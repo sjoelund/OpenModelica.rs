@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 /// represents a rational number, e.g. 6/7
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Rational {
     /// numerator
     pub nom: i32,
@@ -101,7 +101,7 @@ pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 
 fn normalizeZero(mut r: Rational) -> Rational {
     let mut outR: Rational;
-    outR = (match r.clone() {
+    outR = (match r {
         Rational { nom: 0, denom: _ } => Rational { nom: 0, denom: 1 },
         _ => r,
     });

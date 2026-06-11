@@ -66,7 +66,7 @@ pub type Visited = FCore::Visited;
 
 pub type Graph = FCore::Graph;
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum WalkOptions {
     /// breadth first search
     BFS,
@@ -83,7 +83,7 @@ impl metamodelica::gc::MMTrace for WalkOptions {
 }
 pub(crate) use self::WalkOptions::{BFS,DFS};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum VisitOptions {
     /// mark node as visited and report an error if already visited
     VISIT,
@@ -100,7 +100,7 @@ impl metamodelica::gc::MMTrace for VisitOptions {
 }
 pub(crate) use self::VisitOptions::{VISIT,NO_VISIT};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum Options {
     NO_OPTIONS,
     OPTIONS {

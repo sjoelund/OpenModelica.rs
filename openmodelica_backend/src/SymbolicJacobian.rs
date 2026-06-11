@@ -4606,7 +4606,7 @@ pub mod LinearJacobian {
                 mapEqnIncRow = __pa3.clone();
                 mapIncRowEqn = __pa4.clone();
                 indexType = __pa5.clone();
-                (syst, _, _) = unwrap_break_err!(BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), indexType.clone(), None, updateList_arr.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), false), '__try2);
+                (syst, _, _) = unwrap_break_err!(BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), indexType, None, updateList_arr.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), false), '__try2);
                 Ok::<_, anyhow::Error>((syst.clone(),))
             } {
                 Ok((__try2_o0,)) => {

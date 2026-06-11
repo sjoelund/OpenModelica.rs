@@ -658,17 +658,17 @@ pub(crate) fn toFlatStream(mut var: Arc<NFVariable>, mut format: BaseModelica::O
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     s = IOStream::append(s, (indent).clone())?;
     s = Attributes::toFlatStream(var.attributes.clone(), var.ty.clone(), s, ComponentRef::isSimple(var.name.clone()))?;
-    s = IOStream::append(s, (Type::toFlatString(Type::arrayElementType(var.ty.clone()), format.clone())?).clone())?;
+    s = IOStream::append(s, (Type::toFlatString(Type::arrayElementType(var.ty.clone()), format)?).clone())?;
     s = IOStream::append(s, (literal!(" ")).clone())?;
-    s = IOStream::append(s, (ComponentRef::toFlatString(var.name.clone(), format.clone())?).clone())?;
+    s = IOStream::append(s, (ComponentRef::toFlatString(var.name.clone(), format)?).clone())?;
     dims = Type::arrayDims(var.ty.clone());
     if !(dims.clone().is_empty()) {
-        s = IOStream::append(s, (Dimension::toFlatStringList(dims, format.clone(), (literal!("")).clone())?).clone())?;
+        s = IOStream::append(s, (Dimension::toFlatStringList(dims, format, (literal!("")).clone())?).clone())?;
     }
     if !(var.typeAttributes.clone().is_empty()) {
-        s = Component::typeAttrsToFlatStream(var.typeAttributes.clone(), var.ty.clone(), format.clone(), s)?;
+        s = Component::typeAttrsToFlatStream(var.typeAttributes.clone(), var.ty.clone(), format, s)?;
     } else if !(var.children.clone().is_empty()) {
-        s = toFlatStreamModifier(var.children.clone(), format.moveBindings.clone() || Binding::isBound(var.binding.clone()), printBindingType, format.clone(), s)?;
+        s = toFlatStreamModifier(var.children.clone(), format.moveBindings.clone() || Binding::isBound(var.binding.clone()), printBindingType, format, s)?;
     }
     s = toFlatStreamBinding(var.binding.clone(), printBindingType, format, s)?;
     s = FlatModelicaUtil::appendComment(var.comment.clone(), FlatModelicaUtil::ElementType::COMPONENT.clone(), s)?;
@@ -681,7 +681,7 @@ pub(crate) fn toFlatStreamBinding(mut binding: Arc<Binding::NFBinding>, mut prin
         s = IOStream::append(s, (literal!(" = ")).clone())?;
         if printBindingType {
             s = IOStream::append(s, (literal!("(")).clone())?;
-            s = IOStream::append(s, (Type::toFlatString(Binding::getType(binding.clone())?, format.clone())?).clone())?;
+            s = IOStream::append(s, (Type::toFlatString(Binding::getType(binding.clone())?, format)?).clone())?;
             s = IOStream::append(s, (literal!(") ")).clone())?;
         }
         s = IOStream::append(s, (Binding::toFlatString(binding, format, (literal!("")).clone())?).clone())?;
@@ -699,15 +699,15 @@ pub(crate) fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVa
         let mut child = child.clone();
         ss = IOStream::create(literal!("NFVariable.toFlatStreamModifier"), openmodelica_util::IOStream::IOStreamType::LIST)?;
         if !(child.typeAttributes.clone().is_empty()) {
-            ss = Component::typeAttrsToFlatStream(child.typeAttributes.clone(), child.ty.clone(), format.clone(), ss.clone())?;
+            ss = Component::typeAttrsToFlatStream(child.typeAttributes.clone(), child.ty.clone(), format, ss.clone())?;
         } else if !(child.children.clone().is_empty()) {
             overwritten_binding = overwrittenBinding || Binding::isBound(child.binding.clone());
-            ss = toFlatStreamModifier(child.children.clone(), overwritten_binding, printBindingType, format.clone(), ss.clone())?;
+            ss = toFlatStreamModifier(child.children.clone(), overwritten_binding, printBindingType, format, ss.clone())?;
         }
         if !(overwrittenBinding) {
             src = Binding::source(child.binding.clone());
             if src == Binding::Source::MODIFIER.clone() || src == Binding::Source::GENERATED.clone() {
-                ss = toFlatStreamBinding(child.binding.clone(), printBindingType, format.clone(), ss.clone())?;
+                ss = toFlatStreamBinding(child.binding.clone(), printBindingType, format, ss.clone())?;
             }
         }
         if !(IOStream::empty(ss.clone())?) {

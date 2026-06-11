@@ -193,7 +193,7 @@ impl Default for ExtendsTable {
 pub type EXTENDS_TABLE = ExtendsTable;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FrameType {
     NORMAL_SCOPE,
     ENCAPSULATED_SCOPE,
@@ -257,7 +257,7 @@ impl Default for Frame {
 pub type FRAME = Frame;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ClassType {
     USERDEFINED,
     BUILTIN,

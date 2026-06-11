@@ -993,7 +993,7 @@ pub(crate) fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::Ins
             s = IOStream::append(s, (literal!("\n")).clone())?;
             let __range0 = ClassTree::getComponents(var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone())?.borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range0 {
-                s = IOStream::append(s.clone(), (InstNode::toFlatString(comp.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
+                s = IOStream::append(s.clone(), (InstNode::toFlatString(comp.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
                 s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
             }
             s = IOStream::append(s, (indent).clone())?;

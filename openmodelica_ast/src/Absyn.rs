@@ -716,7 +716,7 @@ pub use self::ElementSpec::{CLASSDEF,EXTENDS,IMPORT,COMPONENTS};
 
 /// One of the keyword inner and outer CAN be given to reference an
 ///   inner or outer element. Thus there are three disjoint possibilities.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum InnerOuter {
     /// an inner prefix
     INNER,
@@ -1384,7 +1384,7 @@ impl Default for ElementArg {
 pub use self::ElementArg::{MODIFICATION,REDECLARATION,ELEMENTARGCOMMENT,INHERITANCEBREAK};
 
 /// The keywords redeclare and replacable can be given in three different kombinations, each one by themself or the both combined.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum RedeclareKeywords {
     REDECLARE,
     REPLACEABLE,
@@ -1406,7 +1406,7 @@ pub use self::RedeclareKeywords::{REDECLARE,REPLACEABLE,REDECLARE_REPLACEABLE};
 
 /// The each keyword can be present in both MODIFICATION\'s and REDECLARATION\'s.
 ///  - Each attribute
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Each {
     EACH,
     NON_EACH,
@@ -1473,7 +1473,7 @@ pub type ATTR = ElementAttributes;
 
 
 /// Is field
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IsField {
     /// variable is not a field
     NONFIELD,
@@ -1494,7 +1494,7 @@ impl Default for IsField {
 pub use self::IsField::{NONFIELD,FIELD};
 
 /// Parallelism
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Parallelism {
     /// Global variables for CUDA and OpenCL
     PARGLOBAL,
@@ -1517,7 +1517,7 @@ impl Default for Parallelism {
 }
 pub use self::Parallelism::{PARGLOBAL,PARLOCAL,NON_PARALLEL};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum FlowStream {
     FLOW,
     STREAM,
@@ -1535,7 +1535,7 @@ impl metamodelica::gc::MMTrace for FlowStream {
 pub(crate) use self::FlowStream::{FLOW,STREAM,NOT_FLOW_STREAM};
 
 /// Variability
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Variability {
     VAR,
     DISCRETE,
@@ -1558,7 +1558,7 @@ impl Default for Variability {
 pub use self::Variability::{VAR,DISCRETE,PARAM,CONST};
 
 /// Direction
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Direction {
     /// direction is input
     INPUT,
@@ -1966,7 +1966,7 @@ impl Default for Case {
 }
 pub use self::Case::{CASE,ELSE};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MatchType {
     MATCH,
     MATCHCONTINUE,
@@ -2113,7 +2113,7 @@ pub use self::FunctionArgs::{FUNCTIONARGS,FOR_ITER_FARG};
 
 pub static emptyFunctionArgs: std::sync::LazyLock<Arc<FunctionArgs>> = std::sync::LazyLock::new(|| { Arc::new(FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: metamodelica::nil() }) });
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ReductionIterType {
     /// Reductions are by default calculated as all combinations of the iterators
     COMBINE,
@@ -2160,7 +2160,7 @@ pub type NAMEDARG = NamedArg;
 
 
 /// Expression operators
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Operator {
     /// addition
     ADD,
@@ -2492,7 +2492,7 @@ impl Default for Restriction {
 pub use self::Restriction::{R_CLASS,R_OPTIMIZATION,R_MODEL,R_RECORD,R_BLOCK,R_CONNECTOR,R_EXP_CONNECTOR,R_TYPE,R_PACKAGE,R_FUNCTION,R_OPERATOR,R_OPERATOR_RECORD,R_ENUMERATION,R_PREDEFINED_INTEGER,R_PREDEFINED_REAL,R_PREDEFINED_STRING,R_PREDEFINED_BOOLEAN,R_PREDEFINED_ENUMERATION,R_PREDEFINED_CLOCK,R_UNIONTYPE,R_METARECORD,R_UNKNOWN};
 
 /// function purity
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FunctionPurity {
     PURE,
     IMPURE,
@@ -2512,7 +2512,7 @@ impl Default for FunctionPurity {
 }
 pub use self::FunctionPurity::{PURE,IMPURE,NO_PURITY};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FunctionRestriction {
     /// a normal function
     FR_NORMAL_FUNCTION {

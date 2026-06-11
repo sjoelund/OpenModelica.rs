@@ -69,7 +69,7 @@ pub const startNamePrefix: &'static str = "$START";
 
 pub const auxNamePrefix: &'static str = "$AUX";
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarKind {
     /// variable
     VARIABLE,
@@ -146,7 +146,7 @@ impl Default for ConnectorType {
 }
 pub use self::ConnectorType::{POTENTIAL,FLOW,STREAM,NON_CONNECTOR};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarDirection {
     /// input
     INPUT,
@@ -169,7 +169,7 @@ impl Default for VarDirection {
 }
 pub use self::VarDirection::{INPUT,OUTPUT,BIDIR};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarParallelism {
     /// Global variables for CUDA and OpenCL
     PARGLOBAL,
@@ -192,7 +192,7 @@ impl Default for VarParallelism {
 }
 pub use self::VarParallelism::{PARGLOBAL,PARLOCAL,NON_PARALLEL};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarVisibility {
     /// public variables
     PUBLIC,
@@ -212,7 +212,7 @@ impl Default for VarVisibility {
 }
 pub use self::VarVisibility::{PUBLIC,PROTECTED};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarInnerOuter {
     /// an inner prefix
     INNER,
@@ -1051,7 +1051,7 @@ impl Default for Function {
 }
 pub use self::Function::{FUNCTION,RECORD_CONSTRUCTOR};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum InlineType {
     /// Normal inline, inline as soon as possible
     NORM_INLINE,
@@ -1378,7 +1378,7 @@ pub fn emptyVarAttrString() -> Arc<VariableAttributes> { __emptyVarAttrString_TL
 thread_local! { static __emptyVarAttrEnum_TLS: Arc<VariableAttributes> = Arc::new(VariableAttributes::VAR_ATTR_ENUMERATION { quantity: None, min: None, max: None, start: None, fixed: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None }); }
 pub fn emptyVarAttrEnum() -> Arc<VariableAttributes> { __emptyVarAttrEnum_TLS.with(|__t| __t.clone()) }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum StateSelect {
     NEVER,
     AVOID,
@@ -1402,7 +1402,7 @@ impl Default for StateSelect {
 }
 pub use self::StateSelect::{NEVER,AVOID,DEFAULT,PREFER,ALWAYS};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Uncertainty {
     GIVEN,
     SOUGHT,
@@ -2060,7 +2060,7 @@ thread_local! { static __dummyAttrInput_TLS: Arc<Attributes> = Arc::new(Attribut
 pub fn dummyAttrInput() -> Arc<Attributes> { __dummyAttrInput_TLS.with(|__t| __t.clone()) }
 
 /// where this binding came from: either default binding or start value
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BindingSource {
     /// the binding came from the default value
     BINDING_FROM_DEFAULT_VALUE,
@@ -2503,7 +2503,7 @@ impl Default for Type {
 }
 pub use self::Type::{T_INTEGER,T_REAL,T_STRING,T_BOOL,T_CLOCK,T_ENUMERATION,T_ARRAY,T_NORETCALL,T_UNKNOWN,T_COMPLEX,T_SUBTYPE_BASIC,T_FUNCTION,T_FUNCTION_REFERENCE_VAR,T_FUNCTION_REFERENCE_FUNC,T_TUPLE,T_CODE,T_ANYTYPE,T_METALIST,T_METATUPLE,T_METAOPTION,T_METAUNIONTYPE,T_METARECORD,T_METAARRAY,T_METABOXED,T_METAPOLYMORPHIC,T_METATYPE};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum CodeType {
     C_EXPRESSION,
     C_EXPRESSION_OR_MODIFICATION,
@@ -2736,7 +2736,7 @@ pub use self::FunctionBuiltin::{FUNCTION_NOT_BUILTIN,FUNCTION_BUILTIN,FUNCTION_B
 
 //This was a function restriction in SCode and Absyn
 //Now it is part of function attributes.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FunctionParallelism {
     /// a normal function i.e non_parallel
     FP_NON_PARALLEL,
@@ -2899,7 +2899,7 @@ pub type FUNCARG = FuncArg;
 ///    all other variables are not constant and will get C_VAR constantness.
 ///
 ///  - Variable properties
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Const {
     /// constant
     C_CONST,
@@ -4446,7 +4446,7 @@ pub use self::Subscript::{WHOLEDIM,SLICE,INDEX,WHOLE_NONEXP};
 
 /* -- End Expression.mo -- */
 /// array cref expansion strategy
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Expand {
     /// expand crefs
     EXPAND,
@@ -4553,7 +4553,7 @@ impl Default for ComponentPrefix {
 pub use self::ComponentPrefix::{PRE,NOCOMPPRE};
 
 /// Prefix for classes is its variability
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ClassPrefix {
     /// VAR, DISCRETE, PARAM, or CONST
     pub variability: SCode::Variability,
@@ -4578,7 +4578,7 @@ pub mod Connect {
     ///   is outside if it connects out from the component.  This is important when
     ///   generating equations for flow variables, where outside connectors are
     ///   multiplied with -1 (since flow is always into a component).
-    #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+    #[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Face {
         /// This is an inside connection
         INSIDE,

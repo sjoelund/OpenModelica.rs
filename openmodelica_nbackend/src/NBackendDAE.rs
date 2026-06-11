@@ -466,9 +466,9 @@ pub(crate) fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamode
             module_clocks = metamodelica::cons((name.clone(), clock_time), module_clocks.clone());
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 (varSizes, eqnSizes) = sizes(bdae.clone())?;
-                debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!(" V(")); __mm_s.push_str(&*intString(Util::tuple21(varSizes.clone()))); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(Util::tuple22(varSizes.clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-                debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!(" E(")); __mm_s.push_str(&*intString(Util::tuple21(eqnSizes.clone()))); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(Util::tuple22(eqnSizes.clone()))); __mm_s.push_str(&*literal!(") ")); ArcStr::from(__mm_s) }).clone();
-                if Util::tuple21(varSizes.clone()) != Util::tuple21(eqnSizes.clone()) {
+                debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!(" V(")); __mm_s.push_str(&*intString(Util::tuple21(varSizes))); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(Util::tuple22(varSizes))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+                debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!(" E(")); __mm_s.push_str(&*intString(Util::tuple21(eqnSizes))); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(Util::tuple22(eqnSizes))); __mm_s.push_str(&*literal!(") ")); ArcStr::from(__mm_s) }).clone();
+                if Util::tuple21(varSizes) != Util::tuple21(eqnSizes) {
                     debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!("XX ")); ArcStr::from(__mm_s) }).clone();
                 }
                 debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), intMax(100 - ((debugStr.clone()).clone().len() as i32), 0))?); ArcStr::from(__mm_s) }).clone();
@@ -1778,7 +1778,7 @@ pub(crate) fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
 
 pub(crate) fn strongcomponentinfo(mut phase: ArcStr, mut systems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Partition::Partition>>>>>) -> Result<()> {
     let mut c: CountCollector = CountCollector { single_scalar: 0, single_array: 0, single_record: 0, multi_algorithm: 0, multi_when: 0, multi_if: 0, multi_tpl: 0, resizable_for: 0, generic_for: 0, entwined_for: 0, loop_lin: 0, loop_nlin: 0 };
-    let mut collector_ptr: Pointer::Pointer<CountCollector> = Pointer::create(c.clone());
+    let mut collector_ptr: Pointer::Pointer<CountCollector> = Pointer::create(c);
     let mut single_sc: ArcStr;
     let mut multi_sc: ArcStr;
     let mut for_sc: ArcStr;

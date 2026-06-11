@@ -687,7 +687,7 @@ pub(crate) fn unNameInnerouterUniqueCref(mut cr: Arc<DAE::ComponentRef>, mut rem
 
 fn removeInnerAttribute(mut io: Absyn::InnerOuter) -> Absyn::InnerOuter {
     let mut ioOut: Absyn::InnerOuter;
-    ioOut = (match io.clone() {
+    ioOut = (match io {
         Absyn::InnerOuter::INNER { .. } => openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER,
         Absyn::InnerOuter::INNER_OUTER { .. } => openmodelica_ast::Absyn::InnerOuter::OUTER,
         _ => io,
@@ -2805,7 +2805,7 @@ pub fn getFunctionVisibility(mut r#fn: DAE::Function) -> SCode::Visibility {
     visibility = (match r#fn {
         DAE::Function::FUNCTION { visibility: mut __esc_visibility, .. } => {
             visibility = __esc_visibility.clone();
-            visibility.clone()
+            visibility
         },
         _ => openmodelica_frontend_types::SCode::Visibility::PUBLIC,
     });
@@ -2873,7 +2873,7 @@ pub fn getFunctionInlineType(mut r#fn: DAE::Function) -> Result<DAE::InlineType>
     outInlineType = (match r#fn {
         DAE::Function::FUNCTION { inlineType: mut __esc_outInlineType, .. } => {
             outInlineType = __esc_outInlineType.clone();
-            outInlineType.clone()
+            outInlineType
         },
         _ => bail!("match: no arm matched"),
     });
@@ -4012,7 +4012,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
     Ok((element, arg))
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum TraverseStatementsOptions {
     TRAVERSE_ALL,
     TRAVERSE_RHS_ONLY,
@@ -4103,7 +4103,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut e_2: Arc<DAE::Exp>;
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    (e_1, extraArg) = traverseStatementsOptionsEvalLhs(e.clone(), extraArg.clone(), func.clone(), opt.clone())?;
+                    (e_1, extraArg) = traverseStatementsOptionsEvalLhs(e.clone(), extraArg.clone(), func.clone(), opt)?;
                     (e_2, extraArg) = func(e2.clone(), extraArg.clone())?;
                     x = if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e_1.clone(), exp: e_2.clone(), source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
@@ -4119,7 +4119,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(traverseStatementsOptionsEvalLhs(Arc::new(DAE::Exp::TUPLE { PR: expl1.clone() }), extraArg.clone(), func.clone(), opt.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(traverseStatementsOptionsEvalLhs(Arc::new(DAE::Exp::TUPLE { PR: expl1.clone() }), extraArg.clone(), func.clone(), opt)?) {
                         (Deref @ DAE::Exp::TUPLE { PR: __pa0 }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -4139,7 +4139,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
                     (e_2, extraArg) = func(e2.clone(), extraArg.clone())?;
-                    (e_1, extraArg) = traverseStatementsOptionsEvalLhs(e.clone(), extraArg.clone(), func.clone(), opt.clone())?;
+                    (e_1, extraArg) = traverseStatementsOptionsEvalLhs(e.clone(), extraArg.clone(), func.clone(), opt)?;
                     x = (::match_deref::match_deref! { match &(e_1.clone()) {
         Deref @ DAE::Exp::CREF { .. } => if (referenceEq(&*(e2.clone()),&*(e_2.clone())) && referenceEq(&*(e.clone()),&*(e_1.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e_1.clone(), exp: e_2.clone(), source: source.clone() })},
         _ => if (referenceEq(&*(e2.clone()),&*(e_2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e.clone(), exp: e_2.clone(), source: source.clone() })},
@@ -4159,8 +4159,8 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut algElse1: Arc<DAE::Else>;
                     let mut b: bool;
                     let mut extraArg = (*extraArg).clone();
-                    (algElse1, extraArg) = traverseDAEEquationsStmtsElse(algElse.clone(), func.clone(), opt.clone(), extraArg.clone())?;
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (algElse1, extraArg) = traverseDAEEquationsStmtsElse(algElse.clone(), func.clone(), opt, extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
                     (stmts1, b) = Algorithm::optimizeIf(e_1.clone(), stmts2.clone(), algElse1.clone(), source.clone());
                     stmts1 = if (!(b.clone()) && referenceEq(&*(e.clone()),&*(e_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone())) && referenceEq(&*(algElse.clone()),&*(algElse1.clone()))) {metamodelica::cons(inStmt.clone(), metamodelica::nil())} else {stmts1.clone()};
@@ -4176,7 +4176,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
                     x = if (referenceEq(&*(e.clone()),&*(e_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_FOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
@@ -4191,7 +4191,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
                     x = if (referenceEq(&*(e.clone()),&*(e_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_PARFOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), loopPrlVars: loopPrlVars.clone(), source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
@@ -4206,7 +4206,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
                     x = if (referenceEq(&*(e.clone()),&*(e_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_WHILE { exp: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
@@ -4221,7 +4221,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
                     x = if (referenceEq(&*(e.clone()),&*(e_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: None, source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
@@ -4237,13 +4237,13 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut x: Arc<DAE::Statement>;
                     let mut ew_1: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(traverseDAEEquationsStmtsList(list![ew.clone()], func.clone(), opt.clone(), extraArg.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(traverseDAEEquationsStmtsList(list![ew.clone()], func.clone(), opt, extraArg.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     ew_1 = __pa0.clone();
                     extraArg = __pa1.clone();
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
                     x = if (referenceEq(&*(ew.clone()),&*(ew_1.clone())) && referenceEq(&*(e.clone()),&*(e_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: Some(ew_1.clone()), source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
@@ -4339,7 +4339,7 @@ fn traverseDAEEquationsStmtsWork<Type_a: Clone + 'static + metamodelica::gc::MMT
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let mut x: Arc<DAE::Statement>;
                     let mut extraArg = (*extraArg).clone();
-                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+                    (stmts2, extraArg) = traverseDAEEquationsStmtsList(stmts.clone(), func.clone(), opt, extraArg.clone())?;
                     x = if (metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(stmts2.clone()))) {inStmt.clone()} else {Arc::new(DAE::Statement::STMT_FAILURE { body: stmts2.clone(), source: source.clone() })};
                     Ok((metamodelica::cons(x.clone(), metamodelica::nil()), extraArg.clone()))
                 }
@@ -4378,7 +4378,7 @@ fn traverseDAEEquationsStmtsElse<Type_a: Clone + 'static + metamodelica::gc::MMT
             let mut el_1: Arc<DAE::Else>;
             let mut b: bool;
             let mut extraArg = (*extraArg).clone();
-            (el_1, extraArg) = traverseDAEEquationsStmtsElse(el.clone(), func.clone(), opt.clone(), extraArg.clone())?;
+            (el_1, extraArg) = traverseDAEEquationsStmtsElse(el.clone(), func.clone(), opt, extraArg.clone())?;
             (st_1, extraArg) = traverseDAEEquationsStmtsList(st.clone(), func.clone(), opt, extraArg.clone())?;
             (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
             outElse = Algorithm::optimizeElseIf(e_1.clone(), st_1.clone(), el_1.clone());

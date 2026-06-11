@@ -956,7 +956,7 @@ pub fn classifyAddition(mut op: Arc<NFOperator>) -> SizeClassification {
 pub fn fromClassification(mut cl: Classification, mut ty: Arc<Type::NFType>) -> Result<Arc<NFOperator>> {
     let mut result: Arc<NFOperator>;
     let mut op: Op;
-    op = (match cl.clone() {
+    op = (match cl {
         (MathClassification::ADDITION, SizeClassification::SCALAR) => Op::ADD.clone(),
         (MathClassification::SUBTRACTION, SizeClassification::SCALAR) => Op::SUB.clone(),
         (MathClassification::MULTIPLICATION, SizeClassification::SCALAR) => Op::MUL.clone(),

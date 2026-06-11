@@ -77,7 +77,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut inProp2: DAE::Properties, mut inExp2: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut AbExp2: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), inProp2.clone(), inExp2.clone())) {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOperator1, inProp1.clone(), inExp1.clone(), inProp2.clone(), inExp2.clone())) {
         (_, _, _, props1 @ DAE::Properties::PROP_TUPLE { .. }, _, DAE::Properties::PROP { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
             let mut cache: FCore::Cache;
             let mut type1: Arc<DAE::Type>;
@@ -137,9 +137,9 @@ pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inO
                 exp2 = __pa2.clone();
                 otype = __pa3.clone();
                 r#const = Types::constAnd(const1.clone(), const2.clone());
-                exp = replaceOperatorWithFcall(AbExp.clone(), exp1.clone(), oper.clone(), Some(exp2.clone()), r#const.clone())?;
+                exp = replaceOperatorWithFcall(AbExp.clone(), exp1.clone(), oper.clone(), Some(exp2.clone()), r#const)?;
                 (exp, _) = ExpressionSimplify::simplify(exp)?;
-                prop = DAE::Properties::PROP { type_: otype, constFlag: r#const.clone() };
+                prop = DAE::Properties::PROP { type_: otype, constFlag: r#const };
                 warnUnsafeRelations(inEnv, AbExp, r#const, type1.clone(), type2.clone(), exp1.clone(), exp2.clone(), oper, inPre, inInfo);
             }
             return Ok((cache.clone(), exp, prop))
@@ -154,7 +154,7 @@ pub(crate) fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOp
     let mut outExp: Arc<DAE::Exp>;
     let mut outProp: DAE::Properties;
     (outCache, outExp, outProp) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1, AbExp1.clone());
+        let __mc_input = (inCache.clone(), inEnv.clone(), inOperator1, inProp1.clone(), inExp1, AbExp1.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, DAE::Properties::PROP_TUPLE { .. }, exp1, _) => {
@@ -167,7 +167,7 @@ pub(crate) fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOp
                     type1 = __pa0.clone();
                     prop = __pa1.clone();
                     exp = Arc::new(DAE::Exp::TSUB { exp: exp1.clone(), ix: 1, ty: type1.clone() });
-                    (cache, exp, prop) = unary(inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), inImpl, inPre.clone(), inInfo.clone())?;
+                    (cache, exp, prop) = unary(inCache.clone(), inEnv.clone(), inOperator1, prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), inImpl, inPre.clone(), inInfo.clone())?;
                     Ok((cache.clone(), exp.clone(), prop.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -474,7 +474,7 @@ fn binaryUserdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOper:
     let mut outExp: Arc<DAE::Exp>;
     let mut foldType: Option<Arc<DAE::Type>> = None;
     let mut outType: Arc<DAE::Type>;
-    (outCache, outExp, foldType, outType) = (::match_deref::match_deref! { match &((inCache, inEnv, inOper.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone())) {
+    (outCache, outExp, foldType, outType) = (::match_deref::match_deref! { match &((inCache, inEnv, inOper, inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone())) {
         (cache, env, op, exp1, exp2, type1, type2) => {
             let mut bool1: bool;
             let mut bool2: bool;
@@ -527,7 +527,7 @@ fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inEx
             let mut isScalar2: bool;
             let mut isMatrix1: bool;
             let mut isMatrix2: bool;
-            isRelation = listMember(inOper.clone(), list![openmodelica_ast::Absyn::Operator::LESS, openmodelica_ast::Absyn::Operator::LESSEQ, openmodelica_ast::Absyn::Operator::GREATER, openmodelica_ast::Absyn::Operator::GREATEREQ, openmodelica_ast::Absyn::Operator::EQUAL, openmodelica_ast::Absyn::Operator::NEQUAL]);
+            isRelation = listMember(inOper, list![openmodelica_ast::Absyn::Operator::LESS, openmodelica_ast::Absyn::Operator::LESSEQ, openmodelica_ast::Absyn::Operator::GREATER, openmodelica_ast::Absyn::Operator::GREATEREQ, openmodelica_ast::Absyn::Operator::EQUAL, openmodelica_ast::Absyn::Operator::NEQUAL]);
             Error::assertionOrAddSourceMessage(!(isRelation), Error::COMPILER_ERROR.clone(), list![(literal!("Not supporting overloading of relation array operations")).clone()], info.clone())?;
             isScalar1 = !(Types::arrayType(inType1.clone()));
             isScalar2 = !(Types::arrayType(inType2.clone()));
@@ -550,7 +550,7 @@ fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inEx
 fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isScalar1: bool, mut isVector1: bool, mut isMatrix1: bool, mut isScalar2: bool, mut isVector2: bool, mut isMatrix2: bool, mut inOper: Absyn::Operator, mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>)> {
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut exps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>;
-    (cache, exps) = (match (inCache, isScalar1, isVector1, isMatrix1, isScalar2, isVector2, isMatrix2, inOper.clone()) {
+    (cache, exps) = (match (inCache, isScalar1, isVector1, isMatrix1, isScalar2, isVector2, isMatrix2, inOper) {
         (mut __esc_cache, false, _, _, true, _, _, _) => {
             cache = __esc_cache.clone();
             let mut exp: Arc<DAE::Exp>;
@@ -1099,24 +1099,24 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
         }
         __acc.reverse()
     }));
-    let mut op: Absyn::Operator = inOperator.clone();
+    let mut op: Absyn::Operator = inOperator;
     let mut ia1: bool = Types::isArray(t1.clone());
     let mut ia2: bool = Types::isArray(t2.clone());
     if ia2 && !(ia1) {
-        (e1, e2, t1, t2) = (match op.clone() {
+        (e1, e2, t1, t2) = (match op {
         Absyn::Operator::ADD_EW { .. } => (e2, e1, t2, t1),
         Absyn::Operator::MUL { .. } => (e2, e1, t2, t1),
         Absyn::Operator::MUL_EW { .. } => (e2, e1, t2, t1),
         _ => (e1, e2, t1, t2),
     });
     } else if ia1 && !(ia2) {
-        (op, e2) = (match op.clone() {
+        (op, e2) = (match op {
         Absyn::Operator::SUB_EW { .. } => (openmodelica_ast::Absyn::Operator::ADD_EW, Expression::negate(e2)?),
         _ => (op, e2),
     });
     }
     match '__try0: {
-        ops = (match op.clone() {
+        ops = (match op {
         Absyn::Operator::ADD { .. } => {
             addTypes.clone()
         },
@@ -1222,7 +1222,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
         }
         Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OperatorOverloading.operatorsBinary failed, op: ")); __mm_s.push_str(&*Dump::opSymbol(op.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OperatorOverloading.operatorsBinary failed, op: ")); __mm_s.push_str(&*Dump::opSymbol(op)?); ArcStr::from(__mm_s) }).clone())?;
             return Err(__try0_err);
         }
     }
@@ -1231,7 +1231,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
 
 fn operatorsUnary(mut op: Absyn::Operator) -> Result<Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>> {
     let mut ops: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
-    ops = (match op.clone() {
+    ops = (match op {
         Absyn::Operator::UMINUS { .. } => {
             let mut intarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
             let mut realarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;

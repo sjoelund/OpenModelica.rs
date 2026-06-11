@@ -72,7 +72,7 @@ impl Default for HpcOmData {
 pub type HPCOMDATA = HpcOmData;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MemoryMap {
     MEMORYMAP_ARRAY {
         floatArraySize: i32,

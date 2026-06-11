@@ -716,7 +716,7 @@ pub fn restrictionEqual(mut restr1: SCode::Restriction, mut restr2: SCode::Restr
 
 pub(crate) fn funcRestrictionEqual(mut funcRestr1: SCode::FunctionRestriction, mut funcRestr2: SCode::FunctionRestriction) -> bool {
     let mut equal: bool;
-    equal = (match (funcRestr1.clone(), funcRestr2.clone()) {
+    equal = (match (funcRestr1, funcRestr2) {
         (SCode::FunctionRestriction::FR_NORMAL_FUNCTION { .. }, SCode::FunctionRestriction::FR_NORMAL_FUNCTION { .. }) => AbsynUtil::purityEqual(var_field!(funcRestr1.purity, SCode::FunctionRestriction::FR_NORMAL_FUNCTION).clone(), var_field!(funcRestr2.purity, SCode::FunctionRestriction::FR_NORMAL_FUNCTION).clone(), false),
         (SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. }, SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. }) => AbsynUtil::purityEqual(var_field!(funcRestr1.purity, SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION).clone(), var_field!(funcRestr2.purity, SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION).clone(), false),
         (SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. }, SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. }) => true,
@@ -1289,7 +1289,7 @@ pub fn setClassPartialPrefix(mut partialPrefix: SCode::Partial, mut cl: Arc<SCod
     let mut cl: Arc<SCode::Element> = cl;
     let () = (::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
-            if !(partialPrefix.clone() == var_field!((*cl).partialPrefix, SCode::Element::CLASS).clone()) {
+            if !(partialPrefix == var_field!((*cl).partialPrefix, SCode::Element::CLASS).clone()) {
                 assign_variant_field!(cl => SCode::Element::CLASS; partialPrefix = partialPrefix);
             }
             ()
@@ -3820,11 +3820,11 @@ pub fn getFunctionRestrictionPurity(mut restr: SCode::FunctionRestriction) -> Ab
     purity = (match restr {
         SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: mut __esc_purity } => {
             purity = __esc_purity.clone();
-            purity.clone()
+            purity
         },
         SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: mut __esc_purity } => {
             purity = __esc_purity.clone();
-            purity.clone()
+            purity
         },
         _ => openmodelica_ast::Absyn::FunctionPurity::NO_PURITY,
     });
@@ -4173,7 +4173,7 @@ pub(crate) fn propagateArrayDimensions(mut inOriginalDims: Arc<metamodelica::Lis
 
 pub(crate) fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut inNewConnectorType: SCode::ConnectorType) -> SCode::ConnectorType {
     let mut outNewConnectorType: SCode::ConnectorType;
-    outNewConnectorType = (match inNewConnectorType.clone() {
+    outNewConnectorType = (match inNewConnectorType {
         SCode::ConnectorType::POTENTIAL { .. } => inOriginalConnectorType,
         _ => inNewConnectorType,
     });
@@ -4182,7 +4182,7 @@ pub(crate) fn propagateConnectorType(mut inOriginalConnectorType: SCode::Connect
 
 pub(crate) fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNewParallelism: SCode::Parallelism) -> SCode::Parallelism {
     let mut outNewParallelism: SCode::Parallelism;
-    outNewParallelism = (match inNewParallelism.clone() {
+    outNewParallelism = (match inNewParallelism {
         SCode::Parallelism::NON_PARALLEL { .. } => inOriginalParallelism,
         _ => inNewParallelism,
     });
@@ -4191,7 +4191,7 @@ pub(crate) fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism
 
 pub(crate) fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNewVariability: SCode::Variability) -> SCode::Variability {
     let mut outNewVariability: SCode::Variability;
-    outNewVariability = (match inNewVariability.clone() {
+    outNewVariability = (match inNewVariability {
         SCode::Variability::VAR { .. } => inOriginalVariability,
         _ => inNewVariability,
     });
@@ -4200,7 +4200,7 @@ pub(crate) fn propagateVariability(mut inOriginalVariability: SCode::Variability
 
 pub(crate) fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirection: Absyn::Direction) -> Absyn::Direction {
     let mut outNewDirection: Absyn::Direction;
-    outNewDirection = (match inNewDirection.clone() {
+    outNewDirection = (match inNewDirection {
         Absyn::Direction::BIDIR { .. } => inOriginalDirection,
         _ => inNewDirection,
     });
@@ -4209,7 +4209,7 @@ pub(crate) fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut 
 
 pub(crate) fn propagateIsField(mut inOriginalIsField: Absyn::IsField, mut inNewIsField: Absyn::IsField) -> Absyn::IsField {
     let mut outNewIsField: Absyn::IsField;
-    outNewIsField = (match inNewIsField.clone() {
+    outNewIsField = (match inNewIsField {
         Absyn::IsField::NONFIELD { .. } => inOriginalIsField,
         _ => inNewIsField,
     });
@@ -4257,7 +4257,7 @@ pub fn propagatePrefixes(mut originalPrefixes: Arc<SCode::Prefixes>, mut newPref
 
 pub(crate) fn propagatePrefixInnerOuter(mut inOriginalIO: Absyn::InnerOuter, mut inIO: Absyn::InnerOuter) -> Absyn::InnerOuter {
     let mut outIO: Absyn::InnerOuter;
-    outIO = (match inIO.clone() {
+    outIO = (match inIO {
         Absyn::InnerOuter::NOT_INNER_OUTER { .. } => inOriginalIO,
         _ => inIO,
     });

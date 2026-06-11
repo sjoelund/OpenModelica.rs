@@ -223,7 +223,7 @@ pub(crate) fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRe
         } };
         cr2 = __pa0.clone();
         crefs2 = __pa1.clone();
-        sets = addConnection(sets.clone(), cr1.clone(), face1.clone(), cr2.clone(), face2.clone(), connectorType.clone(), source.clone())?;
+        sets = addConnection(sets.clone(), cr1.clone(), face1, cr2.clone(), face2, connectorType.clone(), source.clone())?;
     }
     Ok(sets)
 }
@@ -610,11 +610,11 @@ fn addOuterConnectToSets2(mut outerCref: Arc<DAE::ComponentRef>, mut innerCref: 
     let mut sc: i32;
     match '__try0: {
         node = unwrap_break_err!(setTrieGet(outerCref.clone(), sets.sets.clone(), true), '__try0);
-        outer_els = unwrap_break_err!(collectOuterElements(node.clone(), outerFace.clone()), '__try0);
+        outer_els = unwrap_break_err!(collectOuterElements(node.clone(), outerFace), '__try0);
         inner_els = ({
         let mut __acc: Arc<metamodelica::List<ConnectorElement>> = metamodelica::nil();
         for mut oe in (outer_els.clone()).into_iter().cloned() {
-            let __x = unwrap_break_err!(findInnerElement(oe.clone(), innerCref.clone(), innerFace.clone(), sets.clone()), '__try0);
+            let __x = unwrap_break_err!(findInnerElement(oe.clone(), innerCref.clone(), innerFace, sets.clone()), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -696,14 +696,14 @@ fn optPrefixCref(mut prefix: Option<Arc<DAE::ComponentRef>>, mut cref: Arc<DAE::
 fn findElement(mut cref: Arc<DAE::ComponentRef>, mut face: Face, mut ty: ConnectorType, mut source: Arc<DAE::ElementSource>, mut sets: Sets) -> ConnectorElement {
     let mut element: ConnectorElement;
     match '__try0: {
-        element = unwrap_break_err!(setTrieGetElement(cref.clone(), face.clone(), sets.sets.clone()), '__try0);
+        element = unwrap_break_err!(setTrieGetElement(cref.clone(), face, sets.sets.clone()), '__try0);
         Ok::<_, anyhow::Error>((element.clone(),))
     } {
         Ok((__try0_o0,)) => {
             element = __try0_o0;
         }
         Err(_) => {
-            element = newElement(cref.clone(), face.clone(), ty.clone(), source.clone(), Connect::NEW_SET.clone());
+            element = newElement(cref.clone(), face, ty.clone(), source.clone(), Connect::NEW_SET.clone());
         }
     }
     element
@@ -1805,7 +1805,7 @@ fn sumInside2(mut element: ConnectorElement, mut flowThreshold: metamodelica::Re
 }
 
 pub(crate) fn faceEqual(mut face1: Face, mut face2: Face) -> bool {
-    let mut sameFaces: bool = metamodelica::valueConstructor((&face1.clone())).unwrap() == metamodelica::valueConstructor((&face2.clone())).unwrap();
+    let mut sameFaces: bool = metamodelica::valueConstructor((&face1)).unwrap() == metamodelica::valueConstructor((&face2)).unwrap();
     sameFaces
 }
 

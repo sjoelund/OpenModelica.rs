@@ -85,7 +85,7 @@ pub(crate) const BORDER: &'static str = "***************************************
 
 pub(crate) const UNDERLINE: &'static str = "========================================";
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum TearingMethod {
     /// Only tear discrete variables from loops
     MINIMAL_TEARING,
@@ -136,9 +136,9 @@ pub(crate) fn tearingSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Ar
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             DAEtype = __pa1.clone();
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n\n\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nCalling Tearing for ")); __mm_s.push_str(&*unwrap_break_err!(BackendDump::printBackendDAEType2String(DAEtype.clone()), '__try0)); __mm_s.push_str(&*literal!("!\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n\n\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nCalling Tearing for ")); __mm_s.push_str(&*unwrap_break_err!(BackendDump::printBackendDAEType2String(DAEtype), '__try0)); __mm_s.push_str(&*literal!("!\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        (outDAE, strongComponentIndex) = unwrap_break_err!(BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new({ let __pe_b0 = method.clone(); move |__pe_a1, __pe_a2, __pe_a3| tearingSystemWork(__pe_b0.clone(), __pe_a1, __pe_a2, __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32)> + 'static>), strongComponentIndex), '__try0);
+        (outDAE, strongComponentIndex) = unwrap_break_err!(BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new({ let __pe_b0 = method; move |__pe_a1, __pe_a2, __pe_a3| tearingSystemWork(__pe_b0.clone(), __pe_a1, __pe_a2, __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32)> + 'static>), strongComponentIndex), '__try0);
         System::tmpTickSetIndex(strongComponentIndex, Global::strongComponent_index.clone());
         Ok::<_, anyhow::Error>((method.clone(), outDAE.clone(), strongComponentIndex.clone()))
     } {
@@ -181,7 +181,7 @@ fn callTearingMethod(mut inTearingMethod: TearingMethod, mut isyst: Arc<BackendD
     let debug: bool = false;
     let mut userTVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut userResiduals: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut tearingMethod: TearingMethod = inTearingMethod.clone();
+    let mut tearingMethod: TearingMethod = inTearingMethod;
     if listMember(strongComponentIndex, Flags::getConfigIntList(Flags::TOTAL_TEARING.clone())?) {
         tearingMethod = crate::Tearing::TearingMethod::TOTAL_TEARING;
     } else {
@@ -288,7 +288,7 @@ fn traverseComponents(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::Strong
         comp => {
             let mut b: bool;
             let mut comp = (*comp).clone();
-            (comp, b, strongComponentIndexOut) = traverseComponent(comp.clone(), isyst.clone(), ishared.clone(), inMethod.clone(), strongComponentIndexOut)?;
+            (comp, b, strongComponentIndexOut) = traverseComponent(comp.clone(), isyst.clone(), ishared.clone(), inMethod, strongComponentIndexOut)?;
             outRunMatching = outRunMatching || b;
             comp.clone()
         },
@@ -356,7 +356,7 @@ fn traverseComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut isyst: Ar
                     execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.traverseComponent ")); __mm_s.push_str(&*if (isLinear) {literal!("LS")} else {literal!("NLS")}); __mm_s.push_str(&*literal!(" start")); ArcStr::from(__mm_s) }).clone())?;
                 }
                 match '__try0: {
-                    (oComp, _) = unwrap_break_err!(callTearingMethod(inMethod.clone(), isyst.clone(), ishared.clone(), eindex.clone(), vindx.clone(), ojac.clone(), jacType.clone(), mixedSystem.clone(), strongComponentIndexOut), '__try0);
+                    (oComp, _) = unwrap_break_err!(callTearingMethod(inMethod, isyst.clone(), ishared.clone(), eindex.clone(), vindx.clone(), ojac.clone(), jacType.clone(), mixedSystem.clone(), strongComponentIndexOut), '__try0);
                     outRunMatching = true;
                     Ok::<_, anyhow::Error>((oComp.clone(), outRunMatching.clone()))
                 } {
@@ -620,7 +620,7 @@ pub(crate) fn unsolvable(mut elem: Arc<metamodelica::List<(i32, BackendDAE::Solv
     for mut el in &*elem {
         let mut el = el.clone();
         (e, s, _) = el.clone();
-        if solvable(s.clone())? {
+        if solvable(s)? {
             if e > 0 {
                 isUnsolvable = false;
                 return Ok(isUnsolvable.clone());
@@ -1238,7 +1238,7 @@ fn solvableLst(mut rows: Arc<metamodelica::List<(i32, BackendDAE::Solvability, A
     for mut r in &*rows {
         let mut r = r.clone();
         (_, s, _) = r.clone();
-        if !(self::solvable(s.clone())?) {
+        if !(self::solvable(s)?) {
             solvable = false;
             return Ok(solvable.clone());
         }
@@ -1354,7 +1354,7 @@ fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE:
             varindxarr = metamodelica::arrayFromVec(vindx.clone().into_iter().cloned().collect());
             ovars = List::map1r(tvars.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varindxarr.clone())?;
             innerEquations = omcTearing4_1(othercomps.clone(), ass2.clone(), mapIncRowEqn.clone(), eindxarr.clone(), varindxarr.clone(), columark.clone(), mark)?;
-            linear = BackendDAEUtil::getLinearfromJacType(jacType.clone())?;
+            linear = BackendDAEUtil::getLinearfromJacType(jacType)?;
             Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: ovars.clone(), residualequations: ores.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem }), true))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1728,7 +1728,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     } };
     DAEtype = __pa1.clone();
     modelName = __pa2.clone();
-    DAEtypeStr = (BackendDump::printBackendDAEType2String(DAEtype.clone())?).clone();
+    DAEtypeStr = (BackendDump::printBackendDAEType2String(DAEtype)?).clone();
     dynamicTearing = (::match_deref::match_deref! { match &((Config::dynamicTearing()?, linear, noDynamicStateSelection, DAEtypeStr.clone(), Flags::getConfigBool(Flags::DYNAMIC_TEARING_FOR_INITIALIZATION.clone())?, Config::simCodeTarget()?)) {
         (Deref @ "true", _, true, Deref @ "simulation", _, Deref @ "C") => true,
         (Deref @ "true", _, true, Deref @ "initialization", true, Deref @ "C") => true,
@@ -3021,7 +3021,7 @@ fn countImpossibleAss(mut elem: Arc<metamodelica::List<(i32, BackendDAE::Solvabi
     for mut e in &*elem {
         let mut e = e.clone();
         (_, s, _) = e.clone();
-        if !(solvable(s.clone())?) {
+        if !(solvable(s)?) {
             outCount = outCount + 1;
         }
     }
@@ -3783,7 +3783,7 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
             }
         }
         if tmp_update {
-            systlst_new = metamodelica::cons(BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), stateSets.clone(), partitionKind.clone(), BackendEquation::emptyEqns()), systlst_new.clone());
+            systlst_new = metamodelica::cons(BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), stateSets.clone(), partitionKind, BackendEquation::emptyEqns()), systlst_new.clone());
         } else {
             systlst_new = metamodelica::cons(syst.clone(), systlst_new.clone());
         }

@@ -29,7 +29,7 @@ pub(crate) fn dumpProgram(mut txt: Tpl::Text, mut a_program: Arc<metamodelica::L
 pub(crate) fn dumpElements(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_indent: bool, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<Arc<SCode::Element>>>;
-    ret_0 = SCodeDump::filterElements(a_elements, a_options.clone())?;
+    ret_0 = SCodeDump::filterElements(a_elements, a_options)?;
     out_txt = dumpElements2(txt, ret_0, a_indent, a_options)?;
     Ok(out_txt)
 }
@@ -166,7 +166,7 @@ fn lm_19(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
             ret_2 = intEq(1, x_i1);
             ret_3 = boolNot(ret_2);
             l_pre__spacing = fun_14(Tpl::emptyTxt.clone(), ret_3, a_prevSpacing.clone(), l_spacing.clone())?;
-            l_el__str = dumpElement(Tpl::emptyTxt.clone(), i_el.clone(), (literal!("")).clone(), a_options.clone())?;
+            l_el__str = dumpElement(Tpl::emptyTxt.clone(), i_el.clone(), (literal!("")).clone(), a_options)?;
             ret_6 = Util::getStatefulBoolean(a_inPublicSection.clone());
             l_vis__str = dumpElementVisibility(Tpl::emptyTxt.clone(), i_el.clone(), ret_6)?;
             l_dummyTxt = fun_15(Tpl::emptyTxt.clone(), l_vis__str.clone(), a_inPublicSection.clone())?;
@@ -592,7 +592,7 @@ fn lm_39(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Enum>>
         let mut lstElt_39 = lstElt_39.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_39.clone()) {
         i_enum => {
-            txt = dumpEnumLiteral(txt.clone(), i_enum.clone(), a_options.clone())?;
+            txt = dumpEnumLiteral(txt.clone(), i_enum.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1127,7 +1127,7 @@ fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_62 = lstElt_62.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_62.clone()) {
         i_eq => {
-            txt = dumpEquation(txt.clone(), i_eq.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_eq.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1286,7 +1286,7 @@ fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_65 = lstElt_65.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_65.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1302,7 +1302,7 @@ fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_66 = lstElt_66.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_66.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1380,7 +1380,7 @@ fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_69 = lstElt_69.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_69.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1443,7 +1443,7 @@ fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_72 = lstElt_72.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_72.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1459,7 +1459,7 @@ fn lm_73(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_73 = lstElt_73.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_73.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1530,7 +1530,7 @@ fn lm_75(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_75 = lstElt_75.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_75.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1546,7 +1546,7 @@ fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
         let mut lstElt_76 = lstElt_76.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_76.clone()) {
         i_e => {
-            txt = dumpEquation(txt.clone(), i_e.clone(), a_options.clone())?;
+            txt = dumpEquation(txt.clone(), i_e.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1566,7 +1566,7 @@ fn lm_77(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>,
             let mut l_else__cond__str: Tpl::Text;
             l_else__cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_else__cond.clone())?;
             l_else__body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_else__body__str = lm_76(l_else__body__str.clone(), i_else__body.clone(), a_options.clone())?;
+            l_else__body__str = lm_76(l_else__body__str.clone(), i_else__body.clone(), a_options)?;
             l_else__body__str = Tpl::popIter(l_else__body__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("elsewhen ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_else__cond__str.clone())?;
@@ -1648,7 +1648,7 @@ fn lm_80(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Algori
         let mut lstElt_80 = lstElt_80.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_80.clone()) {
         i_al => {
-            txt = dumpAlgorithmSection(txt.clone(), i_al.clone(), a_options.clone())?;
+            txt = dumpAlgorithmSection(txt.clone(), i_al.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1702,7 +1702,7 @@ fn lm_83(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Statem
         let mut lstElt_83 = lstElt_83.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_83.clone()) {
         i_s => {
-            txt = dumpStatement(txt.clone(), i_s.clone(), a_options.clone())?;
+            txt = dumpStatement(txt.clone(), i_s.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -1911,7 +1911,7 @@ fn lm_87(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>,
             let mut l_body__str: Tpl::Text;
             let mut l_cond__str: Tpl::Text;
             l_cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_cond.clone())?;
-            l_body__str = dumpStatements(Tpl::emptyTxt.clone(), i_body.clone(), a_options.clone())?;
+            l_body__str = dumpStatements(Tpl::emptyTxt.clone(), i_body.clone(), a_options)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("elseif ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
@@ -2026,7 +2026,7 @@ fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>,
             let mut l_ew__body__str: Tpl::Text;
             let mut l_ew__cond__str: Tpl::Text;
             l_ew__cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_ew__cond.clone())?;
-            l_ew__body__str = dumpStatements(Tpl::emptyTxt.clone(), i_ew__body.clone(), a_options.clone())?;
+            l_ew__body__str = dumpStatements(Tpl::emptyTxt.clone(), i_ew__body.clone(), a_options)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("elsewhen ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_ew__cond__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
@@ -2488,7 +2488,7 @@ fn lm_111(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::SubMo
         let mut lstElt_111 = lstElt_111.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_111.clone()) {
         i_submod => {
-            txt = dumpSubModifier(txt.clone(), i_submod.clone(), a_options.clone())?;
+            txt = dumpSubModifier(txt.clone(), i_submod.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -2545,7 +2545,7 @@ fn lm_114(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::SubMo
         let mut lstElt_114 = lstElt_114.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_114.clone()) {
         i_submod => {
-            txt = dumpAnnotationSubModifier(txt.clone(), i_submod.clone(), a_options.clone())?;
+            txt = dumpAnnotationSubModifier(txt.clone(), i_submod.clone(), a_options)?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -3153,7 +3153,7 @@ fn fun_143(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<SCode::ExternalDecl
 pub(crate) fn dumpExternalDecl(mut txt: Tpl::Text, mut a_externalDecl: Arc<SCode::ExternalDecl>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_res: Tpl::Text;
-    l_res = fun_141(Tpl::emptyTxt.clone(), a_externalDecl.clone(), a_options.clone())?;
+    l_res = fun_141(Tpl::emptyTxt.clone(), a_externalDecl.clone(), a_options)?;
     out_txt = fun_143(txt, a_externalDecl, a_options, l_res)?;
     Ok(out_txt)
 }

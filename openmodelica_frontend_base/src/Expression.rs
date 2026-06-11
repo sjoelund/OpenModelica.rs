@@ -11408,7 +11408,7 @@ fn fromAbsynExpOpt(mut aoe: Option<Arc<Absyn::Exp>>) -> Result<Option<Arc<DAE::E
 
 fn fromAbsynOperator(mut aop: Absyn::Operator, mut ty: Arc<DAE::Type>) -> Result<DAE::Operator> {
     let mut op: DAE::Operator;
-    op = (match aop.clone() {
+    op = (match aop {
         Absyn::Operator::ADD { .. } => DAE::Operator::ADD { ty: ty },
         Absyn::Operator::SUB { .. } => DAE::Operator::SUB { ty: ty },
         Absyn::Operator::MUL { .. } => DAE::Operator::MUL { ty: ty },

@@ -2533,7 +2533,7 @@ pub(crate) fn adjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inI
         } };
         vars = __pa1.clone();
         eqns = __pa2.clone();
-        (outAdjacencyMatrix, outAdjacencyMatrixT) = unwrap_break_err!(adjacencyMatrixDispatch(vars.clone(), eqns.clone(), inIndexType.clone(), functionTree.clone(), isInitial), '__try0);
+        (outAdjacencyMatrix, outAdjacencyMatrixT) = unwrap_break_err!(adjacencyMatrixDispatch(vars.clone(), eqns.clone(), inIndexType, functionTree.clone(), isInitial), '__try0);
         Ok::<_, anyhow::Error>((eqns.clone(), outAdjacencyMatrix.clone(), outAdjacencyMatrixT.clone(), vars.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
@@ -2562,7 +2562,7 @@ pub(crate) fn adjacencyMatrixMasked(mut inEqSystem: Arc<BackendDAE::EqSystem>, m
         } };
         vars = __pa1.clone();
         eqns = __pa2.clone();
-        (outAdjacencyMatrix, outAdjacencyMatrixT) = unwrap_break_err!(adjacencyMatrixDispatchMasked(vars.clone(), eqns.clone(), inIndexType.clone(), inMask.clone(), functionTree.clone(), isInitial), '__try0);
+        (outAdjacencyMatrix, outAdjacencyMatrixT) = unwrap_break_err!(adjacencyMatrixDispatchMasked(vars.clone(), eqns.clone(), inIndexType, inMask.clone(), functionTree.clone(), isInitial), '__try0);
         Ok::<_, anyhow::Error>((eqns.clone(), outAdjacencyMatrix.clone(), outAdjacencyMatrixT.clone(), vars.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
@@ -2594,7 +2594,7 @@ pub fn adjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndexTyp
         vars = __pa1.clone();
         eqns = __pa2.clone();
         ExpandableArray::compress(eqns.clone());
-        (outAdjacencyMatrix, outAdjacencyMatrixT, outMapEqnIncRow, outMapIncRowEqn) = unwrap_break_err!(adjacencyMatrixDispatchScalar(vars.clone(), eqns.clone(), inIndexType.clone(), functionTree.clone(), isInitial), '__try0);
+        (outAdjacencyMatrix, outAdjacencyMatrixT, outMapEqnIncRow, outMapIncRowEqn) = unwrap_break_err!(adjacencyMatrixDispatchScalar(vars.clone(), eqns.clone(), inIndexType, functionTree.clone(), isInitial), '__try0);
         Ok::<_, anyhow::Error>((eqns.clone(), outAdjacencyMatrix.clone(), outAdjacencyMatrixT.clone(), outMapEqnIncRow.clone(), outMapIncRowEqn.clone(), vars.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
@@ -2650,7 +2650,7 @@ pub(crate) fn hasIndexTypeSolvableAndUnprocessedScalar(mut syst: Arc<BackendDAE:
     let mut processed: bool;
     if '__try0: {
         (indexType, scalar, processed) = unwrap_break_err!(getIndexType(syst.clone()), '__try0);
-        b = (match (indexType.clone(), scalar, processed) {
+        b = (match (indexType, scalar, processed) {
         (BackendDAE::IndexType::SOLVABLE { .. }, true, false) => true,
         _ => false,
     });
@@ -2698,7 +2698,7 @@ pub(crate) fn adjacencyMatrixDispatch(mut inVars: BackendDAE::Variables, mut inE
     outAdjacencyArrayT = arrayCreate(num_vars, metamodelica::nil());
     for mut idx in 1..=num_eqs {
         eq = BackendEquation::get(inEqns.clone(), idx.clone())?;
-        (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
+        (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType, functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
         row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
         metamodelica::arrayUpdate(outAdjacencyArray.clone(), idx.clone(), row.clone())?;
         outAdjacencyArrayT = filladjacencyMatrixT(row.clone(), list![idx.clone()], outAdjacencyArrayT.clone())?;
@@ -2721,7 +2721,7 @@ pub(crate) fn adjacencyMatrixDispatchMasked(mut inVars: BackendDAE::Variables, m
     for mut idx in 1..=num_eqs {
         if ({let __elt = inMask.borrow()[(idx.clone()-1) as usize].clone(); __elt}) {
             eq = BackendEquation::get(inEqns.clone(), idx.clone())?;
-            (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
+            (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType, functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
             row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
             metamodelica::arrayUpdate(outAdjacencyArray.clone(), idx.clone(), row.clone())?;
             outAdjacencyArrayT = filladjacencyMatrixT(row.clone(), list![idx.clone()], outAdjacencyArrayT.clone())?;
@@ -2751,7 +2751,7 @@ fn adjacencyMatrixDispatchScalar(mut inVars: BackendDAE::Variables, mut inEqns: 
     omapEqnIncRow = arrayCreate(num_eqs, metamodelica::nil());
     for mut idx in 1..=num_eqs {
         eq = BackendEquation::get(inEqns.clone(), idx.clone())?;
-        (rowTree, size) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
+        (rowTree, size) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType, functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
         row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
         row_indices = List::intRange2(num_rows + 1, num_rows + size);
         num_rows = num_rows + size;
@@ -2798,7 +2798,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
     let mut whenIntegerLst: Arc<metamodelica::List<i32>>;
     let mut inlinedEquation: Arc<BackendDAE::Equation>;
     whenIntegerLst = 'mc: {
-        let __mc_input = inIndexType.clone();
+        let __mc_input = inIndexType;
         if let Ok(__v) = (|| -> Result<_> {
             let BackendDAE::IndexType::BASECLOCK_IDX { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut kind: BackendDAE::EquationKind;
@@ -2841,8 +2841,8 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                 Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
                     let mut lst1: Arc<AvlSetInt::Tree>;
                     let mut res: Arc<AvlSetInt::Tree>;
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
-                    res = adjacencyRowExp(e2.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType, isInitial)?;
+                    res = adjacencyRowExp(e2.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType, isInitial)?;
                     Ok((res.clone(), 1))
                 }
                 _ => bail!("nomatch"),
@@ -2853,8 +2853,8 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e1, right: e2, .. } => {
                     let mut lst1: Arc<AvlSetInt::Tree>;
                     let mut res: Arc<AvlSetInt::Tree>;
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
-                    res = adjacencyRowExp(e2.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType, isInitial)?;
+                    res = adjacencyRowExp(e2.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType, isInitial)?;
                     Ok((res.clone(), size.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2867,8 +2867,8 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                     let mut res: Arc<AvlSetInt::Tree>;
                     let mut size: i32;
                     size = if (Flags::isSet(Flags::NF_SCALARIZE.clone())?) {List::reduce(dimsize.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?} else {1};
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
-                    res = adjacencyRowExp(e2.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType, isInitial)?;
+                    res = adjacencyRowExp(e2.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType, isInitial)?;
                     Ok((res.clone(), size.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2879,7 +2879,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                 Deref @ BackendDAE::Equation::FOR_EQUATION { body: eqn, iter: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: r#str, .. }, .. }, .. } => {
                     let mut eqn = (*eqn).clone();
                     (eqn, _) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(fnptr!(stripIterSub, Arc<DAE::Exp>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr) -> Result<(Arc<DAE::Exp>, bool, ArcStr)> + 'static>); move |__pe_a0, __pe_a2| Expression::traverseExpTopDown(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (r#str.clone()).clone())?;
-                    Ok(adjacencyRow(eqn.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), iRow.clone(), isInitial)?)
+                    Ok(adjacencyRow(eqn.clone(), vars.clone(), inIndexType, functionTree.clone(), iRow.clone(), isInitial)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2891,8 +2891,8 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                     let mut res: Arc<AvlSetInt::Tree>;
                     let mut expCref: Arc<DAE::Exp>;
                     expCref = Expression::crefExp(cr.clone())?;
-                    lst1 = adjacencyRowExp(expCref.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
-                    res = adjacencyRowExp(e.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
+                    lst1 = adjacencyRowExp(expCref.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType, isInitial)?;
+                    res = adjacencyRowExp(e.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType, isInitial)?;
                     Ok((res.clone(), 1))
                 }
                 _ => bail!("nomatch"),
@@ -2902,7 +2902,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. } => {
                     let mut res: Arc<AvlSetInt::Tree>;
-                    res = adjacencyRowExp(e.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
+                    res = adjacencyRowExp(e.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType, isInitial)?;
                     Ok((res.clone(), 1))
                 }
                 _ => bail!("nomatch"),
@@ -2912,7 +2912,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation: we, .. } => {
                     let mut res: Arc<AvlSetInt::Tree>;
-                    res = adjacencyRowWhen(we.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), iRow.clone(), isInitial)?;
+                    res = adjacencyRowWhen(we.clone(), vars.clone(), inIndexType, functionTree.clone(), iRow.clone(), isInitial)?;
                     Ok((res.clone(), size.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2926,7 +2926,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                     let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut varslst: Arc<metamodelica::List<BackendDAE::Var>>;
                     let mut p: Arc<metamodelica::List<i32>>;
-                    res = traverseStmts(statementLst.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = functionTree.clone(); let __pe_b4 = inIndexType.clone(); let __pe_b5 = isInitial; move |__pe_a0, __pe_a1| adjacencyRowAlgorithm(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetInt::Tree>) -> Result<Arc<AvlSetInt::Tree>> + 'static>), iRow.clone())?;
+                    res = traverseStmts(statementLst.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = functionTree.clone(); let __pe_b4 = inIndexType; let __pe_b5 = isInitial; move |__pe_a0, __pe_a1| adjacencyRowAlgorithm(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetInt::Tree>) -> Result<Arc<AvlSetInt::Tree>> + 'static>), iRow.clone())?;
                     crefLst = CheckModel::algorithmStatementListOutputs(statementLst.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
                     for mut cr in &*crefLst.clone() {
                         let mut cr = cr.clone();
@@ -2961,7 +2961,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                         } };
                         eqns = __pa0.clone();
                     }
-                    (res, size) = adjacencyRowLst(eqns.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), iRow.clone(), isInitial)?;
+                    (res, size) = adjacencyRowLst(eqns.clone(), vars.clone(), inIndexType, functionTree.clone(), iRow.clone(), isInitial)?;
                     Ok((res.clone(), size.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2980,7 +2980,7 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                         } };
                         eqns = __pa0.clone();
                     }
-                    (res, size) = adjacencyRowLst(eqns.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), iRow.clone(), isInitial)?;
+                    (res, size) = adjacencyRowLst(eqns.clone(), vars.clone(), inIndexType, functionTree.clone(), iRow.clone(), isInitial)?;
                     Ok((res.clone(), size.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2991,9 +2991,9 @@ pub(crate) fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: 
                 Deref @ BackendDAE::Equation::IF_EQUATION { conditions: expl, eqnstrue: eqnslst, eqnsfalse: eqns, .. } => {
                     let mut res: Arc<AvlSetInt::Tree>;
                     let mut size: i32;
-                    res = adjacencyRow1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, Arc<AvlSetInt::Tree>, Option<Arc<AvlTreePathFunction::Tree>>, BackendDAE::IndexType, bool) -> Result<Arc<AvlSetInt::Tree>> + 'static>), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial)?;
-                    (res, _) = adjacencyRowLstLst(eqnslst.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), res.clone(), isInitial)?;
-                    (res, size) = adjacencyRowLst(eqns.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), res.clone(), isInitial)?;
+                    res = adjacencyRow1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, Arc<AvlSetInt::Tree>, Option<Arc<AvlTreePathFunction::Tree>>, BackendDAE::IndexType, bool) -> Result<Arc<AvlSetInt::Tree>> + 'static>), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType, isInitial)?;
+                    (res, _) = adjacencyRowLstLst(eqnslst.clone(), vars.clone(), inIndexType, functionTree.clone(), res.clone(), isInitial)?;
+                    (res, size) = adjacencyRowLst(eqns.clone(), vars.clone(), inIndexType, functionTree.clone(), res.clone(), isInitial)?;
                     Ok((res.clone(), size.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3040,7 +3040,7 @@ fn adjacencyRowLst(mut inEquation: Arc<metamodelica::List<Arc<BackendDAE::Equati
     let mut size: i32;
     for mut eq in &*inEquation {
         let mut eq = eq.clone();
-        (outIntegerLst, size) = adjacencyRow(eq.clone(), inVariables.clone(), inIndexType.clone(), functionTree.clone(), outIntegerLst.clone(), isInitial)?;
+        (outIntegerLst, size) = adjacencyRow(eq.clone(), inVariables.clone(), inIndexType, functionTree.clone(), outIntegerLst.clone(), isInitial)?;
         rowSize = rowSize + size;
     }
     Ok((outIntegerLst, rowSize))
@@ -3052,7 +3052,7 @@ fn adjacencyRowLstLst(mut inEquation: Arc<metamodelica::List<Arc<metamodelica::L
     let mut size: i32;
     for mut eql in &*inEquation {
         let mut eql = eql.clone();
-        (outIntegerLst, size) = adjacencyRowLst(eql.clone(), inVariables.clone(), inIndexType.clone(), functionTree.clone(), outIntegerLst.clone(), isInitial)?;
+        (outIntegerLst, size) = adjacencyRowLst(eql.clone(), inVariables.clone(), inIndexType, functionTree.clone(), outIntegerLst.clone(), isInitial)?;
         rowSize = rowSize + size;
     }
     Ok((outIntegerLst, rowSize))
@@ -3063,8 +3063,8 @@ fn adjacencyRowWhen(mut inEquation: Arc<BackendDAE::WhenEquation>, mut inVariabl
     outRow = (::match_deref::match_deref! { match &(inEquation) {
         Deref @ BackendDAE::WhenEquation { condition: cond, whenStmtLst, elsewhenPart: oelsewe } => {
             let mut elsewe: Arc<BackendDAE::WhenEquation>;
-            outRow = adjacencyRowExp(cond.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
-            outRow = adjacencyRowWhenOps(whenStmtLst.clone(), inVariables.clone(), inIndexType.clone(), functionTree.clone(), outRow, isInitial)?;
+            outRow = adjacencyRowExp(cond.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
+            outRow = adjacencyRowWhenOps(whenStmtLst.clone(), inVariables.clone(), inIndexType, functionTree.clone(), outRow, isInitial)?;
             if isSome(oelsewe.clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(oelsewe.clone()) {
                     Some(__pa0) => __pa0.clone(),
@@ -3087,37 +3087,37 @@ fn adjacencyRowWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOpe
             inRow
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, right: e2, .. }, tail: rest } => {
-            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
+            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
             outRow = adjacencyRowWhenOps(rest.clone(), inVariables, inIndexType, functionTree, outRow, isInitial)?;
             outRow
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: e1, right: e2, .. }, tail: rest } => {
-            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
-            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
+            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
+            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow, functionTree.clone(), inIndexType, isInitial)?;
             outRow = adjacencyRowWhenOps(rest.clone(), inVariables, inIndexType, functionTree, outRow, isInitial)?;
             outRow
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { stateVar: cr, value: e2, .. }, tail: rest } => {
             let mut e1: Arc<DAE::Exp>;
             e1 = Expression::crefExp(cr.clone())?;
-            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
-            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
+            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
+            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow, functionTree.clone(), inIndexType, isInitial)?;
             outRow = adjacencyRowWhenOps(rest.clone(), inVariables, inIndexType, functionTree, outRow, isInitial)?;
             outRow
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { condition: e1, message: e2, .. }, tail: rest } => {
-            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
-            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
+            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
+            outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow, functionTree.clone(), inIndexType, isInitial)?;
             outRow = adjacencyRowWhenOps(rest.clone(), inVariables, inIndexType, functionTree, outRow, isInitial)?;
             outRow
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::TERMINATE { message: e1, .. }, tail: rest } => {
-            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
+            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
             outRow = adjacencyRowWhenOps(rest.clone(), inVariables, inIndexType, functionTree, outRow, isInitial)?;
             outRow
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::NORETCALL { exp: e1, .. }, tail: rest } => {
-            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType.clone(), isInitial)?;
+            outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow, functionTree.clone(), inIndexType, isInitial)?;
             outRow = adjacencyRowWhenOps(rest.clone(), inVariables, inIndexType, functionTree, outRow, isInitial)?;
             outRow
         },
@@ -3153,7 +3153,7 @@ pub(crate) fn adjacencyRow1<Type_a: Clone + 'static + metamodelica::gc::MMTrace,
 
 pub(crate) fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables, mut inIntegerLst: Arc<AvlSetInt::Tree>, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut inIndexType: BackendDAE::IndexType, mut isInitial: bool) -> Result<Arc<AvlSetInt::Tree>> {
     let mut outIntegerLst: Arc<AvlSetInt::Tree>;
-    outIntegerLst = (match inIndexType.clone() {
+    outIntegerLst = (match inIndexType {
         BackendDAE::IndexType::SPARSE { .. } => {
             let mut vallst: Arc<AvlSetInt::Tree>;
             let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(inExp, (std::sync::Arc::new(fnptr!(traversingadjacencyRowExpFinderwithInput, Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (inVariables, inIntegerLst, isInitial))?;
@@ -4300,7 +4300,7 @@ pub(crate) fn updateAdjacencyMatrix(mut syst: Arc<BackendDAE::EqSystem>, mut inI
                 Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: daeeqns, m: Some(m), mT: Some(mt), mapping: Some(mapping), .. } => {
                     let mut m = (*m).clone();
                     let mut mt = (*mt).clone();
-                    (m, mt) = updateAdjacencyMatrix1(vars.clone(), daeeqns.clone(), inIndxType.clone(), functionTree.clone(), m.clone(), mt.clone(), inIntegerLst.clone(), isInitial)?;
+                    (m, mt) = updateAdjacencyMatrix1(vars.clone(), daeeqns.clone(), inIndxType, functionTree.clone(), m.clone(), mt.clone(), inIntegerLst.clone(), isInitial)?;
                     Ok(setEqSystMatrices(syst.clone(), Some(m.clone()), Some(mt.clone()), Some(mapping.clone()))?)
                 }
                 _ => bail!("nomatch"),
@@ -4340,7 +4340,7 @@ fn updateAdjacencyMatrix1(mut vars: BackendDAE::Variables, mut daeeqns: Arc<Expa
             let mut oldvars: Arc<metamodelica::List<i32>>;
             abse = intAbs(e.clone());
             eqn = BackendEquation::get(daeeqns.clone(), abse)?;
-            (row, _) = adjacencyRow(eqn, vars.clone(), inIndxType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
+            (row, _) = adjacencyRow(eqn, vars.clone(), inIndxType, functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
             oldvars = getOldVars(m.clone(), abse);
             m_1 = Array::replaceAtWithFill(abse, AvlSetInt::listKeys(row.clone(), metamodelica::nil()), metamodelica::nil(), m.clone())?;
             (_, outvars, invars) = AvlSetInt::intersection(AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), oldvars)?, row)?;
@@ -4381,9 +4381,9 @@ pub(crate) fn updateAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, m
                     mapIncRowEqn = Array::expand(deltasize.clone(), iMapIncRowEqn.clone(), 0)?;
                     m = Array::expand(deltasize.clone(), m.clone(), metamodelica::nil())?;
                     mt = Array::expand(deltasize.clone(), mt.clone(), metamodelica::nil())?;
-                    (m, mt, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(oldsize.clone() + 1, newsize.clone(), oldsize1.clone(), vars.clone(), daeeqns.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial);
+                    (m, mt, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(oldsize.clone() + 1, newsize.clone(), oldsize1.clone(), vars.clone(), daeeqns.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType, functionTree.clone(), isInitial);
                     eqns = List::removeOnTrue(oldsize.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), inIntegerLst.clone())?;
-                    (m, mt, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar1(vars.clone(), daeeqns.clone(), m.clone(), mt.clone(), eqns.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial)?;
+                    (m, mt, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar1(vars.clone(), daeeqns.clone(), m.clone(), mt.clone(), eqns.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType, functionTree.clone(), isInitial)?;
                     Ok((setEqSystMatrices(syst.clone(), Some(m.clone()), Some(mt.clone()), Some((mapEqnIncRow.clone(), mapIncRowEqn.clone(), indexType.clone(), scalar.clone(), processed.clone())))?, mapEqnIncRow.clone(), mapIncRowEqn.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4428,7 +4428,7 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             let mut mapIncRowEqn: metamodelica::Array<i32>;
             abse = intAbs(e.clone());
             eqn = BackendEquation::get(daeeqns.clone(), abse)?;
-            (row, _) = adjacencyRow(eqn, vars.clone(), inIndxType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
+            (row, _) = adjacencyRow(eqn, vars.clone(), inIndxType, functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
             scalarindxs = ({let __elt = iMapEqnIncRow.borrow()[(abse-1) as usize].clone(); __elt});
             oldvars = getOldVars(m.clone(), listHead(scalarindxs.clone())?);
             (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), oldvars)?, row.clone())?;
@@ -4497,7 +4497,7 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     abse = intAbs(index);
                     eqn = BackendEquation::get(daeeqns.clone(), abse.clone())?;
                     rowsize = BackendEquation::equationSize(eqn.clone())?;
-                    (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
+                    (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType, functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial)?;
                     new_size = size + rowsize.clone();
                     scalarindxs = List::intRange2(size + 1, new_size.clone());
                     mapEqnIncRow = metamodelica::arrayUpdate(iMapEqnIncRow.clone(), abse.clone(), scalarindxs.clone())?;
@@ -4505,7 +4505,7 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     row_lst = AvlSetInt::listKeys(row.clone(), metamodelica::nil());
                     m1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), row_lst.clone(), m.clone())?;
                     mt1 = filladjacencyMatrixT(row_lst.clone(), scalarindxs.clone(), mt.clone())?;
-                    (m1, mt1, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(index + 1, n, new_size.clone(), vars.clone(), daeeqns.clone(), m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial);
+                    (m1, mt1, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(index + 1, n, new_size.clone(), vars.clone(), daeeqns.clone(), m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType, functionTree.clone(), isInitial);
                     Ok((m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4542,7 +4542,7 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     row_lst = AvlSetInt::listKeys(row.clone(), metamodelica::nil());
                     m1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), row_lst.clone(), m.clone())?;
                     mt1 = filladjacencyMatrixT(row_lst.clone(), scalarindxs.clone(), mt.clone())?;
-                    (m1, mt1, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(index + 1, n, new_size.clone(), vars.clone(), daeeqns.clone(), m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial);
+                    (m1, mt1, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(index + 1, n, new_size.clone(), vars.clone(), daeeqns.clone(), m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType, functionTree.clone(), isInitial);
                     Ok((m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4689,7 +4689,7 @@ pub fn getAdjacencyMatrixfromOption(mut inSyst: Arc<BackendDAE::EqSystem>, mut i
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
             let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
             let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool);
-            (m, mT) = adjacencyMatrix(inSyst.clone(), inIndxType.clone(), inFunctionTree, isInitial)?;
+            (m, mT) = adjacencyMatrix(inSyst.clone(), inIndxType, inFunctionTree, isInitial)?;
             mapping = getArrayAdjacencyMatrixMapping(ExpandableArray::getNumberOfElements(inSyst.orderedEqs.clone()), inIndxType, false);
             (setEqSystMatrices(inSyst, Some(m.clone()), Some(mT.clone()), Some(mapping.clone()))?, m.clone(), mT.clone())
         },
@@ -4736,7 +4736,7 @@ pub(crate) fn getAdjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut 
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool);
-    (outM, outMT) = adjacencyMatrix(inEqSystem.clone(), inIndxType.clone(), functionTree, isInitial)?;
+    (outM, outMT) = adjacencyMatrix(inEqSystem.clone(), inIndxType, functionTree, isInitial)?;
     mapping = getArrayAdjacencyMatrixMapping(ExpandableArray::getNumberOfElements(inEqSystem.orderedEqs.clone()), inIndxType, false);
     outEqSystem = setEqSystMatrices(inEqSystem, Some(outM.clone()), Some(outMT.clone()), Some(mapping))?;
     Ok((outEqSystem, outM, outMT))
@@ -4748,7 +4748,7 @@ pub(crate) fn getAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut 
     let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outMapIncRowEqn: metamodelica::Array<i32>;
-    (outM, outMT, outMapEqnIncRow, outMapIncRowEqn) = adjacencyMatrixScalar(syst.clone(), inIndxType.clone(), functionTree, isInitial)?;
+    (outM, outMT, outMapEqnIncRow, outMapIncRowEqn) = adjacencyMatrixScalar(syst.clone(), inIndxType, functionTree, isInitial)?;
     osyst = setEqSystMatrices(syst, Some(outM.clone()), Some(outMT.clone()), Some((outMapEqnIncRow.clone(), outMapIncRowEqn.clone(), inIndxType, true, false)))?;
     Ok((osyst, outM, outMT, outMapEqnIncRow, outMapIncRowEqn))
 }

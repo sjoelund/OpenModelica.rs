@@ -87,7 +87,7 @@ pub type TREENODE = BinTree;
 
 /// Each node in the binary tree can have a value associated with it.
 ///  - Tree Value
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct TreeValue {
     /// Key
     pub key: Key,

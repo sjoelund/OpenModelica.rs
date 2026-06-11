@@ -577,11 +577,11 @@ pub(crate) fn toFlatString(mut binding: Arc<NFBinding>, mut format: BaseModelica
     string = ((::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNBOUND { .. } => literal!(""),
         Deref @ RAW_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ UNTYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ TYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ FLAT_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ CEVAL_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ INVALID_BINDING { .. } => toFlatString(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), format.clone(), (prefix).clone())?,
+        Deref @ UNTYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone(), format)?); ArcStr::from(__mm_s) },
+        Deref @ TYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), format)?); ArcStr::from(__mm_s) },
+        Deref @ FLAT_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), format)?); ArcStr::from(__mm_s) },
+        Deref @ CEVAL_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone(), format)?); ArcStr::from(__mm_s) },
+        Deref @ INVALID_BINDING { .. } => toFlatString(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), format, (prefix).clone())?,
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

@@ -471,7 +471,7 @@ fn retrieveOuterConnections2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
 
 fn convertInnerOuterInnerToOuter(mut io: Absyn::InnerOuter) -> Absyn::InnerOuter {
     let mut oio: Absyn::InnerOuter;
-    oio = (match io.clone() {
+    oio = (match io {
         Absyn::InnerOuter::INNER { .. } => openmodelica_ast::Absyn::InnerOuter::OUTER,
         _ => io,
     });

@@ -3069,7 +3069,7 @@ pub(crate) fn functionHeaderBoxed(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a
     l_boxvar = Tpl::writeStr(l_boxvar, (a_fname.clone()).clone())?;
     l_boxvar = Tpl::writeTok(l_boxvar, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
     l_boxvar = Tpl::writeTok(l_boxvar, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    (out_txt, out_a_staticPrototypes) = fun_158(txt, a_isBoxed, a_staticPrototypes, a_isSimulation, a_dynLoad, a_visibility.clone(), a_inFunc, a_outVars, a_fargs, (a_fname).clone())?;
+    (out_txt, out_a_staticPrototypes) = fun_158(txt, a_isBoxed, a_staticPrototypes, a_isSimulation, a_dynLoad, a_visibility, a_inFunc, a_outVars, a_fargs, (a_fname).clone())?;
     out_txt = Tpl::softNewLine(out_txt)?;
     (out_txt, out_a_staticPrototypes) = fun_161(out_txt, a_visibility, l_boxvar, a_isSimulation, out_a_staticPrototypes)?;
     Ok((out_txt, out_a_staticPrototypes))
@@ -3187,7 +3187,7 @@ pub(crate) fn functionHeaderImpl(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_
     let mut l_prototype: Tpl::Text;
     let mut l_dummy: Tpl::Text;
     l_dummy = Tpl::emptyTxt.clone();
-    (l_prototype, l_dummy) = functionPrototype(Tpl::emptyTxt.clone(), (a_fname.clone()).clone(), a_fargs, a_outVars, a_boxed, a_visibility.clone(), a_isSimulation, true, l_dummy)?;
+    (l_prototype, l_dummy) = functionPrototype(Tpl::emptyTxt.clone(), (a_fname.clone()).clone(), a_fargs, a_outVars, a_boxed, a_visibility, a_isSimulation, true, l_dummy)?;
     ret_3 = boolAnd(a_boxed, a_inFunc);
     l_inFnStr = fun_163(Tpl::emptyTxt.clone(), ret_3, (a_fname).clone())?;
     (out_txt, out_a_staticPrototypes) = fun_168(txt, a_visibility, l_inFnStr, l_prototype, a_dynamicLoad, a_staticPrototypes, a_isSimulation)?;

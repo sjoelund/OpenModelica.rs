@@ -51,7 +51,7 @@ use crate::System;
 use openmodelica_util_datatypes_basic::List;
 
 /// Used to signal success or failure of a function call
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Status {
     SUCCESS,
     FAILURE,
@@ -69,7 +69,7 @@ impl Default for Status {
 }
 pub use self::Status::{SUCCESS,FAILURE};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DateTime {
     pub sec: i32,
     pub min: i32,

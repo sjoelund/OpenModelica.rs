@@ -844,7 +844,7 @@ pub mod FunctionTreeImpl {
 
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FlattenSettings {
     pub scalarize: bool,
     pub arrayConnect: bool,
@@ -1094,7 +1094,7 @@ pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>,
     src = ElementSource::createElementSource(InstNode::info(classInst.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
     src = ElementSource::addCommentToSource(src, SCodeUtil::getElementComment(InstNode::definition(classInst.clone())?));
     deleted_vars = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-    (vars, sections) = flattenClass(InstNode::getClass(classInst)?, prefix, Visibility::PUBLIC.clone(), None, metamodelica::nil(), sections, deleted_vars.clone(), settings.clone())?;
+    (vars, sections) = flattenClass(InstNode::getClass(classInst)?, prefix, Visibility::PUBLIC.clone(), None, metamodelica::nil(), sections, deleted_vars.clone(), settings)?;
     vars = metamodelica::Dangerous::listReverseInPlace(vars);
     flatModel = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
@@ -1134,7 +1134,7 @@ pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>,
         if settings.arrayConnect.clone() {
             flatModel = resolveArrayConnections(flatModel)?;
         } else {
-            flatModel = resolveConnections(flatModel, deleted_vars.clone(), settings.clone())?;
+            flatModel = resolveConnections(flatModel, deleted_vars.clone(), settings)?;
         }
         InstUtil::dumpFlatModelDebug((literal!("connections")).clone(), flatModel.clone(), FunctionTreeImpl::new())?;
     }
@@ -1216,7 +1216,7 @@ fn flattenClass(mut cls: Arc<Class::NFClass>, mut prefix: Arc<Prefix::Prefix>, m
             if bindings.clone().is_empty() {
                 let __range1 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range1 {
-                    (vars, sections) = flattenComponent(c.clone(), prefix.clone(), visibility, binding.clone(), vars.clone(), sections.clone(), deletedVars.clone(), settings.clone())?;
+                    (vars, sections) = flattenComponent(c.clone(), prefix.clone(), visibility, binding.clone(), vars.clone(), sections.clone(), deletedVars.clone(), settings)?;
                 }
             } else {
                 let __range2 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -1227,7 +1227,7 @@ fn flattenClass(mut cls: Arc<Class::NFClass>, mut prefix: Arc<Prefix::Prefix>, m
                     } };
                     b = __pa3.clone();
                     bindings = __pa4.clone();
-                    (vars, sections) = flattenComponent(c.clone(), prefix.clone(), visibility, Some(b.clone()), vars.clone(), sections.clone(), deletedVars.clone(), settings.clone())?;
+                    (vars, sections) = flattenComponent(c.clone(), prefix.clone(), visibility, Some(b.clone()), vars.clone(), sections.clone(), deletedVars.clone(), settings)?;
                 }
             }
             sections = flattenSections(var_field!((*cls).sections, Class::NFClass::INSTANCED_CLASS).clone(), Prefix::toNonIndexedPrefix(prefix)?, sections, settings)?;
@@ -1272,11 +1272,11 @@ fn flattenComponent(mut component: Arc<InstNode::InstNode>, mut prefix: Arc<Pref
             }
             cls = InstNode::getClass(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone())?;
             vis = if (InstNode::isProtected(component)) {Visibility::PROTECTED.clone()} else {visibility};
-            (vars, sections) = (match getComponentType(ty.clone(), settings.clone()) {
+            (vars, sections) = (match getComponentType(ty.clone(), settings) {
         ComponentType::COMPLEX { .. } => flattenComplexComponent(comp_node, c.clone(), cls, ty.clone(), vis, outerBinding, prefix, vars, sections, deletedVars, settings)?,
         ComponentType::NORMAL => flattenSimpleComponent(comp_node, c.clone(), vis, outerBinding, Class::getTypeAttributes(cls), prefix, vars, sections, settings, metamodelica::nil())?,
         ComponentType::RECORD { .. } => {
-            (children, sections) = flattenComplexComponent(comp_node.clone(), c.clone(), cls.clone(), ty.clone(), vis, outerBinding.clone(), prefix.clone(), metamodelica::nil(), sections, deletedVars, settings.clone())?;
+            (children, sections) = flattenComplexComponent(comp_node.clone(), c.clone(), cls.clone(), ty.clone(), vis, outerBinding.clone(), prefix.clone(), metamodelica::nil(), sections, deletedVars, settings)?;
             flattenSimpleComponent(comp_node, c.clone(), vis, outerBinding, Class::getTypeAttributes(cls), prefix, vars, sections, settings, children.reverse())?
         },
         _ => {
@@ -1338,7 +1338,7 @@ fn getComponentType(mut ty: Arc<Type::NFType>, mut settings: FlattenSettings) ->
         Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => return ComponentType::NORMAL.clone(),
         Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } if (settings.newBackend.clone()) => return ComponentType::RECORD.clone(),
         Deref @ Type::COMPLEX { .. } => return ComponentType::COMPLEX.clone(),
-        Deref @ Type::ARRAY { .. } => { (ty, settings) = (var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), settings.clone()); continue '__tco; },
+        Deref @ Type::ARRAY { .. } => { (ty, settings) = (var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), settings); continue '__tco; },
         _ => return ComponentType::NORMAL.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -1724,7 +1724,7 @@ fn flattenArray(mut cls: Arc<Class::NFClass>, mut dimensions: Arc<metamodelica::
         range_iter = RangeIterator::fromDim(dim, false)?;
         while RangeIterator::hasNext(range_iter.clone())? {
             (range_iter, sub_exp) = RangeIterator::next(range_iter.clone())?;
-            (vars, sections) = flattenArray(cls.clone(), rest_dims.clone(), prefix.clone(), visibility, binding.clone(), vars.clone(), sections.clone(), metamodelica::cons(Arc::new(Subscript::NFSubscript::INDEX { index: sub_exp.clone() }), subscripts.clone()), deletedVars.clone(), info.clone(), settings.clone())?;
+            (vars, sections) = flattenArray(cls.clone(), rest_dims.clone(), prefix.clone(), visibility, binding.clone(), vars.clone(), sections.clone(), metamodelica::cons(Arc::new(Subscript::NFSubscript::INDEX { index: sub_exp.clone() }), subscripts.clone()), deletedVars.clone(), info.clone(), settings)?;
         }
     }
     Ok((vars, sections))
@@ -1742,7 +1742,7 @@ fn vectorizeArray(mut cls: Arc<Class::NFClass>, mut cls_ty: Arc<Type::NFType>, m
     if List::any(dimensions.clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))? {
         return Ok((vars.clone(), sections.clone()));
     }
-    (vrs, sects) = flattenClass(cls, prefix.clone(), visibility, binding, metamodelica::nil(), Arc::new(Sections::NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() }), deletedVars, settings.clone())?;
+    (vrs, sects) = flattenClass(cls, prefix.clone(), visibility, binding, metamodelica::nil(), Arc::new(Sections::NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() }), deletedVars, settings)?;
     for mut v in &*vrs.reverse() {
         let mut v = v.clone();
         if !(settings.newBackend.clone() && Type::isRecord(Type::arrayElementType(cls_ty.clone()))) {
@@ -1752,7 +1752,7 @@ fn vectorizeArray(mut cls: Arc<Class::NFClass>, mut cls_ty: Arc<Type::NFType>, m
     }
     let () = (::match_deref::match_deref! { match &(sects.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
-            eq = vectorizeEquations(var_field!((*sects).equations, Sections::NFSections::SECTIONS).clone(), dimensions.clone(), prefix.clone(), settings.clone())?;
+            eq = vectorizeEquations(var_field!((*sects).equations, Sections::NFSections::SECTIONS).clone(), dimensions.clone(), prefix.clone(), settings)?;
             ieq = vectorizeEquations(var_field!((*sects).initialEquations, Sections::NFSections::SECTIONS).clone(), dimensions.clone(), prefix.clone(), settings)?;
             alg = vectorizeAlgorithms(var_field!((*sects).algorithms, Sections::NFSections::SECTIONS).clone(), dimensions.clone(), prefix.clone())?;
             ialg = vectorizeAlgorithms(var_field!((*sects).initialAlgorithms, Sections::NFSections::SECTIONS).clone(), dimensions, prefix)?;
@@ -1905,7 +1905,7 @@ fn vectorizeEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     for mut eq in &*eql {
         let mut eq = eq.clone();
-        equations = vectorizeEquation(eq.clone(), dimensions.clone(), prefix.clone(), settings.clone(), equations.clone())?;
+        equations = vectorizeEquation(eq.clone(), dimensions.clone(), prefix.clone(), settings, equations.clone())?;
     }
     equations = metamodelica::Dangerous::listReverseInPlace(equations);
     Ok(equations)
@@ -1917,7 +1917,7 @@ fn vectorizeEquation(mut eqn: Arc<Equation::NFEquation>, mut dimensions: Arc<met
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    eql = flattenEquation(eqn, EMPTY_PREFIX().clone(), metamodelica::nil(), settings.clone())?;
+    eql = flattenEquation(eqn, EMPTY_PREFIX().clone(), metamodelica::nil(), settings)?;
     for mut eq in &*eql {
         let mut eq = eq.clone();
         equations = (::match_deref::match_deref! { match &(eq.clone()) {
@@ -1932,7 +1932,7 @@ fn vectorizeEquation(mut eqn: Arc<Equation::NFEquation>, mut dimensions: Arc<met
         Deref @ Equation::NORETCALL { exp: lhs @ Deref @ Expression::CALL { .. }, .. } if (Call::isConnectionsOperator(var_field!((**lhs).call, Expression::NFExpression::CALL).clone())?) => metamodelica::cons(eq.clone(), equations.clone()),
         _ => {
             eq = vectorizeEquationGeneric(eq.clone(), dimensions.clone(), prefix.clone())?;
-            splitForLoop(eq.clone(), EMPTY_PREFIX().clone(), equations.clone(), settings.clone())?
+            splitForLoop(eq.clone(), EMPTY_PREFIX().clone(), equations.clone(), settings)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2356,7 +2356,7 @@ pub(crate) fn flattenSections(mut sections: Arc<Sections::NFSections>, mut prefi
             let mut ieq: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
             let mut alg: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>;
             let mut ialg: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>;
-            eq = flattenEquations(var_field!((*sections).equations, Sections::NFSections::SECTIONS).clone(), prefix.clone(), settings.clone())?;
+            eq = flattenEquations(var_field!((*sections).equations, Sections::NFSections::SECTIONS).clone(), prefix.clone(), settings)?;
             ieq = flattenEquations(var_field!((*sections).initialEquations, Sections::NFSections::SECTIONS).clone(), prefix.clone(), settings)?;
             alg = flattenAlgorithms(var_field!((*sections).algorithms, Sections::NFSections::SECTIONS).clone(), prefix.clone())?;
             ialg = flattenAlgorithms(var_field!((*sections).initialAlgorithms, Sections::NFSections::SECTIONS).clone(), prefix)?;
@@ -2375,7 +2375,7 @@ pub(crate) fn flattenEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFE
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     for mut eq in &*eql {
         let mut eq = eq.clone();
-        equations = flattenEquation(eq.clone(), prefix.clone(), equations.clone(), settings.clone())?;
+        equations = flattenEquation(eq.clone(), prefix.clone(), equations.clone(), settings)?;
     }
     Ok(equations)
 }
@@ -2416,7 +2416,7 @@ pub(crate) fn flattenEquation(mut eq: Arc<Equation::NFEquation>, mut prefix: Arc
             assign_variant_field!(eq => Equation::NFEquation::WHEN; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
         for mut b in (var_field!((*eq).branches, Equation::NFEquation::WHEN).clone()).into_iter().cloned() {
-            let __x = flattenEqBranch(b.clone(), prefix.clone(), info.clone(), settings.clone())?;
+            let __x = flattenEqBranch(b.clone(), prefix.clone(), info.clone(), settings)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2526,14 +2526,14 @@ pub(crate) fn flattenIfEquation(mut eq: Arc<Equation::NFEquation>, mut prefix: A
             }
             if Expression::isTrue(cond.clone()) {
                 branches = metamodelica::nil();
-                eql = flattenEquations(eql.clone(), prefix.clone(), settings.clone())?;
+                eql = flattenEquations(eql.clone(), prefix.clone(), settings)?;
                 if bl.clone().is_empty() {
                     equations = listAppend(eql.clone(), equations.clone());
                 } else {
                     bl = metamodelica::cons(Equation::makeBranch(cond.clone(), metamodelica::Dangerous::listReverseInPlace(eql.clone()), var.clone()), bl.clone());
                 }
             } else if !(Expression::isFalse(cond.clone())) {
-                eql = flattenEquations(eql.clone(), prefix.clone(), settings.clone())?;
+                eql = flattenEquations(eql.clone(), prefix.clone(), settings)?;
                 bl = metamodelica::cons(Equation::makeBranch(cond.clone(), metamodelica::Dangerous::listReverseInPlace(eql.clone()), var.clone()), bl.clone());
             }
             bl.clone()
@@ -2603,7 +2603,7 @@ pub(crate) fn unrollForLoop(mut forLoop: Arc<Equation::NFEquation>, mut prefix: 
     while RangeIterator::hasNext(range_iter.clone())? {
         (range_iter, val) = RangeIterator::next(range_iter.clone())?;
         unrolled_body = Equation::replaceIteratorList(body.clone(), iter.clone(), val.clone())?;
-        unrolled_body = flattenEquations(unrolled_body.clone(), prefix.clone(), settings.clone())?;
+        unrolled_body = flattenEquations(unrolled_body.clone(), prefix.clone(), settings)?;
         equations = listAppend(unrolled_body.clone(), equations.clone());
     }
     Ok(equations)
@@ -2629,8 +2629,8 @@ pub(crate) fn splitForLoop(mut forLoop: Arc<Equation::NFEquation>, mut prefix: A
     body = __pa2.clone();
     scope = __pa3.clone();
     src = __pa4.clone();
-    body = flattenEquations(body, EMPTY_PREFIX().clone(), settings.clone())?;
-    (connects, non_connects) = splitForLoop2(body, settings.clone())?;
+    body = flattenEquations(body, EMPTY_PREFIX().clone(), settings)?;
+    (connects, non_connects) = splitForLoop2(body, settings)?;
     if !(connects.clone().is_empty()) {
         if isSome(opt_range.clone()) {
             let __pa5 = ::match_deref::match_deref! { match &(opt_range) {
@@ -2668,7 +2668,7 @@ pub(crate) fn splitForLoop2(mut forBody: Arc<metamodelica::List<Arc<Equation::NF
             ()
         },
         Deref @ Equation::FOR { .. } => {
-            (conns, nconns) = splitForLoop2(var_field!((*eq).body, Equation::NFEquation::FOR).clone(), settings.clone())?;
+            (conns, nconns) = splitForLoop2(var_field!((*eq).body, Equation::NFEquation::FOR).clone(), settings)?;
             if !(conns.clone().is_empty()) {
                 connects = metamodelica::cons(Arc::new(Equation::NFEquation::FOR { iterator: var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), range: var_field!((*eq).range, Equation::NFEquation::FOR).clone(), body: conns.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::FOR).clone(), source: var_field!((*eq).source, Equation::NFEquation::FOR).clone() }), connects.clone());
             }
@@ -3570,23 +3570,23 @@ pub(crate) fn evaluateIfWithConnects2(mut eq: Arc<Equation::NFEquation>, mut equ
 pub(crate) fn checkDeletedVarRefs(mut flatModel: Arc<FlatModel::NFFlatModel>, mut deletedVars: DeletedVariables, mut settings: FlattenSettings) -> Result<()> {
     for mut var in &*flatModel.variables.clone() {
         let mut var = var.clone();
-        checkDeletedVarRefsInVar(var.clone(), deletedVars.clone(), settings.clone())?;
+        checkDeletedVarRefsInVar(var.clone(), deletedVars.clone(), settings)?;
     }
     for mut eq in &*flatModel.equations.clone() {
         let mut eq = eq.clone();
-        checkDeletedVarRefsInEq(eq.clone(), deletedVars.clone(), settings.clone())?;
+        checkDeletedVarRefsInEq(eq.clone(), deletedVars.clone(), settings)?;
     }
     for mut eq in &*flatModel.initialEquations.clone() {
         let mut eq = eq.clone();
-        checkDeletedVarRefsInEq(eq.clone(), deletedVars.clone(), settings.clone())?;
+        checkDeletedVarRefsInEq(eq.clone(), deletedVars.clone(), settings)?;
     }
     for mut alg in &*flatModel.algorithms.clone() {
         let mut alg = alg.clone();
-        checkDeletedVarRefsInAlg(alg.clone(), deletedVars.clone(), settings.clone())?;
+        checkDeletedVarRefsInAlg(alg.clone(), deletedVars.clone(), settings)?;
     }
     for mut alg in &*flatModel.initialAlgorithms.clone() {
         let mut alg = alg.clone();
-        checkDeletedVarRefsInAlg(alg.clone(), deletedVars.clone(), settings.clone())?;
+        checkDeletedVarRefsInAlg(alg.clone(), deletedVars.clone(), settings)?;
     }
     Ok(())
 }
@@ -3624,7 +3624,7 @@ pub(crate) fn checkDeletedVarRefsInEq(mut eq: Arc<Equation::NFEquation>, mut del
 pub(crate) fn checkDeletedVarRefsInAlg(mut alg: Arc<Algorithm::NFAlgorithm>, mut deletedVars: DeletedVariables, mut settings: FlattenSettings) -> Result<()> {
     for mut stmt in &*alg.statements.clone() {
         let mut stmt = stmt.clone();
-        Statement::applyExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = deletedVars.clone(); let __pe_b2 = settings.clone(); let __pe_b3 = Statement::info(stmt.clone())?; move |__pe_a0| checkDeletedVarRefsInExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+        Statement::applyExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = deletedVars.clone(); let __pe_b2 = settings; let __pe_b3 = Statement::info(stmt.clone())?; move |__pe_a0| checkDeletedVarRefsInExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     }
     Ok(())
 }

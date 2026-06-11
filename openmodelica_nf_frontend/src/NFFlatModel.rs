@@ -350,7 +350,7 @@ pub(crate) fn appendFlatStream(mut flatModel: Arc<NFFlatModel>, mut functions: A
     }
     for mut ty in &*collectFlatTypes(flat_model.clone(), funcs)? {
         let mut ty = ty.clone();
-        s = Type::toFlatDeclarationStream(ty.clone(), format.clone(), (literal!("  ")).clone(), s.clone())?;
+        s = Type::toFlatDeclarationStream(ty.clone(), format, (literal!("  ")).clone(), s.clone())?;
         s = IOStream::append(s.clone(), (literal!(";\n\n")).clone())?;
     }
     s = IOStream::append(s, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  model ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone())?;
@@ -358,29 +358,29 @@ pub(crate) fn appendFlatStream(mut flatModel: Arc<NFFlatModel>, mut functions: A
     s = IOStream::append(s, (literal!("\n")).clone())?;
     for mut v in &*flat_model.variables.clone() {
         let mut v = v.clone();
-        s = Variable::toFlatStream(v.clone(), format.clone(), (literal!("    ")).clone(), printBindingTypes, s.clone())?;
+        s = Variable::toFlatStream(v.clone(), format, (literal!("    ")).clone(), printBindingTypes, s.clone())?;
         s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
     }
     if !(flat_model.initialEquations.clone().is_empty()) {
         s = IOStream::append(s, (literal!("  initial equation\n")).clone())?;
-        s = Equation::toFlatStreamList(flat_model.initialEquations.clone(), format.clone(), (literal!("    ")).clone(), s)?;
+        s = Equation::toFlatStreamList(flat_model.initialEquations.clone(), format, (literal!("    ")).clone(), s)?;
     }
     if !(flat_model.equations.clone().is_empty()) {
         s = IOStream::append(s, (literal!("  equation\n")).clone())?;
-        s = Equation::toFlatStreamList(flat_model.equations.clone(), format.clone(), (literal!("    ")).clone(), s)?;
+        s = Equation::toFlatStreamList(flat_model.equations.clone(), format, (literal!("    ")).clone(), s)?;
     }
     for mut alg in &*flat_model.initialAlgorithms.clone() {
         let mut alg = alg.clone();
         if !(alg.statements.clone().is_empty()) {
             s = IOStream::append(s.clone(), (literal!("  initial algorithm\n")).clone())?;
-            s = Statement::toFlatStreamList(alg.statements.clone(), format.clone(), (literal!("    ")).clone(), s.clone())?;
+            s = Statement::toFlatStreamList(alg.statements.clone(), format, (literal!("    ")).clone(), s.clone())?;
         }
     }
     for mut alg in &*flat_model.algorithms.clone() {
         let mut alg = alg.clone();
         if !(alg.statements.clone().is_empty()) {
             s = IOStream::append(s.clone(), (literal!("  algorithm\n")).clone())?;
-            s = Statement::toFlatStreamList(alg.statements.clone(), format.clone(), (literal!("    ")).clone(), s.clone())?;
+            s = Statement::toFlatStreamList(alg.statements.clone(), format, (literal!("    ")).clone(), s.clone())?;
         }
     }
     s = FlatModelicaUtil::appendElementSourceCommentAnnotation(flat_model.source.clone(), FlatModelicaUtil::ElementType::ROOT_CLASS.clone(), (literal!("    ")).clone(), (literal!(";\n")).clone(), s)?;

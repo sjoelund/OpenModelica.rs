@@ -344,7 +344,7 @@ pub(crate) fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::P
         fin = __pa3.clone();
         rio = __pa4.clone();
         repl = __pa5.clone();
-        io = (match (io.clone(), rio.clone()) {
+        io = (match (io, rio) {
         (Absyn::InnerOuter::NOT_INNER_OUTER { .. }, _) => rio,
         (_, Absyn::InnerOuter::NOT_INNER_OUTER { .. }) => io,
         (Absyn::InnerOuter::INNER { .. }, Absyn::InnerOuter::INNER { .. }) => io,

@@ -809,7 +809,7 @@ pub fn translateEitemlist(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: __esc_e } => {
             e = (*__esc_e).clone();
             let mut e_1: Arc<metamodelica::List<Arc<SCode::Element>>>;
-            e_1 = translateElement(e.clone(), inVisibility.clone())?;
+            e_1 = translateElement(e.clone(), inVisibility)?;
             l = List::append_reverse(e_1.clone(), l.clone());
             ()
         },
@@ -1008,7 +1008,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
                 comment = __pa3.clone();
                 cond = __pa4.clone();
                 checkTypeSpec(t.clone(), info.clone())?;
-                setHasInnerOuterDefinitionsHandler(io.clone());
+                setHasInnerOuterDefinitionsHandler(io);
                 setHasStreamConnectorsHandler(st.clone())?;
                 r#mod = translateMod(m.clone(), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
                 prl1 = translateParallelism(parallelism.clone())?;
@@ -1021,7 +1021,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
                 scc = translateConstrainClass(cc.clone())?;
                 sRep = if (repl_1) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE()};
                 ct = translateConnectorType(fl.clone(), st.clone())?;
-                prefixes = Arc::new(SCode::Prefixes { visibility: vis.clone(), redeclarePrefix: sRed.clone(), finalPrefix: sFin.clone(), innerOuter: io.clone(), replaceablePrefix: sRep.clone() });
+                prefixes = Arc::new(SCode::Prefixes { visibility: vis.clone(), redeclarePrefix: sRed, finalPrefix: sFin, innerOuter: io, replaceablePrefix: sRep.clone() });
                 xs_1 = (match di.clone() {
         Absyn::Direction::INPUT_OUTPUT { .. } if (!(Flags::isSet(Flags::SKIP_INPUT_OUTPUT_SYNTACTIC_SUGAR.clone())?)) => {
             let mut attr1: SCode::Attributes;
@@ -1029,13 +1029,13 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             let mut mod2: Arc<SCode::Mod>;
             let mut inName: ArcStr;
             inName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$in_")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone();
-            attr1 = SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: openmodelica_ast::Absyn::Direction::INPUT, isField: isf.clone() };
-            attr2 = SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: openmodelica_ast::Absyn::Direction::OUTPUT, isField: isf.clone() };
+            attr1 = SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct, parallelism: prl1, variability: var1, direction: openmodelica_ast::Absyn::Direction::INPUT, isField: isf.clone() };
+            attr2 = SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct, parallelism: prl1, variability: var1, direction: openmodelica_ast::Absyn::Direction::OUTPUT, isField: isf.clone() };
             mod2 = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (inName.clone()).clone(), subscripts: metamodelica::nil() }) })), comment: None, info: info.clone() });
             metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: attr2.clone(), typeSpec: t.clone(), modifications: mod2.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: prefixes.clone(), attributes: attr1.clone(), typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone()))
         },
         _ => {
-            metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: di.clone(), isField: isf.clone() }, typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone())
+            metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct, parallelism: prl1, variability: var1, direction: di.clone(), isField: isf.clone() }, typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone())
         },
     });
             }
@@ -1458,7 +1458,7 @@ pub fn translateMod(mut inMod: Option<Arc<Absyn::Modification>>, mut finalPrefix
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outMod = (::match_deref::match_deref! { match &((subs.clone(), binding.clone(), finalPrefix.clone(), eachPrefix.clone())) {
+    outMod = (::match_deref::match_deref! { match &((subs.clone(), binding.clone(), finalPrefix, eachPrefix)) {
         (Deref @ metamodelica::List::Nil, None, SCode::Final::NOT_FINAL { .. }, SCode::Each::NOT_EACH { .. }) => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => Arc::new(SCode::Mod::MOD { finalPrefix: finalPrefix, eachPrefix: eachPrefix, subModLst: subs, binding: binding, comment: comment, info: info }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

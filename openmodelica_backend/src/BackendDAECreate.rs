@@ -818,8 +818,8 @@ fn lower2(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inFunc
                 (outEqns, outVars, eq_attrs) = createWhenClock(whenClkCnt, e.clone(), outEqns.clone(), outVars.clone());
                 whenClkCnt = whenClkCnt + 1;
                 (outVars, outGlobalKnownVars, outExVars, eqns, reqns, outIEqns, outConstraints, outClassAttributes, outExtObjClasses, outAliasEqns, outInlineHT) = lower2(dae_elts.clone(), inFunctions.clone(), outInlineHT.clone(), outVars.clone(), outGlobalKnownVars.clone(), outExVars.clone(), metamodelica::nil(), metamodelica::nil(), outIEqns.clone(), outConstraints.clone(), outClassAttributes.clone(), outExtObjClasses.clone(), outAliasEqns.clone())?;
-                outEqns = listAppend(List::map1(eqns.clone(), (std::sync::Arc::new(BackendEquation::setEquationAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), eq_attrs.clone())?, outEqns.clone());
-                outREqns = listAppend(List::map1(reqns.clone(), (std::sync::Arc::new(BackendEquation::setEquationAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), eq_attrs.clone())?, outREqns.clone());
+                outEqns = listAppend(List::map1(eqns.clone(), (std::sync::Arc::new(BackendEquation::setEquationAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), eq_attrs)?, outEqns.clone());
+                outREqns = listAppend(List::map1(reqns.clone(), (std::sync::Arc::new(BackendEquation::setEquationAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), eq_attrs)?, outREqns.clone());
             } else {
                 (eqns, reqns, outVars) = lowerWhenEqn(el.clone(), inFunctions.clone(), metamodelica::nil(), metamodelica::nil(), outVars.clone())?;
                 outEqns = listAppend(outEqns.clone(), eqns.clone());
@@ -1510,7 +1510,7 @@ fn setMinMaxFromEnumeration1(mut inMin: Option<Arc<DAE::Exp>>, mut inMax: Option
 // end fixParameterStartBinding;
 fn lowerVarkind(mut inVarKind: DAE::VarKind, mut inType: Arc<DAE::Type>, mut inComponentRef: Arc<DAE::ComponentRef>, mut inVarDirection: DAE::VarDirection, mut inConnectorType: Arc<DAE::ConnectorType>, mut daeAttr: Option<Arc<DAE::VariableAttributes>>, mut protection: DAE::VarVisibility) -> Result<BackendDAE::VarKind> {
     let mut outVarKind: BackendDAE::VarKind;
-    outVarKind = (::match_deref::match_deref! { match &((inVarKind.clone(), daeAttr)) {
+    outVarKind = (::match_deref::match_deref! { match &((inVarKind, daeAttr)) {
         (DAE::VarKind::VARIABLE { .. }, Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS { .. }), .. })) if (!(Types::isDiscreteType(inType.clone()))) => BackendDAE::VarKind::STATE { index: 1, derName: None, natural: false },
         (DAE::VarKind::VARIABLE { .. }, Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::PREFER { .. }), .. })) if (!(Types::isDiscreteType(inType.clone()))) => BackendDAE::VarKind::STATE { index: 1, derName: None, natural: false },
         _ => {
@@ -1543,7 +1543,7 @@ fn lowerKnownVarkind(mut varKind: DAE::VarKind, mut componentRef: Arc<DAE::Compo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::VarKind::VARIABLE { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let true = (ConnectUtil::topLevelInput(componentRef.clone(), varDirection.clone(), connectorType.clone(), visibility.clone())?) else { bail!("pattern mismatch") };
+            let true = (ConnectUtil::topLevelInput(componentRef.clone(), varDirection, connectorType.clone(), visibility)?) else { bail!("pattern mismatch") };
             Ok(openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -2199,7 +2199,7 @@ fn lowerExtendedRecordEqns(mut explst1: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
         },
         (Deref @ metamodelica::List::Cons { head: e1, tail: elst1 }, Deref @ metamodelica::List::Cons { head: e2, tail: elst2 }) => {
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
-            eqns = lowerExtendedRecordEqn(e1.clone(), e2.clone(), source.clone(), inEqAttributes.clone(), functionTree.clone(), inEqns)?;
+            eqns = lowerExtendedRecordEqn(e1.clone(), e2.clone(), source.clone(), inEqAttributes, functionTree.clone(), inEqns)?;
             { (explst1, explst2, source, inEqAttributes, functionTree, inEqns) = (elst1.clone(), elst2.clone(), source, inEqAttributes, functionTree, eqns); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -2218,7 +2218,7 @@ fn lowerExtendedRecordEqn(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, 
                     let mut explst2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     explst1 = Expression::splitRecord(inExp1.clone(), Expression::r#typeof(inExp1.clone())?)?;
                     explst2 = Expression::splitRecord(inExp2.clone(), Expression::r#typeof(inExp2.clone())?)?;
-                    Ok(lowerExtendedRecordEqns(explst1.clone(), explst2.clone(), source.clone(), inEqAttributes.clone(), functionTree.clone(), inEqns.clone())?)
+                    Ok(lowerExtendedRecordEqns(explst1.clone(), explst2.clone(), source.clone(), inEqAttributes, functionTree.clone(), inEqns.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2231,7 +2231,7 @@ fn lowerExtendedRecordEqn(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, 
                     tp = Expression::r#typeof(inExp1.clone())?;
                     let true = (DAEUtil::expTypeComplex(tp.clone())) else { bail!("pattern mismatch") };
                     size = Expression::sizeOf(tp.clone());
-                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: inEqAttributes.clone() }), inEqns.clone()))
+                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: inEqAttributes }), inEqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2244,7 +2244,7 @@ fn lowerExtendedRecordEqn(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, 
                     tp = Expression::r#typeof(inExp1.clone())?;
                     let true = (DAEUtil::expTypeArray(tp.clone())) else { bail!("pattern mismatch") };
                     dims = Expression::arrayDimension(tp.clone());
-                    Ok(lowerArrayEqn(dims.clone(), inExp1.clone(), inExp2.clone(), source.clone(), inEqAttributes.clone(), inEqns.clone())?)
+                    Ok(lowerArrayEqn(dims.clone(), inExp1.clone(), inExp2.clone(), source.clone(), inEqAttributes, inEqns.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2257,7 +2257,7 @@ fn lowerExtendedRecordEqn(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, 
                     tp = Expression::r#typeof(inExp1.clone())?;
                     let true = (Types::isTuple(tp.clone())) else { bail!("pattern mismatch") };
                     size = Expression::sizeOf(tp.clone());
-                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: inEqAttributes.clone() }), inEqns.clone()))
+                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: inEqAttributes }), inEqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2274,7 +2274,7 @@ fn lowerExtendedRecordEqn(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, 
                     b2 = DAEUtil::expTypeArray(tp.clone());
                     b3 = Types::isTuple(tp.clone());
                     let false = (b1.clone() || b2.clone() || b3.clone()) else { bail!("pattern mismatch") };
-                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: inExp1.clone(), scalar: inExp2.clone(), source: source.clone(), attr: inEqAttributes.clone() }), inEqns.clone()))
+                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: inExp1.clone(), scalar: inExp2.clone(), source: source.clone(), attr: inEqAttributes }), inEqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2325,7 +2325,7 @@ fn generateEquations(mut iE1lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iE2
             return Ok(iAcc)
         },
         (Deref @ metamodelica::List::Cons { head: e1, tail: e1lst }, Deref @ metamodelica::List::Cons { head: e2, tail: e2lst }) => {
-            { (iE1lst, iE2lst, source, inEqAttributes, iAcc) = (e1lst.clone(), e2lst.clone(), source.clone(), inEqAttributes.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: e1.clone(), scalar: e2.clone(), source: source, attr: inEqAttributes }), iAcc)); continue '__tco; }
+            { (iE1lst, iE2lst, source, inEqAttributes, iAcc) = (e1lst.clone(), e2lst.clone(), source.clone(), inEqAttributes, metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: e1.clone(), scalar: e2.clone(), source: source, attr: inEqAttributes }), iAcc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3202,19 +3202,19 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
                     let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
                     let mut reqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
                     let mut ieqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
-                    crefLst = CheckModel::checkAndGetAlgorithmOutputs(alg.clone(), source.clone(), inCrefExpansion.clone())?;
+                    crefLst = CheckModel::checkAndGetAlgorithmOutputs(alg.clone(), source.clone(), inCrefExpansion)?;
                     size = (crefLst.clone().len() as i32);
                     if inInitialization {
-                        ieqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inIEquations.clone());
+                        ieqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inIEquations.clone());
                         eqns = inEquations.clone();
                         reqns = inREquations.clone();
                     } else {
                         if size.clone() > 0 {
-                            eqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inEquations.clone());
+                            eqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inEquations.clone());
                             reqns = inREquations.clone();
                         } else {
                             eqns = inEquations.clone();
-                            reqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inREquations.clone());
+                            reqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inREquations.clone());
                         }
                         ieqns = inIEquations.clone();
                     }
@@ -3228,9 +3228,9 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
                 Deref @ DAE::Element::INITIALALGORITHM { algorithm_: alg, source } => {
                     let mut size: i32;
                     let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-                    crefLst = CheckModel::checkAndGetAlgorithmOutputs(alg.clone(), source.clone(), inCrefExpansion.clone())?;
+                    crefLst = CheckModel::checkAndGetAlgorithmOutputs(alg.clone(), source.clone(), inCrefExpansion)?;
                     size = (crefLst.clone().len() as i32);
-                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inIEquations.clone())))
+                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inIEquations.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3261,9 +3261,9 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
                     alg = Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_ASSERT { cond: cond.clone(), msg: msg.clone(), level: level.clone(), source: source.clone() })] });
                     if inInitialization {
                         reqns = inREquations.clone();
-                        ieqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inIEquations.clone());
+                        ieqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inIEquations.clone());
                     } else {
-                        reqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inREquations.clone());
+                        reqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inREquations.clone());
                         ieqns = inIEquations.clone();
                     }
                     Ok((inEquations.clone(), reqns.clone(), ieqns.clone()))
@@ -3277,7 +3277,7 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
                     let mut alg: Arc<DAE::Algorithm>;
                     BackendDAEUtil::checkAssertCondition(cond.clone(), msg.clone(), level.clone(), ElementSource::getElementSourceFileInfo(source.clone()))?;
                     alg = Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_ASSERT { cond: cond.clone(), msg: msg.clone(), level: level.clone(), source: source.clone() })] });
-                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() }), inIEquations.clone())))
+                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() }), inIEquations.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3285,7 +3285,7 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::TERMINATE { message: msg, source } => {
-                    Ok((inEquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source.clone() })] }), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inREquations.clone()), inIEquations.clone()))
+                    Ok((inEquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source.clone() })] }), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inREquations.clone()), inIEquations.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3293,7 +3293,7 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::INITIAL_TERMINATE { message: msg, source } => {
-                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source.clone() })] }), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inIEquations.clone())))
+                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source.clone() })] }), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inIEquations.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3303,7 +3303,7 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
                 Deref @ DAE::Element::NORETCALL { exp: e, source } => {
                     let mut alg: Arc<DAE::Algorithm>;
                     alg = Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_NORETCALL { exp: e.clone(), source: source.clone() })] });
-                    Ok((inEquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inREquations.clone()), inIEquations.clone()))
+                    Ok((inEquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inREquations.clone()), inIEquations.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3313,7 +3313,7 @@ fn lowerAlgorithm(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTre
                 Deref @ DAE::Element::INITIAL_NORETCALL { exp: e, source } => {
                     let mut alg: Arc<DAE::Algorithm>;
                     alg = Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_NORETCALL { exp: e.clone(), source: source.clone() })] });
-                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion.clone(), attr: eqAttributes.clone() }), inIEquations.clone())))
+                    Ok((inEquations.clone(), inREquations.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: 0, alg: alg.clone(), source: source.clone(), expand: inCrefExpansion, attr: eqAttributes }), inIEquations.clone())))
                 }
                 _ => bail!("nomatch"),
             }}

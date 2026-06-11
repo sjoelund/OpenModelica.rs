@@ -894,7 +894,7 @@ fn getSubClockFactor(mut subClk: BackendDAE::SubClock) -> MMath::Rational {
     factor = (match subClk {
         BackendDAE::SubClock::SUBCLOCK { factor: mut __esc_factor, shift: _, solver: _ } => {
             factor = __esc_factor.clone();
-            factor.clone()
+            factor
         },
         _ => MMath::RAT1.clone(),
     });
@@ -906,7 +906,7 @@ fn getSubClockShift(mut subClk: BackendDAE::SubClock) -> MMath::Rational {
     shift = (match subClk {
         BackendDAE::SubClock::SUBCLOCK { factor: _, shift: mut __esc_shift, solver: _ } => {
             shift = __esc_shift.clone();
-            shift.clone()
+            shift
         },
         _ => MMath::RAT0.clone(),
     });
@@ -1562,12 +1562,12 @@ fn isInferedBaseClock(mut subClk: Arc<DAE::ClockKind>) -> bool {
 
 fn setFactor(mut oldVal: MMath::Rational, mut newVal: MMath::Rational) -> Result<MMath::Rational> {
     let mut outVal: MMath::Rational;
-    outVal = (match (oldVal.clone(), newVal.clone()) {
+    outVal = (match (oldVal, newVal) {
         (MMath::Rational { nom: 1, denom: 1 }, _) => newVal,
         (_, MMath::Rational { nom: 1, denom: 1 }) => oldVal,
         _ => {
-            if !(MMath::equals(oldVal.clone(), newVal.clone())?) {
-                Error::addMessage(Error::SUBCLOCK_CONFLICT.clone(), list![(literal!("factor")).clone(), (MMath::rationalString(oldVal)?).clone(), (MMath::rationalString(newVal.clone())?).clone()])?;
+            if !(MMath::equals(oldVal, newVal)?) {
+                Error::addMessage(Error::SUBCLOCK_CONFLICT.clone(), list![(literal!("factor")).clone(), (MMath::rationalString(oldVal)?).clone(), (MMath::rationalString(newVal)?).clone()])?;
                 bail!("fail");
             }
             newVal
@@ -1578,12 +1578,12 @@ fn setFactor(mut oldVal: MMath::Rational, mut newVal: MMath::Rational) -> Result
 
 fn setShift(mut oldVal: MMath::Rational, mut newVal: MMath::Rational) -> Result<MMath::Rational> {
     let mut outVal: MMath::Rational;
-    outVal = (match (oldVal.clone(), newVal.clone()) {
+    outVal = (match (oldVal, newVal) {
         (MMath::Rational { nom: 0, denom: _ }, _) => newVal,
         (_, MMath::Rational { nom: 0, denom: _ }) => oldVal,
         _ => {
-            if !(MMath::equals(oldVal.clone(), newVal.clone())?) {
-                Error::addMessage(Error::SUBCLOCK_CONFLICT.clone(), list![(literal!("shift")).clone(), (MMath::rationalString(oldVal)?).clone(), (MMath::rationalString(newVal.clone())?).clone()])?;
+            if !(MMath::equals(oldVal, newVal)?) {
+                Error::addMessage(Error::SUBCLOCK_CONFLICT.clone(), list![(literal!("shift")).clone(), (MMath::rationalString(oldVal)?).clone(), (MMath::rationalString(newVal)?).clone()])?;
                 bail!("fail");
             }
             newVal
@@ -1845,7 +1845,7 @@ fn collectEquationArrayClocks(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<
         source = __pa0.clone();
         if partitionIdx != 0 {
             eqAttr = BackendEquation::getEquationAttributes(eq.clone())?;
-            eqAttr = (match eqAttr.clone() {
+            eqAttr = (match eqAttr {
         BackendDAE::EquationAttributes { kind: BackendDAE::EquationKind::CLOCKED_EQUATION { clk: mut whenIdx }, .. } => {
             let mut partitionsWhenClocksLst: Arc<metamodelica::List<i32>>;
             partitionsWhenClocksLst = ({let __elt = partitionsWhenClocks.borrow()[(partitionIdx-1) as usize].clone(); __elt});
@@ -1853,13 +1853,13 @@ fn collectEquationArrayClocks(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<
                 metamodelica::arrayUpdate(partitionsWhenClocks.clone(), partitionIdx, metamodelica::cons(whenIdx.clone(), partitionsWhenClocksLst.clone()))?;
             }
             eqAttr.kind = openmodelica_backend_types::BackendDAE::EquationKind::DYNAMIC_EQUATION;
-            eqAttr.clone()
+            eqAttr
         },
         _ => {
-            eqAttr.clone()
+            eqAttr
         },
     });
-            eq = BackendEquation::setEquationAttributes(eq.clone(), eqAttr.clone())?;
+            eq = BackendEquation::setEquationAttributes(eq.clone(), eqAttr)?;
             let (__pa1, (__pa2, __pa3, _, _, _, _, _, _, _)) = BackendEquation::traverseExpsOfEquation(eq.clone(), (std::sync::Arc::new(collectSubclkInfoExp1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>))> + 'static>), (outNewEqs.clone(), outNewVars.clone(), contPartitions.clone(), source.clone(), clksCnt.clone(), partitionIdx, partitions.clone(), inVars.clone(), mT.clone()))?;
             eq = __pa1.clone();
             outNewEqs = __pa2.clone();

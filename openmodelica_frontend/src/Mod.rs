@@ -431,7 +431,7 @@ fn elabModValue(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
     let mut c: DAE::Const;
     let mut v: Arc<Values::Value>;
     c = Types::propAllConst(inProp)?;
-    if !(Types::constIsVariable(c.clone())) {
+    if !(Types::constIsVariable(c)) {
         msg = AbsynUtil::optMsg(Types::constIsConst(c) && !(inImpl), inInfo);
         err_count = Error::getNumErrorMessages();
         if '__try0: {
@@ -1008,9 +1008,9 @@ fn mergeSubMods(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut f: SCod
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: n, r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: _ } }), info, .. } }, tail: rest } => {
                     let mut m: Arc<DAE::Mod>;
                     m = lookupCompModification(inMods.clone(), (id.clone()).clone())?;
-                    m = Arc::new(DAE::Mod::MOD { finalPrefix: f.clone(), eachPrefix: e.clone(), subModLst: list![Arc::new(DAE::SubMod { ident: (n.clone()).clone(), r#mod: m.clone() })], binding: None, info: info.clone() });
+                    m = Arc::new(DAE::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: list![Arc::new(DAE::SubMod { ident: (n.clone()).clone(), r#mod: m.clone() })], binding: None, info: info.clone() });
                     m = merge(inMod.clone(), m.clone(), (literal!("")).clone(), true)?;
-                    m = mergeSubMods(inMods.clone(), m.clone(), f.clone(), e.clone(), rest.clone());
+                    m = mergeSubMods(inMods.clone(), m.clone(), f, e, rest.clone());
                     Ok(m.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1020,7 +1020,7 @@ fn mergeSubMods(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut f: SCod
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut m: Arc<DAE::Mod>;
-                    m = mergeSubMods(inMods.clone(), inMod.clone(), f.clone(), e.clone(), rest.clone());
+                    m = mergeSubMods(inMods.clone(), inMod.clone(), f, e, rest.clone());
                     Ok(m.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1100,7 +1100,7 @@ fn lookupComplexCompModification(mut inEqMod: Option<DAE::EqMod>, mut inName: Ar
                 ae = unwrap_break_err!(Expression::unelabExp(e.clone()), '__try0);
                 ty = unwrap_break_err!(Types::complicateType(unwrap_break_err!(Expression::r#typeof(e.clone()), '__try0)), '__try0);
                 eq_mod = DAE::EqMod::TYPED { modifierAsExp: e.clone(), modifierAsValue: Some(v.clone()), properties: DAE::Properties::PROP { type_: ty.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }, modifierAsAbsynExp: ae.clone(), info: info.clone() };
-                outMod = Arc::new(DAE::Mod::MOD { finalPrefix: inFinal.clone(), eachPrefix: inEach.clone(), subModLst: metamodelica::nil(), binding: Some(eq_mod.clone()), info: inInfo.clone() });
+                outMod = Arc::new(DAE::Mod::MOD { finalPrefix: inFinal, eachPrefix: inEach, subModLst: metamodelica::nil(), binding: Some(eq_mod.clone()), info: inInfo.clone() });
                 break;
             }
         }

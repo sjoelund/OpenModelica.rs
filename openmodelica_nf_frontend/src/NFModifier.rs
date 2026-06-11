@@ -1346,7 +1346,7 @@ pub mod Modifier {
             return Ok(s.clone());
         }
         loop {
-            s = toFlatStream(listHead(mods.clone())?, format.clone(), s.clone(), true)?;
+            s = toFlatStream(listHead(mods.clone())?, format, s.clone(), true)?;
             mods = listRest(mods.clone())?;
             if mods.clone().is_empty() {
                 break;
@@ -1369,7 +1369,7 @@ pub mod Modifier {
             submods = ModTable::listValues(var_field!((*r#mod).subModifiers, Modifier::MODIFIER).clone(), metamodelica::nil());
             if !(submods.clone().is_empty()) {
                 s = IOStream::append(s, (literal!("(")).clone())?;
-                s = toFlatStreamList(submods, format.clone(), s, (literal!(", ")).clone())?;
+                s = toFlatStreamList(submods, format, s, (literal!(", ")).clone())?;
                 s = IOStream::append(s, (literal!(")")).clone())?;
                 binding_sep = (literal!(" = ")).clone();
             } else {

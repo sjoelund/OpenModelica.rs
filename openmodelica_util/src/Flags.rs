@@ -194,7 +194,7 @@ impl Default for FlagData {
 pub use self::FlagData::{EMPTY_FLAG,BOOL_FLAG,INT_FLAG,INT_LIST_FLAG,REAL_FLAG,STRING_FLAG,STRING_LIST_FLAG,ENUM_FLAG};
 
 /// This uniontype is used to specify the visibility of a configuration flag.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum FlagVisibility {
     /// An internal flag that is hidden to the user.
     INTERNAL,

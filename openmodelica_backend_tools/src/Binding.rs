@@ -578,8 +578,8 @@ fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Componen
                     let mut enew: Arc<Absyn::ElementItem>;
                     client_pref = (getPreferredBinding((ename.clone()).clone(), preferred.clone())?).clone();
                     cnew = applyModifierPreferred(comps.clone(), e.clone(), (client_pref.clone()).clone(), instance_name.clone(), (ename.clone()).clone());
-                    enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix, redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) });
-                    Ok(metamodelica::cons(enew.clone(), applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix, redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())))
+                    enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix, redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter, specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) });
+                    Ok(metamodelica::cons(enew.clone(), applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix, redeclareKeywords.clone(), innerOuter, info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -587,7 +587,7 @@ fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Componen
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix, redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone()))
+                    Ok(applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix, redeclareKeywords.clone(), innerOuter, info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -677,7 +677,7 @@ fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,
             let mut cnew: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
             let mut enew: Arc<Absyn::ElementItem>;
             cnew = applyModifier(comps.clone(), e.clone(), instance_name.clone(), counter, newName);
-            enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix, redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew }), info: info.clone(), constrainClass: constrainClass.clone() }) });
+            enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix, redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter, specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew }), info: info.clone(), constrainClass: constrainClass.clone() }) });
             return metamodelica::cons(enew, applyModifiers(comps, rest.clone(), instance_name, counter + 1, finalPrefix, redeclareKeywords, innerOuter, info, constrainClass, attributes, tSpec, newName))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {

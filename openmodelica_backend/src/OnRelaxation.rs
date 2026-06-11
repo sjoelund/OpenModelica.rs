@@ -1505,7 +1505,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-                    Ok((inElst.clone().reverse(), inVars.clone(), inEqns.clone(), inTpl.clone()))
+                    Ok((inElst.clone().reverse(), inVars.clone(), inEqns.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1513,7 +1513,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _) => {
-                    Ok((List::append_reverse(inElst.clone(), inB.clone()), inVars.clone(), inEqns.clone(), inTpl.clone()))
+                    Ok((List::append_reverse(inElst.clone(), inB.clone()), inVars.clone(), inEqns.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1521,7 +1521,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil) => {
-                    Ok((List::append_reverse(inElst.clone(), inA.clone()), inVars.clone(), inEqns.clone(), inTpl.clone()))
+                    Ok((List::append_reverse(inElst.clone(), inA.clone()), inVars.clone(), inEqns.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1535,7 +1535,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
                     let mut tpl: (i32, i32);
                     let true = (intEq(ca.clone(), cb.clone())) else { bail!("pattern mismatch") };
                     let true = (intEq(ca.clone(), col)) else { bail!("pattern mismatch") };
-                    (elst, vars, eqns, tpl) = addRows(resta.clone(), restb.clone(), col, inVars.clone(), inEqns.clone(), inTpl.clone(), inElst.clone())?;
+                    (elst, vars, eqns, tpl) = addRows(resta.clone(), restb.clone(), col, inVars.clone(), inEqns.clone(), inTpl, inElst.clone())?;
                     Ok((elst.clone(), vars.clone(), eqns.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1552,7 +1552,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
                     let true = (intEq(ca.clone(), cb.clone())) else { bail!("pattern mismatch") };
                     e = Expression::expAdd(ea.clone(), eb.clone())?;
                     (e, _) = ExpressionSimplify::simplify(e.clone())?;
-                    (vars, eqns, e, tpl) = makeDummyVar(inTpl.clone(), e.clone(), inVars.clone(), inEqns.clone())?;
+                    (vars, eqns, e, tpl) = makeDummyVar(inTpl, e.clone(), inVars.clone(), inEqns.clone())?;
                     (elst, vars, eqns, tpl) = addRows(resta.clone(), restb.clone(), col, vars.clone(), eqns.clone(), tpl.clone(), metamodelica::cons((ca.clone(), e.clone()), inElst.clone()))?;
                     Ok((elst.clone(), vars.clone(), eqns.clone(), tpl.clone()))
                 }
@@ -1568,7 +1568,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
                     let mut tpl: (i32, i32);
                     let true = (intGt(ca.clone(), cb.clone())) else { bail!("pattern mismatch") };
                     let true = (intEq(cb.clone(), col)) else { bail!("pattern mismatch") };
-                    (elst, vars, eqns, tpl) = addRows(inA.clone(), restb.clone(), col, inVars.clone(), inEqns.clone(), inTpl.clone(), inElst.clone())?;
+                    (elst, vars, eqns, tpl) = addRows(inA.clone(), restb.clone(), col, inVars.clone(), inEqns.clone(), inTpl, inElst.clone())?;
                     Ok((elst.clone(), vars.clone(), eqns.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1582,7 +1582,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
                     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
                     let mut tpl: (i32, i32);
                     let true = (intGt(ca.clone(), cb.clone())) else { bail!("pattern mismatch") };
-                    (elst, vars, eqns, tpl) = addRows(inA.clone(), restb.clone(), col, inVars.clone(), inEqns.clone(), inTpl.clone(), metamodelica::cons((cb.clone(), eb.clone()), inElst.clone()))?;
+                    (elst, vars, eqns, tpl) = addRows(inA.clone(), restb.clone(), col, inVars.clone(), inEqns.clone(), inTpl, metamodelica::cons((cb.clone(), eb.clone()), inElst.clone()))?;
                     Ok((elst.clone(), vars.clone(), eqns.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1597,7 +1597,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
                     let mut tpl: (i32, i32);
                     let true = (intLt(ca.clone(), cb.clone())) else { bail!("pattern mismatch") };
                     let true = (intEq(ca.clone(), col)) else { bail!("pattern mismatch") };
-                    (elst, vars, eqns, tpl) = addRows(resta.clone(), inB.clone(), col, inVars.clone(), inEqns.clone(), inTpl.clone(), inElst.clone())?;
+                    (elst, vars, eqns, tpl) = addRows(resta.clone(), inB.clone(), col, inVars.clone(), inEqns.clone(), inTpl, inElst.clone())?;
                     Ok((elst.clone(), vars.clone(), eqns.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1611,7 +1611,7 @@ fn addRows(mut inA: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inB: Arc<
                     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
                     let mut tpl: (i32, i32);
                     let true = (intLt(ca.clone(), cb.clone())) else { bail!("pattern mismatch") };
-                    (elst, vars, eqns, tpl) = addRows(resta.clone(), inB.clone(), col, inVars.clone(), inEqns.clone(), inTpl.clone(), metamodelica::cons((ca.clone(), ea.clone()), inElst.clone()))?;
+                    (elst, vars, eqns, tpl) = addRows(resta.clone(), inB.clone(), col, inVars.clone(), inEqns.clone(), inTpl, metamodelica::cons((ca.clone(), ea.clone()), inElst.clone()))?;
                     Ok((elst.clone(), vars.clone(), eqns.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1655,11 +1655,11 @@ fn makeDummyVar(mut inTpl: (i32, i32), mut e: Arc<DAE::Exp>, mut inVars: Backend
     let mut outExp: Arc<DAE::Exp>;
     let mut outTpl: (i32, i32);
     (outVars, outEqns, outExp, outTpl) = 'mc: {
-        let __mc_input = (inTpl.clone(), e.clone());
+        let __mc_input = (inTpl, e.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::CREF { .. }) => {
-                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl.clone()))
+                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1667,7 +1667,7 @@ fn makeDummyVar(mut inTpl: (i32, i32), mut e: Arc<DAE::Exp>, mut inVars: Backend
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::CREF { .. }, .. }) => {
-                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl.clone()))
+                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1675,7 +1675,7 @@ fn makeDummyVar(mut inTpl: (i32, i32), mut e: Arc<DAE::Exp>, mut inVars: Backend
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::RCONST { .. }) => {
-                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl.clone()))
+                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1684,7 +1684,7 @@ fn makeDummyVar(mut inTpl: (i32, i32), mut e: Arc<DAE::Exp>, mut inVars: Backend
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
                     let true = (Expression::isConst(e.clone())?) else { bail!("pattern mismatch") };
-                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl.clone()))
+                    Ok((inVars.clone(), inEqns.clone(), e.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1721,11 +1721,11 @@ fn gaussElimination1(mut col: i32, mut row: i32, mut size: i32, mut ce: Arc<DAE:
     let mut outEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let mut outTpl: (i32, i32);
     (outVars, outEqns, outTpl) = 'mc: {
-        let __mc_input = inTpl.clone();
+        let __mc_input = inTpl;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (intGt(row, size)) else { bail!("pattern mismatch") };
-            Ok((inVars.clone(), inEqns.clone(), inTpl.clone()))
+            Ok((inVars.clone(), inEqns.clone(), inTpl))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -1743,7 +1743,7 @@ fn gaussElimination1(mut col: i32, mut row: i32, mut size: i32, mut ce: Arc<DAE:
             e = __pa0.clone();
             e1 = Expression::expDiv(e.clone(), ce.clone())?;
             (e1, _) = ExpressionSimplify::simplify(e1.clone())?;
-            (vars, eqns, cexp, tpl) = makeDummyVar(inTpl.clone(), e1.clone(), inVars.clone(), inEqns.clone())?;
+            (vars, eqns, cexp, tpl) = makeDummyVar(inTpl, e1.clone(), inVars.clone(), inEqns.clone())?;
             elst = ({let __elt = matrix.borrow()[(col-1) as usize].clone(); __elt});
             elst = List::map1(elst.clone(), (std::sync::Arc::new(mulRow) as std::sync::Arc<dyn ::std::ops::Fn((i32, Arc<DAE::Exp>), Arc<DAE::Exp>) -> Result<(i32, Arc<DAE::Exp>)> + 'static>), cexp.clone())?;
             (elst, vars, eqns, tpl) = addRows(({let __elt = matrix.borrow()[(row-1) as usize].clone(); __elt}), elst.clone(), col, vars.clone(), eqns.clone(), tpl.clone(), metamodelica::nil())?;
@@ -1756,7 +1756,7 @@ fn gaussElimination1(mut col: i32, mut row: i32, mut size: i32, mut ce: Arc<DAE:
             let mut vars: BackendDAE::Variables;
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
             let mut tpl: (i32, i32);
-            (vars, eqns, tpl) = gaussElimination1(col, row + 1, size, ce.clone(), matrix.clone(), inVars.clone(), inEqns.clone(), inTpl.clone());
+            (vars, eqns, tpl) = gaussElimination1(col, row + 1, size, ce.clone(), matrix.clone(), inVars.clone(), inEqns.clone(), inTpl);
             Ok((vars.clone(), eqns.clone(), tpl.clone()))
         })() { break 'mc __v; }
         panic!("matchcontinue: no arm matched")
@@ -1768,7 +1768,7 @@ fn gaussElimination(mut col: i32, mut size: i32, mut matrix: metamodelica::Array
     let mut outVars: BackendDAE::Variables;
     let mut outEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     (outVars, outEqns) = 'mc: {
-        let __mc_input = inTpl.clone();
+        let __mc_input = inTpl;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (intGt(col, size)) else { bail!("pattern mismatch") };
@@ -1785,7 +1785,7 @@ fn gaussElimination(mut col: i32, mut size: i32, mut matrix: metamodelica::Array
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa0.clone();
-            (vars, eqns, tpl) = gaussElimination1(col, col + 1, size, e.clone(), matrix.clone(), inVars.clone(), inEqns.clone(), inTpl.clone());
+            (vars, eqns, tpl) = gaussElimination1(col, col + 1, size, e.clone(), matrix.clone(), inVars.clone(), inEqns.clone(), inTpl);
             (vars, eqns) = gaussElimination(col + 1, size, matrix.clone(), vars.clone(), eqns.clone(), tpl.clone())?;
             Ok((vars.clone(), eqns.clone()))
         })() { break 'mc __v; }

@@ -1050,18 +1050,18 @@ pub mod Function {
             s = IOStream::append(s, (literal!("\n")).clone())?;
             for mut i in &*r#fn.inputs.clone() {
                 let mut i = i.clone();
-                s = IOStream::append(s.clone(), (InstNode::toFlatString(i.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
+                s = IOStream::append(s.clone(), (InstNode::toFlatString(i.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
                 s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
             }
             for mut o in &*r#fn.outputs.clone() {
                 let mut o = o.clone();
-                s = IOStream::append(s.clone(), (InstNode::toFlatString(o.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
+                s = IOStream::append(s.clone(), (InstNode::toFlatString(o.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
                 s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
             }
             if !(r#fn.locals.clone().is_empty()) {
                 for mut l in &*r#fn.locals.clone() {
                     let mut l = l.clone();
-                    s = IOStream::append(s.clone(), (InstNode::toFlatString(l.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
+                    s = IOStream::append(s.clone(), (InstNode::toFlatString(l.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
                     s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
                 }
             }
@@ -2033,7 +2033,7 @@ pub mod Function {
             pconst = Prefixes::variabilityToDAEConst(Component::variability(comp.clone())?);
             ppar = Prefixes::parallelismToDAE(Component::parallelism(comp.clone()))?;
             pdefault = Util::applyOption(Binding::typedExp(Component::getBinding(comp.clone())), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))?;
-            params = metamodelica::cons(Arc::new(DAE::FuncArg { name: (pname.clone()).clone(), ty: ptype.clone(), r#const: pconst.clone(), par: ppar.clone(), defaultBinding: pdefault.clone() }), params.clone());
+            params = metamodelica::cons(Arc::new(DAE::FuncArg { name: (pname.clone()).clone(), ty: ptype.clone(), r#const: pconst, par: ppar, defaultBinding: pdefault.clone() }), params.clone());
         }
         params = params.reverse();
         ty = if (isDefaultRecordConstructor(r#fn.clone())) {InstNode::getType(r#fn.node.clone())?} else {r#fn.returnType.clone()};
@@ -2381,9 +2381,9 @@ pub mod Function {
         fres = __pa0.clone();
         is_partial = InstNode::isPartial(node)?;
         cmt = mergeFunctionAnnotations(comments);
-        purity = InstBasics::getFunctionRestrictionPurity(SCodeUtil::getFunctionRestrictionPurity(fres.clone()), cmt.clone(), true)?;
+        purity = InstBasics::getFunctionRestrictionPurity(SCodeUtil::getFunctionRestrictionPurity(fres), cmt.clone(), true)?;
         attr = 'mc: {
-        let __mc_input = fres.clone();
+        let __mc_input = fres;
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut has_unbox_args: bool;
@@ -2464,7 +2464,7 @@ pub mod Function {
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             if purity == DAE::Purity::UNDEFINED.clone() && Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())? {
-                purity = if (SCodeUtil::isExternalFunctionRestriction(fres.clone())) {DAE::Purity::IMPURE.clone()} else {DAE::Purity::PURE.clone()};
+                purity = if (SCodeUtil::isExternalFunctionRestriction(fres)) {DAE::Purity::IMPURE.clone()} else {DAE::Purity::PURE.clone()};
             }
             if SCodeUtil::hasNamedExternalCall((literal!("ModelicaError")).clone(), SCodeUtil::getClassDef(def.clone())?) {
                 purity = DAE::Purity::PURE.clone();

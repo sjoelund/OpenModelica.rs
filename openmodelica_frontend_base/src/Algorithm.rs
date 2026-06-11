@@ -336,7 +336,7 @@ pub fn makeAssignmentsList(mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: lhs_prop, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: rhs, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: rhs_prop, tail: rest_rhs_prop }) => {
             let mut ass: Arc<DAE::Statement>;
             let mut rest_ass: Arc<metamodelica::List<Arc<DAE::Statement>>>;
-            ass = makeAssignment(lhs.clone(), lhs_prop.clone(), rhs.clone(), rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?;
+            ass = makeAssignment(lhs.clone(), lhs_prop.clone(), rhs.clone(), rhs_prop.clone(), attributes.clone(), initial_, source.clone())?;
             rest_ass = makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes, initial_, source)?;
             return Ok(metamodelica::cons(ass, rest_ass))
         },
@@ -384,7 +384,7 @@ pub(crate) fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
 pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTypesPropertiesLst: Arc<metamodelica::List<DAE::Properties>>, mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut initial_: SCode::Initial, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
     let mut outStatement: Arc<DAE::Statement>;
     outStatement = 'mc: {
-        let __mc_input = (inExpExpLst, inTypesPropertiesLst, inExp, inProperties, initial_.clone());
+        let __mc_input = (inExpExpLst, inTypesPropertiesLst, inExp, inProperties, initial_);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lprop, rhs, _, _) => {
@@ -466,7 +466,7 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
                     rhs_str = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
                     str1 = stringDelimitList(List::map(lprop.clone(), (std::sync::Arc::new(Types::printPropStr) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
                     str2 = (Types::printPropStr(rprop.clone())?).clone();
-                    strInitial = (SCodeDump::printInitialStr(initial_.clone())?).clone();
+                    strInitial = (SCodeDump::printInitialStr(initial_)?).clone();
                     Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Algorithm.makeTupleAssignment failed on: \n\t")); __mm_s.push_str(&*lhs_str.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*rhs_str.clone()); __mm_s.push_str(&*literal!("\n\tprops lhs: (")); __mm_s.push_str(&*str1.clone()); __mm_s.push_str(&*literal!(") =  props rhs: ")); __mm_s.push_str(&*str2.clone()); __mm_s.push_str(&*literal!("\n\tin ")); __mm_s.push_str(&*strInitial.clone()); __mm_s.push_str(&*literal!(" section")); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }

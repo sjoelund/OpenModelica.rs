@@ -1810,7 +1810,7 @@ pub(crate) fn setHideResult(mut varIn: BackendDAE::Var, mut hideResultB: Option<
 pub(crate) fn setVarDirectionTpl(mut var: BackendDAE::Var, mut dir: DAE::VarDirection) -> (BackendDAE::Var, DAE::VarDirection) {
     let mut var: BackendDAE::Var = var;
     let mut dir: DAE::VarDirection = dir;
-    var.varDirection = dir.clone();
+    var.varDirection = dir;
     (var, dir)
 }
 

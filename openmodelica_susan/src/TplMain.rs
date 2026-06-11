@@ -659,7 +659,7 @@ impl metamodelica::gc::MMTrace for Exp {
 }
 pub(crate) use self::Exp::{ICONST,VARIABLE,BINARY};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum Operator {
     PLUS,
     TIMES,

@@ -205,7 +205,7 @@ fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>
                     let true = (DAEUtil::expTypeComplex(tp.clone())) else { bail!("pattern mismatch") };
                     size = Expression::sizeOf(tp.clone());
                     source = ElementSource::addSymbolicTransformation(inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_SCALARIZE { before: eqExp.clone(), index: i.clone(), after: Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: inExp1.clone(), rhs: inExp2.clone() }) }))?;
-                    Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: eqAttr.clone() }), eqns.clone())))
+                    Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: eqAttr }), eqns.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -229,7 +229,7 @@ fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>
                     }
                     ds = Expression::dimensionsSizes(dims.clone())?;
                     source = ElementSource::addSymbolicTransformation(inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_SCALARIZE { before: eqExp.clone(), index: i.clone(), after: Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: inExp1.clone(), rhs: inExp2.clone() }) }))?;
-                    Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: ds.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: eqAttr.clone(), recordSize: recordSize.clone() }), eqns.clone())))
+                    Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: ds.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: eqAttr, recordSize: recordSize.clone() }), eqns.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -246,7 +246,7 @@ fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>
                     b2 = DAEUtil::expTypeArray(tp.clone());
                     let false = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
                     source = ElementSource::addSymbolicTransformation(inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_SCALARIZE { before: eqExp.clone(), index: i.clone(), after: Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: inExp1.clone(), rhs: inExp2.clone() }) }))?;
-                    Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: inExp1.clone(), scalar: inExp2.clone(), source: source.clone(), attr: eqAttr.clone() }), eqns.clone())))
+                    Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: inExp1.clone(), scalar: inExp2.clone(), source: source.clone(), attr: eqAttr }), eqns.clone())))
                 }
                 _ => bail!("nomatch"),
             }}

@@ -324,7 +324,7 @@ pub mod Branch {
                 s = IOStream::append(s, (literal!("else\n")).clone())?;
             } else {
                 s = IOStream::append(s, (header).clone())?;
-                s = IOStream::append(s, (Expression::toFlatString(var_field!((*branch).condition, Branch::BRANCH).clone(), format.clone())?).clone())?;
+                s = IOStream::append(s, (Expression::toFlatString(var_field!((*branch).condition, Branch::BRANCH).clone(), format)?).clone())?;
                 s = IOStream::append(s, (literal!(" then\n")).clone())?;
             }
             s = toFlatStreamList(var_field!((*branch).body, Branch::BRANCH).clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
@@ -1448,14 +1448,14 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
     s = IOStream::append(s, (indent.clone()).clone())?;
     s = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::EQUALITY).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::EQUALITY).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(" = ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).rhs, NFEquation::EQUALITY).clone(), format)?).clone())?;
             s
         },
         Deref @ CONNECT { .. } => {
             s = IOStream::append(s, (literal!("connect(")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::CONNECT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::CONNECT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).rhs, NFEquation::CONNECT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(")")).clone())?;
@@ -1466,7 +1466,7 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
             s = IOStream::append(s, (Util::makeQuotedIdentifier((InstNode::name(var_field!((*eq).iterator, NFEquation::FOR).clone())?).clone())?).clone())?;
             if isSome(var_field!((*eq).range, NFEquation::FOR).clone()) {
                 s = IOStream::append(s, (literal!(" in ")).clone())?;
-                s = IOStream::append(s, (Expression::toFlatString(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?, format.clone())?).clone())?;
+                s = IOStream::append(s, (Expression::toFlatString(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?, format)?).clone())?;
             }
             s = IOStream::append(s, (literal!(" loop\n")).clone())?;
             s = toFlatStreamList(var_field!((*eq).body, NFEquation::FOR).clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
@@ -1481,7 +1481,7 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
             } };
             branch = __pa0.clone();
             branches = __pa1.clone();
-            s = Branch::toFlatStream(branch.clone(), (literal!("if ")).clone(), format.clone(), false, (indent.clone()).clone(), s)?;
+            s = Branch::toFlatStream(branch.clone(), (literal!("if ")).clone(), format, false, (indent.clone()).clone(), s)?;
             while !(branches.clone().is_empty()) {
                 let (__pa2, __pa3) = ::match_deref::match_deref! { match &(branches.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
@@ -1490,18 +1490,18 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
                 branch = __pa2.clone();
                 branches = __pa3.clone();
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-                s = Branch::toFlatStream(branch.clone(), (literal!("elseif ")).clone(), format.clone(), branches.clone().is_empty(), (indent.clone()).clone(), s.clone())?;
+                s = Branch::toFlatStream(branch.clone(), (literal!("elseif ")).clone(), format, branches.clone().is_empty(), (indent.clone()).clone(), s.clone())?;
             }
             s = IOStream::append(s, (indent).clone())?;
             s = IOStream::append(s, (literal!("end if")).clone())?;
             s
         },
         Deref @ WHEN { .. } => {
-            s = Branch::toFlatStream(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?, (literal!("when ")).clone(), format.clone(), false, (indent.clone()).clone(), s)?;
+            s = Branch::toFlatStream(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?, (literal!("when ")).clone(), format, false, (indent.clone()).clone(), s)?;
             for mut b in &*listRest(var_field!((*eq).branches, NFEquation::WHEN).clone())? {
                 let mut b = b.clone();
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-                s = Branch::toFlatStream(b.clone(), (literal!("elsewhen ")).clone(), format.clone(), false, (indent.clone()).clone(), s.clone())?;
+                s = Branch::toFlatStream(b.clone(), (literal!("elsewhen ")).clone(), format, false, (indent.clone()).clone(), s.clone())?;
             }
             s = IOStream::append(s, (indent).clone())?;
             s = IOStream::append(s, (literal!("end when")).clone())?;
@@ -1509,9 +1509,9 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
         },
         Deref @ ASSERT { .. } => {
             s = IOStream::append(s, (literal!("assert(")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).condition, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).condition, NFEquation::ASSERT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).message, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).message, NFEquation::ASSERT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).level, NFEquation::ASSERT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(")")).clone())?;
@@ -1525,7 +1525,7 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
         },
         Deref @ REINIT { .. } => {
             s = IOStream::append(s, (literal!("reinit(")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).cref, NFEquation::REINIT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).cref, NFEquation::REINIT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).reinitExp, NFEquation::REINIT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(")")).clone())?;
@@ -1553,7 +1553,7 @@ pub(crate) fn toFlatStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>
             s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
         }
         prev_multi_line = multi_line;
-        s = toFlatStream(eq.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
+        s = toFlatStream(eq.clone(), format, (indent.clone()).clone(), s.clone())?;
         s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
     }
     Ok(s)

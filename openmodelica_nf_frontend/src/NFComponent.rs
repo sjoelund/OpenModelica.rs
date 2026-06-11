@@ -808,12 +808,12 @@ pub(crate) fn toFlatStream(mut name: ArcStr, mut component: Arc<NFComponent>, mu
         Deref @ COMPONENT { .. } => {
             s = IOStream::append(s, (indent).clone())?;
             s = Attributes::toFlatStream(var_field!((*component).attributes, NFComponent::COMPONENT).clone(), var_field!((*component).ty, NFComponent::COMPONENT).clone(), s, true)?;
-            s = IOStream::append(s, (Type::toFlatString(Type::arrayElementType(var_field!((*component).ty, NFComponent::COMPONENT).clone()), format.clone())?).clone())?;
+            s = IOStream::append(s, (Type::toFlatString(Type::arrayElementType(var_field!((*component).ty, NFComponent::COMPONENT).clone()), format)?).clone())?;
             s = IOStream::append(s, (literal!(" ")).clone())?;
             s = IOStream::append(s, (Util::makeQuotedIdentifier((name).clone())?).clone())?;
             dims = Type::arrayDims(var_field!((*component).ty, NFComponent::COMPONENT).clone());
             if !(dims.clone().is_empty()) {
-                s = IOStream::append(s, (Dimension::toFlatStringList(dims, format.clone(), (literal!("")).clone())?).clone())?;
+                s = IOStream::append(s, (Dimension::toFlatStringList(dims, format, (literal!("")).clone())?).clone())?;
             }
             ty_attrs = ({
         let mut __acc: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
@@ -823,7 +823,7 @@ pub(crate) fn toFlatStream(mut name: ArcStr, mut component: Arc<NFComponent>, mu
         }
         __acc.reverse()
     });
-            s = typeAttrsToFlatStream(ty_attrs, var_field!((*component).ty, NFComponent::COMPONENT).clone(), format.clone(), s)?;
+            s = typeAttrsToFlatStream(ty_attrs, var_field!((*component).ty, NFComponent::COMPONENT).clone(), format, s)?;
             s = IOStream::append(s, (Binding::toFlatString(var_field!((*component).binding, NFComponent::COMPONENT).clone(), format, (literal!(" = ")).clone())?).clone())?;
             ()
         },
@@ -859,7 +859,7 @@ pub(crate) fn typeAttrsToFlatStream(mut typeAttrs: Arc<metamodelica::List<(ArcSt
         }
         s = IOStream::append(s.clone(), (name.clone()).clone())?;
         s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-        s = IOStream::append(s.clone(), (Expression::toFlatString(bind_exp.clone(), format.clone())?).clone())?;
+        s = IOStream::append(s.clone(), (Expression::toFlatString(bind_exp.clone(), format)?).clone())?;
         if format.showConfidence.clone() {
             s = IOStream::append(s.clone(), (literal!(" /* confidence = ")).clone())?;
             s = IOStream::append(s.clone(), ArcStr::from(::std::format!("{}", Binding::actualConfidence(binding.clone())?)))?;

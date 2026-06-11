@@ -149,7 +149,7 @@ pub use self::Restriction::{R_CLASS,R_OPTIMIZATION,R_MODEL,R_RECORD,R_BLOCK,R_CO
 
 // Same as Absyn.FunctionRestriction except this contains
 // FR_EXTERNAL_FUNCTION and FR_RECORD_CONSTRUCTOR.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FunctionRestriction {
     /// a normal function
     FR_NORMAL_FUNCTION {
@@ -992,7 +992,7 @@ pub use self::Statement::{ALG_ASSIGN,ALG_IF,ALG_FOR,ALG_PARFOR,ALG_WHILE,ALG_WHE
 
 // common prefixes to elements
 /// the visibility prefix
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Visibility {
     /// a public element
     PUBLIC,
@@ -1013,7 +1013,7 @@ impl Default for Visibility {
 pub use self::Visibility::{PUBLIC,PROTECTED};
 
 /// the redeclare prefix
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Redeclare {
     /// a redeclare prefix
     REDECLARE,
@@ -1096,7 +1096,7 @@ impl Default for Replaceable {
 pub use self::Replaceable::{REPLACEABLE,NOT_REPLACEABLE};
 
 /// the final prefix
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Final {
     /// a final prefix
     FINAL,
@@ -1117,7 +1117,7 @@ impl Default for Final {
 pub use self::Final::{FINAL,NOT_FINAL};
 
 /// the each prefix
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Each {
     /// a each prefix
     EACH,
@@ -1138,7 +1138,7 @@ impl Default for Each {
 pub use self::Each::{EACH,NOT_EACH};
 
 /// the encapsulated prefix
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Encapsulated {
     /// a encapsulated prefix
     ENCAPSULATED,
@@ -1159,7 +1159,7 @@ impl Default for Encapsulated {
 pub use self::Encapsulated::{ENCAPSULATED,NOT_ENCAPSULATED};
 
 /// the partial prefix
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Partial {
     /// a partial prefix
     PARTIAL,
@@ -1179,7 +1179,7 @@ impl Default for Partial {
 }
 pub use self::Partial::{PARTIAL,NOT_PARTIAL};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ConnectorType {
     /// No connector type prefix.
     POTENTIAL,
@@ -1432,7 +1432,7 @@ pub type ATTR = Attributes;
 
 
 /// Parallelism
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Parallelism {
     /// Global variables for CUDA and OpenCL
     PARGLOBAL,
@@ -1456,7 +1456,7 @@ impl Default for Parallelism {
 pub use self::Parallelism::{PARGLOBAL,PARLOCAL,NON_PARALLEL};
 
 /// the variability of a component
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Variability {
     /// a variable
     VAR,
@@ -1486,7 +1486,7 @@ pub use self::Variability::{VAR,DISCRETE,PARAM,CONST};
 /// the initial attribute of an algorithm or equation
 /// Intial is used as argument to instantiation-function for
 /// specifying if equations or algorithms are initial or not.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Initial {
     /// an initial equation or algorithm
     INITIAL,

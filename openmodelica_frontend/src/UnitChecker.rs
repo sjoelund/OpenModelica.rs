@@ -734,8 +734,8 @@ pub(crate) fn powSpecUnit(mut suin: UnitAbsyn::SpecUnit, mut expo: MMath::Ration
             let UnitAbsyn::SpecUnit { typeParameters: ref params1, units: ref unitvec1 } = __mc_input.clone() else { bail!("nomatch") };
             let mut params2: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>;
             let mut unitvec2: Arc<metamodelica::List<MMath::Rational>>;
-            params2 = powUnitParams(params1.clone(), expo.clone())?;
-            unitvec2 = powUnitVec(unitvec1.clone(), expo.clone())?;
+            params2 = powUnitParams(params1.clone(), expo)?;
+            unitvec2 = powUnitVec(unitvec1.clone(), expo)?;
             Ok(UnitAbsyn::SpecUnit { typeParameters: params2.clone(), units: unitvec2.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1079,13 +1079,13 @@ fn mulSpecUnitWithNorm(mut suin: UnitAbsyn::SpecUnit, mut normunit: UnitAbsyn::U
         let __mc_input = (suin, normunit);
         if let Ok(__v) = (|| -> Result<_> {
             let (UnitAbsyn::SpecUnit { typeParameters: ref params, units: ref unitvec }, UnitAbsyn::Unit::UNSPECIFIED { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(UnitAbsyn::SpecUnit { typeParameters: metamodelica::cons((expo.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc }), params.clone()), units: unitvec.clone() })
+            Ok(UnitAbsyn::SpecUnit { typeParameters: metamodelica::cons((expo, UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc }), params.clone()), units: unitvec.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut su2, UnitAbsyn::Unit::SPECIFIED { specified: mut sunorm }) = __mc_input.clone() else { bail!("nomatch") };
             let mut su3: UnitAbsyn::SpecUnit;
             let mut su4: UnitAbsyn::SpecUnit;
-            su3 = powSpecUnit(sunorm.clone(), expo.clone())?;
+            su3 = powSpecUnit(sunorm.clone(), expo)?;
             su4 = mulSpecUnit(su2.clone(), su3.clone())?;
             Ok(su4.clone())
         })() { break 'mc __v; }

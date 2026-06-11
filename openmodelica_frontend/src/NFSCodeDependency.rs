@@ -1418,7 +1418,7 @@ fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> (Env, bool
 
 fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFSCodeEnv::ClassType, mut inEnv: Env) -> () {
     let () = 'mc: {
-        let __mc_input = (inClass.clone(), inClassType.clone());
+        let __mc_input = (inClass.clone(), inClassType);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { name: cls_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: bc, .. }, tail: _ }, .. }, info, .. }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {

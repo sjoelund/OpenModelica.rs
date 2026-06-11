@@ -479,7 +479,7 @@ pub(crate) fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Abs
                 let mut alg = alg.clone();
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 s = IOStream::append(s.clone(), (literal!("algorithm\n")).clone())?;
-                s = Statement::toFlatStreamList(alg.statements.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
+                s = Statement::toFlatStreamList(alg.statements.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
             }
             ()
         },
@@ -491,7 +491,7 @@ pub(crate) fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Abs
             if var_field!((*sections).explicit, NFSections::EXTERNAL).clone() {
                 if !(ComponentRef::isEmpty(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone())) {
                     s = IOStream::append(s, (literal!(" ")).clone())?;
-                    s = IOStream::append(s, (ComponentRef::toFlatString(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone(), format.clone())?).clone())?;
+                    s = IOStream::append(s, (ComponentRef::toFlatString(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone(), format)?).clone())?;
                     s = IOStream::append(s, (literal!(" =")).clone())?;
                 }
                 s = IOStream::append(s, (literal!(" ")).clone())?;
@@ -500,7 +500,7 @@ pub(crate) fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Abs
                 s = IOStream::append(s, stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (var_field!((*sections).args, NFSections::EXTERNAL).clone()).into_iter().cloned() {
-            let __x = Expression::toFlatString(e.clone(), format.clone())?;
+            let __x = Expression::toFlatString(e.clone(), format)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

@@ -2393,12 +2393,12 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
     let mut outExp: Arc<DAE::Exp>;
     let mut outTuple: (i32, i32, i32, i32, i32, i32, i32, i32);
     (outExp, outTuple) = 'mc: {
-        let __mc_input = (inExp.clone(), inTuple.clone());
+        let __mc_input = (inExp.clone(), inTuple);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { operator: op, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    tpl = countOperator(op.clone(), inTuple.clone());
+                    tpl = countOperator(op.clone(), inTuple);
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2408,7 +2408,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::UNARY { operator: op, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    tpl = countOperator(op.clone(), inTuple.clone());
+                    tpl = countOperator(op.clone(), inTuple);
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2418,7 +2418,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::LBINARY { operator: op, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    tpl = countOperator(op.clone(), inTuple.clone());
+                    tpl = countOperator(op.clone(), inTuple);
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2428,7 +2428,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::LUNARY { operator: op, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    tpl = countOperator(op.clone(), inTuple.clone());
+                    tpl = countOperator(op.clone(), inTuple);
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2438,7 +2438,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::RELATION { operator: op, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    tpl = countOperator(op.clone(), inTuple.clone());
+                    tpl = countOperator(op.clone(), inTuple);
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2456,7 +2456,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
                     let mut i7: i32;
                     let mut i8: i32;
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = traversecountOperationsExp(exp1.clone(), shared.clone(), inTuple.clone());
+                    (_, tpl) = traversecountOperationsExp(exp1.clone(), shared.clone(), inTuple);
                     (_, tpl) = traversecountOperationsExp(exp2.clone(), shared.clone(), tpl.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = traversecountOperationsExp(cond.clone(), shared.clone(), tpl.clone());
                     i1 = __pa0.clone();
@@ -2476,7 +2476,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::RECORD { exps: expLst, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = Expression::traverseExpList(expLst.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTuple.clone())?;
+                    (_, tpl) = Expression::traverseExpList(expLst.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTuple)?;
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2486,7 +2486,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { array: expLst, .. }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = Expression::traverseExpList(expLst.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTuple.clone())?;
+                    (_, tpl) = Expression::traverseExpList(expLst.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTuple)?;
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2496,7 +2496,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::TUPLE { PR: expLst }, _) => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = Expression::traverseExpList(expLst.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTuple.clone())?;
+                    (_, tpl) = Expression::traverseExpList(expLst.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTuple)?;
                     Ok((e.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2558,7 +2558,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
                     let mut elemLst: Arc<metamodelica::List<Arc<DAE::Element>>>;
                     func = DAEUtil::getNamedFunction(path.clone(), BackendDAEUtil::getFunctions(shared.clone())?)?;
                     elemLst = DAEUtil::getFunctionElements(func.clone())?;
-                    (i1, i2, i3, i4, i5, i6, i7, i8) = countOperationsInFunction(elemLst.clone(), shared.clone(), inTuple.clone());
+                    (i1, i2, i3, i4, i5, i6, i7, i8) = countOperationsInFunction(elemLst.clone(), shared.clone(), inTuple);
                     Ok((e.clone(), (i1.clone(), i2.clone(), i3.clone(), i4.clone(), i5.clone(), i6.clone(), i7.clone(), i8.clone() + 1)))
                 }
                 _ => bail!("nomatch"),
@@ -2567,7 +2567,7 @@ fn traversecountOperationsExp(mut inExp: Arc<DAE::Exp>, mut shared: Arc<BackendD
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok((inExp.clone(), inTuple.clone()))
+                    Ok((inExp.clone(), inTuple))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2584,7 +2584,7 @@ fn countOperationsInFunction(mut elemLst: Arc<metamodelica::List<Arc<DAE::Elemen
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    Ok(inTpl.clone())
+                    Ok(inTpl)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2593,7 +2593,7 @@ fn countOperationsInFunction(mut elemLst: Arc<metamodelica::List<Arc<DAE::Elemen
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ALGORITHM { algorithm_: Deref @ DAE::Algorithm { statementLst: stmts }, .. }, tail: rest } => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| Ok(traversecountOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTpl.clone())?;
+                    (_, tpl) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); move |__pe_a0, __pe_a2| Ok(traversecountOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), inTpl)?;
                     Ok(countOperationsInFunction(rest.clone(), shared.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2603,7 +2603,7 @@ fn countOperationsInFunction(mut elemLst: Arc<metamodelica::List<Arc<DAE::Elemen
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { exp: exp1, scalar: exp2, .. }, tail: rest } => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = traversecountOperationsExp(exp1.clone(), shared.clone(), inTpl.clone());
+                    (_, tpl) = traversecountOperationsExp(exp1.clone(), shared.clone(), inTpl);
                     (_, tpl) = traversecountOperationsExp(exp2.clone(), shared.clone(), tpl.clone());
                     Ok(countOperationsInFunction(rest.clone(), shared.clone(), tpl.clone()))
                 }
@@ -2614,7 +2614,7 @@ fn countOperationsInFunction(mut elemLst: Arc<metamodelica::List<Arc<DAE::Elemen
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { lhs: exp1, rhs: exp2, .. }, tail: rest } => {
                     let mut tpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-                    (_, tpl) = traversecountOperationsExp(exp1.clone(), shared.clone(), inTpl.clone());
+                    (_, tpl) = traversecountOperationsExp(exp1.clone(), shared.clone(), inTpl);
                     (_, tpl) = traversecountOperationsExp(exp2.clone(), shared.clone(), tpl.clone());
                     Ok(countOperationsInFunction(rest.clone(), shared.clone(), tpl.clone()))
                 }
@@ -2624,7 +2624,7 @@ fn countOperationsInFunction(mut elemLst: Arc<metamodelica::List<Arc<DAE::Elemen
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(countOperationsInFunction(rest.clone(), shared.clone(), inTpl.clone()))
+                    Ok(countOperationsInFunction(rest.clone(), shared.clone(), inTpl))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2636,7 +2636,7 @@ fn countOperationsInFunction(mut elemLst: Arc<metamodelica::List<Arc<DAE::Elemen
 
 fn countOperator(mut op: DAE::Operator, mut inTpl: (i32, i32, i32, i32, i32, i32, i32, i32)) -> (i32, i32, i32, i32, i32, i32, i32, i32) {
     let mut outTpl: (i32, i32, i32, i32, i32, i32, i32, i32);
-    outTpl = (match (op, inTpl.clone()) {
+    outTpl = (match (op, inTpl) {
         (DAE::Operator::ADD { .. }, (mut i1, mut i2, mut i3, mut i4, mut i5, mut i6, mut i7, mut i8)) => {
             (i1.clone() + 1, i2.clone(), i3.clone(), i4.clone(), i5.clone(), i6.clone(), i7.clone(), i8.clone())
         },
@@ -2973,7 +2973,7 @@ fn simplifyIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
 fn simplifyIfEquation1(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut theneqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut elseenqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut source: Arc<DAE::ElementSource>, mut globalKnownVars: BackendDAE::Variables, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inEqAttr: BackendDAE::EquationAttributes) -> Arc<metamodelica::List<Arc<BackendDAE::Equation>>> {
     let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     outEqns = 'mc: {
-        let __mc_input = inEqAttr.clone();
+        let __mc_input = inEqAttr;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
@@ -2984,7 +2984,7 @@ fn simplifyIfEquation1(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
             ht = simplifySolvedIfEqnsElse(elseenqs.clone(), ht.clone())?;
             ht = simplifySolvedIfEqns(conditions.clone().reverse(), theneqns.clone().reverse(), ht.clone())?;
             crexplst = BaseHashTable::hashTableList(ht.clone())?;
-            eqns = simplifySolvedIfEqns2(crexplst.clone(), inEqns.clone(), inEqAttr.clone())?;
+            eqns = simplifySolvedIfEqns2(crexplst.clone(), inEqns.clone(), inEqAttr)?;
             Ok(eqns.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -2995,12 +2995,12 @@ fn simplifyIfEquation1(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
             countEquationsInBranches(theneqns.clone(), elseenqs.clone(), source.clone())?;
             fbsExp = makeEquationLstToResidualExpLst(elseenqs.clone())?;
             tbsExp = List::map(theneqns.clone(), (std::sync::Arc::new(makeEquationLstToResidualExpLst) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?;
-            eqns = makeEquationsFromResiduals(conditions.clone(), tbsExp.clone(), fbsExp.clone(), source.clone(), inEqAttr.clone())?;
+            eqns = makeEquationsFromResiduals(conditions.clone(), tbsExp.clone(), fbsExp.clone(), source.clone(), inEqAttr)?;
             Ok(listAppend(eqns.clone(), inEqns.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: conditions.clone(), eqnstrue: theneqns.clone(), eqnsfalse: elseenqs.clone(), source: source.clone(), attr: inEqAttr.clone() }), inEqns.clone()))
+            Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: conditions.clone(), eqnstrue: theneqns.clone(), eqnsfalse: elseenqs.clone(), source: source.clone(), attr: inEqAttr }), inEqns.clone()))
         })() { break 'mc __v; }
         panic!("matchcontinue: no arm matched")
     };
@@ -3016,7 +3016,7 @@ fn simplifySolvedIfEqns2(mut crexplst: Arc<metamodelica::List<(Arc<DAE::Componen
         Deref @ metamodelica::List::Cons { head: (cr, e), tail: rest } => {
             let mut crexp: Arc<DAE::Exp>;
             crexp = Expression::crefExp(cr.clone())?;
-            { (crexplst, inEqns, inEqAttr) = (rest.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: crexp, scalar: e.clone(), source: DAE::emptyElementSource().clone(), attr: inEqAttr.clone() }), inEqns), inEqAttr); continue '__tco; }
+            { (crexplst, inEqns, inEqAttr) = (rest.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: crexp, scalar: e.clone(), source: DAE::emptyElementSource().clone(), attr: inEqAttr }), inEqns), inEqAttr); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3451,7 +3451,7 @@ fn makeEquationsFromResiduals(mut inExp1: Arc<metamodelica::List<Arc<DAE::Exp>>>
             let mut size: i32;
             size = Expression::sizeOf(Expression::r#typeof(fb.clone())?);
             tbsRest = List::map(inExpLst2.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
-            rest_res = makeEquationsFromResiduals(inExp1.clone(), tbsRest, fbs.clone(), inSource.clone(), inEqAttr.clone())?;
+            rest_res = makeEquationsFromResiduals(inExp1.clone(), tbsRest, fbs.clone(), inSource.clone(), inEqAttr)?;
             tbsFirst = List::map(inExpLst2, (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
             ifexp = Expression::makeNestedIf(inExp1, tbsFirst, fb.clone())?;
             if size == 1 {
@@ -3648,7 +3648,7 @@ fn semiLinearOptimize4(mut explst: Arc<metamodelica::List<(Arc<DAE::Exp>, i32, A
         },
         Deref @ metamodelica::List::Cons { head: (s2, index, source), tail: rest @ Deref @ metamodelica::List::Cons { head: (s1, _, _), tail: _ } } => {
             let mut eqn: Arc<BackendDAE::Equation>;
-            eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: s2.clone(), scalar: s1.clone(), source: source.clone(), attr: inEqAttr.clone() });
+            eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: s2.clone(), scalar: s1.clone(), source: source.clone(), attr: inEqAttr });
             { (explst, iAcc, inEqAttr) = (rest.clone(), metamodelica::cons((eqn, index.clone()), iAcc), inEqAttr); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -5040,7 +5040,7 @@ pub(crate) fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, m
                         right_lst = __pa16.clone();
                         if !(Expression::isWild(e1.clone())) {
                             if Expression::isScalar(e2.clone())? {
-                                eqn1 = BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?;
+                                eqn1 = BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr)?;
                                 eqns = BackendEquation::add(eqn1.clone(), eqns.clone())?;
                             } else {
                                 expLst = simplifyComplexFunction2(e1.clone());
@@ -5053,7 +5053,7 @@ pub(crate) fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, m
                                     } };
                                     e3 = __pa17.clone();
                                     expLst = __pa18.clone();
-                                    eqn1 = BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr.clone())?;
+                                    eqn1 = BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr)?;
                                     eqns = BackendEquation::add(eqn1.clone(), eqns.clone())?;
                                 }
                             }
@@ -5075,7 +5075,7 @@ pub(crate) fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, m
                             right_lst = __pa21.clone();
                             if !(Expression::isWild(e1.clone())) {
                                 if unwrap_break_err!(Expression::isScalar(e2.clone()), '__try19) {
-                                    eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone()), '__try19);
+                                    eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr), '__try19);
                                     eqns = unwrap_break_err!(BackendEquation::add(eqn1.clone(), eqns.clone()), '__try19);
                                 } else {
                                     expLst = simplifyComplexFunction2(e1.clone());
@@ -5088,7 +5088,7 @@ pub(crate) fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, m
                                         } };
                                         e3 = __pa22.clone();
                                         expLst = __pa23.clone();
-                                        eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr.clone()), '__try19);
+                                        eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr), '__try19);
                                         eqns = unwrap_break_err!(BackendEquation::add(eqn1.clone(), eqns.clone()), '__try19);
                                     }
                                 }
@@ -5196,7 +5196,7 @@ pub(crate) fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, m
                         expLst = metamodelica::cons(e.clone(), expLst.clone());
                     }
                     left = Arc::new(DAE::Exp::TUPLE { PR: metamodelica::Dangerous::listReverseInPlace(expLst.clone()) });
-                    eqn = BackendEquation::generateEquation(left.clone(), right.clone(), source.clone(), attr.clone())?;
+                    eqn = BackendEquation::generateEquation(left.clone(), right.clone(), source.clone(), attr)?;
                     eqns = BackendEquation::setAtIndex(eqns.clone(), i.clone(), eqn.clone())?;
                 }
             }

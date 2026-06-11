@@ -3784,7 +3784,7 @@ fn listClass(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<Value
                     Ok((::match_deref::match_deref! { match &(AbsynUtil::pathLastIdent(path.clone())?) {
         Deref @ "Absyn" => Dump::unparseStr(SymbolTable::getAbsyn(), false, Dump::defaultDumpOptions.clone())?,
         Deref @ "SCode" => SCodeDump::programStr(SymbolTable::getSCode()?, SCodeDump::defaultOptions.clone())?,
-        Deref @ "MetaModelicaInterface" => SCodeDump::programStr(SymbolTable::getSCode()?, dumpOpt.clone())?,
+        Deref @ "MetaModelicaInterface" => SCodeDump::programStr(SymbolTable::getSCode()?, dumpOpt)?,
         Deref @ "Internal" => System::anyStringCode(SymbolTable::getAbsyn()),
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3811,7 +3811,7 @@ fn listClass(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<Value
                     Ok(((::match_deref::match_deref! { match &(AbsynUtil::pathLastIdent(path.clone())?) {
         Deref @ "Absyn" => Dump::unparseStr(p.clone(), false, Dump::defaultDumpOptions.clone())?,
         Deref @ "SCode" => SCodeDump::unparseElementStr(cl.clone(), SCodeDump::defaultOptions.clone())?,
-        Deref @ "MetaModelicaInterface" => SCodeDump::unparseElementStr(cl.clone(), dumpOpt.clone())?,
+        Deref @ "MetaModelicaInterface" => SCodeDump::unparseElementStr(cl.clone(), dumpOpt)?,
         Deref @ "Internal" => System::anyStringCode(p.clone()),
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

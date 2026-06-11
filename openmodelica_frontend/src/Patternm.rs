@@ -1862,7 +1862,7 @@ fn filterUnusedDecls(mut matchDecls: Arc<metamodelica::List<Arc<DAE::Element>>>,
 fn caseDeadCodeElimination(mut matchType: Absyn::MatchType, mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut prevPatterns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>>, mut iacc: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut iter: bool) -> Result<Arc<metamodelica::List<Arc<DAE::MatchCase>>>> {
     let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>;
     outCases = 'mc: {
-        let __mc_input = (matchType.clone(), cases, iacc, iter);
+        let __mc_input = (matchType, cases, iacc, iter);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil, acc, false) => {
@@ -1874,7 +1874,7 @@ fn caseDeadCodeElimination(mut matchType: Absyn::MatchType, mut cases: Arc<metam
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil, acc, true) => {
-                    Ok(caseDeadCodeElimination(matchType.clone(), acc.clone().reverse(), metamodelica::nil(), metamodelica::nil(), false)?)
+                    Ok(caseDeadCodeElimination(matchType, acc.clone().reverse(), metamodelica::nil(), metamodelica::nil(), false)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1883,7 +1883,7 @@ fn caseDeadCodeElimination(mut matchType: Absyn::MatchType, mut cases: Arc<metam
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { body: Deref @ metamodelica::List::Nil, result: None, info, .. }, tail: Deref @ metamodelica::List::Nil }, acc, _) => {
                     Error::assertionOrAddSourceMessage(!(Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())?), Error::META_DEAD_CODE.clone(), list![(literal!("Last pattern is empty")).clone()], info.clone())?;
-                    Ok(caseDeadCodeElimination(matchType.clone(), acc.clone().reverse(), metamodelica::nil(), metamodelica::nil(), false)?)
+                    Ok(caseDeadCodeElimination(matchType, acc.clone().reverse(), metamodelica::nil(), metamodelica::nil(), false)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1903,7 +1903,7 @@ fn caseDeadCodeElimination(mut matchType: Absyn::MatchType, mut cases: Arc<metam
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: case_ @ Deref @ DAE::MatchCase { patterns: pats, .. }, tail: rest }, acc, _) => {
-                    Ok(caseDeadCodeElimination(matchType.clone(), rest.clone(), metamodelica::cons(pats.clone(), prevPatterns.clone()), metamodelica::cons(case_.clone(), acc.clone()), iter)?)
+                    Ok(caseDeadCodeElimination(matchType, rest.clone(), metamodelica::cons(pats.clone(), prevPatterns.clone()), metamodelica::cons(case_.clone(), acc.clone()), iter)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2012,7 +2012,7 @@ fn optimizeContinueToMatch(mut matchType: Absyn::MatchType, mut cases: Arc<metam
         _ => optimizeContinueToMatch2(cases.clone(), metamodelica::nil(), info.clone()),
     });
     if Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())? {
-        checkMatchContinueSingleCaseToTry(outMatchType.clone(), cases, info)?;
+        checkMatchContinueSingleCaseToTry(outMatchType, cases, info)?;
     }
     Ok(outMatchType)
 }
@@ -2673,7 +2673,7 @@ fn checkLocalShadowing(mut elt: Arc<SCode::Element>, mut env: FCore::Graph, mut 
         } };
         cache = __pa3.clone();
         var = __pa4.clone();
-        b = (match var.clone() {
+        b = (match var {
         SCode::Variability::CONST { .. } => true,
         _ => false,
     });

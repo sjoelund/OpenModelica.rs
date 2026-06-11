@@ -106,7 +106,7 @@ use openmodelica_util_datatypes_basic::List;
 
 //public imports
 // protected imports
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum AnnotationType {
     ICON_ANNOTATION,
     DIAGRAM_ANNOTATION,
@@ -3117,7 +3117,7 @@ fn getClassEnv_dispatch(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) ->
     Ok((cache, env_2))
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ComponentProperties {
     pub isFinal: bool,
     pub isFlow: bool,
@@ -3193,7 +3193,7 @@ pub(crate) fn setComponentProperties(mut classPath: Arc<Absyn::Path>, mut compon
             is_stream = false;
         }
         props = ComponentProperties { isFinal: is_final, isFlow: is_flow, isStream: is_stream, isProtected: is_protected, isReplaceable: is_replaceable, variability: unwrap_break_err!(setElementVariability((variability.clone()).clone()), '__try0), innerOuter: setInnerOuterAttributes(innerPrefix, outerPrefix), direction: unwrap_break_err!(setElementCausality((direction.clone()).clone()), '__try0) };
-        program = unwrap_break_err!(transformPathedClassInProgram(classPath.clone(), program.clone(), (std::sync::Arc::new({ let __pe_b1 = (component.clone()).clone(); let __pe_b2 = props.clone(); move |__pe_a0| setComponentPropertiesInClass(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
+        program = unwrap_break_err!(transformPathedClassInProgram(classPath.clone(), program.clone(), (std::sync::Arc::new({ let __pe_b1 = (component.clone()).clone(); let __pe_b2 = props; move |__pe_a0| setComponentPropertiesInClass(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         result = ValuesMake::makeBoolean(true);
         Ok::<_, anyhow::Error>((result.clone(),))
     } {
@@ -3251,7 +3251,7 @@ fn setComponentPropertiesInClassparts(mut inParts: Arc<metamodelica::List<Arc<Ab
                         _ => bail!("pattern mismatch"),
                     } };
                     elt = __pa0.clone();
-                    elt = setComponentPropertiesInElement(elt.clone(), (component.clone()).clone(), properties.clone())?;
+                    elt = setComponentPropertiesInElement(elt.clone(), (component.clone()).clone(), properties)?;
                     (publst, _) = deleteOrUpdateComponentFromElementitems((component.clone()).clone(), publst.clone(), None)?;
                     protlst = ProgramUtil::getProtectedList(parts.clone());
                     protlst = List::appendElt(Arc::new(Absyn::ElementItem::ELEMENTITEM { element: elt.clone() }), protlst.clone());
@@ -3276,7 +3276,7 @@ fn setComponentPropertiesInClassparts(mut inParts: Arc<metamodelica::List<Arc<Ab
                         _ => bail!("pattern mismatch"),
                     } };
                     elt = __pa0.clone();
-                    elt = setComponentPropertiesInElement(elt.clone(), (component.clone()).clone(), properties.clone())?;
+                    elt = setComponentPropertiesInElement(elt.clone(), (component.clone()).clone(), properties)?;
                     (protlst, _) = deleteOrUpdateComponentFromElementitems((component.clone()).clone(), protlst.clone(), None)?;
                     publst = ProgramUtil::getPublicList(parts.clone());
                     publst = List::appendElt(Arc::new(Absyn::ElementItem::ELEMENTITEM { element: elt.clone() }), publst.clone());
@@ -3292,8 +3292,8 @@ fn setComponentPropertiesInClassparts(mut inParts: Arc<metamodelica::List<Arc<Ab
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: elts }, tail: rest } => {
                     let mut elts = (*elts).clone();
                     let mut rest = (*rest).clone();
-                    rest = setComponentPropertiesInClassparts(rest.clone(), (component.clone()).clone(), properties.clone())?;
-                    elts = setComponentPropertiesInElementitems(elts.clone(), (component.clone()).clone(), properties.clone())?;
+                    rest = setComponentPropertiesInClassparts(rest.clone(), (component.clone()).clone(), properties)?;
+                    elts = setComponentPropertiesInElementitems(elts.clone(), (component.clone()).clone(), properties)?;
                     Ok(metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: elts.clone() }), rest.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3304,8 +3304,8 @@ fn setComponentPropertiesInClassparts(mut inParts: Arc<metamodelica::List<Arc<Ab
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: elts }, tail: rest } => {
                     let mut elts = (*elts).clone();
                     let mut rest = (*rest).clone();
-                    rest = setComponentPropertiesInClassparts(rest.clone(), (component.clone()).clone(), properties.clone())?;
-                    elts = setComponentPropertiesInElementitems(elts.clone(), (component.clone()).clone(), properties.clone())?;
+                    rest = setComponentPropertiesInClassparts(rest.clone(), (component.clone()).clone(), properties)?;
+                    elts = setComponentPropertiesInElementitems(elts.clone(), (component.clone()).clone(), properties)?;
                     Ok(metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: elts.clone() }), rest.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3315,7 +3315,7 @@ fn setComponentPropertiesInClassparts(mut inParts: Arc<metamodelica::List<Arc<Ab
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: part, tail: rest } => {
                     let mut rest = (*rest).clone();
-                    rest = setComponentPropertiesInClassparts(rest.clone(), (component.clone()).clone(), properties.clone())?;
+                    rest = setComponentPropertiesInClassparts(rest.clone(), (component.clone()).clone(), properties)?;
                     Ok(metamodelica::cons(part.clone(), rest.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5984,7 +5984,7 @@ pub(crate) fn addComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::P
         if unwrap_break_err!(AbsynUtil::pathContains(classPath.clone(), (unwrap_break_err!(AbsynUtil::pathFirstIdent(ty_path.clone()), '__try0)).clone()), '__try0) {
             ty_path = typeName.clone();
         }
-        cdef = unwrap_break_err!(InteractiveUtil::addToPublic(cdef.clone(), Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: false, redeclareKeywords: redecl.clone(), innerOuter: io.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: ty_path.clone(), arrayDim: None }), components: list![Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: (componentName.clone()).clone(), arrayDim: metamodelica::nil(), modification: modification.clone() }, condition: None, comment: annotation_.clone() })] }), info: info.clone(), constrainClass: None }) })), '__try0);
+        cdef = unwrap_break_err!(InteractiveUtil::addToPublic(cdef.clone(), Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: false, redeclareKeywords: redecl.clone(), innerOuter: io, specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: ty_path.clone(), arrayDim: None }), components: list![Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: (componentName.clone()).clone(), arrayDim: metamodelica::nil(), modification: modification.clone() }, condition: None, comment: annotation_.clone() })] }), info: info.clone(), constrainClass: None }) })), '__try0);
         program = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![cdef.clone()], within_: w.clone() }, program.clone(), false), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
@@ -10477,7 +10477,7 @@ fn getDefinitionDirString(mut dir: Absyn::Direction, mut variability: Absyn::Var
         (Absyn::Direction::OUTPUT { .. }, true) => literal!("output "),
         (_, false) => {
             if '__try0: {
-                let Absyn::CONST { .. } = (variability.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+                let Absyn::CONST { .. } = (variability) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             literal!("")

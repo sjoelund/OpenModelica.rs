@@ -73,7 +73,7 @@ use openmodelica_util::ExecStat::execStat;
 use openmodelica_util::Flags;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EvalSettings {
     pub scalarize: bool,
 }
@@ -103,7 +103,7 @@ pub fn evaluate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut context: i32) ->
         flatModel.variables = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
         for mut v in (flatModel.variables.clone()).into_iter().cloned() {
-            let __x = evaluateVariable(v.clone(), context, settings.clone())?;
+            let __x = evaluateVariable(v.clone(), context, settings)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -140,7 +140,7 @@ pub(crate) fn evaluateVariable(mut var: Arc<Variable::NFVariable>, mut context: 
         var.children = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
         for mut v in (var.children.clone()).into_iter().cloned() {
-            let __x = evaluateVariable(v.clone(), context, settings.clone())?;
+            let __x = evaluateVariable(v.clone(), context, settings)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

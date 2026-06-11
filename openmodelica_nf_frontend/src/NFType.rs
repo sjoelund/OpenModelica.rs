@@ -1154,7 +1154,7 @@ pub(crate) fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::Output
         Deref @ BOOLEAN => return Ok(literal!("Boolean")),
         Deref @ CLOCK => return Ok(literal!("Clock")),
         Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {return Ok(literal!("enumeration(:)"))} else if (isBuiltinEnumeration(ty.clone())) {return Ok(AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?)} else {return Ok(Util::makeQuotedIdentifier((AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?).clone())?)},
-        Deref @ ARRAY { .. } => return Ok(Dimension::toFlatStringList(var_field!((*ty).dimensions, NFType::ARRAY).clone(), format.clone(), (toFlatString(var_field!((*ty).elementType, NFType::ARRAY).clone(), format)?).clone())?),
+        Deref @ ARRAY { .. } => return Ok(Dimension::toFlatStringList(var_field!((*ty).dimensions, NFType::ARRAY).clone(), format, (toFlatString(var_field!((*ty).elementType, NFType::ARRAY).clone(), format)?).clone())?),
         Deref @ TUPLE { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1 = format; move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }),
         Deref @ NORETCALL => return Ok(literal!("()")),
         Deref @ UNKNOWN => return Ok(literal!("unknown()")),
@@ -1163,7 +1163,7 @@ pub(crate) fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::Output
         Deref @ METABOXED { .. } => { (ty, format) = (var_field!((*ty).ty, NFType::METABOXED).clone(), format); continue '__tco; },
         Deref @ POLYMORPHIC { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*var_field!((*ty).name, NFType::POLYMORPHIC).clone()); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) }),
         Deref @ ANY => return Ok(literal!("$ANY$")),
-        Deref @ CONDITIONAL_ARRAY { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*toFlatString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toFlatString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), format)?); ArcStr::from(__mm_s) }),
+        Deref @ CONDITIONAL_ARRAY { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*toFlatString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), format)?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toFlatString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), format)?); ArcStr::from(__mm_s) }),
         Deref @ UNTYPED { .. } => return Ok(Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new({ let __pe_b1 = format; move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.toFlatString")); __mm_s.push_str(&*literal!(" got unknown type: ")); __mm_s.push_str(&*anyString(ty)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFType.mo"))?;
@@ -1226,7 +1226,7 @@ pub(crate) fn toFlatDeclarationStream(mut ty: Arc<NFType>, mut format: BaseModel
                 _ => bail!("pattern mismatch"),
             } };
             f = __pa0.clone();
-            s = Function::toFlatStream(f, format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s, (literal!("constructor")).clone())?;
+            s = Function::toFlatStream(f, format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s, (literal!("constructor")).clone())?;
             s = IOStream::append(s, (literal!(";\n\n")).clone())?;
             let __pa2 = ::match_deref::match_deref! { match &(Function::typeNodeCache(var_field!((*complexTy).destructor, ComplexType::NFComplexType::EXTERNAL_OBJECT).clone(), NFInstContext::FUNCTION.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } => __pa2.clone(),

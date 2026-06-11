@@ -1213,7 +1213,7 @@ fn simpleArrayEquationAcausal(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mu
             if Expression::isEvaluatedConst(e.clone()) {
                 continue;
             }
-            eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: Arc::new(BackendDAE::WhenEquation { condition: Arc::new(DAE::Exp::BCONST { bool: false }), whenStmtLst: list![BackendDAE::WhenOperator::ASSERT { condition: Arc::new(DAE::Exp::BCONST { bool: false }), message: Arc::new(DAE::Exp::SCONST { string: (literal!("Failed assertion exp is 0")).clone() }), level: DAE::ASSERTIONLEVEL_ERROR().clone(), source: source.clone() }], elsewhenPart: None }), source: source.clone(), attr: attr.clone() });
+            eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: Arc::new(BackendDAE::WhenEquation { condition: Arc::new(DAE::Exp::BCONST { bool: false }), whenStmtLst: list![BackendDAE::WhenOperator::ASSERT { condition: Arc::new(DAE::Exp::BCONST { bool: false }), message: Arc::new(DAE::Exp::SCONST { string: (literal!("Failed assertion exp is 0")).clone() }), level: DAE::ASSERTIONLEVEL_ERROR().clone(), source: source.clone() }], elsewhenPart: None }), source: source.clone(), attr: attr });
             outTpl = simpleEquationsFinder(eq.clone(), outTpl.clone());
         }
         return Ok(outTpl.clone());
@@ -3579,7 +3579,7 @@ fn selectMinDepth(mut e: Arc<DAE::Exp>, mut inMin: (i32, bool)) -> Result<(Arc<D
     let mut eOut: Arc<DAE::Exp> = e.clone();
     let mut cont: bool = true;
     let mut outMin: (i32, bool);
-    outMin = (::match_deref::match_deref! { match &((e, inMin.clone())) {
+    outMin = (::match_deref::match_deref! { match &((e, inMin)) {
         (Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, (d, _)) => {
             let mut i: i32;
             i = ComponentReference::crefDepth(cr.clone())?;

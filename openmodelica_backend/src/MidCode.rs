@@ -490,7 +490,7 @@ impl Default for RValue {
 }
 pub use self::RValue::{VARIABLE,UNARYOP,BINARYOP,LITERALINTEGER,LITERALREAL,LITERALBOOLEAN,LITERALSTRING,LITERALMETATYPE,UNIONTYPEVARIANT,ISSOME,ISCONS,METAFIELD};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum UnaryOp {
     MOVE,
     UMINUS,
@@ -511,7 +511,7 @@ impl metamodelica::gc::MMTrace for UnaryOp {
 }
 pub use self::UnaryOp::{MOVE,UMINUS,NOT,UNBOX,BOX};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BinaryOp {
     ADD,
     SUB,

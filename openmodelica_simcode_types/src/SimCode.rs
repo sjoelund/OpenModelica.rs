@@ -719,7 +719,7 @@ impl Default for UnitDefinition {
 pub type UNITDEFINITION = UnitDefinition;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BaseUnit {
     BASEUNIT {
         /// exponent
@@ -888,7 +888,7 @@ pub type FILEINFO = FileInfo;
 
 
 /// Number of variables of various types in a Modelica model.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VarInfo {
     pub numZeroCrossings: i32,
     pub numTimeEvents: i32,
@@ -1015,7 +1015,7 @@ impl Default for VarInfo {
 pub type VARINFO = VarInfo;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum DaeModeConfig {
     ALL_EQUATIONS,
     DYNAMIC_EQUATIONS,

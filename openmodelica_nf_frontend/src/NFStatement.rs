@@ -1176,7 +1176,7 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
     s = IOStream::append(s, (indent.clone()).clone())?;
     s = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => {
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(" := ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone(), format)?).clone())?;
             s
@@ -1191,7 +1191,7 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
             s = IOStream::append(s, (Util::makeQuotedIdentifier((InstNode::name(var_field!((*stmt).iterator, NFStatement::FOR).clone())?).clone())?).clone())?;
             if isSome(var_field!((*stmt).range, NFStatement::FOR).clone()) {
                 s = IOStream::append(s, (literal!(" in ")).clone())?;
-                s = IOStream::append(s, (Expression::toFlatString(Util::getOption(var_field!((*stmt).range, NFStatement::FOR).clone())?, format.clone())?).clone())?;
+                s = IOStream::append(s, (Expression::toFlatString(Util::getOption(var_field!((*stmt).range, NFStatement::FOR).clone())?, format)?).clone())?;
             }
             s = IOStream::append(s, (literal!(" loop\n")).clone())?;
             s = toFlatStreamList(var_field!((*stmt).body, NFStatement::FOR).clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
@@ -1214,10 +1214,10 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
                     s = IOStream::append(s.clone(), (literal!("else\n")).clone())?;
                 } else {
                     s = IOStream::append(s.clone(), (if (first) {literal!("if ")} else {literal!("elseif ")}).clone())?;
-                    s = IOStream::append(s.clone(), (Expression::toFlatString(cond.clone(), format.clone())?).clone())?;
+                    s = IOStream::append(s.clone(), (Expression::toFlatString(cond.clone(), format)?).clone())?;
                     s = IOStream::append(s.clone(), (literal!(" then\n")).clone())?;
                 }
-                s = toFlatStreamList(body.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
+                s = toFlatStreamList(body.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 first = false;
             }
@@ -1230,9 +1230,9 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
                 let mut b = b.clone();
                 (cond, body) = b.clone();
                 s = IOStream::append(s.clone(), (if (first) {literal!("when ")} else {literal!("elsewhen ")}).clone())?;
-                s = IOStream::append(s.clone(), (Expression::toFlatString(cond.clone(), format.clone())?).clone())?;
+                s = IOStream::append(s.clone(), (Expression::toFlatString(cond.clone(), format)?).clone())?;
                 s = IOStream::append(s.clone(), (literal!(" then\n")).clone())?;
-                s = toFlatStreamList(body.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
+                s = toFlatStreamList(body.clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 first = false;
             }
@@ -1241,9 +1241,9 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
         },
         Deref @ ASSERT { .. } => {
             s = IOStream::append(s, (literal!("assert(")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).condition, NFStatement::ASSERT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).condition, NFStatement::ASSERT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).message, NFStatement::ASSERT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).message, NFStatement::ASSERT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).level, NFStatement::ASSERT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(")")).clone())?;
@@ -1257,7 +1257,7 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
         },
         Deref @ REINIT { .. } => {
             s = IOStream::append(s, (literal!("reinit(")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).cref, NFStatement::REINIT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).cref, NFStatement::REINIT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(", ")).clone())?;
             s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(")")).clone())?;
@@ -1266,7 +1266,7 @@ pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica:
         Deref @ NORETCALL { .. } => IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).exp, NFStatement::NORETCALL).clone(), format)?).clone())?,
         Deref @ WHILE { .. } => {
             s = IOStream::append(s, (literal!("while ")).clone())?;
-            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).condition, NFStatement::WHILE).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*stmt).condition, NFStatement::WHILE).clone(), format)?).clone())?;
             s = IOStream::append(s, (literal!(" loop\n")).clone())?;
             s = toFlatStreamList(var_field!((*stmt).body, NFStatement::WHILE).clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
             s = IOStream::append(s, (indent).clone())?;
@@ -1296,7 +1296,7 @@ pub(crate) fn toFlatStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement
             s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
         }
         prev_multi_line = multi_line;
-        s = toFlatStream(stmt.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
+        s = toFlatStream(stmt.clone(), format, (indent.clone()).clone(), s.clone())?;
         s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
     }
     Ok(s)

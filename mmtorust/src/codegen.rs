@@ -434,6 +434,13 @@ struct GenCtx {
     /// `emit_struct` / `emit_uniontype` to gate emission of the manual
     /// `impl Default` block so we don't emit it for types nothing requires.
     types_needing_default: HashSet<String>,
+    /// FQNs of records/uniontypes whose Rust representation can derive `Copy`:
+    /// every field is itself `Copy` (a scalar `i32`/`f64`/`bool`, a Modelica
+    /// enumeration, a `Copy` tuple, or another `Copy` record/uniontype).
+    /// Populated by [`compute_copy_type_qnames`]. Consulted by `type_derives`
+    /// to add `Copy` to the emitted `#[derive(...)]` and by [`ty_is_copy`] so an
+    /// owned read of such a value is a bitwise copy that needs no `.clone()`.
+    copy_type_qnames: HashSet<String>,
     /// Fallibility of the function currently being emitted. Set at the start
     /// of [`emit_function`] and consulted by the return-statement emitter and
     /// by the implicit-return tail in [`emit_function`] to decide whether to
@@ -628,7 +635,7 @@ enum VarShape {
 }
 
 impl GenCtx {
-    fn new(top_name: &str, current_crate: Option<String>, crate_map: BTreeMap<String, String>, nullable_global_roots: HashSet<String>, top_level_uniontype_names: HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, fn_type_vars: BTreeMap<String, Vec<String>>, fallible_functions: BTreeSet<String>, partial_eq_required: BTreeMap<String, HashSet<String>>, reference_eq_required: BTreeMap<String, HashSet<String>>, default_required: BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: HashSet<String>, types_needing_default: HashSet<String>) -> Self {
+    fn new(top_name: &str, current_crate: Option<String>, crate_map: BTreeMap<String, String>, nullable_global_roots: HashSet<String>, top_level_uniontype_names: HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, fn_type_vars: BTreeMap<String, Vec<String>>, fallible_functions: BTreeSet<String>, partial_eq_required: BTreeMap<String, HashSet<String>>, reference_eq_required: BTreeMap<String, HashSet<String>>, default_required: BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: HashSet<String>, types_needing_default: HashSet<String>, copy_type_qnames: HashSet<String>) -> Self {
         Self {
             top_name: top_name.to_owned(),
             current_path: Vec::new(),
@@ -676,6 +683,7 @@ impl GenCtx {
             default_required,
             defaultable_struct_qnames,
             types_needing_default,
+            copy_type_qnames,
             current_fn_fallible: true,
             current_fn_qname: String::new(),
             source_file: String::new(),
@@ -825,6 +833,20 @@ impl GenCtx {
             "#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]"
         } else {
             "#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]"
+        }
+    }
+
+    /// The full `#[derive(...)]` for a record/uniontype, adding `Copy` for an
+    /// all-`Copy` type (see [`Self::copy_type_qnames`]). `Copy` is inserted
+    /// right after `Clone` — `Copy: Clone`, and a Copy type is never one of the
+    /// interior-mutability / `dyn Fn` shapes [`derives_for`] strips down, so the
+    /// base derive always begins `#[derive(Clone, …`.
+    fn type_derives(&self, qname: &str) -> String {
+        let base = self.derives_for(qname);
+        if self.copy_type_qnames.contains(qname) {
+            base.replacen("Clone", "Clone, Copy", 1)
+        } else {
+            base.to_owned()
         }
     }
 
@@ -1426,6 +1448,10 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
         &hier.top_level, &hier.default_required, &defaultable_struct_qnames,
     );
     phase_times.push(("types_needing_default", _pp.elapsed())); let _pp = std::time::Instant::now();
+    // Records/uniontypes that can derive `Copy` (every field is `Copy`), so
+    // their `#[derive]` gains `Copy` and reads of them elide `.clone()`.
+    let copy_type_qnames = compute_copy_type_qnames(&hier.top_level, &hier.recursive_types);
+    phase_times.push(("copy_type_qnames", _pp.elapsed())); let _pp = std::time::Instant::now();
 
     // Whole-program scan for global roots cleared via `setGlobalRoot(idx, 0)`;
     // these are modeled as `Option<T>` slots (see comment on the function).
@@ -1538,7 +1564,7 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let (content, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        let (content, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default, &copy_type_qnames);
         if !file_missing.is_empty() {
             missing_imports.lock().unwrap().extend(file_missing);
         }
@@ -1921,8 +1947,8 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>) {
-    let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), reference_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>, copy_type_qnames: &HashSet<String>) -> (String, BTreeSet<String>) {
+    let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), reference_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone(), copy_type_qnames.clone());
     ctx.keep_public = keep_public.clone();
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
     if let NodeKind::Class(c) = &node.kind {
@@ -2738,7 +2764,7 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
             // `(variant, escaped field names)` for the MMTrace impl below.
             let mut mm_variants: Vec<(String, Vec<String>)> = Vec::new();
             emit_doc_comment(out, &inner, class_doc(c));
-            writeln!(out, "{inner}{}", ctx.derives_for(qname)).unwrap();
+            writeln!(out, "{inner}{}", ctx.type_derives(qname)).unwrap();
             let vis = ctx.vis_for_qname(qname);
             writeln!(out, "{inner}{vis}enum {ename}{type_params} {{").unwrap();
             let variant_indent = format!("{inner}    ");
@@ -3084,7 +3110,7 @@ fn emit_struct<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cl
     // here at the struct definition and the fix is to add `Default` upstream.
     // Hand-written `RustStruct` mappings keep their existing derives.
     let derives = match &node.ty {
-        Ty::RustStruct(qname) => ctx.derives_for(qname).to_owned(),
+        Ty::RustStruct(qname) => ctx.type_derives(qname),
         _ => "#[derive(Clone, Debug, PartialEq)]".to_owned(),
     };
     emit_doc_comment(out, indent, class_doc(c));
@@ -7934,7 +7960,7 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             let is_plain_local = segments.len() <= 1
                 && !name.contains('.')
                 && segments.iter().all(|s| s.subscripts.is_empty());
-            let copy = ty_is_copy(effective_ty);
+            let copy = ty_is_copy(effective_ty, &ctx.copy_type_qnames);
             let emitted = match effective_ty {
                 // Infallible concrete function used as a value. Wrap with
                 // `fnptr!(path, ArgTy1, …)` so the closure satisfies the
@@ -16736,12 +16762,20 @@ fn try_emit_reference_eq<'a>(
 
 /// True when a value of this type is `Copy` in the generated Rust, so a
 /// `.clone()` on it compiles to the same bitwise copy as a plain read. The
-/// generator emits these as primitive scalars (`i32`/`f64`/`bool`) or as
+/// generator emits these as primitive scalars (`i32`/`f64`/`bool`), as
 /// `#[derive(Copy)]` enums (Modelica enumerations — see the enumeration arm of
-/// `emit_node`). Every other generated type owns heap data (`Arc`/`ArcStr`/
-/// `Vec`/`RefCell`/record) and is move-only.
-fn ty_is_copy(ty: &Ty) -> bool {
-    matches!(ty, Ty::I32 | Ty::F64 | Ty::Bool | Ty::Enumeration(_))
+/// `emit_node`), or as records/uniontypes whose fields are all `Copy` (in
+/// `copy_qnames`, computed by [`compute_copy_type_qnames`] and given a `Copy`
+/// derive by [`GenCtx::type_derives`]). A type that owns heap data
+/// (`Arc`/`ArcStr`/`Vec`/`RefCell`) — including every recursive (`Arc<Self>`)
+/// uniontype — has a non-`Copy` field and is move-only.
+fn ty_is_copy(ty: &Ty, copy_qnames: &HashSet<String>) -> bool {
+    match ty {
+        Ty::I32 | Ty::F64 | Ty::Bool | Ty::Enumeration(_) => true,
+        Ty::RustStruct(q) | Ty::RustEnum(q) | Ty::AliasTo(q) => copy_qnames.contains(q),
+        Ty::Tuple(elems) => elems.iter().all(|e| ty_is_copy(e, copy_qnames)),
+        _ => false,
+    }
 }
 
 fn is_arc_wrapped(ty: &Ty, ctx: &GenCtx) -> bool {
@@ -21536,18 +21570,16 @@ fn visit_exp_for_eq(exp: &typedexp::TypedExp, out: &mut std::collections::HashSe
 ///
 /// The traversal walks `top_level` to find all record classes (Ty::RustStruct)
 /// and iterates a fixed point until no new record is added.
-fn compute_defaultable_struct_qnames<'a>(
+/// Collect every record's field types and every uniontype's variants' fields
+/// from the hierarchy. `records` maps a record qname to its field types;
+/// `enums` maps a uniontype qname to its ordered `(variant_name, field_types)`
+/// list (unit variants carry an empty field-types vector). Variants are kept in
+/// declaration order so consumers can deterministically pick a "smallest"
+/// variant. Shared by the defaultability and `Copy`-eligibility fixpoints.
+fn collect_record_enum_types<'a>(
     top_level: &'a BTreeMap<String, NameNode<'a>>,
-) -> HashSet<String> {
-    // Collect every record's field types AND every enum's variants' fields
-    // (variants are stored as ordered lists so `emit_uniontype` can later
-    // pick the "smallest" defaultable variant — fewest fields wins, ties
-    // broken by declaration order, with unit variants therefore preferred).
-    // Then iterate a fixed point: a record is defaultable iff every field is;
-    // an enum is defaultable iff *some* variant's fields are all defaultable.
+) -> (BTreeMap<String, Vec<Ty>>, BTreeMap<String, Vec<(String, Vec<Ty>)>>) {
     let mut records: BTreeMap<String, Vec<Ty>> = BTreeMap::new();
-    // Per-enum, ordered variants: (variant_name, field_types).  Unit variants
-    // carry an empty field-types vector.
     let mut enums: BTreeMap<String, Vec<(String, Vec<Ty>)>> = BTreeMap::new();
     fn collect_types<'a>(
         node: &NameNode<'a>,
@@ -21561,9 +21593,6 @@ fn compute_defaultable_struct_qnames<'a>(
                     records.insert(qname.clone(), fields.iter().map(|f| f.1.clone()).collect());
                 }
                 Ty::RustEnum(qname) => {
-                    // Iterate variants in declaration order so the
-                    // smallest-variant selection in `emit_uniontype` is
-                    // deterministic.
                     let mut variants: Vec<(String, Vec<Ty>)> = Vec::new();
                     for rec_name in records_in_order(c) {
                         let Some(rec_node) = node.children.get(&rec_name) else { continue };
@@ -21600,6 +21629,74 @@ fn compute_defaultable_struct_qnames<'a>(
     for n in top_level.values() {
         collect_types(n, &mut records, &mut enums);
     }
+    (records, enums)
+}
+
+/// The set of record/uniontype qnames whose Rust representation can derive
+/// `Copy`. A record qualifies iff *every* field is `Copy`; a uniontype iff
+/// *every* variant's fields are all `Copy`. A field is `Copy` when it is a
+/// scalar (`i32`/`f64`/`bool`), a Modelica enumeration, a `Copy` tuple, or
+/// another type already in the set. Heap-owning fields (`Arc`/`ArcStr`/`Vec`/
+/// `List`/`Array`/`Mutable`/`dyn Fn`, rendered as `Ty::Generic`/`Function`/etc.)
+/// are not `Copy`, so any type holding one never enters the set.
+///
+/// Arc-wrapped (`recursive_types`) qnames are excluded even when their fields
+/// are all `Copy`: such a type's *value* is rendered `Arc<T>`, which is not
+/// `Copy`, both where it is bound (a `.clone()` there must stay a refcount bump,
+/// not a move) and where it appears as another type's field (the field is
+/// `Arc<T>`, not `T`). Hand-written runtime packages are also excluded: the
+/// generator does not emit their `#[derive]`, so it cannot guarantee `Copy`.
+/// Iterates a fixed point until no new qname is added.
+fn compute_copy_type_qnames<'a>(
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+    recursive_types: &BTreeSet<String>,
+) -> HashSet<String> {
+    let (records, enums) = collect_record_enum_types(top_level);
+    // A field type is `Copy` given the qnames known `Copy` so far.
+    fn field_is_copy(ty: &Ty, copy: &HashSet<String>) -> bool {
+        match ty {
+            Ty::I32 | Ty::F64 | Ty::Bool | Ty::Enumeration(_) => true,
+            Ty::RustStruct(q) | Ty::RustEnum(q) | Ty::AliasTo(q) => copy.contains(q),
+            Ty::Tuple(elems) => elems.iter().all(|e| field_is_copy(e, copy)),
+            _ => false,
+        }
+    }
+    let ineligible = |qname: &str| {
+        let top_pkg = qname.split('.').next().unwrap_or("");
+        HANDWRITTEN_TOP_PACKAGES.contains(&top_pkg) || recursive_types.contains(qname)
+    };
+    let mut copy: HashSet<String> = HashSet::new();
+    let mut changed = true;
+    while changed {
+        changed = false;
+        for (qname, fields) in &records {
+            if copy.contains(qname) || ineligible(qname) { continue; }
+            if fields.iter().all(|t| field_is_copy(t, &copy)) {
+                copy.insert(qname.clone());
+                changed = true;
+            }
+        }
+        for (qname, variants) in &enums {
+            if copy.contains(qname) || ineligible(qname) { continue; }
+            // Every variant must be `Copy` — a uniontype value can be any
+            // variant, so the type is `Copy` only when they all are. (Contrast
+            // defaultability, which needs just one defaultable variant.)
+            if variants.iter().all(|(_, ftys)| ftys.iter().all(|t| field_is_copy(t, &copy))) {
+                copy.insert(qname.clone());
+                changed = true;
+            }
+        }
+    }
+    copy
+}
+
+fn compute_defaultable_struct_qnames<'a>(
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+) -> HashSet<String> {
+    // Collect every record's field types AND every enum's variants' fields,
+    // then iterate a fixed point: a record is defaultable iff every field is;
+    // an enum is defaultable iff *some* variant's fields are all defaultable.
+    let (records, enums) = collect_record_enum_types(top_level);
 
     let mut defaultable: HashSet<String> = HashSet::new();
     // Built-in / runtime types that have a hand-written `Default` impl in a

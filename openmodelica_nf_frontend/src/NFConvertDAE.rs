@@ -118,7 +118,7 @@ pub fn convertStatements(mut statements: Arc<metamodelica::List<Arc<Statement::N
     Ok(elements)
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VariableConversionSettings {
     pub isFunctionParameter: bool,
     pub addTypeToSource: bool,
@@ -151,7 +151,7 @@ fn convertVariables(mut variables: Arc<metamodelica::List<Arc<Variable::NFVariab
     settings = VariableConversionSettings { isFunctionParameter: false, addTypeToSource: Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? || Flags::isSet(Flags::VISUAL_XML.clone())? };
     for mut var in &*variables.reverse() {
         let mut var = var.clone();
-        elements = metamodelica::cons(convertVariable(var.clone(), settings.clone())?, elements.clone());
+        elements = metamodelica::cons(convertVariable(var.clone(), settings)?, elements.clone());
     }
     Ok(elements)
 }

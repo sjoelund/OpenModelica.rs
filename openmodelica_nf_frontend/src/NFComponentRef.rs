@@ -1352,7 +1352,7 @@ pub(crate) fn toFlatString(mut cref: Arc<NFComponentRef>, mut format: BaseModeli
             if format.recordMode.clone() == BaseModelica::RecordMode::WITH_RECORDS.clone() && isCref(cr.clone()) && Type::isRecord(scalarType(cr.clone())?) && !(crefs.clone().is_empty()) {
                 strl = metamodelica::cons((literal!("'")).clone(), strl.clone());
                 if !(subs.clone().is_empty()) {
-                    strl = metamodelica::cons((Subscript::toFlatStringList(subs.clone(), format.clone(), false)?).clone(), strl.clone());
+                    strl = metamodelica::cons((Subscript::toFlatStringList(subs.clone(), format, false)?).clone(), strl.clone());
                     subs = metamodelica::nil();
                 }
                 if !(crefs.clone().is_empty()) {
@@ -1373,7 +1373,7 @@ pub(crate) fn toFlatString(mut cref: Arc<NFComponentRef>, mut format: BaseModeli
             strl = metamodelica::cons((Util::escapeQuotes((firstName(cr.clone(), true)?).clone())?).clone(), strl.clone());
             subs = getSubscripts(cr.clone());
             if !(subs.clone().is_empty()) && !(format.scalarizeMode.clone() == BaseModelica::ScalarizeMode::PARTIALLY_SCALARIZED.clone() && crefs.clone().is_empty()) {
-                strl = metamodelica::cons((Subscript::toFlatStringList(subs.clone(), format.clone(), true)?).clone(), strl.clone());
+                strl = metamodelica::cons((Subscript::toFlatStringList(subs.clone(), format, true)?).clone(), strl.clone());
             }
             if !(crefs.clone().is_empty()) {
                 if format.recordMode.clone() == BaseModelica::RecordMode::WITH_RECORDS.clone() && isCref(cr.clone()) && Type::isRecord(scalarType(cr.clone())?) {
@@ -1391,7 +1391,7 @@ pub(crate) fn toFlatString(mut cref: Arc<NFComponentRef>, mut format: BaseModeli
     }
     strl = metamodelica::cons((literal!("'")).clone(), strl);
     if !(subs.clone().is_empty()) {
-        strl = metamodelica::cons((Subscript::toFlatStringList(subs, format.clone(), format.scalarizeMode.clone() == BaseModelica::ScalarizeMode::SCALARIZED.clone())?).clone(), strl);
+        strl = metamodelica::cons((Subscript::toFlatStringList(subs, format, format.scalarizeMode.clone() == BaseModelica::ScalarizeMode::SCALARIZED.clone())?).clone(), strl);
     }
     r#str = stringAppendList(strl.reverse());
     Ok(r#str)

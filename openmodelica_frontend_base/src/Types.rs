@@ -158,7 +158,7 @@ pub fn getConstList(mut inPropertiesList: Arc<metamodelica::List<DAE::Properties
             let mut ccdr: Arc<metamodelica::List<DAE::Const>>;
             c = propertiesListToConst2(tc.clone())?;
             ccdr = getConstList(pcdr.clone())?;
-            metamodelica::cons(c.clone(), ccdr)
+            metamodelica::cons(c, ccdr)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -184,7 +184,7 @@ pub fn propertiesListToConst(mut p: Arc<metamodelica::List<DAE::Properties>>) ->
             c1 = propertiesListToConst2(tc1.clone())?;
             c2 = propertiesListToConst(pps.clone())?;
             c1 = constAnd(c1, c2);
-            c1.clone()
+            c1
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -203,7 +203,7 @@ fn propertiesListToConst2(mut t: Arc<DAE::TupleConst>) -> Result<DAE::Const> {
             c1 = propertiesListToConst2(tc1.clone())?;
             c2 = tupleConstListToConst(tcxl.clone())?;
             c1 = constAnd(c1, c2);
-            c1.clone()
+            c1
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -229,7 +229,7 @@ pub fn tupleConstListToConst(mut t: Arc<metamodelica::List<Arc<DAE::TupleConst>>
             c1 = propertiesListToConst2(p1.clone())?;
             c2 = tupleConstListToConst(tcxl.clone())?;
             c1 = constAnd(c1, c2);
-            c1.clone()
+            c1
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -8202,7 +8202,7 @@ pub(crate) fn isFixedWithNoBinding(mut inTy: Arc<DAE::Type>, mut inVariability: 
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut b: bool;
-                    b = listMember(inVariability.clone(), list![openmodelica_frontend_types::SCode::Variability::PARAM, openmodelica_frontend_types::SCode::Variability::CONST]);
+                    b = listMember(inVariability, list![openmodelica_frontend_types::SCode::Variability::PARAM, openmodelica_frontend_types::SCode::Variability::CONST]);
                     Ok(b.clone())
                 }
                 _ => bail!("nomatch"),

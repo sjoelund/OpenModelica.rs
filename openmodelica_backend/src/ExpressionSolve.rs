@@ -169,7 +169,7 @@ fn solveSimpleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDAE::
     match '__try5: {
         (e, _, _, _) = unwrap_break_err!(solve2(e1.clone(), e2.clone(), varexp.clone(), Some(shared.functionTree.clone()), None, false, isContinuousIntegration), '__try5);
         source = unwrap_break_err!(ElementSource::addSymbolicTransformationSolve(true, source.clone(), cr.clone(), e1.clone(), e2.clone(), e.clone(), metamodelica::nil()), '__try5);
-        eqn = unwrap_break_err!(BackendEquation::generateEquation(varexp.clone(), e.clone(), source.clone(), attr.clone()), '__try5);
+        eqn = unwrap_break_err!(BackendEquation::generateEquation(varexp.clone(), e.clone(), source.clone(), attr), '__try5);
         solved = true;
         Ok::<_, anyhow::Error>((solved.clone(),))
     } {

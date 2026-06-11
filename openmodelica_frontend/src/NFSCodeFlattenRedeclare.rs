@@ -720,7 +720,7 @@ fn propagatePrefixes(mut inOriginalPrefixes: Arc<SCode::Prefixes>, mut inNewPref
 
 fn propagatePrefixInnerOuter(mut inOriginalIO: Absyn::InnerOuter, mut inIO: Absyn::InnerOuter) -> Absyn::InnerOuter {
     let mut outIO: Absyn::InnerOuter;
-    outIO = (match inIO.clone() {
+    outIO = (match inIO {
         Absyn::InnerOuter::NOT_INNER_OUTER { .. } => inOriginalIO,
         _ => inIO,
     });
@@ -777,7 +777,7 @@ fn propagateArrayDimensions(mut inOriginalDims: Arc<metamodelica::List<Arc<Absyn
 
 fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut inNewConnectorType: SCode::ConnectorType) -> SCode::ConnectorType {
     let mut outNewConnectorType: SCode::ConnectorType;
-    outNewConnectorType = (match inNewConnectorType.clone() {
+    outNewConnectorType = (match inNewConnectorType {
         SCode::ConnectorType::POTENTIAL { .. } => inOriginalConnectorType,
         _ => inNewConnectorType,
     });
@@ -786,7 +786,7 @@ fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut
 
 fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNewParallelism: SCode::Parallelism) -> SCode::Parallelism {
     let mut outNewParallelism: SCode::Parallelism;
-    outNewParallelism = (match inNewParallelism.clone() {
+    outNewParallelism = (match inNewParallelism {
         SCode::Parallelism::NON_PARALLEL { .. } => inOriginalParallelism,
         _ => inNewParallelism,
     });
@@ -795,7 +795,7 @@ fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNew
 
 fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNewVariability: SCode::Variability) -> SCode::Variability {
     let mut outNewVariability: SCode::Variability;
-    outNewVariability = (match inNewVariability.clone() {
+    outNewVariability = (match inNewVariability {
         SCode::Variability::VAR { .. } => inOriginalVariability,
         _ => inNewVariability,
     });
@@ -804,7 +804,7 @@ fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNew
 
 fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirection: Absyn::Direction) -> Absyn::Direction {
     let mut outNewDirection: Absyn::Direction;
-    outNewDirection = (match inNewDirection.clone() {
+    outNewDirection = (match inNewDirection {
         Absyn::Direction::BIDIR { .. } => inOriginalDirection,
         _ => inNewDirection,
     });
@@ -813,7 +813,7 @@ fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirect
 
 fn propagateIsField(mut inOriginalIsField: Absyn::IsField, mut inNewIsField: Absyn::IsField) -> Absyn::IsField {
     let mut outNewIsField: Absyn::IsField;
-    outNewIsField = (match inNewIsField.clone() {
+    outNewIsField = (match inNewIsField {
         Absyn::IsField::NONFIELD { .. } => inOriginalIsField,
         _ => inNewIsField,
     });

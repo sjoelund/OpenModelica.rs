@@ -313,7 +313,7 @@ impl Default for AliasVariable {
 }
 pub use self::AliasVariable::{NOALIAS,ALIAS,NEGATEDALIAS};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Causality {
     /// needed for FMI-1.0
     NONECAUS,
@@ -340,7 +340,7 @@ impl Default for Causality {
 }
 pub use self::Causality::{NONECAUS,OUTPUT,INPUT,LOCAL,PARAMETER,CALCULATED_PARAMETER};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Initial {
     NONE_INITIAL,
     EXACT,
@@ -362,7 +362,7 @@ impl Default for Initial {
 }
 pub use self::Initial::{NONE_INITIAL,EXACT,APPROX,CALCULATED};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Variability {
     CONSTANT,
     FIXED,

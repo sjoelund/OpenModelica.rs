@@ -133,7 +133,7 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
     let mut outExp: Arc<DAE::Exp>;
     let mut hasChanged: bool;
     (outExp, hasChanged) = 'mc: {
-        let __mc_input = (inExp, options.clone());
+        let __mc_input = (inExp, options);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, ExpressionSimplifyTypes::Evaluate::DO_EVAL { .. }) => {
@@ -153,9 +153,9 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
                     let mut eNew: Arc<DAE::Exp>;
                     let mut b: bool;
                     let false = (Config::getNoSimplify()?) else { bail!("pattern mismatch") };
-                    (eNew, _) = simplify1WithOptions(e.clone(), options.clone())?;
+                    (eNew, _) = simplify1WithOptions(e.clone(), options)?;
                     eNew = simplify2(eNew.clone(), true, true)?;
-                    (eNew, _) = simplify1WithOptions(eNew.clone(), options.clone())?;
+                    (eNew, _) = simplify1WithOptions(eNew.clone(), options)?;
                     b = !(ExpressionBasics::expEqual(e.clone(), eNew.clone())?);
                     Ok((eNew.clone(), b.clone()))
                 }
@@ -167,7 +167,7 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
                 (e, _) => {
                     let mut eNew: Arc<DAE::Exp>;
                     let mut b: bool;
-                    (eNew, b) = simplify1WithOptions(e.clone(), options.clone())?;
+                    (eNew, b) = simplify1WithOptions(e.clone(), options)?;
                     Ok((eNew.clone(), b.clone()))
                 }
                 _ => bail!("nomatch"),

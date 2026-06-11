@@ -84,7 +84,7 @@ impl Default for RecordMode {
     fn default() -> Self { Self::WITH_RECORDS }
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct OutputFormat {
     pub scalarizeMode: ScalarizeMode,
     pub recordMode: RecordMode,

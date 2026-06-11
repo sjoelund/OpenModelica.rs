@@ -1807,7 +1807,7 @@ fn optimizeIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
                     let mut eqnslst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>;
                     explst = conditions1.clone().reverse();
                     eqnslst = theneqns1.clone().reverse();
-                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: explst.clone(), eqnstrue: eqnslst.clone(), eqnsfalse: elseenqs.clone(), source: source.clone(), attr: inEqAttr.clone() }), inEqns.clone()))
+                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: explst.clone(), eqnstrue: eqnslst.clone(), eqnsfalse: elseenqs.clone(), source: source.clone(), attr: inEqAttr }), inEqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1827,7 +1827,7 @@ fn optimizeIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
                     let mut eqnslst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>;
                     explst = conditions1.clone().reverse();
                     eqnslst = theneqns1.clone().reverse();
-                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: explst.clone(), eqnstrue: eqnslst.clone(), eqnsfalse: eqns.clone(), source: source.clone(), attr: inEqAttr.clone() }), inEqns.clone()))
+                    Ok(metamodelica::cons(Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: explst.clone(), eqnstrue: eqnslst.clone(), eqnsfalse: eqns.clone(), source: source.clone(), attr: inEqAttr }), inEqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1835,7 +1835,7 @@ fn optimizeIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: false }, tail: explst }, Deref @ metamodelica::List::Cons { head: _, tail: eqnslst }, _, _) => {
-                    Ok(optimizeIfEquation(explst.clone(), eqnslst.clone(), elseenqs.clone(), conditions1.clone(), theneqns1.clone(), source.clone(), inEqAttr.clone(), inEqns.clone())?)
+                    Ok(optimizeIfEquation(explst.clone(), eqnslst.clone(), elseenqs.clone(), conditions1.clone(), theneqns1.clone(), source.clone(), inEqAttr, inEqns.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1843,7 +1843,7 @@ fn optimizeIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: e, tail: explst }, Deref @ metamodelica::List::Cons { head: eqns, tail: eqnslst }, _, _) => {
-                    Ok(optimizeIfEquation(explst.clone(), eqnslst.clone(), elseenqs.clone(), metamodelica::cons(e.clone(), conditions1.clone()), metamodelica::cons(eqns.clone(), theneqns1.clone()), source.clone(), inEqAttr.clone(), inEqns.clone())?)
+                    Ok(optimizeIfEquation(explst.clone(), eqnslst.clone(), elseenqs.clone(), metamodelica::cons(e.clone(), conditions1.clone()), metamodelica::cons(eqns.clone(), theneqns1.clone()), source.clone(), inEqAttr, inEqns.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}

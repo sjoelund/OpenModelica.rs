@@ -71,7 +71,7 @@ pub type FrameType = NFSCodeEnv::FrameType;
 
 pub type Import = Absyn::Import;
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum RedeclareReplaceStrategy {
     INSERT_REDECLARES,
     IGNORE_REDECLARES,
@@ -86,7 +86,7 @@ impl metamodelica::gc::MMTrace for RedeclareReplaceStrategy {
 }
 pub(crate) use self::RedeclareReplaceStrategy::{INSERT_REDECLARES,IGNORE_REDECLARES};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum LookupStrategy {
     NO_BUILTIN_TYPES,
     LOOKUP_ANY,
@@ -446,7 +446,7 @@ fn lookupInBaseClasses2(mut inName: ArcStr, mut inBaseClasses: Arc<metamodelica:
                     let mut item: Option<Arc<NFSCodeEnv::Item>>;
                     let mut path: Option<Arc<Absyn::Path>>;
                     let mut env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
-                    (item, path, env) = lookupInBaseClasses3((inName.clone()).clone(), ext.clone(), inEnv.clone(), inEnvWithExtends.clone(), inReplaceRedeclares.clone(), inVisitedScopes.clone())?;
+                    (item, path, env) = lookupInBaseClasses3((inName.clone()).clone(), ext.clone(), inEnv.clone(), inEnvWithExtends.clone(), inReplaceRedeclares, inVisitedScopes.clone())?;
                     Ok((item.clone(), path.clone(), env.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -458,7 +458,7 @@ fn lookupInBaseClasses2(mut inName: ArcStr, mut inBaseClasses: Arc<metamodelica:
                     let mut item: Option<Arc<NFSCodeEnv::Item>>;
                     let mut path: Option<Arc<Absyn::Path>>;
                     let mut env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
-                    (item, path, env) = lookupInBaseClasses2((inName.clone()).clone(), rest_ext.clone(), inEnv.clone(), inEnvWithExtends.clone(), inReplaceRedeclares.clone(), inVisitedScopes.clone())?;
+                    (item, path, env) = lookupInBaseClasses2((inName.clone()).clone(), rest_ext.clone(), inEnv.clone(), inEnvWithExtends.clone(), inReplaceRedeclares, inVisitedScopes.clone())?;
                     Ok((item.clone(), path.clone(), env.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -959,7 +959,7 @@ fn lookupRedeclaredClass2(mut inItem: Item, mut inRedeclarePrefix: SCode::Redecl
     let mut outItem: Item;
     let mut outEnv: Env;
     (outItem, outEnv) = 'mc: {
-        let __mc_input = (inItem.clone(), inRedeclarePrefix.clone(), inReplaceablePrefix.clone());
+        let __mc_input = (inItem.clone(), inRedeclarePrefix, inReplaceablePrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, SCode::Redeclare::NOT_REDECLARE { .. }, Deref @ SCode::Replaceable::REPLACEABLE { .. }) => {
@@ -998,7 +998,7 @@ fn lookupRedeclaredClass2(mut inItem: Item, mut inRedeclarePrefix: SCode::Redecl
                 (Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, declaredEnv: env }, _, _) => {
                     let mut item = (*item).clone();
                     let mut env = (*env).clone();
-                    (item, env) = lookupRedeclaredClass2(item.clone(), inRedeclarePrefix.clone(), inReplaceablePrefix.clone(), env.clone(), inInfo.clone())?;
+                    (item, env) = lookupRedeclaredClass2(item.clone(), inRedeclarePrefix, inReplaceablePrefix.clone(), env.clone(), inInfo.clone())?;
                     Ok((item.clone(), env.clone()))
                 }
                 _ => bail!("nomatch"),

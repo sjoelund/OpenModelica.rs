@@ -6234,7 +6234,7 @@ pub fn isImpure(mut purity: Absyn::FunctionPurity, mut defaultImpure: bool) -> b
 
 pub(crate) fn purityEqual(mut purity1: Absyn::FunctionPurity, mut purity2: Absyn::FunctionPurity, mut defaultImpure: bool) -> bool {
     let mut isEqual: bool;
-    if metamodelica::valueConstructor((&purity1.clone())).unwrap() == metamodelica::valueConstructor((&purity2.clone())).unwrap() {
+    if metamodelica::valueConstructor((&purity1)).unwrap() == metamodelica::valueConstructor((&purity2)).unwrap() {
         isEqual = true;
     } else if defaultImpure {
         isEqual = (match (purity1, purity2) {

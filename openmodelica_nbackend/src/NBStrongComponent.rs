@@ -351,7 +351,7 @@ pub(crate) fn toString(mut comp: Arc<NBStrongComponent>, mut index: i32) -> Resu
     Ok(r#str)
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CountCollector {
     pub single_scalar: i32,
     pub single_array: i32,

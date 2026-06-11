@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 /// severity of message
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Severity {
     /// Error because of a failure in the tool
     INTERNAL,
@@ -72,7 +72,7 @@ impl Default for Severity {
 pub use self::Severity::{INTERNAL,ERROR,WARNING,NOTIFICATION};
 
 /// runtime scripting /interpretation error
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MessageType {
     /// syntax errors
     SYNTAX,

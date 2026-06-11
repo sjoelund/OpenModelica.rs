@@ -1376,7 +1376,7 @@ pub(crate) fn lookupVarInternal(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     let mut outComponentEnv: FCore::Graph;
     let mut name: ArcStr = arcstr::literal!("");
     (outCache, outAttributes, outType, outBinding, constOfForIteratorRange, splicedExpData, outClassEnv, outComponentEnv, name) = 'mc: {
-        let __mc_input = (inCache, inEnv.clone(), inComponentRef, searchStrategy.clone());
+        let __mc_input = (inCache, inEnv.clone(), inComponentRef, searchStrategy);
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, FCore::Graph::G { scope: Deref @ metamodelica::List::Cons { head: r, tail: _ }, .. }, r#ref, _) => {
@@ -1410,7 +1410,7 @@ pub(crate) fn lookupVarInternal(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
                     let mut splicedExpData: InstTypes::SplicedExpData = splicedExpData.clone();
                     let true = (FNode::isImplicitRefName(r.clone())?) else { bail!("pattern mismatch") };
                     (env, _) = FGraph::stripLastScopeRef(inEnv.clone())?;
-                    (cache, attr, ty, binding, cnstForRange, splicedExpData, env, componentEnv, name) = lookupVarInternal(cache.clone(), env.clone(), r#ref.clone(), searchStrategy.clone())?;
+                    (cache, attr, ty, binding, cnstForRange, splicedExpData, env, componentEnv, name) = lookupVarInternal(cache.clone(), env.clone(), r#ref.clone(), searchStrategy)?;
                     Ok(((cache.clone(), attr.clone(), ty.clone(), binding.clone(), cnstForRange.clone(), splicedExpData.clone(), env.clone(), componentEnv.clone(), name.clone()), name.clone(), splicedExpData.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1454,7 +1454,7 @@ pub(crate) fn lookupVarInternalIdent(mut inCache: FCore::Cache, mut inEnv: FCore
     let mut outComponentEnv: FCore::Graph;
     let mut name: ArcStr = arcstr::literal!("");
     (outCache, outAttributes, outType, outBinding, constOfForIteratorRange, splicedExpData, outClassEnv, outComponentEnv, name) = 'mc: {
-        let __mc_input = (inCache, inEnv.clone(), searchStrategy.clone());
+        let __mc_input = (inCache, inEnv.clone(), searchStrategy);
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, FCore::Graph::G { scope: Deref @ metamodelica::List::Cons { head: r, tail: _ }, .. }, _) => {
@@ -1488,7 +1488,7 @@ pub(crate) fn lookupVarInternalIdent(mut inCache: FCore::Cache, mut inEnv: FCore
                     let mut splicedExpData: InstTypes::SplicedExpData = splicedExpData.clone();
                     let true = (FNode::isImplicitRefName(r.clone())?) else { bail!("pattern mismatch") };
                     (env, _) = FGraph::stripLastScopeRef(inEnv.clone())?;
-                    (cache, attr, ty, binding, cnstForRange, splicedExpData, env, componentEnv, name) = lookupVarInternalIdent(cache.clone(), env.clone(), (ident.clone()).clone(), ss.clone(), searchStrategy.clone())?;
+                    (cache, attr, ty, binding, cnstForRange, splicedExpData, env, componentEnv, name) = lookupVarInternalIdent(cache.clone(), env.clone(), (ident.clone()).clone(), ss.clone(), searchStrategy)?;
                     Ok(((cache.clone(), attr.clone(), ty.clone(), binding.clone(), cnstForRange.clone(), splicedExpData.clone(), env.clone(), componentEnv.clone(), name.clone()), name.clone(), splicedExpData.clone()))
                 }
                 _ => bail!("nomatch"),

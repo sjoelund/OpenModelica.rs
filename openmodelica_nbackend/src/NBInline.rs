@@ -798,7 +798,7 @@ fn getElementList(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamode
 fn checkInline(mut func: Arc<Function::Function>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>>) -> Result<bool> {
     let mut b: bool;
     let mut it: DAE::InlineType = Function::inlineBuiltin(func.clone());
-    b = List::contains(inline_types, it.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::inlineTypeEqual, DAE::InlineType, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType, DAE::InlineType) -> Result<bool> + 'static>))? && functionInlineable(func.clone())?;
+    b = List::contains(inline_types, it, (std::sync::Arc::new(fnptr!(DAEUtil::inlineTypeEqual, DAE::InlineType, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType, DAE::InlineType) -> Result<bool> + 'static>))? && functionInlineable(func.clone())?;
     if b && DAEUtil::inlineTypeEqual(it, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE) {
         b = defaultHeuristic(func, func_map)?;
     }

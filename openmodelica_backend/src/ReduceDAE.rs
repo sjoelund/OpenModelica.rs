@@ -803,7 +803,7 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
                 Deref @ "deletion" => (),
                 _ => bail!("pattern mismatch"),
             } };
-            (e, vars, idx, labels) = addLabelToExpForDeletion(inExp1.clone(), inVarLst.clone(), inIntdex.clone(), add, reduceList.clone())?;
+            (e, vars, idx, labels) = addLabelToExpForDeletion(inExp1.clone(), inVarLst.clone(), inIntdex, add, reduceList.clone())?;
             Ok((e.clone(), vars.clone(), idx.clone(), labels.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -816,7 +816,7 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
                 Deref @ "substitution" => (),
                 _ => bail!("pattern mismatch"),
             } };
-            (e, vars, idx, labels, _) = addLabelToExpForSubstitution(inExp1.clone(), inVarLst.clone(), inIntdex.clone(), reduceList.clone(), inVarRepl.clone())?;
+            (e, vars, idx, labels, _) = addLabelToExpForSubstitution(inExp1.clone(), inVarLst.clone(), inIntdex, reduceList.clone(), inVarRepl.clone())?;
             Ok((e.clone(), vars.clone(), idx.clone(), labels.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -829,7 +829,7 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
                 Deref @ "linearization" => (),
                 _ => bail!("pattern mismatch"),
             } };
-            (e, vars, idx, labels) = addLabelToExpForLinearization(inExp1.clone(), inVarLst.clone(), inIntdex.clone(), reduceList.clone(), inVarRepl.clone());
+            (e, vars, idx, labels) = addLabelToExpForLinearization(inExp1.clone(), inVarLst.clone(), inIntdex, reduceList.clone(), inVarRepl.clone());
             Ok((e.clone(), vars.clone(), idx.clone(), labels.clone()))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

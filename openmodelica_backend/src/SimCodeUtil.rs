@@ -673,7 +673,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
             modelInfo.vars = tmpSimVars.clone();
             varInfo = modelInfo.varInfo.clone();
             varInfo.numSensitivityParameters = countSenParams;
-            modelInfo.varInfo = varInfo.clone();
+            modelInfo.varInfo = varInfo;
         }
         if isSome(shared.dataReconciliationData.clone()) {
             tmpSimVars = modelInfo.vars.clone();
@@ -692,13 +692,13 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                 modelInfo.vars = tmpSimVars.clone();
                 varInfo = modelInfo.varInfo.clone();
                 varInfo.numSetbVars = (tmpsetBVars.clone().len() as i32);
-                modelInfo.varInfo = varInfo.clone();
+                modelInfo.varInfo = varInfo;
             }
             varInfo = modelInfo.varInfo.clone();
             varInfo.numSetcVars = (tmpsetcVars.clone().len() as i32);
             varInfo.numDataReconVars = (tmpdatareconinputvars.clone().len() as i32);
             varInfo.numRelatedBoundaryConditions = numRelatedBoundaryConditions;
-            modelInfo.varInfo = varInfo.clone();
+            modelInfo.varInfo = varInfo;
         }
         backendMapping = setBackendVarMapping(inBackendDAE.clone(), crefToSimVarHT.clone(), modelInfo.clone(), backendMapping.clone());
         (varToArrayIndexMapping, varToIndexMapping) = unwrap_break_err!(SimCodeUtilShared::createVarToArrayIndexMapping(modelInfo.clone()), '__try0);
@@ -1319,7 +1319,7 @@ pub fn addAlgebraicLoopsModelInfoSymJacs(mut symjacs: Arc<metamodelica::List<Arc
         varInfo = modelInfo.varInfo.clone();
         assign_field!(symjac.jacobianIndex = varInfo.numJacobians.clone());
         varInfo.numJacobians = varInfo.numJacobians.clone() + 1;
-        modelInfo.varInfo = varInfo.clone();
+        modelInfo.varInfo = varInfo;
         if debug {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Collect Jacobian ")); __mm_s.push_str(&*symjac.matrixName.clone()); __mm_s.push_str(&*literal!(" and set index to: ")); __mm_s.push_str(&*intString(symjac.jacobianIndex.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
@@ -2371,7 +2371,7 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
     let mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = tempvars;
     let mut eq_idx: i32;
     let mut res_idx: i32;
-    (eq_idx, res_idx) = idx_tpl.clone();
+    (eq_idx, res_idx) = idx_tpl;
     (equations_, idx_tpl, tempvars) = 'mc: {
         let __mc_input = (inExp.clone(), inExp1.clone());
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
@@ -2380,8 +2380,8 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut idx_tpl: (i32, i32) = idx_tpl.clone();
                     let mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = tempvars.clone();
-                    (equations_, idx_tpl, tempvars) = createNonlinearResidualEquationsComplex(e1.clone(), inExp1.clone(), source.clone(), eqAttr.clone(), idx_tpl.clone(), tempvars.clone())?;
-                    Ok(((equations_.clone(), idx_tpl.clone(), tempvars.clone()), equations_.clone(), idx_tpl.clone(), tempvars.clone()))
+                    (equations_, idx_tpl, tempvars) = createNonlinearResidualEquationsComplex(e1.clone(), inExp1.clone(), source.clone(), eqAttr, idx_tpl, tempvars.clone())?;
+                    Ok(((equations_.clone(), idx_tpl, tempvars.clone()), equations_.clone(), idx_tpl.clone(), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2392,8 +2392,8 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut idx_tpl: (i32, i32) = idx_tpl.clone();
                     let mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = tempvars.clone();
-                    (equations_, idx_tpl, tempvars) = createNonlinearResidualEquationsComplex(inExp.clone(), e2.clone(), source.clone(), eqAttr.clone(), idx_tpl.clone(), tempvars.clone())?;
-                    Ok(((equations_.clone(), idx_tpl.clone(), tempvars.clone()), equations_.clone(), idx_tpl.clone(), tempvars.clone()))
+                    (equations_, idx_tpl, tempvars) = createNonlinearResidualEquationsComplex(inExp.clone(), e2.clone(), source.clone(), eqAttr, idx_tpl, tempvars.clone())?;
+                    Ok(((equations_.clone(), idx_tpl, tempvars.clone()), equations_.clone(), idx_tpl.clone(), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2430,13 +2430,13 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     e1lst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr.clone())?;
                     e2lst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), crtmp.clone())?;
                     exptl = List::zip(e1lst.clone(), e2lst.clone());
-                    let (__pa3, (__pa4, __pa5)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa3, (__pa4, __pa5)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa3.clone();
                     eq_idx = __pa4.clone();
                     res_idx = __pa5.clone();
                     etmp = Expression::crefExp(crtmp.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: etmp.clone(), exp: e2_1.clone(), source: source.clone() });
-                    eqSystlst = metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() }), eqSystlst.clone());
+                    eqSystlst = metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr }), eqSystlst.clone());
                     Ok(((eqSystlst.clone(), (eq_idx + 1, res_idx), tempvars.clone()), eq_idx.clone(), res_idx.clone(), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2474,13 +2474,13 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     e1lst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr.clone())?;
                     e2lst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), crtmp.clone())?;
                     exptl = List::zip(e1lst.clone(), e2lst.clone());
-                    let (__pa3, (__pa4, __pa5)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa3, (__pa4, __pa5)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa3.clone();
                     eq_idx = __pa4.clone();
                     res_idx = __pa5.clone();
                     etmp = Expression::crefExp(crtmp.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: etmp.clone(), exp: e1_1.clone(), source: source.clone() });
-                    eqSystlst = metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() }), eqSystlst.clone());
+                    eqSystlst = metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr }), eqSystlst.clone());
                     Ok(((eqSystlst.clone(), (eq_idx + 1, res_idx), tempvars.clone()), eq_idx.clone(), res_idx.clone(), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2508,12 +2508,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(eq_idx)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e1_1 = Expression::crefToExp(cr.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e1_1.clone(), exp: e2_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr });
                     eq_idx = eq_idx + 1;
                     e1lst = Expression::expandExpression(e1_1.clone(), true)?;
                     e2lst = List::mapFlat(e2lst.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Expression::expandExpression(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?;
                     exptl = List::zip(e1lst.clone(), e2lst.clone());
-                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa0.clone();
                     eq_idx = __pa1.clone();
                     res_idx = __pa2.clone();
@@ -2545,12 +2545,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(eq_idx)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e1_1 = Expression::crefToExp(cr.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e1_1.clone(), exp: e2_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr });
                     eq_idx = eq_idx + 1;
                     e1lst = Expression::expandExpression(e1_1.clone(), true)?;
                     e2lst = List::mapFlat(e2lst.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Expression::expandExpression(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?;
                     exptl = List::zip(e1lst.clone(), e2lst.clone());
-                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa0.clone();
                     eq_idx = __pa1.clone();
                     res_idx = __pa2.clone();
@@ -2582,11 +2582,11 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(eq_idx)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e2_1 = Expression::crefExp(cr.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e2_1.clone(), exp: e1_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr });
                     eq_idx = eq_idx + 1;
                     e1lst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr.clone())?;
                     exptl = List::zip(e1lst.clone(), e2lst.clone());
-                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa0.clone();
                     eq_idx = __pa1.clone();
                     res_idx = __pa2.clone();
@@ -2617,11 +2617,11 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(eq_idx)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e2_1 = Expression::crefExp(cr.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e2_1.clone(), exp: e1_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr });
                     eq_idx = eq_idx + 1;
                     e1lst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr.clone())?;
                     exptl = List::zip(e1lst.clone(), e2lst.clone());
-                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa0.clone();
                     eq_idx = __pa1.clone();
                     res_idx = __pa2.clone();
@@ -2654,7 +2654,7 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(eq_idx)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     crexplst = List::map1(expl.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp.clone(), expExpLst: crexplst.clone(), exp: inExp1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx, statements: list![stms.clone()], eqAttr: eqAttr });
                     eq_idx = eq_idx + 1;
                     expl = List::filterOnTrue(expl.clone(), (std::sync::Arc::new(fnptr!(Expression::isNotWild, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
                     expl = List::flatten(List::map1(expl.clone(), (std::sync::Arc::new(Expression::generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), None)?)?;
@@ -2668,7 +2668,7 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     crlst = List::flatten(crlstlst.clone())?;
                     expl = List::map(crlst.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     exptl = List::zip(expl.clone(), crexplst.clone());
-                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil())?;
+                    let (__pa0, (__pa1, __pa2)) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr, (eq_idx, res_idx), metamodelica::nil())?;
                     eqSystlst = __pa0.clone();
                     eq_idx = __pa1.clone();
                     res_idx = __pa2.clone();
@@ -2728,10 +2728,10 @@ fn createNonlinearResidualEquationsSingleComplex(mut inExp: Arc<DAE::Exp>, mut i
             cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident); __mm_s.push_str(&*intString(iuniqueEqIndex)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
             (eqCrefs, crexplst, lhsExpLstRes, rhsExpLstRes, lhsExpLstAss, rhsExpLstAss) = createTmpCrefExpsForComplexEqnSys(expl.clone(), cr, eqCrefs, callCrefs, metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
             stms = Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp, expExpLst: crexplst, exp: inExp1, source: source.clone() });
-            simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms], eqAttr: eqAttr.clone() });
+            simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms], eqAttr: eqAttr });
             uniqueEqIndex = iuniqueEqIndex + 1;
             exptl = List::zip(lhsExpLstAss, rhsExpLstAss.clone());
-            (eqSystlst_simpAss, uniqueEqIndex) = List::map2Fold(exptl, (std::sync::Arc::new(makeSES_SIMPLE_ASSIGN) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<SimCode::SimEqSystem>, i32)> + 'static>), source.clone(), eqAttr.clone(), uniqueEqIndex, metamodelica::nil())?;
+            (eqSystlst_simpAss, uniqueEqIndex) = List::map2Fold(exptl, (std::sync::Arc::new(makeSES_SIMPLE_ASSIGN) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<SimCode::SimEqSystem>, i32)> + 'static>), source.clone(), eqAttr, uniqueEqIndex, metamodelica::nil())?;
             exptl = List::zip(rhsExpLstRes, lhsExpLstRes.clone());
             let (__pa0, (__pa1, _)) = List::map2Fold(exptl, (std::sync::Arc::new(makeSES_RESIDUAL1) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source, eqAttr, (uniqueEqIndex, 0), metamodelica::nil())?;
             eqSystlst = __pa0.clone();
@@ -2974,7 +2974,7 @@ pub fn createNonlinearResidualEquations(mut eqs: Arc<metamodelica::List<Arc<Back
     match '__try0: {
         for mut eq in &*eqs.clone().reverse() {
             let mut eq = eq.clone();
-            (eq_idx, res_idx) = idx_tpl.clone();
+            (eq_idx, res_idx) = idx_tpl;
             eqSystems = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr: eqAttr } => {
             let mut res_exp: Arc<DAE::Exp>;
@@ -3029,7 +3029,7 @@ pub fn createNonlinearResidualEquations(mut eqs: Arc<metamodelica::List<Arc<Back
             e1 = unwrap_break_err!(Expression::replaceDerOpInExp(e1.clone()), '__try0);
             (e2, _) = unwrap_break_err!(ExpressionSimplify::simplify(e2.clone()), '__try0);
             e2 = unwrap_break_err!(Expression::replaceDerOpInExp(e2.clone()), '__try0);
-            (eqSystlst, idx_tpl, tempvars) = unwrap_break_err!(createNonlinearResidualEquationsComplex(e1.clone(), e2.clone(), source.clone(), eqAttr.clone(), idx_tpl.clone(), tempvars.clone()), '__try0);
+            (eqSystlst, idx_tpl, tempvars) = unwrap_break_err!(createNonlinearResidualEquationsComplex(e1.clone(), e2.clone(), source.clone(), eqAttr.clone(), idx_tpl, tempvars.clone()), '__try0);
             listAppend(eqSystlst.clone(), eqSystems.clone())
         },
         Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { .. }, .. } => {
@@ -3226,7 +3226,7 @@ fn makeSES_SIMPLE_ASSIGNwithArray(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut
                 elems = __pa1.clone();
                 for mut tpl in &*List::zip(var_field!((**left).array, DAE::Exp::ARRAY).clone(), elems.clone()) {
                     let mut tpl = tpl.clone();
-                    (eqn, ouniqueEqIndex) = unwrap_break_err!(makeSES_SIMPLE_ASSIGN(tpl.clone(), source.clone(), eqAttr.clone(), ouniqueEqIndex), '__try0);
+                    (eqn, ouniqueEqIndex) = unwrap_break_err!(makeSES_SIMPLE_ASSIGN(tpl.clone(), source.clone(), eqAttr, ouniqueEqIndex), '__try0);
                     outSimEqn = metamodelica::cons(eqn.clone(), outSimEqn.clone());
                 }
                 outSimEqn = outSimEqn.clone().reverse();
@@ -3366,7 +3366,7 @@ fn createOdeSystem2(mut mixedEvent: bool, mut inVars: BackendDAE::Variables, mut
     let mut ouniqueEqIndex: i32;
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>>;
     (equations_, ouniqueEqIndex, otempvars) = 'mc: {
-        let __mc_input = (inJacobian.clone(), inJacobianType.clone());
+        let __mc_input = (inJacobian.clone(), inJacobianType);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, BackendDAE::JacobianType::JAC_CONSTANT { .. }) => {
@@ -3485,7 +3485,7 @@ fn createOdeSystem2(mut mixedEvent: bool, mut inVars: BackendDAE::Variables, mut
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut r#str: ArcStr;
-                    r#str = (BackendDump::jacobianTypeStr(inJacobianType.clone())?).clone();
+                    r#str = (BackendDump::jacobianTypeStr(inJacobianType)?).clone();
                     r#str = stringAppendList(list![(literal!("createOdeSystem2 failed for ")).clone(), (r#str.clone()).clone()]);
                     Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
@@ -5985,7 +5985,7 @@ fn createElseWhenEquation(mut inElseWhenEquation: Arc<BackendDAE::WhenEquation>,
                     _ => bail!("pattern mismatch"),
                 } };
                 elseWhenEquation = __pa0.clone();
-                (simElseWhenEq, uniqueEqIndex) = createElseWhenEquation(elseWhenEquation, inVars, iuniqueEqIndex + 1, inElementSource.clone(), inEqAttr.clone())?;
+                (simElseWhenEq, uniqueEqIndex) = createElseWhenEquation(elseWhenEquation, inVars, iuniqueEqIndex + 1, inElementSource.clone(), inEqAttr)?;
                 osimElseWhenEq = Some(simElseWhenEq);
             } else {
                 uniqueEqIndex = iuniqueEqIndex + 1;
@@ -6282,7 +6282,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = otempvars.clone();
                     let mut ouniqueEqIndex: i32 = ouniqueEqIndex.clone();
-                    (equations_, ouniqueEqIndex, otempvars) = createSingleComplexEqnCode2(crefs.clone(), e1.clone(), inExp4.clone(), iuniqueEqIndex, itempvars.clone(), source.clone(), eqKind.clone(), iextra.clone(), genDiscrete, inVars.clone())?;
+                    (equations_, ouniqueEqIndex, otempvars) = createSingleComplexEqnCode2(crefs.clone(), e1.clone(), inExp4.clone(), iuniqueEqIndex, itempvars.clone(), source.clone(), eqKind, iextra.clone(), genDiscrete, inVars.clone())?;
                     Ok(((equations_.clone(), ouniqueEqIndex, otempvars.clone()), equations_.clone(), otempvars.clone(), ouniqueEqIndex.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -6294,7 +6294,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = otempvars.clone();
                     let mut ouniqueEqIndex: i32 = ouniqueEqIndex.clone();
-                    (equations_, ouniqueEqIndex, otempvars) = createSingleComplexEqnCode2(crefs.clone(), inExp3.clone(), e1.clone(), iuniqueEqIndex, itempvars.clone(), source.clone(), eqKind.clone(), iextra.clone(), genDiscrete, inVars.clone())?;
+                    (equations_, ouniqueEqIndex, otempvars) = createSingleComplexEqnCode2(crefs.clone(), inExp3.clone(), e1.clone(), iuniqueEqIndex, itempvars.clone(), source.clone(), eqKind, iextra.clone(), genDiscrete, inVars.clone())?;
                     Ok(((equations_.clone(), ouniqueEqIndex, otempvars.clone()), equations_.clone(), otempvars.clone(), ouniqueEqIndex.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -6310,7 +6310,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     (e2_1, _) = Expression::extendArrExp(e2.clone(), false);
                     tp = Expression::r#typeof(e1.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e1.clone(), exp: e2_1.clone(), source: source.clone() });
-                    Ok((list![Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind.clone() })], iuniqueEqIndex + 1, itempvars.clone()))
+                    Ok((list![Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind })], iuniqueEqIndex + 1, itempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6325,7 +6325,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     (e1_1, _) = Expression::extendArrExp(e1.clone(), false);
                     tp = Expression::r#typeof(e2.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e2.clone(), exp: e1_1.clone(), source: source.clone() });
-                    Ok((list![Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind.clone() })], iuniqueEqIndex + 1, itempvars.clone()))
+                    Ok((list![Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind })], iuniqueEqIndex + 1, itempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6357,11 +6357,11 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     cr1 = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(iuniqueEqIndex)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e1_1 = Expression::crefToExp(cr1.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e1_1.clone(), exp: e2_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind });
                     uniqueEqIndex = iuniqueEqIndex + 1;
                     crexplst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr1.clone())?;
                     exptl = List::zip(expLst.clone(), crexplst.clone());
-                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind.clone(), uniqueEqIndex.clone(), metamodelica::nil())?;
+                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind, uniqueEqIndex.clone(), metamodelica::nil())?;
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), List::flatten(eqSystlst_nonflat.clone())?);
                     tempvars = createTempVars(varLst.clone(), cr1.clone(), itempvars.clone())?;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), tempvars.clone()))
@@ -6395,11 +6395,11 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     cr1 = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(iuniqueEqIndex)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e1_1 = Expression::crefToExp(cr1.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e1_1.clone(), exp: e2_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind });
                     uniqueEqIndex = iuniqueEqIndex + 1;
                     crexplst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr1.clone())?;
                     exptl = List::zip(expLst.clone(), crexplst.clone());
-                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind.clone(), uniqueEqIndex.clone(), metamodelica::nil())?;
+                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind, uniqueEqIndex.clone(), metamodelica::nil())?;
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), List::flatten(eqSystlst_nonflat.clone())?);
                     tempvars = createTempVars(varLst.clone(), cr1.clone(), itempvars.clone())?;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), tempvars.clone()))
@@ -6434,11 +6434,11 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     cr1 = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(iuniqueEqIndex)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e2_1 = Expression::crefExp(cr1.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e2_1.clone(), exp: e1_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind });
                     uniqueEqIndex = iuniqueEqIndex + 1;
                     crexplst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr1.clone())?;
                     exptl = List::zip(expLst.clone(), crexplst.clone());
-                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind.clone(), uniqueEqIndex.clone(), metamodelica::nil())?;
+                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind, uniqueEqIndex.clone(), metamodelica::nil())?;
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), List::flatten(eqSystlst_nonflat.clone())?);
                     tempvars = createTempVars(varLst.clone(), cr1.clone(), itempvars.clone())?;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), tempvars.clone()))
@@ -6472,11 +6472,11 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     cr1 = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*intString(iuniqueEqIndex)); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
                     e2_1 = Expression::crefExp(cr1.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e2_1.clone(), exp: e1_1.clone(), source: source.clone() });
-                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind.clone() });
+                    simeqn_complex = Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![stms.clone()], eqAttr: eqKind });
                     uniqueEqIndex = iuniqueEqIndex + 1;
                     crexplst = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr1.clone())?;
                     exptl = List::zip(expLst.clone(), crexplst.clone());
-                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind.clone(), uniqueEqIndex.clone(), metamodelica::nil())?;
+                    (eqSystlst_nonflat, uniqueEqIndex) = List::map2Fold(exptl.clone(), (std::sync::Arc::new(makeSES_SIMPLE_ASSIGNwithArray) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Exp>, Arc<DAE::Exp>), Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, i32) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, i32)> + 'static>), source.clone(), eqKind, uniqueEqIndex.clone(), metamodelica::nil())?;
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), List::flatten(eqSystlst_nonflat.clone())?);
                     tempvars = createTempVars(varLst.clone(), cr1.clone(), itempvars.clone())?;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), tempvars.clone()))
@@ -6496,7 +6496,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     ht = List::fold(crefs.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
                     let false = (Expression::expHasCrefsNoPreOrStart(e2.clone(), crefs.clone())?) else { bail!("pattern mismatch") };
                     List::foldAllValue(expl.clone(), (std::sync::Arc::new(fnptr!(createSingleComplexEqnCode3, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), true, ht.clone())?;
-                    eqSystlst = list![Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp.clone(), expExpLst: expl.clone(), exp: e2.clone(), source: source.clone() })], eqAttr: eqKind.clone() })];
+                    eqSystlst = list![Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: iuniqueEqIndex, statements: list![Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp.clone(), expExpLst: expl.clone(), exp: e2.clone(), source: source.clone() })], eqAttr: eqKind })];
                     uniqueEqIndex = iuniqueEqIndex + 1;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), itempvars.clone()))
                 }
@@ -6514,7 +6514,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     ht = HashSet::emptyHashSet();
                     ht = List::fold(crefs.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
                     List::foldAllValue(expl.clone(), (std::sync::Arc::new(fnptr!(createSingleComplexEqnCode3, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), true, ht.clone())?;
-                    eqnLst = List::threadMap2(expl.clone(), expl1.clone(), (std::sync::Arc::new(BackendEquation::generateEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), source.clone(), eqKind.clone())?;
+                    eqnLst = List::threadMap2(expl.clone(), expl1.clone(), (std::sync::Arc::new(BackendEquation::generateEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), source.clone(), eqKind)?;
                     (eqSystlst, uniqueEqIndex, tempvars) = createEquationsfromList(eqnLst.clone(), inVars.clone(), iuniqueEqIndex, itempvars.clone(), iextra.clone(), genDiscrete, false, false, false)?;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), tempvars.clone()))
                 }
@@ -6531,7 +6531,7 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
                     ht = HashSet::emptyHashSet();
                     ht = List::fold(crefs.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
                     List::foldAllValue(expl.clone(), (std::sync::Arc::new(fnptr!(createSingleComplexEqnCode3, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), true, ht.clone())?;
-                    eqnLst = List::threadMap2(expl.clone(), expl1.clone(), (std::sync::Arc::new(BackendEquation::generateEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), source.clone(), eqKind.clone())?;
+                    eqnLst = List::threadMap2(expl.clone(), expl1.clone(), (std::sync::Arc::new(BackendEquation::generateEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes) -> Result<Arc<BackendDAE::Equation>> + 'static>), source.clone(), eqKind)?;
                     (eqSystlst, uniqueEqIndex, _) = createEquationsfromList(eqnLst.clone(), inVars.clone(), iuniqueEqIndex, itempvars.clone(), iextra.clone(), genDiscrete, false, false, false)?;
                     Ok((eqSystlst.clone(), uniqueEqIndex.clone(), itempvars.clone()))
                 }
@@ -7601,7 +7601,7 @@ pub fn createModelInfo(mut class_: Arc<Absyn::Path>, mut program: Absyn::Program
         if debug {
             unwrap_break_err!(execStat((literal!("simCode: hasLargeEquationSystems")).clone()), '__try0);
         }
-        modelInfo = SimCode::ModelInfo { name: class_.clone(), description: (dlow.shared.info.description.clone()).clone(), version: (version.clone()).clone(), author: (author.clone()).clone(), license: (license.clone()).clone(), copyright: (copyright.clone()).clone(), directory: (directory.clone()).clone(), fileName: (fileName.clone()).clone(), varInfo: varInfo.clone(), vars: vars.clone(), functions: functions.clone(), labels: labels.clone(), resourcePaths: if (unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) {unwrap_break_err!(getResources(program.classes.clone(), dlow.clone(), inInitDAE.clone()), '__try0)} else {metamodelica::nil()}, sortedClasses: unwrap_break_err!(List::sort(program.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::classNameGreater, Arc<Absyn::Class>, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0), nClocks: metamodelica::arrayLength(dlow.shared.partitionsInfo.basePartitions.clone()), nSubClocks: metamodelica::arrayLength(dlow.shared.partitionsInfo.subPartitions.clone()), nSpatialDistributions: numSpatialDistributions + 1, hasLargeLinearEquationSystems: hasLargeEqSystems, linearSystems: metamodelica::nil(), nonLinearSystems: metamodelica::nil(), unitDefinitions: unitDefinitions.clone() };
+        modelInfo = SimCode::ModelInfo { name: class_.clone(), description: (dlow.shared.info.description.clone()).clone(), version: (version.clone()).clone(), author: (author.clone()).clone(), license: (license.clone()).clone(), copyright: (copyright.clone()).clone(), directory: (directory.clone()).clone(), fileName: (fileName.clone()).clone(), varInfo: varInfo, vars: vars.clone(), functions: functions.clone(), labels: labels.clone(), resourcePaths: if (unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) {unwrap_break_err!(getResources(program.classes.clone(), dlow.clone(), inInitDAE.clone()), '__try0)} else {metamodelica::nil()}, sortedClasses: unwrap_break_err!(List::sort(program.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::classNameGreater, Arc<Absyn::Class>, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0), nClocks: metamodelica::arrayLength(dlow.shared.partitionsInfo.basePartitions.clone()), nSubClocks: metamodelica::arrayLength(dlow.shared.partitionsInfo.subPartitions.clone()), nSpatialDistributions: numSpatialDistributions + 1, hasLargeLinearEquationSystems: hasLargeEqSystems, linearSystems: metamodelica::nil(), nonLinearSystems: metamodelica::nil(), unitDefinitions: unitDefinitions.clone() };
         Ok::<_, anyhow::Error>((author.clone(), copyright.clone(), description.clone(), directory.clone(), fileName.clone(), hasLargeEqSystems.clone(), license.clone(), modelInfo.clone(), na.clone(), na_bool.clone(), na_int.clone(), na_string.clone(), ndy.clone(), next.clone(), np.clone(), np_bool.clone(), np_int.clone(), np_string.clone(), numInVars.clone(), numOptimizeConstraints.clone(), numOptimizeFinalConstraints.clone(), numOutVars.clone(), numRealInputVars.clone(), nx.clone(), ny.clone(), ny_bool.clone(), ny_int.clone(), ny_string.clone(), unitDefinitions.clone(), varInfo.clone(), vars.clone(), version.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7, __try0_o8, __try0_o9, __try0_o10, __try0_o11, __try0_o12, __try0_o13, __try0_o14, __try0_o15, __try0_o16, __try0_o17, __try0_o18, __try0_o19, __try0_o20, __try0_o21, __try0_o22, __try0_o23, __try0_o24, __try0_o25, __try0_o26, __try0_o27, __try0_o28, __try0_o29, __try0_o30, __try0_o31)) => {
@@ -8356,7 +8356,7 @@ pub fn getFmiInitialAttributeStr(mut simVar: SimCodeVar::SimVar) -> Result<ArcSt
     } };
     var_initial = __pa0.clone();
     default_initial = getDefaultFmiInitialAttribute(Util::getOptionOrDefault(simVar.variability.clone(), openmodelica_simcode_types::SimCodeVar::Variability::CONTINUOUS), Util::getOptionOrDefault(simVar.causality.clone(), openmodelica_simcode_types::SimCodeVar::Causality::LOCAL));
-    if var_initial.clone() == default_initial && !(Flags::isSet(Flags::DUMP_FORCE_FMI_ATTRIBUTES.clone())?) {
+    if var_initial == default_initial && !(Flags::isSet(Flags::DUMP_FORCE_FMI_ATTRIBUTES.clone())?) {
         var_initial = openmodelica_simcode_types::SimCodeVar::Initial::NONE_INITIAL;
     }
     out_string = ((match var_initial {
@@ -10041,8 +10041,8 @@ fn dlowvarToSimvar(mut dlowVar: BackendDAE::Var, mut optAliasVars: Option<Backen
             isValueChangeable = BackendVariable::isChangeable(dlowVar.clone())?;
             caus = getCausality(dlowVar.clone(), vars.clone(), isValueChangeable);
             variability = openmodelica_simcode_types::SimCodeVar::Variability::CONSTANT;
-            initial_ = setInitialAttribute(dlowVar.clone(), variability.clone(), caus.clone(), isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
-            initVal = updateStartValue(dlowVar.clone(), initVal, initial_.clone(), caus.clone())?;
+            initial_ = setInitialAttribute(dlowVar.clone(), variability, caus, isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
+            initVal = updateStartValue(dlowVar.clone(), initVal, initial_, caus)?;
             if BackendVariable::isRealVar(dlowVar.clone()) {
                 relativeQuantity = SCodeUtil::optCommentHasBooleanNamedAnnotationFalse(comment.clone(), (literal!("absoluteValue")).clone())?;
             } else {
@@ -10087,8 +10087,8 @@ fn dlowvarToSimvar(mut dlowVar: BackendDAE::Var, mut optAliasVars: Option<Backen
             isValueChangeable = BackendVariable::isChangeable(dlowVar.clone())?;
             caus = getCausality(dlowVar.clone(), vars.clone(), isValueChangeable);
             variability = openmodelica_simcode_types::SimCodeVar::Variability::FIXED;
-            initial_ = setInitialAttribute(dlowVar.clone(), variability.clone(), caus.clone(), isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
-            initVal = updateStartValue(dlowVar.clone(), initVal, initial_.clone(), caus.clone())?;
+            initial_ = setInitialAttribute(dlowVar.clone(), variability, caus, isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
+            initVal = updateStartValue(dlowVar.clone(), initVal, initial_, caus)?;
             if BackendVariable::isRealVar(dlowVar.clone()) {
                 relativeQuantity = SCodeUtil::optCommentHasBooleanNamedAnnotationFalse(comment.clone(), (literal!("absoluteValue")).clone())?;
             } else {
@@ -10141,8 +10141,8 @@ fn dlowvarToSimvar(mut dlowVar: BackendDAE::Var, mut optAliasVars: Option<Backen
             isValueChangeable = BackendVariable::isChangeable(dlowVar.clone())?;
             caus = getCausality(dlowVar.clone(), vars.clone(), isValueChangeable);
             variability = openmodelica_simcode_types::SimCodeVar::Variability::CONTINUOUS;
-            initial_ = setInitialAttribute(dlowVar.clone(), variability.clone(), caus.clone(), isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
-            initVal = updateStartValue(dlowVar.clone(), initVal, initial_.clone(), caus.clone())?;
+            initial_ = setInitialAttribute(dlowVar.clone(), variability, caus, isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
+            initVal = updateStartValue(dlowVar.clone(), initVal, initial_, caus)?;
             if BackendVariable::isRealVar(dlowVar.clone()) {
                 relativeQuantity = SCodeUtil::optCommentHasBooleanNamedAnnotationFalse(comment.clone(), (literal!("absoluteValue")).clone())?;
             } else {
@@ -10194,8 +10194,8 @@ fn dlowvarToSimvar(mut dlowVar: BackendDAE::Var, mut optAliasVars: Option<Backen
             isValueChangeable = BackendVariable::isChangeable(dlowVar.clone())?;
             caus = getCausality(dlowVar.clone(), vars.clone(), isValueChangeable);
             variability = getVariabilityAttribute(dlowVar.clone());
-            initial_ = setInitialAttribute(dlowVar.clone(), variability.clone(), caus.clone(), isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
-            initVal = updateStartValue(dlowVar.clone(), initVal, initial_.clone(), caus.clone())?;
+            initial_ = setInitialAttribute(dlowVar.clone(), variability, caus, isFixed, iterationVars, aliasvar.clone(), vars.clone())?;
+            initVal = updateStartValue(dlowVar.clone(), initVal, initial_, caus)?;
             if BackendVariable::isRealVar(dlowVar.clone()) {
                 relativeQuantity = SCodeUtil::optCommentHasBooleanNamedAnnotationFalse(comment.clone(), (literal!("absoluteValue")).clone())?;
             } else {
@@ -10251,7 +10251,7 @@ fn setInitialAttribute(mut dlow: BackendDAE::Var, mut variability: SimCodeVar::V
         (SimCodeVar::Variability::CONTINUOUS { .. }, SimCodeVar::Causality::LOCAL { .. }) => getInitialAttributeHelper(dlow, isFixed, iterationVars)?,
         (_, _) => openmodelica_simcode_types::SimCodeVar::Initial::NONE_INITIAL,
     });
-    if initial_.clone() == openmodelica_simcode_types::SimCodeVar::Initial::EXACT && !(aliasvar == openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS) {
+    if initial_ == openmodelica_simcode_types::SimCodeVar::Initial::EXACT && !(aliasvar == openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS) {
         initial_ = openmodelica_simcode_types::SimCodeVar::Initial::CALCULATED;
     }
     Ok(initial_)
@@ -10355,10 +10355,10 @@ fn updateStartValue(mut var: BackendDAE::Var, mut startValue: Option<Arc<DAE::Ex
     let mut startValue: Option<Arc<DAE::Exp>> = startValue;
     if Flags::getConfigBool(Flags::BUILDING_FMU.clone())? && FMI::isFMIVersion20((FMI::getFMIVersionString()?).clone())? {
         startValue = (::match_deref::match_deref! { match &(startValue.clone()) {
-        Some(_) if (isInitialExactOrApprox(initial_.clone())) => startValue,
-        None if (isInitialExactOrApprox(initial_.clone())) => setDefaultStartValue(var.varType.clone())?,
-        Some(_) if (isCausalityInput(causality.clone())) => startValueIsConstOrDefault(startValue, var.varType.clone())?,
-        None if (isCausalityInput(causality.clone())) => setDefaultStartValue(var.varType.clone())?,
+        Some(_) if (isInitialExactOrApprox(initial_)) => startValue,
+        None if (isInitialExactOrApprox(initial_)) => setDefaultStartValue(var.varType.clone())?,
+        Some(_) if (isCausalityInput(causality)) => startValueIsConstOrDefault(startValue, var.varType.clone())?,
+        None if (isCausalityInput(causality)) => setDefaultStartValue(var.varType.clone())?,
         _ => startValueIsConstOrDefault(startValue, var.varType.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

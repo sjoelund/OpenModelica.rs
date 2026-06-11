@@ -88,7 +88,7 @@ pub type FunctionVar = (Arc<DAE::Element>, Option<Arc<Values::Value>>);
 // LoopControl is used to control the functions behaviour in different
 // situations. All evaluation functions returns a LoopControl variable that
 // tells the caller whether it should continue evaluating or not.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum LoopControl {
     /// Continue to the next statement.
     NEXT,
@@ -1091,7 +1091,7 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
 
 fn evaluateElements(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inElements, inLoopControl.clone())) {
+        ::match_deref::match_deref! { match &((inElements, inLoopControl)) {
         (_, LoopControl::RETURN { .. }) => {
             return Ok((inCache, inEnv, inLoopControl))
         },
@@ -1269,7 +1269,7 @@ fn evaluateStatements(mut inStatement: Arc<metamodelica::List<Arc<DAE::Statement
 
 fn evaluateStatements2(mut inStatement: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inStatement, inLoopControl.clone())) {
+        ::match_deref::match_deref! { match &((inStatement, inLoopControl)) {
         (_, LoopControl::BREAK { .. }) => {
             return Ok((inCache, inEnv, inLoopControl))
         },
@@ -1421,7 +1421,7 @@ fn evaluateForStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore
 
 fn evaluateForLoopArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIter: Arc<DAE::ComponentRef>, mut inIterType: Arc<DAE::Type>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inEnv.clone(), inValues, inLoopControl.clone())) {
+        ::match_deref::match_deref! { match &((inEnv.clone(), inValues, inLoopControl)) {
         (_, _, LoopControl::BREAK { .. }) => {
             return Ok((inCache, inEnv, crate::CevalFunction::LoopControl::NEXT))
         },
@@ -1448,7 +1448,7 @@ fn evaluateWhileStatement(mut inCondition: Arc<DAE::Exp>, mut inStatements: Arc<
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outLoopControl: LoopControl;
-    (outCache, outEnv, outLoopControl) = (match inLoopControl.clone() {
+    (outCache, outEnv, outLoopControl) = (match inLoopControl {
         LoopControl::BREAK { .. } => {
             (inCache, inEnv, crate::CevalFunction::LoopControl::NEXT)
         },

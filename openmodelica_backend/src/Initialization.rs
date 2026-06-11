@@ -441,7 +441,7 @@ fn inlineWhenForInitializationWhenEquation(mut inWEqn: Arc<BackendDAE::WhenEquat
             e = (*__esc_e).clone();
             if active {
                 lhs = Expression::crefExp(cr.clone())?;
-                eqn = BackendEquation::generateEquation(lhs.clone(), e.clone(), inSource.clone(), inEqAttr.clone())?;
+                eqn = BackendEquation::generateEquation(lhs.clone(), e.clone(), inSource.clone(), inEqAttr)?;
                 outEqns = metamodelica::cons(eqn.clone(), outEqns.clone());
             } else {
                 outLeftCrs = List::fold(ComponentReference::expandCref(cr.clone(), true)?, (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), outLeftCrs.clone())?;
@@ -453,7 +453,7 @@ fn inlineWhenForInitializationWhenEquation(mut inWEqn: Arc<BackendDAE::WhenEquat
             eLst = (*__esc_eLst).clone();
             e = (*__esc_e).clone();
             if active {
-                eqn = BackendEquation::generateEquation(lhs.clone(), e.clone(), inSource.clone(), inEqAttr.clone())?;
+                eqn = BackendEquation::generateEquation(lhs.clone(), e.clone(), inSource.clone(), inEqAttr)?;
                 outEqns = metamodelica::cons(eqn.clone(), outEqns.clone());
             } else {
                 crefLst = List::flatten(List::map(eLst.clone(), (std::sync::Arc::new(Expression::getAllCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>))?)?;

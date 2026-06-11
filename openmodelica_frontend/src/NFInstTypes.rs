@@ -373,7 +373,7 @@ impl metamodelica::gc::MMTrace for Condition {
 }
 pub(crate) use self::Condition::{SINGLE_CONDITION,ARRAY_CONDITION};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum ParamType {
     /// Not a parameter.
     NON_PARAM,
@@ -501,7 +501,7 @@ pub(crate) static DEFAULT_PROTECTED_PREFIXES: std::sync::LazyLock<Prefixes> = st
 
 pub(crate) static DEFAULT_INPUT_PREFIXES: std::sync::LazyLock<Prefixes> = std::sync::LazyLock::new(|| { Prefixes::PREFIXES { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, variability: openmodelica_frontend_types::SCode::Variability::VAR, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: (openmodelica_ast::Absyn::Direction::INPUT, Absyn::dummyInfo.clone()), connectorType: (openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, Absyn::dummyInfo.clone()), varArgs: crate::NFInstTypes::VarArgs::NO_VARARG } });
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum VarArgs {
     NO_VARARG,
     IS_VARARG,
@@ -958,7 +958,7 @@ impl metamodelica::gc::MMTrace for Entry {
 pub type ENTRY = Entry;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum ScopeType {
     BUILTIN_SCOPE,
     TOP_SCOPE,

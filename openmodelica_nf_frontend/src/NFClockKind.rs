@@ -550,16 +550,16 @@ pub(crate) fn toFlatString(mut ck: Arc<NFClockKind>, mut format: BaseModelica::O
             literal!("")
         },
         Deref @ RATIONAL_CLOCK { intervalCounter: e1, resolution: e2 } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format)?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         Deref @ REAL_CLOCK { interval: e1 } => {
             Expression::toFlatString(e1.clone(), format)?
         },
         Deref @ EVENT_CLOCK { condition: e1, startInterval: e2 } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format)?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         Deref @ SOLVER_CLOCK { c: e1, solverMethod: e2 } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format)?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

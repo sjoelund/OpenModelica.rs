@@ -167,7 +167,7 @@ impl Default for CacheLineMap {
 pub type CACHELINEMAP = CacheLineMap;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CacheLineEntry {
     pub start: i32,
     pub dataType: i32,
@@ -265,7 +265,7 @@ impl Default for PartlyFilledCacheLine {
 }
 pub use self::PartlyFilledCacheLine::{PARTLYFILLEDCACHELINE_LEVEL,PARTLYFILLEDCACHELINE_THREAD};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ScVarInfo {
     pub ownerThread: i32,
     pub isShared: bool,
@@ -1114,7 +1114,7 @@ fn addVarsToThreadCL(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iThreadIdx
         cacheVariables = metamodelica::cons(cacheVariable.clone(), cacheVariables.clone());
         scVarCLMapping = metamodelica::arrayUpdate(scVarCLMapping.clone(), varIdx, (lastCLidx, varDataType))?;
         varEntry = CacheLineEntry { start: cacheLineSize - lastCLnumBytesFree, dataType: varDataType, size: varNumBytesRequired, scVarIdx: (cacheVariables.clone().len() as i32), threadOwner: iThreadIdx };
-        lastCL = CacheLineMap { idx: lastCLidx, numBytesFree: lastCLnumBytesFree - varNumBytesRequired, entries: metamodelica::cons(varEntry.clone(), lastCLentries.clone()) };
+        lastCL = CacheLineMap { idx: lastCLidx, numBytesFree: lastCLnumBytesFree - varNumBytesRequired, entries: metamodelica::cons(varEntry, lastCLentries.clone()) };
         metamodelica::arrayUpdate(iThreadCacheLines.clone(), iThreadIdx, contractCacheLineForVarType(varDataType, threadCacheLinesFloat.clone(), threadCacheLinesInt.clone(), threadCacheLinesBool.clone(), metamodelica::cons(lastCL.clone(), fullCLs.clone())))?;
     }
     oInfo = (CacheMap::CACHEMAP { cacheLineSize: cacheLineSize, cacheVariables: cacheVariables, cacheLinesFloat: cacheLinesFloat, cacheLinesInt: cacheLinesInt, cacheLinesBool: cacheLinesBool }, CacheMapMeta { allSCVarsMapping: allSCVarsMapping.clone(), simCodeVarTypes: simCodeVarTypes.clone(), scVarCLMapping: scVarCLMapping.clone() }, numCLs);
@@ -1612,7 +1612,7 @@ fn createCacheMapDefaultCppRuntime0(mut iVariables: Arc<metamodelica::List<SimCo
                 threadIdx = -1;
             }
             entry = CacheLineEntry { start: -1, dataType: varDataType, size: varSize, scVarIdx: currentScVarIdx + iScVarIdxStart, threadOwner: threadIdx };
-            (entry, lastCacheLineNew, newCacheLineCreated) = createCacheMapDefaultCppRuntime1(entry.clone(), iCacheLineSize, lastCacheLine.clone())?;
+            (entry, lastCacheLineNew, newCacheLineCreated) = createCacheMapDefaultCppRuntime1(entry, iCacheLineSize, lastCacheLine.clone())?;
             let CacheLineMap { idx: __pa1, entries: __pa2, .. } = (lastCacheLineNew.clone()) else { bail!("pattern mismatch") };
             varCLIdx = __pa1.clone();
             cachelineEntries = __pa2.clone();
@@ -1656,11 +1656,11 @@ fn createCacheMapDefaultCppRuntime1(mut iCacheLineEntry: CacheLineEntry, mut iCa
     lastCacheLineEntries = __pa7.clone();
     if intGt(entrySize, numberOfFreeBytesLastCacheLine) {
         cacheLineEntry = CacheLineEntry { start: 0, dataType: entryType, size: entrySize, scVarIdx: entryVarIdx, threadOwner: entryThreadOwner };
-        cacheLine = CacheLineMap { idx: lastCacheLineIdx + 1, numBytesFree: iCacheLineSize - entrySize, entries: list![cacheLineEntry.clone()] };
+        cacheLine = CacheLineMap { idx: lastCacheLineIdx + 1, numBytesFree: iCacheLineSize - entrySize, entries: list![cacheLineEntry] };
         oNewOneCreated = true;
     } else {
         cacheLineEntry = CacheLineEntry { start: iCacheLineSize - numberOfFreeBytesLastCacheLine, dataType: entryType, size: entrySize, scVarIdx: entryVarIdx, threadOwner: entryThreadOwner };
-        cacheLine = CacheLineMap { idx: lastCacheLineIdx, numBytesFree: numberOfFreeBytesLastCacheLine - entrySize, entries: metamodelica::cons(cacheLineEntry.clone(), lastCacheLineEntries) };
+        cacheLine = CacheLineMap { idx: lastCacheLineIdx, numBytesFree: numberOfFreeBytesLastCacheLine - entrySize, entries: metamodelica::cons(cacheLineEntry, lastCacheLineEntries) };
         oNewOneCreated = false;
     }
     oCacheLineEntry = cacheLineEntry;
@@ -1771,8 +1771,8 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
                     let true = (intGe((cacheLineCandidates.clone().len() as i32), currentCLCandidateIdx.clone())) else { bail!("pattern mismatch") };
                     currentCLCandidate = (cacheLineCandidates.clone()).get(currentCLCandidateIdx.clone())?;
                     (varDataType, numBytesRequired, _) = metamodelica::arrayGet(iSimCodeVarTypes.clone(), iSCVarIdx)?;
-                    let true = (doesSCVarFitIntoCL(currentCLCandidate.clone(), numBytesRequired)) else { bail!("pattern mismatch") };
-                    (currentCLCandidateCLIdx, currentCLCandidateFreeBytes) = currentCLCandidate.clone();
+                    let true = (doesSCVarFitIntoCL(currentCLCandidate, numBytesRequired)) else { bail!("pattern mismatch") };
+                    (currentCLCandidateCLIdx, currentCLCandidateFreeBytes) = currentCLCandidate;
                     cacheLine = (cacheLinesFloat.clone()).get((cacheLinesFloat.clone().len() as i32) - currentCLCandidateCLIdx + 1)?;
                     let CacheLineMap { idx: __pa0, numBytesFree: __pa1, entries: __pa2 } = (cacheLine.clone()) else { bail!("pattern mismatch") };
                     clIdx = __pa0.clone();
@@ -1792,7 +1792,7 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
                     cacheVariables = metamodelica::cons(scVar.clone(), cacheVariables.clone());
                     writtenCL = metamodelica::cons(clIdx, writtenCL.clone());
                     currentCLCandidate = (currentCLCandidateCLIdx, currentCLCandidateFreeBytes - numBytesRequired);
-                    cacheLineCandidates = List::set(cacheLineCandidates.clone(), currentCLCandidateIdx.clone(), currentCLCandidate.clone())?;
+                    cacheLineCandidates = List::set(cacheLineCandidates.clone(), currentCLCandidateIdx.clone(), currentCLCandidate)?;
                     cacheMap = CacheMap::CACHEMAP { cacheLineSize: cacheLineSize.clone(), cacheVariables: cacheVariables.clone(), cacheLinesFloat: cacheLinesFloat.clone(), cacheLinesInt: cacheLinesInt.clone(), cacheLinesBool: cacheLinesBool.clone() };
                     cacheMapMeta = CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping.clone(), simCodeVarTypes: iSimCodeVarTypes.clone(), scVarCLMapping: iScVarCLMapping.clone() };
                     Ok(((cacheMap.clone(), cacheMapMeta.clone(), numNewCL.clone(), cacheLineCandidates.clone(), writtenCL.clone(), currentCLCandidateIdx.clone()), CLentries.clone(), cacheLine.clone(), clIdx.clone(), currentCLCandidate.clone(), currentCLCandidateCLIdx.clone(), currentCLCandidateFreeBytes.clone(), entryStart.clone(), numBytesFree.clone(), numBytesRequired.clone(), numCacheVars.clone(), scVar.clone(), varDataType.clone()))
@@ -2262,7 +2262,7 @@ fn createCacheLineThreadProperties(mut iCacheLine: CacheLineMap, mut iNumberOfTh
     bytesPerThread = arrayCreate(iNumberOfThreads, 0);
     for mut entry in &*entries {
         let mut entry = entry.clone();
-        let CacheLineEntry { threadOwner: __pa3, size: __pa4, .. } = (entry.clone()) else { bail!("pattern mismatch") };
+        let CacheLineEntry { threadOwner: __pa3, size: __pa4, .. } = (entry) else { bail!("pattern mismatch") };
         threadOwner = __pa3.clone();
         size = __pa4.clone();
         if intLt(threadOwner, 0) {
@@ -2781,7 +2781,7 @@ fn getTaskSimVarMapping(mut iSccEqMapping: metamodelica::Array<Arc<metamodelica:
                 sccEqs = unwrap_break_err!(metamodelica::arrayGet(iSccEqMapping.clone(), sccIdx), '__try0);
                 for mut sccEq in &*sccEqs.clone() {
                     let mut sccEq = sccEq.clone();
-                    (eqIdx, _, _) = sccEq.clone();
+                    (eqIdx, _, _) = sccEq;
                     (_, eqVars) = unwrap_break_err!(metamodelica::arrayGet(iEqSimCodeVarMapping.clone(), eqIdx), '__try0);
                     for mut v2 in &*eqVars.clone() {
                         let mut v2 = v2.clone();
@@ -2976,7 +2976,7 @@ fn appendCacheLineMapToGraph(mut iCacheLineMap: CacheLineMap, mut iCacheVariable
     notOnlyParamters = false;
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
-        let CacheLineEntry { threadOwner: __pa2, .. } = (entry.clone()) else { bail!("pattern mismatch") };
+        let CacheLineEntry { threadOwner: __pa2, .. } = (entry) else { bail!("pattern mismatch") };
         entryThreadOwner = __pa2.clone();
         notOnlyParamters = boolOr(notOnlyParamters, intNe(entryThreadOwner, -1));
     }

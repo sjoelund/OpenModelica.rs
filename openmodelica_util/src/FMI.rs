@@ -138,7 +138,7 @@ impl metamodelica::gc::MMTrace for EnumerationItem {
 pub type ENUMERATIONITEM = EnumerationItem;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ExperimentAnnotation {
     pub fmiExperimentStartTime: metamodelica::Real,
     pub fmiExperimentStopTime: metamodelica::Real,

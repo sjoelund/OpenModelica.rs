@@ -765,7 +765,7 @@ pub(crate) fn equalityConstraint(mut inEnv: FCore::Graph, mut inCdefelts: Arc<me
             els = __pa3.clone();
             dimension = equalityConstraintOutputDimension(els.clone());
             inlineType = classIsInlineFunc(el.clone());
-            outResult = Some((path.clone(), dimension, inlineType.clone()));
+            outResult = Some((path.clone(), dimension, inlineType));
             return outResult.clone();
             Ok::<(), anyhow::Error>(())
         }.is_err() {
@@ -2082,7 +2082,7 @@ pub(crate) fn classdefElts2(mut inElements: Arc<metamodelica::List<(Arc<SCode::E
     let mut outClassDefs: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut outConstEls: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
     (outClassDefs, outConstEls) = 'mc: {
-        let __mc_input = (inElements, partialPrefix.clone());
+        let __mc_input = (inElements, partialPrefix);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _) => {
@@ -2130,7 +2130,7 @@ pub(crate) fn classdefElts2(mut inElements: Arc<metamodelica::List<(Arc<SCode::E
                 (Deref @ metamodelica::List::Cons { head: _, tail: xs }, _) => {
                     let mut cdefs: Arc<metamodelica::List<Arc<SCode::Element>>>;
                     let mut els: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
-                    (cdefs, els) = classdefElts2(xs.clone(), partialPrefix.clone())?;
+                    (cdefs, els) = classdefElts2(xs.clone(), partialPrefix)?;
                     Ok((cdefs.clone(), els.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2548,7 +2548,7 @@ fn addRecordConstructorsToTheCache(mut inCache: FCore::Cache, mut inEnv: FCore::
                     let mut env: FCore::Graph;
                     let mut ih: InstanceHierarchy;
                     metamodelica::print((literal!("Depreciated record constructor used: Inst.addRecordConstructorsToTheCache")).clone());
-                    let true = (AbsynUtil::isInputOrOutput(inDirection.clone())?) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::isInputOrOutput(inDirection)?) else { bail!("pattern mismatch") };
                     let false = (stringEq((AbsynUtil::pathLastIdent(path.clone())?).clone(), (name.clone()).clone())) else { bail!("pattern mismatch") };
                     (cache, env, ih) = InstFunction::implicitFunctionInstantiation(inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone()))
@@ -3058,7 +3058,7 @@ fn moveBindings3(mut inEquation: Arc<DAE::Element>) -> Result<Arc<DAE::Exp>> {
 
 pub(crate) fn checkModificationOnOuter(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inName: ArcStr, mut inCref: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>, mut inVariability: SCode::Variability, mut inInnerOuter: Absyn::InnerOuter, mut inImpl: bool, mut inInfo: SourceInfo) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inIH.clone(), inMod.clone(), inVariability, inInnerOuter.clone());
+        let __mc_input = (inIH.clone(), inMod.clone(), inVariability, inInnerOuter);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, SCode::Variability::CONST { .. }, _) => {
@@ -3089,7 +3089,7 @@ pub(crate) fn checkModificationOnOuter(mut inCache: FCore::Cache, mut inEnv: FCo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let false = (InnerOuter::modificationOnOuter(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), (inName.clone()).clone(), inCref.clone(), inMod.clone(), inInnerOuter.clone(), inImpl, inInfo.clone())) else { bail!("pattern mismatch") };
+                    let false = (InnerOuter::modificationOnOuter(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), (inName.clone()).clone(), inCref.clone(), inMod.clone(), inInnerOuter, inImpl, inInfo.clone())) else { bail!("pattern mismatch") };
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -3617,7 +3617,7 @@ fn propagateAllAttributes(mut inElement: Arc<DAE::Element>, mut inAttributes: SC
 
 fn propagateDirection(mut inVarDirection: DAE::VarDirection, mut inDirection: Absyn::Direction, mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<DAE::VarDirection> {
     let mut outVarDirection: DAE::VarDirection;
-    outVarDirection = (match (inVarDirection.clone(), inDirection.clone()) {
+    outVarDirection = (match (inVarDirection, inDirection) {
         (_, Absyn::Direction::BIDIR { .. }) => {
             inVarDirection
         },
@@ -3641,19 +3641,19 @@ fn propagateDirection(mut inVarDirection: DAE::VarDirection, mut inDirection: Ab
 fn propagateParallelism(mut inVarParallelism: DAE::VarParallelism, mut inParallelism: SCode::Parallelism, mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<DAE::VarParallelism> {
     let mut outVarParallelism: DAE::VarParallelism;
     outVarParallelism = 'mc: {
-        let __mc_input = (inVarParallelism.clone(), inParallelism.clone());
+        let __mc_input = (inVarParallelism, inParallelism);
         if let Ok(__v) = (|| -> Result<_> {
             let (_, SCode::Parallelism::NON_PARALLEL { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(inVarParallelism.clone())
+            Ok(inVarParallelism)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (DAE::VarParallelism::NON_PARALLEL { .. }, _) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(DAEUtil::scodePrlToDaePrl(inParallelism.clone())?)
+            Ok(DAEUtil::scodePrlToDaePrl(inParallelism)?)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut daeprl1, _) = __mc_input.clone() else { bail!("nomatch") };
             let mut daeprl2: DAE::VarParallelism;
-            daeprl2 = DAEUtil::scodePrlToDaePrl(inParallelism.clone())?;
+            daeprl2 = DAEUtil::scodePrlToDaePrl(inParallelism)?;
             let true = (DAEUtil::daeParallelismEqual(daeprl1.clone(), daeprl2.clone())) else { bail!("pattern mismatch") };
             Ok(daeprl1.clone())
         })() { break 'mc __v; }
@@ -3664,10 +3664,10 @@ fn propagateParallelism(mut inVarParallelism: DAE::VarParallelism, mut inParalle
             let mut s3: ArcStr;
             let mut s4: ArcStr;
             let mut daeprl2: DAE::VarParallelism;
-            daeprl2 = DAEUtil::scodePrlToDaePrl(inParallelism.clone())?;
+            daeprl2 = DAEUtil::scodePrlToDaePrl(inParallelism)?;
             s1 = (DAEDump::dumpVarParallelismStr(daeprl2.clone())?).clone();
             s2 = (ComponentReferenceBasics::printComponentRefStr(inCref.clone())?).clone();
-            s3 = (DAEDump::dumpVarParallelismStr(inVarParallelism.clone())?).clone();
+            s3 = (DAEDump::dumpVarParallelismStr(inVarParallelism)?).clone();
             s4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Component declared as '")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("' when having the variable '")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("' declared as '")); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("' : Subcomponent parallelism modified to.")); __mm_s.push_str(&*s1.clone()); ArcStr::from(__mm_s) }).clone();
             Error::addSourceMessage(Error::PARMODELICA_WARNING.clone(), list![(s4.clone()).clone()], inInfo.clone())?;
             Ok(daeprl2.clone())
@@ -3688,7 +3688,7 @@ fn propagateVisibility(mut inVarVisibility: DAE::VarVisibility, mut inVisibility
 
 fn propagateVariability(mut inVarKind: DAE::VarKind, mut inVariability: SCode::Variability) -> DAE::VarKind {
     let mut outVarKind: DAE::VarKind;
-    outVarKind = (match (inVarKind.clone(), inVariability) {
+    outVarKind = (match (inVarKind, inVariability) {
         (_, SCode::Variability::VAR { .. }) => inVarKind,
         (DAE::VarKind::DISCRETE { .. }, _) => inVarKind,
         (_, SCode::Variability::DISCRETE { .. }) => openmodelica_frontend_types::DAE::VarKind::DISCRETE,
@@ -3703,7 +3703,7 @@ fn propagateVariability(mut inVarKind: DAE::VarKind, mut inVariability: SCode::V
 
 fn propagateFinal(mut inVarAttributes: Option<Arc<DAE::VariableAttributes>>, mut inFinal: SCode::Final) -> Result<Option<Arc<DAE::VariableAttributes>>> {
     let mut outVarAttributes: Option<Arc<DAE::VariableAttributes>>;
-    outVarAttributes = (match inFinal.clone() {
+    outVarAttributes = (match inFinal {
         SCode::Final::FINAL { .. } => DAEUtil::setFinalAttr(inVarAttributes, SCodeUtil::finalBool(inFinal)?)?,
         _ => inVarAttributes,
     });
@@ -3712,7 +3712,7 @@ fn propagateFinal(mut inVarAttributes: Option<Arc<DAE::VariableAttributes>>, mut
 
 fn propagateInnerOuter(mut inVarInnerOuter: Absyn::InnerOuter, mut inInnerOuter: Absyn::InnerOuter) -> Absyn::InnerOuter {
     let mut outVarInnerOuter: Absyn::InnerOuter;
-    outVarInnerOuter = (match (inVarInnerOuter.clone(), inInnerOuter.clone()) {
+    outVarInnerOuter = (match (inVarInnerOuter, inInnerOuter) {
         (_, Absyn::InnerOuter::NOT_INNER_OUTER { .. }) => inVarInnerOuter,
         (Absyn::InnerOuter::NOT_INNER_OUTER { .. }, _) => inInnerOuter,
         _ => inVarInnerOuter,
@@ -3722,7 +3722,7 @@ fn propagateInnerOuter(mut inVarInnerOuter: Absyn::InnerOuter, mut inInnerOuter:
 
 fn propagateConnectorType(mut inVarConnectorType: Arc<DAE::ConnectorType>, mut inConnectorType: SCode::ConnectorType, mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<Arc<DAE::ConnectorType>> {
     let mut outVarConnectorType: Arc<DAE::ConnectorType>;
-    outVarConnectorType = (::match_deref::match_deref! { match &((inVarConnectorType.clone(), inConnectorType.clone())) {
+    outVarConnectorType = (::match_deref::match_deref! { match &((inVarConnectorType.clone(), inConnectorType)) {
         (_, SCode::ConnectorType::POTENTIAL { .. }) => {
             inVarConnectorType
         },
@@ -6556,18 +6556,18 @@ pub(crate) fn propagateAbSCDirection(mut inVariability: SCode::Variability, mut 
 
 pub(crate) fn propagateAbSCDirection2(mut v1: Absyn::Direction, mut optDerAttr: Option<SCode::Attributes>, mut inInfo: SourceInfo) -> Result<Absyn::Direction> {
     let mut v3: Absyn::Direction;
-    v3 = (match (v1.clone(), optDerAttr) {
+    v3 = (match (v1, optDerAttr) {
         (_, None) => {
-            v1.clone()
+            v1
         },
         (Absyn::Direction::BIDIR { .. }, Some(SCode::Attributes { direction: mut v2, .. })) => {
             v2.clone()
         },
         (_, Some(SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, .. })) => {
-            v1.clone()
+            v1
         },
-        (_, Some(SCode::Attributes { direction: mut v2, .. })) if (v1.clone() == v2.clone()) => {
-            v1.clone()
+        (_, Some(SCode::Attributes { direction: mut v2, .. })) if (v1 == v2.clone()) => {
+            v1
         },
         _ => {
             metamodelica::print((literal!(" failure in propagateAbSCDirection2, Absyn.DIRECTION mismatch")).clone());
@@ -6890,9 +6890,9 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
     restriction = SCodeUtil::getClassRestriction(cl.clone())?;
     let SCode::Restriction::R_FUNCTION { functionRestriction: __pa0 } = (restriction) else { bail!("pattern mismatch") };
     fres = __pa0.clone();
-    daePurity = InstBasics::getFunctionRestrictionPurity(SCodeUtil::getFunctionRestrictionPurity(fres.clone()), inheritedComment.clone(), false)?;
+    daePurity = InstBasics::getFunctionRestrictionPurity(SCodeUtil::getFunctionRestrictionPurity(fres), inheritedComment.clone(), false)?;
     attr = 'mc: {
-        let __mc_input = fres.clone();
+        let __mc_input = fres;
         if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5)) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: mut purity } = __mc_input.clone() else { bail!("nomatch") };
             let mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>> = inVars.clone();
@@ -6901,13 +6901,13 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
             let mut name: ArcStr = name.clone();
             let mut outVars: Arc<metamodelica::List<Arc<DAE::Var>>> = outVars.clone();
             let mut unboxArgs: bool = unboxArgs.clone();
-            isImpure = AbsynUtil::isImpure(purity.clone(), false);
+            isImpure = AbsynUtil::isImpure(purity, false);
             inVars = List::select(vl.clone(), (std::sync::Arc::new(Types::isInputVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
             outVars = List::select(vl.clone(), (std::sync::Arc::new(Types::isOutputVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
             name = (SCodeUtil::isBuiltinFunction(cl.clone(), List::map(inVars.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, List::map(outVars.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?)?).clone();
             inlineType = InstBasics::commentIsInlineFunc(inheritedComment.clone());
             unboxArgs = SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_UnboxArguments")).clone())?;
-            Ok((DAE::FunctionAttributes { inline: inlineType.clone(), generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: unboxArgs }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, inVars.clone(), inlineType.clone(), isImpure.clone(), name.clone(), outVars.clone(), unboxArgs.clone()))
+            Ok((DAE::FunctionAttributes { inline: inlineType, generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: unboxArgs }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, inVars.clone(), inlineType.clone(), isImpure.clone(), name.clone(), outVars.clone(), unboxArgs.clone()))
         })() { inVars = __wb0; inlineType = __wb1; isImpure = __wb2; name = __wb3; outVars = __wb4; unboxArgs = __wb5; break 'mc __v; }
         if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5)) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
@@ -6923,7 +6923,7 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
             inlineType = InstBasics::commentIsInlineFunc(inheritedComment.clone());
             isOpenModelicaPure = !(SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_Impure")).clone())?);
             unboxArgs = SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_UnboxArguments")).clone())?;
-            Ok((DAE::FunctionAttributes { inline: inlineType.clone(), generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: unboxArgs }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION }, inVars.clone(), inlineType.clone(), isOpenModelicaPure.clone(), name.clone(), outVars.clone(), unboxArgs.clone()))
+            Ok((DAE::FunctionAttributes { inline: inlineType, generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: unboxArgs }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION }, inVars.clone(), inlineType.clone(), isOpenModelicaPure.clone(), name.clone(), outVars.clone(), unboxArgs.clone()))
         })() { inVars = __wb0; inlineType = __wb1; isOpenModelicaPure = __wb2; name = __wb3; outVars = __wb4; unboxArgs = __wb5; break 'mc __v; }
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
@@ -6933,7 +6933,7 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
             inlineType = InstBasics::commentIsInlineFunc(inheritedComment.clone());
             isBuiltin = if (SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_BuiltinPtr")).clone())?) {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR} else {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN};
             isOpenModelicaPure = !(SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_Impure")).clone())?);
-            Ok((DAE::FunctionAttributes { inline: inlineType.clone(), generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: isBuiltin.clone(), functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION }, inlineType.clone(), isBuiltin.clone(), isOpenModelicaPure.clone()))
+            Ok((DAE::FunctionAttributes { inline: inlineType, generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: isBuiltin.clone(), functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION }, inlineType.clone(), isBuiltin.clone(), isOpenModelicaPure.clone()))
         })() { inlineType = __wb0; isBuiltin = __wb1; isOpenModelicaPure = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
@@ -6948,10 +6948,10 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
             inlineType = InstBasics::commentIsInlineFunc(inheritedComment.clone());
             hasOutVars = List::any(vl.clone(), (std::sync::Arc::new(Types::isOutputVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
             isBuiltin = if (SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_BuiltinPtr")).clone())?) {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR} else {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN};
-            if daePurity == DAE::Purity::UNDEFINED.clone() && SCodeUtil::isExternalFunctionRestriction(fres.clone()) && !(hasOutVars || Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())?) {
+            if daePurity == DAE::Purity::UNDEFINED.clone() && SCodeUtil::isExternalFunctionRestriction(fres) && !(hasOutVars || Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())?) {
                 daePurity = DAE::Purity::IMPURE.clone();
             }
-            Ok((DAE::FunctionAttributes { inline: inlineType.clone(), generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: isBuiltin.clone(), functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, daePurity.clone(), hasOutVars.clone(), inlineType.clone(), isBuiltin.clone()))
+            Ok((DAE::FunctionAttributes { inline: inlineType, generateEvents: false, purity: daePurity, isFunctionPointer: false, isBuiltin: isBuiltin.clone(), functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, daePurity.clone(), hasOutVars.clone(), inlineType.clone(), isBuiltin.clone()))
         })() { daePurity = __wb0; hasOutVars = __wb1; inlineType = __wb2; isBuiltin = __wb3; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
@@ -7920,7 +7920,7 @@ pub(crate) fn noModForUpdatedComponents(mut variability: SCode::Variability, mut
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     if !((BaseHashTable::hasKey(cref.clone(), updatedComps.clone())?)) { bail!("guard") }
-                    checkVariabilityOfUpdatedComponent(variability.clone(), cref.clone())?;
+                    checkVariabilityOfUpdatedComponent(variability, cref.clone())?;
                     Ok((openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::SCode::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
@@ -7941,7 +7941,7 @@ pub(crate) fn noModForUpdatedComponents(mut variability: SCode::Variability, mut
 
 pub(crate) fn propagateModFinal(mut inMod: Arc<DAE::Mod>, mut inFinal: SCode::Final) -> SCode::Final {
     let mut outFinal: SCode::Final;
-    outFinal = (::match_deref::match_deref! { match &((inMod, inFinal.clone())) {
+    outFinal = (::match_deref::match_deref! { match &((inMod, inFinal)) {
         (_, SCode::Final::FINAL { .. }) => {
             inFinal
         },

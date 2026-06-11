@@ -1184,7 +1184,7 @@ pub mod RefTree {
 
 }
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Kind {
     USERDEFINED,
     BUILTIN,
@@ -1544,7 +1544,7 @@ impl Default for Cache {
 }
 pub use self::Cache::{CACHE,NO_CACHE};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ScopeType {
     FUNCTION_SCOPE,
     CLASS_SCOPE,

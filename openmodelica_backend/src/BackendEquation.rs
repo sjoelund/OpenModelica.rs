@@ -1849,55 +1849,55 @@ pub(crate) fn setEquationKind(mut eq: Arc<BackendDAE::Equation>, mut k: BackendD
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::ARRAY_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::ARRAY_EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::FOR_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::FOR_EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::SOLVED_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::SOLVED_EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::RESIDUAL_EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::WHEN_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::WHEN_EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::ALGORITHM { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::ALGORITHM; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::COMPLEX_EQUATION; attr = a.clone());
             eq
         },
         Deref @ BackendDAE::Equation::IF_EQUATION { attr: a, .. } => {
             let mut a = (*a).clone();
-            a.kind = k.clone();
+            a.kind = k;
             assign_variant_field!(eq => BackendDAE::Equation::IF_EQUATION; attr = a.clone());
             eq
         },

@@ -2016,11 +2016,11 @@ pub(crate) fn buildTest1() -> Result<(Arc<metamodelica::List<Arc<UnitAbsyn::Unit
     nr1 = MMath::Rational { nom: -1, denom: 0 };
     nr2 = MMath::Rational { nom: -2, denom: 0 };
     ut = list![Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: Arc::new(UnitAbsyn::UnitTerm::LOC { loc: 1, origExp: Arc::new(DAE::Exp::SCONST { string: (literal!("1")).clone() }) }), ut2: Arc::new(UnitAbsyn::UnitTerm::LOC { loc: 4, origExp: Arc::new(DAE::Exp::SCONST { string: (literal!("4")).clone() }) }), origExp: Arc::new(DAE::Exp::SCONST { string: (literal!("1==4")).clone() }) }), Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: Arc::new(UnitAbsyn::UnitTerm::LOC { loc: 2, origExp: Arc::new(DAE::Exp::SCONST { string: (literal!("2")).clone() }) }), ut2: Arc::new(UnitAbsyn::UnitTerm::LOC { loc: 5, origExp: Arc::new(DAE::Exp::SCONST { string: (literal!("5")).clone() }) }), origExp: Arc::new(DAE::Exp::SCONST { string: (literal!("2==5")).clone() }) })];
-    unitderx = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1.clone(), nr1.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone()] } };
-    unitderv = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1.clone(), nr2.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone()] } };
-    unitx = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone()] } };
-    unitv = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1.clone(), nr1, r0.clone(), r0.clone(), r0.clone(), r0.clone(), r0.clone()] } };
-    unita = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1, nr2, r0.clone(), r0.clone(), r0.clone(), r0.clone(), r0] } };
+    unitderx = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1, nr1, r0, r0, r0, r0, r0] } };
+    unitderv = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1, nr2, r0, r0, r0, r0, r0] } };
+    unitx = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1, r0, r0, r0, r0, r0, r0] } };
+    unitv = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1, nr1, r0, r0, r0, r0, r0] } };
+    unita = UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: list![r1, nr2, r0, r0, r0, r0, r0] } };
     sigma = emptyStore();
     (sigma, _) = add(unitderx, sigma)?;
     (sigma, _) = add(unitderv, sigma)?;

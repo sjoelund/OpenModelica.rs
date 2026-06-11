@@ -215,7 +215,7 @@ impl Default for Value {
 }
 pub use self::Value::{INTEGER,REAL,STRING,BOOL,ENUM_LITERAL,ARRAY,LIST,META_ARRAY,TUPLE,META_TUPLE,RECORD,OPTION,CODE,NORETCALL,META_BOX,META_FAIL,EMPTY};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IntRealOp {
     MULOP,
     DIVOP,

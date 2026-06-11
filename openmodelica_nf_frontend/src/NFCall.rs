@@ -928,7 +928,7 @@ pub(crate) fn toFlatString(mut call: Arc<NFCall>, mut format: BaseModelica::Outp
     r#str = ((::match_deref::match_deref! { match &(call.clone()) {
         Deref @ TYPED_CALL { .. } => {
             name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((*call).r#fn, NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?).clone();
-            arg_str = (toFlatStringArgs(var_field!((*call).arguments, NFCall::TYPED_CALL).clone(), (name.clone()).clone(), format.clone())?).clone();
+            arg_str = (toFlatStringArgs(var_field!((*call).arguments, NFCall::TYPED_CALL).clone(), (name.clone()).clone(), format)?).clone();
             if (Function::isBuiltin(var_field!((*call).r#fn, NFCall::TYPED_CALL).clone())) {stringAppendList(list![(name).clone(), (literal!("(")).clone(), (arg_str).clone(), (literal!(")")).clone()])} else if (isExternalObjectConstructor(call.clone())) {stringAppendList(list![(Type::toFlatString(var_field!((*call).ty, NFCall::TYPED_CALL).clone(), format)?).clone(), (literal!("(")).clone(), (arg_str).clone(), (literal!(")")).clone()])} else {stringAppendList(list![(Util::makeQuotedIdentifier((name).clone())?).clone(), (literal!("(")).clone(), (arg_str).clone(), (literal!(")")).clone()])}
         },
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
@@ -936,11 +936,11 @@ pub(crate) fn toFlatString(mut call: Arc<NFCall>, mut format: BaseModelica::Outp
                 r#str = (Expression::toFlatString(devectorizeCall(call)?, format)?).clone();
             } else {
                 name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(NFBuiltinFuncs::ARRAY_FUNC().clone())?, (literal!(".")).clone(), true, false)?).clone();
-                arg_str = (Expression::toFlatString(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), format.clone())?).clone();
+                arg_str = (Expression::toFlatString(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), format)?).clone();
                 c = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut iter in (var_field!((*call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone()).into_iter().cloned() {
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*Util::makeQuotedIdentifier((InstNode::name(Util::tuple21(iter.clone()))?).clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toFlatString(Util::tuple22(iter.clone()), format.clone())?); ArcStr::from(__mm_s) };
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*Util::makeQuotedIdentifier((InstNode::name(Util::tuple21(iter.clone()))?).clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toFlatString(Util::tuple22(iter.clone()), format)?); ArcStr::from(__mm_s) };
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -951,11 +951,11 @@ pub(crate) fn toFlatString(mut call: Arc<NFCall>, mut format: BaseModelica::Outp
         },
         Deref @ TYPED_REDUCTION { .. } => {
             name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone())?, (literal!(".")).clone(), true, false)?).clone();
-            arg_str = (Expression::toFlatString(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), format.clone())?).clone();
+            arg_str = (Expression::toFlatString(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), format)?).clone();
             c = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut iter in (var_field!((*call).iters, NFCall::TYPED_REDUCTION).clone()).into_iter().cloned() {
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*Util::makeQuotedIdentifier((InstNode::name(Util::tuple21(iter.clone()))?).clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toFlatString(Util::tuple22(iter.clone()), format.clone())?); ArcStr::from(__mm_s) };
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*Util::makeQuotedIdentifier((InstNode::name(Util::tuple21(iter.clone()))?).clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toFlatString(Util::tuple22(iter.clone()), format)?); ArcStr::from(__mm_s) };
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -977,7 +977,7 @@ pub(crate) fn toFlatStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::
         Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Cons { head: __esc_arg2, tail: Deref @ metamodelica::List::Nil } } => {
             arg1 = (*__esc_arg1).clone();
             arg2 = (*__esc_arg2).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(arg1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", format = ")); __mm_s.push_str(&*Expression::toFlatString(arg2.clone(), format)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(arg1.clone(), format)?); __mm_s.push_str(&*literal!(", format = ")); __mm_s.push_str(&*Expression::toFlatString(arg2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         _ => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(args) {
@@ -986,7 +986,7 @@ pub(crate) fn toFlatStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::
             } };
             arg1 = __pa0.clone();
             rest_args = __pa1.clone();
-            argsString = (Expression::toFlatString(arg1, format.clone())?).clone();
+            argsString = (Expression::toFlatString(arg1, format)?).clone();
             if (rest_args.clone().len() as i32) == 3 {
                 let (__pa2, __pa3) = ::match_deref::match_deref! { match &(rest_args) {
                     Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
@@ -995,7 +995,7 @@ pub(crate) fn toFlatStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::
                 arg1 = __pa2.clone();
                 rest_args = __pa3.clone();
                 if !(Expression::isIntegerValue(arg1.clone(), 6)) {
-                    argsString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*argsString); __mm_s.push_str(&*literal!(", significantDigits = ")); __mm_s.push_str(&*Expression::toFlatString(arg1, format.clone())?); ArcStr::from(__mm_s) }).clone();
+                    argsString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*argsString); __mm_s.push_str(&*literal!(", significantDigits = ")); __mm_s.push_str(&*Expression::toFlatString(arg1, format)?); ArcStr::from(__mm_s) }).clone();
                 }
             }
             let (__pa4, __pa5) = ::match_deref::match_deref! { match &(rest_args) {
@@ -1005,7 +1005,7 @@ pub(crate) fn toFlatStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::
             arg1 = __pa4.clone();
             rest_args = __pa5.clone();
             if !(Expression::isZero(arg1.clone())?) {
-                argsString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*argsString); __mm_s.push_str(&*literal!(", minimumLength = ")); __mm_s.push_str(&*Expression::toFlatString(arg1, format.clone())?); ArcStr::from(__mm_s) }).clone();
+                argsString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*argsString); __mm_s.push_str(&*literal!(", minimumLength = ")); __mm_s.push_str(&*Expression::toFlatString(arg1, format)?); ArcStr::from(__mm_s) }).clone();
             }
             let (__pa6, __pa7) = ::match_deref::match_deref! { match &(rest_args) {
                 Deref @ metamodelica::List::Cons { head: __pa6, tail: __pa7 } => (__pa6.clone(), __pa7.clone()),
@@ -1023,7 +1023,7 @@ pub(crate) fn toFlatStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::
         _ => stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut arg in (args).into_iter().cloned() {
-            let __x = Expression::toFlatString(arg.clone(), format.clone())?;
+            let __x = Expression::toFlatString(arg.clone(), format)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

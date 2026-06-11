@@ -940,7 +940,7 @@ pub(crate) fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE
         outBinding = None;
     } else {
         info = Mod::getModInfo(inMod);
-        let (__pa2, __pa3) = ::match_deref::match_deref! { match &(Types::matchProp(e.clone(), p.clone(), DAE::Properties::PROP { type_: inType.clone(), constFlag: inConst.clone() }, true)) {
+        let (__pa2, __pa3) = ::match_deref::match_deref! { match &(Types::matchProp(e.clone(), p.clone(), DAE::Properties::PROP { type_: inType.clone(), constFlag: inConst }, true)) {
             Ok((__pa2, DAE::Properties::PROP { constFlag: __pa3, .. })) => (__pa2.clone(), __pa3.clone()),
             _ => {
             e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();

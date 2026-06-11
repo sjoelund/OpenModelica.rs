@@ -405,7 +405,7 @@ impl Default for EdgeLabel {
 pub type EDGELABEL = EdgeLabel;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FontStyle {
     FONTPLAIN,
     FONTBOLD,
@@ -427,7 +427,7 @@ impl Default for FontStyle {
 }
 pub use self::FontStyle::{FONTPLAIN,FONTBOLD,FONTITALIC,FONTBOLDITALIC};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ShapeType {
     RECTANGLE,
     ROUNDRECTANGLE,
@@ -461,7 +461,7 @@ impl Default for ShapeType {
 }
 pub use self::ShapeType::{RECTANGLE,ROUNDRECTANGLE,ELLIPSE,PARALLELOGRAM,HEXAGON,TRIANGLE,OCTAGON,DIAMOND,TRAPEZOID,TRAPEZOID2};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum LineType {
     LINE,
     DASHED,
@@ -481,7 +481,7 @@ impl Default for LineType {
 }
 pub use self::LineType::{LINE,DASHED,DASHEDDOTTED};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ArrowType {
     ARROWSTANDART,
     ARROWNONE,
@@ -501,7 +501,7 @@ impl Default for ArrowType {
 }
 pub use self::ArrowType::{ARROWSTANDART,ARROWNONE,ARROWCONCAVE};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum AttributeType {
     TYPE_STRING,
     TYPE_BOOLEAN,
@@ -523,7 +523,7 @@ impl Default for AttributeType {
 }
 pub use self::AttributeType::{TYPE_STRING,TYPE_BOOLEAN,TYPE_INTEGER,TYPE_DOUBLE};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum AttributeTarget {
     TARGET_NODE,
     TARGET_EDGE,
@@ -847,7 +847,7 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: head @ Attribute { attIdx, name, attTarget, .. }, tail: rest } => {
                     let true = (stringEq((name.clone()).clone(), (iAttributeName.clone()).clone())) else { bail!("pattern mismatch") };
-                    let true = (compareAttributeTargets(iAttributeTarget.clone(), attTarget.clone())?) else { bail!("pattern mismatch") };
+                    let true = (compareAttributeTargets(iAttributeTarget, attTarget.clone())?) else { bail!("pattern mismatch") };
                     Ok(Some((head.clone(), attIdx.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -857,7 +857,7 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
                     let mut tmpAttribute: Option<(Attribute, i32)> = tmpAttribute.clone();
-                    tmpAttribute = getAttributeByNameAndTargetTail(rest.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone());
+                    tmpAttribute = getAttributeByNameAndTargetTail(rest.clone(), (iAttributeName.clone()).clone(), iAttributeTarget);
                     Ok((tmpAttribute.clone(), tmpAttribute.clone()))
                 }
                 _ => bail!("nomatch"),

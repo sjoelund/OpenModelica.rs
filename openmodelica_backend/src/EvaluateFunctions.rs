@@ -112,7 +112,7 @@ impl Default for FuncInfo {
 pub type FUNCINFO = FuncInfo;
 
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub(crate) enum Variability {
     CONST,
     VARIABLE,

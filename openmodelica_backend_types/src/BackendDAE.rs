@@ -174,7 +174,7 @@ pub use self::SubClock::{SUBCLOCK,INFERED_SUBCLOCK};
 
 pub static DEFAULT_SUBCLOCK: std::sync::LazyLock<SubClock> = std::sync::LazyLock::new(|| { SubClock::SUBCLOCK { factor: MMath::RAT1.clone(), shift: MMath::RAT0.clone(), solver: None } });
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BaseClockPartitionKind {
     UNKNOWN_PARTITION,
     CLOCKED_PARTITION {
@@ -440,7 +440,7 @@ pub type EXTRA_INFO = ExtraInfo;
 
 /// BackendDAEType to indicate different types of BackendDAEs.
 ///  For example for simulation, initialization, Jacobian, algebraic loops etc.
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BackendDAEType {
     /// Type for the normal BackendDAE.DAE for simulation
     SIMULATION,
@@ -808,7 +808,7 @@ impl Default for VarKind {
 }
 pub use self::VarKind::{VARIABLE,STATE,STATE_DER,DUMMY_DER,DUMMY_STATE,CLOCKED_STATE,DISCRETE,PARAM,CONST,EXTOBJ,JAC_VAR,JAC_TMP_VAR,SEED_VAR,OPT_CONSTR,OPT_FCONSTR,OPT_INPUT_WITH_DER,OPT_INPUT_DER,OPT_TGRID,OPT_LOOP_INPUT,ALG_STATE,ALG_STATE_OLD,DAE_RESIDUAL_VAR,DAE_AUX_VAR,LOOP_ITERATION,LOOP_SOLVED};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TearingSelect {
     NEVER,
     AVOID,
@@ -835,7 +835,7 @@ pub use self::TearingSelect::{NEVER,AVOID,DEFAULT,PREFER,ALWAYS};
 pub const WHENCLK_PRREFIX: &'static str = "$whenclk";
 
 /// equation kind
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum EquationKind {
     BINDING_EQUATION,
     DYNAMIC_EQUATION,
@@ -869,7 +869,7 @@ impl Default for EquationKind {
 pub use self::EquationKind::{BINDING_EQUATION,DYNAMIC_EQUATION,INITIAL_EQUATION,CLOCKED_EQUATION,DISCRETE_EQUATION,AUX_EQUATION,UNKNOWN_EQUATION_KIND};
 
 /// evaluation stages
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EvaluationStages {
     pub dynamicEval: bool,
     pub algebraicEval: bool,
@@ -902,7 +902,7 @@ pub type EVALUATION_STAGES = EvaluationStages;
 
 pub static defaultEvalStages: EvaluationStages = EvaluationStages { dynamicEval: false, algebraicEval: false, zerocrossEval: false, discreteEval: false };
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EquationAttributes {
     /// true if the equation was differentiated, and should not be differentiated again to avoid equal equations
     pub differentiated: bool,
@@ -1319,7 +1319,7 @@ impl Default for Matching {
 }
 pub use self::Matching::{NO_MATCHING,MATCHING};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IndexReduction {
     /// Use index reduction during matching
     INDEX_REDUCTION,
@@ -1336,7 +1336,7 @@ impl metamodelica::gc::MMTrace for IndexReduction {
 }
 pub use self::IndexReduction::{INDEX_REDUCTION,NO_INDEX_REDUCTION};
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum EquationConstraints {
     /// for e.g. initial eqns.
     ///                  where not all variables
@@ -1913,7 +1913,7 @@ pub type AdjacencyMatrixEnhanced = metamodelica::Array<Arc<metamodelica::List<(i
 
 pub type AdjacencyMatrixTEnhanced = metamodelica::Array<Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>)>>>;
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Solvability {
     /// Equation is already solved for the variable
     SOLVABILITY_SOLVED,
@@ -1974,7 +1974,7 @@ pub use self::Solvability::{SOLVABILITY_SOLVED,SOLVABILITY_CONSTONE,SOLVABILITY_
 /// Constraints on the solvability of the (casual) tearing set; needed for proper Dynamic Tearing
 pub type Constraints = Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>;
 
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IndexType {
     /// adjacency matrix with absolute indexes
     ABSOLUTE,
@@ -2009,7 +2009,7 @@ pub use self::IndexType::{ABSOLUTE,NORMAL,SOLVABLE,BASECLOCK_IDX,SUBCLOCK_IDX,SP
 //
 // Jacobian stuff
 //
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum JacobianType {
     /// If Jacobian has only constant values, for system
     ///               of equations this means that it can be solved statically.
@@ -2198,7 +2198,7 @@ pub fn emptyInputData() -> DifferentiateInputData { __emptyInputData_TLS.with(|_
 pub type DifferentiateInputArguments = (Arc<openmodelica_frontend_types::DAE::ComponentRef>, DifferentiateInputData, DifferentiationType, Arc<AvlTreePathFunction::Tree>);
 
 /// Define the behaviour of differentiation method for (e.g. index reduction, ...)
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum DifferentiationType {
     /// Used for index reduction differentiation w.r.t. time (e.g. create dummy derivative variables)
     DIFFERENTIATION_TIME,
