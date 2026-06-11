@@ -240,15 +240,15 @@ pub(crate) fn createStartEquation(mut var: Pointer::Pointer<Arc<Variable::NFVari
             e.clone()
         },
         _ => {
-            (_, name, start_var, start_name) = createStartVar(var.clone(), name.clone(), metamodelica::nil())?;
-            Pointer::update(ptr_start_vars.clone(), metamodelica::cons(start_var.clone(), Pointer::access(ptr_start_vars)));
-            Expression::fromCref(start_name.clone(), false)?
+            (_, name, start_var, start_name) = createStartVar(var.clone(), name, metamodelica::nil())?;
+            Pointer::update(ptr_start_vars.clone(), metamodelica::cons(start_var, Pointer::access(ptr_start_vars)));
+            Expression::fromCref(start_name, false)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             kind = if (BVariable::isContinuous(var.clone(), true)?) {EquationKind::CONTINUOUS.clone()} else {EquationKind::DISCRETE.clone()};
-            start_eq = BEquation::Equation::makeAssignment(Expression::fromCref(name.clone(), false)?, start_exp.clone(), idx, (arcstr::literal!(BEquation::START_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(kind.clone(), true, None, None))?;
-            Pointer::update(ptr_start_eqs.clone(), metamodelica::cons(start_eq.clone(), Pointer::access(ptr_start_eqs)));
+            start_eq = BEquation::Equation::makeAssignment(Expression::fromCref(name, false)?, start_exp, idx, (arcstr::literal!(BEquation::START_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(kind, true, None, None))?;
+            Pointer::update(ptr_start_eqs.clone(), metamodelica::cons(start_eq, Pointer::access(ptr_start_eqs)));
             ()
         },
         Deref @ Variable::VARIABLE { .. } => {
@@ -260,9 +260,9 @@ pub(crate) fn createStartEquation(mut var: Pointer::Pointer<Arc<Variable::NFVari
         Some(e) if (!(Expression::isLiteralXML(e.clone())?)) => {
             (_, _, start_var, start_name) = createStartVar(var.clone(), BVariable::getVarName(var.clone()), metamodelica::nil())?;
             kind = if (BVariable::isContinuous(var.clone(), true)?) {EquationKind::CONTINUOUS.clone()} else {EquationKind::DISCRETE.clone()};
-            start_eq = BEquation::Equation::makeAssignment(Expression::fromCref(start_name.clone(), false)?, e.clone(), idx, (arcstr::literal!(BEquation::START_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(kind.clone(), true, None, None))?;
-            Pointer::update(ptr_start_eqs.clone(), metamodelica::cons(start_eq.clone(), Pointer::access(ptr_start_eqs)));
-            Pointer::update(ptr_start_vars_init.clone(), metamodelica::cons(start_var.clone(), Pointer::access(ptr_start_vars_init)));
+            start_eq = BEquation::Equation::makeAssignment(Expression::fromCref(start_name, false)?, e.clone(), idx, (arcstr::literal!(BEquation::START_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(kind, true, None, None))?;
+            Pointer::update(ptr_start_eqs.clone(), metamodelica::cons(start_eq, Pointer::access(ptr_start_eqs)));
+            Pointer::update(ptr_start_vars_init.clone(), metamodelica::cons(start_var, Pointer::access(ptr_start_vars_init)));
             ()
         },
         _ => {
@@ -357,7 +357,7 @@ pub(crate) fn createStartVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVaria
         },
     });
             BVariable::addRecordChild(start_parent.clone(), start_var.clone())?;
-            start_var = BVariable::setParent(start_var, start_parent.clone());
+            start_var = BVariable::setParent(start_var, start_parent);
             start_var
         },
         _ => {
@@ -496,14 +496,14 @@ pub(crate) fn createStartExpressionSlice(mut exp: Arc<Expression::NFExpression>,
             let mut new_iter: Arc<ComponentRef::NFComponentRef>;
             (var_ptr, name, start_var, start_cref, _, frames, iterator) = createIteratedStartCref(var_ptr, name, (var_field!((**array_constructor).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone().len() as i32))?;
             replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-            for mut tpl in &*List::zip(var_field!((**array_constructor).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), frames.clone()) {
+            for mut tpl in &*List::zip(var_field!((**array_constructor).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), frames) {
                 let mut tpl = tpl.clone();
                 let ((__pa0, _), (__pa1, _, _)) = tpl.clone();
                 old_iter = __pa0.clone();
                 new_iter = __pa1.clone();
                 UnorderedMap::add(ComponentRef::fromNode(old_iter.clone(), InstNode::getType(old_iter.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()), Expression::fromCref(new_iter.clone(), false)?, replacements.clone())?;
             }
-            (Expression::map(var_field!((**array_constructor).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, iterator)
+            (Expression::map(var_field!((**array_constructor).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), (std::sync::Arc::new({ let __pe_b1 = replacements; move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, iterator)
         },
         _ => {
             let mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
@@ -513,7 +513,7 @@ pub(crate) fn createStartExpressionSlice(mut exp: Arc<Expression::NFExpression>,
                 start_exp = exp;
             } else {
                 (var_ptr, name, start_var, start_cref, subscripts, _, iterator) = createIteratedStartCref(var_ptr, name, 0)?;
-                start_exp = Expression::applySubscripts(subscripts.clone(), exp, true)?;
+                start_exp = Expression::applySubscripts(subscripts, exp, true)?;
             }
             (start_exp, iterator)
         },
@@ -884,17 +884,17 @@ pub(crate) fn removeWhenEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc
             let mut lhs_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             stmts = removeWhenEquationBody(Some(var_field!((*eqn).body, Equation::Equation::WHEN_EQUATION).clone()))?;
             if !(stmts.clone().is_empty()) {
-                new_eqn = Pointer::access(BEquation::Equation::makeAlgorithm(stmts.clone(), true)?);
-                new_eqn = BEquation::Equation::setResidualVar(new_eqn.clone(), BEquation::Equation::getResidualVar(Pointer::create(eqn))?)?;
+                new_eqn = Pointer::access(BEquation::Equation::makeAlgorithm(stmts, true)?);
+                new_eqn = BEquation::Equation::setResidualVar(new_eqn, BEquation::Equation::getResidualVar(Pointer::create(eqn))?)?;
             } else {
                 lhs_crefs = BEquation::WhenEquationBody::getAllAssigned(var_field!((*eqn).body, Equation::Equation::WHEN_EQUATION).clone());
-                for mut cref in &*lhs_crefs.clone() {
+                for mut cref in &*lhs_crefs {
                     let mut cref = cref.clone();
                     UnorderedMap::add(cref.clone(), iter.clone(), cref_map.clone())?;
                 }
                 new_eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
             }
-            new_eqn.clone()
+            new_eqn
         },
         Deref @ BEquation::Equation::IF_EQUATION { .. } => {
             assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = removeWhenEquationIfBody(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), iter, cref_map)?);
@@ -906,12 +906,12 @@ pub(crate) fn removeWhenEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc
             let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             stmts = removeWhenEquationAlgorithmBody(var_field!((*eqn).alg, Equation::Equation::ALGORITHM).statements.clone())?;
             if !(stmts.clone().is_empty()) {
-                new_eqn = Pointer::access(BEquation::Equation::makeAlgorithm(stmts.clone(), true)?);
-                new_eqn = BEquation::Equation::setResidualVar(new_eqn.clone(), BEquation::Equation::getResidualVar(Pointer::create(eqn))?)?;
+                new_eqn = Pointer::access(BEquation::Equation::makeAlgorithm(stmts, true)?);
+                new_eqn = BEquation::Equation::setResidualVar(new_eqn, BEquation::Equation::getResidualVar(Pointer::create(eqn))?)?;
             } else {
                 new_eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
             }
-            new_eqn.clone()
+            new_eqn
         },
         _ => {
             eqn
@@ -1011,9 +1011,9 @@ pub(crate) fn removeWhenEquationStatement(mut stmt: Arc<Statement::NFStatement>,
                 let mut body_stmt = body_stmt.clone();
                 stmts_acc = metamodelica::cons(removeWhenEquationStatement(body_stmt.clone(), condition_set.clone())?, stmts_acc.clone());
             }
-            stmts = List::flatten(stmts_acc.clone())?;
+            stmts = List::flatten(stmts_acc)?;
             if !(stmts.clone().is_empty()) {
-                assign_variant_field!(stmt => Statement::NFStatement::FOR; body = stmts.clone());
+                assign_variant_field!(stmt => Statement::NFStatement::FOR; body = stmts);
                 out_stmts = list![stmt];
             } else {
                 out_stmts = metamodelica::nil();
@@ -1042,12 +1042,12 @@ pub(crate) fn removeConditionEquation(mut stmt: Arc<Statement::NFStatement>, mut
                 out_stmts = list![stmt.clone()];
             } else {
                 tail_stmts = metamodelica::cons(stmt.clone(), Pointer::access(tail_stmts_ptr.clone()));
-                for mut pre_cref in &*UnorderedSet::toList(pre_set.clone()) {
+                for mut pre_cref in &*UnorderedSet::toList(pre_set) {
                     let mut pre_cref = pre_cref.clone();
                     post_cref = BVariable::getPartnerCref(pre_cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::getVarPre, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>), false)?;
                     tail_stmts = metamodelica::cons(Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: Expression::fromCref(pre_cref.clone(), false)?, rhs: Expression::fromCref(post_cref.clone(), false)?, ty: ComponentRef::getSubscriptedType(pre_cref.clone(), false)?, source: DAE::emptyElementSource().clone() }), tail_stmts.clone());
                 }
-                Pointer::update(tail_stmts_ptr, tail_stmts.clone());
+                Pointer::update(tail_stmts_ptr, tail_stmts);
             }
             out_stmts
         },
@@ -1136,7 +1136,7 @@ pub(crate) fn collectAlgorithmOutputs(mut eqn: Arc<Equation::Equation>, mut outp
         }
         __acc.reverse()
     }))?;
-            for mut cr in &*out_crefs.clone() {
+            for mut cr in &*out_crefs {
                 let mut cr = cr.clone();
                 UnorderedSet::add(cr.clone(), outputs.clone())?;
             }

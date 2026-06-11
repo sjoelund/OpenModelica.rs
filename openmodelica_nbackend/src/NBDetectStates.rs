@@ -239,18 +239,18 @@ fn collectStatesAndDerivatives(mut exp: Arc<Expression::NFExpression>, mut acc_s
             if !(BVariable::isContinuous(state_var.clone(), false)?) {
                 res = Expression::makeZero(ComponentRef::getSubscriptedType(state_cref.clone(), false)?)?;
             } else {
-                if BVariable::hasDerVar(state_var.clone()) {
+                if BVariable::hasDerVar(state_var) {
                     der_cref = BVariable::getPartnerCref(state_cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::getVarDer, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>), scalarized)?;
                 } else {
                     (der_cref, der_var) = BVariable::makeDerVar(state_cref.clone(), scalarized)?;
                     state_var = BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?;
                     BVariable::setStateDerivativeVar(state_var.clone(), der_var.clone());
-                    Pointer::update(acc_states.clone(), metamodelica::cons(state_var.clone(), Pointer::access(acc_states)));
-                    Pointer::update(acc_derivatives.clone(), metamodelica::cons(der_var.clone(), Pointer::access(acc_derivatives)));
+                    Pointer::update(acc_states.clone(), metamodelica::cons(state_var, Pointer::access(acc_states)));
+                    Pointer::update(acc_derivatives.clone(), metamodelica::cons(der_var, Pointer::access(acc_derivatives)));
                 }
-                res = Expression::fromCref(der_cref.clone(), false)?;
+                res = Expression::fromCref(der_cref, false)?;
             }
-            res.clone()
+            res
         },
         _ => {
             exp
@@ -273,24 +273,24 @@ fn resolveGeneralDer(mut exp: Arc<Expression::NFExpression>, mut acc_states: Poi
             let mut oDiffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments>;
             if Expression::fold(arg.clone(), (std::sync::Arc::new(checkAlgebraic) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, i32) -> Result<i32> + 'static>), 0)? > 1 {
                 (state_var, state_cref, der_var, der_cref) = BVariable::makeAuxStateVar(Pointer::access(uniqueIndex.clone()), Some(arg.clone()))?;
-                aux_equation = BEquation::Equation::makeAssignment(Expression::fromCref(state_cref.clone(), false)?, arg.clone(), uniqueIndex, (arcstr::literal!(BVariable::AUXILIARY_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::CONTINUOUS.clone(), false, None, None))?;
-                returnExp = Expression::fromCref(der_cref.clone(), false)?;
-                Pointer::update(acc_states.clone(), metamodelica::cons(state_var.clone(), Pointer::access(acc_states)));
-                Pointer::update(acc_derivatives.clone(), metamodelica::cons(der_var.clone(), Pointer::access(acc_derivatives)));
-                Pointer::update(acc_aux_equations.clone(), metamodelica::cons(aux_equation.clone(), Pointer::access(acc_aux_equations)));
+                aux_equation = BEquation::Equation::makeAssignment(Expression::fromCref(state_cref, false)?, arg.clone(), uniqueIndex, (arcstr::literal!(BVariable::AUXILIARY_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::CONTINUOUS.clone(), false, None, None))?;
+                returnExp = Expression::fromCref(der_cref, false)?;
+                Pointer::update(acc_states.clone(), metamodelica::cons(state_var, Pointer::access(acc_states)));
+                Pointer::update(acc_derivatives.clone(), metamodelica::cons(der_var, Pointer::access(acc_derivatives)));
+                Pointer::update(acc_aux_equations.clone(), metamodelica::cons(aux_equation, Pointer::access(acc_aux_equations)));
             } else {
                 (returnExp, oDiffArgs) = Differentiate::differentiateExpression(arg.clone(), diffArgs)?;
-                returnExp = SimplifyExp::simplifyDump(returnExp.clone(), true, literal!("NBDetectStates.resolveGeneralDer"), (literal!("")).clone())?;
+                returnExp = SimplifyExp::simplifyDump(returnExp, true, literal!("NBDetectStates.resolveGeneralDer"), (literal!("")).clone())?;
                 if List::hasOneElement(oDiffArgs.new_vars.clone()) {
                     der_var = listHead(oDiffArgs.new_vars.clone())?;
                     Pointer::update(acc_derivatives.clone(), metamodelica::cons(der_var.clone(), Pointer::access(acc_derivatives)));
-                    Pointer::update(acc_states.clone(), metamodelica::cons(Util::getOption((BVariable::getVarState(der_var.clone())).0)?, Pointer::access(acc_states)));
+                    Pointer::update(acc_states.clone(), metamodelica::cons(Util::getOption((BVariable::getVarState(der_var)).0)?, Pointer::access(acc_states)));
                 } else if List::hasSeveralElements(oDiffArgs.new_vars.clone()) {
                     Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDetectStates.resolveGeneralDer")); __mm_s.push_str(&*literal!(" failed because the number of algebraic variables were miscounted! ")); __mm_s.push_str(&*literal!("Expected: 0 or 1, got: ")); __mm_s.push_str(&*intString((oDiffArgs.new_vars.clone().len() as i32))); ArcStr::from(__mm_s) }).clone()])?;
                     bail!("fail");
                 }
             }
-            returnExp.clone()
+            returnExp
         },
         _ => {
             exp
@@ -351,7 +351,7 @@ fn collectPreAndPrevious(mut exp: Arc<Expression::NFExpression>, mut acc_previou
         _ => exp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            new_exp.clone()
+            new_exp
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression>;
@@ -363,29 +363,29 @@ fn collectPreAndPrevious(mut exp: Arc<Expression::NFExpression>, mut acc_previou
             ()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDetectStates.collectPreAndPrevious")); __mm_s.push_str(&*literal!(" failed because previous() can only contain component references, but contained: ")); __mm_s.push_str(&*Expression::toString(old_exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDetectStates.collectPreAndPrevious")); __mm_s.push_str(&*literal!(" failed because previous() can only contain component references, but contained: ")); __mm_s.push_str(&*Expression::toString(old_exp)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            new_exp.clone()
+            new_exp
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression>;
             (new_exp, _) = preFromArgs(args.clone(), acc_previous, scalarized, (literal!("pre")).clone())?;
-            new_exp.clone()
+            new_exp
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression>;
             let mut old_exp: Arc<Expression::NFExpression>;
             (new_exp, old_exp) = preFromArgs(args.clone(), acc_previous, scalarized, (literal!("edge")).clone())?;
-            Arc::new(Expression::NFExpression::LBINARY { exp1: old_exp.clone(), operator: Operator::makeAnd(Expression::typeOf(old_exp.clone())), exp2: Expression::logicNegate(new_exp.clone()) })
+            Arc::new(Expression::NFExpression::LBINARY { exp1: old_exp.clone(), operator: Operator::makeAnd(Expression::typeOf(old_exp)), exp2: Expression::logicNegate(new_exp) })
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "change" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression>;
             let mut old_exp: Arc<Expression::NFExpression>;
             (new_exp, old_exp) = preFromArgs(args.clone(), acc_previous, scalarized, (literal!("change")).clone())?;
-            Arc::new(Expression::NFExpression::RELATION { exp1: old_exp.clone(), operator: Operator::makeNotEqual(Expression::typeOf(old_exp.clone())), exp2: new_exp.clone(), index: -1 })
+            Arc::new(Expression::NFExpression::RELATION { exp1: old_exp.clone(), operator: Operator::makeNotEqual(Expression::typeOf(old_exp)), exp2: new_exp, index: -1 })
         },
         _ => {
             exp

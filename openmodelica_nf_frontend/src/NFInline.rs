@@ -72,7 +72,7 @@ pub(crate) fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forc
         DAE::InlineType::NORM_INLINE { .. } => forceInline || Flags::getConfigBool(Flags::FRONTEND_INLINE.clone())?,
         _ => forceInline,
     });
-            if (shouldInline.clone()) {inlineCall(callExp, forceInline)?} else {callExp}
+            if (shouldInline) {inlineCall(callExp, forceInline)?} else {callExp}
         },
         _ => {
             callExp
@@ -212,7 +212,7 @@ fn replaceDimExp(mut dim: Arc<Dimension::NFDimension>, mut node: Arc<InstNode::I
         Deref @ Dimension::EXP { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
             exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b1 = node; let __pe_b2 = value; move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            Dimension::fromExp(exp.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?
+            Dimension::fromExp(exp, var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?
         },
         _ => {
             dim

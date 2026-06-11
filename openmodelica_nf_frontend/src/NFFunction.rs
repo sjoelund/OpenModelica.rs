@@ -656,10 +656,10 @@ pub mod Function {
             let mut node: Arc<InstNode::InstNode>;
             let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
             node = makeEnumConversionOp(fnNode.clone())?;
-            node = InstNode::makeRootClass(node.clone(), parent, None);
-            (node, cmts) = instFunction3(node.clone(), context, info)?;
-            r#fn = new(fnPath, node.clone(), cmts.clone())?;
-            fnNode = InstNode::cacheAddFunc(fnNode, r#fn.clone(), false)?;
+            node = InstNode::makeRootClass(node, parent, None);
+            (node, cmts) = instFunction3(node, context, info)?;
+            r#fn = new(fnPath, node, cmts)?;
+            fnNode = InstNode::cacheAddFunc(fnNode, r#fn, false)?;
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { .. } => {
@@ -670,12 +670,12 @@ pub mod Function {
             }
             fnNode = InstNode::makeRootClass(fnNode, parent, None);
             (fnNode, cmts) = instFunction3(fnNode, context, info.clone())?;
-            r#fn = new(fnPath, fnNode.clone(), cmts.clone())?;
+            r#fn = new(fnPath, fnNode.clone(), cmts)?;
             specialBuiltin = isSpecialBuiltin(r#fn.clone())?;
             assign_field!(r#fn.derivatives = FunctionDerivative::instDerivatives(fnNode.clone(), r#fn.clone())?);
             assign_field!(r#fn.inverses = FunctionInverse::instInverses(fnNode.clone(), r#fn.clone())?);
             assign_field!(r#fn.derivedInputs = instPartialDerivedVars(var_field!((*def).classDef, SCode::Element::CLASS).clone(), r#fn.inputs.clone(), r#fn.clone(), context, info)?);
-            fnNode = InstNode::cacheAddFunc(fnNode, r#fn.clone(), specialBuiltin)?;
+            fnNode = InstNode::cacheAddFunc(fnNode, r#fn, specialBuiltin)?;
             (fnNode.clone(), specialBuiltin)
         },
         _ => bail!("match: no arm matched"),
@@ -1292,8 +1292,8 @@ pub mod Function {
             assign_field!(slot.evalStatus = SlotEvalStatus::EVALUATING.clone());
             metamodelica::arrayUpdate(slots.clone(), slot.index.clone(), slot.clone())?;
             exp = evaluateSlotExp(Util::getOption(slot.default.clone())?, slots.clone(), context, info.clone())?;
-            (exp, ty, var, pur) = Typing::typeExp(exp.clone(), context, info, false)?;
-            outArg = Arc::new(TypedArg { name: None, value: exp.clone(), ty: ty.clone(), var: var.clone(), purity: pur.clone() });
+            (exp, ty, var, pur) = Typing::typeExp(exp, context, info, false)?;
+            outArg = Arc::new(TypedArg { name: None, value: exp, ty: ty, var: var, purity: pur });
             assign_field!(
                 slot.arg = Some(outArg.clone()),
                 slot.evalStatus = SlotEvalStatus::EVALUATED.clone()
@@ -2714,9 +2714,9 @@ pub mod Function {
             let mut cr_node: Arc<InstNode::InstNode>;
             cr = ComponentRef::last(var_field!((*exp).cref, Expression::NFExpression::CREF).clone());
             if ComponentRef::isCref(cr.clone()) {
-                cr_node = ComponentRef::node(cr.clone())?;
+                cr_node = ComponentRef::node(cr)?;
                 if UnorderedSet::contains(cr_node.clone(), locals)? {
-                    UnorderedSet::add(cr_node.clone(), deps.clone())?;
+                    UnorderedSet::add(cr_node, deps.clone())?;
                 }
             }
             ()

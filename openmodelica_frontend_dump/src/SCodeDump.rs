@@ -230,45 +230,45 @@ pub fn shortElementStr(mut inElement: Arc<SCode::Element>) -> Result<ArcStr> {
             let mut r#str: ArcStr;
             let mut res: ArcStr;
             r#str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*printModStr(r#mod.clone(), defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone();
-            res = stringAppendList(list![(literal!("extends ")).clone(), (r#str.clone()).clone(), (literal!(";")).clone()]);
-            res.clone()
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*printModStr(r#mod.clone(), defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone();
+            res = stringAppendList(list![(literal!("extends ")).clone(), (r#str).clone(), (literal!(";")).clone()]);
+            res
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
             let mut res: ArcStr;
             res = (unparseElementStr(inElement, defaultOptions.clone())?).clone();
-            res.clone()
+            res
         },
         Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { .. }, classDef: Deref @ SCode::ClassDef::DERIVED { .. }, .. } => {
             let mut res: ArcStr;
             res = (unparseElementStr(inElement, defaultOptions.clone())?).clone();
-            res.clone()
+            res
         },
         Deref @ SCode::Element::CLASS { name: n, partialPrefix: pp, prefixes: Deref @ SCode::Prefixes { innerOuter: io, redeclarePrefix: rdp, replaceablePrefix: rpp, .. }, classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. } => {
             let mut res: ArcStr;
             let mut ioStr: ArcStr;
             ioStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Dump::unparseInnerOuterStr(io.clone())?); __mm_s.push_str(&*redeclareStr(rdp.clone())?); __mm_s.push_str(&*replaceablePrefixStr(rpp.clone())?); __mm_s.push_str(&*partialStr(pp.clone())?); ArcStr::from(__mm_s) }).clone();
-            res = stringAppendList(list![(ioStr.clone()).clone(), (literal!("class extends ")).clone(), (n.clone()).clone(), (literal!(";")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(ioStr).clone(), (literal!("class extends ")).clone(), (n.clone()).clone(), (literal!(";")).clone()]);
+            res
         },
         Deref @ SCode::Element::CLASS { name: n, partialPrefix: pp, prefixes: Deref @ SCode::Prefixes { innerOuter: io, redeclarePrefix: rdp, replaceablePrefix: rpp, .. }, classDef: Deref @ SCode::ClassDef::ENUMERATION { .. }, .. } => {
             let mut res: ArcStr;
             let mut ioStr: ArcStr;
             ioStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Dump::unparseInnerOuterStr(io.clone())?); __mm_s.push_str(&*redeclareStr(rdp.clone())?); __mm_s.push_str(&*replaceablePrefixStr(rpp.clone())?); __mm_s.push_str(&*partialStr(pp.clone())?); ArcStr::from(__mm_s) }).clone();
-            res = stringAppendList(list![(ioStr.clone()).clone(), (literal!("class ")).clone(), (n.clone()).clone(), (literal!(" enumeration;")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(ioStr).clone(), (literal!("class ")).clone(), (n.clone()).clone(), (literal!(" enumeration;")).clone()]);
+            res
         },
         Deref @ SCode::Element::CLASS { name: n, partialPrefix: pp, prefixes: Deref @ SCode::Prefixes { innerOuter: io, redeclarePrefix: rdp, replaceablePrefix: rpp, .. }, .. } => {
             let mut res: ArcStr;
             let mut ioStr: ArcStr;
             ioStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Dump::unparseInnerOuterStr(io.clone())?); __mm_s.push_str(&*redeclareStr(rdp.clone())?); __mm_s.push_str(&*replaceablePrefixStr(rpp.clone())?); __mm_s.push_str(&*partialStr(pp.clone())?); ArcStr::from(__mm_s) }).clone();
-            res = stringAppendList(list![(ioStr.clone()).clone(), (literal!("class ")).clone(), (n.clone()).clone(), (literal!(";")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(ioStr).clone(), (literal!("class ")).clone(), (n.clone()).clone(), (literal!(";")).clone()]);
+            res
         },
         Deref @ SCode::Element::IMPORT { imp, .. } => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("import ")); __mm_s.push_str(&*AbsynUtil::printImportString(imp.clone())?); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
@@ -411,7 +411,7 @@ pub(crate) fn replaceableStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Resu
             let mut mod_str: ArcStr;
             path_str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
             mod_str = (printModStr(r#mod.clone(), defaultOptions.clone())?).clone();
-            (literal!("replaceable "), { let mut __mm_s = String::new(); __mm_s.push_str(&*path_str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*mod_str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
+            (literal!("replaceable "), { let mut __mm_s = String::new(); __mm_s.push_str(&*path_str); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*mod_str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
         },
         Deref @ SCode::Replaceable::REPLACEABLE { cc: None } => {
             (literal!("replaceable "), literal!(""))
@@ -446,7 +446,7 @@ pub(crate) fn prefixesStr(mut prefixes: Arc<SCode::Prefixes>) -> Result<ArcStr> 
         Deref @ SCode::Prefixes { visibility: v, redeclarePrefix: rd, finalPrefix: f, innerOuter: io, replaceablePrefix: rpl } => {
             let mut s: ArcStr;
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*visibilityStr(v.clone())?); __mm_s.push_str(&*redeclareStr(rd.clone())?); __mm_s.push_str(&*finalStr(f.clone())?); __mm_s.push_str(&*Dump::unparseInnerOuterStr(io.clone())?); __mm_s.push_str(&*replaceablePrefixStr(rpl.clone())?); ArcStr::from(__mm_s) }).clone();
-            s.clone()
+            s
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

@@ -304,7 +304,7 @@ pub mod SimJacobian {
         }
         __acc.reverse()
     });
-            indices.generic_call_map = sim_map.clone();
+            indices.generic_call_map = sim_map;
             if Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())? {
                 seed_vec = BVariable::VariablePointers::scalarize(var_field!((**varData).seedVars, VarData::VarData::VAR_DATA_JAC).clone())?;
                 res_vec = BVariable::VariablePointers::scalarize(var_field!((**varData).resultVars, VarData::VarData::VAR_DATA_JAC).clone())?;
@@ -314,12 +314,12 @@ pub mod SimJacobian {
                 res_vec = var_field!((**varData).resultVars, VarData::VarData::VAR_DATA_JAC).clone();
                 tmp_vec = var_field!((**varData).tmpVars, VarData::VarData::VAR_DATA_JAC).clone();
             }
-            BVariable::VariablePointers::map(seed_vec.clone(), (std::sync::Arc::new({ let __pe_b1 = seedVars_ptr.clone(); let __pe_b2 = Pointer::create(SimCode::EMPTY_SIM_CODE_INDICES()); let __pe_b3 = VarType::SIMULATION.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFVariable::NFVariable>) -> Result<Arc<NFVariable::NFVariable>> + 'static>))?;
-            BVariable::VariablePointers::map(res_vec.clone(), (std::sync::Arc::new({ let __pe_b1 = resVars_ptr.clone(); let __pe_b2 = Pointer::create(SimCode::EMPTY_SIM_CODE_INDICES()); let __pe_b3 = VarType::SIMULATION.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFVariable::NFVariable>) -> Result<Arc<NFVariable::NFVariable>> + 'static>))?;
-            BVariable::VariablePointers::map(tmp_vec.clone(), (std::sync::Arc::new({ let __pe_b1 = tmpVars_ptr.clone(); let __pe_b2 = Pointer::create(SimCode::EMPTY_SIM_CODE_INDICES()); let __pe_b3 = VarType::SIMULATION.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFVariable::NFVariable>) -> Result<Arc<NFVariable::NFVariable>> + 'static>))?;
-            seedVars = Pointer::access(seedVars_ptr.clone()).reverse();
-            resVars = Pointer::access(resVars_ptr.clone()).reverse();
-            tmpVars = Pointer::access(tmpVars_ptr.clone()).reverse();
+            BVariable::VariablePointers::map(seed_vec, (std::sync::Arc::new({ let __pe_b1 = seedVars_ptr.clone(); let __pe_b2 = Pointer::create(SimCode::EMPTY_SIM_CODE_INDICES()); let __pe_b3 = VarType::SIMULATION.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFVariable::NFVariable>) -> Result<Arc<NFVariable::NFVariable>> + 'static>))?;
+            BVariable::VariablePointers::map(res_vec, (std::sync::Arc::new({ let __pe_b1 = resVars_ptr.clone(); let __pe_b2 = Pointer::create(SimCode::EMPTY_SIM_CODE_INDICES()); let __pe_b3 = VarType::SIMULATION.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFVariable::NFVariable>) -> Result<Arc<NFVariable::NFVariable>> + 'static>))?;
+            BVariable::VariablePointers::map(tmp_vec, (std::sync::Arc::new({ let __pe_b1 = tmpVars_ptr.clone(); let __pe_b2 = Pointer::create(SimCode::EMPTY_SIM_CODE_INDICES()); let __pe_b3 = VarType::SIMULATION.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFVariable::NFVariable>) -> Result<Arc<NFVariable::NFVariable>> + 'static>))?;
+            seedVars = Pointer::access(seedVars_ptr).reverse();
+            resVars = Pointer::access(resVars_ptr).reverse();
+            tmpVars = Pointer::access(tmpVars_ptr).reverse();
             jac_map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), (seedVars.clone().len() as i32) + (resVars.clone().len() as i32) + (tmpVars.clone().len() as i32));
             SimCodeUtil::addListSimCodeMap(seedVars.clone(), jac_map.clone())?;
             SimCodeUtil::addListSimCodeMap(resVars.clone(), jac_map.clone())?;

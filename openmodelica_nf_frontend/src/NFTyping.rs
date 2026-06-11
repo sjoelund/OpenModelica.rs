@@ -565,7 +565,7 @@ pub(crate) fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::N
             } else {
                 dim = dimension;
             }
-            dim.clone()
+            dim
         },
         Deref @ Dimension::UNTYPED { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
@@ -575,28 +575,28 @@ pub(crate) fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::N
             let mut target: Arc<Ceval::EvalTarget::EvalTarget>;
             metamodelica::arrayUpdate(dimensions.clone(), index, Arc::new(Dimension::NFDimension::UNTYPED { dimension: var_field!((*dimension).dimension, Dimension::NFDimension::UNTYPED).clone(), isProcessing: true }))?;
             (exp, ty, var, _) = typeExp(var_field!((*dimension).dimension, Dimension::NFDimension::UNTYPED).clone(), InstContext::set(context, InstContext::DIMENSION.clone()), info.clone(), false)?;
-            TypeCheck::checkDimensionType(exp.clone(), ty.clone(), info.clone())?;
+            TypeCheck::checkDimensionType(exp.clone(), ty, info.clone())?;
             if !(InstContext::inFunction(context)) {
-                if var.clone() <= Variability::PARAMETER.clone() {
+                if var <= Variability::PARAMETER.clone() {
                     if InstContext::inRelaxed(context) {
-                        exp = Ceval::tryEvalExp(exp.clone(), Ceval::noTarget().clone());
+                        exp = Ceval::tryEvalExp(exp, Ceval::noTarget().clone());
                     } else {
                         target = Ceval::EvalTarget::new(info, context, Some(Arc::new(Ceval::EvalTargetData { component: component.clone(), index: index, exp: exp.clone() })));
-                        exp = Ceval::tryEvalExpResizable(exp.clone(), target.clone())?;
+                        exp = Ceval::tryEvalExpResizable(exp, target)?;
                     }
-                } else if !(var.clone() == Variability::NON_STRUCTURAL_PARAMETER.clone()) {
+                } else if !(var == Variability::NON_STRUCTURAL_PARAMETER.clone()) {
                     Error::addSourceMessage(Error::DIMENSION_NOT_KNOWN.clone(), list![(Expression::toString(exp.clone())?).clone()], info)?;
                     bail!("fail");
                 }
             } else {
-                if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() && !(Expression::contains(exp.clone(), (std::sync::Arc::new(fnptr!(Expression::isFunctionInputCref, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
-                    exp = Ceval::tryEvalExp(exp.clone(), Ceval::noTarget().clone());
+                if var <= Variability::STRUCTURAL_PARAMETER.clone() && !(Expression::contains(exp.clone(), (std::sync::Arc::new(fnptr!(Expression::isFunctionInputCref, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
+                    exp = Ceval::tryEvalExp(exp, Ceval::noTarget().clone());
                 }
             }
-            exp = subscriptDimExp(exp.clone(), component.clone())?;
-            dim = Dimension::fromExp(exp.clone(), var.clone())?;
+            exp = subscriptDimExp(exp, component.clone())?;
+            dim = Dimension::fromExp(exp, var)?;
             metamodelica::arrayUpdate(dimensions.clone(), index, dim.clone())?;
-            dim.clone()
+            dim
         },
         Deref @ Dimension::UNKNOWN if (InstContext::inFunction(context) && (Binding::isUnbound(binding.clone()) && InstNode::isOutput(component.clone()) || !(InstNode::isOutput(component.clone())))) => {
             dimension
@@ -619,7 +619,7 @@ pub(crate) fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::N
                 if Binding::isUnbound(b.clone()) {
                     parent_dims = 0;
                     b = Class::lookupAttributeBinding((literal!("start")).clone(), InstNode::getClass(component.clone())?);
-                    b = Binding::mapExp(b.clone(), (std::sync::Arc::new({ let __pe_b1 = component.clone(); move |__pe_a0| Expression::filterSplitIndices(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+                    b = Binding::mapExp(b, (std::sync::Arc::new({ let __pe_b1 = component.clone(); move |__pe_a0| Expression::filterSplitIndices(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 }
             }
             (dim, ty_err) = (::match_deref::match_deref! { match &(b.clone()) {
@@ -627,14 +627,14 @@ pub(crate) fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::N
             Error::addSourceMessage(Error::FAILURE_TO_DEDUCE_DIMS_NO_MOD.clone(), list![ArcStr::from(::std::format!("{}", index)), (InstNode::name(component.clone())?).clone()], info.clone())?;
             bail!("fail")
         },
-        Deref @ Binding::UNTYPED_BINDING { .. } => deduceDimensionFromExp(var_field!((*b).bindingExp, Binding::NFBinding::UNTYPED_BINDING).clone(), None, index, parent_dims.clone(), component.clone(), context, info.clone())?,
-        Deref @ Binding::TYPED_BINDING { .. } => deduceDimensionFromExp(var_field!((*b).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(), Some(var_field!((*b).bindingType, Binding::NFBinding::TYPED_BINDING).clone()), index, parent_dims.clone(), component.clone(), context, info.clone())?,
+        Deref @ Binding::UNTYPED_BINDING { .. } => deduceDimensionFromExp(var_field!((*b).bindingExp, Binding::NFBinding::UNTYPED_BINDING).clone(), None, index, parent_dims, component.clone(), context, info.clone())?,
+        Deref @ Binding::TYPED_BINDING { .. } => deduceDimensionFromExp(var_field!((*b).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(), Some(var_field!((*b).bindingType, Binding::NFBinding::TYPED_BINDING).clone()), index, parent_dims, component.clone(), context, info.clone())?,
         _ => (dimension, crate::NFTyping::TypingError::interned_NO_ERROR()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            let () = (::match_deref::match_deref! { match &(ty_err.clone()) {
+            let () = (::match_deref::match_deref! { match &(ty_err) {
         Deref @ TypingError::OUT_OF_BOUNDS { .. } if (!(InstContext::inRelaxed(context))) => {
-            Error::addSourceMessage(Error::DIMENSION_DEDUCTION_FROM_BINDING_FAILURE.clone(), list![ArcStr::from(::std::format!("{}", index)), (InstNode::name(component.clone())?).clone(), (Binding::toString(b.clone(), (literal!("")).clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::DIMENSION_DEDUCTION_FROM_BINDING_FAILURE.clone(), list![ArcStr::from(::std::format!("{}", index)), (InstNode::name(component.clone())?).clone(), (Binding::toString(b, (literal!("")).clone())?).clone()], info.clone())?;
             bail!("fail")
         },
         _ => (),
@@ -648,7 +648,7 @@ pub(crate) fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::N
                 exp = Ceval::tryEvalExp(exp.clone(), Ceval::noTarget().clone());
             } else {
                 target = Ceval::EvalTarget::new(info, context, Some(Arc::new(Ceval::EvalTargetData { component: component.clone(), index: index, exp: exp.clone() })));
-                exp = Ceval::evalExp(exp.clone(), target.clone())?;
+                exp = Ceval::evalExp(exp.clone(), target)?;
             }
             exp = subscriptDimExp(exp.clone(), component.clone())?;
             Dimension::fromExp(exp.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?
@@ -657,11 +657,11 @@ pub(crate) fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::N
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeDimension")); __mm_s.push_str(&*literal!(" returned unknown dimension in a non-function context")); ArcStr::from(__mm_s) }).clone(), info)?;
             bail!("fail")
         },
-        _ => dim.clone(),
+        _ => dim,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             metamodelica::arrayUpdate(dimensions.clone(), index, dim.clone())?;
-            dim.clone()
+            dim
         },
         _ => {
             dimension
@@ -944,8 +944,8 @@ pub fn typeBinding(mut binding: Arc<Binding::NFBinding>, mut context: i32) -> Re
             let mut info: SourceInfo;
             let mut exp = (*exp).clone();
             info = Binding::getInfo(binding.clone());
-            (exp, ty, var, purity) = typeExp(exp.clone(), context, info.clone(), false)?;
-            Arc::new(Binding::NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty.clone(), variability: var.clone(), purity: purity.clone(), eachType: var_field!((*binding).eachType, Binding::NFBinding::UNTYPED_BINDING).clone(), evalState: Mutable::create(Binding::EvalState::NOT_EVALUATED.clone()), isFlattened: false, source: var_field!((*binding).source, Binding::NFBinding::UNTYPED_BINDING).clone(), confidence: var_field!((*binding).confidence, Binding::NFBinding::UNTYPED_BINDING).clone(), info: var_field!((*binding).info, Binding::NFBinding::UNTYPED_BINDING).clone() })
+            (exp, ty, var, purity) = typeExp(exp.clone(), context, info, false)?;
+            Arc::new(Binding::NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty, variability: var, purity: purity, eachType: var_field!((*binding).eachType, Binding::NFBinding::UNTYPED_BINDING).clone(), evalState: Mutable::create(Binding::EvalState::NOT_EVALUATED.clone()), isFlattened: false, source: var_field!((*binding).source, Binding::NFBinding::UNTYPED_BINDING).clone(), confidence: var_field!((*binding).confidence, Binding::NFBinding::UNTYPED_BINDING).clone(), info: var_field!((*binding).info, Binding::NFBinding::UNTYPED_BINDING).clone() })
         },
         Deref @ Binding::TYPED_BINDING { .. } => {
             binding
@@ -976,13 +976,13 @@ pub(crate) fn typeComponentCondition(mut condition: Arc<Binding::NFBinding>, mut
             let mut exp = (*exp).clone();
             next_context = InstContext::set(context, InstContext::CONDITION.clone());
             info = Binding::getInfo(condition.clone());
-            (exp, ty, var, purity) = typeExp(exp.clone(), next_context.clone(), info.clone(), false)?;
+            (exp, ty, var, purity) = typeExp(exp.clone(), next_context, info.clone(), false)?;
             (exp, _, mk) = TypeCheck::matchTypes(ty.clone(), crate::NFType::interned_BOOLEAN(), exp.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
-            if TypeCheck::isIncompatibleMatch(mk.clone()) {
+            if TypeCheck::isIncompatibleMatch(mk) {
                 Error::addSourceMessage(Error::IF_CONDITION_TYPE_ERROR.clone(), list![(Expression::toString(exp.clone())?).clone(), (Type::toString(ty.clone())?).clone()], info.clone())?;
                 bail!("fail");
             }
-            if var.clone() > Variability::PARAMETER.clone() {
+            if var > Variability::PARAMETER.clone() {
                 Error::addSourceMessage(Error::COMPONENT_CONDITION_VARIABILITY.clone(), list![(Expression::toString(exp.clone())?).clone()], info.clone())?;
                 bail!("fail");
             }
@@ -990,7 +990,7 @@ pub(crate) fn typeComponentCondition(mut condition: Arc<Binding::NFBinding>, mut
             if evaluate {
                 ErrorExt::setCheckpoint(literal!("NFTyping.typeComponentCondition"));
                 if '__try0: {
-                    exp = unwrap_break_err!(Ceval::evalExp(exp.clone(), Ceval::EvalTarget::new(info.clone(), next_context.clone(), None)), '__try0);
+                    exp = unwrap_break_err!(Ceval::evalExp(exp.clone(), Ceval::EvalTarget::new(info.clone(), next_context, None)), '__try0);
                     exp = unwrap_break_err!(simplifyDimExp(exp.clone()), '__try0);
                     eval_state = Binding::EvalState::EVALUATED.clone();
                     Ok::<(), anyhow::Error>(())
@@ -998,7 +998,7 @@ pub(crate) fn typeComponentCondition(mut condition: Arc<Binding::NFBinding>, mut
                 }
                 ErrorExt::rollBack(literal!("NFTyping.typeComponentCondition"));
             }
-            Arc::new(Binding::NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty.clone(), variability: var.clone(), purity: purity.clone(), eachType: Binding::EachType::NOT_EACH.clone(), evalState: Mutable::create(eval_state.clone()), isFlattened: false, source: var_field!((*condition).source, Binding::NFBinding::UNTYPED_BINDING).clone(), confidence: var_field!((*condition).confidence, Binding::NFBinding::UNTYPED_BINDING).clone(), info: info.clone() })
+            Arc::new(Binding::NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty, variability: var, purity: purity, eachType: Binding::EachType::NOT_EACH.clone(), evalState: Mutable::create(eval_state), isFlattened: false, source: var_field!((*condition).source, Binding::NFBinding::UNTYPED_BINDING).clone(), confidence: var_field!((*condition).confidence, Binding::NFBinding::UNTYPED_BINDING).clone(), info: info })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1099,10 +1099,10 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
             let mut ty2: Arc<Type::NFType>;
             let mut next_context: i32;
             next_context = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
-            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), next_context.clone(), info.clone(), false)?;
-            (e2, ty2, var2, pur2) = typeExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), next_context.clone(), info.clone(), false)?;
-            (exp, ty) = TypeCheck::checkBinaryOperation(e1.clone(), ty1.clone(), var1.clone(), var_field!((*exp).operator, Expression::NFExpression::BINARY).clone(), e2.clone(), ty2.clone(), var2.clone(), context, info, retype)?;
-            (exp, ty, Prefixes::variabilityMax(var1.clone(), var2.clone()), Prefixes::purityMin(pur1.clone(), pur2.clone()))
+            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), next_context, info.clone(), false)?;
+            (e2, ty2, var2, pur2) = typeExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), next_context, info.clone(), false)?;
+            (exp, ty) = TypeCheck::checkBinaryOperation(e1, ty1, var1, var_field!((*exp).operator, Expression::NFExpression::BINARY).clone(), e2, ty2, var2, context, info, retype)?;
+            (exp, ty, Prefixes::variabilityMax(var1, var2), Prefixes::purityMin(pur1, pur2))
         },
         Deref @ Expression::UNARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -1111,9 +1111,9 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
             let mut ty1: Arc<Type::NFType>;
             let mut next_context: i32;
             next_context = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
-            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp, Expression::NFExpression::UNARY).clone(), next_context.clone(), info.clone(), false)?;
-            (exp, ty) = TypeCheck::checkUnaryOperation(e1.clone(), ty1.clone(), var1.clone(), var_field!((*exp).operator, Expression::NFExpression::UNARY).clone(), context, info)?;
-            (exp, ty, var1.clone(), pur1.clone())
+            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp, Expression::NFExpression::UNARY).clone(), next_context, info.clone(), false)?;
+            (exp, ty) = TypeCheck::checkUnaryOperation(e1, ty1, var1, var_field!((*exp).operator, Expression::NFExpression::UNARY).clone(), context, info)?;
+            (exp, ty, var1, pur1)
         },
         Deref @ Expression::LBINARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -1126,10 +1126,10 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
             let mut ty2: Arc<Type::NFType>;
             let mut next_context: i32;
             next_context = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
-            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), next_context.clone(), info.clone(), false)?;
-            (e2, ty2, var2, pur2) = typeExp(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), next_context.clone(), info.clone(), false)?;
-            (exp, ty) = TypeCheck::checkLogicalBinaryOperation(e1.clone(), ty1.clone(), var1.clone(), var_field!((*exp).operator, Expression::NFExpression::LBINARY).clone(), e2.clone(), ty2.clone(), var2.clone(), context, info)?;
-            (exp, ty, Prefixes::variabilityMax(var1.clone(), var2.clone()), Prefixes::purityMin(pur1.clone(), pur2.clone()))
+            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), next_context, info.clone(), false)?;
+            (e2, ty2, var2, pur2) = typeExp(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), next_context, info.clone(), false)?;
+            (exp, ty) = TypeCheck::checkLogicalBinaryOperation(e1, ty1, var1, var_field!((*exp).operator, Expression::NFExpression::LBINARY).clone(), e2, ty2, var2, context, info)?;
+            (exp, ty, Prefixes::variabilityMax(var1, var2), Prefixes::purityMin(pur1, pur2))
         },
         Deref @ Expression::LUNARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -1138,9 +1138,9 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
             let mut ty1: Arc<Type::NFType>;
             let mut next_context: i32;
             next_context = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
-            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp, Expression::NFExpression::LUNARY).clone(), next_context.clone(), info.clone(), false)?;
-            (exp, ty) = TypeCheck::checkLogicalUnaryOperation(e1.clone(), ty1.clone(), var1.clone(), var_field!((*exp).operator, Expression::NFExpression::LUNARY).clone(), context, info)?;
-            (exp, ty, var1.clone(), pur1.clone())
+            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp, Expression::NFExpression::LUNARY).clone(), next_context, info.clone(), false)?;
+            (exp, ty) = TypeCheck::checkLogicalUnaryOperation(e1, ty1, var1, var_field!((*exp).operator, Expression::NFExpression::LUNARY).clone(), context, info)?;
+            (exp, ty, var1, pur1)
         },
         Deref @ Expression::RELATION { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -1153,11 +1153,11 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
             let mut ty2: Arc<Type::NFType>;
             let mut next_context: i32;
             next_context = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
-            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), next_context.clone(), info.clone(), false)?;
-            (e2, ty2, var2, pur2) = typeExp(var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), next_context.clone(), info.clone(), false)?;
-            (exp, ty) = TypeCheck::checkRelationOperation(e1.clone(), ty1.clone(), var1.clone(), var_field!((*exp).operator, Expression::NFExpression::RELATION).clone(), e2.clone(), ty2.clone(), var2.clone(), var_field!((*exp).index, Expression::NFExpression::RELATION).clone(), context, info)?;
-            variability = Prefixes::variabilityMax(var1.clone(), var2.clone());
-            purity = Prefixes::purityMin(pur1.clone(), pur2.clone());
+            (e1, ty1, var1, pur1) = typeExp(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), next_context, info.clone(), false)?;
+            (e2, ty2, var2, pur2) = typeExp(var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), next_context, info.clone(), false)?;
+            (exp, ty) = TypeCheck::checkRelationOperation(e1, ty1, var1, var_field!((*exp).operator, Expression::NFExpression::RELATION).clone(), e2, ty2, var2, var_field!((*exp).index, Expression::NFExpression::RELATION).clone(), context, info)?;
+            variability = Prefixes::variabilityMax(var1, var2);
+            purity = Prefixes::purityMin(pur1, pur2);
             if !(InstContext::inNoEvent(context)) && variability == Variability::CONTINUOUS.clone() {
                 variability = Variability::DISCRETE.clone();
             }
@@ -1176,17 +1176,17 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
             (e1, ty, var1, pur1) = Call::typeCall(exp, context, info, retype)?;
             if Type::isTuple(ty.clone()) && !(InstContext::isSingleExpression(context)) {
                 ty = Type::firstTupleType(ty)?;
-                e1 = Expression::tupleElement(e1.clone(), ty.clone(), 1)?;
+                e1 = Expression::tupleElement(e1, ty.clone(), 1)?;
             }
-            (e1.clone(), ty, var1.clone(), pur1.clone())
+            (e1, ty, var1, pur1)
         },
         Deref @ Expression::CAST { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut next_context: i32;
             next_context = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
-            (e1, ty, variability, purity) = typeExp(var_field!((*exp).exp, Expression::NFExpression::CAST).clone(), next_context.clone(), info, retype)?;
+            (e1, ty, variability, purity) = typeExp(var_field!((*exp).exp, Expression::NFExpression::CAST).clone(), next_context, info, retype)?;
             assign_variant_field!(exp => Expression::NFExpression::CAST;
-                exp = e1.clone(),
+                exp = e1,
                 ty = Type::copyDims(ty, var_field!((*exp).ty, Expression::NFExpression::CAST).clone())
             );
             (exp.clone(), var_field!((*exp).ty, Expression::NFExpression::CAST).clone(), variability, purity)
@@ -1197,8 +1197,8 @@ pub fn typeExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut inf
         Deref @ Expression::MUTABLE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = Mutable::access(var_field!((*exp).exp, Expression::NFExpression::MUTABLE).clone());
-            (e1, ty, variability, purity) = typeExp(e1.clone(), context, info, retype)?;
-            assign_variant_field!(exp => Expression::NFExpression::MUTABLE; exp = Mutable::create(e1.clone()));
+            (e1, ty, variability, purity) = typeExp(e1, context, info, retype)?;
+            assign_variant_field!(exp => Expression::NFExpression::MUTABLE; exp = Mutable::create(e1));
             (exp, ty, variability, purity)
         },
         Deref @ Expression::PARTIAL_FUNCTION_APPLICATION { .. } => {
@@ -1445,7 +1445,7 @@ pub(crate) fn evaluateArrayIf(mut exp: Arc<Expression::NFExpression>, mut target
             cond = Ceval::evalExp(var_field!((*exp).condition, Expression::NFExpression::IF).clone(), target.clone())?;
             if Expression::isTrue(cond.clone()) {
                 outExp = var_field!((*exp).trueBranch, Expression::NFExpression::IF).clone();
-            } else if Expression::isFalse(cond.clone()) {
+            } else if Expression::isFalse(cond) {
                 outExp = var_field!((*exp).falseBranch, Expression::NFExpression::IF).clone();
             } else {
                 Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.evaluateArrayIf")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), Ceval::EvalTarget::getInfo(target))?;
@@ -1632,8 +1632,8 @@ pub(crate) fn typeCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut context
             node_ty = typeComponent(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone(), InstContext::nodeContext(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone(), context), firstPart || !(InstContext::inDimension(context)))?;
             (subs, subs_var) = typeSubscripts(var_field!((*cref).subscripts, ComponentRef::NFComponentRef::CREF).clone(), node_ty.clone(), Arc::new(Expression::NFExpression::CREF { ty: node_ty.clone(), cref: cref.clone() }), context, info.clone(), true)?;
             (rest_cr, rest_var) = typeCref2(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), context, info, false)?;
-            subsVariability = Prefixes::variabilityMax(subs_var.clone(), rest_var.clone());
-            (Arc::new(ComponentRef::NFComponentRef::CREF { node: var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone(), subscripts: subs.clone(), ty: node_ty.clone(), origin: var_field!((*cref).origin, ComponentRef::NFComponentRef::CREF).clone(), restCref: rest_cr.clone() }), subsVariability)
+            subsVariability = Prefixes::variabilityMax(subs_var, rest_var);
+            (Arc::new(ComponentRef::NFComponentRef::CREF { node: var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone(), subscripts: subs, ty: node_ty, origin: var_field!((*cref).origin, ComponentRef::NFComponentRef::CREF).clone(), restCref: rest_cr }), subsVariability)
         },
         Deref @ ComponentRef::CREF { node: Deref @ InstNode::CLASS_NODE { .. }, .. } if (firstPart && InstNode::isFunction(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone())?) => {
             let mut r#fn: Arc<Function::Function>;
@@ -1643,7 +1643,7 @@ pub(crate) fn typeCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut context
             } };
             r#fn = __pa0.clone();
             assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF;
-                ty = Arc::new(Type::NFType::FUNCTION { r#fn: r#fn.clone(), fnType: Type::FunctionType::FUNCTION_REFERENCE.clone() }),
+                ty = Arc::new(Type::NFType::FUNCTION { r#fn: r#fn, fnType: Type::FunctionType::FUNCTION_REFERENCE.clone() }),
                 restCref = typeCref2(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), context, info, false)?.0
             );
             (cref.clone(), Variability::CONSTANT.clone())
@@ -1658,9 +1658,9 @@ pub(crate) fn typeCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut context
             let mut rest_var: Variability;
             (_, subs_var) = typeSubscripts(var_field!((*cref).subscripts, ComponentRef::NFComponentRef::CREF).clone(), var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone(), Arc::new(Expression::NFExpression::CREF { ty: var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone(), cref: cref.clone() }), context, info.clone(), false)?;
             (rest_cr, rest_var) = typeCref2(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), context, info, false)?;
-            assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = rest_cr.clone());
-            subsVariability = Prefixes::variabilityMax(subs_var.clone(), rest_var.clone());
-            (cref.clone(), rest_var.clone())
+            assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = rest_cr);
+            subsVariability = Prefixes::variabilityMax(subs_var, rest_var);
+            (cref.clone(), rest_var)
         },
         _ => {
             (cref.clone(), Variability::CONSTANT.clone())
@@ -2385,18 +2385,18 @@ pub(crate) fn makeDefaultExternalCall(mut extDecl: Arc<Sections::NFSections>, mu
             } };
             r#fn = __pa0.clone();
             single_output = (r#fn.outputs.clone().len() as i32) == 1;
-            if single_output.clone() && Type::isArray(Function::returnType(r#fn.clone())) {
+            if single_output && Type::isArray(Function::returnType(r#fn.clone())) {
                 single_output = false;
                 Error::addSourceMessage(Error::EXT_FN_SINGLE_RETURN_ARRAY.clone(), list![(var_field!((*extDecl).language, Sections::NFSections::EXTERNAL).clone()).clone()], InstNode::info(fnNode))?;
             }
-            if single_output.clone() {
+            if single_output {
                 let __pa2 = ::match_deref::match_deref! { match &(r#fn.outputs.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } => __pa2.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
                 node = __pa2.clone();
                 ty = InstNode::getType(node.clone())?;
-                assign_variant_field!(extDecl => Sections::NFSections::EXTERNAL; outputRef = ComponentRef::fromNode(node.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()));
+                assign_variant_field!(extDecl => Sections::NFSections::EXTERNAL; outputRef = ComponentRef::fromNode(node, ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()));
             }
             comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(r#fn.node.clone())?)?)?;
             if metamodelica::arrayLength(comps.clone()) > 0 {
@@ -2404,7 +2404,7 @@ pub(crate) fn makeDefaultExternalCall(mut extDecl: Arc<Sections::NFSections>, mu
                 let __range4 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range4 {
                     comp = InstNode::component(c.clone())?;
-                    if !(single_output.clone()) || Component::direction(comp.clone()) != Direction::OUTPUT.clone() {
+                    if !(single_output) || Component::direction(comp.clone()) != Direction::OUTPUT.clone() {
                         ty = Component::getType(comp.clone())?;
                         exp = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: ComponentRef::fromNode(c.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()) });
                         args = metamodelica::cons(exp.clone(), args.clone());
@@ -2413,7 +2413,7 @@ pub(crate) fn makeDefaultExternalCall(mut extDecl: Arc<Sections::NFSections>, mu
                         }
                     }
                 }
-                assign_variant_field!(extDecl => Sections::NFSections::EXTERNAL; args = args.clone().reverse());
+                assign_variant_field!(extDecl => Sections::NFSections::EXTERNAL; args = args.reverse());
             }
             extDecl
         },
@@ -2484,19 +2484,19 @@ pub fn typeEquation(mut eq: Arc<Equation::NFEquation>, mut context: i32) -> Resu
                 } };
                 e1 = __pa0.clone();
             } else {
-                e1 = deduceIterationRangeEq(eq.clone(), var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), info.clone())?;
+                e1 = deduceIterationRangeEq(eq.clone(), var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), info)?;
             }
-            (e1, _, _, _) = typeIterator(var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), e1.clone(), context, true)?;
+            (e1, _, _, _) = typeIterator(var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), e1, context, true)?;
             next_context = InstContext::set(context, InstContext::FOR.clone());
             body = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*eq).body, Equation::NFEquation::FOR).clone()).into_iter().cloned() {
-            let __x = typeEquation(e.clone(), next_context.clone())?;
+            let __x = typeEquation(e.clone(), next_context)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            Arc::new(Equation::NFEquation::FOR { iterator: var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), range: Some(e1.clone()), body: body.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::FOR).clone(), source: var_field!((*eq).source, Equation::NFEquation::FOR).clone() })
+            Arc::new(Equation::NFEquation::FOR { iterator: var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), range: Some(e1), body: body, scope: var_field!((*eq).scope, Equation::NFEquation::FOR).clone(), source: var_field!((*eq).source, Equation::NFEquation::FOR).clone() })
         },
         Deref @ Equation::IF { .. } => {
             typeIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), context, var_field!((*eq).scope, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone())?
@@ -2510,26 +2510,26 @@ pub fn typeEquation(mut eq: Arc<Equation::NFEquation>, mut context: i32) -> Resu
             let mut e3: Arc<Expression::NFExpression>;
             let mut info: SourceInfo;
             info = ElementSource::getInfo(var_field!((*eq).source, Equation::NFEquation::ASSERT).clone());
-            (e1, e2, e3) = typeAssert(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), context, info.clone())?;
-            Arc::new(Equation::NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::ASSERT).clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() })
+            (e1, e2, e3) = typeAssert(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), context, info)?;
+            Arc::new(Equation::NFEquation::ASSERT { condition: e1, message: e2, level: e3, scope: var_field!((*eq).scope, Equation::NFEquation::ASSERT).clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() })
         },
         Deref @ Equation::TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut info: SourceInfo;
             info = ElementSource::getInfo(var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone());
-            (e1, _) = typeOperatorArg(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), crate::NFType::interned_STRING(), context, (literal!("terminate")).clone(), (literal!("message")).clone(), 1, info.clone())?;
-            Arc::new(Equation::NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() })
+            (e1, _) = typeOperatorArg(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), crate::NFType::interned_STRING(), context, (literal!("terminate")).clone(), (literal!("message")).clone(), 1, info)?;
+            Arc::new(Equation::NFEquation::TERMINATE { message: e1, scope: var_field!((*eq).scope, Equation::NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() })
         },
         Deref @ Equation::REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             (e1, e2) = typeReinit(var_field!((*eq).cref, Equation::NFEquation::REINIT).clone(), var_field!((*eq).reinitExp, Equation::NFEquation::REINIT).clone(), context, var_field!((*eq).source, Equation::NFEquation::REINIT).clone())?;
-            Arc::new(Equation::NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::REINIT).clone(), source: var_field!((*eq).source, Equation::NFEquation::REINIT).clone() })
+            Arc::new(Equation::NFEquation::REINIT { cref: e1, reinitExp: e2, scope: var_field!((*eq).scope, Equation::NFEquation::REINIT).clone(), source: var_field!((*eq).source, Equation::NFEquation::REINIT).clone() })
         },
         Deref @ Equation::NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             (e1, _, _, _) = typeExp(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), context, ElementSource::getInfo(var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone()), false)?;
-            Arc::new(Equation::NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() })
+            Arc::new(Equation::NFEquation::NORETCALL { exp: e1, scope: var_field!((*eq).scope, Equation::NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() })
         },
         _ => {
             eq
@@ -2700,16 +2700,16 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
             info = ElementSource::getInfo(var_field!((*st).source, Statement::NFStatement::ASSIGNMENT).clone());
             (e1, ty1, var, _) = typeExp(var_field!((*st).lhs, Statement::NFStatement::ASSIGNMENT).clone(), InstContext::set(context, InstContext::LHS.clone()), info.clone(), false)?;
             (e2, ty2, _, _) = typeExp(var_field!((*st).rhs, Statement::NFStatement::ASSIGNMENT).clone(), InstContext::set(context, InstContext::RHS.clone()), info.clone(), false)?;
-            (e2, _, mk) = TypeCheck::matchTypes(ty2.clone(), ty1.clone(), e2.clone(), TypeCheck::ALLOW_UNKNOWN.clone())?;
-            if TypeCheck::isIncompatibleMatch(mk.clone()) {
-                Error::addSourceMessage(Error::ASSIGN_TYPE_MISMATCH_ERROR.clone(), list![(Expression::toString(e1.clone())?).clone(), (Expression::toString(e2.clone())?).clone(), (Type::toString(ty1.clone())?).clone(), (Type::toString(ty2.clone())?).clone()], info.clone())?;
+            (e2, _, mk) = TypeCheck::matchTypes(ty2.clone(), ty1.clone(), e2, TypeCheck::ALLOW_UNKNOWN.clone())?;
+            if TypeCheck::isIncompatibleMatch(mk) {
+                Error::addSourceMessage(Error::ASSIGN_TYPE_MISMATCH_ERROR.clone(), list![(Expression::toString(e1.clone())?).clone(), (Expression::toString(e2.clone())?).clone(), (Type::toString(ty1.clone())?).clone(), (Type::toString(ty2)?).clone()], info.clone())?;
                 bail!("fail");
             }
-            checkAssignment(e1.clone(), e2.clone(), var.clone(), context, info.clone())?;
+            checkAssignment(e1.clone(), e2.clone(), var, context, info)?;
             if Expression::isExternalCall(e2.clone())? {
                 Call::updateExternalRecordArgs(Expression::tupleElements(e1.clone()))?;
             }
-            Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: e1.clone(), rhs: e2.clone(), ty: ty1.clone(), source: var_field!((*st).source, Statement::NFStatement::ASSIGNMENT).clone() })
+            Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: e1, rhs: e2, ty: ty1, source: var_field!((*st).source, Statement::NFStatement::ASSIGNMENT).clone() })
         },
         Deref @ Statement::FOR { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2724,12 +2724,12 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
                 } };
                 e1 = __pa0.clone();
             } else {
-                e1 = deduceIterationRangeStmt(st.clone(), var_field!((*st).iterator, Statement::NFStatement::FOR).clone(), info.clone())?;
+                e1 = deduceIterationRangeStmt(st.clone(), var_field!((*st).iterator, Statement::NFStatement::FOR).clone(), info)?;
             }
-            (e1, _, _, _) = typeIterator(var_field!((*st).iterator, Statement::NFStatement::FOR).clone(), e1.clone(), context, false)?;
+            (e1, _, _, _) = typeIterator(var_field!((*st).iterator, Statement::NFStatement::FOR).clone(), e1, context, false)?;
             next_context = InstContext::set(context, InstContext::FOR.clone());
-            body = typeStatements(var_field!((*st).body, Statement::NFStatement::FOR).clone(), next_context.clone())?;
-            Arc::new(Statement::NFStatement::FOR { iterator: var_field!((*st).iterator, Statement::NFStatement::FOR).clone(), range: Some(e1.clone()), body: body.clone(), forType: var_field!((*st).forType, Statement::NFStatement::FOR).clone(), source: var_field!((*st).source, Statement::NFStatement::FOR).clone() })
+            body = typeStatements(var_field!((*st).body, Statement::NFStatement::FOR).clone(), next_context)?;
+            Arc::new(Statement::NFStatement::FOR { iterator: var_field!((*st).iterator, Statement::NFStatement::FOR).clone(), range: Some(e1), body: body, forType: var_field!((*st).forType, Statement::NFStatement::FOR).clone(), source: var_field!((*st).source, Statement::NFStatement::FOR).clone() })
         },
         Deref @ Statement::IF { .. } => {
             let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2740,7 +2740,7 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
             let mut next_context: i32;
             let mut cond_context: i32;
             next_context = InstContext::set(context, InstContext::IF.clone());
-            cond_context = InstContext::set(next_context.clone(), InstContext::CONDITION.clone());
+            cond_context = InstContext::set(next_context, InstContext::CONDITION.clone());
             tybrs = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
         for mut br in (var_field!((*st).branches, Statement::NFStatement::IF).clone()).into_iter().cloned() {
@@ -2748,11 +2748,11 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
         (__esc_cond, __esc_body) => {
             cond = (*__esc_cond).clone();
             body = (*__esc_body).clone();
-            (e1, _, _) = typeCondition(cond.clone(), cond_context.clone(), var_field!((*st).source, Statement::NFStatement::IF).clone(), Error::IF_CONDITION_TYPE_ERROR.clone(), false, false)?;
+            (e1, _, _) = typeCondition(cond.clone(), cond_context, var_field!((*st).source, Statement::NFStatement::IF).clone(), Error::IF_CONDITION_TYPE_ERROR.clone(), false, false)?;
             sts1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut bst in (body.clone()).into_iter().cloned() {
-            let __x = typeStatement(bst.clone(), next_context.clone())?;
+            let __x = typeStatement(bst.clone(), next_context)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2765,7 +2765,7 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
         }
         __acc.reverse()
     });
-            Arc::new(Statement::NFStatement::IF { branches: tybrs.clone(), source: var_field!((*st).source, Statement::NFStatement::IF).clone() })
+            Arc::new(Statement::NFStatement::IF { branches: tybrs, source: var_field!((*st).source, Statement::NFStatement::IF).clone() })
         },
         Deref @ Statement::WHEN { .. } => {
             let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2786,7 +2786,7 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
             sts1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut bst in (body.clone()).into_iter().cloned() {
-            let __x = typeStatement(bst.clone(), next_context.clone())?;
+            let __x = typeStatement(bst.clone(), next_context)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2799,7 +2799,7 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
         }
         __acc.reverse()
     });
-            Arc::new(Statement::NFStatement::WHEN { branches: tybrs.clone(), source: var_field!((*st).source, Statement::NFStatement::WHEN).clone() })
+            Arc::new(Statement::NFStatement::WHEN { branches: tybrs, source: var_field!((*st).source, Statement::NFStatement::WHEN).clone() })
         },
         Deref @ Statement::ASSERT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2807,8 +2807,8 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
             let mut e3: Arc<Expression::NFExpression>;
             let mut info: SourceInfo;
             info = ElementSource::getInfo(var_field!((*st).source, Statement::NFStatement::ASSERT).clone());
-            (e1, e2, e3) = typeAssert(var_field!((*st).condition, Statement::NFStatement::ASSERT).clone(), var_field!((*st).message, Statement::NFStatement::ASSERT).clone(), var_field!((*st).level, Statement::NFStatement::ASSERT).clone(), context, info.clone())?;
-            Arc::new(Statement::NFStatement::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*st).source, Statement::NFStatement::ASSERT).clone() })
+            (e1, e2, e3) = typeAssert(var_field!((*st).condition, Statement::NFStatement::ASSERT).clone(), var_field!((*st).message, Statement::NFStatement::ASSERT).clone(), var_field!((*st).level, Statement::NFStatement::ASSERT).clone(), context, info)?;
+            Arc::new(Statement::NFStatement::ASSERT { condition: e1, message: e2, level: e3, source: var_field!((*st).source, Statement::NFStatement::ASSERT).clone() })
         },
         Deref @ Statement::TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2818,8 +2818,8 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
                 Error::addSourceMessage(Error::EXP_INVALID_IN_FUNCTION.clone(), list![(literal!("terminate")).clone()], info.clone())?;
                 bail!("fail");
             }
-            (e1, _) = typeOperatorArg(var_field!((*st).message, Statement::NFStatement::TERMINATE).clone(), crate::NFType::interned_STRING(), context, (literal!("terminate")).clone(), (literal!("message")).clone(), 1, info.clone())?;
-            Arc::new(Statement::NFStatement::TERMINATE { message: e1.clone(), source: var_field!((*st).source, Statement::NFStatement::TERMINATE).clone() })
+            (e1, _) = typeOperatorArg(var_field!((*st).message, Statement::NFStatement::TERMINATE).clone(), crate::NFType::interned_STRING(), context, (literal!("terminate")).clone(), (literal!("message")).clone(), 1, info)?;
+            Arc::new(Statement::NFStatement::TERMINATE { message: e1, source: var_field!((*st).source, Statement::NFStatement::TERMINATE).clone() })
         },
         Deref @ Statement::REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2829,12 +2829,12 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
                 bail!("fail");
             }
             (e1, e2) = typeReinit(var_field!((*st).cref, Statement::NFStatement::REINIT).clone(), var_field!((*st).reinitExp, Statement::NFStatement::REINIT).clone(), context, var_field!((*st).source, Statement::NFStatement::REINIT).clone())?;
-            Arc::new(Statement::NFStatement::REINIT { cref: e1.clone(), reinitExp: e2.clone(), source: var_field!((*st).source, Statement::NFStatement::REINIT).clone() })
+            Arc::new(Statement::NFStatement::REINIT { cref: e1, reinitExp: e2, source: var_field!((*st).source, Statement::NFStatement::REINIT).clone() })
         },
         Deref @ Statement::NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             (e1, _, _, _) = typeExp(var_field!((*st).exp, Statement::NFStatement::NORETCALL).clone(), context, ElementSource::getInfo(var_field!((*st).source, Statement::NFStatement::NORETCALL).clone()), false)?;
-            Arc::new(Statement::NFStatement::NORETCALL { exp: e1.clone(), source: var_field!((*st).source, Statement::NFStatement::NORETCALL).clone() })
+            Arc::new(Statement::NFStatement::NORETCALL { exp: e1, source: var_field!((*st).source, Statement::NFStatement::NORETCALL).clone() })
         },
         Deref @ Statement::WHILE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2848,7 +2848,7 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
         }
         __acc.reverse()
     });
-            Arc::new(Statement::NFStatement::WHILE { condition: e1.clone(), body: sts1.clone(), source: var_field!((*st).source, Statement::NFStatement::WHILE).clone() })
+            Arc::new(Statement::NFStatement::WHILE { condition: e1, body: sts1, source: var_field!((*st).source, Statement::NFStatement::WHILE).clone() })
         },
         Deref @ Statement::FAILURE { .. } => {
             let mut sts1: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
@@ -2860,7 +2860,7 @@ pub(crate) fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i3
         }
         __acc.reverse()
     });
-            Arc::new(Statement::NFStatement::FAILURE { body: sts1.clone(), source: var_field!((*st).source, Statement::NFStatement::FAILURE).clone() })
+            Arc::new(Statement::NFStatement::FAILURE { body: sts1, source: var_field!((*st).source, Statement::NFStatement::FAILURE).clone() })
         },
         _ => {
             st
@@ -2880,8 +2880,8 @@ pub(crate) fn checkAssignment(mut lhsExp: Arc<Expression::NFExpression>, mut rhs
             i = 1;
             for mut e in &*var_field!((*lhsExp).elements, Expression::NFExpression::TUPLE).clone() {
                 let mut e = e.clone();
-                checkAssignment(e.clone(), Expression::tupleElement(rhsExp.clone(), var_field!((*lhsExp).ty, Expression::NFExpression::TUPLE).clone(), i.clone())?, Expression::variability(e.clone())?, context, info.clone())?;
-                i = i.clone() + 1;
+                checkAssignment(e.clone(), Expression::tupleElement(rhsExp.clone(), var_field!((*lhsExp).ty, Expression::NFExpression::TUPLE).clone(), i)?, Expression::variability(e.clone())?, context, info.clone())?;
+                i = i + 1;
             }
             ()
         },

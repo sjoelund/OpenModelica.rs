@@ -73,11 +73,11 @@ fn friendly2(mut cond: bool, mut name: ArcStr) -> Result<ArcStr> {
             let mut strs: Arc<metamodelica::List<ArcStr>>;
             let mut newName: ArcStr;
             newName = (if (arcstr::literal!(Autoconf::os) == literal!("Windows_NT")) {System::stringReplace((name).clone(), (literal!("\\")).clone(), (literal!("/")).clone())?} else {name}).clone();
-            (i, strs) = System::regex((newName.clone()).clone(), (literal!("^(.*/Compiler/)?(.*/testsuite/)?(.*/.openmodelica/libraries/)?(.*/lib/omlibrary/)?(.*/build/(install_cmake/)?)?(.*)$")).clone(), 8, true, false);
-            friendly = ((strs.clone()).get(i.clone())?).clone();
+            (i, strs) = System::regex((newName).clone(), (literal!("^(.*/Compiler/)?(.*/testsuite/)?(.*/.openmodelica/libraries/)?(.*/lib/omlibrary/)?(.*/build/(install_cmake/)?)?(.*)$")).clone(), 8, true, false);
+            friendly = ((strs).get(i)?).clone();
             (i, strs) = System::regex((friendly.clone()).clone(), (literal!("^(.*)(/[_[:alnum:]]*\\.mos?_temp[0-9]*)(.*)$")).clone(), 4, true, false);
-            if i.clone() == 4 {
-                friendly = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*(strs.clone()).get(2)?); __mm_s.push_str(&*(strs.clone()).get(4)?); ArcStr::from(__mm_s) }).clone();
+            if i == 4 {
+                friendly = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*(strs.clone()).get(2)?); __mm_s.push_str(&*(strs).get(4)?); ArcStr::from(__mm_s) }).clone();
             }
             friendly
         },

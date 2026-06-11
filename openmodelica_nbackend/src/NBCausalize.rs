@@ -187,7 +187,7 @@ pub(crate) fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>)
             ty1 = Type::removeSizeOneArraysAndRecords(Variable::typeOf(Pointer::access(var_field!((*scc).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone())))?;
             ty2 = Type::removeSizeOneArraysAndRecords(BEquation::Equation::getType(Pointer::access(var_field!((*scc).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), false)?)?;
             (_, _, kind) = TypeCheck::matchTypes(ty1.clone(), ty2.clone(), Expression::fromCref(BVariable::getVarName(var_field!((*scc).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), false)?, TypeCheck::DEFAULT_OPTIONS.clone())?;
-            if kind.clone() != TypeCheck::MatchKind::EXACT.clone() {
+            if kind != TypeCheck::MatchKind::EXACT.clone() {
                 err = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBCausalize.checkSystemVariabilities")); __mm_s.push_str(&*literal!(" failed. The following strong component has conflicting types: ")); __mm_s.push_str(&*Type::toString(ty1.clone())?); __mm_s.push_str(&*literal!(" != ")); __mm_s.push_str(&*Type::toString(ty2.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StrongComponent::toString(scc.clone(), -1)?); ArcStr::from(__mm_s) }).clone();
                 if Flags::isSet(Flags::BLT_DUMP.clone())? {
                     err = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*err.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BPartition::Partition::toString(partition.clone(), 0)?); ArcStr::from(__mm_s) }).clone();
@@ -269,7 +269,7 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
             full = Adjacency::Matrix::createFull(partition.unknowns.clone(), partition.equations.clone(), kind)?;
             vn = UnorderedMap::subMap(partition.unknowns.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut var in (unfixable.clone()).into_iter().cloned() {
+        for mut var in (unfixable).into_iter().cloned() {
             let __x = BVariable::getVarName(var.clone());
             __acc = cons(__x, __acc);
         }
@@ -277,7 +277,7 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
     }))?;
             en = UnorderedMap::subMap(partition.equations.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut eqn in (initials.clone()).into_iter().cloned() {
+        for mut eqn in (initials).into_iter().cloned() {
             let __x = BEquation::Equation::getEqnName(eqn.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -285,12 +285,12 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
     }))?;
             adj_matching = Adjacency::Matrix::fullToFinal(full.clone(), vn.clone(), en.clone(), partition.equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj_matching.clone(), true, true, true)?;
-            vo = vn.clone();
-            eo = en.clone();
+            vo = vn;
+            eo = en;
             vn = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             en = UnorderedMap::subMap(partition.equations.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut eqn in (simulation.clone()).into_iter().cloned() {
+        for mut eqn in (simulation).into_iter().cloned() {
             let __x = BEquation::Equation::getEqnName(eqn.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -298,18 +298,18 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
     }))?;
             (adj_matching, full) = Adjacency::Matrix::expand(adj_matching, full, vo.clone(), vn.clone(), eo.clone(), en.clone(), partition.unknowns.clone(), partition.equations.clone(), BPartition::Partition::getKind(partition.clone()))?;
             matching = Matching::regular(matching, adj_matching.clone(), true, true, true)?;
-            vo = UnorderedMap::merge(vo.clone(), vn.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBCausalize.mo"))?;
-            eo = UnorderedMap::merge(eo.clone(), en.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBCausalize.mo"))?;
+            vo = UnorderedMap::merge(vo, vn, metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBCausalize.mo"))?;
+            eo = UnorderedMap::merge(eo, en, metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBCausalize.mo"))?;
             vn = UnorderedMap::subMap(partition.unknowns.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut var in (fixable.clone()).into_iter().cloned() {
+        for mut var in (fixable).into_iter().cloned() {
             let __x = BVariable::getVarName(var.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }))?;
             en = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-            (adj_matching, full) = Adjacency::Matrix::expand(adj_matching, full, vo.clone(), vn.clone(), eo.clone(), en.clone(), partition.unknowns.clone(), partition.equations.clone(), BPartition::Partition::getKind(partition.clone()))?;
+            (adj_matching, full) = Adjacency::Matrix::expand(adj_matching, full, vo, vn, eo, en, partition.unknowns.clone(), partition.equations.clone(), BPartition::Partition::getKind(partition.clone()))?;
             (matching, adj_matching, full, variables, equations, varData, eqData) = Matching::singular(matching, adj_matching, full, partition.unknowns.clone(), partition.equations.clone(), funcMap, varData, eqData, kind, false, false)?;
             adj_sorting = Adjacency::Matrix::upgrade(adj_matching, full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             comps = Sorting::tarjan(adj_sorting, matching.clone(), variables.clone(), equations.clone())?;

@@ -2064,9 +2064,9 @@ pub mod InstNode {
             (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::DAE_TYPE { .. } => stripDAETypeVars(var_field!((*cls).ty, Class::NFClass::DAE_TYPE).clone()),
         _ => {
-            res = Class::restriction(cls.clone());
+            res = Class::restriction(cls);
             state = Restriction::toDAE(res.clone(), fullPath(clsNode, false)?);
-            Arc::new(DAE::Type::T_COMPLEX { complexClassType: state.clone(), varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res.clone()) })
+            Arc::new(DAE::Type::T_COMPLEX { complexClassType: state, varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res) })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -2101,10 +2101,10 @@ pub mod InstNode {
             (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::DAE_TYPE { .. } => var_field!((*cls).ty, Class::NFClass::DAE_TYPE).clone(),
         _ => {
-            res = Class::restriction(cls.clone());
+            res = Class::restriction(cls);
             state = Restriction::toDAE(res.clone(), fullPath(clsNode.clone(), false)?);
             vars = ConvertDAE::makeTypeVars(clsNode.clone())?;
-            outType = Arc::new(DAE::Type::T_COMPLEX { complexClassType: state.clone(), varLst: vars.clone(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res.clone()) });
+            outType = Arc::new(DAE::Type::T_COMPLEX { complexClassType: state, varLst: vars, equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res) });
             Pointer::update(var_field!((*clsNode).cls, InstNode::CLASS_NODE).clone(), Arc::new(Class::NFClass::DAE_TYPE { ty: outType.clone() }));
             outType
         },
@@ -2153,9 +2153,9 @@ pub mod InstNode {
         Deref @ CLASS_NODE { .. } => {
             let mut cls: Arc<Class::NFClass>;
             cls = Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone());
-            cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new(ClassTree::clone) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>))?;
+            cls = Class::classTreeApply(cls, (std::sync::Arc::new(ClassTree::clone) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>))?;
             assign_variant_field!(node => InstNode::CLASS_NODE;
-                cls = Pointer::create(cls.clone()),
+                cls = Pointer::create(cls),
                 caches = CachedData::empty()
             );
             ()
@@ -2163,8 +2163,8 @@ pub mod InstNode {
         Deref @ COMPONENT_NODE { .. } => {
             let mut comp: Arc<Component::NFComponent>;
             comp = Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone());
-            comp = Component::setClassInstance(clone(Component::classInstance(comp.clone()))?, comp.clone())?;
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(comp.clone()));
+            comp = Component::setClassInstance(clone(Component::classInstance(comp.clone()))?, comp)?;
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(comp));
             ()
         },
         _ => {

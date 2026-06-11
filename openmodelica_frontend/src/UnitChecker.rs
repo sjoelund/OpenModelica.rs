@@ -129,8 +129,8 @@ pub(crate) fn isComplete(mut st: UnitAbsyn::Store) -> Result<(bool, UnitAbsyn::S
             let mut comp: bool;
             let mut st2: UnitAbsyn::Store;
             lst = Arc::new(vector.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-            (comp, st2) = completeCheck(lst.clone(), 1, UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() })?;
-            (comp.clone(), st2.clone())
+            (comp, st2) = completeCheck(lst, 1, UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() })?;
+            (comp, st2)
         },
     });
     Ok((complete, stout))
@@ -545,7 +545,7 @@ pub(crate) fn unitHasUnknown(mut u: UnitAbsyn::Unit) -> Result<bool> {
         UnitAbsyn::Unit::SPECIFIED { specified: mut su } => {
             let mut unk: bool;
             unk = hasUnknown(su.clone())?;
-            unk.clone()
+            unk
         },
         _ => {
             true
@@ -1154,10 +1154,10 @@ pub(crate) fn printResult(mut res: UnitAbsyn::UnitCheckResult) -> Result<()> {
             let mut str2: ArcStr;
             metamodelica::print((literal!("\n---\nThe system of units is inconsistent. \"")).clone());
             str1 = (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: u1.clone() })?).clone();
-            metamodelica::print((str1.clone()).clone());
+            metamodelica::print((str1).clone());
             metamodelica::print((literal!("\" != \"")).clone());
             str2 = (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: u2.clone() })?).clone();
-            metamodelica::print((str2.clone()).clone());
+            metamodelica::print((str2).clone());
             metamodelica::print((literal!("\"\n---\n")).clone());
             ()
         },

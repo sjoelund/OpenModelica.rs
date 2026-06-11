@@ -750,8 +750,8 @@ fn BFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut rowmark: i32, mut i: i
             let mut rows: Arc<metamodelica::List<i32>>;
             let mut b: bool;
             rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            (queue1, b) = BFSBtraverseRows(rows.clone(), nextQueue, rowmark, i, c.clone(), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone())?;
-            return Ok(BFSBphase1(b.clone(), rest.clone(), rowmark, i, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), queue1.clone(), metamodelica::cons(c.clone(), inVisitedColums))?)
+            (queue1, b) = BFSBtraverseRows(rows, nextQueue, rowmark, i, c.clone(), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone())?;
+            return Ok(BFSBphase1(b, rest.clone(), rowmark, i, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), queue1, metamodelica::cons(c.clone(), inVisitedColums))?)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function BFSBphase failed in equation ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -1020,7 +1020,7 @@ fn DFSBphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mu
         _ => {
             let mut rows: Arc<metamodelica::List<i32>>;
             rows = List::select(({let __elt = m.borrow()[(c-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            DFSBtraverseRows(rows.clone(), stack, i, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), inVisitedColums)
+            DFSBtraverseRows(rows, stack, i, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), inVisitedColums)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function DFSBphase failed in equation ")); __mm_s.push_str(&*intString(c)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -1110,7 +1110,7 @@ fn DFSBreasign(mut stack: Arc<metamodelica::List<i32>>, mut r: i32, mut ass1: me
             rc = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
             metamodelica::arrayUpdate(ass1.clone(), c.clone(), r)?;
             metamodelica::arrayUpdate(ass2.clone(), r, c.clone())?;
-            DFSBreasign(rest.clone(), rc.clone(), ass1.clone(), ass2.clone())?;
+            DFSBreasign(rest.clone(), rc, ass1.clone(), ass2.clone())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1272,8 +1272,8 @@ fn MC21A1fixArrays(mut meqns: Arc<metamodelica::List<i32>>, mut nv: i32, mut ne:
             let mut rowmarks1: metamodelica::Array<i32>;
             let mut lookahead1: metamodelica::Array<i32>;
             memsize = metamodelica::arrayLength(rowmarks.clone());
-            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv, memsize.clone(), -1)?;
-            lookahead1 = assignmentsArrayExpand(lookahead.clone(), ne, memsize.clone(), 0)?;
+            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv, memsize, -1)?;
+            lookahead1 = assignmentsArrayExpand(lookahead.clone(), ne, memsize, 0)?;
             MC21A1fixArray(changedEqns, lookahead1.clone())?;
             (rowmarks1.clone(), lookahead1.clone())
         },
@@ -1316,7 +1316,7 @@ fn MC21Aphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, m
             let mut b: bool;
             rows = List::select(({let __elt = m.borrow()[(c-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             b = intLt(({let __elt = lookahead.borrow()[(c-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
-            MC21Achecklookahead(b.clone(), rows.clone(), stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), inVisitedColums)?
+            MC21Achecklookahead(b, rows, stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), inVisitedColums)?
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function MC21Aphase failed in equation ")); __mm_s.push_str(&*intString(c)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -1525,8 +1525,8 @@ fn PF1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: me
             let mut lookahead1: metamodelica::Array<i32>;
             (i_1, unmatched1) = PFaugmentmatching(i, unmatched.clone(), nv, ne, m.clone(), mt.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), (unmatched.len() as i32), metamodelica::nil())?;
             meqns = getEqnsforIndexReduction(unmatched1.clone(), ne, m.clone(), mt.clone(), ass1.clone(), ass2.clone(), inArg.clone())?;
-            (unmatched1, rowmarks1, lookahead1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = PF2(meqns.clone(), unmatched1.clone(), metamodelica::nil(), rowmarks.clone(), lookahead.clone(), isyst, ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
-            { (i, unmatched, rowmarks, lookahead, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1.clone() + 1, unmatched1.clone(), rowmarks1.clone(), lookahead1.clone(), syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg.clone()); continue '__tco; }
+            (unmatched1, rowmarks1, lookahead1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = PF2(meqns, unmatched1, metamodelica::nil(), rowmarks.clone(), lookahead.clone(), isyst, ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
+            { (i, unmatched, rowmarks, lookahead, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1 + 1, unmatched1, rowmarks1.clone(), lookahead1.clone(), syst, shared, nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1562,12 +1562,12 @@ fn PF2(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut unm
             (unmatched1, _, syst, shared, ass2_1, ass1_1, arg) = sssHandler(meqns, 0, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
             ne_1 = BackendDAEUtil::systemSize(syst.clone())?;
             nv_1 = BackendVariable::daenumVariables(syst.clone());
-            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1.clone(), ne, -1)?;
-            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1.clone(), nv, -1)?;
-            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv_1.clone(), nv, -1)?;
-            lookahead1 = assignmentsArrayExpand(lookahead.clone(), ne_1.clone(), ne, 0)?;
+            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1, ne, -1)?;
+            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1, nv, -1)?;
+            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv_1, nv, -1)?;
+            lookahead1 = assignmentsArrayExpand(lookahead.clone(), ne_1, ne, 0)?;
             MC21A1fixArray(unmatched1.clone(), lookahead1.clone())?;
-            (unmatched1.clone(), rowmarks1.clone(), lookahead1.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone())
+            (unmatched1, rowmarks1.clone(), lookahead1.clone(), nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), syst, shared, arg)
         },
         (_, _) => {
             singularSystemError(meqns, 0, isyst, ishared, ass1.clone(), ass2.clone(), inArg)?;
@@ -1654,7 +1654,7 @@ fn PFphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mut 
             let mut b: bool;
             rows = List::select(({let __elt = m.borrow()[(c-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             b = intLt(({let __elt = lookahead.borrow()[(c-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
-            PFchecklookahead(b.clone(), rows.clone(), stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone())?
+            PFchecklookahead(b, rows, stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone())?
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function PFphase failed in equation ")); __mm_s.push_str(&*intString(c)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -1862,8 +1862,8 @@ fn PFPlus1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks
             let mut syst = (*syst).clone();
             (i_1, unmatched1) = PFPlusaugmentmatching(i, unmatched.clone(), nv, ne, m.clone(), mt.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), (unmatched.len() as i32), metamodelica::nil(), false)?;
             meqns = getEqnsforIndexReduction(unmatched1.clone(), ne, m.clone(), mt.clone(), ass1.clone(), ass2.clone(), inArg.clone())?;
-            (unmatched1, rowmarks1, lookahead1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = PF2(meqns.clone(), unmatched1.clone(), metamodelica::nil(), rowmarks.clone(), lookahead.clone(), syst.clone(), ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
-            { (i, unmatched, rowmarks, lookahead, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1.clone() + 1, unmatched1.clone(), rowmarks1.clone(), lookahead1.clone(), syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg.clone()); continue '__tco; }
+            (unmatched1, rowmarks1, lookahead1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = PF2(meqns, unmatched1, metamodelica::nil(), rowmarks.clone(), lookahead.clone(), syst.clone(), ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
+            { (i, unmatched, rowmarks, lookahead, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1 + 1, unmatched1, rowmarks1.clone(), lookahead1.clone(), syst.clone(), shared, nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1946,14 +1946,14 @@ fn PFPlusphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, 
             let mut b: bool;
             rows = List::select(({let __elt = m.borrow()[(c-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             b = intLt(({let __elt = lookahead.borrow()[(c-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
-            PFPluschecklookahead(b.clone(), rows.clone(), stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows)?
+            PFPluschecklookahead(b, rows, stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows)?
         },
         (_, true) => {
             let mut rows: Arc<metamodelica::List<i32>>;
             let mut b: bool;
             rows = List::select(({let __elt = m.borrow()[(c-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             b = intLt(({let __elt = lookahead.borrow()[(c-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
-            PFPluschecklookahead(b.clone(), rows.clone().reverse(), stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows)?
+            PFPluschecklookahead(b, rows.reverse(), stack, i, c, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows)?
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function PFPlusphase failed in equation ")); __mm_s.push_str(&*intString(c)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2164,8 +2164,8 @@ fn HK1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: me
             let mut syst = (*syst).clone();
             (i_1, unmatched1) = HKphase(i, unmatched.clone(), nv, ne, m.clone(), mt.clone(), rowmarks.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), (unmatched.len() as i32), metamodelica::nil())?;
             meqns = getEqnsforIndexReduction(unmatched1.clone(), ne, m.clone(), mt.clone(), ass1.clone(), ass2.clone(), inArg.clone())?;
-            (unmatched1, rowmarks1, collummarks1, level1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = HK2(meqns.clone(), unmatched1.clone(), metamodelica::nil(), rowmarks.clone(), collummarks.clone(), level.clone(), syst.clone(), ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
-            { (i, unmatched, rowmarks, collummarks, level, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1.clone() + 1, unmatched1.clone(), rowmarks1.clone(), collummarks1.clone(), level1.clone(), syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg.clone()); continue '__tco; }
+            (unmatched1, rowmarks1, collummarks1, level1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = HK2(meqns, unmatched1, metamodelica::nil(), rowmarks.clone(), collummarks.clone(), level.clone(), syst.clone(), ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
+            { (i, unmatched, rowmarks, collummarks, level, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1 + 1, unmatched1, rowmarks1.clone(), collummarks1.clone(), level1.clone(), syst.clone(), shared, nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2203,12 +2203,12 @@ fn HK2(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut unm
             (unmatched1, _, syst, shared, ass2_1, ass1_1, arg) = sssHandler(meqns, 0, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
             ne_1 = BackendDAEUtil::systemSize(syst.clone())?;
             nv_1 = BackendVariable::daenumVariables(syst.clone());
-            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1.clone(), metamodelica::arrayLength(ass1.clone()), -1)?;
-            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1.clone(), metamodelica::arrayLength(ass2.clone()), -1)?;
-            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv_1.clone(), metamodelica::arrayLength(rowmarks.clone()), -1)?;
-            collummarks1 = assignmentsArrayExpand(collummarks.clone(), ne_1.clone(), metamodelica::arrayLength(collummarks.clone()), -1)?;
-            level1 = assignmentsArrayExpand(level.clone(), ne_1.clone(), metamodelica::arrayLength(level.clone()), -1)?;
-            (unmatched1.clone(), rowmarks1.clone(), collummarks1.clone(), level1.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone())
+            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1, metamodelica::arrayLength(ass1.clone()), -1)?;
+            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1, metamodelica::arrayLength(ass2.clone()), -1)?;
+            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv_1, metamodelica::arrayLength(rowmarks.clone()), -1)?;
+            collummarks1 = assignmentsArrayExpand(collummarks.clone(), ne_1, metamodelica::arrayLength(collummarks.clone()), -1)?;
+            level1 = assignmentsArrayExpand(level.clone(), ne_1, metamodelica::arrayLength(level.clone()), -1)?;
+            (unmatched1, rowmarks1.clone(), collummarks1.clone(), level1.clone(), nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), syst, shared, arg)
         },
         (_, _) => {
             singularSystemError(meqns, 0, isyst, ishared, ass1.clone(), ass2.clone(), inArg)?;
@@ -2317,7 +2317,7 @@ fn HKBFS(mut colums: Arc<metamodelica::List<i32>>, mut nv: i32, mut ne: i32, mut
             let mut rows: Arc<metamodelica::List<(i32, i32)>>;
             let mut ll: Option<i32>;
             (rows, ll) = HKBFSBphase(list![c.clone()], i, 0, lowestL, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows, metamodelica::nil())?;
-            { (colums, nv, ne, m, mT, rowmarks, i, level, lowestL, ass1, ass2, inRows) = (rest.clone(), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), i, level.clone(), ll.clone(), ass1.clone(), ass2.clone(), rows.clone()); continue '__tco; }
+            { (colums, nv, ne, m, mT, rowmarks, i, level, lowestL, ass1, ass2, inRows) = (rest.clone(), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), i, level.clone(), ll, ass1.clone(), ass2.clone(), rows); continue '__tco; }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKBFS failed in phase ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2340,8 +2340,8 @@ fn HKBFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut l: i32, 
             let mut b: bool;
             let mut ll: Option<i32>;
             l_1 = l + 1;
-            b = intGt(l_1.clone(), lowl.clone());
-            return Ok(HKBFSBphase1(b.clone(), queue1, i, l_1.clone(), lowestL, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows, metamodelica::nil())?)
+            b = intGt(l_1, lowl.clone());
+            return Ok(HKBFSBphase1(b, queue1, i, l_1, lowestL, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows, metamodelica::nil())?)
         },
         (Deref @ metamodelica::List::Nil, None, _) => {
             let mut rows: Arc<metamodelica::List<(i32, i32)>>;
@@ -2356,10 +2356,10 @@ fn HKBFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut l: i32, 
             let mut ll: Option<i32>;
             cr = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             metamodelica::arrayUpdate(level.clone(), c.clone(), l)?;
-            (queue2, rows, b) = HKBFStraverseRows(cr.clone(), metamodelica::nil(), i, l, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows, false)?;
-            queue2 = listAppend(queue1, queue2.clone());
-            ll = if (b.clone()) {Some(l)} else {lowestL};
-            { (queue, i, l, lowestL, nv, ne, m, mT, rowmarks, level, ass1, ass2, inRows, queue1) = (rest.clone(), i, l, ll.clone(), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), rows.clone(), queue2.clone()); continue '__tco; }
+            (queue2, rows, b) = HKBFStraverseRows(cr, metamodelica::nil(), i, l, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows, false)?;
+            queue2 = listAppend(queue1, queue2);
+            ll = if (b) {Some(l)} else {lowestL};
+            { (queue, i, l, lowestL, nv, ne, m, mT, rowmarks, level, ass1, ass2, inRows, queue1) = (rest.clone(), i, l, ll, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), rows, queue2); continue '__tco; }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKBFSBphase failed in phase ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2381,7 +2381,7 @@ fn HKBFSBphase1(mut inUnMaRowFound: bool, mut queue: Arc<metamodelica::List<i32>
             let mut ll: Option<i32>;
             let mut rows: Arc<metamodelica::List<(i32, i32)>>;
             (rows, ll) = HKBFSBphase(queue, i, l, lowestL, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows, queue1)?;
-            (rows.clone(), ll.clone())
+            (rows, ll)
         },
         _ => {
             Error::addInternalError((literal!("function HKBFSBphase1 failed")).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2472,8 +2472,8 @@ fn HKDFS(mut unmatchedRows: Arc<metamodelica::List<(i32, i32)>>, mut i: i32, mut
             let mut ur: Arc<metamodelica::List<i32>>;
             let mut b: bool;
             b = HKDFSphase(list![r.clone()], i, r.clone(), l.clone(), nv, ne, m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), false)?;
-            ur = List::consOnTrue(!(b.clone()), r.clone(), inUnmatchedRows);
-            { (unmatchedRows, i, nv, ne, m, mT, collummarks, level, ass1, ass2, inUnmatchedRows) = (rest.clone(), i, nv, ne, m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), ur.clone()); continue '__tco; }
+            ur = List::consOnTrue(!(b), r.clone(), inUnmatchedRows);
+            { (unmatchedRows, i, nv, ne, m, mT, collummarks, level, ass1, ass2, inUnmatchedRows) = (rest.clone(), i, nv, ne, m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), ur); continue '__tco; }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKDFS failed in phase ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2493,7 +2493,7 @@ fn HKDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32, m
         _ => {
             let mut collums: Arc<metamodelica::List<i32>>;
             collums = List::select(({let __elt = mT.borrow()[(r-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            HKDFStraverseCollums(collums.clone(), stack, i, l, nv, ne, m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inMatched)?
+            HKDFStraverseCollums(collums, stack, i, l, nv, ne, m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inMatched)?
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKDFSphase failed in phase ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2596,7 +2596,7 @@ fn HKDFSreasign(mut stack: Arc<metamodelica::List<i32>>, mut c: i32, mut ass1: m
             cr = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
             metamodelica::arrayUpdate(ass1.clone(), c, r.clone())?;
             metamodelica::arrayUpdate(ass2.clone(), r.clone(), c)?;
-            HKDFSreasign(rest.clone(), cr.clone(), ass1.clone(), ass2.clone())?;
+            HKDFSreasign(rest.clone(), cr, ass1.clone(), ass2.clone())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2701,8 +2701,8 @@ fn HKDW1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: 
             let mut syst = (*syst).clone();
             (i_1, unmatched1) = HKDWphase(i, unmatched.clone(), nv, ne, m.clone(), mt.clone(), rowmarks.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), (unmatched.len() as i32), metamodelica::nil())?;
             meqns = getEqnsforIndexReduction(unmatched1.clone(), ne, m.clone(), mt.clone(), ass1.clone(), ass2.clone(), inArg.clone())?;
-            (unmatched1, rowmarks1, collummarks1, level1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = HK2(meqns.clone(), unmatched1.clone(), metamodelica::nil(), rowmarks.clone(), collummarks.clone(), level.clone(), syst.clone(), ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
-            { (i, unmatched, rowmarks, collummarks, level, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1.clone() + 1, unmatched1.clone(), rowmarks1.clone(), collummarks1.clone(), level1.clone(), syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg.clone()); continue '__tco; }
+            (unmatched1, rowmarks1, collummarks1, level1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = HK2(meqns, unmatched1, metamodelica::nil(), rowmarks.clone(), collummarks.clone(), level.clone(), syst.clone(), ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
+            { (i, unmatched, rowmarks, collummarks, level, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1 + 1, unmatched1, rowmarks1.clone(), collummarks1.clone(), level1.clone(), syst.clone(), shared, nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2793,7 +2793,7 @@ fn HKDWDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32,
         _ => {
             let mut collums: Arc<metamodelica::List<i32>>;
             collums = List::select(({let __elt = mT.borrow()[(r-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            HKDWDFStraverseCollums(collums.clone(), stack, i, nv, ne, m.clone(), mT.clone(), collummarks.clone(), ass1.clone(), ass2.clone(), inMatched)?
+            HKDWDFStraverseCollums(collums, stack, i, nv, ne, m.clone(), mT.clone(), collummarks.clone(), ass1.clone(), ass2.clone(), inMatched)?
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKDWDFSphase failed in phase ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -2976,11 +2976,11 @@ fn ABMP1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: 
             let mut level1: metamodelica::Array<i32>;
             let mut rlevel1: metamodelica::Array<i32>;
             lim = ((metamodelica::OrderedFloat(0.1_f64) * (metamodelica::OrderedFloat((metamodelica::arrayLength(ass1.clone())) as f64)).sqrt()).0.floor() as i32);
-            unmatched1 = ABMPphase(unmatched.clone(), i, nv, ne, m.clone(), mt.clone(), rowmarks.clone(), rlevel.clone(), colptrs.clone(), lim.clone(), ass1.clone(), ass2.clone())?;
+            unmatched1 = ABMPphase(unmatched.clone(), i, nv, ne, m.clone(), mt.clone(), rowmarks.clone(), rlevel.clone(), colptrs.clone(), lim, ass1.clone(), ass2.clone())?;
             (i_1, unmatched1) = HKphase(i + 1, unmatched.clone(), nv, ne, m.clone(), mt.clone(), rowmarks.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), (unmatched.len() as i32), metamodelica::nil())?;
             meqns = getEqnsforIndexReduction(unmatched1.clone(), ne, m.clone(), mt.clone(), ass1.clone(), ass2.clone(), inArg.clone())?;
-            (unmatched1, rowmarks1, collummarks1, level1, rlevel1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = ABMP2(meqns.clone(), unmatched1.clone(), metamodelica::nil(), rowmarks.clone(), collummarks.clone(), level.clone(), rlevel.clone(), isyst, ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
-            { (i, unmatched, rowmarks, collummarks, level, rlevel, colptrs, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1.clone() + 1, unmatched1.clone(), rowmarks1.clone(), collummarks1.clone(), level1.clone(), rlevel1.clone(), colptrs.clone(), syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg.clone()); continue '__tco; }
+            (unmatched1, rowmarks1, collummarks1, level1, rlevel1, nv_1, ne_1, ass1_1, ass2_1, syst, shared, arg) = ABMP2(meqns, unmatched1, metamodelica::nil(), rowmarks.clone(), collummarks.clone(), level.clone(), rlevel.clone(), isyst, ishared, nv, ne, ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg)?;
+            { (i, unmatched, rowmarks, collummarks, level, rlevel, colptrs, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (i_1 + 1, unmatched1, rowmarks1.clone(), collummarks1.clone(), level1.clone(), rlevel1.clone(), colptrs.clone(), syst, shared, nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), arg); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3020,13 +3020,13 @@ fn ABMP2(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut u
             (unmatched1, _, syst, shared, ass2_1, ass1_1, arg) = sssHandler(meqns, 0, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
             ne_1 = BackendDAEUtil::systemSize(syst.clone())?;
             nv_1 = BackendVariable::daenumVariables(syst.clone());
-            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1.clone(), metamodelica::arrayLength(ass1_1.clone()), -1)?;
-            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1.clone(), metamodelica::arrayLength(ass2_1.clone()), -1)?;
-            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv_1.clone(), metamodelica::arrayLength(rowmarks.clone()), -1)?;
-            collummarks1 = assignmentsArrayExpand(collummarks.clone(), ne_1.clone(), metamodelica::arrayLength(collummarks.clone()), -1)?;
+            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1, metamodelica::arrayLength(ass1_1.clone()), -1)?;
+            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1, metamodelica::arrayLength(ass2_1.clone()), -1)?;
+            rowmarks1 = assignmentsArrayExpand(rowmarks.clone(), nv_1, metamodelica::arrayLength(rowmarks.clone()), -1)?;
+            collummarks1 = assignmentsArrayExpand(collummarks.clone(), ne_1, metamodelica::arrayLength(collummarks.clone()), -1)?;
             rlevel1 = arrayCreate(metamodelica::arrayLength(ass2_1.clone()), metamodelica::arrayLength(ass2_1.clone()));
-            level1 = assignmentsArrayExpand(level.clone(), ne_1.clone(), metamodelica::arrayLength(level.clone()), -1)?;
-            (unmatched1.clone(), rowmarks1.clone(), collummarks1.clone(), level1.clone(), rlevel1.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone())
+            level1 = assignmentsArrayExpand(level.clone(), ne_1, metamodelica::arrayLength(level.clone()), -1)?;
+            (unmatched1, rowmarks1.clone(), collummarks1.clone(), level1.clone(), rlevel1.clone(), nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), syst, shared, arg)
         },
         (_, _) => {
             singularSystemError(meqns, 0, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
@@ -3046,7 +3046,7 @@ fn ABMPphase(mut U: Arc<metamodelica::List<i32>>, mut i: i32, mut nv: i32, mut n
         _ => {
             let mut ur: Arc<metamodelica::List<i32>>;
             ur = ABMPBFSphase(U.clone(), i, 0, lim, (U.clone().len() as i32), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), metamodelica::nil())?;
-            ABMPphase1(U, ur.clone(), i, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), colptrs.clone(), lim, ass1.clone(), ass2.clone())?
+            ABMPphase1(U, ur, i, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), colptrs.clone(), lim, ass1.clone(), ass2.clone())?
         },
         _ => {
             Error::addInternalError((literal!("function ABMPphase failed")).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -3067,9 +3067,9 @@ fn ABMPphase1(mut U: Arc<metamodelica::List<i32>>, mut unmatchedRows: Arc<metamo
             let mut unmatched: Arc<metamodelica::List<i32>>;
             let mut L: i32;
             L = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt});
-            ABMPDFS(unmatchedRows, 0, L.clone(), nv, ne, m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
+            ABMPDFS(unmatchedRows, 0, L, nv, ne, m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
             unmatched = HKgetUnmatched(U, ass1.clone(), metamodelica::nil());
-            ABMPphase2(unmatched.clone(), i, L.clone(), nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), colptrs.clone(), lim, ass1.clone(), ass2.clone())?
+            ABMPphase2(unmatched, i, L, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), colptrs.clone(), lim, ass1.clone(), ass2.clone())?
         },
         _ => {
             Error::addInternalError((literal!("function ABMPphase1 failed")).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -3133,16 +3133,16 @@ fn ABMPBFSphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32,
             let mut l: i32;
             let mut b: bool;
             l = L + 2;
-            b = intGt(l.clone(), lim) || intGt(50 * l.clone(), lim1);
-            return Ok(ABMPBFSphase1(b.clone(), nextqueue, i, l.clone(), lim, lim1, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), unMatched)?)
+            b = intGt(l, lim) || intGt(50 * l, lim1);
+            return Ok(ABMPBFSphase1(b, nextqueue, i, l, lim, lim1, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), unMatched)?)
         },
         (Deref @ metamodelica::List::Cons { head: c, tail: rest }, _) => {
             let mut rows: Arc<metamodelica::List<i32>>;
             let mut queue1: Arc<metamodelica::List<i32>>;
             let mut unmatched: Arc<metamodelica::List<i32>>;
             rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            (queue1, unmatched) = ABMPBFStraverseRows(rows.clone(), i, L, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), nextqueue, unMatched)?;
-            { (queue, i, L, lim, lim1, nv, ne, m, mT, rowmarks, level, ass1, ass2, nextqueue, unMatched) = (rest.clone(), i, L, lim, lim1, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue1.clone(), unmatched.clone()); continue '__tco; }
+            (queue1, unmatched) = ABMPBFStraverseRows(rows, i, L, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), nextqueue, unMatched)?;
+            { (queue, i, L, lim, lim1, nv, ne, m, mT, rowmarks, level, ass1, ass2, nextqueue, unMatched) = (rest.clone(), i, L, lim, lim1, nv, ne, m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue1, unmatched); continue '__tco; }
         },
         _ => {
             Error::addInternalError((literal!("function ABMPBFSphase failed")).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -3420,10 +3420,10 @@ fn ABMPDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32,
             let mut i_1: i32;
             let mut b: bool;
             collums = List::select(({let __elt = mT.borrow()[(r-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            collums = List::stripN(collums.clone(), ({let __elt = colptrs.borrow()[(r-1) as usize].clone(); __elt}))?;
+            collums = List::stripN(collums, ({let __elt = colptrs.borrow()[(r-1) as usize].clone(); __elt}))?;
             desL = ({let __elt = level.borrow()[(r-1) as usize].clone(); __elt}) - 2;
-            (i_1, b) = ABMPDFStraverseCollums(collums.clone(), 1, stack, r, i, desL.clone(), nv, ne, m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone())?;
-            (i_1.clone(), b.clone())
+            (i_1, b) = ABMPDFStraverseCollums(collums, 1, stack, r, i, desL, nv, ne, m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone())?;
+            (i_1, b)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function ABMPDFSphase failed in phase ")); __mm_s.push_str(&*intString(i)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
@@ -3513,7 +3513,7 @@ fn ABMPDFStraverseCollums1(mut inMatched: bool, mut counter: i32, mut rows: Arc<
             let mut i_1: i32;
             let mut b: bool;
             (i_1, b) = ABMPDFStraverseCollums(rows, counter, stack, r, i, desL, nv, ne, m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone())?;
-            (i_1.clone(), b.clone())
+            (i_1, b)
         },
     });
     Ok((outI, matched))
@@ -3688,11 +3688,11 @@ fn PR_FIFO_FAIR2(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>
             (unmatched1, _, syst, shared, ass2_1, ass1_1, arg) = sssHandler(meqns, 0, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
             ne_1 = BackendDAEUtil::systemSize(syst.clone())?;
             nv_1 = BackendVariable::daenumVariables(syst.clone());
-            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1.clone(), metamodelica::arrayLength(ass1_1.clone()), -1)?;
-            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1.clone(), metamodelica::arrayLength(ass2_1.clone()), -1)?;
-            l_label1 = assignmentsArrayExpand(l_label.clone(), ne_1.clone(), metamodelica::arrayLength(l_label.clone()), -1)?;
-            r_label1 = assignmentsArrayExpand(r_label.clone(), nv_1.clone(), metamodelica::arrayLength(r_label.clone()), -1)?;
-            (unmatched1.clone(), l_label1.clone(), r_label1.clone(), nv_1.clone(), ne_1.clone(), ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone())
+            ass1_1 = assignmentsArrayExpand(ass1_1.clone(), ne_1, metamodelica::arrayLength(ass1_1.clone()), -1)?;
+            ass2_1 = assignmentsArrayExpand(ass2_1.clone(), nv_1, metamodelica::arrayLength(ass2_1.clone()), -1)?;
+            l_label1 = assignmentsArrayExpand(l_label.clone(), ne_1, metamodelica::arrayLength(l_label.clone()), -1)?;
+            r_label1 = assignmentsArrayExpand(r_label.clone(), nv_1, metamodelica::arrayLength(r_label.clone()), -1)?;
+            (unmatched1, l_label1.clone(), r_label1.clone(), nv_1, ne_1, ass1_1.clone(), ass2_1.clone(), syst, shared, arg)
         },
         (_, _) => {
             singularSystemError(meqns, 0, isyst, ishared, ass1.clone(), ass2.clone(), inArg)?;
@@ -3919,8 +3919,8 @@ fn PR_FIFO_FAIRphase1(mut b: bool, mut relabels: i32, mut max_vertex: i32, mut m
             let mut minvert: i32;
             let mut tmp: i32;
             tmp = intMod(({let __elt = l_label.borrow()[(max_vertex-1) as usize].clone(); __elt}), 4);
-            (rel, minlab, minvert) = PR_FIFO_FAIRphase2(intEq(tmp.clone(), 1), relabels, max_vertex, min_vertec, min_label, max, nv, ne, m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
-            (rel.clone(), minlab.clone(), minvert.clone())
+            (rel, minlab, minvert) = PR_FIFO_FAIRphase2(intEq(tmp, 1), relabels, max_vertex, min_vertec, min_label, max, nv, ne, m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
+            (rel, minlab, minvert)
         },
         _ => {
             (relabels, min_label, min_vertec)
@@ -3940,8 +3940,8 @@ fn PR_FIFO_FAIRphase2(mut b: bool, mut relabels: i32, mut max_vertex: i32, mut m
             let mut minlab: i32;
             let mut minvert: i32;
             rows = List::select(({let __elt = m.borrow()[(max_vertex-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            (rel, minlab, minvert) = PR_FIFO_FAIRphase_traverseRows(rows.clone(), relabels, max_vertex, min_vertec, min_label, max, nv, ne, m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone());
-            (rel.clone(), minlab.clone(), minvert.clone())
+            (rel, minlab, minvert) = PR_FIFO_FAIRphase_traverseRows(rows, relabels, max_vertex, min_vertec, min_label, max, nv, ne, m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone());
+            (rel, minlab, minvert)
         },
         _ => {
             let mut rows: Arc<metamodelica::List<i32>>;
@@ -3949,9 +3949,9 @@ fn PR_FIFO_FAIRphase2(mut b: bool, mut relabels: i32, mut max_vertex: i32, mut m
             let mut minlab: i32;
             let mut minvert: i32;
             rows = List::select(({let __elt = m.borrow()[(max_vertex-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            rows = rows.clone().reverse();
-            (rel, minlab, minvert) = PR_FIFO_FAIRphase_traverseRows(rows.clone(), relabels, max_vertex, min_vertec, min_label, max, nv, ne, m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone());
-            (rel.clone(), minlab.clone(), minvert.clone())
+            rows = rows.reverse();
+            (rel, minlab, minvert) = PR_FIFO_FAIRphase_traverseRows(rows, relabels, max_vertex, min_vertec, min_label, max, nv, ne, m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone());
+            (rel, minlab, minvert)
         },
     });
     Ok((outRelabels, outMinLabels, outMinVertex))
@@ -4225,10 +4225,10 @@ fn ks_rand_cheapmatching2(mut b: bool, mut c: i32, mut col_degrees: metamodelica
             let mut r: i32;
             e_id = ((realMod(System::realRand(), intReal(({let __elt = col_degrees.borrow()[(c-1) as usize].clone(); __elt})))).0.floor() as i32);
             lst = List::select(({let __elt = m.borrow()[(c-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            (rlst, r) = ks_rand_cheapmatching3(e_id.clone(), lst.clone(), row_degrees.clone(), c, ass1.clone(), ass2.clone(), metamodelica::nil(), 0);
-            lst = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            clst = ks_rand_cheapmatching4(lst.clone(), ({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}), col_degrees.clone(), ass1.clone(), metamodelica::nil());
-            (clst.clone(), rlst.clone())
+            (rlst, r) = ks_rand_cheapmatching3(e_id, lst, row_degrees.clone(), c, ass1.clone(), ass2.clone(), metamodelica::nil(), 0);
+            lst = List::select(({let __elt = mT.borrow()[(r-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            clst = ks_rand_cheapmatching4(lst, ({let __elt = row_degrees.borrow()[(r-1) as usize].clone(); __elt}), col_degrees.clone(), ass1.clone(), metamodelica::nil());
+            (clst, rlst)
         },
         _ => {
             (metamodelica::nil(), metamodelica::nil())
@@ -4352,10 +4352,10 @@ fn getOneRows(mut n: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>
             let mut onerows: Arc<metamodelica::List<i32>>;
             let mut l: i32;
             lst = List::select(({let __elt = m.borrow()[(n-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            l = (lst.clone().len() as i32);
-            metamodelica::arrayUpdate(degrees.clone(), n, l.clone())?;
-            onerows = List::consOnTrue(intEq(l.clone(), 1), n, inOneRows);
-            { (n, m, degrees, inOneRows) = (n - 1, m.clone(), degrees.clone(), onerows.clone()); continue '__tco; }
+            l = (lst.len() as i32);
+            metamodelica::arrayUpdate(degrees.clone(), n, l)?;
+            onerows = List::consOnTrue(intEq(l, 1), n, inOneRows);
+            { (n, m, degrees, inOneRows) = (n - 1, m.clone(), degrees.clone(), onerows); continue '__tco; }
         },
     }
     }
@@ -4371,8 +4371,8 @@ fn setrandArray(mut n: i32, mut randarr: metamodelica::Array<i32>) -> Result<()>
             let mut tmp: i32;
             z = ((realMod(System::realRand(), intReal(n))).0.floor() as i32) + 1;
             tmp = ({let __elt = randarr.borrow()[(n-1) as usize].clone(); __elt});
-            metamodelica::arrayUpdate(randarr.clone(), n, ({let __elt = randarr.borrow()[(z.clone()-1) as usize].clone(); __elt}))?;
-            metamodelica::arrayUpdate(randarr.clone(), z.clone(), tmp.clone())?;
+            metamodelica::arrayUpdate(randarr.clone(), n, ({let __elt = randarr.borrow()[(z-1) as usize].clone(); __elt}))?;
+            metamodelica::arrayUpdate(randarr.clone(), z, tmp)?;
             setrandArray(n - 1, randarr.clone())?;
             ()
         },
@@ -5046,14 +5046,14 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
             (ass1_1, ass2_1) = (ass1.clone(), ass2.clone());
             syst = isyst.clone();
             if !(Flags::getConfigBool(Flags::NO_ASSC.clone())?) && BackendDAEUtil::hasIndexTypeSolvableAndUnprocessedScalar(syst.clone()) && BackendDAEUtil::doIndexReduction(inMatchingOptions.clone()) {
-                syst = BackendDAEUtil::setAnalyticalToStructuralProcessed(syst.clone(), true)?;
+                syst = BackendDAEUtil::setAnalyticalToStructuralProcessed(syst, true)?;
                 (_, m1, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(isyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
                 comps = Sorting::Tarjan(m1.clone(), ass2_1.clone(), metamodelica::arrayLength(ass2_1.clone()))?;
-                for mut comp in &*comps.clone() {
+                for mut comp in &*comps {
                     let mut comp = comp.clone();
-                    (ass1_1, ass2_1, syst, changed) = BackendDAEUtil::analyticalToStructuralSingularity(comp.clone(), ass1_1.clone(), ass2_1.clone(), syst.clone(), changed.clone(), false)?;
+                    (ass1_1, ass2_1, syst, changed) = BackendDAEUtil::analyticalToStructuralSingularity(comp.clone(), ass1_1.clone(), ass2_1.clone(), syst.clone(), changed, false)?;
                 }
-                if changed.clone() {
+                if changed {
                     BackendDAEEXT::setAssignment(nv, ne, ass1_1.clone(), ass2_1.clone());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(syst.clone()) {
                         Deref @ BackendDAE::EqSystem { m: Some(__pa0), mT: Some(__pa1), .. } => (__pa0.clone(), __pa1.clone()),
@@ -5077,16 +5077,16 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
             m1t = metamodelica::arrayFromVec(mt.clone().borrow().clone());
             (m1, m1t) = removeEdgesForNoDerivativeFunctionInputs(m1.clone(), m1t.clone(), syst.clone(), ishared.clone())?;
             (m1, m1t) = removeEdgesToDiscreteEquations(m1.clone(), m1t.clone(), syst.clone(), ishared.clone())?;
-            meqns1 = getEqnsforIndexReduction(unmatched_eqs.clone(), ne, m1.clone(), m1t.clone(), ass1_1.clone(), ass2_1.clone(), inArg.clone())?;
+            meqns1 = getEqnsforIndexReduction(unmatched_eqs, ne, m1.clone(), m1t.clone(), ass1_1.clone(), ass2_1.clone(), inArg.clone())?;
             if !(meqns1.clone().is_empty()) {
-                (syst, meqns1, ass1_1, ass2_1) = sanityCheckArtificialStates(syst.clone(), ishared.clone(), nv, ne, meqns1.clone(), ass1_1.clone(), ass2_1.clone(), algIndx, cheapMatching, clearMatching, inArg.clone())?;
+                (syst, meqns1, ass1_1, ass2_1) = sanityCheckArtificialStates(syst, ishared.clone(), nv, ne, meqns1, ass1_1.clone(), ass2_1.clone(), algIndx, cheapMatching, clearMatching, inArg.clone())?;
             } else {
-                (syst, meqns1, ass1_1, ass2_1) = (syst.clone(), meqns1.clone(), ass1_1.clone(), ass2_1.clone());
+                (syst, meqns1, ass1_1, ass2_1) = (syst, meqns1, ass1_1.clone(), ass2_1.clone());
             }
             if Flags::isSet(Flags::BLT_DUMP.clone())? && !(meqns1.clone().is_empty()) {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Index Reduction neccessary!\n")); __mm_s.push_str(&*literal!("MSS subsets:\n ")); __mm_s.push_str(&*stringDelimitList(List::map(meqns1.clone(), (std::sync::Arc::new(Util::intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n ")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            { (meqns, internalCall, algIndx, cheapMatching, clearMatching, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (meqns1.clone(), true, algIndx, -1, 0, syst.clone(), ishared, nv, ne, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), inArg); continue '__tco; }
+            { (meqns, internalCall, algIndx, cheapMatching, clearMatching, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (meqns1, true, algIndx, -1, 0, syst, ishared, nv, ne, ass1_1.clone(), ass2_1.clone(), inMatchingOptions, sssHandler.clone(), inArg); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: _ }, _, _, (BackendDAE::IndexReduction::INDEX_REDUCTION { .. }, _)) => {
             let mut nv_1: i32;
@@ -5106,10 +5106,10 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
             (_, _, syst, shared, ass2_1, ass1_1, arg) = sssHandler(meqns, 0, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
             ne_1 = BackendDAEUtil::systemSize(syst.clone())?;
             nv_1 = BackendVariable::daenumVariables(syst.clone());
-            ass1_2 = assignmentsArrayExpand(ass1_1.clone(), ne_1.clone(), memsize.clone(), -1)?;
-            ass2_2 = assignmentsArrayExpand(ass2_1.clone(), nv_1.clone(), memsize.clone(), -1)?;
-            let true = (BackendDAEEXT::setAssignment(ne_1.clone(), nv_1.clone(), ass1_2.clone(), ass2_2.clone())) else { bail!("pattern mismatch") };
-            { (meqns, internalCall, algIndx, cheapMatching, clearMatching, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (metamodelica::nil(), false, algIndx, cheapMatching, clearMatching, syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_2.clone(), ass2_2.clone(), inMatchingOptions, sssHandler.clone(), arg.clone()); continue '__tco; }
+            ass1_2 = assignmentsArrayExpand(ass1_1.clone(), ne_1, memsize, -1)?;
+            ass2_2 = assignmentsArrayExpand(ass2_1.clone(), nv_1, memsize, -1)?;
+            let true = (BackendDAEEXT::setAssignment(ne_1, nv_1, ass1_2.clone(), ass2_2.clone())) else { bail!("pattern mismatch") };
+            { (meqns, internalCall, algIndx, cheapMatching, clearMatching, isyst, ishared, nv, ne, ass1, ass2, inMatchingOptions, sssHandler, inArg) = (metamodelica::nil(), false, algIndx, cheapMatching, clearMatching, syst, shared, nv_1, ne_1, ass1_2.clone(), ass2_2.clone(), inMatchingOptions, sssHandler.clone(), arg); continue '__tco; }
         },
         _ => {
             singularSystemError(meqns, 0, isyst, ishared, ass1.clone(), ass2.clone(), inArg)?;
@@ -5413,7 +5413,7 @@ pub(crate) fn getMarked(mut ne: i32, mut mark: i32, mut markArr: metamodelica::A
         _ => {
             let mut marked: Arc<metamodelica::List<i32>>;
             marked = List::consOnTrue(intEq(({let __elt = markArr.borrow()[(ne-1) as usize].clone(); __elt}), mark), ne, iMarked);
-            { (ne, mark, markArr, iMarked) = (ne - 1, mark, markArr.clone(), marked.clone()); continue '__tco; }
+            { (ne, mark, markArr, iMarked) = (ne - 1, mark, markArr.clone(), marked); continue '__tco; }
         },
     }
     }
@@ -5428,7 +5428,7 @@ pub(crate) fn getUnassigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut 
         _ => {
             let mut unassigned: Arc<metamodelica::List<i32>>;
             unassigned = List::consOnTrue(intLt(({let __elt = ass.borrow()[(ne-1) as usize].clone(); __elt}), 1), ne, inUnassigned);
-            { (ne, ass, inUnassigned) = (ne - 1, ass.clone(), unassigned.clone()); continue '__tco; }
+            { (ne, ass, inUnassigned) = (ne - 1, ass.clone(), unassigned); continue '__tco; }
         },
     }
     }
@@ -5465,7 +5465,7 @@ pub(crate) fn getAssigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut in
         _ => {
             let mut assigned: Arc<metamodelica::List<i32>>;
             assigned = List::consOnTrue(intGt(({let __elt = ass.borrow()[(ne-1) as usize].clone(); __elt}), 0), ne, inAssigned);
-            { (ne, ass, inAssigned) = (ne - 1, ass.clone(), assigned.clone()); continue '__tco; }
+            { (ne, ass, inAssigned) = (ne - 1, ass.clone(), assigned); continue '__tco; }
         },
     }
     }
@@ -5483,9 +5483,9 @@ pub(crate) fn getEqnsforIndexReduction(mut U: Arc<metamodelica::List<i32>>, mut 
             let mut subsets: metamodelica::Array<Arc<metamodelica::List<i32>>>;
             colummarks = arrayCreate(neqns, -1);
             lengthU = (U.clone().len() as i32);
-            subsets = arrayCreate(lengthU.clone(), metamodelica::nil());
+            subsets = arrayCreate(lengthU, metamodelica::nil());
             subsets = getEqnsforIndexReduction1(U, m.clone(), mT.clone(), 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), subsets.clone())?;
-            removeEmptySubsets(1, lengthU.clone(), subsets.clone(), metamodelica::nil())
+            removeEmptySubsets(1, lengthU, subsets.clone(), metamodelica::nil())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5499,8 +5499,8 @@ fn removeEmptySubsets(mut index: i32, mut length: i32, mut subsets: metamodelica
             let mut eqns: Arc<metamodelica::List<i32>>;
             let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
             eqns = ({let __elt = subsets.borrow()[(index-1) as usize].clone(); __elt});
-            acc = appendNonEmpty(eqns.clone(), iAcc);
-            { (index, length, subsets, iAcc) = (index + 1, length, subsets.clone(), acc.clone()); continue '__tco; }
+            acc = appendNonEmpty(eqns, iAcc);
+            { (index, length, subsets, iAcc) = (index + 1, length, subsets.clone(), acc); continue '__tco; }
         },
         _ => {
             return iAcc
@@ -5530,10 +5530,10 @@ fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamod
             let mut eqns: Arc<metamodelica::List<i32>>;
             let mut e1: i32;
             e1 = ({let __elt = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone(); __elt});
-            eqns = ({let __elt = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone(); __elt});
+            eqns = ({let __elt = mapEqnIncRow.borrow()[(e1-1) as usize].clone(); __elt});
             List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark, colummarks.clone())?;
-            eqns = getEqnsforIndexReductionphase(eqns.clone(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone())?;
-            Array::appendToElement(mark, eqns.clone(), inSubsets.clone())?;
+            eqns = getEqnsforIndexReductionphase(eqns.clone(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns)?;
+            Array::appendToElement(mark, eqns, inSubsets.clone())?;
             { (U, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets) = (rest.clone(), m.clone(), mT.clone(), mark + 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
@@ -5554,8 +5554,8 @@ fn getEqnsforIndexReductionphase(mut elst: Arc<metamodelica::List<i32>>, mut m: 
             let mut rows: Arc<metamodelica::List<i32>>;
             let mut eqns: Arc<metamodelica::List<i32>>;
             rows = List::select(({let __elt = m.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            eqns = getEqnsforIndexReductiontraverseRows(rows.clone(), metamodelica::nil(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), inEqns)?;
-            { (elst, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets, inEqns) = (rest.clone(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone()); continue '__tco; }
+            eqns = getEqnsforIndexReductiontraverseRows(rows, metamodelica::nil(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), inEqns)?;
+            { (elst, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets, inEqns) = (rest.clone(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns); continue '__tco; }
         },
         _ => {
             return Ok(bail!("fail"))
@@ -5581,23 +5581,23 @@ fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, 
             let mut rc: i32;
             let mut e: i32;
             rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
-            if List::exist1(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rc.clone())? && intGt(rc.clone(), 0) && !(intEq(({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), mark)) {
-                if intGt(({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), 0) {
-                    mergeSubsets(mark, ({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), inSubsets.clone(), colummarks.clone())?;
+            if List::exist1(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rc)? && intGt(rc, 0) && !(intEq(({let __elt = colummarks.borrow()[(rc-1) as usize].clone(); __elt}), mark)) {
+                if intGt(({let __elt = colummarks.borrow()[(rc-1) as usize].clone(); __elt}), 0) {
+                    mergeSubsets(mark, ({let __elt = colummarks.borrow()[(rc-1) as usize].clone(); __elt}), inSubsets.clone(), colummarks.clone())?;
                     nextqueue = nextColums;
                     queue = inEqns;
                 } else {
-                    e = ({let __elt = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone(); __elt});
-                    eqns = ({let __elt = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone(); __elt});
+                    e = ({let __elt = mapIncRowEqn.borrow()[(rc-1) as usize].clone(); __elt});
+                    eqns = ({let __elt = mapEqnIncRow.borrow()[(e-1) as usize].clone(); __elt});
                     List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark, colummarks.clone())?;
                     nextqueue = listAppend(nextColums, eqns.clone());
-                    queue = listAppend(inEqns, eqns.clone());
+                    queue = listAppend(inEqns, eqns);
                 }
             } else {
                 nextqueue = nextColums;
                 queue = inEqns;
             }
-            { (rows, nextColums, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets, inEqns) = (rest.clone(), nextqueue.clone(), m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), queue.clone()); continue '__tco; }
+            { (rows, nextColums, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets, inEqns) = (rest.clone(), nextqueue, m.clone(), mT.clone(), mark, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), queue); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -5642,9 +5642,9 @@ fn reduceIndexifNecessary(mut meqns: Arc<metamodelica::List<i32>>, mut actualEqn
             (changedEqns, i_1, syst, shared, ass2_1, ass1_1, arg) = sssHandler(list![meqns], actualEqn, isyst, ishared, ass2.clone(), ass1.clone(), inArg)?;
             ne_1 = BackendDAEUtil::systemSize(syst.clone())?;
             nv_1 = BackendVariable::daenumVariables(syst.clone());
-            ass1_2 = assignmentsArrayExpand(ass1_1.clone(), ne_1.clone(), metamodelica::arrayLength(ass1_1.clone()), -1)?;
-            ass2_2 = assignmentsArrayExpand(ass2_1.clone(), nv_1.clone(), metamodelica::arrayLength(ass2_1.clone()), -1)?;
-            (changedEqns.clone(), i_1.clone(), syst.clone(), shared.clone(), nv_1.clone(), ne_1.clone(), ass1_2.clone(), ass2_2.clone(), arg.clone())
+            ass1_2 = assignmentsArrayExpand(ass1_1.clone(), ne_1, metamodelica::arrayLength(ass1_1.clone()), -1)?;
+            ass2_2 = assignmentsArrayExpand(ass2_1.clone(), nv_1, metamodelica::arrayLength(ass2_1.clone()), -1)?;
+            (changedEqns, i_1, syst, shared, nv_1, ne_1, ass1_2.clone(), ass2_2.clone(), arg)
         },
         (_, _) => {
             singularSystemError(list![meqns], actualEqn, isyst, ishared, ass1.clone(), ass2.clone(), inArg)?;
@@ -5851,7 +5851,7 @@ fn testMatchingAlgorithm(mut index: i32, mut matchingAlgorithm: Arc<dyn ::std::o
         _ => {
             let mut arg: (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32);
             arg = IndexReduction::getStructurallySingularSystemHandlerArg(isyst.clone(), ishared.clone(), metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()))?;
-            matchingAlgorithm(isyst.clone(), ishared.clone(), true, inMatchingOptions.clone(), (std::sync::Arc::new(IndexReduction::pantelidesIndexReduction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, i32, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, metamodelica::Array<i32>, metamodelica::Array<i32>, (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32)) -> Result<(Arc<metamodelica::List<i32>>, i32, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, metamodelica::Array<i32>, metamodelica::Array<i32>, (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32))> + 'static>), arg.clone())?;
+            matchingAlgorithm(isyst.clone(), ishared.clone(), true, inMatchingOptions.clone(), (std::sync::Arc::new(IndexReduction::pantelidesIndexReduction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, i32, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, metamodelica::Array<i32>, metamodelica::Array<i32>, (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32)) -> Result<(Arc<metamodelica::List<i32>>, i32, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, metamodelica::Array<i32>, metamodelica::Array<i32>, (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32))> + 'static>), arg)?;
             testMatchingAlgorithm(index - 1, matchingAlgorithm.clone(), isyst, ishared, inMatchingOptions)?;
             ()
         },
@@ -5902,13 +5902,13 @@ fn randSortSystem(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
             let mut syst = (*syst).clone();
             ne = BackendDAEUtil::systemSize(isyst.clone())?;
             nv = BackendVariable::daenumVariables(isyst);
-            randarr = Array::createIntRange(ne.clone());
-            setrandArray(ne.clone(), randarr.clone())?;
-            randarr1 = Array::createIntRange(nv.clone());
-            setrandArray(nv.clone(), randarr1.clone())?;
+            randarr = Array::createIntRange(ne);
+            setrandArray(ne, randarr.clone())?;
+            randarr1 = Array::createIntRange(nv);
+            setrandArray(nv, randarr1.clone())?;
             assign_field!(
-                syst.orderedEqs = randSortSystem1(ne.clone(), 0, randarr.clone(), eqns.clone(), BackendEquation::listEquation(metamodelica::nil())?, (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), (std::sync::Arc::new(BackendEquation::add) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>))?,
-                syst.orderedVars = randSortSystem1(nv.clone(), 0, randarr1.clone(), vars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), (std::sync::Arc::new(BackendVariable::addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>))?
+                syst.orderedEqs = randSortSystem1(ne, 0, randarr.clone(), eqns.clone(), BackendEquation::listEquation(metamodelica::nil())?, (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), (std::sync::Arc::new(BackendEquation::add) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>))?,
+                syst.orderedVars = randSortSystem1(nv, 0, randarr1.clone(), vars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), (std::sync::Arc::new(BackendVariable::addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>))?
             );
             (syst, _, _) = BackendDAEUtil::getAdjacencyMatrix(BackendDAEUtil::clearEqSyst(syst.clone())?, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared))?;
             syst.clone()
@@ -5932,8 +5932,8 @@ fn randSortSystem1<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: 
             let mut tb: Type_b;
             let mut ta: Type_a;
             tb = get(oldTypeA.clone(), ({let __elt = randarr.borrow()[(index-1) as usize].clone(); __elt}) + offset)?;
-            ta = set(tb.clone(), newTypeA)?;
-            { (index, offset, randarr, oldTypeA, newTypeA, get, set) = (index - 1, offset, randarr.clone(), oldTypeA, ta.clone(), get.clone(), set.clone()); continue '__tco; }
+            ta = set(tb, newTypeA)?;
+            { (index, offset, randarr, oldTypeA, newTypeA, get, set) = (index - 1, offset, randarr.clone(), oldTypeA, ta, get.clone(), set.clone()); continue '__tco; }
         },
     }
     }

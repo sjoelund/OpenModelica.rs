@@ -157,9 +157,9 @@ pub(crate) fn buildCrefExpFromAsub(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamo
             let mut indexes: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut crNew = (*crNew).clone();
             indexes = List::map(subs, (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
-            crNew = ComponentReference::subscriptCref(crNew.clone(), indexes.clone())?;
+            crNew = ComponentReference::subscriptCref(crNew.clone(), indexes)?;
             crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
-            crefExp.clone()
+            crefExp
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -177,7 +177,7 @@ pub fn buildCrefExpFromSubs(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica:
             let mut crNew = (*crNew).clone();
             crNew = ComponentReference::subscriptCref(crNew.clone(), subs)?;
             crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
-            crefExp.clone()
+            crefExp
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -216,7 +216,7 @@ pub fn makeCrefRecordExp(mut inCRefRecord: Arc<DAE::ComponentRef>, mut inVar: Ar
         (cr, Deref @ DAE::Var { name, ty: tp, .. }) => {
             let mut cr1: Arc<DAE::ComponentRef>;
             cr1 = ComponentReference::crefPrependIdent(cr.clone(), (name.clone()).clone(), metamodelica::nil(), tp.clone())?;
-            outExp = Expression::makeCrefExp(cr1.clone(), tp.clone())?;
+            outExp = Expression::makeCrefExp(cr1, tp.clone())?;
             outExp
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -544,9 +544,9 @@ fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDe
         }
         __acc.reverse()
     });
-            tyss = List::map1(tys.clone(), (std::sync::Arc::new(Types::getAllInnerTypesOfType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>), std::sync::Arc::new(fnptr!(Util::anyReturnTrue, _)))?;
-            tys = List::flatten(tyss.clone())?;
-            dependencies = List::filterMap1(tys.clone(), (std::sync::Arc::new(getRecordDependenciesFromType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<SimCodeFunction::RecordDeclaration> + 'static>), allDecls);
+            tyss = List::map1(tys, (std::sync::Arc::new(Types::getAllInnerTypesOfType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>), std::sync::Arc::new(fnptr!(Util::anyReturnTrue, _)))?;
+            tys = List::flatten(tyss)?;
+            dependencies = List::filterMap1(tys, (std::sync::Arc::new(getRecordDependenciesFromType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<SimCodeFunction::RecordDeclaration> + 'static>), allDecls);
             List::unique(dependencies)
         },
         _ => {
@@ -634,11 +634,11 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             let mut libs = (*libs).clone();
             let mut libPaths = (*libPaths).clone();
             fname = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(path.clone()), (literal!(".")).clone(), true, false)?).clone();
-            b = stringEq((fname.clone()).clone(), (name.clone()).clone());
-            if !(b.clone()) {
+            b = stringEq((fname).clone(), (name.clone()).clone());
+            if !(b) {
                 (r#fn, includes, includeDirs, libs, libPaths) = elaborateFunction(program.clone(), fel.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
             }
-            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program, rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap); continue '__tco; }
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program, rest.clone(), List::consOnTrue(!(b), r#fn, accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel @ DAE::Function::FUNCTION { path, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: DAE::ExternalDecl { name, language: Deref @ "C", .. }, .. }, tail: _ }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut b: bool;
@@ -650,11 +650,11 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             let mut libs = (*libs).clone();
             let mut libPaths = (*libPaths).clone();
             fname = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(path.clone()), (literal!(".")).clone(), true, false)?).clone();
-            b = listMember((name.clone()).clone(), SCodeUtil::knownExternalCFunctions.clone()) && stringEq((fname.clone()).clone(), (name.clone()).clone());
-            if !(b.clone()) {
+            b = listMember((name.clone()).clone(), SCodeUtil::knownExternalCFunctions.clone()) && stringEq((fname).clone(), (name.clone()).clone());
+            if !(b) {
                 (r#fn, includes, includeDirs, libs, libPaths) = elaborateFunction(program.clone(), fel.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
             }
-            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program, rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap); continue '__tco; }
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program, rest.clone(), List::consOnTrue(!(b), r#fn, accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
@@ -664,7 +664,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             let mut libs = (*libs).clone();
             let mut libPaths = (*libPaths).clone();
             (r#fn, includes, includeDirs, libs, libPaths) = elaborateFunction(program.clone(), fel.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program, rest.clone(), metamodelica::cons(r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap); continue '__tco; }
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program, rest.clone(), metamodelica::cons(r#fn, accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -968,10 +968,10 @@ fn extArgsToSimExtArgs(mut extArg: DAE::ExtArg) -> Result<Arc<SimCodeFunction::S
             let mut type_ = type_.clone();
             isInput = AbsynUtil::isInput(dir.clone());
             isOutput = AbsynUtil::isOutput(dir.clone());
-            outputIndex = if (isOutput.clone()) {-1} else {0};
+            outputIndex = if (isOutput) {-1} else {0};
             isArray = Types::isArray(type_.clone());
             type_ = Types::simplifyType(type_.clone())?;
-            Arc::new(SimCodeFunction::SimExtArg::SimExtArg::SIMEXTARG { cref: componentRef.clone(), isInput: isInput.clone(), outputIndex: outputIndex.clone(), isArray: isArray.clone(), hasBinding: false, type_: type_.clone() })
+            Arc::new(SimCodeFunction::SimExtArg::SimExtArg::SIMEXTARG { cref: componentRef.clone(), isInput: isInput, outputIndex: outputIndex, isArray: isArray, hasBinding: false, type_: type_.clone() })
         },
         DAE::ExtArg::EXTARGEXP { exp: ref exp_, type_: mut type_ } => {
             let mut type_ = type_.clone();
@@ -1306,7 +1306,7 @@ fn replaceLiteralArrayExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodeli
                     exp2 = inExp.clone();
                 }
             }
-            (exp2.clone(), tpl.clone())
+            (exp2, tpl.clone())
         },
         (Deref @ DAE::Exp::MATRIX { .. }, tpl) => {
             let mut exp2: Arc<DAE::Exp>;
@@ -1324,7 +1324,7 @@ fn replaceLiteralArrayExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodeli
                     exp2 = inExp.clone();
                 }
             }
-            (exp2.clone(), tpl.clone())
+            (exp2, tpl.clone())
         },
         _ => {
             (inExp, inTpl)
@@ -1469,7 +1469,7 @@ fn listToCons2(mut ies: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<DAE::Exp>
         Deref @ metamodelica::List::Cons { head: car, tail: es } => {
             let mut cdr: Arc<DAE::Exp>;
             cdr = listToCons2(es.clone());
-            Arc::new(DAE::Exp::CONS { car: car.clone(), cdr: cdr.clone() })
+            Arc::new(DAE::Exp::CONS { car: car.clone(), cdr: cdr })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1726,7 +1726,7 @@ fn getCrefFromExp(mut e: Arc<DAE::Exp>) -> Result<Arc<Absyn::ComponentRef>> {
         Deref @ DAE::Exp::CREF { componentRef: crefe, .. } => {
             let mut crefa: Arc<Absyn::ComponentRef>;
             crefa = ComponentReference::unelabCref(crefe.clone())?;
-            crefa.clone()
+            crefa
         },
         _ => {
             Error::addInternalError((literal!("function getCrefFromExp failed: input was not of type DAE.CREF")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
@@ -1750,29 +1750,29 @@ fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Ar
             name = (AbsynUtil::pathStringUnquoteReplaceDot(path.clone(), (literal!("_")).clone())?).clone();
             (sname, is_default) = checkBindingsandGetConstructorName((name.clone()).clone(), varlst.clone());
             optRecDecl = UnorderedMap::get((sname.clone()).clone(), recDeclsMap.clone())?;
-            if is_default.clone() {
+            if is_default {
                 if isSome(optRecDecl.clone()) {
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(optRecDecl.clone()) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(optRecDecl) {
                         Some(SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: _, aliasName: _, defPath: _, variables: __pa0, usedExternally: __pa1 }) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     vars = __pa0.clone();
                     bool1 = __pa1.clone();
-                    if usedExternally.clone() && !(bool1.clone()) {
-                        recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: None, defPath: path.clone(), variables: vars.clone(), usedExternally: true };
-                        UnorderedMap::add((sname.clone()).clone(), recDecl.clone(), recDeclsMap)?;
+                    if usedExternally.clone() && !(bool1) {
+                        recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: None, defPath: path.clone(), variables: vars, usedExternally: true };
+                        UnorderedMap::add((sname).clone(), recDecl, recDeclsMap)?;
                     }
                 } else {
                     vars = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
-                    recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: None, defPath: path.clone(), variables: vars.clone(), usedExternally: usedExternally.clone() };
-                    UnorderedMap::add((sname.clone()).clone(), recDecl.clone(), recDeclsMap.clone())?;
+                    recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: None, defPath: path.clone(), variables: vars, usedExternally: usedExternally.clone() };
+                    UnorderedMap::add((sname).clone(), recDecl, recDeclsMap.clone())?;
                     collectRecDeclsFromTypesVars(varlst.clone(), recDeclsMap)?;
                 }
             } else {
-                if isNone(optRecDecl.clone()) {
+                if isNone(optRecDecl) {
                     vars = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
-                    recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_ADD_CONSTRCTOR { ctor_name: (sname.clone()).clone(), name: (name.clone()).clone(), variables: vars.clone() };
-                    UnorderedMap::add((sname.clone()).clone(), recDecl.clone(), recDeclsMap)?;
+                    recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_ADD_CONSTRCTOR { ctor_name: (sname.clone()).clone(), name: (name).clone(), variables: vars };
+                    UnorderedMap::add((sname).clone(), recDecl, recDeclsMap)?;
                 }
             }
             ()
@@ -1788,7 +1788,7 @@ fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Ar
             let mut fieldNames: Arc<metamodelica::List<ArcStr>>;
             sname = (AbsynUtil::pathStringUnquoteReplaceDot(path.clone(), (literal!("_")).clone())?).clone();
             fieldNames = List::map(varlst.clone(), (std::sync::Arc::new(fnptr!(generateVarName, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
-            UnorderedMap::tryAdd((sname.clone()).clone(), SimCodeFunction::RecordDeclaration::RECORD_DECL_DEF { path: path.clone(), fieldNames: fieldNames.clone() }, recDeclsMap.clone())?;
+            UnorderedMap::tryAdd((sname).clone(), SimCodeFunction::RecordDeclaration::RECORD_DECL_DEF { path: path.clone(), fieldNames: fieldNames }, recDeclsMap.clone())?;
             collectRecDeclsFromTypesVars(varlst.clone(), recDeclsMap)?;
             ()
         },
@@ -1815,8 +1815,8 @@ fn typesVarNoBinding(mut inTypesVar: Arc<DAE::Var>) -> Result<Arc<SimCodeFunctio
                 _ => bail!("pattern mismatch"),
             } };
             scPrl = __pa0.clone();
-            prl = scodeParallelismToDAEParallelism(scPrl.clone())?;
-            Arc::new(SimCodeFunction::Variable::Variable::VARIABLE { name: cref_.clone(), ty: ty.clone(), value: None, instDims: metamodelica::nil(), parallelism: prl.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: false })
+            prl = scodeParallelismToDAEParallelism(scPrl)?;
+            Arc::new(SimCodeFunction::Variable::Variable::VARIABLE { name: cref_, ty: ty.clone(), value: None, instDims: metamodelica::nil(), parallelism: prl, kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: false })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1839,9 +1839,9 @@ fn typesVar(mut inTypesVar: Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variab
                 _ => bail!("pattern mismatch"),
             } };
             scPrl = __pa0.clone();
-            prl = scodeParallelismToDAEParallelism(scPrl.clone())?;
+            prl = scodeParallelismToDAEParallelism(scPrl)?;
             bindExp = checkSourceAndGetBindingExp(inTypesVar.binding.clone());
-            Arc::new(SimCodeFunction::Variable::Variable::VARIABLE { name: cref_.clone(), ty: ty.clone(), value: bindExp.clone(), instDims: metamodelica::nil(), parallelism: prl.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: inTypesVar.bind_from_outside.clone() })
+            Arc::new(SimCodeFunction::Variable::Variable::VARIABLE { name: cref_, ty: ty.clone(), value: bindExp, instDims: metamodelica::nil(), parallelism: prl, kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: inTypesVar.bind_from_outside.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1993,7 +1993,7 @@ fn generateExtFunctionIncludes(mut program: Absyn::Program, mut path: Arc<Absyn:
             (libs, libNames) = generateExtFunctionIncludesLibstr((target.clone()).clone(), r#mod.clone())?;
             includes = generateExtFunctionIncludesIncludestr(r#mod.clone());
             (libs, dirs, resources) = generateExtFunctionLibraryDirectoryFlags(program.clone(), path.clone(), r#mod.clone(), libs);
-            for mut name in &*if (Flags::isSet(Flags::CHECK_EXT_LIBS.clone())?) {libNames.clone()} else {metamodelica::nil()} {
+            for mut name in &*if (Flags::isSet(Flags::CHECK_EXT_LIBS.clone())?) {libNames} else {metamodelica::nil()} {
                 let mut name = name.clone();
                 if getGerneralTarget((target.clone()).clone())? == literal!("msvc") || arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
                     fullLibNames = list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lib")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(".a")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lib")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(".lib")); ArcStr::from(__mm_s) }).clone()];
@@ -2004,7 +2004,7 @@ fn generateExtFunctionIncludes(mut program: Absyn::Program, mut path: Arc<Absyn:
             }
             paths = generateExtFunctionLibraryDirectoryPaths(program.clone(), path.clone(), r#mod.clone());
             includeDirs = generateExtFunctionIncludeDirectoryFlags(program, path, r#mod.clone(), includes.clone());
-            (includes, includeDirs, libs, paths, b.clone())
+            (includes, includeDirs, libs, paths, b)
         },
         None => {
             (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), false)
@@ -2064,7 +2064,7 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
                         cmd = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sh ./autogen.sh && ./configure --libdir='")); __mm_s.push_str(&*userCompiledBinariesDirectory(path.clone())?); __mm_s.push_str(&*literal!("' && make && make install")); ArcStr::from(__mm_s) }).clone();
                         status = System::systemCall((cmd.clone()).clone(), (literal!("log")).clone());
                         contents = (System::readFile((literal!("log")).clone())?).clone();
-                        if status.clone() != 0 {
+                        if status != 0 {
                             Error::addSourceMessage(Error::COMPILER_WARNING.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to run ")); __mm_s.push_str(&*cmd.clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*contents.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
                         } else {
                             Error::addSourceMessage(Error::COMPILER_NOTIFICATION.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Succeeded with compilation and installation of the library using:\ncommand: ")); __mm_s.push_str(&*cmd.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*contents.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -2079,7 +2079,7 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
                                     }
                                 }
                             }
-                            if didFind.clone() {
+                            if didFind {
                                 found = (listHead(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut x in (List::flatten(({
@@ -2112,7 +2112,7 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
                     System::cd((pwd.clone()).clone());
                     System::removeDirectory((tmpdir.clone()).clone());
                     Error::addSourceMessage(Error::COMPILER_NOTIFICATION.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Removed directory ")); __mm_s.push_str(&*tmpdir.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
-                    if didFind.clone() {
+                    if didFind {
                         break;
                     }
                 }
@@ -2403,7 +2403,7 @@ fn generateExtFunctionLibraryDirectoryPaths2(mut add: bool, mut dir: ArcStr, mut
             libs = (*__esc_libs).clone();
             let mut b: bool;
             b = System::directoryExists((dir.clone()).clone());
-            libs = List::consOnTrue(b.clone(), (dir).clone(), libs.clone());
+            libs = List::consOnTrue(b, (dir).clone(), libs.clone());
             libs.clone()
         },
         _ => {
@@ -3030,8 +3030,8 @@ fn aliasRecordDeclarations(mut inDecl: SimCodeFunction::RecordDeclaration, mut i
             let mut r#str: ArcStr;
             let mut alias: Option<ArcStr>;
             r#str = stringDelimitList(List::map(vars.clone(), (std::sync::Arc::new(variableString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
-            (alias, ht) = aliasRecordDeclarations2((r#str.clone()).clone(), name.clone(), inHt)?;
-            (SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: alias.clone(), defPath: name.clone(), variables: vars.clone(), usedExternally: extConvert.clone() }, ht)
+            (alias, ht) = aliasRecordDeclarations2((r#str).clone(), name.clone(), inHt)?;
+            (SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: alias, defPath: name.clone(), variables: vars.clone(), usedExternally: extConvert.clone() }, ht)
         },
         _ => {
             (inDecl, inHt)
@@ -3171,8 +3171,8 @@ pub fn twodigit(mut i: i32) -> ArcStr {
         _ if (i < 10) => {
             let mut s: ArcStr;
             s = (intString(i)).clone();
-            s = (stringAppend((literal!("0")).clone(), (s.clone()).clone())).clone();
-            s.clone()
+            s = (stringAppend((literal!("0")).clone(), (s).clone())).clone();
+            s
         },
         _ => {
             intString(i)

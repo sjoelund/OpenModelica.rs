@@ -432,7 +432,7 @@ fn checkOverloadedBinaryArrayAddSub2(mut exp1: Arc<Expression::NFExpression>, mu
                     unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), e.clone()) };
                 }
             }
-            outType = Type::setArrayElementType(type1, ty.clone());
+            outType = Type::setArrayElementType(type1, ty);
             outExp = Expression::makeArray(outType.clone(), arr.clone(), false);
             (outExp, outType)
         },
@@ -2195,7 +2195,7 @@ pub(crate) fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut s
         (Deref @ Expression::INTEGER { value: 1 }, None, _) => {
             let mut dim_exp: Arc<Expression::NFExpression>;
             dim_exp = SimplifyExp::simplify(stopExp.clone(), false)?;
-            Dimension::fromExp(dim_exp.clone(), Expression::variability(dim_exp.clone())?)?
+            Dimension::fromExp(dim_exp.clone(), Expression::variability(dim_exp)?)?
         },
         (_, None, _) if (Expression::isEqual(startExp.clone(), stopExp.clone())?) => {
             Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone())
@@ -2214,14 +2214,14 @@ pub(crate) fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut s
                     _ => bail!("pattern mismatch"),
                 } };
                 step_exp = __pa0.clone();
-                var = Prefixes::variabilityMax(var.clone(), Expression::variability(step_exp.clone())?);
-                pur = Prefixes::purityMin(pur.clone(), Expression::purity(step_exp.clone())?);
-                dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::DIV_INT().clone(), list![dim_exp.clone(), step_exp.clone()], var.clone(), pur.clone(), NFBuiltinFuncs::DIV_INT().returnType.clone()) });
+                var = Prefixes::variabilityMax(var, Expression::variability(step_exp.clone())?);
+                pur = Prefixes::purityMin(pur, Expression::purity(step_exp.clone())?);
+                dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::DIV_INT().clone(), list![dim_exp, step_exp], var, pur, NFBuiltinFuncs::DIV_INT().returnType.clone()) });
             }
-            dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp.clone(), operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
-            dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::MAX_INT().clone(), list![dim_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 })], var.clone(), pur.clone(), NFBuiltinFuncs::MAX_INT().returnType.clone()) });
-            dim_exp = SimplifyExp::simplify(dim_exp.clone(), false)?;
-            Dimension::fromExp(dim_exp.clone(), var.clone())?
+            dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp, operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
+            dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::MAX_INT().clone(), list![dim_exp, Arc::new(Expression::NFExpression::INTEGER { value: 0 })], var, pur, NFBuiltinFuncs::MAX_INT().returnType.clone()) });
+            dim_exp = SimplifyExp::simplify(dim_exp, false)?;
+            Dimension::fromExp(dim_exp, var)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2258,16 +2258,16 @@ pub(crate) fn getRangeTypeReal(mut startExp: Arc<Expression::NFExpression>, mut 
                     _ => bail!("pattern mismatch"),
                 } };
                 step_exp = __pa0.clone();
-                var = Prefixes::variabilityMax(var.clone(), Expression::variability(step_exp.clone())?);
-                pur = Prefixes::purityMin(pur.clone(), Expression::purity(step_exp.clone())?);
-                dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp.clone(), operator: Operator::makeDiv(crate::NFType::interned_REAL()), exp2: step_exp.clone() });
-                dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp.clone(), operator: Operator::makeAdd(crate::NFType::interned_REAL()), exp2: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(5e-15_f64) }) });
+                var = Prefixes::variabilityMax(var, Expression::variability(step_exp.clone())?);
+                pur = Prefixes::purityMin(pur, Expression::purity(step_exp.clone())?);
+                dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp, operator: Operator::makeDiv(crate::NFType::interned_REAL()), exp2: step_exp });
+                dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp, operator: Operator::makeAdd(crate::NFType::interned_REAL()), exp2: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(5e-15_f64) }) });
             }
-            dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::FLOOR().clone(), list![dim_exp.clone()], var.clone(), pur.clone(), NFBuiltinFuncs::FLOOR().returnType.clone()) });
-            dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::INTEGER_REAL().clone(), list![dim_exp.clone()], var.clone(), pur.clone(), NFBuiltinFuncs::INTEGER_REAL().returnType.clone()) });
-            dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp.clone(), operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
-            dim_exp = SimplifyExp::simplify(dim_exp.clone(), false)?;
-            Dimension::fromExp(dim_exp.clone(), var.clone())?
+            dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::FLOOR().clone(), list![dim_exp], var, pur, NFBuiltinFuncs::FLOOR().returnType.clone()) });
+            dim_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::INTEGER_REAL().clone(), list![dim_exp], var, pur, NFBuiltinFuncs::INTEGER_REAL().returnType.clone()) });
+            dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp, operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
+            dim_exp = SimplifyExp::simplify(dim_exp, false)?;
+            Dimension::fromExp(dim_exp, var)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2280,7 +2280,7 @@ pub(crate) fn getRangeTypeBool(mut startExp: Arc<Expression::NFExpression>, mut 
         (Deref @ Expression::BOOLEAN { .. }, Deref @ Expression::BOOLEAN { .. }) => {
             let mut sz: i32;
             sz = if (var_field!((*startExp).value, Expression::NFExpression::BOOLEAN).clone() == var_field!((*stopExp).value, Expression::NFExpression::BOOLEAN).clone()) {1} else if (var_field!((*startExp).value, Expression::NFExpression::BOOLEAN).clone() < var_field!((*stopExp).value, Expression::NFExpression::BOOLEAN).clone()) {2} else {0};
-            Dimension::fromInteger(sz.clone(), Prefixes::Variability::CONSTANT.clone())
+            Dimension::fromInteger(sz, Prefixes::Variability::CONSTANT.clone())
         },
         _ => {
             let mut dim_exp: Arc<Expression::NFExpression>;
@@ -2290,8 +2290,8 @@ pub(crate) fn getRangeTypeBool(mut startExp: Arc<Expression::NFExpression>, mut 
             } else {
                 var = Prefixes::variabilityMax(Expression::variability(startExp.clone())?, Expression::variability(stopExp.clone())?);
                 dim_exp = Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_INTEGER(), condition: Arc::new(Expression::NFExpression::RELATION { exp1: startExp.clone(), operator: Operator::makeEqual(crate::NFType::interned_BOOLEAN()), exp2: stopExp.clone(), index: -1 }), trueBranch: Arc::new(Expression::NFExpression::INTEGER { value: 1 }), falseBranch: Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_INTEGER(), condition: Arc::new(Expression::NFExpression::RELATION { exp1: startExp, operator: Operator::makeLess(crate::NFType::interned_BOOLEAN()), exp2: stopExp, index: -1 }), trueBranch: Arc::new(Expression::NFExpression::INTEGER { value: 2 }), falseBranch: Arc::new(Expression::NFExpression::INTEGER { value: 0 }) }) });
-                dim_exp = SimplifyExp::simplify(dim_exp.clone(), false)?;
-                dim = Dimension::fromExp(dim_exp.clone(), var.clone())?;
+                dim_exp = SimplifyExp::simplify(dim_exp, false)?;
+                dim = Dimension::fromExp(dim_exp, var)?;
             }
             dim
         },
@@ -2317,9 +2317,9 @@ pub(crate) fn getRangeTypeEnum(mut startExp: Arc<Expression::NFExpression>, mut 
             } else {
                 var = Prefixes::variabilityMax(Expression::variability(startExp.clone())?, Expression::variability(stopExp.clone())?);
                 dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: Expression::enumIndexExp(startExp)?, operator: Operator::makeSub(crate::NFType::interned_INTEGER()), exp2: Expression::enumIndexExp(stopExp)? });
-                dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp.clone(), operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
-                dim_exp = SimplifyExp::simplify(dim_exp.clone(), false)?;
-                dim = Dimension::fromExp(dim_exp.clone(), var.clone())?;
+                dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: dim_exp, operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
+                dim_exp = SimplifyExp::simplify(dim_exp, false)?;
+                dim = Dimension::fromExp(dim_exp, var)?;
             }
             dim
         },
@@ -2339,14 +2339,14 @@ pub(crate) fn matchBinding(mut binding: Arc<Binding::NFBinding>, mut componentTy
             let mut exp = (*exp).clone();
             (bind_ty, comp_ty) = elaborateBindingType(exp.clone(), component.clone(), var_field!((*binding).bindingType, Binding::NFBinding::TYPED_BINDING).clone(), componentType)?;
             (exp, ty, ty_match) = matchTypes(bind_ty.clone(), comp_ty.clone(), exp.clone(), ALLOW_UNKNOWN.clone())?;
-            if !(isValidAssignmentMatch(ty_match.clone())) {
+            if !(isValidAssignmentMatch(ty_match)) {
                 assign_variant_field!(binding => Binding::NFBinding::TYPED_BINDING; bindingExp = Expression::expandSplitIndices(exp.clone())?);
-                printBindingTypeError((name).clone(), binding.clone(), comp_ty.clone(), bind_ty.clone(), component, context)?;
+                printBindingTypeError((name).clone(), binding.clone(), comp_ty, bind_ty, component, context)?;
                 if !(InstContext::inInstanceAPI(context)) {
                     bail!("fail");
                 }
-            } else if isCastMatch(ty_match.clone()) {
-                binding = Arc::new(Binding::NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty.clone(), variability: var_field!((*binding).variability, Binding::NFBinding::TYPED_BINDING).clone(), purity: var_field!((*binding).purity, Binding::NFBinding::TYPED_BINDING).clone(), eachType: var_field!((*binding).eachType, Binding::NFBinding::TYPED_BINDING).clone(), evalState: var_field!((*binding).evalState, Binding::NFBinding::TYPED_BINDING).clone(), isFlattened: var_field!((*binding).isFlattened, Binding::NFBinding::TYPED_BINDING).clone(), source: var_field!((*binding).source, Binding::NFBinding::TYPED_BINDING).clone(), confidence: var_field!((*binding).confidence, Binding::NFBinding::TYPED_BINDING).clone(), info: var_field!((*binding).info, Binding::NFBinding::TYPED_BINDING).clone() });
+            } else if isCastMatch(ty_match) {
+                binding = Arc::new(Binding::NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty, variability: var_field!((*binding).variability, Binding::NFBinding::TYPED_BINDING).clone(), purity: var_field!((*binding).purity, Binding::NFBinding::TYPED_BINDING).clone(), eachType: var_field!((*binding).eachType, Binding::NFBinding::TYPED_BINDING).clone(), evalState: var_field!((*binding).evalState, Binding::NFBinding::TYPED_BINDING).clone(), isFlattened: var_field!((*binding).isFlattened, Binding::NFBinding::TYPED_BINDING).clone(), source: var_field!((*binding).source, Binding::NFBinding::TYPED_BINDING).clone(), confidence: var_field!((*binding).confidence, Binding::NFBinding::TYPED_BINDING).clone(), info: var_field!((*binding).info, Binding::NFBinding::TYPED_BINDING).clone() });
             }
             ()
         },

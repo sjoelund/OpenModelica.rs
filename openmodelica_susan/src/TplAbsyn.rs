@@ -1079,10 +1079,10 @@ pub(crate) fn transformAST(mut inTplPackage: TemplPackage) -> Result<MMPackage> 
             astDefs = __pa1.clone();
             templateDefs = __pa2.clone();
             annotationFooter = __pa3.clone();
-            mmDeclarations = importDeclarations(astDefs.clone())?;
-            mmDeclarations = transformTemplateDefs(templateDefs.clone(), tp.clone(), mmDeclarations.clone())?;
-            mmDeclarations = mmDeclarations.clone().reverse();
-            MMPackage { name: name.clone(), mmDeclarations: mmDeclarations.clone(), annotationFooter: (annotationFooter.clone()).clone() }
+            mmDeclarations = importDeclarations(astDefs)?;
+            mmDeclarations = transformTemplateDefs(templateDefs, tp, mmDeclarations)?;
+            mmDeclarations = mmDeclarations.reverse();
+            MMPackage { name: name, mmDeclarations: mmDeclarations, annotationFooter: (annotationFooter).clone() }
         },
     });
     Ok(outMMPackage)
@@ -1144,13 +1144,13 @@ pub(crate) fn transformTemplateDefs(mut inTemplateDefsRest: Arc<metamodelica::Li
             let mut accMMDecls = (*accMMDecls).clone();
             encArgs = List::map1(targs.clone(), (std::sync::Arc::new(encodeTypedIdent) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>), ArcStr) -> Result<(ArcStr, Arc<TypeSignature>)> + 'static>), (arcstr::literal!(funArgNamePrefix)).clone())?;
             (stmts, locals, _, accMMDecls, _) = statementsFromExp(texp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), list![Scope::FUN_SCOPE { args: targs.clone(), localArgs: encArgs.clone() }], tplPackage.clone(), accMMDecls.clone())?;
-            iargs = metamodelica::cons(imlicitTxtArg.clone(), encArgs.clone());
+            iargs = metamodelica::cons(imlicitTxtArg.clone(), encArgs);
             oargs = List::filterOnTrue(iargs.clone(), (std::sync::Arc::new(fnptr!(isText, (ArcStr, Arc<TypeSignature>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>)) -> Result<bool> + 'static>))?;
-            stmts = stmts.clone().reverse();
-            stmts = addOutPrefixes(stmts.clone(), oargs.clone(), metamodelica::nil())?;
-            (stmts, locals, accMMDecls) = inlineLastFunIfSingleCall(iargs.clone(), oargs.clone(), stmts.clone(), locals.clone(), accMMDecls.clone())?;
-            mmFun = MMDeclaration::MM_FUN { isPublic: true, name: (tplname.clone()).clone(), inArgs: iargs.clone(), outArgs: oargs.clone(), locals: locals.clone(), statements: stmts.clone(), genInfoOpt: crate::TplAbsyn::GenInfo::GI_TEMPL_FUN };
-            { (inTemplateDefsRest, inTplPackage, inAccMMDecls) = (restTDefs.clone(), tplPackage.clone(), metamodelica::cons(mmFun.clone(), accMMDecls.clone())); continue '__tco; }
+            stmts = stmts.reverse();
+            stmts = addOutPrefixes(stmts, oargs.clone(), metamodelica::nil())?;
+            (stmts, locals, accMMDecls) = inlineLastFunIfSingleCall(iargs.clone(), oargs.clone(), stmts, locals, accMMDecls.clone())?;
+            mmFun = MMDeclaration::MM_FUN { isPublic: true, name: (tplname.clone()).clone(), inArgs: iargs, outArgs: oargs, locals: locals, statements: stmts, genInfoOpt: crate::TplAbsyn::GenInfo::GI_TEMPL_FUN };
+            { (inTemplateDefsRest, inTplPackage, inAccMMDecls) = (restTDefs.clone(), tplPackage.clone(), metamodelica::cons(mmFun, accMMDecls.clone())); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -5079,8 +5079,8 @@ pub(crate) fn makeMMExpFromTemplateConstant(mut inTplDef: TemplateDef, mut inTem
             let mut idtype: Arc<TypeSignature>;
             let mut reason: ArcStr;
             reason = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unresolved identifier - the template '")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*literal!("'in a value context found (missing parenthesis ?) .")); ArcStr::from(__mm_s) }).clone();
-            idtype = Arc::new(TypeSignature::UNRESOLVED_TYPE { reason: (reason.clone()).clone() });
-            (Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), idtype.clone())
+            idtype = Arc::new(TypeSignature::UNRESOLVED_TYPE { reason: (reason).clone() });
+            (Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), idtype)
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -7205,7 +7205,7 @@ fn listMap1Tuple22<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: 
             let mut restC: Arc<metamodelica::List<(Type_a, Type_c)>>;
             itemC = funBDtoC(itemB.clone(), extarg.clone())?;
             restC = listMap1Tuple22(restB.clone(), funBDtoC.clone(), extarg.clone())?;
-            metamodelica::cons((a.clone(), itemC.clone()), restC.clone())
+            metamodelica::cons((a.clone(), itemC), restC)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -7225,7 +7225,7 @@ fn listMap2Tuple22<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: 
             let mut restC: Arc<metamodelica::List<(Type_a, Type_c)>>;
             itemC = funBDEtoC(itemB.clone(), extarg.clone(), extarg2.clone())?;
             restC = listMap2Tuple22(restB.clone(), funBDEtoC.clone(), extarg.clone(), extarg2.clone())?;
-            metamodelica::cons((a.clone(), itemC.clone()), restC.clone())
+            metamodelica::cons((a.clone(), itemC), restC)
         },
         _ => bail!("match: no arm matched"),
     } });

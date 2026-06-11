@@ -152,14 +152,14 @@ pub(crate) fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore
             let mut cache = (*cache).clone();
             checkSimulationArguments(args.clone(), (callName).clone(), info.clone())?;
             exp = Static::elabCodeExp(crexp.clone(), cache.clone(), env.clone(), openmodelica_frontend_types::DAE::CodeType::C_TYPENAME, info.clone())?;
-            (cache, v) = Ceval::ceval(cache.clone(), env.clone(), exp.clone(), true, Absyn::Msg::MSG { info: info.clone() }, 0)?;
-            let __pa0 = ::match_deref::match_deref! { match &(CevalScript::evalCodeTypeName(v.clone(), env.clone())) {
+            (cache, v) = Ceval::ceval(cache.clone(), env.clone(), exp, true, Absyn::Msg::MSG { info: info.clone() }, 0)?;
+            let __pa0 = ::match_deref::match_deref! { match &(CevalScript::evalCodeTypeName(v, env.clone())) {
                 Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa0 } } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             className = __pa0.clone();
             cname_str = (AbsynUtil::pathString(AbsynUtil::unqotePathIdents(className.clone())?, (literal!(".")).clone(), true, false)?).clone();
-            defaulSimOpt = CevalScriptBackend::buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (cname_str.clone()).clone(), defaultOption)?;
+            defaulSimOpt = CevalScriptBackend::buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (cname_str).clone(), defaultOption)?;
             (cache, startTime, stopTime, numberOfIntervals) = calculateSimulationTimes(inCache, inEnv, inAbsynExpLst, inAbsynNamedArgLst, r#impl.clone(), inPrefix, inInfo, defaulSimOpt.clone())?;
             (cache, tolerance) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("tolerance")).clone(), DAE::T_REAL_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("tolerance")).clone())?, pre.clone(), info.clone())?;
             (cache, method) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("method")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("method")).clone())?, pre.clone(), info.clone())?;
@@ -168,8 +168,8 @@ pub(crate) fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore
             (cache, outputFormat) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("outputFormat")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("outputFormat")).clone())?, pre.clone(), info.clone())?;
             (cache, variableFilter) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("variableFilter")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("variableFilter")).clone())?, pre.clone(), info.clone())?;
             (cache, cflags) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("cflags")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("cflags")).clone())?, pre.clone(), info.clone())?;
-            (cache, simflags) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("simflags")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("simflags")).clone())?, pre.clone(), info.clone())?;
-            (cache.clone(), list![Arc::new(DAE::Exp::CODE { code: Arc::new(Absyn::CodeNode::C_TYPENAME { path: className.clone() }), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), startTime.clone(), stopTime.clone(), numberOfIntervals.clone(), tolerance.clone(), method.clone(), fileNamePrefix.clone(), options.clone(), outputFormat.clone(), variableFilter.clone(), cflags.clone(), simflags.clone()])
+            (cache, simflags) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("simflags")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt, (literal!("simflags")).clone())?, pre.clone(), info.clone())?;
+            (cache.clone(), list![Arc::new(DAE::Exp::CODE { code: Arc::new(Absyn::CodeNode::C_TYPENAME { path: className }), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), startTime, stopTime, numberOfIntervals, tolerance, method, fileNamePrefix, options, outputFormat, variableFilter, cflags, simflags])
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -552,7 +552,7 @@ fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentR
             let mut prop: DAE::Properties;
             let mut cache = (*cache).clone();
             (cache, e, prop) = elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info)?;
-            (cache.clone(), e.clone(), prop.clone())
+            (cache.clone(), e, prop)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

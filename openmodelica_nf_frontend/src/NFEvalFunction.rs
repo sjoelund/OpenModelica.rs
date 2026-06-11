@@ -344,8 +344,8 @@ fn applyReplacementsDim(mut map: ArgumentMap, mut dim: Arc<Dimension::NFDimensio
         Deref @ Dimension::EXP { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
             exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b0 = map; move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            exp = Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?;
-            Dimension::fromExp(exp.clone(), Variability::CONSTANT.clone())?
+            exp = Ceval::evalExp(exp, Ceval::noTarget().clone())?;
+            Dimension::fromExp(exp, Variability::CONSTANT.clone())?
         },
         _ => {
             dim
@@ -588,7 +588,7 @@ fn optimizeStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Statem
             iter_exp = Expression::makeMutable(Arc::new(Expression::NFExpression::EMPTY { ty: InstNode::getType(var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone())? }));
             assign_variant_field!(stmt => Statement::NFStatement::FOR;
                 body = Statement::replaceIteratorList(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), iter_exp.clone())?,
-                iterator = Arc::new(InstNode::InstNode::ITERATOR_NODE { exp: iter_exp.clone() })
+                iterator = Arc::new(InstNode::InstNode::ITERATOR_NODE { exp: iter_exp })
             );
             ()
         },
@@ -863,7 +863,7 @@ fn assignRecord(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression:
             } };
             elems = __pa0.clone();
             cls_tree = Class::classTree(InstNode::getClass(ComponentRef::node(var_field!((*rhs).cref, Expression::NFExpression::CREF).clone())?)?)?;
-            comps = ClassTree::getComponents(cls_tree.clone())?;
+            comps = ClassTree::getComponents(cls_tree)?;
             let __range1 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range1 {
                 let (__pa2, __pa3) = ::match_deref::match_deref! { match &(elems.clone()) {

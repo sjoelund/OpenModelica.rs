@@ -3227,7 +3227,7 @@ fn removeLastTokenInTree(mut t: Arc<ParseTree>) -> Result<Arc<ParseTree>> {
             } };
             node = __pa0.clone();
             nodes = __pa1.clone();
-            makeNode(metamodelica::cons(removeLastTokenInTree(node.clone())?, nodes.clone()).reverse(), label.clone())
+            makeNode(metamodelica::cons(removeLastTokenInTree(node)?, nodes.clone()).reverse(), label.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

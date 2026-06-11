@@ -270,7 +270,7 @@ fn inlineDAEElementsLst(mut inElementList: Arc<metamodelica::List<Arc<metamodeli
             let mut inlined: bool;
             let mut elem = (*elem).clone();
             (elem, inlined) = inlineDAEElements(elem.clone(), inFunctions.clone(), metamodelica::nil(), false);
-            { (inElementList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(elem.clone(), iAcc), inlined.clone() || iInlined); continue '__tco; }
+            { (inElementList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(elem.clone(), iAcc), inlined || iInlined); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -288,7 +288,7 @@ fn inlineDAEElements(mut inElementList: Arc<metamodelica::List<Arc<DAE::Element>
             let mut inlined: bool;
             let mut elem = (*elem).clone();
             (elem, inlined) = inlineDAEElement(elem.clone(), inFunctions.clone());
-            { (inElementList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(elem.clone(), iAcc), inlined.clone() || iInlined); continue '__tco; }
+            { (inElementList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(elem.clone(), iAcc), inlined || iInlined); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -694,7 +694,7 @@ pub(crate) fn inlineAlgorithm(mut inAlgorithm: Arc<DAE::Algorithm>, mut inElemen
         (Deref @ DAE::Algorithm { statementLst: stmts }, fns) => {
             let mut stmts_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts_1, inlined) = inlineStatements(stmts.clone(), fns.clone(), metamodelica::nil(), false);
-            (Arc::new(DAE::Algorithm { statementLst: stmts_1.clone() }), inlined)
+            (Arc::new(DAE::Algorithm { statementLst: stmts_1 }), inlined)
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -717,7 +717,7 @@ pub fn inlineStatements(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
             let mut inlined: bool;
             let mut stmt = (*stmt).clone();
             (stmt, inlined) = inlineStatement(stmt.clone(), inElementList.clone());
-            { (inStatements, inElementList, iAcc, iInlined) = (rest.clone(), inElementList, metamodelica::cons(stmt.clone(), iAcc), inlined.clone() || iInlined); continue '__tco; }
+            { (inStatements, inElementList, iAcc, iInlined) = (rest.clone(), inElementList, metamodelica::cons(stmt.clone(), iAcc), inlined || iInlined); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -1022,7 +1022,7 @@ pub fn inlineExpOpt(mut inExpOption: Option<Arc<DAE::Exp>>, mut inElementList: F
             let mut b: bool;
             let mut exp = (*exp).clone();
             (exp, source, b, _) = inlineExp(exp.clone(), inElementList, inSource);
-            (Some(exp.clone()), source.clone(), b.clone())
+            (Some(exp.clone()), source, b)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1110,7 +1110,7 @@ pub fn forceInlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple
                     b = false;
                 }
             }
-            (e_1.clone(), source.clone(), b.clone())
+            (e_1, source.clone(), b)
         },
         (e, fns, source) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1118,16 +1118,16 @@ pub fn forceInlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple
             let mut source = (*source).clone();
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new({ let __pe_b2 = fns.clone(); let __pe_b3 = openmodelica_ast_collections::AvlSetPath::Tree::interned_EMPTY(); move |__pe_a0, __pe_a1| Ok(forceInlineCall(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>), metamodelica::nil())?;
             b = !(referenceEq(&*(e.clone()),&*(e_1.clone())));
-            if b.clone() {
+            if b {
                 source = ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }) }))?;
-                let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ExpressionSimplify::simplifyAddSymbolicOperation(Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }), source.clone())?) {
+                let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ExpressionSimplify::simplifyAddSymbolicOperation(Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1 }), source.clone())?) {
                     (Deref @ DAE::EquationExp::PARTIAL_EQUATION { exp: __pa0 }, __pa1) => (__pa0.clone(), __pa1.clone()),
                     _ => bail!("pattern mismatch"),
                 } };
                 e_1 = __pa0.clone();
                 source = __pa1.clone();
             }
-            (e_1.clone(), source.clone(), b.clone())
+            (e_1, source.clone(), b)
         },
         _ => {
             (inExp.clone(), inSource, false)
@@ -1157,7 +1157,7 @@ fn inlineExpsWork(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut fns: F
             let mut e = (*e).clone();
             let mut exps = (*exps).clone();
             (e, source, b, _) = inlineExp(e.clone(), fns.clone(), inSource);
-            { (inExps, fns, inSource, iAcc, iInlined) = (exps.clone(), fns, source.clone(), metamodelica::cons(e.clone(), iAcc), b.clone() || iInlined); continue '__tco; }
+            { (inExps, fns, inSource, iAcc, iInlined) = (exps.clone(), fns, source, metamodelica::cons(e.clone(), iAcc), b || iInlined); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -1176,10 +1176,10 @@ pub(crate) fn checkExpsTypeEquiv(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } else {
                 ty1 = Expression::r#typeof(inExp1)?;
                 ty2 = Expression::r#typeof(inExp2)?;
-                (ty2, _) = Types::traverseType(ty2.clone(), -1, (std::sync::Arc::new(fnptr!(Types::makeExpDimensionsUnknown, Arc<DAE::Type>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, i32) -> Result<(Arc<DAE::Type>, i32)> + 'static>))?;
-                b = Types::equivtypesOrRecordSubtypeOf(ty1.clone(), ty2.clone());
+                (ty2, _) = Types::traverseType(ty2, -1, (std::sync::Arc::new(fnptr!(Types::makeExpDimensionsUnknown, Arc<DAE::Type>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, i32) -> Result<(Arc<DAE::Type>, i32)> + 'static>))?;
+                b = Types::equivtypesOrRecordSubtypeOf(ty1, ty2);
             }
-            b.clone()
+            b
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1447,7 +1447,7 @@ fn mergeFunctionBody(mut iStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, m
             let mut exp = (*exp).clone();
             (exp, _) = VarTransform::replaceExp(exp.clone(), iRepl.clone(), None)?;
             repl = VarTransform::addReplacementNoTransitive(iRepl, cr.clone(), exp.clone())?;
-            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl.clone(), assertStmtsIn); continue '__tco; }
+            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl, assertStmtsIn); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, exp, .. }, tail: stmts } => {
             let mut repl: VarTransform::VariableReplacements;
@@ -1455,7 +1455,7 @@ fn mergeFunctionBody(mut iStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, m
             let mut exp = (*exp).clone();
             (exp, _) = VarTransform::replaceExp(exp.clone(), iRepl.clone(), None)?;
             repl = VarTransform::addReplacementNoTransitive(iRepl, cr.clone(), exp.clone())?;
-            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl.clone(), assertStmtsIn); continue '__tco; }
+            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl, assertStmtsIn); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: explst, exp, .. }, tail: stmts } => {
             let mut repl: VarTransform::VariableReplacements;
@@ -1463,7 +1463,7 @@ fn mergeFunctionBody(mut iStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, m
             let mut exp = (*exp).clone();
             (exp, _) = VarTransform::replaceExp(exp.clone(), iRepl.clone(), None)?;
             repl = addTplAssignToRepl(explst.clone(), 1, exp.clone(), iRepl)?;
-            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl.clone(), assertStmtsIn); continue '__tco; }
+            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl, assertStmtsIn); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSERT { cond: exp, msg: exp1, level: exp2, source }, tail: stmts } => {
             let mut repl: VarTransform::VariableReplacements;
@@ -1476,7 +1476,7 @@ fn mergeFunctionBody(mut iStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, m
             (exp1, _) = VarTransform::replaceExp(exp1.clone(), iRepl.clone(), None)?;
             (exp2, _) = VarTransform::replaceExp(exp2.clone(), iRepl.clone(), None)?;
             stmt = Arc::new(DAE::Statement::STMT_ASSERT { cond: exp.clone(), msg: exp1.clone(), level: exp2.clone(), source: source.clone() });
-            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), iRepl, metamodelica::cons(stmt.clone(), assertStmtsIn)); continue '__tco; }
+            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), iRepl, metamodelica::cons(stmt, assertStmtsIn)); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp, statementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN { exp1: Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, exp: exp1, .. }, tail: Deref @ metamodelica::List::Nil }, else_: Deref @ DAE::Else::ELSE { statementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN { exp1: Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, exp: exp2, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: stmts } if (ComponentReferenceBasics::crefEqual(cr1.clone(), cr2.clone())?) => {
             let mut repl: VarTransform::VariableReplacements;
@@ -1488,7 +1488,7 @@ fn mergeFunctionBody(mut iStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, m
             (exp1, _) = VarTransform::replaceExp(exp1.clone(), iRepl.clone(), None)?;
             (exp2, _) = VarTransform::replaceExp(exp2.clone(), iRepl.clone(), None)?;
             repl = VarTransform::addReplacementNoTransitive(iRepl, cr1.clone(), Arc::new(DAE::Exp::IFEXP { expCond: exp.clone(), expThen: exp1.clone(), expElse: exp2.clone() }))?;
-            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl.clone(), assertStmtsIn); continue '__tco; }
+            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl, assertStmtsIn); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp, statementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, exp: exp1, .. }, tail: Deref @ metamodelica::List::Nil }, else_: Deref @ DAE::Else::ELSE { statementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, exp: exp2, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: stmts } if (ComponentReferenceBasics::crefEqual(cr1.clone(), cr2.clone())?) => {
             let mut repl: VarTransform::VariableReplacements;
@@ -1500,7 +1500,7 @@ fn mergeFunctionBody(mut iStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, m
             (exp1, _) = VarTransform::replaceExp(exp1.clone(), iRepl.clone(), None)?;
             (exp2, _) = VarTransform::replaceExp(exp2.clone(), iRepl.clone(), None)?;
             repl = VarTransform::addReplacementNoTransitive(iRepl, cr1.clone(), Arc::new(DAE::Exp::IFEXP { expCond: exp.clone(), expThen: exp1.clone(), expElse: exp2.clone() }))?;
-            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl.clone(), assertStmtsIn); continue '__tco; }
+            { (iStmts, iRepl, assertStmtsIn) = (stmts.clone(), repl, assertStmtsIn); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1517,8 +1517,8 @@ fn addTplAssignToRepl(mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in
             let mut repl: VarTransform::VariableReplacements;
             let mut exp: Arc<DAE::Exp>;
             exp = Arc::new(DAE::Exp::TSUB { exp: iExp.clone(), ix: indx, ty: tp.clone() });
-            repl = VarTransform::addReplacementNoTransitive(iRepl, cr.clone(), exp.clone())?;
-            { (explst, indx, iExp, iRepl) = (rest.clone(), indx + 1, iExp, repl.clone()); continue '__tco; }
+            repl = VarTransform::addReplacementNoTransitive(iRepl, cr.clone(), exp)?;
+            { (explst, indx, iExp, iRepl) = (rest.clone(), indx + 1, iExp, repl); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1603,7 +1603,7 @@ fn makeComplexBinding(mut binding: Option<Arc<DAE::Exp>>, mut ty: Arc<DAE::Type>
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            Some(Arc::new(DAE::Exp::RECORD { path: ClassInfUtil::getStateName(var_field!((*ty).complexClassType, DAE::Type::T_COMPLEX).clone()), exps: expl.clone(), comp: strl.clone(), ty: ty }))
+            Some(Arc::new(DAE::Exp::RECORD { path: ClassInfUtil::getStateName(var_field!((*ty).complexClassType, DAE::Type::T_COMPLEX).clone()), exps: expl, comp: strl, ty: ty }))
         },
         _ => {
             binding
@@ -1643,7 +1643,7 @@ pub fn checkInlineType(mut inIT: DAE::InlineType, mut fns: Functiontuple) -> boo
         (it, (_, itlst)) => {
             let mut b: bool;
             b = listMember(it.clone(), itlst.clone());
-            b.clone()
+            b
         },
         _ => {
             false
@@ -2293,10 +2293,10 @@ pub(crate) fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<
             let mut eq2: Arc<DAE::EquationExp>;
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), r#fn.clone(), metamodelica::nil())?;
             changed = !(referenceEq(&*(e.clone()),&*(e_1.clone())));
-            eq2 = Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() });
-            source = ElementSource::condAddSymbolicTransformation(changed.clone(), inSource, Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp, after: eq2.clone() }))?;
-            (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed.clone(), eq2.clone(), source)?;
-            (eq2.clone(), source)
+            eq2 = Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1 });
+            source = ElementSource::condAddSymbolicTransformation(changed, inSource, Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp, after: eq2.clone() }))?;
+            (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed, eq2, source)?;
+            (eq2, source)
         },
         Deref @ DAE::EquationExp::RESIDUAL_EXP { exp: e } => {
             let mut changed: bool;
@@ -2304,10 +2304,10 @@ pub(crate) fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<
             let mut eq2: Arc<DAE::EquationExp>;
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), r#fn.clone(), metamodelica::nil())?;
             changed = !(referenceEq(&*(e.clone()),&*(e_1.clone())));
-            eq2 = Arc::new(DAE::EquationExp::RESIDUAL_EXP { exp: e_1.clone() });
-            source = ElementSource::condAddSymbolicTransformation(changed.clone(), inSource, Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp, after: eq2.clone() }))?;
-            (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed.clone(), eq2.clone(), source)?;
-            (eq2.clone(), source)
+            eq2 = Arc::new(DAE::EquationExp::RESIDUAL_EXP { exp: e_1 });
+            source = ElementSource::condAddSymbolicTransformation(changed, inSource, Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp, after: eq2.clone() }))?;
+            (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed, eq2, source)?;
+            (eq2, source)
         },
         Deref @ DAE::EquationExp::EQUALITY_EXPS { lhs: e1, rhs: e2 } => {
             let mut changed: bool;
@@ -2317,10 +2317,10 @@ pub(crate) fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<
             (e1_1, _) = Expression::traverseExpBottomUp(e1.clone(), r#fn.clone(), metamodelica::nil())?;
             (e2_1, _) = Expression::traverseExpBottomUp(e2.clone(), r#fn.clone(), metamodelica::nil())?;
             changed = !(referenceEq(&*(e1.clone()),&*(e1_1.clone())) && referenceEq(&*(e2.clone()),&*(e2_1.clone())));
-            eq2 = Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: e1_1.clone(), rhs: e2_1.clone() });
-            source = ElementSource::condAddSymbolicTransformation(changed.clone(), inSource, Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp, after: eq2.clone() }))?;
-            (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed.clone(), eq2.clone(), source)?;
-            (eq2.clone(), source)
+            eq2 = Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: e1_1, rhs: e2_1 });
+            source = ElementSource::condAddSymbolicTransformation(changed, inSource, Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp, after: eq2.clone() }))?;
+            (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed, eq2, source)?;
+            (eq2, source)
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Inline.inlineEquationExp failed")).clone()])?;

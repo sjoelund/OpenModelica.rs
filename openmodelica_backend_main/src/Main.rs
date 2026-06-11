@@ -227,10 +227,10 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
         }
         __acc.reverse()
     });
-            names = List::map1(names.clone(), (std::sync::Arc::new(AbsynUtil::joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), scope.clone())?;
+            names = List::map1(names, (std::sync::Arc::new(AbsynUtil::joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), scope.clone())?;
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut n in (names.clone()).into_iter().cloned() {
+        for mut n in (names).into_iter().cloned() {
             let __x = AbsynUtil::pathString(n.clone(), (literal!(".")).clone(), true, false)?;
             __acc = cons(__x, __acc);
         }
@@ -250,7 +250,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
     });
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut n in (names.clone()).into_iter().cloned() {
+        for mut n in (names).into_iter().cloned() {
             let __x = AbsynUtil::pathString(n.clone(), (literal!(".")).clone(), true, false)?;
             __acc = cons(__x, __acc);
         }
@@ -620,27 +620,27 @@ pub(crate) fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
             if stringEq((omdevPath.clone()).clone(), (literal!("")).clone()) {
                 omdevPath = (omHome.clone()).clone();
             }
-            msysPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*omdevPath.clone()); __mm_s.push_str(&*literal!("\\tools\\msys")); ArcStr::from(__mm_s) }).clone();
+            msysPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*omdevPath); __mm_s.push_str(&*literal!("\\tools\\msys")); ArcStr::from(__mm_s) }).clone();
             mingwDir = (System::openModelicaPlatform()).clone();
             msysBinDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msysPath.clone()); __mm_s.push_str(&*literal!("\\usr\\bin")); ArcStr::from(__mm_s) }).clone();
             binDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msysPath.clone()); __mm_s.push_str(&*literal!("\\")); __mm_s.push_str(&*mingwDir.clone()); __mm_s.push_str(&*literal!("\\bin")); ArcStr::from(__mm_s) }).clone();
             if System::getCCompiler() == literal!("gcc") {
-                libBinDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msysPath.clone()); __mm_s.push_str(&*literal!("\\")); __mm_s.push_str(&*mingwDir.clone()); __mm_s.push_str(&*literal!("\\lib\\gcc\\")); __mm_s.push_str(&*System::gccDumpMachine()); __mm_s.push_str(&*literal!("\\")); __mm_s.push_str(&*System::gccVersion()); ArcStr::from(__mm_s) }).clone();
+                libBinDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msysPath); __mm_s.push_str(&*literal!("\\")); __mm_s.push_str(&*mingwDir); __mm_s.push_str(&*literal!("\\lib\\gcc\\")); __mm_s.push_str(&*System::gccDumpMachine()); __mm_s.push_str(&*literal!("\\")); __mm_s.push_str(&*System::gccVersion()); ArcStr::from(__mm_s) }).clone();
             } else {
                 libBinDir = (binDir.clone()).clone();
             }
             hasBinDir = System::directoryExists((binDir.clone()).clone());
             hasLibBinDir = System::directoryExists((libBinDir.clone()).clone());
-            if hasBinDir.clone() && hasLibBinDir.clone() {
+            if hasBinDir && hasLibBinDir {
                 oldPath = (System::readEnv((literal!("PATH")).clone())?).clone();
-                newPath = stringAppendList(list![(omHome.clone()).clone(), (literal!("\\bin;")).clone(), (omHome.clone()).clone(), (literal!("\\lib;")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*binDir.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*libBinDir.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msysBinDir.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone()]);
-                newPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::stringReplace((newPath.clone()).clone(), (literal!("/")).clone(), (literal!("\\")).clone())?); __mm_s.push_str(&*oldPath.clone()); ArcStr::from(__mm_s) }).clone();
-                System::setEnv((literal!("PATH")).clone(), (newPath.clone()).clone(), true);
+                newPath = stringAppendList(list![(omHome.clone()).clone(), (literal!("\\bin;")).clone(), (omHome.clone()).clone(), (literal!("\\lib;")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*binDir); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*libBinDir); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msysBinDir); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone()]);
+                newPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::stringReplace((newPath).clone(), (literal!("/")).clone(), (literal!("\\")).clone())?); __mm_s.push_str(&*oldPath); ArcStr::from(__mm_s) }).clone();
+                System::setEnv((literal!("PATH")).clone(), (newPath).clone(), true);
             } else {
                 if !(Flags::isSet(Flags::DISABLE_WINDOWS_PATH_CHECK_WARNING.clone())?) {
                     metamodelica::print((literal!("We could not find some needed MINGW paths in $OPENMODELICAHOME or $OMDEV. Searched for paths:\n")).clone());
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*binDir.clone()); __mm_s.push_str(&*if (hasBinDir.clone()) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*libBinDir.clone()); __mm_s.push_str(&*if (hasLibBinDir.clone()) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*binDir); __mm_s.push_str(&*if (hasBinDir) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*libBinDir); __mm_s.push_str(&*if (hasLibBinDir) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             ()

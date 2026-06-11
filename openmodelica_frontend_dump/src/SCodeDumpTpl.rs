@@ -55,7 +55,7 @@ fn fun_14(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_prevSpacing: metamo
         (mut txt, _, mut a_prevSpacing, mut a_spacing) => {
             let mut ret_0: bool;
             ret_0 = Util::getStatefulBoolean(a_prevSpacing.clone());
-            txt = dumpPreElementSpacing(txt.clone(), (Tpl::textString(a_spacing.clone())?).clone(), ret_0.clone())?;
+            txt = dumpPreElementSpacing(txt.clone(), (Tpl::textString(a_spacing.clone())?).clone(), ret_0)?;
             txt.clone()
         },
     });
@@ -72,8 +72,8 @@ fn fun_15(mut in_txt: Tpl::Text, mut in_a_vis__str: Tpl::Text, mut in_a_inPublic
             let mut ret_1: bool;
             let mut ret_0: bool;
             ret_0 = Util::getStatefulBoolean(a_inPublicSection.clone());
-            ret_1 = boolNot(ret_0.clone());
-            Util::setStatefulBoolean(a_inPublicSection.clone(), ret_1.clone())?;
+            ret_1 = boolNot(ret_0);
+            Util::setStatefulBoolean(a_inPublicSection.clone(), ret_1)?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -163,16 +163,16 @@ fn lm_19(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
             let mut l_spacing: Tpl::Text;
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             l_spacing = dumpElementSpacing(Tpl::emptyTxt.clone(), i_el.clone())?;
-            ret_2 = intEq(1, x_i1.clone());
-            ret_3 = boolNot(ret_2.clone());
-            l_pre__spacing = fun_14(Tpl::emptyTxt.clone(), ret_3.clone(), a_prevSpacing.clone(), l_spacing.clone())?;
+            ret_2 = intEq(1, x_i1);
+            ret_3 = boolNot(ret_2);
+            l_pre__spacing = fun_14(Tpl::emptyTxt.clone(), ret_3, a_prevSpacing.clone(), l_spacing.clone())?;
             l_el__str = dumpElement(Tpl::emptyTxt.clone(), i_el.clone(), (literal!("")).clone(), a_options.clone())?;
             ret_6 = Util::getStatefulBoolean(a_inPublicSection.clone());
-            l_vis__str = dumpElementVisibility(Tpl::emptyTxt.clone(), i_el.clone(), ret_6.clone())?;
+            l_vis__str = dumpElementVisibility(Tpl::emptyTxt.clone(), i_el.clone(), ret_6)?;
             l_dummyTxt = fun_15(Tpl::emptyTxt.clone(), l_vis__str.clone(), a_inPublicSection.clone())?;
-            ret_9 = intEq(x_i1.clone(), a_numElements);
-            ret_10 = boolNot(ret_9.clone());
-            l_post__spacing = fun_17(Tpl::emptyTxt.clone(), ret_10.clone(), l_spacing.clone(), a_prevSpacing.clone())?;
+            ret_9 = intEq(x_i1, a_numElements);
+            ret_10 = boolNot(ret_9);
+            l_post__spacing = fun_17(Tpl::emptyTxt.clone(), ret_10, l_spacing.clone(), a_prevSpacing.clone())?;
             txt = fun_18(txt.clone(), a_indent, l_post__spacing.clone(), l_el__str.clone(), l_vis__str.clone(), l_pre__spacing.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
@@ -440,8 +440,8 @@ pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_import: Arc<SCode::Elem
             let mut txt = (*txt).clone();
             l_visibility__str = dumpVisibility(Tpl::emptyTxt.clone(), i_visibility.clone())?;
             l_import__str = fun_32(Tpl::emptyTxt.clone(), i_imp.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_visibility__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_import__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_visibility__str)?;
+            txt = Tpl::writeText(txt.clone(), l_import__str)?;
             txt.clone()
         },
         (txt, _) => {
@@ -465,11 +465,11 @@ pub(crate) fn dumpExtends(mut in_txt: Tpl::Text, mut in_a_extends: Arc<SCode::El
             l_visibility__str = dumpVisibility(Tpl::emptyTxt.clone(), i_visibility.clone())?;
             l_mod__str = dumpModifier(Tpl::emptyTxt.clone(), i_modifications.clone(), a_options.clone())?;
             l_ann__str = dumpAnnotationOpt(Tpl::emptyTxt.clone(), i_ann.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_visibility__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_visibility__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("extends ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_bc__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_mod__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_ann__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_bc__str)?;
+            txt = Tpl::writeText(txt.clone(), l_mod__str)?;
+            txt = Tpl::writeText(txt.clone(), l_ann__str)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -500,20 +500,20 @@ pub(crate) fn dumpClass(mut in_txt: Tpl::Text, mut in_a_class: Arc<SCode::Elemen
             l_enc__str = dumpEncapsulated(Tpl::emptyTxt.clone(), i_encapsulatedPrefix.clone())?;
             l_partial__str = dumpPartial(Tpl::emptyTxt.clone(), i_partialPrefix.clone())?;
             l_res__str = dumpRestriction(Tpl::emptyTxt.clone(), i_restriction.clone())?;
-            l_prefixes__str = Tpl::writeText(Tpl::emptyTxt.clone(), l_prefix__str.clone())?;
-            l_prefixes__str = Tpl::writeText(l_prefixes__str.clone(), l_enc__str.clone())?;
-            l_prefixes__str = Tpl::writeText(l_prefixes__str.clone(), l_partial__str.clone())?;
-            l_prefixes__str = Tpl::writeText(l_prefixes__str.clone(), l_res__str.clone())?;
+            l_prefixes__str = Tpl::writeText(Tpl::emptyTxt.clone(), l_prefix__str)?;
+            l_prefixes__str = Tpl::writeText(l_prefixes__str, l_enc__str)?;
+            l_prefixes__str = Tpl::writeText(l_prefixes__str, l_partial__str)?;
+            l_prefixes__str = Tpl::writeText(l_prefixes__str, l_res__str)?;
             l_cdef__str = dumpClassDef(Tpl::emptyTxt.clone(), i_classDef.clone(), a_options.clone())?;
             l_cmt__str = dumpClassComment(Tpl::emptyTxt.clone(), i_cmt.clone(), a_options.clone())?;
             l_ann__str = dumpClassAnnotation(Tpl::emptyTxt.clone(), i_cmt.clone(), a_options.clone())?;
             l_cc__str = dumpReplaceableConstrainClass(Tpl::emptyTxt.clone(), i_prefixes.clone(), a_options.clone())?;
             l_header__str = dumpClassHeader(Tpl::emptyTxt.clone(), i_classDef.clone(), (i_name.clone()).clone(), i_restriction.clone(), (Tpl::textString(l_cmt__str.clone())?).clone(), a_options.clone())?;
-            l_footer__str = dumpClassFooter(Tpl::emptyTxt.clone(), i_classDef.clone(), (Tpl::textString(l_cdef__str.clone())?).clone(), (i_name.clone()).clone(), (Tpl::textString(l_cmt__str.clone())?).clone(), (Tpl::textString(l_ann__str.clone())?).clone(), (Tpl::textString(l_cc__str.clone())?).clone())?;
-            txt = Tpl::writeText(txt.clone(), l_prefixes__str.clone())?;
+            l_footer__str = dumpClassFooter(Tpl::emptyTxt.clone(), i_classDef.clone(), (Tpl::textString(l_cdef__str)?).clone(), (i_name.clone()).clone(), (Tpl::textString(l_cmt__str)?).clone(), (Tpl::textString(l_ann__str)?).clone(), (Tpl::textString(l_cc__str)?).clone())?;
+            txt = Tpl::writeText(txt.clone(), l_prefixes__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_header__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_footer__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_header__str)?;
+            txt = Tpl::writeText(txt.clone(), l_footer__str)?;
             txt.clone()
         },
         (txt, _, _, _) => {
@@ -533,7 +533,7 @@ pub(crate) fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCod
             l_mod__str = dumpModifier(Tpl::emptyTxt.clone(), i_modifications.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("extends ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
-            txt = Tpl::writeText(txt.clone(), l_mod__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_mod__str)?;
             txt = Tpl::writeStr(txt.clone(), (a_cmt.clone()).clone())?;
             txt.clone()
         },
@@ -671,20 +671,20 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
             l_nal__str = fun_37(Tpl::emptyTxt.clone(), a_options.clone(), i_p_normalAlgorithmLst.clone())?;
             l_ial__str = fun_38(Tpl::emptyTxt.clone(), a_options.clone(), i_p_initialAlgorithmLst.clone())?;
             l_extdecl__str = dumpExternalDeclOpt(Tpl::emptyTxt.clone(), i_p_externalDecl.clone(), a_options.clone())?;
-            l_cdef__str = Tpl::writeText(Tpl::emptyTxt.clone(), l_el__str.clone())?;
-            l_cdef__str = Tpl::softNewLine(l_cdef__str.clone())?;
-            l_cdef__str = Tpl::writeText(l_cdef__str.clone(), l_ieq__str.clone())?;
-            l_cdef__str = Tpl::softNewLine(l_cdef__str.clone())?;
-            l_cdef__str = Tpl::writeText(l_cdef__str.clone(), l_ial__str.clone())?;
-            l_cdef__str = Tpl::softNewLine(l_cdef__str.clone())?;
-            l_cdef__str = Tpl::writeText(l_cdef__str.clone(), l_neq__str.clone())?;
-            l_cdef__str = Tpl::softNewLine(l_cdef__str.clone())?;
-            l_cdef__str = Tpl::writeText(l_cdef__str.clone(), l_nal__str.clone())?;
-            l_cdef__str = Tpl::softNewLine(l_cdef__str.clone())?;
-            l_cdef__str = Tpl::pushBlock(l_cdef__str.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            l_cdef__str = Tpl::writeText(l_cdef__str.clone(), l_extdecl__str.clone())?;
-            l_cdef__str = Tpl::popBlock(l_cdef__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cdef__str.clone())?;
+            l_cdef__str = Tpl::writeText(Tpl::emptyTxt.clone(), l_el__str)?;
+            l_cdef__str = Tpl::softNewLine(l_cdef__str)?;
+            l_cdef__str = Tpl::writeText(l_cdef__str, l_ieq__str)?;
+            l_cdef__str = Tpl::softNewLine(l_cdef__str)?;
+            l_cdef__str = Tpl::writeText(l_cdef__str, l_ial__str)?;
+            l_cdef__str = Tpl::softNewLine(l_cdef__str)?;
+            l_cdef__str = Tpl::writeText(l_cdef__str, l_neq__str)?;
+            l_cdef__str = Tpl::softNewLine(l_cdef__str)?;
+            l_cdef__str = Tpl::writeText(l_cdef__str, l_nal__str)?;
+            l_cdef__str = Tpl::softNewLine(l_cdef__str)?;
+            l_cdef__str = Tpl::pushBlock(l_cdef__str, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+            l_cdef__str = Tpl::writeText(l_cdef__str, l_extdecl__str)?;
+            l_cdef__str = Tpl::popBlock(l_cdef__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cdef__str)?;
             txt.clone()
         },
         (txt, Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: i_modifications, composition: i_composition }, a_options) => {
@@ -693,7 +693,7 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
             let mut txt = (*txt).clone();
             l_mod__str = dumpModifier(Tpl::emptyTxt.clone(), i_modifications.clone(), a_options.clone())?;
             l_cdef__str = dumpClassDef(Tpl::emptyTxt.clone(), i_composition.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cdef__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cdef__str)?;
             txt.clone()
         },
         (txt, Deref @ SCode::ClassDef::DERIVED { typeSpec: i_typeSpec, modifications: i_modifications, attributes: i_attributes }, a_options) => {
@@ -706,9 +706,9 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
             l_attr__str = dumpAttributes(Tpl::emptyTxt.clone(), i_attributes.clone())?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("= ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_attr__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_type__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_mod__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_attr__str)?;
+            txt = Tpl::writeText(txt.clone(), l_type__str)?;
+            txt = Tpl::writeText(txt.clone(), l_mod__str)?;
             txt = Tpl::popBlock(txt.clone())?;
             txt.clone()
         },
@@ -718,7 +718,7 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
             l_enum__str = fun_40(Tpl::emptyTxt.clone(), i_enumLst.clone(), a_options.clone())?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("= enumeration(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_enum__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_enum__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt.clone()
@@ -729,7 +729,7 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
             l_func__str = AbsynDumpTpl::dumpPath(Tpl::emptyTxt.clone(), i_functionPath.clone())?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("= der(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_func__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_func__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_41(txt.clone(), i_derivedVariables.clone())?;
@@ -849,7 +849,7 @@ pub(crate) fn dumpClassFooter(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCod
             let mut l_annstr: Tpl::Text;
             let mut txt = (*txt).clone();
             l_annstr = fun_44(Tpl::emptyTxt.clone(), (a_ann.clone()).clone())?;
-            txt = fun_46(txt.clone(), (a_cdefStr.clone()).clone(), (a_cc__str.clone()).clone(), (a_name.clone()).clone(), l_annstr.clone())?;
+            txt = fun_46(txt.clone(), (a_cdefStr.clone()).clone(), (a_cc__str.clone()).clone(), (a_name.clone()).clone(), l_annstr)?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -957,19 +957,19 @@ pub(crate) fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_component: Arc<SCode
             l_attr__dim__str = dumpAttributeDim(Tpl::emptyTxt.clone(), i_attributes.clone())?;
             l_type__str = AbsynDumpTpl::dumpTypeSpec(Tpl::emptyTxt.clone(), i_typeSpec.clone())?;
             l_mod__str1 = dumpModifier(Tpl::emptyTxt.clone(), i_modifications.clone(), a_options.clone())?;
-            l_mod__str = fun_51(Tpl::emptyTxt.clone(), a_options.clone(), i_attributes.clone(), l_mod__str1.clone())?;
+            l_mod__str = fun_51(Tpl::emptyTxt.clone(), a_options.clone(), i_attributes.clone(), l_mod__str1)?;
             l_cond__str = fun_52(Tpl::emptyTxt.clone(), i_condition.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_prefix__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_attr__pre__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_type__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_prefix__str)?;
+            txt = Tpl::writeText(txt.clone(), l_attr__pre__str)?;
+            txt = Tpl::writeText(txt.clone(), l_type__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
-            txt = Tpl::writeText(txt.clone(), l_attr__dim__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_mod__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cc__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_attr__dim__str)?;
+            txt = Tpl::writeText(txt.clone(), l_mod__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cc__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt.clone()
         },
         (txt, _, _, _) => {
@@ -1082,16 +1082,16 @@ pub(crate) fn dumpDefineUnit(mut in_txt: Tpl::Text, mut in_a_defineUnit: Arc<SCo
             l_exp__str = fun_54(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_weight__str = fun_55(Tpl::emptyTxt.clone(), i_weight.clone())?;
             l_args__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_args__str = smf_56(l_args__str.clone(), l_exp__str.clone())?;
-            l_args__str = smf_57(l_args__str.clone(), l_weight__str.clone())?;
-            l_args__str = Tpl::popIter(l_args__str.clone())?;
+            l_args__str = smf_56(l_args__str, l_exp__str)?;
+            l_args__str = smf_57(l_args__str, l_weight__str)?;
+            l_args__str = Tpl::popIter(l_args__str)?;
             l_pb = fun_58(Tpl::emptyTxt.clone(), l_args__str.clone())?;
             l_pe = fun_59(Tpl::emptyTxt.clone(), l_args__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("defineunit ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
-            txt = Tpl::writeText(txt.clone(), l_pb.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_args__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_pe.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_pb)?;
+            txt = Tpl::writeText(txt.clone(), l_args__str)?;
+            txt = Tpl::writeText(txt.clone(), l_pe)?;
             txt.clone()
         },
         (txt, _) => {
@@ -1110,7 +1110,7 @@ pub(crate) fn dumpEnumLiteral(mut in_txt: Tpl::Text, mut in_a_enum: Arc<SCode::E
             let mut txt = (*txt).clone();
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeStr(txt.clone(), (i_literal.clone()).clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -1175,10 +1175,10 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
             l_lhs__str = AbsynDumpTpl::dumpLhsExp(Tpl::emptyTxt.clone(), i_expLeft.clone())?;
             l_rhs__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_expRight.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_lhs__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_lhs__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_rhs__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_rhs__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1191,11 +1191,11 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
             l_rhs__str = AbsynDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_crefRight.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("connect(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_lhs__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_lhs__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_rhs__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_rhs__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1220,12 +1220,12 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
             l_lvl__str = dumpAssertionLevel(Tpl::emptyTxt.clone(), i_level.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("assert(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_msg__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_lvl__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_msg__str)?;
+            txt = Tpl::writeText(txt.clone(), l_lvl__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1236,9 +1236,9 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
             l_msg__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_message.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("terminate(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_msg__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_msg__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1251,11 +1251,11 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
             l_exp__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_expReinit.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("reinit(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cref__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cref__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_exp__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_exp__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1265,8 +1265,8 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
             let mut txt = (*txt).clone();
             l_exp__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_exp__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_exp__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1345,24 +1345,24 @@ pub(crate) fn dumpIfEquation(mut in_txt: Tpl::Text, mut in_a_ifequation: Arc<SCo
             let mut txt = (*txt).clone();
             l_if__cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_if__cond.clone())?;
             l_if__branch__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_if__branch__str = lm_65(l_if__branch__str.clone(), i_if__branch.clone(), a_options.clone())?;
-            l_if__branch__str = Tpl::popIter(l_if__branch__str.clone())?;
+            l_if__branch__str = lm_65(l_if__branch__str, i_if__branch.clone(), a_options.clone())?;
+            l_if__branch__str = Tpl::popIter(l_if__branch__str)?;
             l_elseif__str = dumpElseIfEquation(Tpl::emptyTxt.clone(), i_elseif__conds.clone(), i_elseif__branches.clone(), a_options.clone())?;
             l_else__str = fun_67(Tpl::emptyTxt.clone(), i_elseBranch.clone(), a_options.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_if__cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_if__cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_if__branch__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_if__branch__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_elseif__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_elseif__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_else__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_else__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end if")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1400,17 +1400,17 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_a_branches: Arc<metamodelica::List<Arc<m
             let mut txt = (*txt).clone();
             l_cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), a_cond.clone())?;
             l_branch__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_branch__str = lm_69(l_branch__str.clone(), i_branch.clone(), a_options.clone())?;
-            l_branch__str = Tpl::popIter(l_branch__str.clone())?;
+            l_branch__str = lm_69(l_branch__str, i_branch.clone(), a_options.clone())?;
+            l_branch__str = Tpl::popIter(l_branch__str)?;
             l_rest__str = dumpElseIfEquation(Tpl::emptyTxt.clone(), a_rest__conds.clone(), i_rest__branches.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("elseif ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_branch__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_branch__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_rest__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_rest__str)?;
             txt.clone()
         },
         (txt, _, _, _, _) => {
@@ -1479,20 +1479,20 @@ pub(crate) fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_for__equation: Arc
             let mut txt = (*txt).clone();
             l_range__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_range.clone())?;
             l_eq__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eq__str = lm_72(l_eq__str.clone(), i_eEquationLst.clone(), a_options.clone())?;
-            l_eq__str = Tpl::popIter(l_eq__str.clone())?;
+            l_eq__str = lm_72(l_eq__str, i_eEquationLst.clone(), a_options.clone())?;
+            l_eq__str = Tpl::popIter(l_eq__str)?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_index.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" in ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_range__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_range__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" loop\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_eq__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_eq__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1501,18 +1501,18 @@ pub(crate) fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_for__equation: Arc
             let mut l_eq__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_eq__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eq__str = lm_73(l_eq__str.clone(), i_eEquationLst.clone(), a_options.clone())?;
-            l_eq__str = Tpl::popIter(l_eq__str.clone())?;
+            l_eq__str = lm_73(l_eq__str, i_eEquationLst.clone(), a_options.clone())?;
+            l_eq__str = Tpl::popIter(l_eq__str)?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_index.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" loop\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_eq__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_eq__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1594,23 +1594,23 @@ pub(crate) fn dumpWhenEquation(mut in_txt: Tpl::Text, mut in_a_when__equation: A
             let mut txt = (*txt).clone();
             l_cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_condition.clone())?;
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_body__str = lm_75(l_body__str.clone(), i_eEquationLst.clone(), a_options.clone())?;
-            l_body__str = Tpl::popIter(l_body__str.clone())?;
+            l_body__str = lm_75(l_body__str, i_eEquationLst.clone(), a_options.clone())?;
+            l_body__str = Tpl::popIter(l_body__str)?;
             l_else__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_else__str = lm_77(l_else__str.clone(), i_elseBranches.clone(), a_options.clone())?;
-            l_else__str = Tpl::popIter(l_else__str.clone())?;
+            l_else__str = lm_77(l_else__str, i_elseBranches.clone(), a_options.clone())?;
+            l_else__str = Tpl::popIter(l_else__str)?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("when ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_body__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_body__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_else__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_else__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end when")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1731,10 +1731,10 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             l_lhs__str = AbsynDumpTpl::dumpLhsExp(Tpl::emptyTxt.clone(), i_assignComponent.clone())?;
             l_rhs__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_value.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_lhs__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_lhs__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" := ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_rhs__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_rhs__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1767,10 +1767,10 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             l_msg__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_message.clone())?;
             l_lvl__str = dumpAssertionLevel(Tpl::emptyTxt.clone(), i_level.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("assert(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_msg__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_lvl__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_msg__str)?;
+            txt = Tpl::writeText(txt.clone(), l_lvl__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             txt.clone()
         },
@@ -1779,7 +1779,7 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             let mut txt = (*txt).clone();
             l_msg__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_message.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("terminate(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_msg__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_msg__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             txt.clone()
         },
@@ -1790,9 +1790,9 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             l_cr__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_cref.clone())?;
             l_exp__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_newValue.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("reinit(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cr__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cr__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_exp__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_exp__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             txt.clone()
         },
@@ -1802,8 +1802,8 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             let mut txt = (*txt).clone();
             l_exp__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_exp__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_exp__str)?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1812,7 +1812,7 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             let mut txt = (*txt).clone();
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("return")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1821,7 +1821,7 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             let mut txt = (*txt).clone();
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("break")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1832,7 +1832,7 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("failure(")).clone() }))?;
             txt = dumpStatement(txt.clone(), i_stmt.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1846,7 +1846,7 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
             let mut txt = (*txt).clone();
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("continue")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1876,21 +1876,21 @@ pub(crate) fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_if__statement: Arc
             l_else__branch__str = dumpStatements(Tpl::emptyTxt.clone(), i_elseBranch.clone(), a_options.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_true__branch__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_true__branch__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_else__if__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_else__if__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("else\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_else__branch__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_else__branch__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end if")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1949,14 +1949,14 @@ pub(crate) fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_for__statement: A
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_index.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" in ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_range__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_range__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" loop\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_body__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_body__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1970,11 +1970,11 @@ pub(crate) fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_for__statement: A
             txt = Tpl::writeStr(txt.clone(), (i_index.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" loop\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_body__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_body__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -1998,14 +1998,14 @@ pub(crate) fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_while__statemen
             l_body__str = dumpStatements(Tpl::emptyTxt.clone(), i_whileBody.clone(), a_options.clone())?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("while ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" loop\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_body__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_body__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end while")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -2054,20 +2054,20 @@ pub(crate) fn dumpWhenStatement(mut in_txt: Tpl::Text, mut in_a_when__statement:
             l_when__cond__str = AbsynDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_when__cond.clone())?;
             l_when__body__str = dumpStatements(Tpl::emptyTxt.clone(), i_when__body.clone(), a_options.clone())?;
             l_elsewhen__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_elsewhen__str = lm_91(l_elsewhen__str.clone(), i_elsewhens.clone(), a_options.clone())?;
-            l_elsewhen__str = Tpl::popIter(l_elsewhen__str.clone())?;
+            l_elsewhen__str = lm_91(l_elsewhen__str, i_elsewhens.clone(), a_options.clone())?;
+            l_elsewhen__str = Tpl::popIter(l_elsewhen__str)?;
             l_cmt__str = dumpComment(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("when ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_when__cond__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_when__cond__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" then\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_when__body__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_when__body__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_elsewhen__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_elsewhen__str)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end when")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -2092,16 +2092,16 @@ pub(crate) fn dumpTryStatement(mut in_txt: Tpl::Text, mut in_a_try__statement: A
             l_algs2 = dumpStatements(Tpl::emptyTxt.clone(), i_elseBody.clone(), a_options.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("try\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_algs1.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_algs1)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("else\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_algs2.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_algs2)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end try")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -2126,11 +2126,11 @@ pub(crate) fn dumpPrefixes(mut in_txt: Tpl::Text, mut in_a_prefixes: Arc<SCode::
             l_final__str = dumpFinal(Tpl::emptyTxt.clone(), i_finalPrefix.clone())?;
             l_io__str = dumpInnerOuter(Tpl::emptyTxt.clone(), i_innerOuter.clone())?;
             l_replaceable__str = dumpReplaceable(Tpl::emptyTxt.clone(), i_replaceablePrefix.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_redeclare__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_redeclare__str)?;
             txt = Tpl::writeStr(txt.clone(), (a_each.clone()).clone())?;
-            txt = Tpl::writeText(txt.clone(), l_final__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_io__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_replaceable__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_final__str)?;
+            txt = Tpl::writeText(txt.clone(), l_io__str)?;
+            txt = Tpl::writeText(txt.clone(), l_replaceable__str)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -2232,8 +2232,8 @@ pub(crate) fn dumpReplaceableConstrainClass(mut in_txt: Tpl::Text, mut in_a_repl
             l_mod__str = dumpModifier(Tpl::emptyTxt.clone(), i_cc__mod.clone(), a_options.clone())?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constrainedby ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_path__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_mod__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_path__str)?;
+            txt = Tpl::writeText(txt.clone(), l_mod__str)?;
             txt = Tpl::popBlock(txt.clone())?;
             txt.clone()
         },
@@ -2527,8 +2527,8 @@ pub(crate) fn dumpModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<SCode::
             let mut txt = (*txt).clone();
             l_binding__str = dumpModifierBinding(Tpl::emptyTxt.clone(), i_binding.clone())?;
             l_submod__str = fun_112(Tpl::emptyTxt.clone(), i_subModLst.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_submod__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_binding__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_submod__str)?;
+            txt = Tpl::writeText(txt.clone(), l_binding__str)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -2583,11 +2583,11 @@ pub(crate) fn dumpAnnotationModifier(mut in_txt: Tpl::Text, mut in_a_modifier: A
             let mut txt = (*txt).clone();
             l_binding__str = dumpModifierBinding(Tpl::emptyTxt.clone(), i_binding.clone())?;
             l_text = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_text = lm_114(l_text.clone(), i_subModLst.clone(), a_options.clone())?;
-            l_text = Tpl::popIter(l_text.clone())?;
-            l_submod__str = fun_115(Tpl::emptyTxt.clone(), l_text.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_submod__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_binding__str.clone())?;
+            l_text = lm_114(l_text, i_subModLst.clone(), a_options.clone())?;
+            l_text = Tpl::popIter(l_text)?;
+            l_submod__str = fun_115(Tpl::emptyTxt.clone(), l_text)?;
+            txt = Tpl::writeText(txt.clone(), l_submod__str)?;
+            txt = Tpl::writeText(txt.clone(), l_binding__str)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -2607,8 +2607,8 @@ pub(crate) fn dumpModifierPrefix(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<S
             let mut txt = (*txt).clone();
             l_final__str = dumpFinal(Tpl::emptyTxt.clone(), i_finalPrefix.clone())?;
             l_each__str = dumpEach(Tpl::emptyTxt.clone(), i_eachPrefix.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_each__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_final__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_each__str)?;
+            txt = Tpl::writeText(txt.clone(), l_final__str)?;
             txt.clone()
         },
         (txt, Deref @ SCode::Mod::REDECL { finalPrefix: i_finalPrefix, eachPrefix: i_eachPrefix, .. }) => {
@@ -2617,8 +2617,8 @@ pub(crate) fn dumpModifierPrefix(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<S
             let mut txt = (*txt).clone();
             l_final__str = dumpFinal(Tpl::emptyTxt.clone(), i_finalPrefix.clone())?;
             l_each__str = dumpEach(Tpl::emptyTxt.clone(), i_eachPrefix.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_each__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_final__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_each__str)?;
+            txt = Tpl::writeText(txt.clone(), l_final__str)?;
             txt.clone()
         },
         (txt, _) => {
@@ -2636,7 +2636,7 @@ pub(crate) fn dumpRedeclModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<S
             let mut l_each__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_each__str = dumpEach(Tpl::emptyTxt.clone(), i_eachPrefix.clone())?;
-            txt = dumpElement(txt.clone(), i_element.clone(), (Tpl::textString(l_each__str.clone())?).clone(), a_options.clone())?;
+            txt = dumpElement(txt.clone(), i_element.clone(), (Tpl::textString(l_each__str)?).clone(), a_options.clone())?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -2766,7 +2766,7 @@ pub(crate) fn dumpAnnotationSubModifier(mut in_txt: Tpl::Text, mut in_a_submod: 
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Config::showAnnotations()?;
-            txt = fun_122(txt.clone(), ret_0.clone(), i_mod.clone(), a_options.clone(), i_nameMod.clone(), (i_ident.clone()).clone())?;
+            txt = fun_122(txt.clone(), ret_0, i_mod.clone(), a_options.clone(), i_nameMod.clone(), (i_ident.clone()).clone())?;
             txt.clone()
         },
         (txt, Deref @ SCode::SubMod { r#mod: i_mod @ Deref @ SCode::Mod::REDECL { finalPrefix: _, .. }, .. }, a_options) => {
@@ -2794,10 +2794,10 @@ pub(crate) fn dumpAttributes(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::
             l_prl__str = dumpParallelism(Tpl::emptyTxt.clone(), i_parallelism.clone())?;
             l_var__str = dumpVariability(Tpl::emptyTxt.clone(), i_variability.clone())?;
             l_dir__str = dumpDirection(Tpl::emptyTxt.clone(), i_direction.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_prl__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_var__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_dir__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_ct__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_prl__str)?;
+            txt = Tpl::writeText(txt.clone(), l_var__str)?;
+            txt = Tpl::writeText(txt.clone(), l_dir__str)?;
+            txt = Tpl::writeText(txt.clone(), l_ct__str)?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -2942,7 +2942,7 @@ pub(crate) fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_annotation: Arc<SCo
             let mut l_modifStr: Tpl::Text;
             let mut txt = (*txt).clone();
             l_modifStr = dumpAnnotationModifier(Tpl::emptyTxt.clone(), i_modification.clone(), a_options.clone())?;
-            txt = fun_131(txt.clone(), l_modifStr.clone())?;
+            txt = fun_131(txt.clone(), l_modifStr)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -3096,17 +3096,17 @@ fn fun_141(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<SCode::ExternalDecl
             let mut txt = (*txt).clone();
             l_func__name__str = fun_136(Tpl::emptyTxt.clone(), i_funcName.clone())?;
             l_func__args__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_func__args__str = lm_137(l_func__args__str.clone(), i_args.clone())?;
-            l_func__args__str = Tpl::popIter(l_func__args__str.clone())?;
-            l_func__str = fun_138(Tpl::emptyTxt.clone(), l_func__name__str.clone(), l_func__args__str.clone())?;
+            l_func__args__str = lm_137(l_func__args__str, i_args.clone())?;
+            l_func__args__str = Tpl::popIter(l_func__args__str)?;
+            l_func__str = fun_138(Tpl::emptyTxt.clone(), l_func__name__str, l_func__args__str)?;
             l_lang__str = fun_139(Tpl::emptyTxt.clone(), i_lang.clone())?;
             l_ann__str = dumpAnnotationOpt(Tpl::emptyTxt.clone(), i_annotation__.clone(), a_options.clone())?;
             l_output__str = fun_140(Tpl::emptyTxt.clone(), i_output__.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("external")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_lang__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_output__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_func__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_ann__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_lang__str)?;
+            txt = Tpl::writeText(txt.clone(), l_output__str)?;
+            txt = Tpl::writeText(txt.clone(), l_func__str)?;
+            txt = Tpl::writeText(txt.clone(), l_ann__str)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
@@ -3183,8 +3183,8 @@ pub(crate) fn dumpComment(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCode::Co
             let mut txt = (*txt).clone();
             l_ann__str = dumpAnnotationOpt(Tpl::emptyTxt.clone(), i_annotation__.clone(), a_options.clone())?;
             l_cmt__str = dumpCommentStr(Tpl::emptyTxt.clone(), i_comment.clone(), a_options.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmt__str.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_ann__str.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_cmt__str)?;
+            txt = Tpl::writeText(txt.clone(), l_ann__str)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -3203,7 +3203,7 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_comment: Option<ArcStr>) -> Result<Tp
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             ret_0 = (System::escapedString((i_cmt.clone()).clone(), false)).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },

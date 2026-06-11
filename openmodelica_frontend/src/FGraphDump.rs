@@ -153,11 +153,11 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
-            labelText = (nds.clone()).clone();
-            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
-            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node)?)); ArcStr::from(__mm_s) }).clone(), (color.clone()).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], shape.clone(), None, metamodelica::nil(), i.clone(), gi.clone())?;
+            labelText = (nds).clone();
+            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node)?)); ArcStr::from(__mm_s) }).clone(), (color).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label], shape, None, metamodelica::nil(), i.clone(), gi.clone())?;
             nrefs = FCore::RefTree::listValues(kids.clone(), metamodelica::nil());
-            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
+            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs)?;
             (gi.clone(), i.clone())
         },
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, data: FCore::Data::REF { target: Deref @ metamodelica::List::Nil }, .. }) => {
@@ -170,12 +170,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
-            labelText = (nds.clone()).clone();
-            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
-            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), (color.clone()).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], shape.clone(), None, metamodelica::nil(), i.clone(), gi.clone())?;
+            labelText = (nds).clone();
+            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), (color).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label], shape, None, metamodelica::nil(), i.clone(), gi.clone())?;
             (gi, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("r")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node)?)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(FNode::fromRef(nr.clone())?)?)); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_RED)).clone(), openmodelica_codegen_graphml::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), gi.clone())?;
             nrefs = FCore::RefTree::listValues(kids.clone(), metamodelica::nil());
-            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
+            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs)?;
             (gi.clone(), i.clone())
         },
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, data: FCore::Data::REF { target: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, .. }) => {
@@ -188,12 +188,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
-            labelText = (nds.clone()).clone();
-            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
-            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), (color.clone()).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], shape.clone(), None, metamodelica::nil(), i.clone(), gi.clone())?;
+            labelText = (nds).clone();
+            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), (color).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label], shape, None, metamodelica::nil(), i.clone(), gi.clone())?;
             (gi, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("r")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node)?)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(FNode::fromRef(nr.clone())?)?)); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN)).clone(), openmodelica_codegen_graphml::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), gi.clone())?;
             nrefs = FCore::RefTree::listValues(kids.clone(), metamodelica::nil());
-            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
+            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs)?;
             (gi.clone(), i.clone())
         },
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: _, tail: _ }, data: FCore::Data::VR { .. }, .. }) => {
@@ -209,12 +209,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
-            labelText = (nds.clone()).clone();
-            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
-            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), (color.clone()).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], shape.clone(), None, metamodelica::nil(), i.clone(), gi.clone())?;
+            labelText = (nds).clone();
+            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (labelText).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (gi, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), (color).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label], shape, None, metamodelica::nil(), i.clone(), gi.clone())?;
             (gi, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("e")); __mm_s.push_str(&*intString(FNode::id(node.clone())?)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(node)?)); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(FNode::id(FNode::fromRef(nr.clone())?)?)); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_codegen_graphml::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), gi.clone())?;
             nrefs = FCore::RefTree::listValues(kids.clone(), metamodelica::nil());
-            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
+            (gi, i) = addNodes((gi.clone(), i.clone()), nrefs)?;
             (gi.clone(), i.clone())
         },
         _ => bail!("match: no arm matched"),

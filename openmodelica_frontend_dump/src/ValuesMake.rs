@@ -100,12 +100,12 @@ pub fn makeArray(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) ->
         vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: il, .. }, tail: _ } => {
             let mut i1: i32;
             i1 = (vlst.clone().len() as i32);
-            Arc::new(Values::Value::ARRAY { valueLst: vlst.clone(), dimLst: metamodelica::cons(i1.clone(), il.clone()) })
+            Arc::new(Values::Value::ARRAY { valueLst: vlst.clone(), dimLst: metamodelica::cons(i1, il.clone()) })
         },
         vlst => {
             let mut i1: i32;
             i1 = (vlst.clone().len() as i32);
-            Arc::new(Values::Value::ARRAY { valueLst: vlst.clone(), dimLst: list![i1.clone()] })
+            Arc::new(Values::Value::ARRAY { valueLst: vlst.clone(), dimLst: list![i1] })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

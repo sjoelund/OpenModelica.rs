@@ -176,7 +176,7 @@ pub fn elabMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
             let mut cache = (*cache).clone();
             (cache, subs_1) = elabSubmods(cache.clone(), env.clone(), ih.clone(), pre.clone(), subs.clone(), r#impl.clone(), inModScope, info.clone())?;
-            (cache.clone(), Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), subModLst: subs_1.clone(), binding: None, info: info.clone() }))
+            (cache.clone(), Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), subModLst: subs_1, binding: None, info: info.clone() }))
         },
         (cache, env, ih, pre, Deref @ SCode::Mod::MOD { finalPrefix, eachPrefix: each_, subModLst: subs, binding: Some(e), info, .. }, r#impl, _) => {
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
@@ -187,23 +187,23 @@ pub fn elabMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
             let mut cache = (*cache).clone();
             (cache, subs_1) = elabSubmods(cache.clone(), env.clone(), ih.clone(), pre.clone(), subs.clone(), r#impl.clone(), inModScope, info.clone())?;
             (cache, e_1, prop) = Static::elabExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), Config::splitArrays()?, pre.clone(), info.clone())?;
-            (e_1, prop) = Expression::tupleHead(e_1.clone(), prop.clone())?;
-            (cache, e_1, prop) = Ceval::cevalIfConstant(cache.clone(), env.clone(), e_1.clone(), prop.clone(), r#impl.clone(), info.clone())?;
+            (e_1, prop) = Expression::tupleHead(e_1, prop)?;
+            (cache, e_1, prop) = Ceval::cevalIfConstant(cache.clone(), env.clone(), e_1, prop, r#impl.clone(), info.clone())?;
             (e_val, cache) = elabModValue(cache.clone(), env.clone(), e_1.clone(), prop.clone(), r#impl.clone(), info.clone())?;
-            (cache, e_2) = PrefixUtil::prefixExp(cache.clone(), env.clone(), ih.clone(), e_1.clone(), pre.clone())?;
-            (cache.clone(), Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), subModLst: subs_1.clone(), binding: Some(DAE::EqMod::TYPED { modifierAsExp: e_2.clone(), modifierAsValue: e_val.clone(), properties: prop.clone(), modifierAsAbsynExp: e.clone(), info: info.clone() }), info: info.clone() }))
+            (cache, e_2) = PrefixUtil::prefixExp(cache.clone(), env.clone(), ih.clone(), e_1, pre.clone())?;
+            (cache.clone(), Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), subModLst: subs_1, binding: Some(DAE::EqMod::TYPED { modifierAsExp: e_2, modifierAsValue: e_val, properties: prop, modifierAsAbsynExp: e.clone(), info: info.clone() }), info: info.clone() }))
         },
         (cache, env, ih, pre, Deref @ SCode::Mod::MOD { finalPrefix, eachPrefix: each_, subModLst: subs, binding: Some(e), info, .. }, r#impl, _) => {
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
             let mut cache = (*cache).clone();
             (cache, subs_1) = elabSubmods(cache.clone(), env.clone(), ih.clone(), pre.clone(), subs.clone(), r#impl.clone(), inModScope, info.clone())?;
-            (cache.clone(), Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), subModLst: subs_1.clone(), binding: Some(DAE::EqMod::UNTYPED { exp: e.clone() }), info: info.clone() }))
+            (cache.clone(), Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), subModLst: subs_1, binding: Some(DAE::EqMod::UNTYPED { exp: e.clone() }), info: info.clone() }))
         },
         (cache, env, ih, pre, Deref @ SCode::Mod::REDECL { finalPrefix, eachPrefix: each_, element: elem }, r#impl, info) => {
             let mut dm: Arc<DAE::Mod>;
             let mut elem = (*elem).clone();
             (elem, dm) = elabModRedeclareElement(cache.clone(), env.clone(), ih.clone(), pre.clone(), finalPrefix.clone(), elem.clone(), r#impl.clone(), inModScope, info.clone())?;
-            (cache.clone(), Arc::new(DAE::Mod::REDECL { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), element: elem.clone(), r#mod: dm.clone() }))
+            (cache.clone(), Arc::new(DAE::Mod::REDECL { finalPrefix: finalPrefix.clone(), eachPrefix: each_.clone(), element: elem.clone(), r#mod: dm }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -403,7 +403,7 @@ fn elabModQualifyTypespec(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             let mut p1: Arc<Absyn::Path>;
             let mut cache = (*cache).clone();
             (cache, p1) = Inst::makeFullyQualified(cache.clone(), env.clone(), p.clone())?;
-            (cache.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: p1.clone(), arrayDim: None }))
+            (cache.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: p1, arrayDim: None }))
         },
         (cache, env, ih, pre, Deref @ Absyn::TypeSpec::TPATH { path: p, arrayDim: Some(dims) }) => {
             let mut p1: Arc<Absyn::Path>;
@@ -412,11 +412,11 @@ fn elabModQualifyTypespec(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             let mut cache = (*cache).clone();
             let mut dims = (*dims).clone();
             cref = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name).clone(), subscripts: metamodelica::nil() });
-            (cache, edims) = InstUtil::elabArraydim(cache.clone(), env.clone(), cref.clone(), p.clone(), dims.clone(), None, r#impl, true, false, pre.clone(), info, metamodelica::nil())?;
-            (cache, edims) = PrefixUtil::prefixDimensions(cache.clone(), env.clone(), ih.clone(), pre.clone(), edims.clone());
-            dims = List::map(edims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
+            (cache, edims) = InstUtil::elabArraydim(cache.clone(), env.clone(), cref, p.clone(), dims.clone(), None, r#impl, true, false, pre.clone(), info, metamodelica::nil())?;
+            (cache, edims) = PrefixUtil::prefixDimensions(cache.clone(), env.clone(), ih.clone(), pre.clone(), edims);
+            dims = List::map(edims, (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
             (cache, p1) = Inst::makeFullyQualified(cache.clone(), env.clone(), p.clone())?;
-            (cache.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: p1.clone(), arrayDim: Some(dims.clone()) }))
+            (cache.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: p1, arrayDim: Some(dims.clone()) }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -742,7 +742,7 @@ fn elabSubmods2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Ar
             let mut accum_mods: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
             let mut cache = (*cache).clone();
             (cache, dmod) = elabSubmod(cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), smod.clone(), inImpl, inInfo.clone())?;
-            { (inCache, inEnv, inIH, inPrefix, inSubMods, inImpl, inInfo, inAccumMods) = (cache.clone(), inEnv, inIH, inPrefix, rest_smods.clone(), inImpl, inInfo, metamodelica::cons(dmod.clone(), inAccumMods)); continue '__tco; }
+            { (inCache, inEnv, inIH, inPrefix, inSubMods, inImpl, inInfo, inAccumMods) = (cache.clone(), inEnv, inIH, inPrefix, rest_smods.clone(), inImpl, inInfo, metamodelica::cons(dmod, inAccumMods)); continue '__tco; }
         },
         _ => {
             return Ok((inCache, inAccumMods.reverse()))
@@ -779,7 +779,7 @@ fn compactSubMod2(mut inExistingMod: Arc<SCode::SubMod>, mut inNewMod: Arc<SCode
         (Deref @ SCode::SubMod { ident: name1, .. }, _) => {
             let mut submod: Arc<SCode::SubMod>;
             submod = mergeSubModsInSameScope(inExistingMod, inNewMod, metamodelica::cons((name1.clone()).clone(), inName), inModScope)?;
-            (submod.clone(), true)
+            (submod, true)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -871,7 +871,7 @@ fn elabUntypedSubmod(mut inSubMod: Arc<SCode::SubMod>) -> Result<Arc<metamodelic
         Deref @ SCode::SubMod { ident: i, r#mod: m } => {
             let mut m_1: Arc<DAE::Mod>;
             m_1 = elabUntypedMod(m.clone(), ModScope::COMPONENT { name: (literal!("")).clone() })?;
-            list![Arc::new(DAE::SubMod { ident: (i.clone()).clone(), r#mod: m_1.clone() })]
+            list![Arc::new(DAE::SubMod { ident: (i.clone()).clone(), r#mod: m_1 })]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -935,7 +935,7 @@ pub(crate) fn lookupCompModification(mut inMod: Arc<DAE::Mod>, mut inIdent: ArcS
             let mut mod2: Arc<DAE::Mod>;
             mod1 = lookupCompModification2(subs.clone(), (n.clone()).clone());
             mod2 = lookupComplexCompModification(eqMod.clone(), (n.clone()).clone(), f.clone(), e.clone(), info.clone());
-            checkDuplicateModifications(mod1.clone(), mod2.clone(), (n.clone()).clone())?
+            checkDuplicateModifications(mod1, mod2, (n.clone()).clone())?
         },
         _ => {
             openmodelica_frontend_types::DAE::Mod::interned_NOMOD()
@@ -981,7 +981,7 @@ fn mergeModifiers(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut inSMo
         Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: sl, binding: _, comment: _, .. } => {
             let mut m: Arc<DAE::Mod>;
             m = mergeSubMods(inMods, inMod, f.clone(), e.clone(), sl.clone());
-            m.clone()
+            m
         },
         _ => {
             inMod
@@ -1046,8 +1046,8 @@ pub(crate) fn lookupCompModificationFromEqu(mut inMod: Arc<DAE::Mod>, mut inIden
             let mut mod2: Arc<DAE::Mod>;
             mod1 = lookupCompModification2(subs.clone(), (n.clone()).clone());
             mod2 = lookupComplexCompModification(eqMod.clone(), (n.clone()).clone(), f.clone(), e.clone(), info.clone());
-            r#mod = selectEqMod(mod1.clone(), mod2.clone(), (n.clone()).clone())?;
-            r#mod.clone()
+            r#mod = selectEqMod(mod1, mod2, (n.clone()).clone())?;
+            r#mod
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1128,12 +1128,12 @@ fn checkDuplicateModifications(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>,
         (Deref @ DAE::Mod::MOD { binding: None, .. }, Deref @ DAE::Mod::MOD { .. }) => {
             let mut submods: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
             submods = checkDuplicateModifications2(var_field!((*mod1).subModLst, DAE::Mod::MOD).clone(), var_field!((*mod2).subModLst, DAE::Mod::MOD).clone(), (n).clone())?;
-            Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*mod2).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*mod2).eachPrefix, DAE::Mod::MOD).clone(), subModLst: submods.clone(), binding: var_field!((*mod2).binding, DAE::Mod::MOD).clone(), info: var_field!((*mod2).info, DAE::Mod::MOD).clone() })
+            Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*mod2).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*mod2).eachPrefix, DAE::Mod::MOD).clone(), subModLst: submods, binding: var_field!((*mod2).binding, DAE::Mod::MOD).clone(), info: var_field!((*mod2).info, DAE::Mod::MOD).clone() })
         },
         (Deref @ DAE::Mod::MOD { .. }, Deref @ DAE::Mod::MOD { binding: None, .. }) => {
             let mut submods: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
             submods = checkDuplicateModifications2(var_field!((*mod1).subModLst, DAE::Mod::MOD).clone(), var_field!((*mod2).subModLst, DAE::Mod::MOD).clone(), (n).clone())?;
-            Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*mod1).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*mod1).eachPrefix, DAE::Mod::MOD).clone(), subModLst: submods.clone(), binding: var_field!((*mod1).binding, DAE::Mod::MOD).clone(), info: var_field!((*mod1).info, DAE::Mod::MOD).clone() })
+            Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*mod1).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*mod1).eachPrefix, DAE::Mod::MOD).clone(), subModLst: submods, binding: var_field!((*mod1).binding, DAE::Mod::MOD).clone(), info: var_field!((*mod1).info, DAE::Mod::MOD).clone() })
         },
         (Deref @ DAE::Mod::MOD { .. }, Deref @ DAE::Mod::MOD { .. }) => {
             Error::addMultiSourceMessage(Error::DUPLICATE_MODIFICATIONS.clone(), list![(n).clone(), (literal!("")).clone()], list![getModInfo(mod1), getModInfo(mod2.clone())])?;
@@ -1356,7 +1356,7 @@ fn lookupIdxModification3(mut inMod: Arc<DAE::Mod>, mut inIndex: Arc<DAE::Exp>) 
             let mut eq: Option<DAE::EqMod>;
             (_, subs) = lookupIdxModification2(var_field!((*inMod).subModLst, DAE::Mod::MOD).clone(), inIndex.clone())?;
             eq = indexEqmod(var_field!((*inMod).binding, DAE::Mod::MOD).clone(), list![inIndex], var_field!((*inMod).info, DAE::Mod::MOD).clone())?;
-            Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*inMod).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*inMod).eachPrefix, DAE::Mod::MOD).clone(), subModLst: subs.clone(), binding: eq.clone(), info: var_field!((*inMod).info, DAE::Mod::MOD).clone() })
+            Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*inMod).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*inMod).eachPrefix, DAE::Mod::MOD).clone(), subModLst: subs, binding: eq, info: var_field!((*inMod).info, DAE::Mod::MOD).clone() })
         },
         Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::EACH { .. }, .. } => {
             inMod
@@ -1499,15 +1499,15 @@ fn doMerge(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Arc<DAE::Mod>, mut inC
             let mut dmod: Arc<DAE::Mod>;
             let mut el1 = (*el1).clone();
             smod1 = SCodeUtil::getConstrainedByModifiers(var_field!((*el1).prefixes, SCode::Element::COMPONENT).clone());
-            smod1 = SCodeUtil::mergeModifiers(var_field!((*el1).modifications, SCode::Element::COMPONENT).clone(), smod1.clone());
-            dmod1 = elabUntypedMod(smod1.clone(), ModScope::COMPONENT { name: (var_field!((*el1).name, SCode::Element::COMPONENT).clone()).clone() })?;
+            smod1 = SCodeUtil::mergeModifiers(var_field!((*el1).modifications, SCode::Element::COMPONENT).clone(), smod1);
+            dmod1 = elabUntypedMod(smod1, ModScope::COMPONENT { name: (var_field!((*el1).name, SCode::Element::COMPONENT).clone()).clone() })?;
             smod2 = SCodeUtil::getConstrainedByModifiers(var_field!((**el2).prefixes, SCode::Element::COMPONENT).clone());
-            smod2 = SCodeUtil::mergeModifiers(var_field!((**el2).modifications, SCode::Element::COMPONENT).clone(), smod2.clone());
-            dmod2 = elabUntypedMod(smod2.clone(), ModScope::COMPONENT { name: (var_field!((**el2).name, SCode::Element::COMPONENT).clone()).clone() })?;
-            dmod = merge(dmod1.clone(), dmod2.clone(), (var_field!((*el1).name, SCode::Element::COMPONENT).clone()).clone(), inCheckFinal)?;
+            smod2 = SCodeUtil::mergeModifiers(var_field!((**el2).modifications, SCode::Element::COMPONENT).clone(), smod2);
+            dmod2 = elabUntypedMod(smod2, ModScope::COMPONENT { name: (var_field!((**el2).name, SCode::Element::COMPONENT).clone()).clone() })?;
+            dmod = merge(dmod1, dmod2, (var_field!((*el1).name, SCode::Element::COMPONENT).clone()).clone(), inCheckFinal)?;
             emod = merge(emod1.clone(), emod2.clone(), (var_field!((*el1).name, SCode::Element::COMPONENT).clone()).clone(), inCheckFinal)?;
             assign_variant_field!(el1 => SCode::Element::COMPONENT;
-                modifications = unelabMod(dmod.clone())?,
+                modifications = unelabMod(dmod)?,
                 prefixes = SCodeUtil::propagatePrefixes(var_field!((**el2).prefixes, SCode::Element::COMPONENT).clone(), var_field!((*el1).prefixes, SCode::Element::COMPONENT).clone())?,
                 attributes = SCodeUtil::propagateAttributes(var_field!((**el2).attributes, SCode::Element::COMPONENT).clone(), var_field!((*el1).attributes, SCode::Element::COMPONENT).clone(), false)?
             );
@@ -1532,17 +1532,17 @@ fn doMerge(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Arc<DAE::Mod>, mut inC
             let mut emod1 = (*emod1).clone();
             let mut emod2 = (*emod2).clone();
             smod1 = SCodeUtil::getConstrainedByModifiers(var_field!((*el1).prefixes, SCode::Element::CLASS).clone());
-            dmod1 = elabUntypedMod(smod1.clone(), ModScope::COMPONENT { name: (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone() })?;
-            emod1 = merge(emod1.clone(), dmod1.clone(), (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone(), inCheckFinal)?;
+            dmod1 = elabUntypedMod(smod1, ModScope::COMPONENT { name: (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone() })?;
+            emod1 = merge(emod1.clone(), dmod1, (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone(), inCheckFinal)?;
             smod2 = SCodeUtil::getConstrainedByModifiers(var_field!((**el2).prefixes, SCode::Element::CLASS).clone());
-            dmod2 = elabUntypedMod(smod2.clone(), ModScope::COMPONENT { name: (var_field!((**el2).name, SCode::Element::CLASS).clone()).clone() })?;
-            emod2 = merge(emod2.clone(), dmod2.clone(), (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone(), inCheckFinal)?;
+            dmod2 = elabUntypedMod(smod2, ModScope::COMPONENT { name: (var_field!((**el2).name, SCode::Element::CLASS).clone()).clone() })?;
+            emod2 = merge(emod2.clone(), dmod2, (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone(), inCheckFinal)?;
             emod = merge(emod1.clone(), emod2.clone(), (var_field!((*el1).name, SCode::Element::CLASS).clone()).clone(), inCheckFinal)?;
             assign_variant_field!(el1 => SCode::Element::CLASS; prefixes = SCodeUtil::propagatePrefixes(var_field!((**el2).prefixes, SCode::Element::CLASS).clone(), var_field!((**el2).prefixes, SCode::Element::CLASS).clone())?);
             (res, info) = SCodeUtil::checkSameRestriction(var_field!((*el1).restriction, SCode::Element::CLASS).clone(), var_field!((**el2).restriction, SCode::Element::CLASS).clone(), var_field!((*el1).info, SCode::Element::CLASS).clone(), var_field!((**el2).info, SCode::Element::CLASS).clone());
             assign_variant_field!(el1 => SCode::Element::CLASS;
-                restriction = res.clone(),
-                info = info.clone()
+                restriction = res,
+                info = info
             );
             assign_variant_field!(outMod => DAE::Mod::REDECL;
                 element = el1.clone(),
@@ -1597,7 +1597,7 @@ fn doMerge(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Arc<DAE::Mod>, mut inC
                 }
                 vals = metamodelica::cons(v.clone(), vals.clone());
             }
-            assign_variant_field!(val => Values::Value::RECORD; orderd = vals.clone().reverse());
+            assign_variant_field!(val => Values::Value::RECORD; orderd = vals.reverse());
             let __owned_variant_modifierAsValue_0 = Some(val.clone());
             if let DAE::EqMod::TYPED { modifierAsValue, .. } = &mut eqmod {
                 *modifierAsValue = __owned_variant_modifierAsValue_0;
@@ -1639,7 +1639,7 @@ fn doMerge(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Arc<DAE::Mod>, mut inC
                 }
                 vals = metamodelica::cons(v.clone(), vals.clone());
             }
-            assign_variant_field!(val => Values::Value::RECORD; orderd = vals.clone().reverse());
+            assign_variant_field!(val => Values::Value::RECORD; orderd = vals.reverse());
             let __owned_variant_modifierAsValue_0 = Some(val.clone());
             if let DAE::EqMod::TYPED { modifierAsValue, .. } = &mut eqmod {
                 *modifierAsValue = __owned_variant_modifierAsValue_0;
@@ -2109,13 +2109,13 @@ fn prettyPrintSubs(mut inSubs: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut de
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { ident: id, r#mod: Deref @ DAE::Mod::REDECL { .. } }, tail: _ } => {
             let mut s2: ArcStr;
             s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" redeclare(")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!("), class or component ")); __mm_s.push_str(&*id.clone()); ArcStr::from(__mm_s) }).clone();
-            s2.clone()
+            s2
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { ident: id, r#mod: m }, tail: _ } => {
             let mut s2: ArcStr;
             s2 = (prettyPrintMod(m.clone(), depth + 1)?).clone();
-            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("), class or component ")); __mm_s.push_str(&*id.clone()); ArcStr::from(__mm_s) }).clone();
-            s2.clone()
+            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*s2); __mm_s.push_str(&*literal!("), class or component ")); __mm_s.push_str(&*id.clone()); ArcStr::from(__mm_s) }).clone();
+            s2
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
@@ -2129,14 +2129,14 @@ pub(crate) fn prettyPrintSubmod(mut inSub: Arc<DAE::SubMod>) -> Result<ArcStr> {
             let mut s1: ArcStr;
             let mut s2: ArcStr;
             s1 = (SCodeDump::unparseElementStr(var_field!((**m).element, DAE::Mod::REDECL).clone(), SCodeDump::defaultOptions.clone())?).clone();
-            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!("(redeclare ")); __mm_s.push_str(&*if (SCodeUtil::eachBool(var_field!((**m).eachPrefix, DAE::Mod::REDECL).clone())?) {literal!("each ")} else {literal!("")}); __mm_s.push_str(&*if (SCodeUtil::finalBool(var_field!((**m).finalPrefix, DAE::Mod::REDECL).clone())?) {literal!("final ")} else {literal!("")}); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s2.clone()
+            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!("(redeclare ")); __mm_s.push_str(&*if (SCodeUtil::eachBool(var_field!((**m).eachPrefix, DAE::Mod::REDECL).clone())?) {literal!("each ")} else {literal!("")}); __mm_s.push_str(&*if (SCodeUtil::finalBool(var_field!((**m).finalPrefix, DAE::Mod::REDECL).clone())?) {literal!("final ")} else {literal!("")}); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+            s2
         },
         Deref @ DAE::SubMod { ident: id, r#mod: m } => {
             let mut s2: ArcStr;
             s2 = (prettyPrintMod(m.clone(), 0)?).clone();
-            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
-            s2.clone()
+            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*s2); ArcStr::from(__mm_s) }).clone();
+            s2
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2154,7 +2154,7 @@ pub(crate) fn printSubs1Str(mut inTypesSubModLst: Arc<metamodelica::List<Arc<DAE
             let mut res: Arc<metamodelica::List<ArcStr>>;
             s1 = (printSubStr(x.clone())?).clone();
             res = printSubs1Str(xs.clone())?;
-            metamodelica::cons((s1.clone()).clone(), res.clone())
+            metamodelica::cons((s1).clone(), res)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2168,8 +2168,8 @@ fn printSubStr(mut inSubMod: Arc<DAE::SubMod>) -> Result<ArcStr> {
             let mut mod_str: ArcStr;
             let mut res: ArcStr;
             mod_str = (printModStr(r#mod.clone())?).clone();
-            res = (stringAppend(({ let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone(), (mod_str.clone()).clone())).clone();
-            res.clone()
+            res = (stringAppend(({ let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone(), (mod_str).clone())).clone();
+            res
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2368,8 +2368,8 @@ fn getFullModsFromSubMods(mut inTopCref: Arc<DAE::ComponentRef>, mut inSubMods: 
             cref = ComponentReference::joinCrefs(inTopCref.clone(), ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
             fullMods1 = getFullModsFromMod(cref.clone(), r#mod.clone())?;
             fullMods2 = getFullModsFromSubMods(inTopCref, rest.clone())?;
-            fullMods = listAppend(if (fullMods1.clone().is_empty()) {metamodelica::cons(FullMod::SUB_MOD { cref: cref.clone(), subMod: subMod.clone() }, fullMods1.clone())} else {fullMods1.clone()}, fullMods2.clone());
-            fullMods.clone()
+            fullMods = listAppend(if (fullMods1.clone().is_empty()) {metamodelica::cons(FullMod::SUB_MOD { cref: cref, subMod: subMod.clone() }, fullMods1)} else {fullMods1}, fullMods2);
+            fullMods
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2402,12 +2402,12 @@ fn prettyPrintFullMod(mut inFullMod: FullMod, mut inDepth: i32) -> Result<ArcStr
         FullMod::MOD { cref: ref cr, r#mod: mut r#mod } => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*prettyPrintMod(r#mod.clone(), inDepth)?); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str
         },
         FullMod::SUB_MOD { cref: ref cr, subMod: mut subMod } => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*prettyPrintSubmod(subMod.clone())?); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str
         },
     })).clone();
     Ok(outStr)
@@ -2509,7 +2509,7 @@ fn getUntypedCrefFromSubMod(mut inSubMod: Arc<DAE::SubMod>, mut inCrefs: Arc<met
         Deref @ DAE::SubMod { r#mod, .. } => {
             let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
             crefs = getUntypedCrefs(r#mod.clone());
-            listAppend(crefs.clone(), inCrefs)
+            listAppend(crefs, inCrefs)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2640,7 +2640,7 @@ fn removeModInSubs(mut inSubs: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut co
             let mut subs2: Arc<metamodelica::List<Arc<DAE::SubMod>>>;
             subs1 = if (stringEq((s1.clone()).clone(), (componentName.clone()).clone())) {metamodelica::nil()} else {list![Arc::new(DAE::SubMod { ident: (s1.clone()).clone(), r#mod: m1.clone() })]};
             subs2 = removeModInSubs(subs.clone(), (componentName).clone())?;
-            outsubs = listAppend(subs1.clone(), subs2.clone());
+            outsubs = listAppend(subs1, subs2);
             outsubs
         },
         _ => bail!("match: no arm matched"),
@@ -2951,7 +2951,7 @@ pub(crate) fn unparseModStr(mut inMod: Arc<DAE::Mod>) -> Result<ArcStr> {
             each_str = (if (SCodeUtil::eachBool(var_field!((*inMod).eachPrefix, DAE::Mod::MOD).clone())?) {literal!("each ")} else {literal!("")}).clone();
             sub_str = (List::toString(var_field!((*inMod).subModLst, DAE::Mod::MOD).clone(), (std::sync::Arc::new(unparseSubModStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::SubMod>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("(")).clone(), (literal!(", ")).clone(), (literal!(")")).clone(), false, 0)?).clone();
             binding_str = (unparseBindingStr(var_field!((*inMod).binding, DAE::Mod::MOD).clone())?).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*final_str.clone()); __mm_s.push_str(&*each_str.clone()); __mm_s.push_str(&*sub_str.clone()); __mm_s.push_str(&*binding_str.clone()); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*final_str); __mm_s.push_str(&*each_str); __mm_s.push_str(&*sub_str); __mm_s.push_str(&*binding_str); ArcStr::from(__mm_s) }
         },
         Deref @ DAE::Mod::REDECL { .. } => {
             let mut final_str: ArcStr;
@@ -2960,7 +2960,7 @@ pub(crate) fn unparseModStr(mut inMod: Arc<DAE::Mod>) -> Result<ArcStr> {
             final_str = (if (SCodeUtil::finalBool(var_field!((*inMod).finalPrefix, DAE::Mod::REDECL).clone())?) {literal!("final ")} else {literal!("")}).clone();
             each_str = (if (SCodeUtil::eachBool(var_field!((*inMod).eachPrefix, DAE::Mod::REDECL).clone())?) {literal!("each ")} else {literal!("")}).clone();
             el_str = (SCodeDump::unparseElementStr(var_field!((*inMod).element, DAE::Mod::REDECL).clone(), SCodeDump::defaultOptions.clone())?).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*final_str.clone()); __mm_s.push_str(&*each_str.clone()); __mm_s.push_str(&*literal!("redeclare ")); __mm_s.push_str(&*el_str.clone()); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*final_str); __mm_s.push_str(&*each_str); __mm_s.push_str(&*literal!("redeclare ")); __mm_s.push_str(&*el_str); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

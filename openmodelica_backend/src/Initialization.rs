@@ -495,7 +495,7 @@ fn inlineWhenForInitializationWhenAlgorithm(mut inStmts: Arc<metamodelica::List<
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut leftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (stmts, leftCrs) = inlineWhenForInitializationWhenStmt(stmt.clone(), inLeftCrs, inAcc)?;
-            { (inStmts, inAcc, inLeftCrs) = (rest.clone(), stmts.clone(), leftCrs.clone()); continue '__tco; }
+            { (inStmts, inAcc, inLeftCrs) = (rest.clone(), stmts, leftCrs); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: stmt, tail: rest } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
@@ -519,16 +519,16 @@ fn inlineWhenForInitializationWhenStmt(mut inWhenStatement: Arc<DAE::Statement>,
             let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut leftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             crefLst = CheckModel::algorithmStatementListOutputs(stmts.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
-            leftCrs = List::fold(crefLst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inLeftCrs)?;
-            return Ok((inAcc, leftCrs.clone()))
+            leftCrs = List::fold(crefLst, (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inLeftCrs)?;
+            return Ok((inAcc, leftCrs))
         },
         Deref @ DAE::Statement::STMT_WHEN { statementLst: stmts, elseWhen: Some(stmt), .. } => {
             let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut leftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             let mut stmts = (*stmts).clone();
             crefLst = CheckModel::algorithmStatementListOutputs(stmts.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
-            leftCrs = List::fold(crefLst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inLeftCrs)?;
-            { (inWhenStatement, inLeftCrs, inAcc) = (stmt.clone(), leftCrs.clone(), inAcc); continue '__tco; }
+            leftCrs = List::fold(crefLst, (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inLeftCrs)?;
+            { (inWhenStatement, inLeftCrs, inAcc) = (stmt.clone(), leftCrs, inAcc); continue '__tco; }
         },
         _ => {
             Error::addInternalError((literal!("function inlineWhenForInitializationWhenStmt failed")).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
@@ -605,7 +605,7 @@ fn collectPreVariablesTraverseExp2(mut inExp: Arc<DAE::Exp>, mut inHS: (metamode
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             crefs = ComponentReference::expandCref(cr.clone(), true)?;
-            outHS = List::fold(crefs.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inHS)?;
+            outHS = List::fold(crefs, (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inHS)?;
             outHS
         },
         _ => {
@@ -672,14 +672,14 @@ fn warnAboutEqns2(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>
         Deref @ metamodelica::List::Cons { head: eq, tail: Deref @ metamodelica::List::Nil } => {
             let mut crStr: ArcStr;
             crStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("         ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); ArcStr::from(__mm_s) }).clone();
-            crStr.clone()
+            crStr
         },
         Deref @ metamodelica::List::Cons { head: eq, tail: eqns } => {
             let mut crStr: ArcStr;
             let mut r#str: ArcStr;
             crStr = (BackendDump::equationString(eq.clone())?).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("         ")); __mm_s.push_str(&*crStr.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*warnAboutEqns2(eqns.clone())?); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("         ")); __mm_s.push_str(&*crStr); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*warnAboutEqns2(eqns.clone())?); ArcStr::from(__mm_s) }).clone();
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -812,7 +812,7 @@ fn addExtObjToGlobalKnownVars(mut extObj: BackendDAE::Var, mut globalKnownVars: 
         BackendDAE::Var { varKind: BackendDAE::VarKind::EXTOBJ { .. }, bindExp: Some(_), .. } => {
             let mut var: BackendDAE::Var;
             var = BackendVariable::setVarFixed(extObj.clone(), true)?;
-            globalKnownVars = BackendVariable::addVar(var.clone(), globalKnownVars)?;
+            globalKnownVars = BackendVariable::addVar(var, globalKnownVars)?;
             globalKnownVars
         },
         _ => {
@@ -885,10 +885,10 @@ pub(crate) fn flattenParamComp(mut paramIndices: Arc<metamodelica::List<i32>>, m
             paramLst = metamodelica::nil();
             for mut i in &*paramIndices {
                 let mut i = i.clone();
-                param = BackendVariable::getVarAt(inAllParameters.clone(), i.clone())?;
+                param = BackendVariable::getVarAt(inAllParameters.clone(), i)?;
                 paramLst = metamodelica::cons(param.clone(), paramLst.clone());
             }
-            Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cyclically dependent parameters found:\n")); __mm_s.push_str(&*warnAboutVars2(paramLst.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cyclically dependent parameters found:\n")); __mm_s.push_str(&*warnAboutVars2(paramLst)?); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1008,7 +1008,7 @@ fn preBalanceInitialSystem1(mut n: i32, mut mt: metamodelica::Array<Arc<metamode
         (0, true) => {
             let mut vars: BackendDAE::Variables;
             vars = BackendVariable::listVar1(BackendVariable::varList(inVars)?)?;
-            return Ok((vars.clone(), inEqs, true, inDumpVars))
+            return Ok((vars, inEqs, true, inDumpVars))
         },
         _ => {
             let mut b: bool;
@@ -1017,7 +1017,7 @@ fn preBalanceInitialSystem1(mut n: i32, mut mt: metamodelica::Array<Arc<metamode
             let mut dumpVars: Arc<metamodelica::List<BackendDAE::Var>>;
             let true = (n > 0) else { bail!("pattern mismatch") };
             (vars, eqs, b, dumpVars) = preBalanceInitialSystem2(n, mt.clone(), inVars, inEqs, initVars.clone(), isLambda0, inB, inDumpVars)?;
-            { (n, mt, inVars, inEqs, initVars, isLambda0, inB, inDumpVars) = (n - 1, mt.clone(), vars.clone(), eqs.clone(), initVars, isLambda0, b.clone(), dumpVars.clone()); continue '__tco; }
+            { (n, mt, inVars, inEqs, initVars, isLambda0, inB, inDumpVars) = (n - 1, mt.clone(), vars, eqs, initVars, isLambda0, b, dumpVars); continue '__tco; }
         },
     }
     }
@@ -1659,14 +1659,14 @@ fn splitStrongComponents(mut inComps: Arc<metamodelica::List<Arc<metamodelica::L
             let mut listComps: Arc<metamodelica::List<i32>>;
             let mut loopListComps: Arc<metamodelica::List<i32>>;
             (listComps, loopListComps) = splitStrongComponents(restComps.clone());
-            (metamodelica::cons(currIndex.clone(), listComps.clone()), loopListComps.clone())
+            (metamodelica::cons(currIndex.clone(), listComps), loopListComps)
         },
         Deref @ metamodelica::List::Cons { head: currComp, tail: restComps } => {
             let mut listComps: Arc<metamodelica::List<i32>>;
             let mut loopListComps: Arc<metamodelica::List<i32>>;
             (listComps, loopListComps) = splitStrongComponents(restComps.clone());
-            loopListComps = listAppend(currComp.clone(), loopListComps.clone());
-            (listComps.clone(), loopListComps.clone())
+            loopListComps = listAppend(currComp.clone(), loopListComps);
+            (listComps, loopListComps)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2670,17 +2670,17 @@ fn collectInitialClockedVarsEqns(mut inVar: BackendDAE::Var, mut inTpl: (Backend
             let mut previousVar: BackendDAE::Var;
             let mut previousExp: Arc<DAE::Exp>;
             previousVar = BackendVariable::copyVarNewName(previousCR.clone(), var.clone());
-            previousVar = BackendVariable::setVarKind(previousVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
-            previousVar = BackendVariable::setVarDirection(previousVar.clone(), openmodelica_frontend_types::DAE::VarDirection::BIDIR);
-            previousVar = BackendVariable::setBindExp(previousVar.clone(), None);
-            previousVar = BackendVariable::setVarFixed(previousVar.clone(), true)?;
-            previousVar = BackendVariable::setVarStartValueOption(previousVar.clone(), Some(Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() })))?;
+            previousVar = BackendVariable::setVarKind(previousVar, openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
+            previousVar = BackendVariable::setVarDirection(previousVar, openmodelica_frontend_types::DAE::VarDirection::BIDIR);
+            previousVar = BackendVariable::setBindExp(previousVar, None);
+            previousVar = BackendVariable::setVarFixed(previousVar, true)?;
+            previousVar = BackendVariable::setVarStartValueOption(previousVar, Some(Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() })))?;
             previousExp = Expression::crefExp(previousCR.clone())?;
-            vars = BackendVariable::addVar(previousVar.clone(), vars)?;
-            eqns = BackendEquation::add(Arc::new(BackendDAE::Equation::EQUATION { exp: previousExp.clone(), scalar: crExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() }), eqns)?;
+            vars = BackendVariable::addVar(previousVar, vars)?;
+            eqns = BackendEquation::add(Arc::new(BackendDAE::Equation::EQUATION { exp: previousExp, scalar: crExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() }), eqns)?;
             startExp = BackendVariable::varStartValue(var.clone())?;
             vars = BackendVariable::addVar(var.clone(), vars)?;
-            eqns = BackendEquation::add(Arc::new(BackendDAE::Equation::EQUATION { exp: crExp.clone(), scalar: startExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() }), eqns)?;
+            eqns = BackendEquation::add(Arc::new(BackendDAE::Equation::EQUATION { exp: crExp, scalar: startExp, source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() }), eqns)?;
             (vars, eqns)
         },
         _ => {
@@ -2717,17 +2717,17 @@ fn replaceDerPreCref(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty, .. } } => {
             let mut dummyder: Arc<DAE::ComponentRef>;
             dummyder = ComponentReference::crefPrefixDer(cr.clone());
-            Arc::new(DAE::Exp::CREF { componentRef: dummyder.clone(), ty: ty.clone() })
+            Arc::new(DAE::Exp::CREF { componentRef: dummyder, ty: ty.clone() })
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty, .. } } => {
             let mut dummyder: Arc<DAE::ComponentRef>;
             dummyder = ComponentReference::crefPrefixPre(cr.clone());
-            Arc::new(DAE::Exp::CREF { componentRef: dummyder.clone(), ty: ty.clone() })
+            Arc::new(DAE::Exp::CREF { componentRef: dummyder, ty: ty.clone() })
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty, .. } } => {
             let mut dummyder: Arc<DAE::ComponentRef>;
             dummyder = ComponentReference::crefPrefixPrevious(cr.clone());
-            Arc::new(DAE::Exp::CREF { componentRef: dummyder.clone(), ty: ty.clone() })
+            Arc::new(DAE::Exp::CREF { componentRef: dummyder, ty: ty.clone() })
         },
         _ => {
             inExp
@@ -2752,7 +2752,7 @@ fn collectInitialBindings(mut inVar: BackendDAE::Var, mut inTpl: (Arc<Expandable
             let mut eqn: Arc<BackendDAE::Equation>;
             let mut eqns = (*eqns).clone();
             eqn = Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr.clone(), exp: bindExp.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
-            eqns = BackendEquation::add(eqn.clone(), eqns.clone())?;
+            eqns = BackendEquation::add(eqn, eqns.clone())?;
             (var.clone(), (eqns.clone(), reeqns.clone()))
         },
         (var @ BackendDAE::Var { varName: cr, bindExp: Some(bindExp), varType: ty, source, .. }, (eqns, reeqns)) => {
@@ -2764,12 +2764,12 @@ fn collectInitialBindings(mut inVar: BackendDAE::Var, mut inTpl: (Arc<Expandable
             crefExp = Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() });
             if Types::isArray(ty.clone()) {
                 basic_ty = Types::getBasicType(ty.clone());
-                record_size = if (Types::isRecord(basic_ty.clone())) {Some(Types::getDimensionProduct(basic_ty.clone())?)} else {None};
-                eqn = Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: Types::getDimensionSizes(ty.clone())?, left: crefExp.clone(), right: bindExp.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone(), recordSize: record_size.clone() });
+                record_size = if (Types::isRecord(basic_ty.clone())) {Some(Types::getDimensionProduct(basic_ty)?)} else {None};
+                eqn = Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: Types::getDimensionSizes(ty.clone())?, left: crefExp, right: bindExp.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone(), recordSize: record_size });
             } else {
-                eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: crefExp.clone(), scalar: bindExp.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
+                eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: crefExp, scalar: bindExp.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
             }
-            eqns = BackendEquation::add(eqn.clone(), eqns.clone())?;
+            eqns = BackendEquation::add(eqn, eqns.clone())?;
             (var.clone(), (eqns.clone(), reeqns.clone()))
         },
         _ => {

@@ -199,13 +199,13 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
         },
         _ => {
             e1 = Expression::map(exp_simple.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            e1 = SimplifyExp::simplify(e1.clone(), false)?;
-            ::match_deref::match_deref! { match &(e1.clone()) {
+            e1 = SimplifyExp::simplify(e1, false)?;
+            ::match_deref::match_deref! { match &(e1) {
         Deref @ Expression::INTEGER { value: __esc_value } => {
             value = (*__esc_value).clone();
-            e2 = Expression::map(exp_simple.clone(), (std::sync::Arc::new(Expression::replaceResizableParameterWithOriginal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            e2 = SimplifyExp::simplify(e2.clone(), false)?;
-            ::match_deref::match_deref! { match &(e2.clone()) {
+            e2 = Expression::map(exp_simple, (std::sync::Arc::new(Expression::replaceResizableParameterWithOriginal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            e2 = SimplifyExp::simplify(e2, false)?;
+            ::match_deref::match_deref! { match &(e2) {
         Deref @ Expression::INTEGER { value: value_original } if (value.clone() != value_original.clone()) => return Ok(Arc::new(NFDimension::RESIZABLE { size: value_original.clone(), opt_size: Some(value.clone()), exp: exp.clone(), var: var })),
         _ => return Ok(Arc::new(NFDimension::RESIZABLE { size: value.clone(), opt_size: None, exp: exp.clone(), var: var })),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -739,17 +739,17 @@ pub(crate) fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn
         Deref @ UNTYPED { dimension: e1, .. } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim} else {Arc::new(NFDimension::UNTYPED { dimension: e2.clone(), isProcessing: var_field!((*dim).isProcessing, NFDimension::UNTYPED).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim} else {Arc::new(NFDimension::UNTYPED { dimension: e2, isProcessing: var_field!((*dim).isProcessing, NFDimension::UNTYPED).clone() })}
         },
         Deref @ EXP { exp: e1, .. } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::EXP).clone())?}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim} else {fromExp(e2, var_field!((*dim).var, NFDimension::EXP).clone())?}
         },
         Deref @ RESIZABLE { exp: e1, .. } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::RESIZABLE).clone())?}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim} else {fromExp(e2, var_field!((*dim).var, NFDimension::RESIZABLE).clone())?}
         },
         _ => {
             dim
@@ -804,7 +804,7 @@ pub(crate) fn simplify(mut dim: Arc<NFDimension>) -> Result<Arc<NFDimension>> {
         Deref @ EXP { .. } => {
             let mut simple: Arc<Expression::NFExpression>;
             simple = SimplifyExp::simplify(var_field!((*dim).exp, NFDimension::EXP).clone(), false)?;
-            fromExp(simple.clone(), Expression::variability(simple.clone())?)?
+            fromExp(simple.clone(), Expression::variability(simple)?)?
         },
         Deref @ RESIZABLE { .. } => {
             assign_variant_field!(dim => NFDimension::RESIZABLE; exp = SimplifyExp::simplify(var_field!((*dim).exp, NFDimension::RESIZABLE).clone(), false)?);

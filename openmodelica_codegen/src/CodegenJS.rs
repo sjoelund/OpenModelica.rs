@@ -29,12 +29,12 @@ pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
             let mut txt_0: Tpl::Text;
             txt_0 = markdownContents(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt_1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".md")).clone() }))?;
-            Tpl::textFile(txt_0.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt_1 = Tpl::writeTok(txt_1, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".md")).clone() }))?;
+            Tpl::textFile(txt_0, (Tpl::textString(txt_1)?).clone())?;
             txt_2 = nodeJSDriver(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_3 = Tpl::writeTok(txt_3.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_node.js")).clone() }))?;
-            Tpl::textFile(txt_2.clone(), (Tpl::textString(txt_3.clone())?).clone())?;
+            txt_3 = Tpl::writeTok(txt_3, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_node.js")).clone() }))?;
+            Tpl::textFile(txt_2, (Tpl::textString(txt_3)?).clone())?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -80,8 +80,8 @@ pub(crate) fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode:
             let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("# OpenModelica simulation example\n")).clone(), (literal!("## ")).clone()], lastHasNewLine: false }))?;
             txt_0 = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
-            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
+            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_1).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("```yaml script=scriptloader\n")).clone(), (literal!("- lib/tinytimer.js\n")).clone(), (literal!("```\n")).clone(), (literal!("\n")).clone(), (literal!("<style media=\"screen\" type=\"text/css\">\n")).clone(), (literal!("label {font-weight:normal; size: 0.9em}\n")).clone(), (literal!("</style>\n")).clone(), (literal!("\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("\n")).clone(), (literal!("<div id=\"status\" style=\"text-align:center\"><span id=\"statustext\">\n")).clone(), (literal!("Simulation loading</span>. &nbsp Time: <span id=\"statustimer\"> </span></div>\n")).clone(), (literal!("\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("\n")).clone(), (literal!("<div class = \"row\">\n")).clone(), (literal!("<div class = \"col-md-4\">\n")).clone(), (literal!("\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("<br/>\n")).clone(), (literal!("\n")).clone(), (literal!("```yaml jquery=dform\n")).clone(), (literal!("class : form-horizontal\n")).clone(), (literal!("col1class : col-sm-7\n")).clone(), (literal!("col2class : col-sm-5\n")).clone(), (literal!("html:\n")).clone(), (literal!("  - name: stopTime\n")).clone(), (literal!("    type: number\n")).clone(), (literal!("    bs3caption: Stop time, sec\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;

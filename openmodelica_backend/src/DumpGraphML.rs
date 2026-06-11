@@ -78,20 +78,20 @@ pub(crate) fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: 
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared))?;
+            (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs), BackendDAEUtil::isInitializationDAE(inShared))?;
             mapIncRowEqn = Array::createIntRange(metamodelica::arrayLength(m.clone()));
             graphInfo = GraphML::createGraphInfo();
-            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
+            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo)?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, (graphInfo.clone(), graph.clone())))?;
+            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars, (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, (graphInfo, graph)))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::getNumberOfEquations(eqns.clone());
-            eqnsids = List::intRange(neqns.clone());
-            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns.clone(), mapIncRowEqn.clone(), numberMode, (graphInfo.clone(), graph.clone()))?;
-            (_, _, graphInfo) = List::fold(eqnsids.clone(), (std::sync::Arc::new(addEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), graphInfo.clone()))?;
-            GraphML::dumpGraph(graphInfo.clone(), (filename).clone())?;
+            eqnsids = List::intRange(neqns);
+            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns, mapIncRowEqn.clone(), numberMode, (graphInfo, graph))?;
+            (_, _, graphInfo) = List::fold(eqnsids, (std::sync::Arc::new(addEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), graphInfo))?;
+            GraphML::dumpGraph(graphInfo, (filename).clone())?;
             ()
         },
         (Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(_), matching: Deref @ BackendDAE::Matching::NO_MATCHING { .. }, .. }, None) => {
@@ -105,18 +105,18 @@ pub(crate) fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: 
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem);
             graphInfo = GraphML::createGraphInfo();
-            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
+            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo)?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, (graphInfo.clone(), graph.clone())))?;
+            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars, (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, (graphInfo, graph)))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::getNumberOfEquations(eqns.clone());
-            eqnsids = List::intRange(neqns.clone());
+            eqnsids = List::intRange(neqns);
             mapIncRowEqn = Array::createIntRange(metamodelica::arrayLength(m.clone()));
-            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns.clone(), mapIncRowEqn.clone(), numberMode, (graphInfo.clone(), graph.clone()))?;
-            (_, _, graphInfo) = List::fold(eqnsids.clone(), (std::sync::Arc::new(addEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), graphInfo.clone()))?;
-            GraphML::dumpGraph(graphInfo.clone(), (filename).clone())?;
+            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns, mapIncRowEqn.clone(), numberMode, (graphInfo, graph))?;
+            (_, _, graphInfo) = List::fold(eqnsids, (std::sync::Arc::new(addEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), graphInfo))?;
+            GraphML::dumpGraph(graphInfo, (filename).clone())?;
             ()
         },
         (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1: vec1, ass2: vec2, comps: Deref @ metamodelica::List::Nil }, .. }, None) => {
@@ -133,20 +133,20 @@ pub(crate) fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: 
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared))?;
+            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs), BackendDAEUtil::isInitializationDAE(inShared))?;
             graphInfo = GraphML::createGraphInfo();
-            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
+            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo)?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraphMatch, BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, vec1.clone(), (graphInfo.clone(), graph.clone())))?;
+            let (_, _, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars, (std::sync::Arc::new(fnptr!(addVarGraphMatch, BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, vec1.clone(), (graphInfo, graph)))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::equationArraySize(eqns.clone())?;
-            eqnsids = List::intRange(neqns.clone());
-            eqnsflag = arrayCreate(neqns.clone(), false);
-            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraphMatch) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, (metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<bool>), bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns.clone(), (vec2.clone(), mapIncRowEqn.clone(), eqnsflag.clone()), numberMode, (graphInfo.clone(), graph.clone()))?;
-            (_, _, _, _, graphInfo) = List::fold(eqnsids.clone(), (std::sync::Arc::new(addDirectedEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), vec2.clone(), mapIncRowEqn.clone(), graphInfo.clone()))?;
-            GraphML::dumpGraph(graphInfo.clone(), (filename).clone())?;
+            eqnsids = List::intRange(neqns);
+            eqnsflag = arrayCreate(neqns, false);
+            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraphMatch) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, (metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<bool>), bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns, (vec2.clone(), mapIncRowEqn.clone(), eqnsflag.clone()), numberMode, (graphInfo, graph))?;
+            (_, _, _, _, graphInfo) = List::fold(eqnsids, (std::sync::Arc::new(addDirectedEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), vec2.clone(), mapIncRowEqn.clone(), graphInfo))?;
+            GraphML::dumpGraph(graphInfo, (filename).clone())?;
             ()
         },
         (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2: vec2, comps: Deref @ metamodelica::List::Nil, .. }, .. }, Some(vec3)) => {
@@ -162,19 +162,19 @@ pub(crate) fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: 
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared))?;
+            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs), BackendDAEUtil::isInitializationDAE(inShared))?;
             graphInfo = GraphML::createGraphInfo();
-            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
+            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo)?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, (graphInfo.clone(), graph.clone())))?;
+            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars, (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode, 1, (graphInfo, graph)))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::equationArraySize(eqns.clone())?;
-            eqnsids = List::intRange(neqns.clone());
-            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns.clone(), mapIncRowEqn.clone(), numberMode, (graphInfo.clone(), graph.clone()))?;
-            (_, _, _, _, graphInfo) = List::fold(eqnsids.clone(), (std::sync::Arc::new(addDirectedNumEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), vec2.clone(), vec3.clone(), graphInfo.clone()))?;
-            GraphML::dumpGraph(graphInfo.clone(), (filename).clone())?;
+            eqnsids = List::intRange(neqns);
+            (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns, mapIncRowEqn.clone(), numberMode, (graphInfo, graph))?;
+            (_, _, _, _, graphInfo) = List::fold(eqnsids, (std::sync::Arc::new(addDirectedNumEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), vec2.clone(), vec3.clone(), graphInfo))?;
+            GraphML::dumpGraph(graphInfo, (filename).clone())?;
             ()
         },
         (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps, .. }, .. }, None) => {
@@ -188,16 +188,16 @@ pub(crate) fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: 
             let mut funcs: Arc<AvlTreePathFunction::Tree>;
             vars = BackendVariable::daeVars(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, mt) = BackendDAEUtil::getAdjacencyMatrix(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared))?;
+            (_, m, mt) = BackendDAEUtil::getAdjacencyMatrix(inSystem, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs), BackendDAEUtil::isInitializationDAE(inShared))?;
             graphInfo = GraphML::createGraphInfo();
-            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
+            let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo)?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
             vec3 = arrayCreate(metamodelica::arrayLength(mt.clone()), -1);
-            (graphInfo, graph) = addCompsGraph(comps.clone(), vars.clone(), vec3.clone(), 1, (graphInfo.clone(), graph.clone()))?;
+            (graphInfo, graph) = addCompsGraph(comps.clone(), vars, vec3.clone(), 1, (graphInfo, graph))?;
             mapIncRowEqn = arrayCreate(metamodelica::arrayLength(mt.clone()), -1);
-            graphInfo = addCompsEdgesGraph(comps.clone(), m.clone(), vec3.clone(), 1, 1, mapIncRowEqn.clone(), 1, graphInfo.clone())?;
-            GraphML::dumpGraph(graphInfo.clone(), (filename).clone())?;
+            graphInfo = addCompsEdgesGraph(comps.clone(), m.clone(), vec3.clone(), 1, 1, mapIncRowEqn.clone(), 1, graphInfo)?;
+            GraphML::dumpGraph(graphInfo, (filename).clone())?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -534,10 +534,10 @@ fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongCompon
             let mut graphInfo = (*graphInfo).clone();
             (_, vlst) = BackendDAETransform::getEquationAndSolvedVarIndxes(comp.clone())?;
             varcomp1 = List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), iN, varcomp.clone())?;
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
-            text = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(iN)); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*stringDelimitList(List::mapMap(varlst.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone();
-            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (text.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
-            (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(iN)); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE, None, metamodelica::nil(), graph.clone(), graphInfo.clone())?;
+            varlst = List::map1r(vlst, (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            text = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(iN)); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*stringDelimitList(List::mapMap(varlst, (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone();
+            label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (text).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(iN)); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label], openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE, None, metamodelica::nil(), graph.clone(), graphInfo.clone())?;
             { (iComps, vars, varcomp, iN, iGraph) = (rest.clone(), vars, varcomp1.clone(), iN + 1, (graphInfo.clone(), graph.clone())); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -557,10 +557,10 @@ fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongC
             let mut n: i32;
             let mut graph: GraphML::GraphInfo;
             (elst, vlst) = BackendDAETransform::getEquationAndSolvedVarIndxes(comp.clone())?;
-            List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), mark, markarray.clone())?;
-            vlst = getUsedVarsComp(elst.clone(), m.clone(), markarray.clone(), mark)?;
-            (n, graph) = addCompEdgesGraph(vlst.clone(), varcomp.clone(), markarray.clone(), mark + 1, iN, id, iGraph);
-            { (iComps, m, varcomp, iN, id, markarray, mark, iGraph) = (rest.clone(), m.clone(), varcomp.clone(), iN + 1, n.clone(), markarray.clone(), mark + 2, graph.clone()); continue '__tco; }
+            List::fold1r(vlst, Arc::new(arrayUpdate.clone()), mark, markarray.clone())?;
+            vlst = getUsedVarsComp(elst, m.clone(), markarray.clone(), mark)?;
+            (n, graph) = addCompEdgesGraph(vlst, varcomp.clone(), markarray.clone(), mark + 1, iN, id, iGraph);
+            { (iComps, m, varcomp, iN, id, markarray, mark, iGraph) = (rest.clone(), m.clone(), varcomp.clone(), iN + 1, n, markarray.clone(), mark + 2, graph); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

@@ -1538,10 +1538,10 @@ pub(crate) fn instComponentDef(mut component: Arc<SCode::Element>, mut outerMod:
             let mut cmt: Arc<SCode::Comment>;
             r#mod = instElementModifier(component.clone(), node.clone(), parent.clone(), instLevel)?;
             if !(propagatedSubs.clone().is_empty()) {
-                r#mod = Modifier::propagateSubs(r#mod.clone(), propagatedSubs)?;
+                r#mod = Modifier::propagateSubs(r#mod, propagatedSubs)?;
             }
-            r#mod = Modifier::merge(r#mod.clone(), innerMod, (literal!("")).clone())?;
-            r#mod = Modifier::merge(outerMod, r#mod.clone(), (literal!("")).clone())?;
+            r#mod = Modifier::merge(r#mod, innerMod, (literal!("")).clone())?;
+            r#mod = Modifier::merge(outerMod, r#mod, (literal!("")).clone())?;
             dims = ({
         let mut __acc: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         for mut d in (var_field!((*component).attributes, SCode::Element::COMPONENT).arrayDims.clone()).into_iter().cloned() {
@@ -1554,38 +1554,38 @@ pub(crate) fn instComponentDef(mut component: Arc<SCode::Element>, mut outerMod:
             condition = Binding::fromAbsyn(var_field!((*component).condition, SCode::Element::COMPONENT).clone(), false, false, parent.clone(), instLevel, info.clone());
             parent_res = Class::restriction(InstNode::getClass(parent.clone())?);
             attr = Attributes::fromSCode(var_field!((*component).attributes, SCode::Element::COMPONENT).clone(), var_field!((*component).prefixes, SCode::Element::COMPONENT).clone())?;
-            attr = Attributes::checkDeclaredComponentAttributes(attr.clone(), parent_res.clone(), node.clone())?;
-            attr = Attributes::mergeComponentAttributes(attributes, attr.clone(), node.clone(), parent_res.clone())?;
+            attr = Attributes::checkDeclaredComponentAttributes(attr, parent_res.clone(), node.clone())?;
+            attr = Attributes::mergeComponentAttributes(attributes, attr, node.clone(), parent_res)?;
             if isSome(originalAttr.clone()) {
-                attr = Attributes::mergeRedeclaredComponentAttributes(Util::getOption(originalAttr)?, attr.clone(), node.clone())?;
+                attr = Attributes::mergeRedeclaredComponentAttributes(Util::getOption(originalAttr)?, attr, node.clone())?;
             }
             if !(attr.isFinal.clone()) && Modifier::isFinal(r#mod.clone()) {
                 assign_field!(attr.isFinal = true);
             }
-            inst_comp = Arc::new(Component::NFComponent::COMPONENT { classInst: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), ty: crate::NFType::interned_UNKNOWN(), binding: binding.clone(), condition: condition.clone(), attributes: attr.clone(), comment: var_field!((*component).comment, SCode::Element::COMPONENT).clone(), state: ComponentState::PartiallyInstantiated.clone(), info: info.clone() });
-            InstNode::updateComponent(inst_comp.clone(), node.clone())?;
-            r#mod = Modifier::propagate(r#mod.clone(), node.clone(), node.clone())?;
-            (ty_node, ty_attr) = instTypeSpec(var_field!((*component).typeSpec, SCode::Element::COMPONENT).clone(), r#mod.clone(), attr.clone(), useBinding && !(Binding::isBound(binding.clone())), parent, node.clone(), info.clone(), instLevel, context)?;
-            InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::setType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), Arc::new(Type::NFType::UNTYPED { typeNode: ty_node.clone(), dimensions: metamodelica::arrayFromVec(dims.clone().into_iter().cloned().collect()) }))?;
+            inst_comp = Arc::new(Component::NFComponent::COMPONENT { classInst: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), ty: crate::NFType::interned_UNKNOWN(), binding: binding.clone(), condition: condition, attributes: attr.clone(), comment: var_field!((*component).comment, SCode::Element::COMPONENT).clone(), state: ComponentState::PartiallyInstantiated.clone(), info: info.clone() });
+            InstNode::updateComponent(inst_comp, node.clone())?;
+            r#mod = Modifier::propagate(r#mod, node.clone(), node.clone())?;
+            (ty_node, ty_attr) = instTypeSpec(var_field!((*component).typeSpec, SCode::Element::COMPONENT).clone(), r#mod, attr.clone(), useBinding && !(Binding::isBound(binding.clone())), parent, node.clone(), info.clone(), instLevel, context)?;
+            InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::setType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), Arc::new(Type::NFType::UNTYPED { typeNode: ty_node.clone(), dimensions: metamodelica::arrayFromVec(dims.into_iter().cloned().collect()) }))?;
             if !(InstNode::isEmpty(ty_node.clone())) {
                 ty = InstNode::getClass(ty_node.clone())?;
                 res = Class::restriction(ty.clone());
                 elementDefinition = InstNode::definition(ty_node.clone())?;
-                if Restriction::isType(res.clone()) && SCodeUtil::optCommentHasBooleanNamedAnnotationFalse(SCodeUtil::getElementComment(elementDefinition.clone()), (literal!("absoluteValue")).clone())? {
+                if Restriction::isType(res.clone()) && SCodeUtil::optCommentHasBooleanNamedAnnotationFalse(SCodeUtil::getElementComment(elementDefinition), (literal!("absoluteValue")).clone())? {
                     cmt = Component::comment(InstNode::component(node.clone())?)?;
-                    cmt = SCodeUtil::setAnnotationInComment((literal!("absoluteValue")).clone(), Arc::new(Absyn::Exp::BOOL { value: false }), cmt.clone(), false)?;
-                    InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::setComment) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Comment>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), cmt.clone())?;
+                    cmt = SCodeUtil::setAnnotationInComment((literal!("absoluteValue")).clone(), Arc::new(Absyn::Exp::BOOL { value: false }), cmt, false)?;
+                    InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::setComment) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Comment>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), cmt)?;
                 }
                 if !(InstContext::inRedeclared(context)) {
                     checkPartialComponent(node.clone(), attr.clone(), ty_node.clone(), Class::isPartial(ty.clone())?, res.clone(), context, info.clone())?;
                 }
                 checkBindingRestriction(res.clone(), binding.clone(), node.clone(), info.clone())?;
-                ty_attr = Attributes::updateVariability(ty_attr.clone(), ty.clone(), ty_node.clone(), node.clone(), context)?;
-                ty_attr = Attributes::updateComponentConnectorType(ty_attr.clone(), res.clone(), context, node.clone())?;
-                if !(referenceEq(&*(attr.clone()),&*(ty_attr.clone()))) {
+                ty_attr = Attributes::updateVariability(ty_attr, ty, ty_node, node.clone(), context)?;
+                ty_attr = Attributes::updateComponentConnectorType(ty_attr, res.clone(), context, node.clone())?;
+                if !(referenceEq(&*(attr),&*(ty_attr.clone()))) {
                     InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::setAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Attributes::NFAttributes>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), ty_attr.clone())?;
                 }
-                if useBinding && Binding::isUnbound(binding.clone()) && !(InstContext::inFunction(context)) && ty_attr.variability.clone() <= Variability::PARAMETER.clone() && Restriction::isType(res.clone()) {
+                if useBinding && Binding::isUnbound(binding) && !(InstContext::inFunction(context)) && ty_attr.variability.clone() <= Variability::PARAMETER.clone() && Restriction::isType(res) {
                     updateParameterBinding(node, context)?;
                 }
             }
@@ -1922,7 +1922,7 @@ pub(crate) fn instResizable(mut exp: Arc<Expression::NFExpression>) -> Result<Ar
                 attr.isResizable = true
             );
             assign_variant_field!(comp => Component::NFComponent::COMPONENT; attributes = attr.clone());
-            Pointer::update(var_field!((**node).component, InstNode::InstNode::COMPONENT_NODE).clone(), comp.clone());
+            Pointer::update(var_field!((**node).component, InstNode::InstNode::COMPONENT_NODE).clone(), comp);
             ()
         },
         _ => (),
@@ -2183,9 +2183,9 @@ pub fn instBinding(mut binding: Arc<Binding::NFBinding>, mut context: i32) -> Re
             let mut bind_exp: Arc<Expression::NFExpression>;
             bind_exp = instExp(var_field!((*binding).bindingExp, Binding::NFBinding::RAW_BINDING).clone(), var_field!((*binding).scope, Binding::NFBinding::RAW_BINDING).clone(), context, var_field!((*binding).info, Binding::NFBinding::RAW_BINDING).clone())?;
             if !(var_field!((*binding).subs, Binding::NFBinding::RAW_BINDING).clone().is_empty()) {
-                bind_exp = Arc::new(Expression::NFExpression::SUBSCRIPTED_EXP { exp: bind_exp.clone(), subscripts: var_field!((*binding).subs, Binding::NFBinding::RAW_BINDING).clone(), ty: crate::NFType::interned_UNKNOWN(), split: true });
+                bind_exp = Arc::new(Expression::NFExpression::SUBSCRIPTED_EXP { exp: bind_exp, subscripts: var_field!((*binding).subs, Binding::NFBinding::RAW_BINDING).clone(), ty: crate::NFType::interned_UNKNOWN(), split: true });
             }
-            Arc::new(Binding::NFBinding::UNTYPED_BINDING { bindingExp: bind_exp.clone(), isProcessing: false, scope: var_field!((*binding).scope, Binding::NFBinding::RAW_BINDING).clone(), eachType: var_field!((*binding).eachType, Binding::NFBinding::RAW_BINDING).clone(), source: var_field!((*binding).source, Binding::NFBinding::RAW_BINDING).clone(), confidence: var_field!((*binding).confidence, Binding::NFBinding::RAW_BINDING).clone(), info: var_field!((*binding).info, Binding::NFBinding::RAW_BINDING).clone() })
+            Arc::new(Binding::NFBinding::UNTYPED_BINDING { bindingExp: bind_exp, isProcessing: false, scope: var_field!((*binding).scope, Binding::NFBinding::RAW_BINDING).clone(), eachType: var_field!((*binding).eachType, Binding::NFBinding::RAW_BINDING).clone(), source: var_field!((*binding).source, Binding::NFBinding::RAW_BINDING).clone(), confidence: var_field!((*binding).confidence, Binding::NFBinding::RAW_BINDING).clone(), info: var_field!((*binding).info, Binding::NFBinding::RAW_BINDING).clone() })
         },
         _ => {
             binding
@@ -2250,7 +2250,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
         }
         __acc.reverse()
     });
-            return Ok(Arc::new(Expression::NFExpression::MATRIX { elements: expll.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::MATRIX { elements: expll }))
         },
         Deref @ Absyn::Exp::RANGE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2259,7 +2259,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).start, Absyn::Exp::RANGE).clone(), scope.clone(), context, info.clone())?;
             oe = instExpOpt(var_field!((*absynExp).step, Absyn::Exp::RANGE).clone(), scope.clone(), context, info.clone())?;
             e3 = instExp(var_field!((*absynExp).stop, Absyn::Exp::RANGE).clone(), scope, context, info)?;
-            return Ok(Arc::new(Expression::NFExpression::RANGE { ty: crate::NFType::interned_UNKNOWN(), start: e1.clone(), step: oe.clone(), stop: e3.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::RANGE { ty: crate::NFType::interned_UNKNOWN(), start: e1, step: oe, stop: e3 }))
         },
         Deref @ Absyn::Exp::TUPLE { expressions: Deref @ metamodelica::List::Cons { head: absynExp1, tail: Deref @ metamodelica::List::Nil } } => {
             { (absynExp, scope, context, info) = (absynExp1.clone(), scope, context, info); continue '__tco; }
@@ -2274,7 +2274,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
         }
         __acc.reverse()
     });
-            return Ok(Arc::new(Expression::NFExpression::TUPLE { ty: crate::NFType::interned_UNKNOWN(), elements: expl.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::TUPLE { ty: crate::NFType::interned_UNKNOWN(), elements: expl }))
         },
         Deref @ Absyn::Exp::BINARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2283,14 +2283,14 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).exp1, Absyn::Exp::BINARY).clone(), scope.clone(), context, info.clone())?;
             e2 = instExp(var_field!((*absynExp).exp2, Absyn::Exp::BINARY).clone(), scope, context, info)?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::BINARY).clone())?;
-            return Ok(Arc::new(Expression::NFExpression::BINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::BINARY { exp1: e1, operator: op, exp2: e2 }))
         },
         Deref @ Absyn::Exp::UNARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut op: Arc<Operator::NFOperator>;
             e1 = instExp(var_field!((*absynExp).exp, Absyn::Exp::UNARY).clone(), scope, context, info)?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::UNARY).clone())?;
-            return Ok(Expression::makeUnary(op.clone(), e1.clone()))
+            return Ok(Expression::makeUnary(op, e1))
         },
         Deref @ Absyn::Exp::LBINARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2299,14 +2299,14 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).exp1, Absyn::Exp::LBINARY).clone(), scope.clone(), context, info.clone())?;
             e2 = instExp(var_field!((*absynExp).exp2, Absyn::Exp::LBINARY).clone(), scope, context, info)?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::LBINARY).clone())?;
-            return Ok(Arc::new(Expression::NFExpression::LBINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::LBINARY { exp1: e1, operator: op, exp2: e2 }))
         },
         Deref @ Absyn::Exp::LUNARY { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut op: Arc<Operator::NFOperator>;
             e1 = instExp(var_field!((*absynExp).exp, Absyn::Exp::LUNARY).clone(), scope, context, info)?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::LUNARY).clone())?;
-            return Ok(Arc::new(Expression::NFExpression::LUNARY { operator: op.clone(), exp: e1.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::LUNARY { operator: op, exp: e1 }))
         },
         Deref @ Absyn::Exp::RELATION { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2315,7 +2315,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).exp1, Absyn::Exp::RELATION).clone(), scope.clone(), context, info.clone())?;
             e2 = instExp(var_field!((*absynExp).exp2, Absyn::Exp::RELATION).clone(), scope, context, info)?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::RELATION).clone())?;
-            return Ok(Arc::new(Expression::NFExpression::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: -1 }))
+            return Ok(Arc::new(Expression::NFExpression::RELATION { exp1: e1, operator: op, exp2: e2, index: -1 }))
         },
         Deref @ Absyn::Exp::IFEXP { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -2330,7 +2330,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             }
             e1 = instExp(var_field!((*absynExp).ifExp, Absyn::Exp::IFEXP).clone(), scope.clone(), context, info.clone())?;
             e2 = instExp(var_field!((*absynExp).trueBranch, Absyn::Exp::IFEXP).clone(), scope, context, info)?;
-            return Ok(Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_UNKNOWN(), condition: e1.clone(), trueBranch: e2.clone(), falseBranch: e3.clone() }))
+            return Ok(Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_UNKNOWN(), condition: e1, trueBranch: e2, falseBranch: e3 }))
         },
         Deref @ Absyn::Exp::CALL { .. } => {
             return Ok(Call::instantiate(var_field!((*absynExp).function_, Absyn::Exp::CALL).clone(), var_field!((*absynExp).functionArgs, Absyn::Exp::CALL).clone(), scope, context, info)?)
@@ -2465,7 +2465,7 @@ pub(crate) fn instCrefSubscripts(mut cref: Arc<ComponentRef::NFComponentRef>, mu
             }
             rest_cr = instCrefSubscripts(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), scope, context, info)?;
             if !(referenceEq(&*(rest_cr.clone()),&*(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone()))) {
-                assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = rest_cr.clone());
+                assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = rest_cr);
             }
             ()
         },
@@ -2573,10 +2573,10 @@ pub(crate) fn instSections2(mut parts: Arc<SCode::ClassDef>, mut scope: Arc<Inst
             let mut icontext: i32;
             icontext = InstContext::set(context, InstContext::INITIAL.clone());
             eq = instEquations(var_field!((*parts).normalEquationLst, SCode::ClassDef::PARTS).clone(), scope.clone(), connectBreaks.clone(), context)?;
-            ieq = instEquations(var_field!((*parts).initialEquationLst, SCode::ClassDef::PARTS).clone(), scope.clone(), connectBreaks, icontext.clone())?;
+            ieq = instEquations(var_field!((*parts).initialEquationLst, SCode::ClassDef::PARTS).clone(), scope.clone(), connectBreaks, icontext)?;
             alg = instAlgorithmSections(var_field!((*parts).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), scope.clone(), context)?;
-            ialg = instAlgorithmSections(var_field!((*parts).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), scope, icontext.clone())?;
-            Sections::join(Sections::new(eq.clone(), ieq.clone(), alg.clone(), ialg.clone()), sections)?
+            ialg = instAlgorithmSections(var_field!((*parts).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), scope, icontext)?;
+            Sections::join(Sections::new(eq, ieq, alg, ialg), sections)?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2609,7 +2609,7 @@ pub(crate) fn instExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut scope:
             } else {
                 ret_cref = crate::NFComponentRef::interned_EMPTY();
             }
-            Arc::new(Sections::NFSections::EXTERNAL { name: (name.clone()).clone(), args: args.clone(), outputRef: ret_cref.clone(), language: (lang.clone()).clone(), ann: extDecl.annotation_.clone(), explicit: isSome(extDecl.funcName.clone()), info: info.clone() })
+            Arc::new(Sections::NFSections::EXTERNAL { name: (name).clone(), args: args, outputRef: ret_cref, language: (lang).clone(), ann: extDecl.annotation_.clone(), explicit: isSome(extDecl.funcName.clone()), info: info })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2694,7 +2694,7 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             let mut exp2: Arc<Expression::NFExpression>;
             exp1 = instExp(var_field!((*scodeEq).expLeft, SCode::Equation::EQ_EQUALS).clone(), scope.clone(), context, info.clone())?;
             exp2 = instExp(var_field!((*scodeEq).expRight, SCode::Equation::EQ_EQUALS).clone(), scope.clone(), context, info.clone())?;
-            metamodelica::cons(Equation::makeEquality(exp1.clone(), exp2.clone(), crate::NFType::interned_UNKNOWN(), makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_EQUALS).clone(), info.clone()), scope, Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations)
+            metamodelica::cons(Equation::makeEquality(exp1, exp2, crate::NFType::interned_UNKNOWN(), makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_EQUALS).clone(), info.clone()), scope, Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations)
         },
         Deref @ SCode::Equation::EQ_CONNECT { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2711,12 +2711,12 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             }
             if !(ConnectBreakTree::isConnectBroken(var_field!((*scodeEq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), var_field!((*scodeEq).crefRight, SCode::Equation::EQ_CONNECT).clone(), scope.clone(), connectBreaks)?) {
                 next_context = InstContext::set(context, InstContext::CONNECT.clone());
-                lhs_cr = instConnectorCref(var_field!((*scodeEq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), scope.clone(), next_context.clone(), info.clone())?;
-                rhs_cr = instConnectorCref(var_field!((*scodeEq).crefRight, SCode::Equation::EQ_CONNECT).clone(), scope.clone(), next_context.clone(), info.clone())?;
+                lhs_cr = instConnectorCref(var_field!((*scodeEq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), scope.clone(), next_context, info.clone())?;
+                rhs_cr = instConnectorCref(var_field!((*scodeEq).crefRight, SCode::Equation::EQ_CONNECT).clone(), scope.clone(), next_context, info.clone())?;
                 if !(InstNode::isEmpty(ComponentRef::node(lhs_cr.clone())?) || InstNode::isEmpty(ComponentRef::node(rhs_cr.clone())?)) {
-                    exp1 = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: lhs_cr.clone() });
-                    exp2 = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: rhs_cr.clone() });
-                    equations = metamodelica::cons(Arc::new(Equation::NFEquation::CONNECT { lhs: exp1.clone(), rhs: exp2.clone(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_CONNECT).clone(), info.clone()) }), equations);
+                    exp1 = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: lhs_cr });
+                    exp2 = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: rhs_cr });
+                    equations = metamodelica::cons(Arc::new(Equation::NFEquation::CONNECT { lhs: exp1, rhs: exp2, scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_CONNECT).clone(), info.clone()) }), equations);
                 }
             }
             equations
@@ -2731,8 +2731,8 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             checkIteratorShadowing((var_field!((*scodeEq).index, SCode::Equation::EQ_FOR).clone()).clone(), scope.clone(), var_field!((*scodeEq).info, SCode::Equation::EQ_FOR).clone())?;
             (for_scope, iter) = addIteratorToScope((var_field!((*scodeEq).index, SCode::Equation::EQ_FOR).clone()).clone(), scope.clone(), var_field!((*scodeEq).info, SCode::Equation::EQ_FOR).clone(), crate::NFType::interned_UNKNOWN())?;
             next_context = InstContext::set(context, InstContext::FOR.clone());
-            eql = instEquations(var_field!((*scodeEq).eEquationLst, SCode::Equation::EQ_FOR).clone(), for_scope.clone(), connectBreaks, next_context.clone())?;
-            metamodelica::cons(Arc::new(Equation::NFEquation::FOR { iterator: iter.clone(), range: oexp.clone(), body: eql.clone(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_FOR).clone(), info.clone()) }), equations)
+            eql = instEquations(var_field!((*scodeEq).eEquationLst, SCode::Equation::EQ_FOR).clone(), for_scope, connectBreaks, next_context)?;
+            metamodelica::cons(Arc::new(Equation::NFEquation::FOR { iterator: iter, range: oexp, body: eql, scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_FOR).clone(), info.clone()) }), equations)
         },
         Deref @ SCode::Equation::EQ_IF { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2752,7 +2752,7 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             branches = metamodelica::nil();
             for mut branch in &*var_field!((*scodeEq).thenBranch, SCode::Equation::EQ_IF).clone() {
                 let mut branch = branch.clone();
-                eql = instEquations(branch.clone(), scope.clone(), connectBreaks.clone(), next_context.clone())?;
+                eql = instEquations(branch.clone(), scope.clone(), connectBreaks.clone(), next_context)?;
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(expl.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                     _ => bail!("pattern mismatch"),
@@ -2762,10 +2762,10 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
                 branches = metamodelica::cons(Equation::makeBranch(exp1.clone(), eql.clone(), Prefixes::Variability::CONTINUOUS.clone()), branches.clone());
             }
             if !(var_field!((*scodeEq).elseBranch, SCode::Equation::EQ_IF).clone().is_empty()) {
-                eql = instEquations(var_field!((*scodeEq).elseBranch, SCode::Equation::EQ_IF).clone(), scope.clone(), connectBreaks, next_context.clone())?;
-                branches = metamodelica::cons(Equation::makeBranch(Arc::new(Expression::NFExpression::BOOLEAN { value: true }), eql.clone(), Prefixes::Variability::CONTINUOUS.clone()), branches.clone());
+                eql = instEquations(var_field!((*scodeEq).elseBranch, SCode::Equation::EQ_IF).clone(), scope.clone(), connectBreaks, next_context)?;
+                branches = metamodelica::cons(Equation::makeBranch(Arc::new(Expression::NFExpression::BOOLEAN { value: true }), eql, Prefixes::Variability::CONTINUOUS.clone()), branches);
             }
-            metamodelica::cons(Arc::new(Equation::NFEquation::IF { branches: branches.clone().reverse(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_IF).clone(), info.clone()) }), equations)
+            metamodelica::cons(Arc::new(Equation::NFEquation::IF { branches: branches.reverse(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_IF).clone(), info.clone()) }), equations)
         },
         Deref @ SCode::Equation::EQ_WHEN { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2781,15 +2781,15 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             }
             next_context = InstContext::set(context, InstContext::WHEN.clone());
             exp1 = instExp(var_field!((*scodeEq).condition, SCode::Equation::EQ_WHEN).clone(), scope.clone(), context, info.clone())?;
-            eql = instEquations(var_field!((*scodeEq).eEquationLst, SCode::Equation::EQ_WHEN).clone(), scope.clone(), connectBreaks.clone(), next_context.clone())?;
+            eql = instEquations(var_field!((*scodeEq).eEquationLst, SCode::Equation::EQ_WHEN).clone(), scope.clone(), connectBreaks.clone(), next_context)?;
             branches = list![Equation::makeBranch(exp1.clone(), eql.clone(), Prefixes::Variability::CONTINUOUS.clone())];
             for mut branch in &*var_field!((*scodeEq).elseBranches, SCode::Equation::EQ_WHEN).clone() {
                 let mut branch = branch.clone();
                 exp1 = instExp(Util::tuple21(branch.clone()), scope.clone(), context, info.clone())?;
-                eql = instEquations(Util::tuple22(branch.clone()), scope.clone(), connectBreaks.clone(), next_context.clone())?;
+                eql = instEquations(Util::tuple22(branch.clone()), scope.clone(), connectBreaks.clone(), next_context)?;
                 branches = metamodelica::cons(Equation::makeBranch(exp1.clone(), eql.clone(), Prefixes::Variability::CONTINUOUS.clone()), branches.clone());
             }
-            metamodelica::cons(Arc::new(Equation::NFEquation::WHEN { branches: branches.clone().reverse(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_WHEN).clone(), info.clone()) }), equations)
+            metamodelica::cons(Arc::new(Equation::NFEquation::WHEN { branches: branches.reverse(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_WHEN).clone(), info.clone()) }), equations)
         },
         Deref @ SCode::Equation::EQ_ASSERT { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2798,12 +2798,12 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             exp1 = instExp(var_field!((*scodeEq).condition, SCode::Equation::EQ_ASSERT).clone(), scope.clone(), context, info.clone())?;
             exp2 = instExp(var_field!((*scodeEq).message, SCode::Equation::EQ_ASSERT).clone(), scope.clone(), context, info.clone())?;
             exp3 = instExp(var_field!((*scodeEq).level, SCode::Equation::EQ_ASSERT).clone(), scope.clone(), context, info.clone())?;
-            metamodelica::cons(Arc::new(Equation::NFEquation::ASSERT { condition: exp1.clone(), message: exp2.clone(), level: exp3.clone(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_ASSERT).clone(), info.clone()) }), equations)
+            metamodelica::cons(Arc::new(Equation::NFEquation::ASSERT { condition: exp1, message: exp2, level: exp3, scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_ASSERT).clone(), info.clone()) }), equations)
         },
         Deref @ SCode::Equation::EQ_TERMINATE { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
             exp1 = instExp(var_field!((*scodeEq).message, SCode::Equation::EQ_TERMINATE).clone(), scope.clone(), context, info.clone())?;
-            metamodelica::cons(Arc::new(Equation::NFEquation::TERMINATE { message: exp1.clone(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_TERMINATE).clone(), info.clone()) }), equations)
+            metamodelica::cons(Arc::new(Equation::NFEquation::TERMINATE { message: exp1, scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_TERMINATE).clone(), info.clone()) }), equations)
         },
         Deref @ SCode::Equation::EQ_REINIT { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2814,12 +2814,12 @@ pub(crate) fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<Ins
             }
             exp1 = instExp(var_field!((*scodeEq).cref, SCode::Equation::EQ_REINIT).clone(), scope.clone(), context, info.clone())?;
             exp2 = instExp(var_field!((*scodeEq).expReinit, SCode::Equation::EQ_REINIT).clone(), scope.clone(), context, info.clone())?;
-            metamodelica::cons(Arc::new(Equation::NFEquation::REINIT { cref: exp1.clone(), reinitExp: exp2.clone(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_REINIT).clone(), info.clone()) }), equations)
+            metamodelica::cons(Arc::new(Equation::NFEquation::REINIT { cref: exp1, reinitExp: exp2, scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_REINIT).clone(), info.clone()) }), equations)
         },
         Deref @ SCode::Equation::EQ_NORETCALL { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
             exp1 = instExp(var_field!((*scodeEq).exp, SCode::Equation::EQ_NORETCALL).clone(), scope.clone(), context, info.clone())?;
-            metamodelica::cons(Arc::new(Equation::NFEquation::NORETCALL { exp: exp1.clone(), scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_NORETCALL).clone(), info.clone()) }), equations)
+            metamodelica::cons(Arc::new(Equation::NFEquation::NORETCALL { exp: exp1, scope: scope, source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_NORETCALL).clone(), info.clone()) }), equations)
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instEquation")); __mm_s.push_str(&*literal!(" got unknown equation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
@@ -2892,7 +2892,7 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             exp1 = instExp(var_field!((*scodeStmt).assignComponent, SCode::Statement::ALG_ASSIGN).clone(), scope.clone(), context, info.clone())?;
             checkAssignmentRestriction(exp1.clone(), info.clone())?;
             exp2 = instExp(var_field!((*scodeStmt).value, SCode::Statement::ALG_ASSIGN).clone(), scope, context, info.clone())?;
-            Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: exp1.clone(), rhs: exp2.clone(), ty: crate::NFType::interned_UNKNOWN(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_ASSIGN).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: exp1, rhs: exp2, ty: crate::NFType::interned_UNKNOWN(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_ASSIGN).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_FOR { info, .. } => {
             let mut oexp: Option<Arc<Expression::NFExpression>>;
@@ -2903,8 +2903,8 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             oexp = instExpOpt(var_field!((*scodeStmt).range, SCode::Statement::ALG_FOR).clone(), scope.clone(), context, info.clone())?;
             (for_scope, iter) = addIteratorToScope((var_field!((*scodeStmt).index, SCode::Statement::ALG_FOR).clone()).clone(), scope, info.clone(), crate::NFType::interned_UNKNOWN())?;
             next_context = InstContext::set(context, InstContext::FOR.clone());
-            stmtl = instStatements(var_field!((*scodeStmt).forBody, SCode::Statement::ALG_FOR).clone(), for_scope.clone(), next_context.clone())?;
-            Arc::new(Statement::NFStatement::FOR { iterator: iter.clone(), range: oexp.clone(), body: stmtl.clone(), forType: crate::NFStatement::ForType::interned_NORMAL(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_FOR).clone(), info.clone()) })
+            stmtl = instStatements(var_field!((*scodeStmt).forBody, SCode::Statement::ALG_FOR).clone(), for_scope, next_context)?;
+            Arc::new(Statement::NFStatement::FOR { iterator: iter, range: oexp, body: stmtl, forType: crate::NFStatement::ForType::interned_NORMAL(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_FOR).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_PARFOR { info, .. } => {
             let mut oexp: Option<Arc<Expression::NFExpression>>;
@@ -2915,8 +2915,8 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             oexp = instExpOpt(var_field!((*scodeStmt).range, SCode::Statement::ALG_PARFOR).clone(), scope.clone(), context, info.clone())?;
             (for_scope, iter) = addIteratorToScope((var_field!((*scodeStmt).index, SCode::Statement::ALG_PARFOR).clone()).clone(), scope, info.clone(), crate::NFType::interned_UNKNOWN())?;
             next_context = InstContext::set(context, InstContext::FOR.clone());
-            stmtl = instStatements(var_field!((*scodeStmt).parforBody, SCode::Statement::ALG_PARFOR).clone(), for_scope.clone(), next_context.clone())?;
-            Arc::new(Statement::NFStatement::FOR { iterator: iter.clone(), range: oexp.clone(), body: stmtl.clone(), forType: Arc::new(Statement::ForType::PARALLEL { vars: metamodelica::nil() }), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_PARFOR).clone(), info.clone()) })
+            stmtl = instStatements(var_field!((*scodeStmt).parforBody, SCode::Statement::ALG_PARFOR).clone(), for_scope, next_context)?;
+            Arc::new(Statement::NFStatement::FOR { iterator: iter, range: oexp, body: stmtl, forType: Arc::new(Statement::ForType::PARALLEL { vars: metamodelica::nil() }), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_PARFOR).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_IF { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2928,14 +2928,14 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             for mut branch in &*metamodelica::cons((var_field!((*scodeStmt).boolExpr, SCode::Statement::ALG_IF).clone(), var_field!((*scodeStmt).trueBranch, SCode::Statement::ALG_IF).clone()), var_field!((*scodeStmt).elseIfBranch, SCode::Statement::ALG_IF).clone()) {
                 let mut branch = branch.clone();
                 exp1 = instExp(Util::tuple21(branch.clone()), scope.clone(), context, info.clone())?;
-                stmtl = instStatements(Util::tuple22(branch.clone()), scope.clone(), next_context.clone())?;
+                stmtl = instStatements(Util::tuple22(branch.clone()), scope.clone(), next_context)?;
                 branches = metamodelica::cons((exp1.clone(), stmtl.clone()), branches.clone());
             }
             if !(var_field!((*scodeStmt).elseBranch, SCode::Statement::ALG_IF).clone().is_empty()) {
-                stmtl = instStatements(var_field!((*scodeStmt).elseBranch, SCode::Statement::ALG_IF).clone(), scope, next_context.clone())?;
-                branches = metamodelica::cons((Arc::new(Expression::NFExpression::BOOLEAN { value: true }), stmtl.clone()), branches.clone());
+                stmtl = instStatements(var_field!((*scodeStmt).elseBranch, SCode::Statement::ALG_IF).clone(), scope, next_context)?;
+                branches = metamodelica::cons((Arc::new(Expression::NFExpression::BOOLEAN { value: true }), stmtl), branches);
             }
-            Arc::new(Statement::NFStatement::IF { branches: branches.clone().reverse(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_IF).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::IF { branches: branches.reverse(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_IF).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_WHEN_A { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2959,10 +2959,10 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
                 let mut branch = branch.clone();
                 exp1 = instExp(Util::tuple21(branch.clone()), scope.clone(), context, info.clone())?;
                 next_context = InstContext::set(context, InstContext::WHEN.clone());
-                stmtl = instStatements(Util::tuple22(branch.clone()), scope.clone(), next_context.clone())?;
+                stmtl = instStatements(Util::tuple22(branch.clone()), scope.clone(), next_context)?;
                 branches = metamodelica::cons((exp1.clone(), stmtl.clone()), branches.clone());
             }
-            Arc::new(Statement::NFStatement::WHEN { branches: branches.clone().reverse(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_WHEN_A).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::WHEN { branches: branches.reverse(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_WHEN_A).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_ASSERT { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2971,12 +2971,12 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             exp1 = instExp(var_field!((*scodeStmt).condition, SCode::Statement::ALG_ASSERT).clone(), scope.clone(), context, info.clone())?;
             exp2 = instExp(var_field!((*scodeStmt).message, SCode::Statement::ALG_ASSERT).clone(), scope.clone(), context, info.clone())?;
             exp3 = instExp(var_field!((*scodeStmt).level, SCode::Statement::ALG_ASSERT).clone(), scope, context, info.clone())?;
-            Arc::new(Statement::NFStatement::ASSERT { condition: exp1.clone(), message: exp2.clone(), level: exp3.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_ASSERT).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::ASSERT { condition: exp1, message: exp2, level: exp3, source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_ASSERT).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_TERMINATE { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
             exp1 = instExp(var_field!((*scodeStmt).message, SCode::Statement::ALG_TERMINATE).clone(), scope, context, info.clone())?;
-            Arc::new(Statement::NFStatement::TERMINATE { message: exp1.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_TERMINATE).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::TERMINATE { message: exp1, source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_TERMINATE).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_REINIT { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -2991,12 +2991,12 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             }
             exp1 = instExp(var_field!((*scodeStmt).cref, SCode::Statement::ALG_REINIT).clone(), scope.clone(), context, info.clone())?;
             exp2 = instExp(var_field!((*scodeStmt).newValue, SCode::Statement::ALG_REINIT).clone(), scope, context, info.clone())?;
-            Arc::new(Statement::NFStatement::REINIT { cref: exp1.clone(), reinitExp: exp2.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_REINIT).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::REINIT { cref: exp1, reinitExp: exp2, source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_REINIT).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_NORETCALL { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
             exp1 = instExp(var_field!((*scodeStmt).exp, SCode::Statement::ALG_NORETCALL).clone(), scope, context, info.clone())?;
-            Arc::new(Statement::NFStatement::NORETCALL { exp: exp1.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_NORETCALL).clone(), info.clone()) })
+            Arc::new(Statement::NFStatement::NORETCALL { exp: exp1, source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_NORETCALL).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_WHILE { info, .. } => {
             let mut exp1: Arc<Expression::NFExpression>;
@@ -3004,8 +3004,8 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
             let mut next_context: i32;
             exp1 = instExp(var_field!((*scodeStmt).boolExpr, SCode::Statement::ALG_WHILE).clone(), scope.clone(), context, info.clone())?;
             next_context = InstContext::set(context, InstContext::WHILE.clone());
-            stmtl = instStatements(var_field!((*scodeStmt).whileBody, SCode::Statement::ALG_WHILE).clone(), scope, next_context.clone())?;
-            Arc::new(Statement::NFStatement::WHILE { condition: exp1.clone(), body: stmtl.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_WHILE).clone(), info.clone()) })
+            stmtl = instStatements(var_field!((*scodeStmt).whileBody, SCode::Statement::ALG_WHILE).clone(), scope, next_context)?;
+            Arc::new(Statement::NFStatement::WHILE { condition: exp1, body: stmtl, source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_WHILE).clone(), info.clone()) })
         },
         Deref @ SCode::Statement::ALG_RETURN { .. } => {
             if !(InstContext::inFunction(context)) {
@@ -3024,7 +3024,7 @@ pub(crate) fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc
         Deref @ SCode::Statement::ALG_FAILURE { .. } => {
             let mut stmtl: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             stmtl = instStatements(var_field!((*scodeStmt).stmts, SCode::Statement::ALG_FAILURE).clone(), scope, context)?;
-            Arc::new(Statement::NFStatement::FAILURE { body: stmtl.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_FAILURE).clone(), var_field!((*scodeStmt).info, SCode::Statement::ALG_FAILURE).clone()) })
+            Arc::new(Statement::NFStatement::FAILURE { body: stmtl, source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_FAILURE).clone(), var_field!((*scodeStmt).info, SCode::Statement::ALG_FAILURE).clone()) })
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instStatement")); __mm_s.push_str(&*literal!(" got unknown statement")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
@@ -3236,10 +3236,10 @@ pub(crate) fn updateImplicitVariabilityComp(mut component: Arc<InstNode::InstNod
             let mut eval: bool;
             opt_eval = Component::getEvaluateAnnotation(c.clone())?;
             eval = Util::getOptionOrDefault(opt_eval.clone(), false);
-            if isSome(opt_eval.clone()) && !(eval.clone()) && var_field!((*c).attributes, Component::NFComponent::COMPONENT).variability.clone() == Variability::PARAMETER.clone() {
+            if isSome(opt_eval) && !(eval) && var_field!((*c).attributes, Component::NFComponent::COMPONENT).variability.clone() == Variability::PARAMETER.clone() {
                 InstNode::updateComponent(Component::setVariability(Variability::NON_STRUCTURAL_PARAMETER.clone(), c.clone()), node)?;
             } else {
-                if Structural::isStructuralComponent(c.clone(), var_field!((*c).attributes, Component::NFComponent::COMPONENT).clone(), binding.clone(), node.clone(), eval.clone(), parentEval, context)? {
+                if Structural::isStructuralComponent(c.clone(), var_field!((*c).attributes, Component::NFComponent::COMPONENT).clone(), binding.clone(), node.clone(), eval, parentEval, context)? {
                     Structural::markComponent(c.clone(), node)?;
                 }
             }
@@ -3254,7 +3254,7 @@ pub(crate) fn updateImplicitVariabilityComp(mut component: Arc<InstNode::InstNod
                 Structural::markExp(Binding::getUntypedExp(condition.clone())?)?;
             }
             if !(InstNode::isEmpty(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone())) {
-                updateImplicitVariability(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone(), eval.clone() || parentEval, context)?;
+                updateImplicitVariability(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone(), eval || parentEval, context)?;
             }
             ()
         },
@@ -3398,8 +3398,8 @@ pub(crate) fn markImplicitWhenExp_traverser(mut exp: Arc<Expression::NFExpressio
             if InstNode::isComponent(node.clone())? {
                 comp = InstNode::component(node.clone())?;
                 if Component::variability(comp.clone())? == Variability::CONTINUOUS.clone() {
-                    comp = Component::setVariability(Variability::IMPLICITLY_DISCRETE.clone(), comp.clone());
-                    InstNode::updateComponent(comp.clone(), node.clone())?;
+                    comp = Component::setVariability(Variability::IMPLICITLY_DISCRETE.clone(), comp);
+                    InstNode::updateComponent(comp, node.clone())?;
                 }
             }
             ()

@@ -143,12 +143,12 @@ pub(crate) fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Ki
         Partition::Kind::ODE => {
             name = (literal!("ODE_JAC")).clone();
             assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; ode = applyToPartitions(var_field!((*bdae).ode, Jacobian::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), knowns.clone(), (name.clone()).clone(), func.clone())?.0);
-            name.clone()
+            name
         },
         Partition::Kind::DAE => {
             name = (literal!("DAE_JAC")).clone();
             assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; dae = Some((applyToPartitions(Util::getOption(var_field!((*bdae).dae, Jacobian::NBackendDAE::MAIN).clone())?, var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), knowns.clone(), (name.clone()).clone(), func.clone())?).0));
-            name.clone()
+            name
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBJacobian.main")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*Partition::Partition::kindToString(kind)?); ArcStr::from(__mm_s) }).clone()])?;
@@ -162,7 +162,7 @@ pub(crate) fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Ki
                 init = applyToPartitions(var_field!((*bdae).init, Jacobian::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), knowns.clone(), (name.clone()).clone(), func.clone())?.0
             );
             if isSome(var_field!((*bdae).init_0, Jacobian::NBackendDAE::MAIN).clone()) {
-                assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; init_0 = Some((applyToPartitions(Util::getOption(var_field!((*bdae).init_0, Jacobian::NBackendDAE::MAIN).clone())?, var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), knowns.clone(), (name.clone()).clone(), func.clone())?).0));
+                assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; init_0 = Some((applyToPartitions(Util::getOption(var_field!((*bdae).init_0, Jacobian::NBackendDAE::MAIN).clone())?, var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), knowns.clone(), (name).clone(), func.clone())?).0));
             }
             bdae
         },
@@ -467,11 +467,11 @@ pub mod SparsityPattern {
                 let mut cref = cref.clone();
                 UnorderedMap::add(cref.clone(), metamodelica::nil(), map.clone())?;
             }
-            for mut cref in &*seed_vars_array.clone() {
+            for mut cref in &*seed_vars_array {
                 let mut cref = cref.clone();
                 UnorderedSet::add(cref.clone(), set.clone())?;
             }
-            for mut cref in &*partial_vars_array.clone() {
+            for mut cref in &*partial_vars_array {
                 let mut cref = cref.clone();
                 UnorderedSet::add(cref.clone(), set.clone())?;
             }
@@ -480,7 +480,7 @@ pub mod SparsityPattern {
                     StrongComponent::collectCrefs(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), seedCandidates.clone(), partialCandidates.clone(), seed_mapping.clone(), partial_mapping.clone(), map.clone(), set.clone(), jacType)?;
                 }
             }
-            for mut cref in &*partial_vars.clone().reverse() {
+            for mut cref in &*partial_vars.reverse() {
                 let mut cref = cref.clone();
                 if jacType == JacobianType::NLS.clone() || isRowInJacobian(cref.clone(), jacType)? {
                     if UnorderedMap::contains(cref.clone(), map.clone())? {
@@ -494,7 +494,7 @@ pub mod SparsityPattern {
                     }
                 }
             }
-            for mut cref in &*seed_vars.clone().reverse() {
+            for mut cref in &*seed_vars.reverse() {
                 let mut cref = cref.clone();
                 if jacType == JacobianType::NLS.clone() || NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isState, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? || (jacType == JacobianType::OPT_LFG.clone() || jacType == JacobianType::OPT_MRF.clone() || jacType == JacobianType::OPT_R0.clone()) {
                     tmp = UnorderedSet::unique_list(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
@@ -505,9 +505,9 @@ pub mod SparsityPattern {
             for mut col in &*cols.clone() {
                 let mut col = col.clone();
                 (_, tmp) = col.clone();
-                nnz = nnz.clone() + (tmp.clone().len() as i32);
+                nnz = nnz + (tmp.clone().len() as i32);
             }
-            (Arc::new(SparsityPattern { col_wise_pattern: cols.clone(), row_wise_pattern: rows.clone(), seed_vars: col_vars.clone(), partial_vars: row_vars.clone(), nnz: nnz.clone() }), map)
+            (Arc::new(SparsityPattern { col_wise_pattern: cols, row_wise_pattern: rows, seed_vars: col_vars, partial_vars: row_vars, nnz: nnz }), map)
         },
         None => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBJacobian.SparsityPattern.create")); __mm_s.push_str(&*literal!(" failed because of missing strong components.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -1532,12 +1532,12 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
             iRes = 1;
             for mut residual_i in &*residuals.clone() {
                 let mut residual_i = residual_i.clone();
-                if iRes.clone() > (lambdaCrefs.clone().len() as i32) {
+                if iRes > (lambdaCrefs.clone().len() as i32) {
                     break;
                 }
-                diffArguments = accumulateAdjointForResidual(residual_i.clone(), Expression::fromCref((lambdaCrefs.clone()).get(iRes.clone())?, false)?, diff_map_union.clone(), funcMap.clone(), seedCandidates.scalarized.clone(), loop_product_adjoint_map.clone())?;
+                diffArguments = accumulateAdjointForResidual(residual_i.clone(), Expression::fromCref((lambdaCrefs.clone()).get(iRes)?, false)?, diff_map_union.clone(), funcMap.clone(), seedCandidates.scalarized.clone(), loop_product_adjoint_map.clone())?;
                 loop_product_adjoint_map = Util::getOption(diffArguments.adjoint_map.clone())?;
-                iRes = iRes.clone() + 1;
+                iRes = iRes + 1;
             }
             if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[adjoint] loop_product_adjoint_map after: \n")); __mm_s.push_str(&*adjointMapToString(Some(loop_product_adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());

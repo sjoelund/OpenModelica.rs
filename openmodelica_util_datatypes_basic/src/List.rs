@@ -323,9 +323,9 @@ pub fn appendLastList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList
                 l = __pa0.clone();
                 ll = __pa1.clone();
             }
-            ol = metamodelica::cons(listAppend(l.clone(), inList), ol.clone());
-            ol = metamodelica::Dangerous::listReverseInPlace(ol.clone());
-            ol.clone()
+            ol = metamodelica::cons(listAppend(l.clone(), inList), ol);
+            ol = metamodelica::Dangerous::listReverseInPlace(ol);
+            ol
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -721,7 +721,7 @@ fn merge<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inLeft: Arc<metamod
                 l_rest = inLeft;
                 el = r.clone();
             }
-            { (inLeft, inRight, inCompFunc, acc) = (l_rest.clone(), r_rest.clone(), inCompFunc.clone(), metamodelica::cons(el.clone(), acc)); continue '__tco; }
+            { (inLeft, inRight, inCompFunc, acc) = (l_rest.clone(), r_rest.clone(), inCompFunc.clone(), metamodelica::cons(el, acc)); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             return Ok(metamodelica::Dangerous::listReverseInPlace(acc))
@@ -2619,7 +2619,7 @@ pub fn threadFold1<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 
         (Deref @ metamodelica::List::Cons { head: e1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: e2, tail: rest2 }) => {
             let mut res: FT;
             res = inFoldFunc(e1.clone(), e2.clone(), inArg1.clone(), inFoldArg)?;
-            { (inList1, inList2, inFoldFunc, inArg1, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), inArg1, res.clone()); continue '__tco; }
+            { (inList1, inList2, inFoldFunc, inArg1, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), inArg1, res); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             return Ok(inFoldArg)
@@ -2637,7 +2637,7 @@ pub fn threadFold2<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 
         (Deref @ metamodelica::List::Cons { head: e1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: e2, tail: rest2 }) => {
             let mut res: FT;
             res = inFoldFunc(e1.clone(), e2.clone(), inArg1.clone(), inArg2.clone(), inFoldArg)?;
-            { (inList1, inList2, inFoldFunc, inArg1, inArg2, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), inArg1, inArg2, res.clone()); continue '__tco; }
+            { (inList1, inList2, inFoldFunc, inArg1, inArg2, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), inArg1, inArg2, res); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             return Ok(inFoldArg)
@@ -2655,7 +2655,7 @@ pub fn threadFold3<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 
         (Deref @ metamodelica::List::Cons { head: e1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: e2, tail: rest2 }) => {
             let mut res: FT;
             res = inFoldFunc(e1.clone(), e2.clone(), inArg1.clone(), inArg2.clone(), inArg3.clone(), inFoldArg)?;
-            { (inList1, inList2, inFoldFunc, inArg1, inArg2, inArg3, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), inArg1, inArg2, inArg3, res.clone()); continue '__tco; }
+            { (inList1, inList2, inFoldFunc, inArg1, inArg2, inArg3, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), inArg1, inArg2, inArg3, res); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             return Ok(inFoldArg)
@@ -2673,7 +2673,7 @@ pub fn threadFold<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + '
         (Deref @ metamodelica::List::Cons { head: e1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: e2, tail: rest2 }) => {
             let mut res: FT;
             res = inFoldFunc(e1.clone(), e2.clone(), inFoldArg)?;
-            { (inList1, inList2, inFoldFunc, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), res.clone()); continue '__tco; }
+            { (inList1, inList2, inFoldFunc, inFoldArg) = (rest1.clone(), rest2.clone(), inFoldFunc.clone(), res); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             return Ok(inFoldArg)
@@ -3446,8 +3446,8 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<
         _ => {
             let mut r#str: ArcStr;
             r#str = stringDelimitList(map(lst, inPrintFunc.clone())?, (inDelimitStr).clone());
-            r#str = stringAppendList(list![(inNameStr).clone(), (inBeginStr).clone(), (r#str.clone()).clone(), (endStr).clone()]);
-            r#str.clone()
+            r#str = stringAppendList(list![(inNameStr).clone(), (inBeginStr).clone(), (r#str).clone(), (endStr).clone()]);
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -3622,7 +3622,7 @@ fn combination_tail<TI: Clone + 'static + metamodelica::gc::MMTrace>(mut inEleme
                 let mut e = e.clone();
                 acc = combination_tail(rest.clone(), metamodelica::cons(e.clone(), inCombination.clone()), acc.clone());
             }
-            acc.clone()
+            acc
         },
         _ => {
             metamodelica::cons(inCombination.reverse(), inAccumElems)
@@ -3654,7 +3654,7 @@ fn combinationMap_tail<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clon
                 let mut e = e.clone();
                 acc = combinationMap_tail(rest.clone(), inMapFunc.clone(), metamodelica::cons(e.clone(), inCombination.clone()), acc.clone())?;
             }
-            acc.clone()
+            acc
         },
         _ => {
             metamodelica::cons(inMapFunc(inCombination.reverse())?, inAccumElems)
@@ -3850,7 +3850,7 @@ pub fn allCombinations<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: 
         Some(mut maxSz) => {
             let mut sz: i32;
             sz = intMul((lst.clone().len() as i32), applyAndFold(lst.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), std::sync::Arc::new(fnptr!(listLength, _)), 1)?);
-            let true = (sz.clone() <= maxSz.clone()) else { bail!("pattern mismatch") };
+            let true = (sz <= maxSz.clone()) else { bail!("pattern mismatch") };
             allCombinations2(lst)
         },
         None => {
@@ -3885,7 +3885,7 @@ fn allCombinations3<T: Clone + 'static + metamodelica::gc::MMTrace>(mut ilst1: A
         Deref @ metamodelica::List::Cons { head: x, tail: lst1 } => {
             let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<T>>>>;
             acc = allCombinations4(x.clone(), ilst2.clone(), iacc);
-            { (ilst1, ilst2, iacc) = (lst1.clone(), ilst2, acc.clone()); continue '__tco; }
+            { (ilst1, ilst2, iacc) = (lst1.clone(), ilst2, acc); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }

@@ -149,11 +149,11 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             let mut newattr: Attributes;
             nm = (nodename((typ.clone()).clone())).clone();
             typlbl = (makeLabel(list![(typ.clone()).clone()])?).clone();
-            newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (typlbl.clone()).clone() }, attr.clone());
-            out = (makeNode((nm.clone()).clone(), newattr.clone())?).clone();
-            metamodelica::print((out.clone()).clone());
+            newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (typlbl).clone() }, attr.clone());
+            out = (makeNode((nm.clone()).clone(), newattr)?).clone();
+            metamodelica::print((out).clone());
             dumpChildren((nm.clone()).clone(), children.clone())?;
-            nm.clone()
+            nm
         },
         Deref @ Node::LNODE { type_: typ, labelLst: lbl, attributes: attr, children } => {
             let mut nm: Label;
@@ -163,12 +163,12 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             let mut lbl_1: Arc<metamodelica::List<ArcStr>>;
             nm = (nodename((typ.clone()).clone())).clone();
             lbl_1 = metamodelica::cons((typ.clone()).clone(), lbl.clone());
-            lblstr = (makeLabel(lbl_1.clone())?).clone();
-            newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (lblstr.clone()).clone() }, attr.clone());
-            out = (makeNode((nm.clone()).clone(), newattr.clone())?).clone();
-            metamodelica::print((out.clone()).clone());
+            lblstr = (makeLabel(lbl_1)?).clone();
+            newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (lblstr).clone() }, attr.clone());
+            out = (makeNode((nm.clone()).clone(), newattr)?).clone();
+            metamodelica::print((out).clone());
             dumpChildren((nm.clone()).clone(), children.clone())?;
-            nm.clone()
+            nm
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -194,13 +194,13 @@ fn makeLabelReq(mut inStringLst: Arc<metamodelica::List<ArcStr>>, mut inString: 
         Deref @ metamodelica::List::Cons { head: s1, tail: Deref @ metamodelica::List::Cons { head: s2, tail: Deref @ metamodelica::List::Nil } } => {
             let mut s: Label;
             s = (stringAppend((inString).clone(), (s1.clone()).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (literal!("\\n")).clone())).clone();
-            return Ok(stringAppend((s.clone()).clone(), (s2.clone()).clone()))
+            s = (stringAppend((s).clone(), (literal!("\\n")).clone())).clone();
+            return Ok(stringAppend((s).clone(), (s2.clone()).clone()))
         },
         Deref @ metamodelica::List::Cons { head: s1, tail: rest } => {
             let mut s: Label;
             s = (stringAppend((inString).clone(), (s1.clone()).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (literal!("\\n")).clone())).clone();
+            s = (stringAppend((s).clone(), (literal!("\\n")).clone())).clone();
             { (inStringLst, inString) = (rest.clone(), (s.clone()).clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -216,7 +216,7 @@ fn dumpChildren(mut inIdent: Ident, mut inChildren: Children) -> Result<()> {
         (parent, Deref @ metamodelica::List::Cons { head: node, tail: rest }) => {
             let mut nm: Label;
             nm = (dumpNode(node.clone())?).clone();
-            printEdge((nm.clone()).clone(), (parent.clone()).clone());
+            printEdge((nm).clone(), (parent.clone()).clone());
             dumpChildren((parent.clone()).clone(), rest.clone())?;
             ()
         },
@@ -277,16 +277,16 @@ fn makeAttrReq(mut inAttributeLst: Arc<metamodelica::List<Attribute>>, mut inStr
         Deref @ metamodelica::List::Cons { head: Attribute { name, value: v }, tail: Deref @ metamodelica::List::Nil } => {
             let mut s: Label;
             s = (stringAppend((inString).clone(), (name.clone()).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (literal!("=")).clone())).clone();
-            return Ok(stringAppend((s.clone()).clone(), (v.clone()).clone()))
+            s = (stringAppend((s).clone(), (literal!("=")).clone())).clone();
+            return Ok(stringAppend((s).clone(), (v.clone()).clone()))
         },
         Deref @ metamodelica::List::Cons { head: Attribute { name, value: v }, tail: rest } => {
             let mut s: Label;
             s = (stringAppend((inString).clone(), (name.clone()).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (literal!("=")).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (v.clone()).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (literal!(",")).clone())).clone();
-            { (inAttributeLst, inString) = (rest.clone(), (s.clone()).clone()); continue '__tco; }
+            s = (stringAppend((s).clone(), (literal!("=")).clone())).clone();
+            s = (stringAppend((s).clone(), (v.clone()).clone())).clone();
+            s = (stringAppend((s).clone(), (literal!(",")).clone())).clone();
+            { (inAttributeLst, inString) = (rest.clone(), (s).clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

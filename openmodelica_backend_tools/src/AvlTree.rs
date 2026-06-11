@@ -289,24 +289,24 @@ fn addNode<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Cl
         (_, Deref @ Node::NO_NODE { .. }, _, _) => {
             let mut n: Arc<Node<Key, Val>>;
             n = newLeafNode(Item::ITEM { key: inKey, val: inVal }, 1);
-            n.clone()
+            n
         },
         (_, Deref @ Node::NODE { item: Item::NO_ITEM { .. }, left: Deref @ Node::NO_NODE { .. }, right: Deref @ Node::NO_NODE { .. }, .. }, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             n = newLeafNode(Item::ITEM { key: key.clone(), val: val.clone() }, 1);
-            n.clone()
+            n
         },
         (Tree { keyCompareFunc, .. }, Deref @ Node::NODE { item: Item::ITEM { key: rkey, .. }, .. }, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             let mut order: i32;
             order = keyCompareFunc(key.clone(), rkey.clone())?;
-            n = balance(addNode_dispatch(inTree, inNode, order.clone(), key.clone(), val.clone())?)?;
-            n.clone()
+            n = balance(addNode_dispatch(inTree, inNode, order, key.clone(), val.clone())?)?;
+            n
         },
         _ => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.addNode name: ")); __mm_s.push_str(&*name(inTree)?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -431,7 +431,7 @@ pub(crate) fn replace<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clo
         _ => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.replace name: ")); __mm_s.push_str(&*name(inTree)?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str).clone()])?;
             bail!("fail")
         },
     });
@@ -445,8 +445,8 @@ pub(crate) fn replaceNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val:
             let mut n: Arc<Node<Key, Val>>;
             let mut order: i32;
             order = keyCompareFunc(key.clone(), rkey.clone())?;
-            n = replaceNode_dispatch(inTree, inNode, order.clone(), key.clone(), val.clone())?;
-            n.clone()
+            n = replaceNode_dispatch(inTree, inNode, order, key.clone(), val.clone())?;
+            n
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -462,14 +462,14 @@ fn replaceNode_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: C
         (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, 1, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             n = emptyNodeIfNoNode(r.clone())?;
-            n = replaceNode(inTree, n.clone(), key.clone(), val.clone())?;
-            Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: l.clone(), right: n.clone() })
+            n = replaceNode(inTree, n, key.clone(), val.clone())?;
+            Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: l.clone(), right: n })
         },
         (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, (-1), key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             n = emptyNodeIfNoNode(l.clone())?;
-            n = replaceNode(inTree, n.clone(), key.clone(), val.clone())?;
-            Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: n.clone(), right: r.clone() })
+            n = replaceNode(inTree, n, key.clone(), val.clone())?;
+            Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: n, right: r.clone() })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -756,9 +756,9 @@ fn prettyPrintNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clo
             let mut res: ArcStr;
             indent = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone();
             s1 = (prettyPrintNodeStr(inTree.clone(), l.clone(), (indent.clone()).clone())?).clone();
-            s2 = (prettyPrintNodeStr(inTree, r.clone(), (indent.clone()).clone())?).clone();
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
-            res.clone()
+            s2 = (prettyPrintNodeStr(inTree, r.clone(), (indent).clone())?).clone();
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*s1); __mm_s.push_str(&*s2); ArcStr::from(__mm_s) }).clone();
+            res
         },
         Deref @ Node::NODE { item: item @ Item::ITEM { .. }, left: l, right: r, .. } => {
             let mut indent: ArcStr;
@@ -767,9 +767,9 @@ fn prettyPrintNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clo
             let mut res: ArcStr;
             indent = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone();
             s1 = (prettyPrintNodeStr(inTree.clone(), l.clone(), (indent.clone()).clone())?).clone();
-            s2 = (prettyPrintNodeStr(inTree.clone(), r.clone(), (indent.clone()).clone())?).clone();
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*printItemStr(inTree, item.clone())?); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
-            res.clone()
+            s2 = (prettyPrintNodeStr(inTree.clone(), r.clone(), (indent).clone())?).clone();
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*printItemStr(inTree, item.clone())?); __mm_s.push_str(&*s1); __mm_s.push_str(&*s2); ArcStr::from(__mm_s) }).clone();
+            res
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
@@ -806,8 +806,8 @@ fn printNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + '
             left_str = (printNodeStr(inTree.clone(), left.clone())?).clone();
             right_str = (printNodeStr(inTree.clone(), right.clone())?).clone();
             item_str = (printItemStr(inTree, item.clone())?).clone();
-            r#str = stringAppendList(list![(literal!("i: ")).clone(), (item_str.clone()).clone(), (literal!(", l: ")).clone(), (left_str.clone()).clone(), (literal!(", r: ")).clone(), (right_str.clone()).clone()]);
-            r#str.clone()
+            r#str = stringAppendList(list![(literal!("i: ")).clone(), (item_str).clone(), (literal!(", l: ")).clone(), (left_str).clone(), (literal!(", r: ")).clone(), (right_str).clone()]);
+            r#str
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
@@ -830,8 +830,8 @@ pub(crate) fn printItemStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val
             val2Str = getValToStrFunc(inTree)?;
             keyStr = (key2Str(key.clone())?).clone();
             valStr = (val2Str(val.clone())?).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*keyStr.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valStr.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*keyStr); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valStr); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+            r#str
         },
         _ => bail!("match: no arm matched"),
     })).clone();
@@ -920,28 +920,28 @@ fn addNodeUnique<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 
             let mut n: Arc<Node<Key, Val>>;
             item = Item::ITEM { key: inKey, val: inVal };
             n = newLeafNode(item.clone(), 1);
-            (n.clone(), item.clone())
+            (n, item)
         },
         (_, Deref @ Node::NODE { item: Item::NO_ITEM { .. }, left: Deref @ Node::NO_NODE { .. }, right: Deref @ Node::NO_NODE { .. }, .. }, key, val) => {
             let mut item: Item<Key, Val>;
             let mut n: Arc<Node<Key, Val>>;
             item = Item::ITEM { key: key.clone(), val: val.clone() };
             n = newLeafNode(item.clone(), 1);
-            (n.clone(), item.clone())
+            (n, item)
         },
         (Tree { keyCompareFunc, .. }, Deref @ Node::NODE { item: Item::ITEM { key: rkey, .. }, .. }, key, val) => {
             let mut item: Item<Key, Val>;
             let mut n: Arc<Node<Key, Val>>;
             let mut order: i32;
             order = keyCompareFunc(key.clone(), rkey.clone())?;
-            (n, item) = addNodeUnique_dispatch(inTree, inNode, order.clone(), key.clone(), val.clone())?;
-            n = balance(n.clone())?;
-            (n.clone(), item.clone())
+            (n, item) = addNodeUnique_dispatch(inTree, inNode, order, key.clone(), val.clone())?;
+            n = balance(n)?;
+            (n, item)
         },
         _ => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.addNodeUnique name: ")); __mm_s.push_str(&*name(inTree)?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -960,15 +960,15 @@ fn addNodeUnique_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace, Val:
             let mut n: Arc<Node<Key, Val>>;
             let mut it: Item<Key, Val>;
             n = emptyNodeIfNoNode(r.clone())?;
-            (n, it) = addNodeUnique(inTree, n.clone(), key.clone(), val.clone())?;
-            (Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: l.clone(), right: n.clone() }), it.clone())
+            (n, it) = addNodeUnique(inTree, n, key.clone(), val.clone())?;
+            (Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: l.clone(), right: n }), it)
         },
         (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, (-1), key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             let mut it: Item<Key, Val>;
             n = emptyNodeIfNoNode(l.clone())?;
-            (n, it) = addNodeUnique(inTree, n.clone(), key.clone(), val.clone())?;
-            (Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: n.clone(), right: r.clone() }), it.clone())
+            (n, it) = addNodeUnique(inTree, n, key.clone(), val.clone())?;
+            (Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: n, right: r.clone() }), it)
         },
         _ => bail!("match: no arm matched"),
     } });

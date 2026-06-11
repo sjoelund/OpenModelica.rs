@@ -356,16 +356,16 @@ fn compHasDummyState(mut comp: Arc<BackendDAE::StrongComponent>, mut syst: Arc<B
             let mut b: bool;
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = List::map1(varIdcs.clone(), (std::sync::Arc::new(BackendVariable::getVarAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::Variables) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
-            b = List::fold(List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isDummyStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), false)?;
-            b = b.clone() && intGt((varIdcs.clone().len() as i32), 1);
-            b.clone()
+            b = List::fold(List::map(varLst, (std::sync::Arc::new(fnptr!(BackendVariable::isDummyStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), false)?;
+            b = b && intGt((varIdcs.clone().len() as i32), 1);
+            b
         },
         (Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { vars: varIdcs, .. }, Deref @ BackendDAE::EqSystem { orderedVars: vars, .. }) => {
             let mut b: bool;
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = List::map1(varIdcs.clone(), (std::sync::Arc::new(BackendVariable::getVarAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::Variables) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
-            b = List::fold(List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isDummyStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), false)?;
-            b.clone()
+            b = List::fold(List::map(varLst, (std::sync::Arc::new(fnptr!(BackendVariable::isDummyStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), false)?;
+            b
         },
         _ => {
             false
@@ -555,9 +555,9 @@ fn addDerReplacement(mut var1: BackendDAE::Var, mut var2: BackendDAE::Var, mut r
             let mut repl: BackendVarTransform::VariableReplacements;
             source = BackendVariable::varCref(var2)?;
             dest = BackendVariable::varExp(var1)?;
-            dest = IndexReduction::makeder(dest.clone())?;
-            repl = BackendVarTransform::addReplacement(replIn, source.clone(), dest.clone(), None)?;
-            repl.clone()
+            dest = IndexReduction::makeder(dest)?;
+            repl = BackendVarTransform::addReplacement(replIn, source, dest, None)?;
+            repl
         },
         _ => {
             replIn
@@ -870,7 +870,7 @@ fn updateIndicesInComp(mut compIn: Arc<BackendDAE::StrongComponent>, mut varOffs
             varIdx = varIdx.clone() + varOffset;
             eqIdx = eqIdx.clone() + eqOffset;
             compTmp = Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx.clone(), var: varIdx.clone() });
-            compTmp.clone()
+            compTmp
         },
         _ => {
             metamodelica::print((literal!("updateVarEqIndices failed\n")).clone());
@@ -1276,7 +1276,7 @@ fn getResidualExpressionForEquation(mut eq: Arc<BackendDAE::Equation>) -> Result
             let mut ty: Arc<DAE::Type>;
             let mut rhs = (*rhs).clone();
             ty = Expression::r#typeof(lhs.clone())?;
-            rhs = Arc::new(DAE::Exp::BINARY { exp1: rhs.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: lhs.clone() });
+            rhs = Arc::new(DAE::Exp::BINARY { exp1: rhs.clone(), operator: DAE::Operator::SUB { ty: ty }, exp2: lhs.clone() });
             (rhs, _) = ExpressionSimplify::simplify(rhs.clone())?;
             rhs.clone()
         },
@@ -1298,8 +1298,8 @@ fn varInFrontList(mut varIn: BackendDAE::Var, mut lstLstIn: Arc<metamodelica::Li
         _ => {
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = listHead(lstLstIn.clone())?;
-            varLst = metamodelica::cons(varIn, varLst.clone());
-            lstLstOut = List::replaceAt(varLst.clone(), 1, lstLstIn)?;
+            varLst = metamodelica::cons(varIn, varLst);
+            lstLstOut = List::replaceAt(varLst, 1, lstLstIn)?;
             lstLstOut
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1316,8 +1316,8 @@ fn eqInFrontList(mut eqIn: Arc<BackendDAE::Equation>, mut lstLstIn: Arc<metamode
         _ => {
             let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             eqLst = listHead(lstLstIn.clone())?;
-            eqLst = metamodelica::cons(eqIn, eqLst.clone());
-            lstLstOut = List::replaceAt(eqLst.clone(), 1, lstLstIn)?;
+            eqLst = metamodelica::cons(eqIn, eqLst);
+            lstLstOut = List::replaceAt(eqLst, 1, lstLstIn)?;
             lstLstOut
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1863,8 +1863,8 @@ fn applyCramerRule(mut jacValuesIn: metamodelica::Array<Arc<metamodelica::List<B
             let mut resEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut addVars: Arc<metamodelica::List<BackendDAE::Var>>;
             syst = getMatrixFromJac(jacValuesIn.clone(), varsIn.clone())?;
-            (resEqs, addEqs, addVars) = CramerRule(syst.clone());
-            (resEqs.clone(), varsIn, addEqs.clone(), addVars.clone())
+            (resEqs, addEqs, addVars) = CramerRule(syst);
+            (resEqs, varsIn, addEqs, addVars)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

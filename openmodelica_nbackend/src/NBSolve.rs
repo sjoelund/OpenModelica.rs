@@ -648,7 +648,7 @@ pub(crate) fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointe
         }
         __acc.reverse()
     }), false)?, funcMap, kind, implicit_index, slicing_map, iter, varData, eqData)?;
-            assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = if_body.clone());
+            assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = if_body);
             (Arc::new(Slice::NBSlice { t: Pointer::create(eqn), indices: eqn_slice.indices.clone() }), status)
         },
         Deref @ Equation::ALGORITHM { .. } => {
@@ -660,12 +660,12 @@ pub(crate) fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointe
         Deref @ Equation::RECORD_EQUATION { .. } => {
             let mut solved_eqn: Arc<Equation::Equation>;
             (solved_eqn, status) = solveMultiRecordStrongComponent(eqn, var_slices, funcMap)?;
-            (Arc::new(Slice::NBSlice { t: Pointer::create(solved_eqn.clone()), indices: eqn_slice.indices.clone() }), status)
+            (Arc::new(Slice::NBSlice { t: Pointer::create(solved_eqn), indices: eqn_slice.indices.clone() }), status)
         },
         Deref @ Equation::ARRAY_EQUATION { .. } => {
             let mut solved_eqn: Arc<Equation::Equation>;
             (solved_eqn, status) = solveMultiRecordStrongComponent(eqn, var_slices, funcMap)?;
-            (Arc::new(Slice::NBSlice { t: Pointer::create(solved_eqn.clone()), indices: eqn_slice.indices.clone() }), status)
+            (Arc::new(Slice::NBSlice { t: Pointer::create(solved_eqn), indices: eqn_slice.indices.clone() }), status)
         },
         Deref @ Equation::DUMMY_EQUATION => {
             (eqn_slice, Status::EXPLICIT.clone())
@@ -741,8 +741,8 @@ pub(crate) fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<Comp
             let mut dummy: Arc<Iterator::Iterator>;
             (indexed_var, _) = BVariable::makeVarPtrCyclic(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo"))?, cref)?;
             dummy = Iterator::dummy(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            (body_slice, status, implicit_index) = solveMultiStrongComponent(Arc::new(Slice::NBSlice { t: Pointer::create(body.clone()), indices: metamodelica::nil() }), list![Arc::new(Slice::NBSlice { t: indexed_var.clone(), indices: metamodelica::nil() })], funcMap, kind, implicit_index, slicing_map, dummy.clone(), varData, eqData)?;
-            assign_variant_field!(eqn => Equation::Equation::FOR_EQUATION; body = list![Pointer::access(Slice::getT(body_slice.clone()))]);
+            (body_slice, status, implicit_index) = solveMultiStrongComponent(Arc::new(Slice::NBSlice { t: Pointer::create(body.clone()), indices: metamodelica::nil() }), list![Arc::new(Slice::NBSlice { t: indexed_var, indices: metamodelica::nil() })], funcMap, kind, implicit_index, slicing_map, dummy, varData, eqData)?;
+            assign_variant_field!(eqn => Equation::Equation::FOR_EQUATION; body = list![Pointer::access(Slice::getT(body_slice))]);
             (eqn, status, RelationInversion::FALSE.clone())
         },
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
@@ -875,7 +875,7 @@ pub(crate) fn solveSimple(mut eqn: Arc<Equation::Equation>, mut cref: Arc<Compon
             let mut if_body: Arc<IfEquationBody::IfEquationBody>;
             (if_body, status, invertRelation) = solveSimpleIf(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), cref)?;
             if status == Status::EXPLICIT.clone() {
-                assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = if_body.clone());
+                assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = if_body);
             } else {
                 status = Status::UNPROCESSED.clone();
             }
@@ -1521,7 +1521,7 @@ fn applyInstruction(mut insertExp: Arc<Expression::NFExpression>, mut instructio
                     invargList = metamodelica::cons(insertExp.clone(), invargList.clone());
                 }
             }
-            Arc::new(Expression::NFExpression::MULTARY { arguments: argList.clone(), inv_arguments: invargList.clone(), operator: var_field!((*instruction).operator, Expression::NFExpression::MULTARY).clone() })
+            Arc::new(Expression::NFExpression::MULTARY { arguments: argList, inv_arguments: invargList, operator: var_field!((*instruction).operator, Expression::NFExpression::MULTARY).clone() })
         },
         Deref @ Expression::BINARY { .. } => {
             if Expression::isSubstitute(var_field!((*instruction).exp1, Expression::NFExpression::BINARY).clone())? {
@@ -1551,7 +1551,7 @@ fn applyInstruction(mut insertExp: Arc<Expression::NFExpression>, mut instructio
                     argList = metamodelica::cons(insertExp.clone(), argList.clone());
                 }
             }
-            assign_variant_field!(local_call => Call::NFCall::TYPED_CALL; arguments = argList.clone().reverse());
+            assign_variant_field!(local_call => Call::NFCall::TYPED_CALL; arguments = argList.reverse());
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = local_call.clone());
             ()
         },

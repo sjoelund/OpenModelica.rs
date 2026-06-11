@@ -306,10 +306,10 @@ pub fn loadClassFromMp(mut id: ArcStr, mut path: ArcStr, mut name: ArcStr, mut i
             let mut strategy: LoadFileStrategy;
             pd = (arcstr::literal!(Autoconf::pathDelimiter)).clone();
             encodingfile = stringAppendList(list![(path.clone()).clone(), (pd.clone()).clone(), (literal!("package.encoding")).clone()]);
-            encoding = (System::trimChar((System::trimChar((if (System::regularFileExists((encodingfile.clone()).clone())) {System::readFile((encodingfile.clone()).clone())?} else {Util::getOptionOrDefault(optEncoding, (literal!("UTF-8")).clone())}).clone(), (literal!("\n")).clone())?).clone(), (literal!(" ")).clone())?).clone();
-            strategy = LoadFileStrategy::STRATEGY_ON_DEMAND { encoding: (encoding.clone()).clone() };
-            cl = parsePackageFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*path); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone(), strategy.clone(), false, openmodelica_ast::Absyn::Within::TOP, (id).clone(), encrypted)?;
-            cl.clone()
+            encoding = (System::trimChar((System::trimChar((if (System::regularFileExists((encodingfile.clone()).clone())) {System::readFile((encodingfile).clone())?} else {Util::getOptionOrDefault(optEncoding, (literal!("UTF-8")).clone())}).clone(), (literal!("\n")).clone())?).clone(), (literal!(" ")).clone())?).clone();
+            strategy = LoadFileStrategy::STRATEGY_ON_DEMAND { encoding: (encoding).clone() };
+            cl = parsePackageFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*path); __mm_s.push_str(&*pd); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone(), strategy, false, openmodelica_ast::Absyn::Within::TOP, (id).clone(), encrypted)?;
+            cl
         },
         true => {
             let mut pd: ArcStr;
@@ -322,26 +322,26 @@ pub fn loadClassFromMp(mut id: ArcStr, mut path: ArcStr, mut name: ArcStr, mut i
             let mut lveInstance: Option<i32>;
             pd = (arcstr::literal!(Autoconf::pathDelimiter)).clone();
             encodingfile = stringAppendList(list![(path.clone()).clone(), (pd.clone()).clone(), (name.clone()).clone(), (pd.clone()).clone(), (literal!("package.encoding")).clone()]);
-            encoding = (System::trimChar((System::trimChar((if (System::regularFileExists((encodingfile.clone()).clone())) {System::readFile((encodingfile.clone()).clone())?} else {Util::getOptionOrDefault(optEncoding, (literal!("UTF-8")).clone())}).clone(), (literal!("\n")).clone())?).clone(), (literal!(" ")).clone())?).clone();
+            encoding = (System::trimChar((System::trimChar((if (System::regularFileExists((encodingfile.clone()).clone())) {System::readFile((encodingfile).clone())?} else {Util::getOptionOrDefault(optEncoding, (literal!("UTF-8")).clone())}).clone(), (literal!("\n")).clone())?).clone(), (literal!(" ")).clone())?).clone();
             lveInstance = None;
             if encrypted {
                 (lveStarted, lveInstance) = Parser::startLibraryVendorExecutable(({ let mut __mm_s = String::new(); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone());
-                if !(lveStarted.clone()) {
+                if !(lveStarted) {
                     Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Unable to start library vendor executable.")).clone()])?;
                     bail!("fail");
                 }
             }
             if (Testsuite::isRunning()? || Config::noProc()? == 1) && !(encrypted) {
-                strategy = LoadFileStrategy::STRATEGY_ON_DEMAND { encoding: (encoding.clone()).clone() };
+                strategy = LoadFileStrategy::STRATEGY_ON_DEMAND { encoding: (encoding).clone() };
             } else {
                 filenames = getAllFilesFromDirectory(({ let mut __mm_s = String::new(); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), encrypted, metamodelica::nil())?;
-                strategy = LoadFileStrategy::STRATEGY_HASHTABLE { ht: Parser::parallelParseFiles(filenames.clone(), (encoding.clone()).clone(), Config::noProc()?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), lveInstance.clone())? };
+                strategy = LoadFileStrategy::STRATEGY_HASHTABLE { ht: Parser::parallelParseFiles(filenames, (encoding).clone(), Config::noProc()?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*pd); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), lveInstance.clone())? };
             }
-            cl = loadCompletePackageFromMp((id).clone(), (name).clone(), (path).clone(), strategy.clone(), openmodelica_ast::Absyn::Within::TOP, Error::getNumErrorMessages(), encrypted)?;
-            if encrypted && lveStarted.clone() {
-                Parser::stopLibraryVendorExecutable(lveInstance.clone());
+            cl = loadCompletePackageFromMp((id).clone(), (name).clone(), (path).clone(), strategy, openmodelica_ast::Absyn::Within::TOP, Error::getNumErrorMessages(), encrypted)?;
+            if encrypted && lveStarted {
+                Parser::stopLibraryVendorExecutable(lveInstance);
             }
-            cl.clone()
+            cl
         },
     });
     Ok(outClass)
@@ -448,12 +448,12 @@ fn mergeBefore(mut cp: Arc<Absyn::ClassPart>, mut cps: Arc<metamodelica::List<Ar
         (Deref @ Absyn::ClassPart::PUBLIC { contents: ei1 }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: ei2 }, tail: rest }) => {
             let mut ei: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             ei = listAppend(ei1.clone(), ei2.clone());
-            metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: ei.clone() }), rest.clone())
+            metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: ei }), rest.clone())
         },
         (Deref @ Absyn::ClassPart::PROTECTED { contents: ei1 }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: ei2 }, tail: rest }) => {
             let mut ei: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             ei = listAppend(ei1.clone(), ei2.clone());
-            metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: ei.clone() }), rest.clone())
+            metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: ei }), rest.clone())
         },
         _ => {
             metamodelica::cons(cp, cps)
@@ -486,24 +486,24 @@ fn loadCompletePackageFromMp2(mut po: PackageOrder, mut mp: ArcStr, mut strategy
             let mut bDirectoryAndFileExists: bool;
             pd = (arcstr::literal!(Autoconf::pathDelimiter)).clone();
             file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*if (encrypted) {literal!("/package.moc")} else {literal!("/package.mo")}); ArcStr::from(__mm_s) }).clone();
-            bDirectoryAndFileExists = System::directoryExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*id.clone()); ArcStr::from(__mm_s) }).clone()) && System::regularFileExists((file.clone()).clone());
-            if bDirectoryAndFileExists.clone() {
+            bDirectoryAndFileExists = System::directoryExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*id.clone()); ArcStr::from(__mm_s) }).clone()) && System::regularFileExists((file).clone());
+            if bDirectoryAndFileExists {
                 cl = loadCompletePackageFromMp((id.clone()).clone(), (id.clone()).clone(), (mp).clone(), strategy, w1, Error::getNumErrorMessages(), encrypted)?;
                 if isSome(cl.clone()) {
-                    ei = AbsynUtil::makeClassElement(Util::getOption(cl.clone())?)?;
+                    ei = AbsynUtil::makeClassElement(Util::getOption(cl)?)?;
                     cps = mergeBefore(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![ei.clone()] }), acc);
                 } else {
                     cps = acc;
                 }
             } else {
-                file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*if (encrypted) {literal!(".moc")} else {literal!(".mo")}); ArcStr::from(__mm_s) }).clone();
+                file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp); __mm_s.push_str(&*pd); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*if (encrypted) {literal!(".moc")} else {literal!(".mo")}); ArcStr::from(__mm_s) }).clone();
                 if !(System::regularFileExists((file.clone()).clone())) {
                     Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected file ")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(" to exist")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ClassLoader.mo"))?;
                     bail!("fail");
                 }
-                cl = parsePackageFile((file.clone()).clone(), strategy, false, w1, (id.clone()).clone(), encrypted)?;
+                cl = parsePackageFile((file).clone(), strategy, false, w1, (id.clone()).clone(), encrypted)?;
                 if isSome(cl.clone()) {
-                    ei = AbsynUtil::makeClassElement(Util::getOption(cl.clone())?)?;
+                    ei = AbsynUtil::makeClassElement(Util::getOption(cl)?)?;
                     cps = mergeBefore(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![ei.clone()] }), acc);
                 } else {
                     cps = acc;
@@ -695,17 +695,17 @@ fn checkPackageOrderFilesExist(mut po: PackageOrder, mut mp: ArcStr, mut info: S
             let mut str4: ArcStr;
             pd = (arcstr::literal!(Autoconf::pathDelimiter)).clone();
             str2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*if (encrypted) {literal!(".moc")} else {literal!(".mo")}); ArcStr::from(__mm_s) }).clone();
-            if !(System::directoryExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone()) || System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*str2.clone()); ArcStr::from(__mm_s) }).clone())) {
+            if !(System::directoryExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone()) || System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd); __mm_s.push_str(&*str2.clone()); ArcStr::from(__mm_s) }).clone())) {
                 if let Ok(__iflet0) = List::find(System::moFiles((mp.clone()).clone()), (std::sync::Arc::new({ let __pe_b1 = (System::tolower((str2.clone()).clone())).clone(); move |__pe_a0| Ok(Util::stringEqCaseInsensitive(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>)) {
                     str3 = __iflet0;
                 } else {
                     Error::addSourceMessage(Error::PACKAGE_ORDER_FILE_NOT_FOUND.clone(), list![(r#str.clone()).clone()], info.clone())?;
                     bail!("fail");
                 }
-                Error::addSourceMessage(Error::PACKAGE_ORDER_CASE_SENSITIVE.clone(), list![(r#str.clone()).clone(), (str2.clone()).clone(), (str3.clone()).clone()], info)?;
-                str4 = (Util::removeLastNChar((str3.clone()).clone(), if (encrypted) {4} else {3})?).clone();
+                Error::addSourceMessage(Error::PACKAGE_ORDER_CASE_SENSITIVE.clone(), list![(r#str.clone()).clone(), (str2).clone(), (str3.clone()).clone()], info)?;
+                str4 = (Util::removeLastNChar((str3).clone(), if (encrypted) {4} else {3})?).clone();
                 differences = List::removeOnTrue((str4.clone()).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), differences)?;
-                po = PackageOrder::CLASSLOAD { cl: (str4.clone()).clone() };
+                po = PackageOrder::CLASSLOAD { cl: (str4).clone() };
             }
             ()
         },
@@ -765,10 +765,10 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
             let mut b: bool;
             let mut orderElt: PackageOrder;
             compNames = List::map(comps.clone(), (std::sync::Arc::new(AbsynUtil::componentName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentItem>) -> Result<ArcStr> + 'static>))?;
-            (names, b) = matchCompNames(inNamesToSort, compNames.clone(), info.clone())?;
-            orderElt = if (b.clone()) {makeElement(ei.clone(), r#pub)} else {makeClassLoad((name1.clone()).clone())};
-            (outOrder, names) = getPackageContentNamesinElts(names.clone(), if (b.clone()) {elts.clone()} else {inElts}, metamodelica::cons(orderElt.clone(), po), r#pub)?;
-            (outOrder, names.clone())
+            (names, b) = matchCompNames(inNamesToSort, compNames, info.clone())?;
+            orderElt = if (b) {makeElement(ei.clone(), r#pub)} else {makeClassLoad((name1.clone()).clone())};
+            (outOrder, names) = getPackageContentNamesinElts(names, if (b) {elts.clone()} else {inElts}, metamodelica::cons(orderElt, po), r#pub)?;
+            (outOrder, names)
         },
         (Deref @ metamodelica::List::Cons { head: name1, tail: namesToSort }, Deref @ metamodelica::List::Cons { head: ei @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { name: name2, info, .. }, .. }, .. } }, tail: elts }) => {
             let mut names: Arc<metamodelica::List<ArcStr>>;
@@ -777,33 +777,33 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
             let mut load: PackageOrder;
             load = makeClassLoad((name1.clone()).clone());
             b = name1.clone() == name2.clone();
-            Error::assertionOrAddSourceMessage(if (b.clone()) {!(listMember(load.clone(), po.clone()))} else {true}, Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
-            orderElt = if (b.clone()) {makeElement(ei.clone(), r#pub)} else {load.clone()};
-            (outOrder, names) = getPackageContentNamesinElts(namesToSort.clone(), if (b.clone()) {elts.clone()} else {inElts}, metamodelica::cons(orderElt.clone(), po), r#pub)?;
-            (outOrder, names.clone())
+            Error::assertionOrAddSourceMessage(if (b) {!(listMember(load.clone(), po.clone()))} else {true}, Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
+            orderElt = if (b) {makeElement(ei.clone(), r#pub)} else {load};
+            (outOrder, names) = getPackageContentNamesinElts(namesToSort.clone(), if (b) {elts.clone()} else {inElts}, metamodelica::cons(orderElt, po), r#pub)?;
+            (outOrder, names)
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { name: name2, info, .. }, .. }, .. } }, tail: _ }) => {
             let mut names: Arc<metamodelica::List<ArcStr>>;
             let mut load: PackageOrder;
             load = makeClassLoad((name2.clone()).clone());
-            Error::assertionOrAddSourceMessage(!(listMember(load.clone(), po.clone())), Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
+            Error::assertionOrAddSourceMessage(!(listMember(load, po.clone())), Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
             Error::addSourceMessage(Error::FOUND_ELEMENT_NOT_IN_ORDER_FILE.clone(), list![(name2.clone()).clone()], info.clone())?;
             (outOrder, names) = getPackageContentNamesinElts(metamodelica::cons((name2.clone()).clone(), inNamesToSort), inElts, po, r#pub)?;
-            (outOrder, names.clone())
+            (outOrder, names)
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. }, tail: _ }, .. }, info, .. } }, tail: _ }) => {
             let mut names: Arc<metamodelica::List<ArcStr>>;
             let mut load: PackageOrder;
             load = makeClassLoad((name2.clone()).clone());
-            Error::assertionOrAddSourceMessage(!(listMember(load.clone(), po.clone())), Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
+            Error::assertionOrAddSourceMessage(!(listMember(load, po.clone())), Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
             Error::addSourceMessage(Error::FOUND_ELEMENT_NOT_IN_ORDER_FILE.clone(), list![(name2.clone()).clone()], info.clone())?;
             (outOrder, names) = getPackageContentNamesinElts(metamodelica::cons((name2.clone()).clone(), inNamesToSort), inElts, po, r#pub)?;
-            (outOrder, names.clone())
+            (outOrder, names)
         },
         (namesToSort, Deref @ metamodelica::List::Cons { head: ei, tail: elts }) => {
             let mut names: Arc<metamodelica::List<ArcStr>>;
             (outOrder, names) = getPackageContentNamesinElts(namesToSort.clone(), elts.clone(), metamodelica::cons(PackageOrder::ELEMENT { element: ei.clone(), r#pub: r#pub }, po), r#pub)?;
-            (outOrder, names.clone())
+            (outOrder, names)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -823,12 +823,12 @@ fn matchCompNames(mut names: Arc<metamodelica::List<ArcStr>>, mut comps: Arc<met
             let mut rest1 = (*rest1).clone();
             if n1.clone() == n2.clone() {
                 (rest1, b) = matchCompNames(rest1.clone(), rest2.clone(), info.clone())?;
-                Error::assertionOrAddSourceMessage(b.clone(), Error::ORDER_FILE_COMPONENTS.clone(), metamodelica::nil(), info)?;
+                Error::assertionOrAddSourceMessage(b, Error::ORDER_FILE_COMPONENTS.clone(), metamodelica::nil(), info)?;
                 b1 = true;
             } else {
                 b1 = false;
             }
-            (rest1.clone(), b1.clone())
+            (rest1.clone(), b1)
         },
         _ => bail!("match: no arm matched"),
     } });

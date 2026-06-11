@@ -103,7 +103,7 @@ fn cevalWork1(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
             let mut str2: ArcStr;
             str1 = (intString(Global::recursionDepthLimit.clone())).clone();
             str2 = (ExpressionBasics::printExpStr(inExp)?).clone();
-            Error::addSourceMessage(Error::RECURSION_DEPTH_WARNING.clone(), list![(str1.clone()).clone(), (str2.clone()).clone(), (FGraph::printGraphPathStr(inEnv)).clone()], info.clone())?;
+            Error::addSourceMessage(Error::RECURSION_DEPTH_WARNING.clone(), list![(str1).clone(), (str2).clone(), (FGraph::printGraphPathStr(inEnv)).clone()], info.clone())?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -1492,10 +1492,10 @@ fn cevalWholedimRetCall(mut inExp: Arc<DAE::Exp>, mut inCache: FCore::Cache, mut
             let mut attr = (*attr).clone();
             let true = (Expression::arrayContainWholeDimension(dims.clone())) else { bail!("pattern mismatch") };
             (_, v) = ceval(inCache, inEnv, e.clone(), true, Absyn::Msg::MSG { info: inInfo }, numIter + 1)?;
-            ty = Types::typeOfValue(v.clone())?;
+            ty = Types::typeOfValue(v)?;
             cevalType = Types::simplifyType(ty.clone())?;
-            assign_field!(attr.ty = cevalType.clone());
-            (Arc::new(DAE::Exp::CALL { path: p.clone(), expLst: el.clone(), attr: attr.clone() }), DAE::Properties::PROP { type_: ty.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_PARAM })
+            assign_field!(attr.ty = cevalType);
+            (Arc::new(DAE::Exp::CALL { path: p.clone(), expLst: el.clone(), attr: attr.clone() }), DAE::Properties::PROP { type_: ty, constFlag: openmodelica_frontend_types::DAE::Const::C_PARAM })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1873,70 +1873,70 @@ fn cevalKnownExternalFuncs2(mut id: ArcStr, mut inValuesValueLst: Arc<metamodeli
             let mut rv_1: metamodelica::Real;
             let true = (rv.clone() >= metamodelica::OrderedFloat(-1.0_f64) && rv.clone() <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
             rv_1 = (rv.clone()).acos();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "asin", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             let true = (rv.clone() >= metamodelica::OrderedFloat(-1.0_f64) && rv.clone() <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
             rv_1 = (rv.clone()).asin();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "atan", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).atan();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "atan2", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv2 }, tail: Deref @ metamodelica::List::Nil } }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv1.clone()).atan2(rv2.clone());
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "cos", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).cos();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "cosh", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).cosh();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "exp", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).exp();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "log", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             let true = (rv.clone() > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
             rv_1 = (rv.clone()).ln();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "log10", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             let true = (rv.clone() > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
             rv_1 = (rv.clone()).log10();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "sin", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).sin();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "sinh", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).sinh();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "tan", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).tan();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "tanh", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: rv }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut rv_1: metamodelica::Real;
             rv_1 = (rv.clone()).tanh();
-            Arc::new(Values::Value::REAL { real: rv_1.clone() })
+            Arc::new(Values::Value::REAL { real: rv_1 })
         },
         (Deref @ "ModelicaStrings_substring", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: start }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: stop }, tail: Deref @ metamodelica::List::Nil } } }) => {
             let mut r#str = (*r#str).clone();
@@ -1946,7 +1946,7 @@ fn cevalKnownExternalFuncs2(mut id: ArcStr, mut inValuesValueLst: Arc<metamodeli
         (Deref @ "ModelicaStrings_length", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut i: i32;
             i = ((r#str.clone()).clone().len() as i32);
-            Arc::new(Values::Value::INTEGER { integer: i.clone() })
+            Arc::new(Values::Value::INTEGER { integer: i })
         },
         (Deref @ "print", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Nil }) => {
             metamodelica::print((r#str.clone()).clone());
@@ -1958,9 +1958,9 @@ fn cevalKnownExternalFuncs2(mut id: ArcStr, mut inValuesValueLst: Arc<metamodeli
             let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut v: Arc<Values::Value>;
             (n, strs) = System::regex((r#str.clone()).clone(), (re.clone()).clone(), i.clone(), extended.clone(), insensitive.clone());
-            vals = List::map(strs.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
-            v = Arc::new(Values::Value::ARRAY { valueLst: vals.clone(), dimLst: list![i.clone()] });
-            Arc::new(Values::Value::TUPLE { valueLst: list![Arc::new(Values::Value::INTEGER { integer: n.clone() }), v.clone()] })
+            vals = List::map(strs, (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
+            v = Arc::new(Values::Value::ARRAY { valueLst: vals, dimLst: list![i.clone()] });
+            Arc::new(Values::Value::TUPLE { valueLst: list![Arc::new(Values::Value::INTEGER { integer: n }), v] })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2312,7 +2312,7 @@ fn cevalBuiltinSign(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            (b1, b2, b3) = (::match_deref::match_deref! { match &(v.clone()) {
+            (b1, b2, b3) = (::match_deref::match_deref! { match &(v) {
         Deref @ Values::Value::REAL { real: __esc_rv } => {
             rv = (*__esc_rv).clone();
             (rv.clone() > metamodelica::OrderedFloat(0.0_f64), rv.clone() < metamodelica::OrderedFloat(0.0_f64), rv.clone() == metamodelica::OrderedFloat(0.0_f64))
@@ -2323,12 +2323,12 @@ fn cevalBuiltinSign(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
         },
         _ => bail!("match: no arm matched"),
     } });
-            let __pa0 = ::match_deref::match_deref! { match &(List::select(list![(b1.clone(), 1), (b2.clone(), -1), (b3.clone(), 0)], std::sync::Arc::new(fnptr!(Util::tuple21, _)))?) {
+            let __pa0 = ::match_deref::match_deref! { match &(List::select(list![(b1, 1), (b2, -1), (b3, 0)], std::sync::Arc::new(fnptr!(Util::tuple21, _)))?) {
                 Deref @ metamodelica::List::Cons { head: (_, __pa0), tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             iv_1 = __pa0.clone();
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: iv_1.clone() }))
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: iv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2349,8 +2349,8 @@ fn cevalBuiltinExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).exp();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).exp();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2365,7 +2365,7 @@ fn cevalBuiltinNoevent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            (cache.clone(), v.clone())
+            (cache.clone(), v)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2388,8 +2388,8 @@ fn cevalBuiltinCat(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             cache = __pa0.clone();
             dim_int = __pa1.clone();
             (cache, mat_lst) = cevalList(cache.clone(), env.clone(), matrices.clone(), r#impl.clone(), msg.clone(), numIter)?;
-            v = cevalCat(mat_lst.clone(), dim_int.clone())?;
-            (cache.clone(), v.clone())
+            v = cevalCat(mat_lst, dim_int)?;
+            (cache.clone(), v)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2412,20 +2412,20 @@ fn cevalBuiltinIdentity(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             dimension = __pa1.clone();
             res = Arc::new(Values::Value::ARRAY { valueLst: ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut j in (1..=dimension.clone()).into_iter() {
+        for mut j in (1..=dimension).into_iter() {
             let __x = Arc::new(Values::Value::ARRAY { valueLst: ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut i in (1..=dimension.clone()).into_iter() {
+        for mut i in (1..=dimension).into_iter() {
             let __x = if (i.clone() == j.clone()) {Arc::new(Values::Value::INTEGER { integer: 1 })} else {Arc::new(Values::Value::INTEGER { integer: 0 })};
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), dimLst: list![dimension.clone()] });
+    }), dimLst: list![dimension] });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), dimLst: list![dimension.clone(), dimension.clone()] });
-            (cache.clone(), res.clone())
+    }), dimLst: list![dimension, dimension] });
+            (cache.clone(), res)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2455,8 +2455,8 @@ fn cevalBuiltinPromote(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             } };
             cache = __pa3.clone();
             dim_val = __pa4.clone();
-            res = cevalBuiltinPromote2(arr_val.clone(), dim_val.clone() - (dims.clone().len() as i32))?;
-            (cache.clone(), res.clone())
+            res = cevalBuiltinPromote2(arr_val, dim_val - (dims.len() as i32))?;
+            (cache.clone(), res)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2566,8 +2566,8 @@ fn cevalBuiltinSubstring(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             } };
             cache = __pa4.clone();
             stop = __pa5.clone();
-            r#str = substring((r#str.clone()).clone(), start.clone(), stop.clone())?;
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            r#str = substring((r#str).clone(), start, stop)?;
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2586,7 +2586,7 @@ fn cevalBuiltinString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
             let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            r#str = ((::match_deref::match_deref! { match &(v.clone()) {
+            r#str = ((::match_deref::match_deref! { match &(v) {
         Deref @ Values::Value::INTEGER { integer: __esc_i } => {
             i = (*__esc_i).clone();
             intString(i.clone())
@@ -2601,8 +2601,8 @@ fn cevalBuiltinString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
-            (cache, r#str) = cevalBuiltinStringFormat(cache.clone(), env.clone(), (r#str.clone()).clone(), len_exp.clone(), justified_exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            (cache, r#str) = cevalBuiltinStringFormat(cache.clone(), env.clone(), (r#str).clone(), len_exp.clone(), justified_exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Cons { head: sig_dig, tail: Deref @ metamodelica::List::Cons { head: len_exp, tail: Deref @ metamodelica::List::Cons { head: justified_exp, tail: Deref @ metamodelica::List::Nil } } } }, r#impl, msg) => {
             let mut r#str: ArcStr;
@@ -2636,9 +2636,9 @@ fn cevalBuiltinString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
             } };
             cache = __pa6.clone();
             sig = __pa7.clone();
-            format = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("%")); __mm_s.push_str(&*if (left_just.clone()) {literal!("-")} else {literal!("")}); __mm_s.push_str(&*intString(len.clone())); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*intString(sig.clone())); __mm_s.push_str(&*literal!("g")); ArcStr::from(__mm_s) }).clone();
-            r#str = (System::snprintff((format.clone()).clone(), len.clone() + 20, r.clone())?).clone();
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            format = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("%")); __mm_s.push_str(&*if (left_just) {literal!("-")} else {literal!("")}); __mm_s.push_str(&*intString(len)); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*intString(sig)); __mm_s.push_str(&*literal!("g")); ArcStr::from(__mm_s) }).clone();
+            r#str = (System::snprintff((format).clone(), len + 20, r)?).clone();
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2665,8 +2665,8 @@ fn cevalBuiltinStringFormat(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
             } };
             cache = __pa2.clone();
             left_justified = __pa3.clone();
-            r#str = (ExpressionSimplify::cevalBuiltinStringFormat((inString.clone()).clone(), ((inString).clone().len() as i32), min_length.clone(), left_justified.clone())).clone();
-            (cache.clone(), r#str.clone())
+            r#str = (ExpressionSimplify::cevalBuiltinStringFormat((inString.clone()).clone(), ((inString).clone().len() as i32), min_length, left_justified)).clone();
+            (cache.clone(), r#str)
         },
     });
     Ok((outCache, outString))
@@ -2685,7 +2685,7 @@ fn cevalBuiltinPrint(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa0.clone();
             r#str = __pa1.clone();
-            metamodelica::print((r#str.clone()).clone());
+            metamodelica::print((r#str).clone());
             (cache.clone(), openmodelica_frontend_types::Values::Value::interned_NORETCALL())
         },
         _ => bail!("match: no arm matched"),
@@ -2707,8 +2707,8 @@ fn cevalIntString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpE
             } };
             cache = __pa0.clone();
             i = __pa1.clone();
-            r#str = (intString(i.clone())).clone();
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            r#str = (intString(i)).clone();
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2725,13 +2725,13 @@ fn cevalRealString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            let __pa0 = ::match_deref::match_deref! { match &(v.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(v) {
                 Deref @ Values::Value::REAL { real: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             r = __pa0.clone();
-            r#str = (realString(r.clone())).clone();
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            r#str = (realString(r)).clone();
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2752,8 +2752,8 @@ fn cevalStringCharInt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
             } };
             cache = __pa0.clone();
             r#str = __pa1.clone();
-            i = stringCharInt((r#str.clone()).clone())?;
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i.clone() }))
+            i = stringCharInt((r#str).clone())?;
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2774,8 +2774,8 @@ fn cevalIntStringChar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
             } };
             cache = __pa0.clone();
             i = __pa1.clone();
-            r#str = intStringChar(i.clone());
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            r#str = intStringChar(i);
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2796,8 +2796,8 @@ fn cevalStringInt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpE
             } };
             cache = __pa0.clone();
             r#str = __pa1.clone();
-            i = stringInt((r#str.clone()).clone())?;
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i.clone() }))
+            i = stringInt((r#str).clone())?;
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2818,8 +2818,8 @@ fn cevalStringLength(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa0.clone();
             r#str = __pa1.clone();
-            i = ((r#str.clone()).clone().len() as i32);
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i.clone() }))
+            i = ((r#str).clone().len() as i32);
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2841,9 +2841,9 @@ fn cevalStringListStringChar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             } };
             cache = __pa0.clone();
             r#str = __pa1.clone();
-            chList = stringListStringChar((r#str.clone()).clone());
-            valList = List::map(chList.clone(), (std::sync::Arc::new(fnptr!(generateValueString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
-            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList.clone() }))
+            chList = stringListStringChar((r#str).clone());
+            valList = List::map(chList, (std::sync::Arc::new(fnptr!(generateValueString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
+            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2871,9 +2871,9 @@ fn cevalListStringCharString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             } };
             cache = __pa0.clone();
             valList = __pa1.clone();
-            chList = List::map(valList.clone(), (std::sync::Arc::new(extractValueStringChar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
-            r#str = stringAppendList(chList.clone());
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            chList = List::map(valList, (std::sync::Arc::new(extractValueStringChar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
+            r#str = stringAppendList(chList);
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2895,9 +2895,9 @@ fn cevalStringAppendList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             } };
             cache = __pa0.clone();
             valList = __pa1.clone();
-            chList = List::map(valList.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
-            r#str = stringAppendList(chList.clone());
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            chList = List::map(valList, (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
+            r#str = stringAppendList(chList);
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2925,9 +2925,9 @@ fn cevalStringDelimitList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             } };
             cache = __pa2.clone();
             r#str = __pa3.clone();
-            chList = List::map(valList.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
-            r#str = stringDelimitList(chList.clone(), (r#str.clone()).clone());
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
+            chList = List::map(valList, (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
+            r#str = stringDelimitList(chList, (r#str).clone());
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2948,8 +2948,8 @@ fn cevalListLength(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             valList = __pa1.clone();
-            i = (valList.clone().len() as i32);
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i.clone() }))
+            i = (valList.len() as i32);
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: i }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2977,8 +2977,8 @@ fn cevalListAppend(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa2.clone();
             valList2 = __pa3.clone();
-            valList = listAppend(valList1.clone(), valList2.clone());
-            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList.clone() }))
+            valList = listAppend(valList1, valList2);
+            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2999,8 +2999,8 @@ fn cevalListReverse(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             valList1 = __pa1.clone();
-            valList = valList1.clone().reverse();
-            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList.clone() }))
+            valList = valList1.reverse();
+            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3020,7 +3020,7 @@ fn cevalListRest(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpEx
             } };
             cache = __pa0.clone();
             valList1 = __pa1.clone();
-            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList1.clone() }))
+            (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3043,8 +3043,8 @@ fn cevalListMember(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             vals = __pa1.clone();
-            b = listMember(val.clone(), vals.clone());
-            (cache.clone(), Arc::new(Values::Value::BOOL { boolean: b.clone() }))
+            b = listMember(val, vals);
+            (cache.clone(), Arc::new(Values::Value::BOOL { boolean: b }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3064,7 +3064,7 @@ fn cevalListArrayLiteral(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             } };
             cache = __pa0.clone();
             vals = __pa1.clone();
-            (cache.clone(), Arc::new(Values::Value::META_ARRAY { valueLst: vals.clone() }))
+            (cache.clone(), Arc::new(Values::Value::META_ARRAY { valueLst: vals }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3080,8 +3080,8 @@ fn cevalAnyString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpE
             let mut s: ArcStr;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), exp1.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            s = (ValuesDump::valString(v.clone())?).clone();
-            (cache.clone(), Arc::new(Values::Value::STRING { string: (s.clone()).clone() }))
+            s = (ValuesDump::valString(v)?).clone();
+            (cache.clone(), Arc::new(Values::Value::STRING { string: (s).clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3095,7 +3095,7 @@ fn cevalNumBits(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpExp
         Deref @ metamodelica::List::Nil => {
             let mut i: i32;
             i = System::numBits();
-            (inCache, Arc::new(Values::Value::INTEGER { integer: i.clone() }))
+            (inCache, Arc::new(Values::Value::INTEGER { integer: i }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3109,7 +3109,7 @@ fn cevalIntegerMax(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
         Deref @ metamodelica::List::Nil => {
             let mut i: i32;
             i = System::intMaxLit();
-            (inCache, Arc::new(Values::Value::INTEGER { integer: i.clone() }))
+            (inCache, Arc::new(Values::Value::INTEGER { integer: i }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3275,8 +3275,8 @@ fn makeLoadLibrariesEntry(mut cl: Arc<SCode::Element>, mut acc: Arc<metamodelica
             dir = (System::dirname((fileName.clone()).clone())).clone();
             fileName = (System::basename((fileName.clone()).clone())).clone();
             v = ValuesMake::makeArray(list![Arc::new(Values::Value::STRING { string: (name.clone()).clone() }), Arc::new(Values::Value::STRING { string: (dir.clone()).clone() })]);
-            b = stringEq((fileName.clone()).clone(), (literal!("ModelicaBuiltin.mo")).clone()) || stringEq((fileName.clone()).clone(), (literal!("MetaModelicaBuiltin.mo")).clone()) || stringEq((dir.clone()).clone(), (literal!(".")).clone());
-            List::consOnTrue(!(b.clone()), v.clone(), acc)
+            b = stringEq((fileName.clone()).clone(), (literal!("ModelicaBuiltin.mo")).clone()) || stringEq((fileName.clone()).clone(), (literal!("MetaModelicaBuiltin.mo")).clone()) || stringEq((dir).clone(), (literal!(".")).clone());
+            List::consOnTrue(!(b), v, acc)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3296,7 +3296,7 @@ fn cevalListFirst(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpE
             } };
             cache = __pa0.clone();
             v = __pa1.clone();
-            (cache.clone(), ValuesUtil::boxIfUnboxedVal(v.clone()))
+            (cache.clone(), ValuesUtil::boxIfUnboxedVal(v))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3430,8 +3430,8 @@ fn cevalBuiltinFloor(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).floor();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).floor();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3457,13 +3457,13 @@ fn cevalBuiltinCeil(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).floor();
-            ri = ((rv_1.clone()).0.floor() as i32);
-            rvt = intReal(ri.clone());
-            ri_1 = ri.clone() + 1;
-            realRet = intReal(ri_1.clone());
-            v = if (rvt.clone() == rv.clone()) {Arc::new(Values::Value::REAL { real: rvt.clone() })} else {Arc::new(Values::Value::REAL { real: realRet.clone() })};
-            (cache.clone(), v.clone())
+            rv_1 = (rv).floor();
+            ri = ((rv_1).0.floor() as i32);
+            rvt = intReal(ri);
+            ri_1 = ri + 1;
+            realRet = intReal(ri_1);
+            v = if (rvt == rv) {Arc::new(Values::Value::REAL { real: rvt })} else {Arc::new(Values::Value::REAL { real: realRet })};
+            (cache.clone(), v)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3485,15 +3485,15 @@ fn cevalBuiltinSqrt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            if rv.clone() < metamodelica::OrderedFloat(0.0_f64) {
+            if rv < metamodelica::OrderedFloat(0.0_f64) {
                 let Absyn::MSG { info: __pa2 } = (msg.clone()) else { bail!("pattern mismatch") };
                 info = __pa2.clone();
-                Error::addSourceMessage(Error::NEGATIVE_SQRT.clone(), metamodelica::nil(), info.clone())?;
+                Error::addSourceMessage(Error::NEGATIVE_SQRT.clone(), metamodelica::nil(), info)?;
                 bail!("fail");
             } else {
-                rv_1 = (rv.clone()).sqrt();
+                rv_1 = (rv).sqrt();
             }
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3514,8 +3514,8 @@ fn cevalBuiltinSin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).sin();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).sin();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3536,8 +3536,8 @@ fn cevalBuiltinSinh(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).sinh();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).sinh();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3558,8 +3558,8 @@ fn cevalBuiltinCos(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).cos();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).cos();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3580,8 +3580,8 @@ fn cevalBuiltinCosh(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).cosh();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).cosh();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3602,9 +3602,9 @@ fn cevalBuiltinLog(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            let true = (rv.clone() > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
-            rv_1 = (rv.clone()).ln();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            let true = (rv > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
+            rv_1 = (rv).ln();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3625,9 +3625,9 @@ fn cevalBuiltinLog10(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            let true = (rv.clone() > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
-            rv_1 = (rv.clone()).log10();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            let true = (rv > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
+            rv_1 = (rv).log10();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3648,8 +3648,8 @@ fn cevalBuiltinTan(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).tan();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).tan();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3670,8 +3670,8 @@ fn cevalBuiltinTanh(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).tanh();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).tanh();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3692,9 +3692,9 @@ fn cevalBuiltinAsin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            let true = (rv.clone() >= metamodelica::OrderedFloat(-1.0_f64) && rv.clone() <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
-            rv_1 = (rv.clone()).asin();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            let true = (rv >= metamodelica::OrderedFloat(-1.0_f64) && rv <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
+            rv_1 = (rv).asin();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3715,9 +3715,9 @@ fn cevalBuiltinAcos(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            let true = (rv.clone() >= metamodelica::OrderedFloat(-1.0_f64) && rv.clone() <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
-            rv_1 = (rv.clone()).acos();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            let true = (rv >= metamodelica::OrderedFloat(-1.0_f64) && rv <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
+            rv_1 = (rv).acos();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3738,8 +3738,8 @@ fn cevalBuiltinAtan(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            rv_1 = (rv.clone()).atan();
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1.clone() }))
+            rv_1 = (rv).atan();
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv_1 }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3767,8 +3767,8 @@ fn cevalBuiltinAtan2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa2.clone();
             rv_2 = __pa3.clone();
-            rv = (rv_1.clone()).atan2(rv_2.clone());
-            (cache.clone(), Arc::new(Values::Value::REAL { real: rv.clone() }))
+            rv = (rv_1).atan2(rv_2);
+            (cache.clone(), Arc::new(Values::Value::REAL { real: rv }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4006,7 +4006,7 @@ fn cevalBuiltinMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut rhs_str: ArcStr;
             lhs_str = (ExpressionBasics::printExpStr(exp1)?).clone();
             rhs_str = (ExpressionBasics::printExpStr(exp2)?).clone();
-            Error::addSourceMessage(Error::MODULO_BY_ZERO.clone(), list![(lhs_str.clone()).clone(), (rhs_str.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::MODULO_BY_ZERO.clone(), list![(lhs_str).clone(), (rhs_str).clone()], info.clone())?;
             bail!("fail")
         },
         (_, Deref @ Values::Value::INTEGER { integer: 0 }, Absyn::Msg::MSG { info }) => {
@@ -4014,7 +4014,7 @@ fn cevalBuiltinMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut rhs_str: ArcStr;
             lhs_str = (ExpressionBasics::printExpStr(exp1)?).clone();
             rhs_str = (ExpressionBasics::printExpStr(exp2)?).clone();
-            Error::addSourceMessage(Error::MODULO_BY_ZERO.clone(), list![(lhs_str.clone()).clone(), (rhs_str.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::MODULO_BY_ZERO.clone(), list![(lhs_str).clone(), (rhs_str).clone()], info.clone())?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -4040,7 +4040,7 @@ fn cevalBuiltinSum(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
                 if vals.clone().is_empty() {
                     v = Arc::new(Values::Value::INTEGER { integer: 0 });
                 } else {
-                    let __pa2 = ::match_deref::match_deref! { match &(ValuesUtil::sumArrayelt(vals.clone())?) {
+                    let __pa2 = ::match_deref::match_deref! { match &(ValuesUtil::sumArrayelt(vals)?) {
                         __pa2 @ Deref @ Values::Value::INTEGER { .. } => __pa2.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -4050,14 +4050,14 @@ fn cevalBuiltinSum(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
                 if vals.clone().is_empty() {
                     v = Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) });
                 } else {
-                    let __pa3 = ::match_deref::match_deref! { match &(ValuesUtil::sumArrayelt(vals.clone())?) {
+                    let __pa3 = ::match_deref::match_deref! { match &(ValuesUtil::sumArrayelt(vals)?) {
                         __pa3 @ Deref @ Values::Value::REAL { .. } => __pa3.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     v = __pa3.clone();
                 }
             }
-            (cache.clone(), v.clone())
+            (cache.clone(), v)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4073,8 +4073,8 @@ fn cevalBuiltinMax(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut v_1: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), arr.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            v_1 = cevalBuiltinMaxArr(v.clone())?;
-            (cache.clone(), v_1.clone())
+            v_1 = cevalBuiltinMaxArr(v)?;
+            (cache.clone(), v_1)
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: s1, tail: Deref @ metamodelica::List::Cons { head: s2, tail: Deref @ metamodelica::List::Nil } }, r#impl, msg) => {
             let mut v: Arc<Values::Value>;
@@ -4083,8 +4083,8 @@ fn cevalBuiltinMax(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut cache = (*cache).clone();
             (cache, v1) = ceval(cache.clone(), env.clone(), s1.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
             (cache, v2) = ceval(cache.clone(), env.clone(), s2.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            v = cevalBuiltinMax2(v1.clone(), v2.clone())?;
-            (cache.clone(), v.clone())
+            v = cevalBuiltinMax2(v1, v2)?;
+            (cache.clone(), v)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4112,7 +4112,7 @@ fn cevalBuiltinMax2(mut v1: Arc<Values::Value>, mut v2: Arc<Values::Value>) -> R
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             s1 = (ValuesDump::valString(v1)?).clone();
             s2 = (ValuesDump::valString(v2)?).clone();
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Ceval.cevalBuiltinMin2 failed: min(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Ceval.cevalBuiltinMin2 failed: min(")); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*s2); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4148,8 +4148,8 @@ fn cevalBuiltinMin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut v_1: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), arr.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            v_1 = cevalBuiltinMinArr(v.clone())?;
-            (cache.clone(), v_1.clone())
+            v_1 = cevalBuiltinMinArr(v)?;
+            (cache.clone(), v_1)
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: s1, tail: Deref @ metamodelica::List::Cons { head: s2, tail: Deref @ metamodelica::List::Nil } }, r#impl, msg) => {
             let mut v: Arc<Values::Value>;
@@ -4158,8 +4158,8 @@ fn cevalBuiltinMin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
             let mut cache = (*cache).clone();
             (cache, v1) = ceval(cache.clone(), env.clone(), s1.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
             (cache, v2) = ceval(cache.clone(), env.clone(), s2.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            v = cevalBuiltinMin2(v1.clone(), v2.clone())?;
-            (cache.clone(), v.clone())
+            v = cevalBuiltinMin2(v1, v2)?;
+            (cache.clone(), v)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4187,7 +4187,7 @@ fn cevalBuiltinMin2(mut v1: Arc<Values::Value>, mut v2: Arc<Values::Value>) -> R
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             s1 = (ValuesDump::valString(v1)?).clone();
             s2 = (ValuesDump::valString(v2)?).clone();
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Ceval.cevalBuiltinMin2 failed: min(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Ceval.cevalBuiltinMin2 failed: min(")); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*s2); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4410,8 +4410,8 @@ fn cevalBuiltinInteger(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            ri = ((rv.clone()).0.floor() as i32);
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: ri.clone() }))
+            ri = ((rv).0.floor() as i32);
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: ri }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4430,7 +4430,7 @@ fn cevalBuiltinBoolean(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, v) = ceval(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            b = (::match_deref::match_deref! { match &(v.clone()) {
+            b = (::match_deref::match_deref! { match &(v) {
         Deref @ Values::Value::REAL { real: __esc_rv } => {
             rv = (*__esc_rv).clone();
             !(realEq(rv.clone(), metamodelica::OrderedFloat(0.0_f64)))
@@ -4445,7 +4445,7 @@ fn cevalBuiltinBoolean(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         },
         _ => bail!("match: no arm matched"),
     } });
-            (cache.clone(), Arc::new(Values::Value::BOOL { boolean: b.clone() }))
+            (cache.clone(), Arc::new(Values::Value::BOOL { boolean: b }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4479,7 +4479,7 @@ fn cevalBuiltinIntegerEnumeration(mut inCache: FCore::Cache, mut inEnv: FCore::G
             } };
             cache = __pa0.clone();
             ri = __pa1.clone();
-            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: ri.clone() }))
+            (cache.clone(), Arc::new(Values::Value::INTEGER { integer: ri }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4696,8 +4696,8 @@ fn cevalBuiltinFill(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             let mut fill_val: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, fill_val) = ceval(cache.clone(), inEnv.clone(), fill_exp.clone(), inImpl, inMsg.clone(), numIter + 1)?;
-            (cache, fill_val) = cevalBuiltinFill2(cache.clone(), inEnv, fill_val.clone(), dims.clone(), inImpl, inMsg, numIter)?;
-            (cache.clone(), fill_val.clone())
+            (cache, fill_val) = cevalBuiltinFill2(cache.clone(), inEnv, fill_val, dims.clone(), inImpl, inMsg, numIter)?;
+            (cache.clone(), fill_val)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4724,10 +4724,10 @@ fn cevalBuiltinFill2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inF
             } };
             cache = __pa0.clone();
             int_dim = __pa1.clone();
-            fill_vals = List::fill(fill_value.clone(), int_dim.clone());
-            array_dims = ValuesUtil::valueDimensions(fill_value.clone());
-            array_dims = metamodelica::cons(int_dim.clone(), array_dims.clone());
-            (cache.clone(), Arc::new(Values::Value::ARRAY { valueLst: fill_vals.clone(), dimLst: array_dims.clone() }))
+            fill_vals = List::fill(fill_value.clone(), int_dim);
+            array_dims = ValuesUtil::valueDimensions(fill_value);
+            array_dims = metamodelica::cons(int_dim, array_dims);
+            (cache.clone(), Arc::new(Values::Value::ARRAY { valueLst: fill_vals, dimLst: array_dims }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4947,9 +4947,9 @@ pub(crate) fn cevalRangeEnum(mut startIndex: i32, mut stopIndex: i32, mut enumTy
             let mut enum_names = (*enum_names).clone();
             enum_names = List::sublist(enum_names.clone(), startIndex, stopIndex - startIndex + 1)?;
             enum_paths = List::map(enum_names.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))?;
-            enum_paths = List::map1r(enum_paths.clone(), (std::sync::Arc::new(AbsynUtil::joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), enum_type.clone())?;
-            (enum_values, _) = List::mapFold(enum_paths.clone(), (std::sync::Arc::new(fnptr!(makeEnumValue, Arc<Absyn::Path>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, i32) -> Result<(Arc<Values::Value>, i32)> + 'static>), startIndex)?;
-            enum_values.clone()
+            enum_paths = List::map1r(enum_paths, (std::sync::Arc::new(AbsynUtil::joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), enum_type.clone())?;
+            (enum_values, _) = List::mapFold(enum_paths, (std::sync::Arc::new(fnptr!(makeEnumValue, Arc<Absyn::Path>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, i32) -> Result<(Arc<Values::Value>, i32)> + 'static>), startIndex)?;
+            enum_values
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -5042,14 +5042,14 @@ pub(crate) fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             r#str = (ComponentReferenceBasics::printComponentRefStr(inCref.clone())?).clone();
             scope_str = (FGraph::printGraphPathStr(inEnv.clone())).clone();
             if Flags::isSet(Flags::CEVAL.clone())? {
-                Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Ceval.cevalCref on: ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" failed with no constant binding in scope: ")); __mm_s.push_str(&*scope_str.clone()); ArcStr::from(__mm_s) }).clone())?;
+                Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Ceval.cevalCref on: ")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" failed with no constant binding in scope: ")); __mm_s.push_str(&*scope_str); ArcStr::from(__mm_s) }).clone())?;
             }
             s1 = (FGraph::printGraphPathStr(inEnv)).clone();
             s2 = (ComponentReferenceBasics::printComponentRefStr(inCref)?).clone();
             s3 = (TypesDump::printTypeStr(inType.clone())).clone();
             v = Types::typeToValue(inType)?;
-            v = Arc::new(Values::Value::EMPTY { scope: (s1.clone()).clone(), name: (s2.clone()).clone(), ty: v.clone(), tyStr: (s3.clone()).clone() });
-            (inCache, v.clone())
+            v = Arc::new(Values::Value::EMPTY { scope: (s1).clone(), name: (s2).clone(), ty: v, tyStr: (s3).clone() });
+            (inCache, v)
         },
         (Deref @ DAE::Attributes { variability, .. }, _, _, _, _) => {
             let mut cache: FCore::Cache;
@@ -5057,8 +5057,8 @@ pub(crate) fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             let true = (SCodeUtil::isParameterOrConst(variability.clone()) || inImpl || FGraph::inForLoopScope(inEnv.clone())) else { bail!("pattern mismatch") };
             let false = (crefEqualValue(inCref.clone(), inBinding.clone())?) else { bail!("pattern mismatch") };
             (cache, v) = cevalCrefBinding(inCache, inEnv, inCref.clone(), inBinding, inImpl, inMsg, numIter)?;
-            cache = FCore::addEvaluatedCref(cache.clone(), variability.clone(), ComponentReferenceBasics::crefStripLastSubs(inCref)?);
-            (cache.clone(), v.clone())
+            cache = FCore::addEvaluatedCref(cache, variability.clone(), ComponentReferenceBasics::crefStripLastSubs(inCref)?);
+            (cache, v)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5271,9 +5271,9 @@ pub(crate) fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::G
         },
         _ => bail!("match: no arm matched"),
     } });
-            subval = (lst.clone()).get(n.clone())?;
+            subval = (lst.clone()).get(n)?;
             (cache, res) = cevalSubscriptValue(cache.clone(), env.clone(), subs.clone(), subval.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
-            (cache.clone(), res.clone())
+            (cache.clone(), res)
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp }, tail: subs }, Deref @ Values::Value::ARRAY { valueLst: lst, .. }, r#impl, msg) => {
             let mut res: Arc<Values::Value>;
@@ -5288,11 +5288,11 @@ pub(crate) fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::G
             } };
             cache = __pa0.clone();
             sliceLst = __pa1.clone();
-            slice = List::map(sliceLst.clone(), (std::sync::Arc::new(ValuesUtil::valueInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<i32> + 'static>))?;
-            subvals = List::map1r(slice.clone(), (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), lst.clone())?;
-            (cache, lst) = cevalSubscriptValueList(cache.clone(), env.clone(), subs.clone(), subvals.clone(), r#impl.clone(), msg.clone(), numIter)?;
+            slice = List::map(sliceLst, (std::sync::Arc::new(ValuesUtil::valueInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<i32> + 'static>))?;
+            subvals = List::map1r(slice, (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), lst.clone())?;
+            (cache, lst) = cevalSubscriptValueList(cache.clone(), env.clone(), subs.clone(), subvals, r#impl.clone(), msg.clone(), numIter)?;
             res = ValuesMake::makeArray(lst.clone());
-            (cache.clone(), res.clone())
+            (cache.clone(), res)
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: subs }, subval @ Deref @ Values::Value::ARRAY { .. }, r#impl, msg) => {
             let mut res: Arc<Values::Value>;
@@ -5304,7 +5304,7 @@ pub(crate) fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 (cache, lst) = cevalSubscriptValueList(cache.clone(), env.clone(), subs.clone(), var_field!((**subval).valueLst, Values::Value::ARRAY).clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
                 res = ValuesMake::makeArray(lst.clone());
             }
-            (cache.clone(), res.clone())
+            (cache.clone(), res)
         },
         (cache, _, Deref @ metamodelica::List::Nil, v, _, _) => {
             (cache.clone(), v.clone())
@@ -5327,7 +5327,7 @@ fn cevalSubscriptValueList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             let mut cache = (*cache).clone();
             (cache, res) = cevalSubscriptValue(cache.clone(), env.clone(), subs.clone(), subval.clone(), r#impl.clone(), msg.clone(), numIter + 1)?;
             (cache, lst) = cevalSubscriptValueList(cache.clone(), env.clone(), subs.clone(), subvals.clone(), r#impl.clone(), msg.clone(), numIter)?;
-            (cache.clone(), metamodelica::cons(res.clone(), lst.clone()))
+            (cache.clone(), metamodelica::cons(res, lst))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -5514,7 +5514,7 @@ fn cevalReduction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut opPath
             let mut cache = (*cache).clone();
             let mut curValue = (*curValue).clone();
             new_env = extendFrameForIterators(env.clone(), iteratorNames.clone(), vals.clone(), iterTypes.clone())?;
-            (cache, curValue) = cevalReductionEvalAndFold(cache.clone(), new_env.clone(), opPath.clone(), curValue.clone(), exp.clone(), exprType.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), foldExp.clone(), r#impl, msg.clone(), numIter + 1)?;
+            (cache, curValue) = cevalReductionEvalAndFold(cache.clone(), new_env, opPath.clone(), curValue.clone(), exp.clone(), exprType.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), foldExp.clone(), r#impl, msg.clone(), numIter + 1)?;
             { (inCache, inEnv, opPath, inCurValue, exp, exprType, foldName, resultName, foldExp, iteratorNames, inValueMatrix, iterTypes, r#impl, msg, numIter) = (cache.clone(), env.clone(), opPath, curValue.clone(), exp, exprType, (foldName).clone(), (resultName).clone(), foldExp, iteratorNames, valueMatrix.clone(), iterTypes, r#impl, msg, numIter); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -5530,7 +5530,7 @@ fn cevalReductionEvalAndFold(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             let mut value: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             (cache, value) = ceval(cache.clone(), env.clone(), exp, r#impl, msg.clone(), numIter + 1)?;
-            (cache, result) = cevalReductionFold(cache.clone(), env.clone(), opPath, curValue.clone(), value.clone(), (foldName).clone(), (resultName).clone(), foldExp, exprType, r#impl, msg, numIter)?;
+            (cache, result) = cevalReductionFold(cache.clone(), env.clone(), opPath, curValue.clone(), value, (foldName).clone(), (resultName).clone(), foldExp, exprType, r#impl, msg, numIter)?;
             (cache.clone(), result)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -5565,8 +5565,8 @@ fn cevalReductionFold(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut op
             let mut cache = (*cache).clone();
             let mut value = (*value).clone();
             env = FGraph::addForIterator(inEnv, (foldName).clone(), exprType.clone(), Arc::new(DAE::Binding::VALBOUND { valBound: inValue, source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
-            env = FGraph::addForIterator(env.clone(), (resultName).clone(), exprType, Arc::new(DAE::Binding::VALBOUND { valBound: value.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
-            (cache, value) = ceval(cache.clone(), env.clone(), exp.clone(), r#impl, msg, numIter + 1)?;
+            env = FGraph::addForIterator(env, (resultName).clone(), exprType, Arc::new(DAE::Binding::VALBOUND { valBound: value.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
+            (cache, value) = ceval(cache.clone(), env, exp.clone(), r#impl, msg, numIter + 1)?;
             (cache.clone(), Some(value.clone()))
         },
         _ => bail!("match: no arm matched"),
@@ -5650,14 +5650,14 @@ fn filterReductionIterator(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             let mut cache = (*cache).clone();
             let mut vals = (*vals).clone();
             new_env = FGraph::addForIterator(env.clone(), (id.clone()).clone(), ty.clone(), Arc::new(DAE::Binding::VALBOUND { valBound: val.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ceval(cache.clone(), new_env.clone(), exp.clone(), r#impl, msg.clone(), numIter + 1)?) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ceval(cache.clone(), new_env, exp.clone(), r#impl, msg.clone(), numIter + 1)?) {
                 (__pa0, Deref @ Values::Value::BOOL { boolean: __pa1 }) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             cache = __pa0.clone();
             b = __pa1.clone();
             (cache, vals) = filterReductionIterator(cache.clone(), env.clone(), (id).clone(), ty, vals.clone(), guardExp, r#impl, msg, numIter)?;
-            vals = if (b.clone()) {metamodelica::cons(val.clone(), vals.clone())} else {vals.clone()};
+            vals = if (b) {metamodelica::cons(val.clone(), vals.clone())} else {vals.clone()};
             (cache.clone(), vals.clone())
         },
         (cache, _, vals, None) => {
@@ -5727,7 +5727,7 @@ fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value
             let mut value: Arc<Values::Value>;
             let mut vals = (*vals).clone();
             valMatrix = List::partition(vals.clone(), dim.clone())?;
-            vals = List::map(valMatrix.clone(), makeSequence.clone())?;
+            vals = List::map(valMatrix, makeSequence.clone())?;
             { (inVals, inDims, makeSequence) = (vals.clone(), dims.clone(), makeSequence.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -5998,7 +5998,7 @@ pub(crate) fn cevalAstExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
             let mut cache = (*cache).clone();
             (cache, _) = cevalAstExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache, res) = cevalAstExpList(cache.clone(), env.clone(), es.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), metamodelica::cons(e.clone(), res.clone()))
+            (cache.clone(), metamodelica::cons(e.clone(), res))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -6017,7 +6017,7 @@ fn cevalAstExpListList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             let mut cache = (*cache).clone();
             (cache, _) = cevalAstExpList(cache.clone(), env.clone(), e.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache, res) = cevalAstExpListList(cache.clone(), env.clone(), es.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), metamodelica::cons(e.clone(), res.clone()))
+            (cache.clone(), metamodelica::cons(e.clone(), res))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -6032,7 +6032,7 @@ pub(crate) fn cevalAstElt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             let mut citems_1: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
             let mut cache = (*cache).clone();
             (cache, citems_1) = cevalAstCitems(cache.clone(), env.clone(), citems.clone(), r#impl.clone(), msg.clone(), info.clone())?;
-            (cache.clone(), Arc::new(Absyn::Element::ELEMENT { finalPrefix: f.clone(), redeclareKeywords: r.clone(), innerOuter: io.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attr.clone(), typeSpec: tp.clone(), components: citems_1.clone() }), info: info.clone(), constrainClass: c.clone() }))
+            (cache.clone(), Arc::new(Absyn::Element::ELEMENT { finalPrefix: f.clone(), redeclareKeywords: r.clone(), innerOuter: io.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attr.clone(), typeSpec: tp.clone(), components: citems_1 }), info: info.clone(), constrainClass: c.clone() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -6091,7 +6091,7 @@ fn cevalAstModopt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsy
             let mut res: Arc<Absyn::Modification>;
             let mut cache = (*cache).clone();
             (cache, res) = cevalAstModification(cache.clone(), env.clone(), r#mod.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), Some(res.clone()))
+            (cache.clone(), Some(res))
         },
         (cache, _, None, _, _) => {
             (cache.clone(), None)
@@ -6111,13 +6111,13 @@ fn cevalAstModification(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             let mut cache = (*cache).clone();
             (cache, e_1) = cevalAstExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache, eltargs_1) = cevalAstEltargs(cache.clone(), env.clone(), eltargs.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), Arc::new(Absyn::Modification { elementArgLst: eltargs_1.clone(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: e_1.clone(), info: info2.clone() }) }))
+            (cache.clone(), Arc::new(Absyn::Modification { elementArgLst: eltargs_1, eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: e_1, info: info2.clone() }) }))
         },
         (cache, env, Deref @ Absyn::Modification { elementArgLst: eltargs, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }, r#impl, msg) => {
             let mut eltargs_1: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut cache = (*cache).clone();
             (cache, eltargs_1) = cevalAstEltargs(cache.clone(), env.clone(), eltargs.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), Arc::new(Absyn::Modification { elementArgLst: eltargs_1.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))
+            (cache.clone(), Arc::new(Absyn::Modification { elementArgLst: eltargs_1, eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -6177,14 +6177,14 @@ fn cevalAstArraydim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAr
             let mut res: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
             let mut cache = (*cache).clone();
             (cache, res) = cevalAstArraydim(cache.clone(), env.clone(), xs.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), metamodelica::cons(openmodelica_ast::Absyn::Subscript::interned_NOSUB(), res.clone()))
+            (cache.clone(), metamodelica::cons(openmodelica_ast::Absyn::Subscript::interned_NOSUB(), res))
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e }, tail: xs }, r#impl, msg) => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
             let mut cache = (*cache).clone();
             (cache, res) = cevalAstArraydim(cache.clone(), env.clone(), xs.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache, _) = cevalAstExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), metamodelica::cons(Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: e.clone() }), res.clone()))
+            (cache.clone(), metamodelica::cons(Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: e.clone() }), res))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -6206,7 +6206,7 @@ fn cevalAstExpexpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
             (cache, e1_1) = cevalAstExp(cache.clone(), env.clone(), e1.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache, e2_1) = cevalAstExp(cache.clone(), env.clone(), e2.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache, res) = cevalAstExpexpList(cache.clone(), env.clone(), xs.clone(), r#impl.clone(), msg.clone(), info)?;
-            (cache.clone(), metamodelica::cons((e1_1.clone(), e2_1.clone()), res.clone()))
+            (cache.clone(), metamodelica::cons((e1_1, e2_1), res))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -6230,7 +6230,7 @@ pub(crate) fn cevalDimension(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             let mut cache: FCore::Cache;
             let mut res: Arc<Values::Value>;
             (cache, res) = ceval(inCache, inEnv, exp.clone(), inImpl, inMsg, numIter + 1)?;
-            (cache.clone(), res.clone())
+            (cache, res)
         },
         _ => bail!("match: no arm matched"),
     } });

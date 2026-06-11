@@ -88,16 +88,16 @@ pub(crate) fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     }))?;
             paths = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-        for mut n in (names.clone()).into_iter().cloned() {
+        for mut n in (names).into_iter().cloned() {
             let __x = AbsynUtil::suffixPath(p.clone(), (n.clone()).clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
             isSingleton = (paths.clone().len() as i32) == 1;
-            if isSingleton.clone() {
+            if isSingleton {
                 p2 = (paths.clone()).get(1)?;
-                singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: (std::sync::Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv, p2.clone(), None)); move || fixUniontype2(__pe_b0.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<DAE::Type>> + 'static>) });
+                singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: (std::sync::Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv, p2, None)); move || fixUniontype2(__pe_b0.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<DAE::Type>> + 'static>) });
             } else {
                 singletonType = openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON();
             }
@@ -109,7 +109,7 @@ pub(crate) fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
         }
         __acc.reverse()
     });
-            Some(Arc::new(DAE::Type::T_METAUNIONTYPE { paths: paths.clone(), typeVars: typeVarsTypes.clone(), knownSingleton: isSingleton.clone(), singletonType: singletonType.clone(), path: p.clone() }))
+            Some(Arc::new(DAE::Type::T_METAUNIONTYPE { paths: paths, typeVars: typeVarsTypes, knownSingleton: isSingleton, singletonType: singletonType, path: p }))
         },
         _ => {
             None

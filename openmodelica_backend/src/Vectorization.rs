@@ -455,7 +455,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             i = __pa0.clone();
-            var_field!((*inExp1).integer, DAE::Exp::ICONST).clone() == i.clone()
+            var_field!((*inExp1).integer, DAE::Exp::ICONST).clone() == i
         },
         Deref @ DAE::Exp::RCONST { .. } => {
             let mut r: metamodelica::Real;
@@ -464,7 +464,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             r = __pa0.clone();
-            var_field!((*inExp1).real, DAE::Exp::RCONST).clone() == r.clone()
+            var_field!((*inExp1).real, DAE::Exp::RCONST).clone() == r
         },
         Deref @ DAE::Exp::SCONST { .. } => {
             let mut s: ArcStr;
@@ -473,7 +473,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             s = __pa0.clone();
-            var_field!((*inExp1).string, DAE::Exp::SCONST).clone() == s.clone()
+            var_field!((*inExp1).string, DAE::Exp::SCONST).clone() == s
         },
         Deref @ DAE::Exp::BCONST { .. } => {
             let mut b: bool;
@@ -482,7 +482,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             b = __pa0.clone();
-            var_field!((*inExp1).bool, DAE::Exp::BCONST).clone() == b.clone()
+            var_field!((*inExp1).bool, DAE::Exp::BCONST).clone() == b
         },
         Deref @ DAE::Exp::ENUM_LITERAL { .. } => {
             let mut p: Arc<Absyn::Path>;
@@ -491,7 +491,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             p = __pa0.clone();
-            AbsynUtil::pathEqual(var_field!((*inExp1).name, DAE::Exp::ENUM_LITERAL).clone(), p.clone())
+            AbsynUtil::pathEqual(var_field!((*inExp1).name, DAE::Exp::ENUM_LITERAL).clone(), p)
         },
         Deref @ DAE::Exp::CREF { .. } => {
             let mut cr: Arc<DAE::ComponentRef>;
@@ -500,7 +500,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             cr = __pa0.clone();
-            ComponentReferenceBasics::crefEqualWithoutSubs(var_field!((*inExp1).componentRef, DAE::Exp::CREF).clone(), cr.clone())
+            ComponentReferenceBasics::crefEqualWithoutSubs(var_field!((*inExp1).componentRef, DAE::Exp::CREF).clone(), cr)
         },
         Deref @ DAE::Exp::ARRAY { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -511,7 +511,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             ty = __pa0.clone();
             expl = __pa1.clone();
-            var_field!((*inExp1).ty, DAE::Exp::ARRAY).clone() == ty.clone() && expEqualNoCrefSubsList(var_field!((*inExp1).array, DAE::Exp::ARRAY).clone(), expl.clone())?
+            var_field!((*inExp1).ty, DAE::Exp::ARRAY).clone() == ty && expEqualNoCrefSubsList(var_field!((*inExp1).array, DAE::Exp::ARRAY).clone(), expl)?
         },
         Deref @ DAE::Exp::MATRIX { .. } => {
             let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
@@ -522,7 +522,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             ty = __pa0.clone();
             mexpl = __pa1.clone();
-            var_field!((*inExp1).ty, DAE::Exp::MATRIX).clone() == ty.clone() && expEqualNoCrefSubsListList(var_field!((*inExp1).matrix, DAE::Exp::MATRIX).clone(), mexpl.clone())?
+            var_field!((*inExp1).ty, DAE::Exp::MATRIX).clone() == ty && expEqualNoCrefSubsListList(var_field!((*inExp1).matrix, DAE::Exp::MATRIX).clone(), mexpl)?
         },
         Deref @ DAE::Exp::BINARY { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -535,7 +535,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             e1 = __pa0.clone();
             op = __pa1.clone();
             e2 = __pa2.clone();
-            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::BINARY).clone(), op.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp1, DAE::Exp::BINARY).clone(), e1.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp2, DAE::Exp::BINARY).clone(), e2.clone())?
+            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::BINARY).clone(), op)? && expEqualNoCrefSubs(var_field!((*inExp1).exp1, DAE::Exp::BINARY).clone(), e1)? && expEqualNoCrefSubs(var_field!((*inExp1).exp2, DAE::Exp::BINARY).clone(), e2)?
         },
         Deref @ DAE::Exp::LBINARY { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -548,7 +548,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             e1 = __pa0.clone();
             op = __pa1.clone();
             e2 = __pa2.clone();
-            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::LBINARY).clone(), op.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp1, DAE::Exp::LBINARY).clone(), e1.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp2, DAE::Exp::LBINARY).clone(), e2.clone())?
+            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::LBINARY).clone(), op)? && expEqualNoCrefSubs(var_field!((*inExp1).exp1, DAE::Exp::LBINARY).clone(), e1)? && expEqualNoCrefSubs(var_field!((*inExp1).exp2, DAE::Exp::LBINARY).clone(), e2)?
         },
         Deref @ DAE::Exp::UNARY { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -559,7 +559,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             e = __pa0.clone();
             op = __pa1.clone();
-            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::UNARY).clone(), op.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::UNARY).clone(), e.clone())?
+            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::UNARY).clone(), op)? && expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::UNARY).clone(), e)?
         },
         Deref @ DAE::Exp::LUNARY { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -570,7 +570,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             e = __pa0.clone();
             op = __pa1.clone();
-            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::LUNARY).clone(), op.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::LUNARY).clone(), e.clone())?
+            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::LUNARY).clone(), op)? && expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::LUNARY).clone(), e)?
         },
         Deref @ DAE::Exp::RELATION { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -583,7 +583,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             e1 = __pa0.clone();
             op = __pa1.clone();
             e2 = __pa2.clone();
-            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::RELATION).clone(), op.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp1, DAE::Exp::RELATION).clone(), e1.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).exp2, DAE::Exp::RELATION).clone(), e2.clone())?
+            Expression::operatorEqual(var_field!((*inExp1).operator, DAE::Exp::RELATION).clone(), op)? && expEqualNoCrefSubs(var_field!((*inExp1).exp1, DAE::Exp::RELATION).clone(), e1)? && expEqualNoCrefSubs(var_field!((*inExp1).exp2, DAE::Exp::RELATION).clone(), e2)?
         },
         Deref @ DAE::Exp::IFEXP { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -596,7 +596,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             e = __pa0.clone();
             e1 = __pa1.clone();
             e2 = __pa2.clone();
-            expEqualNoCrefSubs(var_field!((*inExp1).expCond, DAE::Exp::IFEXP).clone(), e.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).expThen, DAE::Exp::IFEXP).clone(), e1.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).expElse, DAE::Exp::IFEXP).clone(), e2.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).expCond, DAE::Exp::IFEXP).clone(), e)? && expEqualNoCrefSubs(var_field!((*inExp1).expThen, DAE::Exp::IFEXP).clone(), e1)? && expEqualNoCrefSubs(var_field!((*inExp1).expElse, DAE::Exp::IFEXP).clone(), e2)?
         },
         Deref @ DAE::Exp::CALL { .. } => {
             let mut p: Arc<Absyn::Path>;
@@ -607,7 +607,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             p = __pa0.clone();
             expl = __pa1.clone();
-            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::CALL).clone(), p.clone()) && expEqualNoCrefSubsList(var_field!((*inExp1).expLst, DAE::Exp::CALL).clone(), expl.clone())?
+            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::CALL).clone(), p) && expEqualNoCrefSubsList(var_field!((*inExp1).expLst, DAE::Exp::CALL).clone(), expl)?
         },
         Deref @ DAE::Exp::RECORD { .. } => {
             let mut p: Arc<Absyn::Path>;
@@ -618,7 +618,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             p = __pa0.clone();
             expl = __pa1.clone();
-            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::RECORD).clone(), p.clone()) && expEqualNoCrefSubsList(var_field!((*inExp1).exps, DAE::Exp::RECORD).clone(), expl.clone())?
+            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::RECORD).clone(), p) && expEqualNoCrefSubsList(var_field!((*inExp1).exps, DAE::Exp::RECORD).clone(), expl)?
         },
         Deref @ DAE::Exp::PARTEVALFUNCTION { .. } => {
             let mut p: Arc<Absyn::Path>;
@@ -629,7 +629,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             p = __pa0.clone();
             expl = __pa1.clone();
-            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::PARTEVALFUNCTION).clone(), p.clone()) && expEqualNoCrefSubsList(var_field!((*inExp1).expList, DAE::Exp::PARTEVALFUNCTION).clone(), expl.clone())?
+            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::PARTEVALFUNCTION).clone(), p) && expEqualNoCrefSubsList(var_field!((*inExp1).expList, DAE::Exp::PARTEVALFUNCTION).clone(), expl)?
         },
         Deref @ DAE::Exp::RANGE { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -642,7 +642,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             e1 = __pa0.clone();
             oe = __pa1.clone();
             e2 = __pa2.clone();
-            expEqualNoCrefSubs(var_field!((*inExp1).start, DAE::Exp::RANGE).clone(), e1.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).stop, DAE::Exp::RANGE).clone(), e2.clone())? && expEqualNoCrefSubsOpt(var_field!((*inExp1).step, DAE::Exp::RANGE).clone(), oe.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).start, DAE::Exp::RANGE).clone(), e1)? && expEqualNoCrefSubs(var_field!((*inExp1).stop, DAE::Exp::RANGE).clone(), e2)? && expEqualNoCrefSubsOpt(var_field!((*inExp1).step, DAE::Exp::RANGE).clone(), oe)?
         },
         Deref @ DAE::Exp::TUPLE { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -651,7 +651,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             expl = __pa0.clone();
-            expEqualNoCrefSubsList(var_field!((*inExp1).PR, DAE::Exp::TUPLE).clone(), expl.clone())?
+            expEqualNoCrefSubsList(var_field!((*inExp1).PR, DAE::Exp::TUPLE).clone(), expl)?
         },
         Deref @ DAE::Exp::CAST { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -662,7 +662,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             ty = __pa0.clone();
             e = __pa1.clone();
-            var_field!((*inExp1).ty, DAE::Exp::CAST).clone() == ty.clone() && expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::CAST).clone(), e.clone())?
+            var_field!((*inExp1).ty, DAE::Exp::CAST).clone() == ty && expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::CAST).clone(), e)?
         },
         Deref @ DAE::Exp::ASUB { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -685,13 +685,13 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             subs = __pa1.clone();
             expl2 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for mut sub in (subs.clone()).into_iter().cloned() {
+        for mut sub in (subs).into_iter().cloned() {
             let __x = Expression::getSubscriptExp(sub.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::ASUB).clone(), e.clone())? && expEqualNoCrefSubsList(expl.clone(), expl2.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::ASUB).clone(), e)? && expEqualNoCrefSubsList(expl, expl2)?
         },
         Deref @ DAE::Exp::SIZE { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -702,7 +702,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             e = __pa0.clone();
             oe = __pa1.clone();
-            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::SIZE).clone(), e.clone())? && expEqualNoCrefSubsOpt(var_field!((*inExp1).sz, DAE::Exp::SIZE).clone(), oe.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::SIZE).clone(), e)? && expEqualNoCrefSubsOpt(var_field!((*inExp1).sz, DAE::Exp::SIZE).clone(), oe)?
         },
         Deref @ DAE::Exp::REDUCTION { .. } => {
             inExp1 == inExp2
@@ -714,7 +714,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             expl = __pa0.clone();
-            expEqualNoCrefSubsList(var_field!((*inExp1).valList, DAE::Exp::LIST).clone(), expl.clone())?
+            expEqualNoCrefSubsList(var_field!((*inExp1).valList, DAE::Exp::LIST).clone(), expl)?
         },
         Deref @ DAE::Exp::CONS { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -725,7 +725,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             e1 = __pa0.clone();
             e2 = __pa1.clone();
-            expEqualNoCrefSubs(var_field!((*inExp1).car, DAE::Exp::CONS).clone(), e1.clone())? && expEqualNoCrefSubs(var_field!((*inExp1).cdr, DAE::Exp::CONS).clone(), e2.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).car, DAE::Exp::CONS).clone(), e1)? && expEqualNoCrefSubs(var_field!((*inExp1).cdr, DAE::Exp::CONS).clone(), e2)?
         },
         Deref @ DAE::Exp::META_TUPLE { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -734,7 +734,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             expl = __pa0.clone();
-            expEqualNoCrefSubsList(var_field!((*inExp1).listExp, DAE::Exp::META_TUPLE).clone(), expl.clone())?
+            expEqualNoCrefSubsList(var_field!((*inExp1).listExp, DAE::Exp::META_TUPLE).clone(), expl)?
         },
         Deref @ DAE::Exp::META_OPTION { .. } => {
             let mut oe: Option<Arc<DAE::Exp>>;
@@ -743,7 +743,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             oe = __pa0.clone();
-            expEqualNoCrefSubsOpt(var_field!((*inExp1).exp, DAE::Exp::META_OPTION).clone(), oe.clone())?
+            expEqualNoCrefSubsOpt(var_field!((*inExp1).exp, DAE::Exp::META_OPTION).clone(), oe)?
         },
         Deref @ DAE::Exp::METARECORDCALL { .. } => {
             let mut p: Arc<Absyn::Path>;
@@ -754,7 +754,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
             } };
             p = __pa0.clone();
             expl = __pa1.clone();
-            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::METARECORDCALL).clone(), p.clone()) && expEqualNoCrefSubsList(var_field!((*inExp1).args, DAE::Exp::METARECORDCALL).clone(), expl.clone())?
+            AbsynUtil::pathEqual(var_field!((*inExp1).path, DAE::Exp::METARECORDCALL).clone(), p) && expEqualNoCrefSubsList(var_field!((*inExp1).args, DAE::Exp::METARECORDCALL).clone(), expl)?
         },
         Deref @ DAE::Exp::MATCHEXPRESSION { .. } => {
             inExp1 == inExp2
@@ -766,7 +766,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa0.clone();
-            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::BOX).clone(), e.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::BOX).clone(), e)?
         },
         Deref @ DAE::Exp::UNBOX { .. } => {
             let mut e: Arc<DAE::Exp>;
@@ -775,7 +775,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa0.clone();
-            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::UNBOX).clone(), e.clone())?
+            expEqualNoCrefSubs(var_field!((*inExp1).exp, DAE::Exp::UNBOX).clone(), e)?
         },
         Deref @ DAE::Exp::SHARED_LITERAL { .. } => {
             let mut i: i32;
@@ -784,7 +784,7 @@ pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE:
                 _ => bail!("pattern mismatch"),
             } };
             i = __pa0.clone();
-            var_field!((*inExp1).index, DAE::Exp::SHARED_LITERAL).clone() == i.clone()
+            var_field!((*inExp1).index, DAE::Exp::SHARED_LITERAL).clone() == i
         },
         _ => {
             false
@@ -1251,10 +1251,10 @@ fn dispatchLoopEquations(mut eqIn: Arc<BackendDAE::Equation>, mut arrayCrefs: Ar
             let mut mixEqs = (*mixEqs).clone();
             let mut nonArrEqs = (*nonArrEqs).clone();
             crefs = BackendEquation::equationCrefs(eqIn.clone())?;
-            (arrCrefs, nonArrCrefs) = List::separate1OnTrue(crefs.clone(), (std::sync::Arc::new(crefPartlyEqualToCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> + 'static>), arrayCrefs)?;
-            if nonArrCrefs.clone().is_empty() {
+            (arrCrefs, nonArrCrefs) = List::separate1OnTrue(crefs, (std::sync::Arc::new(crefPartlyEqualToCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> + 'static>), arrayCrefs)?;
+            if nonArrCrefs.is_empty() {
                 classEqs = metamodelica::cons(eqIn, classEqs.clone());
-            } else if arrCrefs.clone().is_empty() {
+            } else if arrCrefs.is_empty() {
                 nonArrEqs = metamodelica::cons(eqIn, nonArrEqs.clone());
             } else {
                 mixEqs = metamodelica::cons(eqIn, mixEqs.clone());
@@ -1285,7 +1285,7 @@ fn crefPartlyEqual(mut cref0: Arc<DAE::ComponentRef>, mut cref1: Arc<DAE::Compon
             } else {
                 b = false;
             }
-            b.clone()
+            b
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             var_field!((*cref0).ident, DAE::ComponentRef::CREF_QUAL).clone() == var_field!((*cref1).ident, DAE::ComponentRef::CREF_IDENT).clone()

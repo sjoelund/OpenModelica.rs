@@ -207,14 +207,14 @@ fn flattenElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<
             let mut item: Item;
             elem = flattenComponent(inElement, inEnv.clone())?;
             item = NFSCodeEnv::newVarItem(elem.clone(), true);
-            env = NFSCodeEnv::updateItemInEnv(item.clone(), inEnv, (name.clone()).clone())?;
-            (elem.clone(), env.clone())
+            env = NFSCodeEnv::updateItemInEnv(item, inEnv, (name.clone()).clone())?;
+            (elem, env)
         },
         Deref @ SCode::Element::CLASS { .. } => {
             let mut env: Env;
             let mut elem: Arc<SCode::Element>;
             (elem, env) = flattenClass(inElement, inEnv)?;
-            (elem.clone(), env.clone())
+            (elem, env)
         },
         Deref @ SCode::Element::EXTENDS { .. } => {
             (flattenExtends(inElement, inEnv.clone())?, inEnv)
@@ -474,7 +474,7 @@ fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Resul
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: cdef @ Deref @ SCode::ClassDef::DERIVED { .. }, cmt, info } => {
             let mut cdef2: Arc<SCode::ClassDef>;
             cdef2 = flattenDerivedClassDef(cdef.clone(), inEnv, info.clone())?;
-            Arc::new(SCode::Element::CLASS { name: (name.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: ep.clone(), partialPrefix: pp.clone(), restriction: res.clone(), classDef: cdef2.clone(), cmt: cmt.clone(), info: info.clone() })
+            Arc::new(SCode::Element::CLASS { name: (name.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: ep.clone(), partialPrefix: pp.clone(), restriction: res.clone(), classDef: cdef2, cmt: cmt.clone(), info: info.clone() })
         },
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::ENUMERATION { .. }, .. } => {
             inElement
@@ -482,7 +482,7 @@ fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Resul
         Deref @ SCode::Element::COMPONENT { .. } => {
             let mut element: Arc<SCode::Element>;
             element = flattenComponent(inElement, inEnv)?;
-            element.clone()
+            element
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Unknown redeclare in NFSCodeFlattenImports.flattenRedeclare")).clone()])?;

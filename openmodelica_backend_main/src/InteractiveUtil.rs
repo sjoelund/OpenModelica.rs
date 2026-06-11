@@ -122,12 +122,12 @@ pub(crate) fn getExtendsElementspecInClass(mut inClass: Arc<Absyn::Class>) -> Ar
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut ext: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
             ext = getExtendsElementspecInClassparts(parts.clone());
-            ext.clone()
+            ext
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, .. } => {
             let mut ext: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
             ext = getExtendsElementspecInClassparts(parts.clone());
-            ext.clone()
+            ext
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: tp, arrayDim: _ }, arguments: eltArg, .. }, .. } => {
             list![Arc::new(Absyn::ElementSpec::EXTENDS { path: tp.clone(), elementArg: eltArg.clone(), annotationOpt: None })]
@@ -152,7 +152,7 @@ fn getExtendsElementspecInClassparts(mut inAbsynClassPartLst: Arc<metamodelica::
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
             lst1 = getExtendsElementspecInClassparts(rest.clone());
             lst2 = getExtendsElementspecInElementitems(elts.clone());
-            return listAppend(lst1.clone(), lst2.clone())
+            return listAppend(lst1, lst2)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: elts }, tail: rest } => {
             let mut lst1: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
@@ -160,7 +160,7 @@ fn getExtendsElementspecInClassparts(mut inAbsynClassPartLst: Arc<metamodelica::
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
             lst1 = getExtendsElementspecInClassparts(rest.clone());
             lst2 = getExtendsElementspecInElementitems(elts.clone());
-            return listAppend(lst1.clone(), lst2.clone())
+            return listAppend(lst1, lst2)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
@@ -316,7 +316,7 @@ fn stripModifiersKeepRedeclares(mut inMod: Option<Arc<Absyn::Modification>>) -> 
         __acc.reverse()
     });
             m = Arc::new(Absyn::Modification { elementArgLst: ea.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() });
-            Some(m.clone())
+            Some(m)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -942,7 +942,7 @@ pub(crate) fn getElementModifierNames(mut path: Arc<Absyn::Path>, mut inElementN
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                if found.clone() {
+                if found {
                     break;
                 }
             }
@@ -1216,7 +1216,7 @@ pub(crate) fn getComponentsInClass(mut inClass: Arc<Absyn::Class>, mut visibilit
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            Dangerous::listReverseInPlace(res.clone())
+            Dangerous::listReverseInPlace(res)
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts: Deref @ metamodelica::List::Nil, .. }, .. } => {
             metamodelica::nil()
@@ -1240,7 +1240,7 @@ pub(crate) fn getComponentsInClass(mut inClass: Arc<Absyn::Class>, mut visibilit
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            Dangerous::listReverseInPlace(res.clone())
+            Dangerous::listReverseInPlace(res)
         },
         _ => {
             metamodelica::nil()
@@ -1737,7 +1737,7 @@ pub(crate) fn buildEnvForGraphicProgram(mut inCache: GraphicEnvCache, mut inAnno
             if AbsynUtil::onlyLiteralsInAnnotationMod(inAnnotationMod) {
                 outGraphicProgram = modelicaAnnotationProgram((Config::getAnnotationVersion()?).clone())?;
                 scode_program = AbsynToSCode::translateAbsyn2SCode(outGraphicProgram.clone())?;
-                (outCache, outEnv) = Inst::makeEnvFromProgram(scode_program.clone())?;
+                (outCache, outEnv) = Inst::makeEnvFromProgram(scode_program)?;
                 outGraphicEnvCache = Interactive::GraphicEnvCache::GRAPHIC_ENV_PARTIAL_CACHE { program: var_field!(inCache.program, Interactive::GraphicEnvCache::GRAPHIC_ENV_NO_CACHE).clone(), modelPath: var_field!(inCache.modelPath, Interactive::GraphicEnvCache::GRAPHIC_ENV_NO_CACHE).clone(), cache: outCache.clone(), env: outEnv.clone() };
             } else {
                 (outCache, outEnv, outGraphicProgram) = buildEnvForGraphicProgramFull(var_field!(inCache.program, Interactive::GraphicEnvCache::GRAPHIC_ENV_NO_CACHE).clone(), var_field!(inCache.modelPath, Interactive::GraphicEnvCache::GRAPHIC_ENV_NO_CACHE).clone())?;
@@ -1813,8 +1813,8 @@ pub(crate) fn getElementsInClass(mut inClass: Arc<Absyn::Class>) -> Arc<metamode
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res = Dangerous::listReverseInPlace(res.clone());
-            res.clone()
+            res = Dangerous::listReverseInPlace(res);
+            res
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts: Deref @ metamodelica::List::Nil, .. }, .. } => {
             metamodelica::nil()
@@ -1843,8 +1843,8 @@ pub(crate) fn getElementsInClass(mut inClass: Arc<Absyn::Class>) -> Arc<metamode
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res = Dangerous::listReverseInPlace(res.clone());
-            res.clone()
+            res = Dangerous::listReverseInPlace(res);
+            res
         },
         _ => {
             metamodelica::nil()
@@ -1878,8 +1878,8 @@ pub(crate) fn getPublicElementsInClass(mut inClass: Arc<Absyn::Class>) -> Arc<me
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res = Dangerous::listReverseInPlace(res.clone());
-            res.clone()
+            res = Dangerous::listReverseInPlace(res);
+            res
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts: Deref @ metamodelica::List::Nil, .. }, .. } => {
             metamodelica::nil()
@@ -1902,8 +1902,8 @@ pub(crate) fn getPublicElementsInClass(mut inClass: Arc<Absyn::Class>) -> Arc<me
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res = Dangerous::listReverseInPlace(res.clone());
-            res.clone()
+            res = Dangerous::listReverseInPlace(res);
+            res
         },
         _ => {
             metamodelica::nil()
@@ -1937,8 +1937,8 @@ pub(crate) fn getProtectedElementsInClass(mut inClass: Arc<Absyn::Class>) -> Arc
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res = Dangerous::listReverseInPlace(res.clone());
-            res.clone()
+            res = Dangerous::listReverseInPlace(res);
+            res
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts: Deref @ metamodelica::List::Nil, .. }, .. } => {
             metamodelica::nil()
@@ -1961,8 +1961,8 @@ pub(crate) fn getProtectedElementsInClass(mut inClass: Arc<Absyn::Class>) -> Arc
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res = Dangerous::listReverseInPlace(res.clone());
-            res.clone()
+            res = Dangerous::listReverseInPlace(res);
+            res
         },
         _ => {
             metamodelica::nil()
@@ -2295,7 +2295,7 @@ pub(crate) fn attrFlowStr(mut inElementAttributes: Absyn::ElementAttributes) -> 
         Absyn::ElementAttributes { flowPrefix: mut f, .. } => {
             let mut res: ArcStr;
             res = (boolString(f.clone())).clone();
-            res.clone()
+            res
         },
     })).clone();
     Ok(outString)
@@ -2307,7 +2307,7 @@ pub(crate) fn attrStreamStr(mut inElementAttributes: Absyn::ElementAttributes) -
         Absyn::ElementAttributes { streamPrefix: mut s, .. } => {
             let mut res: ArcStr;
             res = (boolString(s.clone())).clone();
-            res.clone()
+            res
         },
     })).clone();
     Ok(outString)
@@ -2399,7 +2399,7 @@ pub(crate) fn replaceEquationList(mut inAbsynClassPartLst: Arc<metamodelica::Lis
         (Deref @ metamodelica::List::Cons { head: x, tail: xs }, new) => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
             ys = replaceEquationList(xs.clone(), new.clone())?;
-            metamodelica::cons(x.clone(), ys.clone())
+            metamodelica::cons(x.clone(), ys)
         },
         (Deref @ metamodelica::List::Nil, _) => {
             metamodelica::nil()
@@ -2861,9 +2861,9 @@ pub(crate) fn updateConnectionAnnotationInClass(mut inClass1: Arc<Absyn::Class>,
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
             eqlst = getEquationList(parts.clone())?;
-            eqlst_1 = updateConnectionAnnotationInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), annotation_.clone())?;
-            parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
-            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
+            eqlst_1 = updateConnectionAnnotationInEqList(eqlst, (from.clone()).clone(), (to.clone()).clone(), annotation_.clone())?;
+            parts2 = replaceEquationList(parts.clone(), eqlst_1)?;
+            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2, ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
         (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { baseClassName: bcname, modifications: modif, parts, ann, comment: cmt }, .. }, from, to, annotation_) => {
@@ -2872,9 +2872,9 @@ pub(crate) fn updateConnectionAnnotationInClass(mut inClass1: Arc<Absyn::Class>,
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
             eqlst = getEquationList(parts.clone())?;
-            eqlst_1 = updateConnectionAnnotationInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), annotation_.clone())?;
-            parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
-            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::CLASS_EXTENDS { baseClassName: (bcname.clone()).clone(), modifications: modif.clone(), comment: cmt.clone(), parts: parts2.clone(), ann: ann.clone() }));
+            eqlst_1 = updateConnectionAnnotationInEqList(eqlst, (from.clone()).clone(), (to.clone()).clone(), annotation_.clone())?;
+            parts2 = replaceEquationList(parts.clone(), eqlst_1)?;
+            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::CLASS_EXTENDS { baseClassName: (bcname.clone()).clone(), modifications: modif.clone(), comment: cmt.clone(), parts: parts2, ann: ann.clone() }));
             outClass.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -2976,9 +2976,9 @@ fn updateConnectionNamesInClass(mut inClass1: Arc<Absyn::Class>, mut inFrom: Arc
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
             eqlst = getEquationList(parts.clone())?;
-            eqlst_1 = updateConnectionNamesInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), (fromNew.clone()).clone(), (toNew.clone()).clone())?;
-            parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
-            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
+            eqlst_1 = updateConnectionNamesInEqList(eqlst, (from.clone()).clone(), (to.clone()).clone(), (fromNew.clone()).clone(), (toNew.clone()).clone())?;
+            parts2 = replaceEquationList(parts.clone(), eqlst_1)?;
+            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2, ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
         (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { baseClassName: bcname, modifications: modif, parts, ann, comment: cmt }, .. }, from, to, fromNew, toNew) => {
@@ -2987,9 +2987,9 @@ fn updateConnectionNamesInClass(mut inClass1: Arc<Absyn::Class>, mut inFrom: Arc
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
             eqlst = getEquationList(parts.clone())?;
-            eqlst_1 = updateConnectionNamesInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), (fromNew.clone()).clone(), (toNew.clone()).clone())?;
-            parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
-            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::CLASS_EXTENDS { baseClassName: (bcname.clone()).clone(), modifications: modif.clone(), comment: cmt.clone(), parts: parts2.clone(), ann: ann.clone() }));
+            eqlst_1 = updateConnectionNamesInEqList(eqlst, (from.clone()).clone(), (to.clone()).clone(), (fromNew.clone()).clone(), (toNew.clone()).clone())?;
+            parts2 = replaceEquationList(parts.clone(), eqlst_1)?;
+            assign_field!(outClass.body = Arc::new(Absyn::ClassDef::CLASS_EXTENDS { baseClassName: (bcname.clone()).clone(), modifications: modif.clone(), comment: cmt.clone(), parts: parts2, ann: ann.clone() }));
             outClass.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -3039,12 +3039,12 @@ fn getClassnamesInClassListNoPartial(mut inPath: Arc<Absyn::Path>, mut inProgram
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, b, c) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>>;
             strlist = getClassnamesInPartsNoPartial(parts.clone(), b.clone(), c.clone())?;
-            strlist.clone()
+            strlist
         },
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, .. }, b, c) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>>;
             strlist = getClassnamesInPartsNoPartial(parts.clone(), b.clone(), c.clone())?;
-            strlist.clone()
+            strlist
         },
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { .. }, .. }, .. }, _, _) => {
             metamodelica::nil()

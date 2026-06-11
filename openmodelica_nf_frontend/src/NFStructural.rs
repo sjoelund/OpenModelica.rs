@@ -132,10 +132,10 @@ pub(crate) fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut r
             if InstNode::isComponent(node.clone())? {
                 c = InstNode::component(node.clone())?;
                 var = Component::variability(c.clone())?;
-                if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() {
+                if var <= Variability::STRUCTURAL_PARAMETER.clone() {
                     isNotFixed = false;
-                } else if var.clone() == Variability::PARAMETER.clone() && (!(requireFinal) || Component::isFinal(c.clone())?) && !(Component::isExternalObject(c.clone())?) && Component::isFixed(c.clone())? {
-                    isNotFixed = isComponentBindingNotFixed(c.clone(), node.clone(), requireFinal, maxDepth - 1, false)?;
+                } else if var == Variability::PARAMETER.clone() && (!(requireFinal) || Component::isFinal(c.clone())?) && !(Component::isExternalObject(c.clone())?) && Component::isFixed(c.clone())? {
+                    isNotFixed = isComponentBindingNotFixed(c, node, requireFinal, maxDepth - 1, false)?;
                 } else {
                     isNotFixed = true;
                 }
@@ -192,7 +192,7 @@ pub(crate) fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
             if InstNode::isComponent(node.clone())? {
                 comp = InstNode::component(node.clone())?;
                 if Component::variability(comp.clone())? == Variability::PARAMETER.clone() {
-                    markComponent(comp.clone(), node.clone())?;
+                    markComponent(comp, node.clone())?;
                 }
             }
             Expression::applyShallow(exp, (std::sync::Arc::new(markExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
@@ -207,7 +207,7 @@ pub(crate) fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
                     _ => bail!("pattern mismatch"),
                 } };
                 e = __pa0.clone();
-                markExp(e.clone())?;
+                markExp(e)?;
             }
             ()
         },

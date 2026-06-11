@@ -738,7 +738,7 @@ pub fn mapExp(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<E
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone())?;
             e2 = func(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone()))) {stmt} else {Arc::new(NFStatement::ASSIGNMENT { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*stmt).ty, NFStatement::ASSIGNMENT).clone(), source: var_field!((*stmt).source, NFStatement::ASSIGNMENT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone()))) {stmt} else {Arc::new(NFStatement::ASSIGNMENT { lhs: e1, rhs: e2, ty: var_field!((*stmt).ty, NFStatement::ASSIGNMENT).clone(), source: var_field!((*stmt).source, NFStatement::ASSIGNMENT).clone() })}
         },
         Deref @ FOR { .. } => {
             assign_variant_field!(stmt => NFStatement::FOR;
@@ -776,24 +776,24 @@ pub fn mapExp(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<E
             e1 = func(var_field!((*stmt).condition, NFStatement::ASSERT).clone())?;
             e2 = func(var_field!((*stmt).message, NFStatement::ASSERT).clone())?;
             e3 = func(var_field!((*stmt).level, NFStatement::ASSERT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).condition, NFStatement::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).message, NFStatement::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*stmt).level, NFStatement::ASSERT).clone()))) {stmt} else {Arc::new(NFStatement::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*stmt).source, NFStatement::ASSERT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).condition, NFStatement::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).message, NFStatement::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*stmt).level, NFStatement::ASSERT).clone()))) {stmt} else {Arc::new(NFStatement::ASSERT { condition: e1, message: e2, level: e3, source: var_field!((*stmt).source, NFStatement::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).message, NFStatement::TERMINATE).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).message, NFStatement::TERMINATE).clone()))) {stmt} else {Arc::new(NFStatement::TERMINATE { message: e1.clone(), source: var_field!((*stmt).source, NFStatement::TERMINATE).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).message, NFStatement::TERMINATE).clone()))) {stmt} else {Arc::new(NFStatement::TERMINATE { message: e1, source: var_field!((*stmt).source, NFStatement::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).cref, NFStatement::REINIT).clone())?;
             e2 = func(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).cref, NFStatement::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone()))) {stmt} else {Arc::new(NFStatement::REINIT { cref: e1.clone(), reinitExp: e2.clone(), source: var_field!((*stmt).source, NFStatement::REINIT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).cref, NFStatement::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone()))) {stmt} else {Arc::new(NFStatement::REINIT { cref: e1, reinitExp: e2, source: var_field!((*stmt).source, NFStatement::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).exp, NFStatement::NORETCALL).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).exp, NFStatement::NORETCALL).clone()))) {stmt} else {Arc::new(NFStatement::NORETCALL { exp: e1.clone(), source: var_field!((*stmt).source, NFStatement::NORETCALL).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).exp, NFStatement::NORETCALL).clone()))) {stmt} else {Arc::new(NFStatement::NORETCALL { exp: e1, source: var_field!((*stmt).source, NFStatement::NORETCALL).clone() })}
         },
         Deref @ WHILE { .. } => {
             Arc::new(NFStatement::WHILE { condition: func(var_field!((*stmt).condition, NFStatement::WHILE).clone())?, body: mapExpList(var_field!((*stmt).body, NFStatement::WHILE).clone(), func.clone())?, source: var_field!((*stmt).source, NFStatement::WHILE).clone() })
@@ -816,7 +816,7 @@ pub(crate) fn mapExpShallow(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std:
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone())?;
             e2 = func(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone()))) {stmt} else {Arc::new(NFStatement::ASSIGNMENT { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*stmt).ty, NFStatement::ASSIGNMENT).clone(), source: var_field!((*stmt).source, NFStatement::ASSIGNMENT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).lhs, NFStatement::ASSIGNMENT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).rhs, NFStatement::ASSIGNMENT).clone()))) {stmt} else {Arc::new(NFStatement::ASSIGNMENT { lhs: e1, rhs: e2, ty: var_field!((*stmt).ty, NFStatement::ASSIGNMENT).clone(), source: var_field!((*stmt).source, NFStatement::ASSIGNMENT).clone() })}
         },
         Deref @ FOR { .. } => {
             assign_variant_field!(stmt => NFStatement::FOR; range = Util::applyOption(var_field!((*stmt).range, NFStatement::FOR).clone(), func.clone())?);
@@ -851,24 +851,24 @@ pub(crate) fn mapExpShallow(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std:
             e1 = func(var_field!((*stmt).condition, NFStatement::ASSERT).clone())?;
             e2 = func(var_field!((*stmt).message, NFStatement::ASSERT).clone())?;
             e3 = func(var_field!((*stmt).level, NFStatement::ASSERT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).condition, NFStatement::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).message, NFStatement::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*stmt).level, NFStatement::ASSERT).clone()))) {stmt} else {Arc::new(NFStatement::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*stmt).source, NFStatement::ASSERT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).condition, NFStatement::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).message, NFStatement::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*stmt).level, NFStatement::ASSERT).clone()))) {stmt} else {Arc::new(NFStatement::ASSERT { condition: e1, message: e2, level: e3, source: var_field!((*stmt).source, NFStatement::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).message, NFStatement::TERMINATE).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).message, NFStatement::TERMINATE).clone()))) {stmt} else {Arc::new(NFStatement::TERMINATE { message: e1.clone(), source: var_field!((*stmt).source, NFStatement::TERMINATE).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).message, NFStatement::TERMINATE).clone()))) {stmt} else {Arc::new(NFStatement::TERMINATE { message: e1, source: var_field!((*stmt).source, NFStatement::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).cref, NFStatement::REINIT).clone())?;
             e2 = func(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).cref, NFStatement::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone()))) {stmt} else {Arc::new(NFStatement::REINIT { cref: e1.clone(), reinitExp: e2.clone(), source: var_field!((*stmt).source, NFStatement::REINIT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).cref, NFStatement::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*stmt).reinitExp, NFStatement::REINIT).clone()))) {stmt} else {Arc::new(NFStatement::REINIT { cref: e1, reinitExp: e2, source: var_field!((*stmt).source, NFStatement::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*stmt).exp, NFStatement::NORETCALL).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).exp, NFStatement::NORETCALL).clone()))) {stmt} else {Arc::new(NFStatement::NORETCALL { exp: e1.clone(), source: var_field!((*stmt).source, NFStatement::NORETCALL).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*stmt).exp, NFStatement::NORETCALL).clone()))) {stmt} else {Arc::new(NFStatement::NORETCALL { exp: e1, source: var_field!((*stmt).source, NFStatement::NORETCALL).clone() })}
         },
         Deref @ WHILE { .. } => {
             Arc::new(NFStatement::WHILE { condition: func(var_field!((*stmt).condition, NFStatement::WHILE).clone())?, body: var_field!((*stmt).body, NFStatement::WHILE).clone(), source: var_field!((*stmt).source, NFStatement::WHILE).clone() })

@@ -996,8 +996,8 @@ pub(crate) fn instScalar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     if Config::acceptMetaModelicaGrammar()? {
                         stateName = (AbsynUtil::pathString(ClassInfUtil::getStateName(inState.clone()), (literal!("")).clone(), true, false)?).clone();
                         inStateAndClassNameIsEqual = stringEqual((stateName.clone()).clone(), (cls_name.clone()).clone());
-                        implicitInstantiation = SCodeUtil::isUniontype(inClass.clone()) && SCodeUtil::isConstant(inAttributes.variability.clone()) && inStateAndClassNameIsEqual.clone();
-                        if implicitInstantiation.clone() {
+                        implicitInstantiation = SCodeUtil::isUniontype(inClass.clone()) && SCodeUtil::isConstant(inAttributes.variability.clone()) && inStateAndClassNameIsEqual;
+                        if implicitInstantiation {
                             classWithElementsRemoved = SCodeUtil::setClassDef(Arc::new(SCode::ClassDef::PARTS { elementLst: metamodelica::nil(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None }), inClass.clone())?;
                             (_, env_1, ih, store, dae1, csets, ty, _, opt_attr, graph) = Inst::instClass(cache.clone(), env.clone(), ih.clone(), store.clone(), inMod.clone(), pre.clone(), classWithElementsRemoved.clone(), inInstDims.clone(), inImpl, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, inGraph.clone(), inSets.clone())?;
                         } else {
@@ -1110,37 +1110,37 @@ fn instScalar2(mut inCref: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, m
         (_, SCode::Variability::CONST { .. }, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { .. }), .. }) => {
             let mut dae: DAE::DAElist;
             dae = DAEUtil::joinDaes(inClassDae, inDae)?;
-            dae.clone()
+            dae
         },
         (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, _, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, .. }), .. }) => {
             let mut dae: DAE::DAElist;
             dae = InstBinding::instModEquation(inCref, inType, inMod, inSource, inImpl)?;
-            dae = InstUtil::moveBindings(dae.clone(), inClassDae)?;
-            dae = DAEUtil::joinDaes(dae.clone(), inDae)?;
-            dae.clone()
+            dae = InstUtil::moveBindings(dae, inClassDae)?;
+            dae = DAEUtil::joinDaes(dae, inDae)?;
+            dae
         },
         (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, _, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: Deref @ DAE::Exp::CAST { exp: Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, .. }, .. }), .. }) => {
             let mut dae: DAE::DAElist;
             dae = InstBinding::instModEquation(inCref, inType, inMod, inSource, inImpl)?;
-            dae = InstUtil::moveBindings(dae.clone(), inClassDae)?;
-            dae = DAEUtil::joinDaes(dae.clone(), inDae)?;
-            dae.clone()
+            dae = InstUtil::moveBindings(dae, inClassDae)?;
+            dae = DAEUtil::joinDaes(dae, inDae)?;
+            dae
         },
         (_, SCode::Variability::PARAM { .. }, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { .. }), .. }) => {
             let mut dae: DAE::DAElist;
             dae = InstBinding::instModEquation(inCref, inType, inMod, inSource, inImpl)?;
-            dae = InstUtil::propagateBinding(inClassDae, dae.clone())?;
-            dae = DAEUtil::joinDaes(dae.clone(), inDae)?;
-            dae.clone()
+            dae = InstUtil::propagateBinding(inClassDae, dae)?;
+            dae = DAEUtil::joinDaes(dae, inDae)?;
+            dae
         },
         _ => {
             let mut dae: DAE::DAElist;
             let mut cls_dae: DAE::DAElist;
             dae = if (Types::isComplexType(inType.clone())) {InstBinding::instModEquation(inCref, inType.clone(), inMod, inSource, inImpl)?} else {DAE::emptyDae().clone()};
             cls_dae = stripRecordDefaultBindingsFromDAE(inClassDae, inType, dae.clone())?;
-            dae = DAEUtil::joinDaes(dae.clone(), inDae)?;
-            dae = DAEUtil::joinDaes(cls_dae.clone(), dae.clone())?;
-            dae.clone()
+            dae = DAEUtil::joinDaes(dae, inDae)?;
+            dae = DAEUtil::joinDaes(cls_dae, dae)?;
+            dae
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1190,8 +1190,8 @@ fn checkDimensionGreaterThanZero(mut inDim: Arc<DAE::Dimension>, mut inPrefix: D
             if var_field!((*inDim).integer, DAE::Dimension::DIM_INTEGER).clone() < 0 {
                 dim_str = (ExpressionBasics::dimensionString(inDim)?).clone();
                 cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (inIdent).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
-                cr_str = (ComponentReferenceBasics::printComponentRefStr(PrefixUtil::prefixCrefNoContext(inPrefix, cr.clone())?)?).clone();
-                Error::addSourceMessageAndFail(Error::NEGATIVE_DIMENSION_INDEX.clone(), list![(dim_str.clone()).clone(), (cr_str.clone()).clone()], info)?;
+                cr_str = (ComponentReferenceBasics::printComponentRefStr(PrefixUtil::prefixCrefNoContext(inPrefix, cr)?)?).clone();
+                Error::addSourceMessageAndFail(Error::NEGATIVE_DIMENSION_INDEX.clone(), list![(dim_str).clone(), (cr_str).clone()], info)?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
             ()

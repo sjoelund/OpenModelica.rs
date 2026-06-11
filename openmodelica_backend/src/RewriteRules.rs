@@ -137,8 +137,8 @@ pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, b
             let mut rules: Rules;
             let mut b: bool;
             rules = getRulesFrontEnd(getAllRules()?);
-            (outExp, b) = matchAndRewriteExpFrontEnd(inExp, rules.clone())?;
-            (outExp, b.clone())
+            (outExp, b) = matchAndRewriteExpFrontEnd(inExp, rules)?;
+            (outExp, b)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -206,7 +206,7 @@ pub(crate) fn replaceBindsFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Bind
         (e1 @ Deref @ Absyn::Exp::CREF { componentRef: _ }, bnds) => {
             let mut e2: Arc<Absyn::Exp>;
             e2 = replaceBindFrontEnd(e1.clone(), bnds.clone())?;
-            (e2.clone(), bnds.clone())
+            (e2, bnds.clone())
         },
         _ => {
             (inExp, inBinds)
@@ -602,7 +602,7 @@ pub(crate) fn isPlaceHolderFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<bool> 
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: _ } } => {
             let mut b: bool;
             b = intEq(System::stringFind((name.clone()).clone(), (literal!("'$")).clone())?, 0);
-            b.clone()
+            b
         },
         _ => {
             false
@@ -622,8 +622,8 @@ pub(crate) fn rewriteBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>,
             let mut rules: Rules;
             let mut b: bool;
             rules = getRulesBackEnd(getAllRules()?);
-            (outExp, b) = matchAndRewriteExpBackEnd(inExp, rules.clone())?;
-            (outExp, b.clone())
+            (outExp, b) = matchAndRewriteExpBackEnd(inExp, rules)?;
+            (outExp, b)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -695,7 +695,7 @@ pub(crate) fn replaceBindsBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) 
         (e1 @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, bnds) => {
             let mut e2: Arc<DAE::Exp>;
             e2 = replaceBindBackEnd(e1.clone(), bnds.clone())?;
-            (e2.clone(), bnds.clone())
+            (e2, bnds.clone())
         },
         _ => {
             (inExp, inBinds)
@@ -1007,7 +1007,7 @@ pub(crate) fn isPlaceHolderBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, ty: _ } => {
             let mut b: bool;
             b = intEq(System::stringFind((name.clone()).clone(), (literal!("'$")).clone())?, 0);
-            b.clone()
+            b
         },
         _ => {
             false
@@ -1081,7 +1081,7 @@ pub fn loadRules() -> Result<()> {
         () => {
             let mut file: ArcStr;
             file = (Flags::getConfigString(Flags::REWRITE_RULES_FILE.clone())?).clone();
-            loadRulesFromFile((file.clone()).clone())?;
+            loadRulesFromFile((file).clone())?;
             ()
         },
     });
@@ -1250,7 +1250,7 @@ pub(crate) fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
         Deref @ metamodelica::List::Cons { head: r @ Rule::FRONTEND_RULE { .. }, tail: rest } => {
             let mut lst: Rules;
             lst = getRulesFrontEnd(rest.clone());
-            return metamodelica::cons(r.clone(), lst.clone())
+            return metamodelica::cons(r.clone(), lst)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             { inRules = rest.clone(); continue '__tco; }
@@ -1269,7 +1269,7 @@ pub(crate) fn getRulesBackEnd(mut inRules: Rules) -> Rules {
         Deref @ metamodelica::List::Cons { head: r @ Rule::BACKEND_RULE { .. }, tail: rest } => {
             let mut lst: Rules;
             lst = getRulesBackEnd(rest.clone());
-            return metamodelica::cons(r.clone(), lst.clone())
+            return metamodelica::cons(r.clone(), lst)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             { inRules = rest.clone(); continue '__tco; }

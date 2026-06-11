@@ -462,8 +462,8 @@ pub fn unparseValues(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>
             s1 = (unparseDescription(list![v.clone()])?).clone();
             s2 = (unparseValueNumbers(list![v.clone()])?).clone();
             s3 = (unparseValues(vallst.clone())?).clone();
-            r#str = stringAppendList(list![(s1.clone()).clone(), (s2.clone()).clone(), (literal!("\n")).clone(), (s3.clone()).clone()]);
-            r#str.clone()
+            r#str = stringAppendList(list![(s1).clone(), (s2).clone(), (literal!("\n")).clone(), (s3).clone()]);
+            r#str
         },
         Deref @ metamodelica::List::Nil => {
             literal!("")
@@ -482,8 +482,8 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
             let mut res: ArcStr;
             s1 = (unparseValueNumbers(lst.clone())?).clone();
             s2 = (unparseValueNumbers(xs.clone())?).clone();
-            res = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
-            res.clone()
+            res = (stringAppend((s1).clone(), (s2).clone())).clone();
+            res
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::META_TUPLE { valueLst: lst }, tail: xs } => {
             let mut s1: ArcStr;
@@ -491,8 +491,8 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
             let mut res: ArcStr;
             s1 = (unparseValueNumbers(lst.clone())?).clone();
             s2 = (unparseValueNumbers(xs.clone())?).clone();
-            res = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
-            res.clone()
+            res = (stringAppend((s1).clone(), (s2).clone())).clone();
+            res
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: lst, .. }, tail: xs } => {
             let mut s1: ArcStr;
@@ -500,8 +500,8 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
             let mut res: ArcStr;
             s1 = (unparseValueNumbers(lst.clone())?).clone();
             s2 = (unparseValueNumbers(xs.clone())?).clone();
-            res = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
-            res.clone()
+            res = (stringAppend((s1).clone(), (s2).clone())).clone();
+            res
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: xs } => {
             let mut s1: ArcStr;
@@ -510,9 +510,9 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
             let mut istr: ArcStr;
             s1 = (unparseValueNumbers(xs.clone())?).clone();
             istr = (intString(i.clone())).clone();
-            s2 = (stringAppend((istr.clone()).clone(), (literal!(" ")).clone())).clone();
-            res = (stringAppend((s2.clone()).clone(), (s1.clone()).clone())).clone();
-            res.clone()
+            s2 = (stringAppend((istr).clone(), (literal!(" ")).clone())).clone();
+            res = (stringAppend((s2).clone(), (s1).clone())).clone();
+            res
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r }, tail: xs } => {
             let mut s1: ArcStr;
@@ -521,9 +521,9 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
             let mut istr: ArcStr;
             s1 = (unparseValueNumbers(xs.clone())?).clone();
             istr = (realString(r.clone())).clone();
-            s2 = (stringAppend((istr.clone()).clone(), (literal!(" ")).clone())).clone();
-            res = (stringAppend((s2.clone()).clone(), (s1.clone()).clone())).clone();
-            res.clone()
+            s2 = (stringAppend((istr).clone(), (literal!(" ")).clone())).clone();
+            res = (stringAppend((s2).clone(), (s1).clone())).clone();
+            res
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: sval }, tail: xs } => {
             let mut s1: ArcStr;
@@ -531,8 +531,8 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
             let mut res: ArcStr;
             s1 = (unparseValueNumbers(xs.clone())?).clone();
             s2 = (stringAppend((sval.clone()).clone(), (literal!(" ")).clone())).clone();
-            res = (stringAppend((s2.clone()).clone(), (s1.clone()).clone())).clone();
-            res.clone()
+            res = (stringAppend((s2).clone(), (s1).clone())).clone();
+            res
         },
         Deref @ metamodelica::List::Nil => {
             literal!("")
@@ -549,15 +549,15 @@ fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>
             let mut s1: ArcStr;
             let mut r#str: ArcStr;
             s1 = (unparseDescription(xs.clone())?).clone();
-            r#str = (stringAppend((literal!("# i!\n")).clone(), (s1.clone()).clone())).clone();
-            r#str.clone()
+            r#str = (stringAppend((literal!("# i!\n")).clone(), (s1).clone())).clone();
+            r#str
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { .. }, tail: xs } => {
             let mut s1: ArcStr;
             let mut r#str: ArcStr;
             s1 = (unparseDescription(xs.clone())?).clone();
-            r#str = (stringAppend((literal!("# r!\n")).clone(), (s1.clone()).clone())).clone();
-            r#str.clone()
+            r#str = (stringAppend((literal!("# r!\n")).clone(), (s1).clone())).clone();
+            r#str
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: sval }, tail: xs } => {
             let mut s1: ArcStr;
@@ -566,9 +566,9 @@ fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>
             let mut slen: i32;
             s1 = (unparseDescription(xs.clone())?).clone();
             slen = ((sval.clone()).clone().len() as i32);
-            slenstr = (intString(slen.clone())).clone();
-            r#str = stringAppendList(list![(literal!("# s! 1 ")).clone(), (slenstr.clone()).clone(), (literal!("\n")).clone(), (s1.clone()).clone()]);
-            r#str.clone()
+            slenstr = (intString(slen)).clone();
+            r#str = stringAppendList(list![(literal!("# s! 1 ")).clone(), (slenstr).clone(), (literal!("\n")).clone(), (s1).clone()]);
+            r#str
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vallst, .. }, tail: xs } => {
             let mut s1: ArcStr;
@@ -577,9 +577,9 @@ fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>
             let mut s4: ArcStr;
             s1 = (unparseDescription(xs.clone())?).clone();
             s2 = (unparseArrayDescription(vallst.clone())).clone();
-            s4 = (stringAppend((s2.clone()).clone(), (s1.clone()).clone())).clone();
-            r#str = (stringAppend((s4.clone()).clone(), (literal!(" \n")).clone())).clone();
-            r#str.clone()
+            s4 = (stringAppend((s2).clone(), (s1).clone())).clone();
+            r#str = (stringAppend((s4).clone(), (literal!(" \n")).clone())).clone();
+            r#str
         },
         Deref @ metamodelica::List::Nil => {
             literal!("")
@@ -665,18 +665,18 @@ fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) 
             let mut s3: ArcStr;
             let mut res: ArcStr;
             i1 = (lst.clone().len() as i32);
-            s1 = (intString(i1.clone())).clone();
-            s2 = (stringAppend((s1.clone()).clone(), (literal!(" ")).clone())).clone();
+            s1 = (intString(i1)).clone();
+            s2 = (stringAppend((s1).clone(), (literal!(" ")).clone())).clone();
             s3 = (unparseDimSizes(vals.clone())).clone();
-            res = (stringAppend((s2.clone()).clone(), (s3.clone()).clone())).clone();
-            res.clone()
+            res = (stringAppend((s2).clone(), (s3).clone())).clone();
+            res
         },
         lst => {
             let mut len: i32;
             let mut res: ArcStr;
             len = (lst.clone().len() as i32);
-            res = (intString(len.clone())).clone();
-            res.clone()
+            res = (intString(len)).clone();
+            res
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

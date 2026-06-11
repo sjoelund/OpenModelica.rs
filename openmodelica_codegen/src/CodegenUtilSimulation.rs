@@ -31,7 +31,7 @@ pub fn modelNamePrefix(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode
         (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, .. }) => {
             let mut ret_0: ArcStr;
             ret_0 = (System::makeC89Identifier((i_fileNamePrefix.clone()).clone())).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -260,7 +260,7 @@ fn lm_52(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::St
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (DAEDump::ppStmtStr(i_stmt.clone(), 2)).clone();
-            txt = CodegenUtil::escapeCComments(txt.clone(), (ret_0.clone()).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (ret_0).clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -278,7 +278,7 @@ fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::St
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (DAEDump::ppStmtStr(i_stmt.clone(), 2)).clone();
-            txt = CodegenUtil::escapeCComments(txt.clone(), (ret_0.clone()).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (ret_0).clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -297,7 +297,7 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<var>")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_cr.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</var>")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
@@ -322,7 +322,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ex
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<cell>")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</cell>")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
@@ -340,7 +340,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<residual>")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</residual>")).clone() }))?;
             txt.clone()
         },
@@ -349,7 +349,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<residual>")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</residual>")).clone() }))?;
             txt.clone()
         },
@@ -358,7 +358,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<residual>")).clone() }))?;
             txt_2 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</residual>")).clone() }))?;
             txt.clone()
         },
@@ -405,7 +405,7 @@ fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Co
             let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_cr.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
@@ -442,7 +442,7 @@ fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<var>")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_cr.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</var>")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
@@ -501,7 +501,7 @@ fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Co
             let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_cond.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
@@ -537,7 +537,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: RESIDUAL\n")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_RESIDUAL { exp: i_e_exp, .. }) => {
@@ -548,7 +548,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: FOR_RESIDUAL\n")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1)?).clone())?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_GENERIC_RESIDUAL { exp: i_e_exp, .. }) => {
@@ -559,7 +559,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: GENERIC_RESIDUAL\n")).clone() }))?;
             txt_2 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2)?).clone())?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_e_cref, exp: i_e_exp, .. }) => {
@@ -571,10 +571,10 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: SIMPLE_ASSIGN\n")).clone() }))?;
             txt_3 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_e_cref.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_3.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_3)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_4 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_4.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_4)?).clone())?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { cref: i_e_cref, exp: i_e_exp, cons: i_e_cons, .. }) => {
@@ -587,14 +587,14 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: SIMPLE_ASSIGN_CONSTRAINTS\n")).clone() }))?;
             txt_5 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_e_cref.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_5.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_5)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_6 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_6.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_6)?).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constraints: ")).clone() }))?;
             txt_7 = ExpressionDumpTpl::dumpConstraints(Tpl::emptyTxt.clone(), i_e_cons.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_7.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_7)?).clone())?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { lhs: Deref @ DAE::Exp::CREF { componentRef: i_lhs_componentRef, .. }, exp: i_e_exp, .. }) => {
@@ -606,10 +606,10 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("type: ARRAY_CALL_ASSIGN\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt_8 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_lhs_componentRef.clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_8.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_8)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_9 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_9.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_9)?).clone())?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_RESIZABLE_ASSIGN { call_index: i_e_call__index, .. }) => {
@@ -705,7 +705,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("type: MIXED\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             ret_10 = List::fill(i_e_cont.clone(), 1);
-            txt = dumpEqs(txt.clone(), ret_10.clone())?;
+            txt = dumpEqs(txt.clone(), ret_10)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = dumpEqs(txt.clone(), i_e_discEqs.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone(), (literal!("<mixed>\n")).clone()], lastHasNewLine: true }))?;
@@ -741,9 +741,9 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("dimension: ")).clone() }))?;
             ret_12 = (i_residual_equations.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_12.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_12)).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_detailedDescription.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_detailedDescription)?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, .. }) => {
@@ -759,7 +759,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("} then\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_body.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_body)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end when;")).clone() }))?;
@@ -775,9 +775,9 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = equationIndex(txt.clone(), i_e.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("type: IFEQUATION\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_branches.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_branches)?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_elsebr.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_elsebr)?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { iter: i_e_iter, startIt: i_e_startIt, endIt: i_e_endIt, cref: i_e_cref, exp: i_e_exp, .. }) => {
@@ -789,33 +789,33 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut l_forstatement: Tpl::Text;
             let mut txt = (*txt).clone();
             l_forstatement = Tpl::emptyTxt.clone();
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
             txt_17 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_iter.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_17.clone())?).clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" in ")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_17)?).clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" in ")).clone() }))?;
             txt_18 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_startIt.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_18.clone())?).clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" : ")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_18)?).clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" : ")).clone() }))?;
             txt_19 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_endIt.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_19.clone())?).clone())?;
-            l_forstatement = Tpl::pushBlock(l_forstatement.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("loop")).clone() }))?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            l_forstatement = Tpl::popBlock(l_forstatement.clone())?;
-            l_forstatement = Tpl::pushBlock(l_forstatement.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_19)?).clone())?;
+            l_forstatement = Tpl::pushBlock(l_forstatement, Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("loop")).clone() }))?;
+            l_forstatement = Tpl::writeTok(l_forstatement, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            l_forstatement = Tpl::popBlock(l_forstatement)?;
+            l_forstatement = Tpl::pushBlock(l_forstatement, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt_20 = ExpressionDumpTpl::dumpCref(Tpl::emptyTxt.clone(), i_e_cref.clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_20.clone())?).clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_20)?).clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_21 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_21.clone())?).clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; ")).clone() }))?;
-            l_forstatement = Tpl::popBlock(l_forstatement.clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_21)?).clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; ")).clone() }))?;
+            l_forstatement = Tpl::popBlock(l_forstatement)?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
             txt = equationIndex(txt.clone(), i_e.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: FOR_LOOP\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_forstatement.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_forstatement)?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_EQUATION { iter: i_e_iter, startIt: i_e_startIt, endIt: i_e_endIt, body: i_e_body, .. }) => {
@@ -825,29 +825,29 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut l_forstatement: Tpl::Text;
             let mut txt = (*txt).clone();
             l_forstatement = Tpl::emptyTxt.clone();
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for ")).clone() }))?;
             txt_22 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_iter.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_22.clone())?).clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" in ")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_22)?).clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" in ")).clone() }))?;
             txt_23 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_startIt.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_23.clone())?).clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" : ")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_23)?).clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" : ")).clone() }))?;
             txt_24 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_endIt.clone(), (literal!("\"")).clone())?;
-            l_forstatement = CodegenUtil::escapeCComments(l_forstatement.clone(), (Tpl::textString(txt_24.clone())?).clone())?;
-            l_forstatement = Tpl::pushBlock(l_forstatement.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("loop")).clone() }))?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            l_forstatement = Tpl::popBlock(l_forstatement.clone())?;
-            l_forstatement = Tpl::pushBlock(l_forstatement.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            l_forstatement = dumpEqs(l_forstatement.clone(), i_e_body.clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-            l_forstatement = Tpl::popBlock(l_forstatement.clone())?;
-            l_forstatement = Tpl::writeTok(l_forstatement.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
+            l_forstatement = CodegenUtil::escapeCComments(l_forstatement, (Tpl::textString(txt_24)?).clone())?;
+            l_forstatement = Tpl::pushBlock(l_forstatement, Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("loop")).clone() }))?;
+            l_forstatement = Tpl::writeTok(l_forstatement, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            l_forstatement = Tpl::popBlock(l_forstatement)?;
+            l_forstatement = Tpl::pushBlock(l_forstatement, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+            l_forstatement = dumpEqs(l_forstatement, i_e_body.clone())?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
+            l_forstatement = Tpl::popBlock(l_forstatement)?;
+            l_forstatement = Tpl::writeTok(l_forstatement, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end for")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
             txt = equationIndex(txt.clone(), i_e.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("type: FOR_EQUATION\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_forstatement.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_forstatement)?;
             txt.clone()
         },
         (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_ALIAS { aliasOf: i_e_aliasOf, .. }) => {
@@ -993,7 +993,7 @@ fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             a_columnBuffer = ExpressionDumpTpl::dumpCref(a_columnBuffer.clone(), i_equation_cref.clone())?;
             a_columnBuffer = Tpl::writeTok(a_columnBuffer.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_equation_exp.clone(), (literal!("\"")).clone())?;
-            a_columnBuffer = CodegenUtil::escapeCComments(a_columnBuffer.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            a_columnBuffer = CodegenUtil::escapeCComments(a_columnBuffer.clone(), (Tpl::textString(txt_0)?).clone())?;
             a_columnBuffer = Tpl::writeTok(a_columnBuffer.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             { (in_txt, in_items, in_a_columnBuffer) = (txt.clone(), rest.clone(), a_columnBuffer.clone()); continue '__tco; }
         },
@@ -1044,9 +1044,9 @@ pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodel
             txt = ExpressionDumpTpl::dumpCref(txt.clone(), i_left_componentRef.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_right.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_restbody)?;
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: i_e_left, right: i_e_right, .. }, tail: i_rest }) => {
@@ -1057,9 +1057,9 @@ pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodel
             txt = ExpressionDumpTpl::dumpExp(txt.clone(), i_e_left.clone(), (literal!("\"")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt_2 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_right.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_restbody)?;
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { stateVar: i_e_stateVar, value: i_e_value, .. }, tail: i_rest }) => {
@@ -1071,9 +1071,9 @@ pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodel
             txt = ExpressionDumpTpl::dumpCref(txt.clone(), i_e_stateVar.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",  ")).clone() }))?;
             txt_3 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_value.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_3.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_3)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_restbody)?;
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { condition: i_e_condition, message: i_e_message, level: i_e_level, .. }, tail: i_rest }) => {
@@ -1085,15 +1085,15 @@ pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodel
             l_restbody = dumpWhenOps(Tpl::emptyTxt.clone(), i_rest.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("assert(")).clone() }))?;
             txt_4 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_condition.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_4.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_4)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             txt_5 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_message.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_5.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_5)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             txt_6 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_level.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_6.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_6)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_restbody)?;
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::TERMINATE { message: i_e_message, .. }, tail: i_rest }) => {
@@ -1103,9 +1103,9 @@ pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodel
             l_restbody = dumpWhenOps(Tpl::emptyTxt.clone(), i_rest.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("terminate(")).clone() }))?;
             txt_7 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_message.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_7.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_7)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(")%>);\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_restbody)?;
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::NORETCALL { exp: i_e_exp, .. }, tail: i_rest }) => {
@@ -1115,9 +1115,9 @@ pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodel
             l_restbody = dumpWhenOps(Tpl::emptyTxt.clone(), i_rest.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("noReturnCall(")).clone() }))?;
             txt_8 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_8.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_8)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(")%>);\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_restbody)?;
             txt.clone()
         },
         (txt, _) => {
@@ -1188,7 +1188,7 @@ fn lm_78(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ex
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<cell>")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</cell>")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
@@ -1206,7 +1206,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<residual>")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_0)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</residual>")).clone() }))?;
             txt.clone()
         },
@@ -1215,7 +1215,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<residual>")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_1)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</residual>")).clone() }))?;
             txt.clone()
         },
@@ -1224,7 +1224,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<residual>")).clone() }))?;
             txt_2 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), i_e_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2)?).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</residual>")).clone() }))?;
             txt.clone()
         },

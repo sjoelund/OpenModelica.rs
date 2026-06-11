@@ -31,7 +31,7 @@ fn lm_43(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
-            txt = getCevalScriptInterfaceFunc(txt.clone(), (ret_0.clone()).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone())?;
+            txt = getCevalScriptInterfaceFunc(txt.clone(), (ret_0).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
@@ -94,8 +94,8 @@ pub(crate) fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> R
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getInType failed for ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_0 = Tpl::writeStr(txt_0.clone(), (ret_0.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 72, 16), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt_0 = Tpl::writeStr(txt_0, (ret_0).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 72, 16), (Tpl::textString(txt_0)?).clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -139,8 +139,8 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ValuesMake.makeArray(list(")).clone() }))?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_iter")).clone() }))?;
-            (txt, txt_0) = getInValue(txt.clone(), txt_0.clone(), i_aty_ty.clone())?;
+            txt_0 = Tpl::writeTok(txt_0, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_iter")).clone() }))?;
+            (txt, txt_0) = getInValue(txt.clone(), txt_0, i_aty_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" for ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_iter in ")).clone() }))?;
@@ -161,8 +161,8 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getInValue failed for ")).clone() }))?;
             ret_1 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_1 = Tpl::writeStr(txt_1.clone(), (ret_1.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 84, 16), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt_1 = Tpl::writeStr(txt_1, (ret_1).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 84, 16), (Tpl::textString(txt_1)?).clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -223,8 +223,8 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_postMatch = Tpl::writeText(a_postMatch.clone(), a_name.clone())?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" := ")).clone() }))?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_arr")).clone() }))?;
-            (a_postMatch, txt_0) = getOutValueArray(a_postMatch.clone(), txt_0.clone(), i_aty.clone())?;
+            txt_0 = Tpl::writeTok(txt_0, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_arr")).clone() }))?;
+            (a_postMatch, txt_0) = getOutValueArray(a_postMatch.clone(), txt_0, i_aty.clone())?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
@@ -255,8 +255,8 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getOutValue failed for ")).clone() }))?;
             ret_1 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_1 = Tpl::writeStr(txt_1.clone(), (ret_1.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 103, 16), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt_1 = Tpl::writeStr(txt_1, (ret_1).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 103, 16), (Tpl::textString(txt_1)?).clone())?;
             (txt.clone(), a_varDecl.clone(), a_postMatch.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -318,8 +318,8 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("list(")).clone() }))?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_iter")).clone() }))?;
-            (txt, txt_0) = getOutValueArray(txt.clone(), txt_0.clone(), i_aty_ty.clone())?;
+            txt_0 = Tpl::writeTok(txt_0, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_iter")).clone() }))?;
+            (txt, txt_0) = getOutValueArray(txt.clone(), txt_0, i_aty_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" for ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_iter in ValuesUtil.arrayValues(")).clone() }))?;
@@ -340,8 +340,8 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getOutValueArray failed for ")).clone() }))?;
             ret_1 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_1 = Tpl::writeStr(txt_1.clone(), (ret_1.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 117, 16), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt_1 = Tpl::writeStr(txt_1, (ret_1).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 117, 16), (Tpl::textString(txt_1)?).clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -392,8 +392,8 @@ fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             let mut a_varDecl = (*a_varDecl).clone();
             x_i = Tpl::getIteri_i0(txt.clone())?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("res")).clone() }))?;
-            txt_0 = Tpl::writeStr(txt_0.clone(), (intString(x_i.clone())).clone())?;
-            (txt, txt_0, a_varDecl, a_postMatch) = getOutValue(txt.clone(), txt_0.clone(), i_ty.clone(), a_varDecl.clone(), a_postMatch.clone())?;
+            txt_0 = Tpl::writeStr(txt_0, (intString(x_i)).clone())?;
+            (txt, txt_0, a_varDecl, a_postMatch) = getOutValue(txt.clone(), txt_0, i_ty.clone(), a_varDecl.clone(), a_postMatch.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_postMatch, in_a_varDecl) = (txt.clone(), rest.clone(), a_postMatch.clone(), a_varDecl.clone()); continue '__tco; }
         },
@@ -473,7 +473,7 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output ")).clone() }))?;
             txt = getInType(txt.clone(), i_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" res")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_i.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_i)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
@@ -581,7 +581,7 @@ fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
-            txt = getQtInterfaceFunc(txt.clone(), (ret_0.clone()).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_classNameWithColons.clone()).clone())?;
+            txt = getQtInterfaceFunc(txt.clone(), (ret_0).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_classNameWithColons.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             { (in_txt, in_items, in_a_classNameWithColons) = (txt.clone(), rest.clone(), (a_classNameWithColons.clone()).clone()); continue '__tco; }
         },
@@ -618,7 +618,7 @@ fn lm_62(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
-            txt = getQtInterfaceHeader(txt.clone(), (ret_0.clone()).clone(), (literal!("")).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_className.clone()).clone(), true)?;
+            txt = getQtInterfaceHeader(txt.clone(), (ret_0).clone(), (literal!("")).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_className.clone()).clone(), true)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             { (in_txt, in_items, in_a_className) = (txt.clone(), rest.clone(), (a_className.clone()).clone()); continue '__tco; }
@@ -690,8 +690,8 @@ pub(crate) fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> R
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtType failed for ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_0 = Tpl::writeStr(txt_0.clone(), (ret_0.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 211, 16), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt_0 = Tpl::writeStr(txt_0, (ret_0).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 211, 16), (Tpl::textString(txt_0)?).clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -706,7 +706,7 @@ pub(crate) fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_nam
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = ((i_lst.clone()).get(a_index.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt.clone()
         },
         (txt, _, a_index) => {
@@ -791,9 +791,9 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
             let mut a_name = (*a_name).clone();
             l_varName = getQtTupleTypeOutputName(Tpl::emptyTxt.clone(), a_res.clone(), a_index.clone())?;
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), l_varName.clone())?;
-            l_elt = Tpl::writeTok(l_elt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
+            l_elt = Tpl::writeTok(l_elt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
             l_counter = Tpl::writeText(Tpl::emptyTxt.clone(), l_varName.clone())?;
-            l_counter = Tpl::writeTok(l_counter.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
+            l_counter = Tpl::writeTok(l_counter, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".append(\"{\");\n")).clone(), (literal!("int ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_counter.clone())?;
@@ -802,7 +802,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_elt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_varName.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_varName)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(") {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if (")).clone() }))?;
@@ -813,9 +813,9 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(".append(\",\");\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
-            (txt, l_elt, a_name) = getQtResponseLogText(txt.clone(), l_elt.clone(), i_aty_ty.clone(), a_name.clone())?;
+            (txt, l_elt, a_name) = getQtResponseLogText(txt.clone(), l_elt, i_aty_ty.clone(), a_name.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_counter.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_counter)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("++;\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
@@ -829,8 +829,8 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
             let mut txt = (*txt).clone();
             txt_3 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("structToString failed for ")).clone() }))?;
             ret_3 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_3 = Tpl::writeStr(txt_3.clone(), (ret_3.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 256, 16), (Tpl::textString(txt_3.clone())?).clone())?;
+            txt_3 = Tpl::writeStr(txt_3, (ret_3).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 256, 16), (Tpl::textString(txt_3)?).clone())?;
             (txt.clone(), a_name.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -880,7 +880,7 @@ fn lm_70(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             x_i = Tpl::getIteri_i0(txt.clone())?;
             txt = getQtType(txt.clone(), i_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-            txt = getQtTupleTypeOutputName(txt.clone(), a_res.clone(), x_i.clone())?;
+            txt = getQtTupleTypeOutputName(txt.clone(), a_res.clone(), x_i)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_res) = (txt.clone(), rest.clone(), a_res.clone()); continue '__tco; }
@@ -900,7 +900,7 @@ fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             let mut x_i: i32;
             let mut txt = (*txt).clone();
             x_i = Tpl::getIteri_i0(txt.clone())?;
-            (txt, _) = structToString(txt.clone(), a_res.clone(), i_ty.clone(), x_i.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resultBuffer")).clone() })))?;
+            (txt, _) = structToString(txt.clone(), a_res.clone(), i_ty.clone(), x_i, Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resultBuffer")).clone() })))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_res) = (txt.clone(), rest.clone(), a_res.clone()); continue '__tco; }
         },
@@ -934,10 +934,10 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DA
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("QString toString() {\n")).clone(), (literal!("  QString resultBuffer = \"(\";\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resultBuffer.append(\",\");")).clone() }))?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            ret_1 = Tpl::textStrTok(txt_0.clone())?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(ret_1.clone()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt_0 = Tpl::writeTok(txt_0, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resultBuffer.append(\",\");")).clone() }))?;
+            txt_0 = Tpl::writeTok(txt_0, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            ret_1 = Tpl::textStrTok(txt_0)?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(ret_1), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_71(txt.clone(), a_types.clone(), a_res.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -1055,11 +1055,11 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut a_varDecl = (*a_varDecl).clone();
             l_varDecl2 = Tpl::emptyTxt.clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            l_elt = Tpl::writeTok(l_elt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
-            (txt_3, l_elt, l_varDecl2) = getQtInArg(Tpl::emptyTxt.clone(), l_elt.clone(), i_aty_ty.clone(), l_varDecl2.clone())?;
-            (l_body, txt_3) = getQtInArgBoxed(Tpl::emptyTxt.clone(), txt_3.clone(), i_aty_ty.clone())?;
+            l_elt = Tpl::writeTok(l_elt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
+            (txt_3, l_elt, l_varDecl2) = getQtInArg(Tpl::emptyTxt.clone(), l_elt, i_aty_ty.clone(), l_varDecl2)?;
+            (l_body, txt_3) = getQtInArgBoxed(Tpl::emptyTxt.clone(), txt_3, i_aty_ty.clone())?;
             l_i = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            l_i = Tpl::writeTok(l_i.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
+            l_i = Tpl::writeTok(l_i, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void *")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_lst = mmc_mk_nil();\n")).clone(), (literal!("for (int ")).clone()], lastHasNewLine: false }))?;
@@ -1074,17 +1074,17 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::pushBlock(a_varDecl.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             a_varDecl = getQtType(a_varDecl.clone(), i_aty_ty.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_elt.clone())?;
+            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_elt)?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[")).clone() }))?;
-            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_i.clone())?;
+            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_i)?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("];\n")).clone() }))?;
-            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_varDecl2.clone())?;
+            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_varDecl2)?;
             a_varDecl = Tpl::softNewLine(a_varDecl.clone())?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_lst = mmc_mk_cons(")).clone() }))?;
-            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_body.clone())?;
+            a_varDecl = Tpl::writeText(a_varDecl.clone(), l_body)?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_lst);\n")).clone() }))?;
@@ -1101,8 +1101,8 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_5 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtInArg failed for ")).clone() }))?;
             ret_5 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_5 = Tpl::writeStr(txt_5.clone(), (ret_5.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 311, 16), (Tpl::textString(txt_5.clone())?).clone())?;
+            txt_5 = Tpl::writeStr(txt_5, (ret_5).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 311, 16), (Tpl::textString(txt_5)?).clone())?;
             (txt.clone(), a_varDecl.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1164,8 +1164,8 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtInArgBoxed failed for ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_0 = Tpl::writeStr(txt_0.clone(), (ret_0.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 323, 16), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt_0 = Tpl::writeStr(txt_0, (ret_0).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 323, 16), (Tpl::textString(txt_0)?).clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1236,9 +1236,9 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             let mut a_commandLog = (*a_commandLog).clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            l_elt = Tpl::writeTok(l_elt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
+            l_elt = Tpl::writeTok(l_elt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
             l_counter = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            l_counter = Tpl::writeTok(l_counter.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
+            l_counter = Tpl::writeTok(l_counter, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_commandLog.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".append(\"{\");\n")).clone(), (literal!("int ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_counter.clone())?;
@@ -1258,9 +1258,9 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(".append(\",\");\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
-            (txt, l_elt, a_commandLog) = getQtCommandLogText(txt.clone(), l_elt.clone(), i_aty_ty.clone(), a_commandLog.clone())?;
+            (txt, l_elt, a_commandLog) = getQtCommandLogText(txt.clone(), l_elt, i_aty_ty.clone(), a_commandLog.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_counter.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_counter)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("++;\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
@@ -1274,8 +1274,8 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtCommandLogText failed for ")).clone() }))?;
             ret_2 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_2 = Tpl::writeStr(txt_2.clone(), (ret_2.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 349, 16), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt_2 = Tpl::writeStr(txt_2, (ret_2).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 349, 16), (Tpl::textString(txt_2)?).clone())?;
             (txt.clone(), a_commandLog.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1360,8 +1360,8 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm = NULL;")).clone() }))?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_shortName.clone())?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm")).clone() }))?;
-            (a_postCall, a_name, a_shortName, txt_0) = getQtOutArgArray(a_postCall.clone(), a_name.clone(), a_shortName.clone(), txt_0.clone(), i_aty.clone())?;
+            txt_0 = Tpl::writeTok(txt_0, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm")).clone() }))?;
+            (a_postCall, a_name, a_shortName, txt_0) = getQtOutArgArray(a_postCall.clone(), a_name.clone(), a_shortName.clone(), txt_0, i_aty.clone())?;
             txt = Tpl::writeText(txt.clone(), a_shortName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm")).clone() }))?;
             (txt.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())
@@ -1372,8 +1372,8 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtOutArg failed for ")).clone() }))?;
             ret_1 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_1 = Tpl::writeStr(txt_1.clone(), (ret_1.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 367, 16), (Tpl::textString(txt_1.clone())?).clone())?;
+            txt_1 = Tpl::writeStr(txt_1, (ret_1).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 367, 16), (Tpl::textString(txt_1)?).clone())?;
             (txt.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1444,7 +1444,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut l_elt: Tpl::Text;
             let mut txt = (*txt).clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_shortName.clone())?;
-            l_elt = Tpl::writeTok(l_elt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
+            l_elt = Tpl::writeTok(l_elt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".clear();\n")).clone(), (literal!("while (!listEmpty(")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
@@ -1455,13 +1455,13 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeText(txt.clone(), l_elt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() }))?;
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MMC_CAR(")).clone() }))?;
-            txt_1 = Tpl::writeText(txt_1.clone(), a_mm.clone())?;
-            txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            (txt, _, l_elt, txt_1) = getQtOutArgArray(txt.clone(), l_elt.clone(), l_elt.clone(), txt_1.clone(), i_aty_ty.clone())?;
+            txt_1 = Tpl::writeText(txt_1, a_mm.clone())?;
+            txt_1 = Tpl::writeTok(txt_1, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
+            (txt, _, l_elt, txt_1) = getQtOutArgArray(txt.clone(), l_elt.clone(), l_elt, txt_1, i_aty_ty.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".push_back(")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_elt.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_elt)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = MMC_CDR(")).clone() }))?;
@@ -1478,8 +1478,8 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getOutValueArray failed for ")).clone() }))?;
             ret_2 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_2 = Tpl::writeStr(txt_2.clone(), (ret_2.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 389, 16), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt_2 = Tpl::writeStr(txt_2, (ret_2).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 389, 16), (Tpl::textString(txt_2)?).clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1563,9 +1563,9 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             let mut a_responseLog = (*a_responseLog).clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            l_elt = Tpl::writeTok(l_elt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
+            l_elt = Tpl::writeTok(l_elt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
             l_counter = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
-            l_counter = Tpl::writeTok(l_counter.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
+            l_counter = Tpl::writeTok(l_counter, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_i")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_responseLog.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".append(\"{\");\n")).clone(), (literal!("int ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_counter.clone())?;
@@ -1585,9 +1585,9 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(".append(\",\");\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
-            (txt, l_elt, a_responseLog) = getQtResponseLogText(txt.clone(), l_elt.clone(), i_aty_ty.clone(), a_responseLog.clone())?;
+            (txt, l_elt, a_responseLog) = getQtResponseLogText(txt.clone(), l_elt, i_aty_ty.clone(), a_responseLog.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_counter.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_counter)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("++;\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
@@ -1601,8 +1601,8 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtResponseLogText failed for ")).clone() }))?;
             ret_2 = (TypesDump::unparseType(i_ty.clone())?).clone();
-            txt_2 = Tpl::writeStr(txt_2.clone(), (ret_2.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 416, 16), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt_2 = Tpl::writeStr(txt_2, (ret_2).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("GenerateAPIFunctionsTpl.tpl")).clone(), 416, 16), (Tpl::textString(txt_2)?).clone())?;
             (txt.clone(), a_responseLog.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1679,10 +1679,10 @@ fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", &")).clone() }))?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result.")).clone() }))?;
-            txt_0 = getQtTupleTypeOutputName(txt_0.clone(), a_res.clone(), x_i1.clone())?;
+            txt_0 = getQtTupleTypeOutputName(txt_0, a_res.clone(), x_i1)?;
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("out")).clone() }))?;
-            txt_1 = Tpl::writeStr(txt_1.clone(), (intString(x_i1.clone())).clone())?;
-            (txt, txt_0, txt_1, a_varDecl, a_postCall) = getQtOutArg(txt.clone(), txt_0.clone(), txt_1.clone(), i_t.clone(), a_varDecl.clone(), a_postCall.clone())?;
+            txt_1 = Tpl::writeStr(txt_1, (intString(x_i1)).clone())?;
+            (txt, txt_0, txt_1, a_varDecl, a_postCall) = getQtOutArg(txt.clone(), txt_0, txt_1, i_t.clone(), a_varDecl.clone(), a_postCall.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_postCall, in_a_varDecl, in_a_res) = (txt.clone(), rest.clone(), a_postCall.clone(), a_varDecl.clone(), a_res.clone()); continue '__tco; }
         },
@@ -1713,8 +1713,8 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (a_responseLog, _, _) = getQtResponseLogText(a_responseLog.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result")).clone() })), i_t.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("responseLog")).clone() })))?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result.")).clone() }))?;
-            txt_0 = getQtTupleTypeOutputName(txt_0.clone(), i_t.clone(), 1)?;
-            (a_outArg, txt_0, _, a_varDecl, a_postCall) = getQtOutArg(a_outArg.clone(), txt_0.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("out1")).clone() })), i_type1.clone(), a_varDecl.clone(), a_postCall.clone())?;
+            txt_0 = getQtTupleTypeOutputName(txt_0, i_t.clone(), 1)?;
+            (a_outArg, txt_0, _, a_varDecl, a_postCall) = getQtOutArg(a_outArg.clone(), txt_0, Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("out1")).clone() })), i_type1.clone(), a_varDecl.clone(), a_postCall.clone())?;
             a_outArg = Tpl::writeTok(a_outArg.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 2, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_postCall, a_varDecl) = lm_89(txt.clone(), i_types2.clone(), a_postCall.clone(), a_varDecl.clone(), i_t.clone())?;

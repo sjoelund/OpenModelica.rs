@@ -393,21 +393,21 @@ pub(crate) fn resolveAlias(mut inItem: Item, mut inEnv: Env) -> Result<(Item, En
             let mut item: Item;
             let mut env: Env;
             item = NFSCodeEnv::EnvTree::get(tree.clone(), (name.clone()).clone())?;
-            { (inItem, inEnv) = (item.clone(), inEnv); continue '__tco; }
+            { (inItem, inEnv) = (item, inEnv); continue '__tco; }
         },
         (Deref @ NFSCodeEnv::Item::ALIAS { name, path: Some(path), .. }, _) => {
             let mut item: Item;
             let mut env: Env;
             let mut tree: Arc<NFSCodeEnv::EnvTree::Tree>;
             env = NFSCodeEnv::getEnvTopScope(inEnv)?;
-            env = NFSCodeEnv::enterScopePath(env.clone(), path.clone())?;
+            env = NFSCodeEnv::enterScopePath(env, path.clone())?;
             let __pa0 = ::match_deref::match_deref! { match &(env.clone()) {
                 Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: __pa0, .. }, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             tree = __pa0.clone();
             item = NFSCodeEnv::EnvTree::get(tree.clone(), (name.clone()).clone())?;
-            { (inItem, inEnv) = (item.clone(), env.clone()); continue '__tco; }
+            { (inItem, inEnv) = (item, env); continue '__tco; }
         },
         _ => {
             return Ok((inItem, inEnv))
@@ -486,11 +486,11 @@ pub(crate) fn lookupInBaseClasses3(mut inName: ArcStr, mut inBaseClass: Extends,
             let mut opt_item: Option<Arc<NFSCodeEnv::Item>>;
             let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
             (item, path, env) = lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
-            let true = (checkVisitedScopes(inVisitedScopes, inEnv, path.clone())) else { bail!("pattern mismatch") };
-            item = NFSCodeEnv::setImportsInItemHidden(item.clone(), true)?;
-            (opt_item, opt_env) = NFSCodeFlattenRedeclare::replaceRedeclares(redecls.clone(), item.clone(), env.clone(), inEnvWithExtends, inReplaceRedeclares);
-            (opt_item, opt_path, opt_env) = lookupInBaseClasses4(Arc::new(Absyn::Path::IDENT { name: (inName).clone() }), opt_item.clone(), opt_env.clone())?;
-            (opt_item.clone(), opt_path.clone(), opt_env.clone())
+            let true = (checkVisitedScopes(inVisitedScopes, inEnv, path)) else { bail!("pattern mismatch") };
+            item = NFSCodeEnv::setImportsInItemHidden(item, true)?;
+            (opt_item, opt_env) = NFSCodeFlattenRedeclare::replaceRedeclares(redecls.clone(), item, env, inEnvWithExtends, inReplaceRedeclares);
+            (opt_item, opt_path, opt_env) = lookupInBaseClasses4(Arc::new(Absyn::Path::IDENT { name: (inName).clone() }), opt_item, opt_env)?;
+            (opt_item, opt_path, opt_env)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -550,7 +550,7 @@ fn lookupInBaseClasses4(mut inName: Arc<Absyn::Path>, mut inItem: Option<Arc<NFS
             let mut item = (*item).clone();
             let mut env = (*env).clone();
             (item, path, env) = lookupNameInItem(inName, item.clone(), env.clone())?;
-            (Some(item.clone()), Some(path.clone()), Some(env.clone()))
+            (Some(item.clone()), Some(path), Some(env.clone()))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -668,8 +668,8 @@ pub(crate) fn lookupNameInPackage(mut inName: Arc<Absyn::Path>, mut inEnv: Env) 
             item = __pa0.clone();
             path = __pa1.clone();
             env = __pa2.clone();
-            env = NFSCodeEnv::setImportTableHidden(env.clone(), false)?;
-            (item.clone(), path.clone(), env.clone())
+            env = NFSCodeEnv::setImportTableHidden(env, false)?;
+            (item, path.clone(), env)
         },
         (Deref @ Absyn::Path::QUALIFIED { name, path }, Deref @ metamodelica::List::Cons { head: _, tail: _ }) => {
             let mut new_path: Arc<Absyn::Path>;
@@ -683,10 +683,10 @@ pub(crate) fn lookupNameInPackage(mut inName: Arc<Absyn::Path>, mut inEnv: Env) 
             item = __pa0.clone();
             new_path = __pa1.clone();
             env = __pa2.clone();
-            env = NFSCodeEnv::setImportTableHidden(env.clone(), false)?;
-            (item, path, env) = lookupNameInItem(path.clone(), item.clone(), env.clone())?;
-            path = joinPaths(new_path.clone(), path.clone())?;
-            (item.clone(), path.clone(), env.clone())
+            env = NFSCodeEnv::setImportTableHidden(env, false)?;
+            (item, path, env) = lookupNameInItem(path.clone(), item, env)?;
+            path = joinPaths(new_path, path.clone())?;
+            (item, path.clone(), env)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -787,15 +787,15 @@ pub(crate) fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, m
             let mut env = (*env).clone();
             (item, _, type_env) = lookupTypeSpec(type_spec.clone(), env.clone(), info.clone())?;
             redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
-            (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv, NFInstPrefix::emptyPrefix().clone())?;
-            { (inName, inItem, inEnv) = (inName, item.clone(), type_env.clone()); continue '__tco; }
+            (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares, item, type_env, inEnv, NFInstPrefix::emptyPrefix().clone())?;
+            { (inName, inItem, inEnv) = (inName, item, type_env); continue '__tco; }
         },
         (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. }, _) => {
             let mut item: Item;
             let mut path: Arc<Absyn::Path>;
             let mut env: Env;
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv);
-            return Ok(lookupNameInPackage(inName, env.clone())?)
+            return Ok(lookupNameInPackage(inName, env)?)
         },
         (Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, declaredEnv: env }, _) => {
             let mut path: Arc<Absyn::Path>;
@@ -818,8 +818,8 @@ pub(crate) fn lookupCrefInItem(mut inCref: Arc<Absyn::ComponentRef>, mut inItem:
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
             (item, _, type_env) = lookupTypeSpec(type_spec.clone(), inEnv.clone(), info.clone())?;
             redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
-            (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv, NFInstPrefix::emptyPrefix().clone())?;
-            { (inCref, inItem, inEnv) = (inCref, item.clone(), type_env.clone()); continue '__tco; }
+            (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares, item, type_env, inEnv, NFInstPrefix::emptyPrefix().clone())?;
+            { (inCref, inItem, inEnv) = (inCref, item, type_env); continue '__tco; }
         },
         Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut item: Item;
@@ -1069,12 +1069,12 @@ fn lookupBuiltinName(mut inName: Arc<Absyn::Path>) -> Result<(Item, Env)> {
         Deref @ Absyn::Path::IDENT { name: id } => {
             let mut item: Item;
             item = lookupBuiltinType((id.clone()).clone())?;
-            (item.clone(), NFSCodeEnv::emptyEnv.clone())
+            (item, NFSCodeEnv::emptyEnv.clone())
         },
         Deref @ Absyn::Path::QUALIFIED { name: Deref @ "StateSelect", path: Deref @ Absyn::Path::IDENT { name: id } } => {
             let mut item: Item;
             (item, _) = lookupInClass((id.clone()).clone(), BUILTIN_STATESELECT_ENV.clone())?;
-            (item.clone(), BUILTIN_STATESELECT_ENV.clone())
+            (item, BUILTIN_STATESELECT_ENV.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1212,7 +1212,7 @@ pub(crate) fn lookupBaseClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, 
             let mut item: Item;
             let mut env = (*env).clone();
             (item, env) = lookupInheritedName((id.clone()).clone(), env.clone())?;
-            (item.clone(), path.clone(), env.clone())
+            (item, path.clone(), env.clone())
         },
         (Deref @ Absyn::Path::QUALIFIED { name: Deref @ "$E", .. }, _) => {
             NFEnvExtends::printExtendsError(inName, inEnv, inInfo)?;
@@ -1223,7 +1223,7 @@ pub(crate) fn lookupBaseClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, 
             let mut item: Item;
             let mut path: Arc<Absyn::Path>;
             (item, path, env) = lookupName(inName, inEnv, crate::NFSCodeLookup::LookupStrategy::LOOKUP_ANY, inInfo, Some(Error::LOOKUP_BASECLASS_ERROR.clone()))?;
-            (item.clone(), path.clone(), env.clone())
+            (item, path.clone(), env.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1378,8 +1378,8 @@ fn lookupComponentRef2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> 
             let mut path: Arc<Absyn::Path>;
             let mut env: Env;
             (_, path, env) = lookupSimpleName((name.clone()).clone(), inEnv)?;
-            cref = AbsynUtil::pathToCrefWithSubs(path.clone(), subs.clone())?;
-            (cref.clone(), env.clone())
+            cref = AbsynUtil::pathToCrefWithSubs(path, subs.clone())?;
+            (cref.clone(), env)
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { name, subscripts: subs, componentRef: rest_cref } => {
             let mut cref: Arc<Absyn::ComponentRef>;
@@ -1388,17 +1388,17 @@ fn lookupComponentRef2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> 
             let mut item: Item;
             let mut rest_cref = (*rest_cref).clone();
             (item, new_path, env) = lookupSimpleName((name.clone()).clone(), inEnv)?;
-            cref = AbsynUtil::pathToCrefWithSubs(new_path.clone(), subs.clone())?;
-            (item, rest_cref) = lookupCrefInItem(rest_cref.clone(), item.clone(), env.clone())?;
-            cref = joinCrefs(cref.clone(), rest_cref.clone())?;
-            (cref.clone(), env.clone())
+            cref = AbsynUtil::pathToCrefWithSubs(new_path, subs.clone())?;
+            (item, rest_cref) = lookupCrefInItem(rest_cref.clone(), item, env.clone())?;
+            cref = joinCrefs(cref, rest_cref.clone())?;
+            (cref.clone(), env)
         },
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: cref } => {
             let mut env: Env;
             let mut cref = (*cref).clone();
             cref = lookupCrefFullyQualified(cref.clone(), inEnv.clone())?;
             env = NFSCodeEnv::getEnvTopScope(inEnv)?;
-            (cref.clone(), env.clone())
+            (cref.clone(), env)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1434,12 +1434,12 @@ pub(crate) fn lookupTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: En
             let mut item: Item;
             let mut env: Env;
             (item, newpath, env) = lookupClassName(path.clone(), inEnv, inInfo)?;
-            (item.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: newpath.clone(), arrayDim: ad.clone() }), env.clone())
+            (item, Arc::new(Absyn::TypeSpec::TPATH { path: newpath, arrayDim: ad.clone() }), env)
         },
         Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name }, .. } => {
             let mut cls: Arc<SCode::Element>;
             cls = makeDummyMetaType((name.clone()).clone());
-            (Arc::new(NFSCodeEnv::Item::CLASS { cls: cls.clone(), env: NFSCodeEnv::emptyEnv.clone(), classType: crate::NFSCodeEnv::ClassType::BASIC_TYPE }), inTypeSpec, NFSCodeEnv::emptyEnv.clone())
+            (Arc::new(NFSCodeEnv::Item::CLASS { cls: cls, env: NFSCodeEnv::emptyEnv.clone(), classType: crate::NFSCodeEnv::ClassType::BASIC_TYPE }), inTypeSpec, NFSCodeEnv::emptyEnv.clone())
         },
         _ => bail!("match: no arm matched"),
     } });

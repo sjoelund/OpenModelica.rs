@@ -294,14 +294,14 @@ fn checkSubscriptBoundsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut isP
                 dims = __pa1.clone();
                 if Subscript::isScalarLiteral(s.clone()) && Dimension::isKnown(d.clone(), false) {
                     int_sub = Subscript::toInteger(s.clone())?;
-                    if int_sub.clone() < 1 || int_sub.clone() > Dimension::size(d.clone(), false)? {
-                        Error::addSourceMessage(Error::ARRAY_INDEX_OUT_OF_BOUNDS.clone(), list![(Subscript::toString(s.clone())?).clone(), ArcStr::from(::std::format!("{}", index.clone())), (Dimension::toString(d.clone())?).clone(), (ComponentRef::firstName(cref.clone(), false)?).clone()], info.clone())?;
+                    if int_sub < 1 || int_sub > Dimension::size(d.clone(), false)? {
+                        Error::addSourceMessage(Error::ARRAY_INDEX_OUT_OF_BOUNDS.clone(), list![(Subscript::toString(s.clone())?).clone(), ArcStr::from(::std::format!("{}", index)), (Dimension::toString(d.clone())?).clone(), (ComponentRef::firstName(cref.clone(), false)?).clone()], info.clone())?;
                         if !(isPartial) {
                             bail!("fail");
                         }
                     }
                 }
-                index = index.clone() + 1;
+                index = index + 1;
             }
             checkSubscriptBoundsCref(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), isPartial, info)?;
             ()

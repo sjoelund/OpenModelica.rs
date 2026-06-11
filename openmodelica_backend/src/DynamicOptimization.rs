@@ -256,7 +256,7 @@ fn addOptimizationVarsEqns2(mut inConstraint: Arc<metamodelica::List<Arc<DAE::Co
             let mut e: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut v: BackendDAE::Variables;
             (v, e) = addOptimizationVarsEqns1(constraintLst.clone(), inI, inVars, inEqns, globalKnownVars, (prefConCrefName).clone(), conKind)?;
-            (v.clone(), e.clone())
+            (v, e)
         },
         _ => {
             (inVars, inEqns)
@@ -306,7 +306,7 @@ fn mergeObjectVars(mut inmayer1: Option<Arc<DAE::Exp>>, mut inmayer2: Option<Arc
         (Some(e1), Some(e2)) => {
             let mut e3: Arc<DAE::Exp>;
             e3 = Expression::expAdd(e1.clone(), e2.clone())?;
-            Some(e3.clone())
+            Some(e3)
         },
         (None, Some(_)) => {
             inmayer2

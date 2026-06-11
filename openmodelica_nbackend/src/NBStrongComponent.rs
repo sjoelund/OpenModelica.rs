@@ -917,8 +917,8 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
             let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             let mut scalarized_dependencies: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>;
             dependencies = Equation::collectCrefs(Pointer::access(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone()), (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            scalarized_dependencies = Slice::getDependentCrefsPseudoArrayCausalized(BVariable::getVarName(var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()), dependencies.clone(), metamodelica::nil())?;
-            addScalarizedDependencies(scalarized_dependencies.clone(), map, jacType)?;
+            scalarized_dependencies = Slice::getDependentCrefsPseudoArrayCausalized(BVariable::getVarName(var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()), dependencies, metamodelica::nil())?;
+            addScalarizedDependencies(scalarized_dependencies, map, jacType)?;
             ()
         },
         Deref @ SINGLE_COMPONENT { .. } => {
@@ -927,14 +927,14 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
             dependencies = Equation::collectCrefs(Pointer::access(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone()), (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             dependencies = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-        for mut dep in (dependencies.clone()).into_iter().cloned() {
+        for mut dep in (dependencies).into_iter().cloned() {
             let __x = ComponentRef::scalarizeAll(dep.clone(), true)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }))?;
-            deps_set = prepareDependencies(UnorderedSet::fromList(dependencies.clone(), (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?, map.clone(), jacType)?;
-            updateDependencyMap(BVariable::getVarName(var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()), deps_set.clone(), map)?;
+            deps_set = prepareDependencies(UnorderedSet::fromList(dependencies, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?, map.clone(), jacType)?;
+            updateDependencyMap(BVariable::getVarName(var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()), deps_set, map)?;
             ()
         },
         Deref @ MULTI_COMPONENT { .. } => {
@@ -944,7 +944,7 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
             dependencies = Equation::collectCrefs(Pointer::access(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::MULTI_COMPONENT).clone())), (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             dependencies = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut dep in (dependencies.clone()).into_iter().cloned() {
+        for mut dep in (dependencies).into_iter().cloned() {
             let __x = ComponentRef::stripIteratorSubscripts(dep.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -952,13 +952,13 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
     });
             dependencies = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-        for mut dep in (dependencies.clone()).into_iter().cloned() {
+        for mut dep in (dependencies).into_iter().cloned() {
             let __x = ComponentRef::scalarizeAll(dep.clone(), true)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }))?;
-            deps_set = prepareDependencies(UnorderedSet::fromList(dependencies.clone(), (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?, map.clone(), jacType)?;
+            deps_set = prepareDependencies(UnorderedSet::fromList(dependencies, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?, map.clone(), jacType)?;
             for mut var in &*var_field!((*comp).vars, NBStrongComponent::MULTI_COMPONENT).clone() {
                 let mut var = var.clone();
                 for mut cref in &*ComponentRef::scalarizeAll(BVariable::getVarName(Slice::getT(var.clone())), true)? {
@@ -981,9 +981,9 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
             let mut scalarized_dependencies: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>;
             let mut eqn: Arc<Equation::Equation>;
             eqn = Pointer::access(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).clone()));
-            dependencies = Equation::collectCrefs(eqn.clone(), (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            scalarized_dependencies = Slice::getDependentCrefsPseudoArrayCausalized(var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone(), dependencies.clone(), var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).indices.clone())?;
-            addScalarizedDependencies(scalarized_dependencies.clone(), map, jacType)?;
+            dependencies = Equation::collectCrefs(eqn, (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            scalarized_dependencies = Slice::getDependentCrefsPseudoArrayCausalized(var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone(), dependencies, var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).indices.clone())?;
+            addScalarizedDependencies(scalarized_dependencies, map, jacType)?;
             ()
         },
         Deref @ SLICED_COMPONENT { .. } => {
@@ -991,17 +991,17 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
             let mut eqn: Arc<Equation::Equation>;
             let mut deps_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
             eqn = Pointer::access(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).clone()));
-            dependencies = Equation::collectCrefs(eqn.clone(), (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            dependencies = Equation::collectCrefs(eqn, (std::sync::Arc::new({ let __pe_b2 = set; move |__pe_a0, __pe_a1| Slice::getDependentCrefCausalized(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             dependencies = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-        for mut dep in (dependencies.clone()).into_iter().cloned() {
+        for mut dep in (dependencies).into_iter().cloned() {
             let __x = ComponentRef::scalarizeAll(dep.clone(), true)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }))?;
-            deps_set = prepareDependencies(UnorderedSet::fromList(dependencies.clone(), (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?, map.clone(), jacType)?;
-            updateDependencyMap(var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone(), deps_set.clone(), map)?;
+            deps_set = prepareDependencies(UnorderedSet::fromList(dependencies, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?, map.clone(), jacType)?;
+            updateDependencyMap(var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone(), deps_set, map)?;
             ()
         },
         Deref @ GENERIC_COMPONENT { .. } if (Equation::isForEquation(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::GENERIC_COMPONENT).clone()))) => {
@@ -1048,7 +1048,7 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
                     }
                 }
             }
-            deps_set = prepareDependencies(deps_set.clone(), map.clone(), jacType)?;
+            deps_set = prepareDependencies(deps_set, map.clone(), jacType)?;
             loop_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut var in (strict.iteration_vars.clone()).into_iter().cloned() {
@@ -1068,7 +1068,7 @@ pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<Va
         __acc.reverse()
     }), loop_vars.clone());
             }
-            for mut cref in &*loop_vars.clone() {
+            for mut cref in &*loop_vars {
                 let mut cref = cref.clone();
                 updateDependencyMap(cref.clone(), deps_set.clone(), map.clone())?;
             }
@@ -1350,8 +1350,8 @@ pub(crate) fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>,
             let mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
             let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
             var_scal_idx = ({let __elt = eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt});
-            var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(); __elt});
-            var = BVariable::VariablePointers::getVarAt(vars.clone(), var_arr_idx.clone())?;
+            var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(var_scal_idx-1) as usize].clone(); __elt});
+            var = BVariable::VariablePointers::getVarAt(vars.clone(), var_arr_idx)?;
             eqn = EquationPointers::getEqnAt(eqns.clone(), ({let __elt = mapping.eqn_StA.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             if Equation::isForEquation(eqn.clone()) {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getLoopVarsAndEqns(comp_indices.clone(), eqn_to_var.clone(), mapping.clone(), vars.clone(), eqns.clone())) {
@@ -1363,9 +1363,9 @@ pub(crate) fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>,
                 } };
                 var_slice = __pa0.clone();
                 eqn_slice = __pa1.clone();
-                comp = Arc::new(NBStrongComponent::SLICED_COMPONENT { var_cref: BVariable::VariablePointers::varSlice(vars, var_scal_idx.clone(), ({let __elt = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(); __elt}), mapping, true)?, var: var_slice.clone(), eqn: eqn_slice.clone(), status: Solve::Status::UNPROCESSED.clone() });
+                comp = Arc::new(NBStrongComponent::SLICED_COMPONENT { var_cref: BVariable::VariablePointers::varSlice(vars, var_scal_idx, ({let __elt = mapping.var_StA.borrow()[(var_scal_idx-1) as usize].clone(); __elt}), mapping, true)?, var: var_slice, eqn: eqn_slice, status: Solve::Status::UNPROCESSED.clone() });
             } else if Equation::isCompound(eqn.clone()) {
-                comp = Arc::new(NBStrongComponent::MULTI_COMPONENT { vars: list![Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() })], eqn: Arc::new(Slice::NBSlice { t: eqn.clone(), indices: metamodelica::nil() }), status: Solve::Status::UNPROCESSED.clone() });
+                comp = Arc::new(NBStrongComponent::MULTI_COMPONENT { vars: list![Arc::new(Slice::NBSlice { t: var, indices: metamodelica::nil() })], eqn: Arc::new(Slice::NBSlice { t: eqn, indices: metamodelica::nil() }), status: Solve::Status::UNPROCESSED.clone() });
             } else {
                 let (__pa4, __pa5) = ::match_deref::match_deref! { match &(getLoopVarsAndEqns(comp_indices.clone(), eqn_to_var.clone(), mapping.clone(), vars.clone(), eqns.clone())) {
                     Ok((Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Nil })) => (__pa4.clone(), __pa5.clone()),
@@ -1376,7 +1376,7 @@ pub(crate) fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>,
                 } };
                 var_slice = __pa4.clone();
                 eqn_slice = __pa5.clone();
-                comp = createSliceOrSingle(BVariable::VariablePointers::varSlice(vars, var_scal_idx.clone(), ({let __elt = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(); __elt}), mapping, true)?, var_slice.clone(), eqn_slice.clone())?;
+                comp = createSliceOrSingle(BVariable::VariablePointers::varSlice(vars, var_scal_idx, ({let __elt = mapping.var_StA.borrow()[(var_scal_idx-1) as usize].clone(); __elt}), mapping, true)?, var_slice, eqn_slice)?;
             }
             comp
         },
@@ -1393,14 +1393,14 @@ pub(crate) fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>,
             var_slice = (*__esc_var_slice).clone();
             createSliceOrSingle(BVariable::getVarName(Slice::getT(var_slice.clone())), var_slice.clone(), eqn_slice.clone())?
         },
-        (_, Deref @ metamodelica::List::Cons { head: eqn_slice, tail: Deref @ metamodelica::List::Nil }) if (!(Equation::isForEquation(Slice::getT(eqn_slice.clone())))) => Arc::new(NBStrongComponent::MULTI_COMPONENT { vars: comp_vars.clone(), eqn: eqn_slice.clone(), status: Solve::Status::UNPROCESSED.clone() }),
+        (_, Deref @ metamodelica::List::Cons { head: eqn_slice, tail: Deref @ metamodelica::List::Nil }) if (!(Equation::isForEquation(Slice::getT(eqn_slice.clone())))) => Arc::new(NBStrongComponent::MULTI_COMPONENT { vars: comp_vars, eqn: eqn_slice.clone(), status: Solve::Status::UNPROCESSED.clone() }),
         _ => {
-            tearingSet = Arc::new(Tearing::NBTearing { iteration_vars: comp_vars.clone(), residual_eqns: comp_eqns.clone(), innerEquations: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), jac: None });
-            for mut eqn in &*comp_eqns.clone() {
+            tearingSet = Arc::new(Tearing::NBTearing { iteration_vars: comp_vars, residual_eqns: comp_eqns.clone(), innerEquations: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), jac: None });
+            for mut eqn in &*comp_eqns {
                 let mut eqn = eqn.clone();
                 Equation::map(Pointer::access(Slice::getT(eqn.clone())), (std::sync::Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             }
-            Arc::new(NBStrongComponent::ALGEBRAIC_LOOP { idx: -1, strict: tearingSet.clone(), casual: None, linear: false, mixed: false, homotopy: Pointer::access(homotopy.clone()), status: Solve::Status::IMPLICIT.clone() })
+            Arc::new(NBStrongComponent::ALGEBRAIC_LOOP { idx: -1, strict: tearingSet, casual: None, linear: false, mixed: false, homotopy: Pointer::access(homotopy), status: Solve::Status::IMPLICIT.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

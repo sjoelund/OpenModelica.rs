@@ -132,7 +132,7 @@ pub(crate) fn findMin(mut inTs: T) -> Result<Element> {
             let mut y: Element;
             x = root(t.clone())?;
             y = findMin(ts.clone())?;
-            if (compareElement(x.clone(), y.clone())) {x.clone()} else {y.clone()}
+            if (compareElement(x.clone(), y.clone())) {x} else {y}
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -185,7 +185,7 @@ pub(crate) fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<me
             let mut elt: Element;
             let mut ts = (*ts).clone();
             (ts, elt) = deleteAndReturnMin(ts.clone())?;
-            { (its, acc) = (ts.clone(), metamodelica::cons(elt.clone(), acc)); continue '__tco; }
+            { (its, acc) = (ts.clone(), metamodelica::cons(elt, acc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -289,7 +289,7 @@ fn getMin(mut ts: T) -> Result<(Arc<Tree>, T)> {
             let mut b: bool;
             (t2, ts2) = getMin(ts1.clone())?;
             b = compareElement(root(t1.clone())?, root(t2.clone())?);
-            (if (b.clone()) {t1.clone()} else {t2.clone()}, if (b.clone()) {ts1.clone()} else {metamodelica::cons(t1.clone(), ts2.clone())})
+            (if (b) {t1.clone()} else {t2}, if (b) {ts1.clone()} else {metamodelica::cons(t1.clone(), ts2)})
         },
         _ => bail!("match: no arm matched"),
     } });

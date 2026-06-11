@@ -528,8 +528,8 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: met
         _ => {
             let mut r#str: ArcStr;
             r#str = stringDelimitList(List::map(lst, inPrintFunc.clone())?, (inDelimitStr).clone());
-            r#str = stringAppendList(list![(inNameStr).clone(), (inBeginStr).clone(), (r#str.clone()).clone(), (endStr).clone()]);
-            r#str.clone()
+            r#str = stringAppendList(list![(inNameStr).clone(), (inBeginStr).clone(), (r#str).clone(), (endStr).clone()]);
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

@@ -433,35 +433,35 @@ pub mod EnvTree {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
-            if key_comp.clone() == -1 {
+            if key_comp == -1 {
                 assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
-            } else if key_comp.clone() == 1 {
+            } else if key_comp == 1 {
                 assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else {
                 value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::NODE).clone()),&*(value.clone()))) {
-                    assign_variant_field!(tree => Tree::NODE; value = value.clone());
+                    assign_variant_field!(tree => Tree::NODE; value = value);
                 }
             }
-            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
-            if key_comp.clone() == -1 {
+            if key_comp == -1 {
                 outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }), right: crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
+            } else if key_comp == 1 {
                 outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }) });
             } else {
                 value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
-                    assign_variant_field!(tree => Tree::LEAF; value = value.clone());
+                    assign_variant_field!(tree => Tree::LEAF; value = value);
                 }
                 outTree = tree;
             }
-            if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
+            if (key_comp == 0) {outTree} else {balance(outTree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -545,18 +545,18 @@ pub mod EnvTree {
             let mut balanced_tree: Arc<Tree>;
             lh = height(var_field!((*outTree).left, Tree::NODE).clone());
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
-            diff = lh.clone() - rh.clone();
-            if diff.clone() < -1 {
+            diff = lh - rh;
+            if diff < -1 {
                 balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
-            } else if diff.clone() > 1 {
+            } else if diff > 1 {
                 balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
-            } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
-                assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
+            } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh, rh) + 1 {
+                assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh, rh) + 1);
                 balanced_tree = outTree;
             } else {
                 balanced_tree = outTree;
             }
-            balanced_tree.clone()
+            balanced_tree
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -605,7 +605,7 @@ pub mod EnvTree {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
             (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
-            if c.clone() {
+            if c {
                 value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
                 value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
@@ -858,7 +858,7 @@ pub mod EnvTree {
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
-                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
+                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value, height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left, right: new_right });
             }
             outTree
         },
@@ -866,7 +866,7 @@ pub mod EnvTree {
             let mut new_value: Value;
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
-                assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
+                assign_variant_field!(outTree => Tree::LEAF; value = new_value);
             }
             outTree
         },
@@ -892,7 +892,7 @@ pub mod EnvTree {
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
-                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
+                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value, height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left, right: new_right });
             }
             outTree
         },
@@ -900,7 +900,7 @@ pub mod EnvTree {
             let mut new_value: Value;
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
-                assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
+                assign_variant_field!(outTree => Tree::LEAF; value = new_value);
             }
             outTree
         },
@@ -973,12 +973,12 @@ pub mod EnvTree {
         Deref @ Tree::NODE { right: child @ Deref @ Tree::NODE { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), var_field!((**child).left, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), node.clone(), var_field!((**child).right, Tree::NODE).clone())?
+            setTreeLeftRight(child.clone(), node, var_field!((**child).right, Tree::NODE).clone())?
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY())?;
-            setTreeLeftRight(child.clone(), node.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY())?
+            setTreeLeftRight(child.clone(), node, crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY())?
         },
         _ => {
             inNode
@@ -994,12 +994,12 @@ pub mod EnvTree {
         Deref @ Tree::NODE { left: child @ Deref @ Tree::NODE { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((**child).right, Tree::NODE).clone(), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node.clone())?
+            setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node)?
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), node.clone())?
+            setTreeLeftRight(child.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), node)?
         },
         _ => {
             inNode
@@ -1123,7 +1123,7 @@ pub(crate) fn enterScopePath(mut inEnv: Env, mut inPath: Arc<Absyn::Path>) -> Re
         Deref @ Absyn::Path::QUALIFIED { name, path } => {
             let mut env: Env;
             env = enterScope(inEnv, (name.clone()).clone())?;
-            { (inEnv, inPath) = (env.clone(), path.clone()); continue '__tco; }
+            { (inEnv, inPath) = (env, path.clone()); continue '__tco; }
         },
         Deref @ Absyn::Path::IDENT { name } => {
             return Ok(enterScope(inEnv, (name.clone()).clone())?)
@@ -1131,7 +1131,7 @@ pub(crate) fn enterScopePath(mut inEnv: Env, mut inPath: Arc<Absyn::Path>) -> Re
         Deref @ Absyn::Path::FULLYQUALIFIED { path } => {
             let mut env: Env;
             env = getEnvTopScope(inEnv)?;
-            { (inEnv, inPath) = (env.clone(), path.clone()); continue '__tco; }
+            { (inEnv, inPath) = (env, path.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1200,8 +1200,8 @@ pub(crate) fn newItem(mut inElement: Arc<SCode::Element>) -> Result<Arc<Item>> {
             let mut class_env: Env;
             let mut item: Arc<Item>;
             class_env = makeClassEnvironment(inElement.clone(), true)?;
-            item = newClassItem(inElement, class_env.clone(), crate::NFSCodeEnv::ClassType::USERDEFINED);
-            item.clone()
+            item = newClassItem(inElement, class_env, crate::NFSCodeEnv::ClassType::USERDEFINED);
+            item
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
             newVarItem(inElement, false)
@@ -1544,9 +1544,9 @@ fn extendEnvWithClassDef(mut inClassDefElement: Arc<SCode::Element>, mut inEnv: 
             class_env = makeClassEnvironment(inClassDefElement.clone(), false)?;
             cls_type = getClassType(cdef.clone());
             alias_name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*cls_name.clone()); __mm_s.push_str(&*arcstr::literal!(BASE_CLASS_SUFFIX)); ArcStr::from(__mm_s) }).clone();
-            env = extendEnvWithItem(newClassItem(inClassDefElement, class_env.clone(), cls_type.clone()), inEnv, (alias_name.clone()).clone())?;
-            env = extendEnvWithItem(Arc::new(Item::ALIAS { name: (alias_name.clone()).clone(), path: None, info: info.clone() }), env.clone(), (cls_name.clone()).clone())?;
-            env.clone()
+            env = extendEnvWithItem(newClassItem(inClassDefElement, class_env, cls_type), inEnv, (alias_name.clone()).clone())?;
+            env = extendEnvWithItem(Arc::new(Item::ALIAS { name: (alias_name).clone(), path: None, info: info.clone() }), env, (cls_name.clone()).clone())?;
+            env
         },
         Deref @ SCode::Element::CLASS { name: cls_name, classDef: cdef, .. } => {
             let mut class_env: Env;
@@ -1554,8 +1554,8 @@ fn extendEnvWithClassDef(mut inClassDefElement: Arc<SCode::Element>, mut inEnv: 
             let mut cls_type: ClassType;
             class_env = makeClassEnvironment(inClassDefElement.clone(), false)?;
             cls_type = getClassType(cdef.clone());
-            env = extendEnvWithItem(newClassItem(inClassDefElement, class_env.clone(), cls_type.clone()), inEnv, (cls_name.clone()).clone())?;
-            env.clone()
+            env = extendEnvWithItem(newClassItem(inClassDefElement, class_env, cls_type), inEnv, (cls_name.clone()).clone())?;
+            env
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1685,7 +1685,7 @@ fn translateQualifiedImportToNamed(mut inImport: Import) -> Result<Import> {
         Absyn::Import::QUAL_IMPORT { path: mut path } => {
             let mut name: ArcStr;
             name = (AbsynUtil::pathLastIdent(path.clone())?).clone();
-            Absyn::Import::NAMED_IMPORT { name: (name.clone()).clone(), path: path.clone() }
+            Absyn::Import::NAMED_IMPORT { name: (name).clone(), path: path.clone() }
         },
         _ => bail!("match: no arm matched"),
     });
@@ -1752,20 +1752,20 @@ fn extendEnvWithClassComponents(mut inClassName: ArcStr, mut inClassDef: Arc<SCo
         Deref @ SCode::ClassDef::PARTS { elementLst: el, .. } => {
             let mut env: Env;
             env = List::fold(el.clone(), (std::sync::Arc::new(extendEnvWithElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<Arc<Frame>>>) -> Result<Arc<metamodelica::List<Arc<Frame>>>> + 'static>), inEnv)?;
-            env.clone()
+            env
         },
         Deref @ SCode::ClassDef::DERIVED { typeSpec: ty @ Deref @ Absyn::TypeSpec::TPATH { path, .. }, modifications: mods, .. } => {
             let mut env: Env;
             NFSCodeCheck::checkRecursiveShortDefinition(ty.clone(), (inClassName).clone(), inEnclosingScope, inInfo.clone())?;
             env = extendEnvWithExtends(Arc::new(SCode::Element::EXTENDS { baseClassPath: path.clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, modifications: mods.clone(), ann: None, info: inInfo }), inEnv)?;
-            env.clone()
+            env
         },
         Deref @ SCode::ClassDef::ENUMERATION { enumLst: enums } => {
             let mut env: Env;
             let mut path: Arc<Absyn::Path>;
             path = Arc::new(Absyn::Path::IDENT { name: (inClassName).clone() });
             env = extendEnvWithEnumLiterals(enums.clone(), path.clone(), 1, inEnv, inInfo)?;
-            env.clone()
+            env
         },
         _ => {
             inEnv
@@ -1891,7 +1891,7 @@ fn extendEnvWithEnumLiterals(mut inEnum: Arc<metamodelica::List<Arc<SCode::Enum>
         Deref @ metamodelica::List::Cons { head: lit, tail: rest_lits } => {
             let mut env: Env;
             env = extendEnvWithEnum(lit.clone(), inEnumPath.clone(), inNextValue, inEnv, inInfo.clone())?;
-            { (inEnum, inEnumPath, inNextValue, inEnv, inInfo) = (rest_lits.clone(), inEnumPath, inNextValue + 1, env.clone(), inInfo); continue '__tco; }
+            { (inEnum, inEnumPath, inNextValue, inEnv, inInfo) = (rest_lits.clone(), inEnumPath, inNextValue + 1, env, inInfo); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
             return Ok(inEnv)
@@ -1962,8 +1962,8 @@ fn extendEnvWithElementItem(mut inElementItem: Arc<Absyn::ElementItem>, mut inEn
             let mut el: Arc<metamodelica::List<Arc<SCode::Element>>>;
             let mut env: Env;
             el = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
-            env = List::fold(el.clone(), (std::sync::Arc::new(extendEnvWithElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<Arc<Frame>>>) -> Result<Arc<metamodelica::List<Arc<Frame>>>> + 'static>), inEnv)?;
-            env.clone()
+            env = List::fold(el, (std::sync::Arc::new(extendEnvWithElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<Arc<Frame>>>) -> Result<Arc<metamodelica::List<Arc<Frame>>>> + 'static>), inEnv)?;
+            env
         },
         _ => {
             inEnv
@@ -2015,7 +2015,7 @@ pub(crate) fn getEnvPath(mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: rest } => {
             let mut path: Arc<Absyn::Path>;
             path = getEnvPath(rest.clone())?;
-            return Ok(AbsynUtil::joinPaths(path.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?)
+            return Ok(AbsynUtil::joinPaths(path, Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2565,8 +2565,8 @@ pub(crate) fn prefixIdentWithEnv(mut inIdent: ArcStr, mut inEnv: Env) -> Result<
         _ => {
             let mut path: Arc<Absyn::Path>;
             path = getEnvPath(inEnv)?;
-            path = AbsynUtil::suffixPath(path.clone(), (inIdent).clone())?;
-            path.clone()
+            path = AbsynUtil::suffixPath(path, (inIdent).clone())?;
+            path
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2605,7 +2605,7 @@ pub(crate) fn getRedeclarationNameInfo(mut inRedeclare: Arc<Redeclaration>) -> R
             let mut name: ArcStr;
             let mut info: SourceInfo;
             el = getRedeclarationElement(inRedeclare)?;
-            (name, info) = SCodeUtil::elementNameInfo(el.clone())?;
+            (name, info) = SCodeUtil::elementNameInfo(el)?;
             (name.clone(), info.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2664,9 +2664,9 @@ fn printFrameStr(mut inFrame: Arc<Frame>) -> Result<ArcStr> {
             tree_str = (EnvTree::printTreeStr(tree.clone())?).clone();
             ext_str = (printExtendsTableStr(exts.clone())?).clone();
             imp_str = (printImportTableStr(imps.clone())?).clone();
-            name_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<<<")); __mm_s.push_str(&*ty_str.clone()); __mm_s.push_str(&*literal!(" frame ")); __mm_s.push_str(&*name_str.clone()); __mm_s.push_str(&*literal!(">>>\n")); ArcStr::from(__mm_s) }).clone();
-            out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name_str.clone()); __mm_s.push_str(&*literal!("\tImports:\n")); __mm_s.push_str(&*imp_str.clone()); __mm_s.push_str(&*literal!("\n\tExtends:\n")); __mm_s.push_str(&*ext_str.clone()); __mm_s.push_str(&*literal!("\n\tComponents:\n")); __mm_s.push_str(&*tree_str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            out.clone()
+            name_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<<<")); __mm_s.push_str(&*ty_str); __mm_s.push_str(&*literal!(" frame ")); __mm_s.push_str(&*name_str); __mm_s.push_str(&*literal!(">>>\n")); ArcStr::from(__mm_s) }).clone();
+            out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name_str); __mm_s.push_str(&*literal!("\tImports:\n")); __mm_s.push_str(&*imp_str); __mm_s.push_str(&*literal!("\n\tExtends:\n")); __mm_s.push_str(&*ext_str); __mm_s.push_str(&*literal!("\n\tComponents:\n")); __mm_s.push_str(&*tree_str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            out
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

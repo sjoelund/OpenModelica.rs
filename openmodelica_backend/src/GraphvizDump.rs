@@ -28,10 +28,10 @@ pub(crate) fn dumpBackendDAE(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Bac
             l_0__ = dumpAdjacencyMatrix(Tpl::emptyTxt.clone(), i_dae.clone(), (a_suffix.clone()).clone())?;
             txt_2 = dumpMatching(Tpl::emptyTxt.clone(), i_dae.clone(), (a_suffix.clone()).clone())?;
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_info_fileNamePrefix.clone()).clone())?;
-            txt_3 = Tpl::writeTok(txt_3.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt_3 = Tpl::writeStr(txt_3.clone(), (a_suffix.clone()).clone())?;
-            txt_3 = Tpl::writeTok(txt_3.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_matching.dot")).clone() }))?;
-            Tpl::textFile(txt_2.clone(), (Tpl::textString(txt_3.clone())?).clone())?;
+            txt_3 = Tpl::writeTok(txt_3, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            txt_3 = Tpl::writeStr(txt_3, (a_suffix.clone()).clone())?;
+            txt_3 = Tpl::writeTok(txt_3, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_matching.dot")).clone() }))?;
+            Tpl::textFile(txt_2, (Tpl::textString(txt_3)?).clone())?;
             l_0___1 = Tpl::emptyTxt.clone();
             txt.clone()
         },
@@ -52,10 +52,10 @@ pub(crate) fn dumpAdjacencyMatrix(mut in_txt: Tpl::Text, mut in_a_backendDAE: Ar
             let mut l_0__: Tpl::Text;
             txt_1 = dumpDependence(Tpl::emptyTxt.clone(), i_dae.clone(), (a_suffix.clone()).clone())?;
             txt_2 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_info_fileNamePrefix.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt_2 = Tpl::writeStr(txt_2.clone(), (a_suffix.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_dependence.dot")).clone() }))?;
-            Tpl::textFile(txt_1.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            txt_2 = Tpl::writeStr(txt_2, (a_suffix.clone()).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_dependence.dot")).clone() }))?;
+            Tpl::textFile(txt_1, (Tpl::textString(txt_2)?).clone())?;
             l_0__ = Tpl::emptyTxt.clone();
             txt.clone()
         },
@@ -109,7 +109,7 @@ fn lm_12(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE:
             let mut txt = (*txt).clone();
             x_varID = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = BackendVariable::isStateVar(i_var.clone());
-            txt = fun_11(txt.clone(), ret_0.clone(), i_var_varName.clone(), x_varID.clone(), a_clusterID.clone())?;
+            txt = fun_11(txt.clone(), ret_0, i_var_varName.clone(), x_varID, a_clusterID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -136,10 +136,10 @@ fn lm_13(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("eq")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_eqID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_eqID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             ret_0 = (BackendDump::equationString(i_eq.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
@@ -165,26 +165,26 @@ fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             x_clusterID = Tpl::getIteri_i0(txt.clone())?;
             ret_1 = BackendVariable::varList(i_eqSystem_orderedVars.clone())?;
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_varDeclaration = lm_12(l_varDeclaration.clone(), ret_1.clone(), x_clusterID.clone())?;
-            l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
+            l_varDeclaration = lm_12(l_varDeclaration, ret_1, x_clusterID)?;
+            l_varDeclaration = Tpl::popIter(l_varDeclaration)?;
             ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eqDeclaration = lm_13(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID.clone())?;
-            l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
+            l_eqDeclaration = lm_13(l_eqDeclaration, ret_3, x_clusterID)?;
+            l_eqDeclaration = Tpl::popIter(l_eqDeclaration)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("subgraph cluster_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label = \"system #")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\";\n")).clone(), (literal!("color=white\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_varDeclaration.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_varDeclaration)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = Tpl::writeText(txt.clone(), l_eqDeclaration.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_eqDeclaration)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = dumpDependence2(txt.clone(), x_clusterID.clone(), i_eqSystem_m.clone())?;
+            txt = dumpDependence2(txt.clone(), x_clusterID, i_eqSystem_m.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -207,8 +207,8 @@ pub(crate) fn dumpDependence(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Bac
             let mut l_systems: Tpl::Text;
             let mut txt = (*txt).clone();
             l_systems = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_systems = lm_14(l_systems.clone(), i_eqs.clone())?;
-            l_systems = Tpl::popIter(l_systems.clone())?;
+            l_systems = lm_14(l_systems, i_eqs.clone())?;
+            l_systems = Tpl::popIter(l_systems)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("digraph G {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label=\"")).clone() }))?;
@@ -216,7 +216,7 @@ pub(crate) fn dumpDependence(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Bac
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_suffix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" - dependence]\";\n")).clone(), (literal!("rankdir=LR;\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_systems.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_systems)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -262,7 +262,7 @@ fn lm_17(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut 
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intGt(i_varID.clone(), 0);
-            txt = fun_16(txt.clone(), ret_0.clone(), a_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
+            txt = fun_16(txt.clone(), ret_0, a_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_eqID, in_a_clusterID) = (txt.clone(), rest.clone(), a_eqID.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -283,9 +283,9 @@ fn lm_18(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
             let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_17(l_foo.clone(), i_varList.clone(), x_eqID.clone(), a_clusterID.clone())?;
-            l_foo = Tpl::popIter(l_foo.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
+            l_foo = lm_17(l_foo, i_varList.clone(), x_eqID, a_clusterID.clone())?;
+            l_foo = Tpl::popIter(l_foo)?;
+            txt = Tpl::writeText(txt.clone(), l_foo)?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -302,9 +302,9 @@ fn fun_19(mut in_txt: Tpl::Text, mut in_a_m: Option<metamodelica::Array<Arc<meta
             let mut l_incNodes: Tpl::Text;
             ret_1 = Arc::new(i_incMatrix.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_incNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_incNodes = lm_18(l_incNodes.clone(), ret_1.clone(), a_clusterID.clone())?;
-            l_incNodes = Tpl::popIter(l_incNodes.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_incNodes.clone())?;
+            l_incNodes = lm_18(l_incNodes, ret_1, a_clusterID.clone())?;
+            l_incNodes = Tpl::popIter(l_incNodes)?;
+            txt = Tpl::writeText(txt.clone(), l_incNodes)?;
             txt.clone()
         },
         (mut txt, _, _) => {
@@ -363,7 +363,7 @@ fn lm_22(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE:
             let mut txt = (*txt).clone();
             x_varID = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = BackendVariable::isStateVar(i_var.clone());
-            txt = fun_21(txt.clone(), ret_0.clone(), i_var_varName.clone(), x_varID.clone(), a_clusterID.clone())?;
+            txt = fun_21(txt.clone(), ret_0, i_var_varName.clone(), x_varID, a_clusterID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -390,10 +390,10 @@ fn lm_23(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("eq")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_eqID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_eqID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             ret_0 = (BackendDump::equationString(i_eq.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
@@ -419,26 +419,26 @@ fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             x_clusterID = Tpl::getIteri_i0(txt.clone())?;
             ret_1 = BackendVariable::varList(i_eqSystem_orderedVars.clone())?;
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_varDeclaration = lm_22(l_varDeclaration.clone(), ret_1.clone(), x_clusterID.clone())?;
-            l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
+            l_varDeclaration = lm_22(l_varDeclaration, ret_1, x_clusterID)?;
+            l_varDeclaration = Tpl::popIter(l_varDeclaration)?;
             ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eqDeclaration = lm_23(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID.clone())?;
-            l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
+            l_eqDeclaration = lm_23(l_eqDeclaration, ret_3, x_clusterID)?;
+            l_eqDeclaration = Tpl::popIter(l_eqDeclaration)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("subgraph cluster_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label = \"system #")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\";\n")).clone(), (literal!("color=white\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_varDeclaration.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_varDeclaration)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = Tpl::writeText(txt.clone(), l_eqDeclaration.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_eqDeclaration)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = connections(txt.clone(), x_clusterID.clone(), i_eqSystem_matching.clone(), i_eqSystem_m.clone())?;
+            txt = connections(txt.clone(), x_clusterID, i_eqSystem_matching.clone(), i_eqSystem_m.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -461,8 +461,8 @@ pub(crate) fn dumpMatching(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Backe
             let mut l_systems: Tpl::Text;
             let mut txt = (*txt).clone();
             l_systems = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_systems = lm_24(l_systems.clone(), i_eqs.clone())?;
-            l_systems = Tpl::popIter(l_systems.clone())?;
+            l_systems = lm_24(l_systems, i_eqs.clone())?;
+            l_systems = Tpl::popIter(l_systems)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("digraph G {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label=\"")).clone() }))?;
@@ -470,7 +470,7 @@ pub(crate) fn dumpMatching(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Backe
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_suffix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" - matching]\";\n")).clone(), (literal!("rankdir=LR;\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_systems.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_systems)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -512,7 +512,7 @@ fn fun_27(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a
         (mut txt, false, mut a_eqID, mut a_clusterID, mut a_varID) => {
             let mut ret_0: bool;
             ret_0 = intGt(a_varID.clone(), 0);
-            txt = fun_26(txt.clone(), ret_0.clone(), a_eqID.clone(), a_varID.clone(), a_clusterID.clone())?;
+            txt = fun_26(txt.clone(), ret_0, a_eqID.clone(), a_varID.clone(), a_clusterID.clone())?;
             txt.clone()
         },
         (mut txt, _, mut a_eqID, mut a_clusterID, mut a_varID) => {
@@ -543,9 +543,9 @@ fn lm_28(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut 
             let mut ret_0: Arc<metamodelica::List<i32>>;
             let mut txt = (*txt).clone();
             ret_0 = Arc::new(a_ass2.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-            ret_1 = (ret_0.clone()).get(a_eqID.clone())?;
-            ret_2 = intEq(ret_1.clone(), i_varID.clone());
-            txt = fun_27(txt.clone(), ret_2.clone(), a_eqID.clone(), a_clusterID.clone(), i_varID.clone())?;
+            ret_1 = (ret_0).get(a_eqID.clone())?;
+            ret_2 = intEq(ret_1, i_varID.clone());
+            txt = fun_27(txt.clone(), ret_2, a_eqID.clone(), a_clusterID.clone(), i_varID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID, in_a_eqID, in_a_ass2) = (txt.clone(), rest.clone(), a_clusterID.clone(), a_eqID.clone(), a_ass2.clone()); continue '__tco; }
         },
@@ -566,9 +566,9 @@ fn lm_29(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
             let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_28(l_foo.clone(), i_varList.clone(), a_clusterID.clone(), x_eqID.clone(), a_ass2.clone())?;
-            l_foo = Tpl::popIter(l_foo.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
+            l_foo = lm_28(l_foo, i_varList.clone(), a_clusterID.clone(), x_eqID, a_ass2.clone())?;
+            l_foo = Tpl::popIter(l_foo)?;
+            txt = Tpl::writeText(txt.clone(), l_foo)?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID, in_a_ass2) = (txt.clone(), rest.clone(), a_clusterID.clone(), a_ass2.clone()); continue '__tco; }
         },
@@ -609,7 +609,7 @@ fn lm_31(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut 
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intGt(i_varID.clone(), 0);
-            txt = fun_30(txt.clone(), ret_0.clone(), a_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
+            txt = fun_30(txt.clone(), ret_0, a_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_eqID, in_a_clusterID) = (txt.clone(), rest.clone(), a_eqID.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -630,9 +630,9 @@ fn lm_32(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
             let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_31(l_foo.clone(), i_varList.clone(), x_eqID.clone(), a_clusterID.clone())?;
-            l_foo = Tpl::popIter(l_foo.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
+            l_foo = lm_31(l_foo, i_varList.clone(), x_eqID, a_clusterID.clone())?;
+            l_foo = Tpl::popIter(l_foo)?;
+            txt = Tpl::writeText(txt.clone(), l_foo)?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -650,9 +650,9 @@ fn fun_33(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(a_incMatrix.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_incNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_incNodes = lm_29(l_incNodes.clone(), ret_1.clone(), a_clusterID.clone(), i_ass2.clone())?;
-            l_incNodes = Tpl::popIter(l_incNodes.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_incNodes.clone())?;
+            l_incNodes = lm_29(l_incNodes, ret_1, a_clusterID.clone(), i_ass2.clone())?;
+            l_incNodes = Tpl::popIter(l_incNodes)?;
+            txt = Tpl::writeText(txt.clone(), l_incNodes)?;
             txt.clone()
         },
         (txt, _, a_clusterID, a_incMatrix) => {
@@ -661,10 +661,10 @@ fn fun_33(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
             let mut txt = (*txt).clone();
             ret_2 = Arc::new(a_incMatrix.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_incNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_incNodes = lm_32(l_incNodes.clone(), ret_2.clone(), a_clusterID.clone())?;
-            l_incNodes = Tpl::popIter(l_incNodes.clone())?;
+            l_incNodes = lm_32(l_incNodes, ret_2, a_clusterID.clone())?;
+            l_incNodes = Tpl::popIter(l_incNodes)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("// no matching\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_incNodes.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_incNodes)?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -706,7 +706,7 @@ fn lm_35(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut 
             let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intGt(i_varID.clone(), 0);
-            txt = fun_34(txt.clone(), ret_0.clone(), x_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
+            txt = fun_34(txt.clone(), ret_0, x_eqID, i_varID.clone(), a_clusterID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
         },
@@ -724,10 +724,10 @@ fn fun_36(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(i_ass2.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_matchedNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_matchedNodes = lm_35(l_matchedNodes.clone(), ret_1.clone(), a_clusterID.clone())?;
-            l_matchedNodes = Tpl::popIter(l_matchedNodes.clone())?;
+            l_matchedNodes = lm_35(l_matchedNodes, ret_1, a_clusterID.clone())?;
+            l_matchedNodes = Tpl::popIter(l_matchedNodes)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("// no adjacency matrix\n")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_matchedNodes.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_matchedNodes)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -777,7 +777,7 @@ fn lm_39(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE:
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("var")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_varID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_varID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             txt = CodegenUtil::crefStr(txt.clone(), i_var_varName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
@@ -807,10 +807,10 @@ fn lm_40(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("eq")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_eqID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_eqID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             ret_0 = (BackendDump::equationString(i_eq.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
@@ -836,23 +836,23 @@ fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             x_clusterID = Tpl::getIteri_i0(txt.clone())?;
             ret_1 = BackendVariable::varList(i_eqSystem_orderedVars.clone())?;
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_varDeclaration = lm_39(l_varDeclaration.clone(), ret_1.clone(), x_clusterID.clone())?;
-            l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
+            l_varDeclaration = lm_39(l_varDeclaration, ret_1, x_clusterID)?;
+            l_varDeclaration = Tpl::popIter(l_varDeclaration)?;
             ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eqDeclaration = lm_40(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID.clone())?;
-            l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
+            l_eqDeclaration = lm_40(l_eqDeclaration, ret_3, x_clusterID)?;
+            l_eqDeclaration = Tpl::popIter(l_eqDeclaration)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("subgraph cluster_")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label = \"system #")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\";\n")).clone(), (literal!("color=white\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_varDeclaration.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_varDeclaration)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = dumpStrongComponent(txt.clone(), x_clusterID.clone(), i_eqSystem_matching.clone())?;
+            txt = dumpStrongComponent(txt.clone(), x_clusterID, i_eqSystem_matching.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -875,8 +875,8 @@ pub(crate) fn dumpSorting(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Backen
             let mut l_systems: Tpl::Text;
             let mut txt = (*txt).clone();
             l_systems = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_systems = lm_41(l_systems.clone(), i_eqs.clone())?;
-            l_systems = Tpl::popIter(l_systems.clone())?;
+            l_systems = lm_41(l_systems, i_eqs.clone())?;
+            l_systems = Tpl::popIter(l_systems)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("digraph G {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label=\"")).clone() }))?;
@@ -884,7 +884,7 @@ pub(crate) fn dumpSorting(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Backen
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_suffix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" - sorting]\";\n")).clone(), (literal!("rankdir=LR;\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_systems.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_systems)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -933,9 +933,9 @@ fn fun_44(mut in_txt: Tpl::Text, mut in_a_comp: Arc<BackendDAE::StrongComponent>
             let mut l_foo: Tpl::Text;
             let mut txt = (*txt).clone();
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <-> ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_43(l_foo.clone(), i_c_vars.clone(), a_clusterID.clone())?;
-            l_foo = Tpl::popIter(l_foo.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
+            l_foo = lm_43(l_foo, i_c_vars.clone(), a_clusterID.clone())?;
+            l_foo = Tpl::popIter(l_foo)?;
+            txt = Tpl::writeText(txt.clone(), l_foo)?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -972,9 +972,9 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
             let mut l_cmpNodes: Tpl::Text;
             let mut txt = (*txt).clone();
             l_cmpNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -> ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_cmpNodes = lm_45(l_cmpNodes.clone(), i_comps.clone(), a_clusterID.clone())?;
-            l_cmpNodes = Tpl::popIter(l_cmpNodes.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_cmpNodes.clone())?;
+            l_cmpNodes = lm_45(l_cmpNodes, i_comps.clone(), a_clusterID.clone())?;
+            l_cmpNodes = Tpl::popIter(l_cmpNodes)?;
+            txt = Tpl::writeText(txt.clone(), l_cmpNodes)?;
             txt.clone()
         },
         (txt, _, _) => {

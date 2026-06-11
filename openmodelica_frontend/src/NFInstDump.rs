@@ -104,7 +104,7 @@ pub(crate) fn dumpUntypedComponentDims(mut inComponent: Arc<NFInstTypes::Compone
         Deref @ NFInstTypes::Component::UNTYPED_COMPONENT { dimensions: dims, .. } => {
             let mut dims_str: ArcStr;
             dims_str = (Array::toString(dims.clone(), (std::sync::Arc::new(dimensionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFInstTypes::Dimension) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
-            dims_str.clone()
+            dims_str
         },
         _ => bail!("match: no arm matched"),
     } })).clone();

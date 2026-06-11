@@ -326,28 +326,28 @@ fn setNumProc(mut numProcFlag: i32, mut cpCosts: metamodelica::Real, mut taskGra
             let mut string1: ArcStr;
             let mut string2: ArcStr;
             serCosts = HpcOmScheduler::getSerialExecutionTime(taskGraphMetaIn)?;
-            if realNe(serCosts.clone(), metamodelica::OrderedFloat(0.0_f64)) {
-                maxSpeedUp = realDiv(serCosts.clone(), cpCosts);
-                numProcSched = (((maxSpeedUp.clone()) + (metamodelica::OrderedFloat(1.0_f64))).0.floor() as i32);
+            if realNe(serCosts, metamodelica::OrderedFloat(0.0_f64)) {
+                maxSpeedUp = realDiv(serCosts, cpCosts);
+                numProcSched = (((maxSpeedUp) + (metamodelica::OrderedFloat(1.0_f64))).0.floor() as i32);
                 numProcSys = System::numProcessors();
-                numProc = intMin(numProcSched.clone(), numProcSys.clone());
-                string1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Your system provides only ")); __mm_s.push_str(&*intString(numProcSys.clone())); __mm_s.push_str(&*literal!(" processors!\n")); ArcStr::from(__mm_s) }).clone();
-                string2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(numProcSched.clone())); __mm_s.push_str(&*literal!(" processors might be a reasonable number of processors.\n")); ArcStr::from(__mm_s) }).clone();
-                string1 = (if (intGt(numProcSched.clone(), numProcSys.clone())) {string1.clone()} else {string2.clone()}).clone();
+                numProc = intMin(numProcSched, numProcSys);
+                string1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Your system provides only ")); __mm_s.push_str(&*intString(numProcSys)); __mm_s.push_str(&*literal!(" processors!\n")); ArcStr::from(__mm_s) }).clone();
+                string2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(numProcSched)); __mm_s.push_str(&*literal!(" processors might be a reasonable number of processors.\n")); ArcStr::from(__mm_s) }).clone();
+                string1 = (if (intGt(numProcSched, numProcSys)) {string1} else {string2}).clone();
                 metamodelica::print((literal!("Please set the number of processors you want to use!\n")).clone());
-                metamodelica::print((string1.clone()).clone());
+                metamodelica::print((string1).clone());
             } else {
                 numProc = 1;
                 metamodelica::print((literal!("You did not choose a number of cores. Since there is no ODE-System, the number of cores is set to 1!\n")).clone());
             }
-            FlagsUtil::setConfigInt(Flags::NUM_PROC.clone(), numProc.clone())?;
-            (numProc.clone(), true)
+            FlagsUtil::setConfigInt(Flags::NUM_PROC.clone(), numProc)?;
+            (numProc, true)
         },
         _ => {
             let mut numProcSys: i32;
             numProcSys = System::numProcessors();
-            if intGt(numProcFlag, numProcSys.clone()) && Flags::isSet(Flags::HPCOM_DUMP.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Warning: Your system provides only ")); __mm_s.push_str(&*intString(numProcSys.clone())); __mm_s.push_str(&*literal!(" processors!\n")); ArcStr::from(__mm_s) }).clone());
+            if intGt(numProcFlag, numProcSys) && Flags::isSet(Flags::HPCOM_DUMP.clone())? {
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Warning: Your system provides only ")); __mm_s.push_str(&*intString(numProcSys)); __mm_s.push_str(&*literal!(" processors!\n")); ArcStr::from(__mm_s) }).clone());
             }
             (numProcFlag, true)
         },
@@ -382,9 +382,9 @@ fn applyGRS1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
             let mut tmpTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta;
             let mut tmpContractedTasks: metamodelica::Array<i32>;
             (tmpTaskGraph, tmpTaskGraphT, tmpTaskGraphMeta, tmpContractedTasks, changed) = HpcOmTaskGraph::mergeSimpleNodes(iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta, iContractedTasks.clone())?;
-            (tmpTaskGraph, tmpTaskGraphT, tmpTaskGraphMeta, tmpContractedTasks, changed2) = HpcOmTaskGraph::mergeParentNodes(tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta.clone(), tmpContractedTasks.clone())?;
-            changed = changed.clone() || changed2.clone();
-            { (iTaskGraph, iTaskGraphT, iTaskGraphMeta, iContractedTasks, again) = (tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta.clone(), tmpContractedTasks.clone(), changed.clone()); continue '__tco; }
+            (tmpTaskGraph, tmpTaskGraphT, tmpTaskGraphMeta, tmpContractedTasks, changed2) = HpcOmTaskGraph::mergeParentNodes(tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta, tmpContractedTasks.clone())?;
+            changed = changed || changed2;
+            { (iTaskGraph, iTaskGraphT, iTaskGraphMeta, iContractedTasks, again) = (tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta, tmpContractedTasks.clone(), changed); continue '__tco; }
         },
         _ => {
             return Ok((iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta))
@@ -577,11 +577,11 @@ fn GRS_newGraph2(mut origNodes: Arc<metamodelica::List<i32>>, mut removedNodes: 
             let mut row: Arc<metamodelica::List<i32>>;
             let mut comps: Arc<metamodelica::List<i32>>;
             row = metamodelica::arrayGet(origGraph.clone(), node.clone())?;
-            row = HpcOmTaskGraph::filterContractedNodes(row.clone(), contrTasks.clone())?;
-            row = HpcOmTaskGraph::updateContinuousEntriesInList(row.clone(), removedNodes.clone())?;
+            row = HpcOmTaskGraph::filterContractedNodes(row, contrTasks.clone())?;
+            row = HpcOmTaskGraph::updateContinuousEntriesInList(row, removedNodes.clone())?;
             comps = metamodelica::arrayGet(origInComps.clone(), node.clone())?;
-            metamodelica::arrayUpdate(newGraph.clone(), newNode, row.clone())?;
-            metamodelica::arrayUpdate(newInComps.clone(), newNode, comps.clone())?;
+            metamodelica::arrayUpdate(newGraph.clone(), newNode, row)?;
+            metamodelica::arrayUpdate(newInComps.clone(), newNode, comps)?;
             { (origNodes, removedNodes, contrTasks, origGraph, origInComps, newGraph, newInComps, newNode) = (rest.clone(), removedNodes, contrTasks.clone(), origGraph.clone(), origInComps.clone(), newGraph.clone(), newInComps.clone(), newNode + 1); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

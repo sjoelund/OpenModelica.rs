@@ -231,33 +231,33 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
         Deref @ MAIN { .. } => {
             if !(Flags::isSet(Flags::BLT_DUMP.clone())?) || var_field!((*bdae).ode, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).algebraic, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).ode_event, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).alg_event, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).clocked, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).init, NBackendDAE::MAIN).clone().is_empty() && isNone(var_field!((*bdae).dae, NBackendDAE::MAIN).clone()) {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAE: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::MAIN).clone(), 2)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), 1, None)?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::MAIN).clone(), 2)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), 1, None)?); ArcStr::from(__mm_s) }).clone();
             } else {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).ode, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ODE] Differential-Algebraic: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).algebraic, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ALG] Algebraic: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).ode_event, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ODE_EVENT] Event Handling: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).alg_event, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ALG_EVENT] Event Handling: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).clocked, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[CLOCKED] Event Handling: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).init, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[INI] Initialization: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).ode, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ODE] Differential-Algebraic: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).algebraic, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ALG] Algebraic: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).ode_event, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ODE_EVENT] Event Handling: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).alg_event, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ALG_EVENT] Event Handling: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).clocked, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[CLOCKED] Event Handling: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).init, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[INI] Initialization: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
                 if isSome(var_field!((*bdae).init_0, NBackendDAE::MAIN).clone()) {
-                    tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(Util::getOption(var_field!((*bdae).init_0, NBackendDAE::MAIN).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[INI_0] Initialization Lambda=0: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                    tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(Util::getOption(var_field!((*bdae).init_0, NBackendDAE::MAIN).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[INI_0] Initialization Lambda=0: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
                 }
                 if isSome(var_field!((*bdae).dae, NBackendDAE::MAIN).clone()) {
-                    tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(Util::getOption(var_field!((*bdae).dae, NBackendDAE::MAIN).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAE] DAEMode: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+                    tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*NBPartition::Partition::toStringList(Util::getOption(var_field!((*bdae).dae, NBackendDAE::MAIN).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAE] DAEMode: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
                 }
             }
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*Events::EventInfo::toString(var_field!((*bdae).eventInfo, NBackendDAE::MAIN).clone())?); ArcStr::from(__mm_s) }).clone();
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*Partitioning::ClockedInfo::toString(var_field!((*bdae).clockedInfo, NBackendDAE::MAIN).clone())?); ArcStr::from(__mm_s) }).clone();
-            tmp.clone()
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*Events::EventInfo::toString(var_field!((*bdae).eventInfo, NBackendDAE::MAIN).clone())?); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*Partitioning::ClockedInfo::toString(var_field!((*bdae).clockedInfo, NBackendDAE::MAIN).clone())?); ArcStr::from(__mm_s) }).clone();
+            tmp
         },
         Deref @ JACOBIAN { .. } => {
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*bdae).jacType, NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(" Jacobian ")); __mm_s.push_str(&*var_field!((*bdae).name, NBackendDAE::JACOBIAN).clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::JACOBIAN).clone(), 1)?); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::JACOBIAN).clone(), 1)?); ArcStr::from(__mm_s) }).clone();
             for mut i in 1..=metamodelica::arrayLength(var_field!((*bdae).comps, NBackendDAE::JACOBIAN).clone()) {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*StrongComponent::toString(({let __elt = var_field!((*bdae).comps, NBackendDAE::JACOBIAN).borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*Jacobian::SparsityPattern::toString(var_field!((*bdae).sparsityPattern, NBackendDAE::JACOBIAN).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Jacobian::SparsityColoring::toString(var_field!((*bdae).sparsityColoring, NBackendDAE::JACOBIAN).clone())?); ArcStr::from(__mm_s) }).clone();
-            tmp.clone()
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*Jacobian::SparsityPattern::toString(var_field!((*bdae).sparsityPattern, NBackendDAE::JACOBIAN).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Jacobian::SparsityColoring::toString(var_field!((*bdae).sparsityColoring, NBackendDAE::JACOBIAN).clone())?); ArcStr::from(__mm_s) }).clone();
+            tmp
         },
         Deref @ HESSIAN { .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hessian: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::HESSIAN).clone(), 1)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::HESSIAN).clone(), 1, None)?); ArcStr::from(__mm_s) }
@@ -528,7 +528,7 @@ pub(crate) fn removeStream(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; equations = BEquation::EquationPointers::map(var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = literal!("NBackendDAE.removeStream"); let __pe_b2 = (literal!("")).clone(); let __pe_b3 = acc_discrete_states.clone(); let __pe_b4 = acc_previous.clone(); let __pe_b5: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(SimplifyExp::removeStream) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| BEquation::Equation::simplify(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
             assign_variant_field!(bdae => NBackendDAE::MAIN;
                 eqData = BEquation::EqData::compress(eqData.clone())?,
-                varData = updateDiscreteStates(var_field!((*bdae).varData, NBackendDAE::MAIN).clone(), acc_discrete_states.clone(), acc_previous.clone())?
+                varData = updateDiscreteStates(var_field!((*bdae).varData, NBackendDAE::MAIN).clone(), acc_discrete_states, acc_previous)?
             );
             bdae
         },
@@ -554,10 +554,10 @@ pub(crate) fn updateDiscreteStates(mut varData: Arc<VarData::VarData>, mut acc_d
                 BVariable::VariablePointers::removeList(ads_accessed.clone(), var_field!((*varData).discretes, VarData::VarData::VAR_DATA_SIM).clone())?;
                 BVariable::VariablePointers::removeList(ads_accessed.clone(), var_field!((*varData).discrete_states, VarData::VarData::VAR_DATA_SIM).clone())?;
                 BVariable::VariablePointers::removeList(ap_accessed.clone(), var_field!((*varData).previous, VarData::VarData::VAR_DATA_SIM).clone())?;
-                BVariable::VariablePointers::removeList(ap_accessed.clone(), var_field!((*varData).variables, VarData::VarData::VAR_DATA_SIM).clone())?;
+                BVariable::VariablePointers::removeList(ap_accessed, var_field!((*varData).variables, VarData::VarData::VAR_DATA_SIM).clone())?;
                 BVariable::VariablePointers::addList(ads_accessed.clone(), var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone())?;
                 BVariable::VariablePointers::addList(ads_accessed.clone(), var_field!((*varData).knowns, VarData::VarData::VAR_DATA_SIM).clone())?;
-                for mut v in &*ads_accessed.clone() {
+                for mut v in &*ads_accessed {
                     let mut v = v.clone();
                     BVariable::setVarKind(v.clone(), Arc::new(VariableKind::VariableKind::PARAMETER { resize_value: None }));
                     BVariable::removePartner(v.clone(), (std::sync::Arc::new(fnptr!(BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
@@ -599,7 +599,7 @@ pub(crate) fn getLoopResiduals(mut bdae: Arc<NBackendDAE>) -> Result<Arc<Variabl
                 let mut syst = syst.clone();
                 var_lst = listAppend(NBPartition::Partition::getLoopResiduals(syst.clone())?, var_lst.clone());
             }
-            residuals = BVariable::VariablePointers::fromList(var_lst.clone(), false)?;
+            residuals = BVariable::VariablePointers::fromList(var_lst, false)?;
             residuals
         },
         _ => {
@@ -1052,10 +1052,10 @@ fn lowerEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: bo
             let mut attr: Arc<EquationAttributes::EquationAttributes>;
             attr = lowerEquationAttributes(ty.clone(), init)?;
             backend_equations = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::ARRAY { .. } => list![Pointer::create(Arc::new(Equation::Equation::ARRAY_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr.clone(), recordSize: Type::complexSize(ty.clone(), false)? }))],
-        Deref @ Type::COMPLEX { .. } => list![Pointer::create(Arc::new(Equation::Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr.clone(), recordSize: Type::recordFieldCount(ty.clone()) }))],
-        Deref @ Type::TUPLE { .. } => list![Pointer::create(Arc::new(Equation::Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr.clone(), recordSize: Type::tupleFieldCount(ty.clone()) }))],
-        _ => list![Pointer::create(Arc::new(Equation::Equation::SCALAR_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr.clone() }))],
+        Deref @ Type::ARRAY { .. } => list![Pointer::create(Arc::new(Equation::Equation::ARRAY_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr, recordSize: Type::complexSize(ty.clone(), false)? }))],
+        Deref @ Type::COMPLEX { .. } => list![Pointer::create(Arc::new(Equation::Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr, recordSize: Type::recordFieldCount(ty.clone()) }))],
+        Deref @ Type::TUPLE { .. } => list![Pointer::create(Arc::new(Equation::Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr, recordSize: Type::tupleFieldCount(ty.clone()) }))],
+        _ => list![Pointer::create(Arc::new(Equation::Equation::SCALAR_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone(), attr: attr }))],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             backend_equations
@@ -1076,9 +1076,9 @@ fn lowerEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: bo
             let mut stmt: Arc<Statement::NFStatement>;
             let mut alg: Arc<Algorithm::NFAlgorithm>;
             stmt = Arc::new(Statement::NFStatement::NORETCALL { exp: var_field!((*frontend_equation).exp, FEquation::NFEquation::NORETCALL).clone(), source: var_field!((*frontend_equation).source, FEquation::NFEquation::NORETCALL).clone() });
-            alg = Arc::new(Algorithm::NFAlgorithm { statements: list![stmt.clone()], inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: var_field!((*frontend_equation).source, FEquation::NFEquation::NORETCALL).clone() });
-            alg = Algorithm::setInputsOutputs(alg.clone())?;
-            list![lowerAlgorithm(alg.clone(), init)?]
+            alg = Arc::new(Algorithm::NFAlgorithm { statements: list![stmt], inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: var_field!((*frontend_equation).source, FEquation::NFEquation::NORETCALL).clone() });
+            alg = Algorithm::setInputsOutputs(alg)?;
+            list![lowerAlgorithm(alg, init)?]
         },
         Deref @ FEquation::TERMINATE { .. } => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerEquation")); __mm_s.push_str(&*literal!(" failed for TERMINATE expression without condition:\n")); __mm_s.push_str(&*FEquation::toString(frontend_equation, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
@@ -1186,10 +1186,10 @@ fn lowerIfEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: 
             if Expression::isEnd(ifEqBody.condition.clone()) {
                 backend_equations = ifEqBody.then_eqns.clone();
             } else {
-                bodies = BEquation::IfEquationBody::split(ifEqBody.clone())?;
+                bodies = BEquation::IfEquationBody::split(ifEqBody)?;
                 backend_equations = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        for mut body in (bodies.clone()).into_iter().cloned() {
+        for mut body in (bodies).into_iter().cloned() {
             let __x = BEquation::IfEquationBody::toEquation(body.clone(), source.clone(), init)?;
             __acc = cons(__x, __acc);
         }
@@ -1216,17 +1216,17 @@ fn lowerIfEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Branc
             let mut result: Arc<IfEquationBody::IfEquationBody>;
             (eqns, condition) = lowerIfBranch(branch.clone(), init)?;
             if Expression::isTrue(condition.clone()) {
-                result = Arc::new(IfEquationBody::IfEquationBody { condition: openmodelica_nf_frontend::NFExpression::interned_END(), then_eqns: eqns.clone(), else_if: None });
+                result = Arc::new(IfEquationBody::IfEquationBody { condition: openmodelica_nf_frontend::NFExpression::interned_END(), then_eqns: eqns, else_if: None });
             } else if Expression::isFalse(condition.clone()) {
                 result = lowerIfEquationBody(rest.clone(), init, allow_imbalance)?;
             } else {
                 if rest.clone().is_empty() && (init || allow_imbalance) {
-                    result = Arc::new(IfEquationBody::IfEquationBody { condition: condition.clone(), then_eqns: eqns.clone(), else_if: None });
+                    result = Arc::new(IfEquationBody::IfEquationBody { condition: condition, then_eqns: eqns, else_if: None });
                 } else {
-                    result = Arc::new(IfEquationBody::IfEquationBody { condition: condition.clone(), then_eqns: eqns.clone(), else_if: Some(lowerIfEquationBody(rest.clone(), init, allow_imbalance)?) });
+                    result = Arc::new(IfEquationBody::IfEquationBody { condition: condition, then_eqns: eqns, else_if: Some(lowerIfEquationBody(rest.clone(), init, allow_imbalance)?) });
                 }
             }
-            result.clone()
+            result
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerIfEquationBody")); __mm_s.push_str(&*literal!(" failed due to invalid missing else case.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -1284,8 +1284,8 @@ fn lowerAssert(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool) -> R
             let mut cond: Arc<Expression::NFExpression>;
             BEquation::default(EquationKind::EMPTY.clone(), init, None, None);
             cond = if (Expression::isCall(var_field!((*frontend_eq).condition, FEquation::NFEquation::ASSERT).clone())) {var_field!((*frontend_eq).condition, FEquation::NFEquation::ASSERT).clone()} else {Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::NO_EVENT().clone(), list![var_field!((*frontend_eq).condition, FEquation::NFEquation::ASSERT).clone()], Expression::variability(var_field!((*frontend_eq).condition, FEquation::NFEquation::ASSERT).clone())?, Prefixes::Purity::PURE.clone(), NFBuiltinFuncs::NO_EVENT().returnType.clone()) })};
-            alg = Arc::new(Algorithm::NFAlgorithm { statements: list![Arc::new(Statement::NFStatement::ASSERT { condition: cond.clone(), message: var_field!((*frontend_eq).message, FEquation::NFEquation::ASSERT).clone(), level: var_field!((*frontend_eq).level, FEquation::NFEquation::ASSERT).clone(), source: var_field!((*frontend_eq).source, FEquation::NFEquation::ASSERT).clone() })], inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: var_field!((*frontend_eq).scope, FEquation::NFEquation::ASSERT).clone(), source: var_field!((*frontend_eq).source, FEquation::NFEquation::ASSERT).clone() });
-            list![lowerAlgorithm(alg.clone(), init)?]
+            alg = Arc::new(Algorithm::NFAlgorithm { statements: list![Arc::new(Statement::NFStatement::ASSERT { condition: cond, message: var_field!((*frontend_eq).message, FEquation::NFEquation::ASSERT).clone(), level: var_field!((*frontend_eq).level, FEquation::NFEquation::ASSERT).clone(), source: var_field!((*frontend_eq).source, FEquation::NFEquation::ASSERT).clone() })], inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: var_field!((*frontend_eq).scope, FEquation::NFEquation::ASSERT).clone(), source: var_field!((*frontend_eq).source, FEquation::NFEquation::ASSERT).clone() });
+            list![lowerAlgorithm(alg, init)?]
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerAssert")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*FEquation::toString(frontend_eq, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
@@ -1307,10 +1307,10 @@ fn lowerWhenEquation(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool
                 _ => bail!("pattern mismatch"),
             } };
             whenEqBody = __pa0.clone();
-            bodies = BEquation::WhenEquationBody::split(whenEqBody.clone())?;
+            bodies = BEquation::WhenEquationBody::split(whenEqBody)?;
             ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        for mut b in (bodies.clone()).into_iter().cloned() {
+        for mut b in (bodies).into_iter().cloned() {
             let __x = Pointer::create(Arc::new(Equation::Equation::WHEN_EQUATION { size: BEquation::WhenEquationBody::size(b.clone(), false)?, body: b.clone(), source: var_field!((*frontend_eq).source, FEquation::NFEquation::WHEN).clone(), attr: BEquation::default(if (BEquation::WhenEquationBody::size(b.clone(), false)? > 0) {EquationKind::DISCRETE.clone()} else {EquationKind::EMPTY.clone()}, init, None, None) }));
             __acc = cons(__x, __acc);
         }
@@ -1336,7 +1336,7 @@ fn lowerWhenEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Bra
             let mut stmts: Arc<metamodelica::List<Arc<BEquation::WhenStatement::WhenStatement>>>;
             let mut condition: Arc<Expression::NFExpression>;
             (stmts, condition) = lowerWhenBranch(branch.clone())?;
-            Some(Arc::new(BEquation::WhenEquationBody::WhenEquationBody { condition: condition.clone(), when_stmts: stmts.clone(), else_when: lowerWhenEquationBody(rest.clone())? }))
+            Some(Arc::new(BEquation::WhenEquationBody::WhenEquationBody { condition: condition, when_stmts: stmts, else_when: lowerWhenEquationBody(rest.clone())? }))
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerWhenEquationBody")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -1412,12 +1412,12 @@ fn lowerWhenBranchStatement(mut eq: Arc<FEquation::NFEquation>, mut condition: A
             } };
             head = __pa0.clone();
             tail = __pa1.clone();
-            lowerWhenBranchIf(head.clone(), if_map.clone(), true)?;
-            for mut branch in &*tail.clone() {
+            lowerWhenBranchIf(head, if_map.clone(), true)?;
+            for mut branch in &*tail {
                 let mut branch = branch.clone();
                 lowerWhenBranchIf(branch.clone(), if_map.clone(), false)?;
             }
-            for mut tpl in &*UnorderedMap::toList(if_map.clone()) {
+            for mut tpl in &*UnorderedMap::toList(if_map) {
                 let mut tpl = tpl.clone();
                 (cref, rhs) = tpl.clone();
                 stmts = metamodelica::cons(Arc::new(BEquation::WhenStatement::WhenStatement::ASSIGN { lhs: Expression::fromCref(cref.clone(), false)?, rhs: rhs.clone(), source: var_field!((*eq).source, FEquation::NFEquation::IF).clone() }), stmts.clone());
@@ -1741,28 +1741,28 @@ pub(crate) fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
             clocks = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BVariable::VariablePointers::scalarSize(var_field!((**varData).clocks, VarData::VarData::VAR_DATA_SIM).clone(), false)?)); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BVariable::VariablePointers::size(var_field!((**varData).clocks, VarData::VarData::VAR_DATA_SIM).clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             inputs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BVariable::VariablePointers::scalarSize(var_field!((**varData).top_level_inputs, VarData::VarData::VAR_DATA_SIM).clone(), false)?)); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BVariable::VariablePointers::size(var_field!((**varData).top_level_inputs, VarData::VarData::VAR_DATA_SIM).clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
-                states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*states.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).states, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*states); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).states, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
             } else {
-                states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*states.clone()); __mm_s.push_str(&*literal!(" ('-d=stateselection' for the list of states)")); ArcStr::from(__mm_s) }).clone();
+                states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*states); __mm_s.push_str(&*literal!(" ('-d=stateselection' for the list of states)")); ArcStr::from(__mm_s) }).clone();
             }
             if Flags::isSet(Flags::DUMP_DISCRETEVARS_INFO.clone())? {
-                discretes = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discretes.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).discretes, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
-                clocks = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocks.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).clocks, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
-                inputs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inputs.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).top_level_inputs, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                discretes = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discretes); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).discretes, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                clocks = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocks); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).clocks, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                inputs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inputs); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).top_level_inputs, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
             } else {
-                discretes = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discretes.clone()); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' for the list of discrete variables)")); ArcStr::from(__mm_s) }).clone();
-                clocks = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocks.clone()); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' for the list of clocks variables)")); ArcStr::from(__mm_s) }).clone();
-                inputs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inputs.clone()); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' for the list of top level inputs)")); ArcStr::from(__mm_s) }).clone();
+                discretes = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discretes); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' for the list of discrete variables)")); ArcStr::from(__mm_s) }).clone();
+                clocks = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocks); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' for the list of clocks variables)")); ArcStr::from(__mm_s) }).clone();
+                inputs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inputs); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' for the list of top level inputs)")); ArcStr::from(__mm_s) }).clone();
             }
             if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? || Flags::isSet(Flags::DUMP_DISCRETEVARS_INFO.clone())? {
-                discrete_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discrete_states.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).discrete_states, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
-                clocked_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocked_states.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).clocked_states, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                discrete_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discrete_states); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).discrete_states, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                clocked_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocked_states); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(BVariable::VariablePointers::toList(var_field!((**varData).clocked_states, VarData::VarData::VAR_DATA_SIM).clone())?, (std::sync::Arc::new(BVariable::nameString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
             } else {
-                discrete_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discrete_states.clone()); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' or '-d=stateselection' for the list of discrete states)")); ArcStr::from(__mm_s) }).clone();
-                clocked_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocked_states.clone()); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' or '-d=stateselection' for the list of clocked states)")); ArcStr::from(__mm_s) }).clone();
+                discrete_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*discrete_states); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' or '-d=stateselection' for the list of discrete states)")); ArcStr::from(__mm_s) }).clone();
+                clocked_states = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*clocked_states); __mm_s.push_str(&*literal!(" ('-d=discreteinfo' or '-d=stateselection' for the list of clocked states)")); ArcStr::from(__mm_s) }).clone();
             }
-            Error::addCompilerNotification(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Partition statistics after passing the back-end:\n")); __mm_s.push_str(&*literal!(" * Number of ODE partitions: ..................... ")); __mm_s.push_str(&*p_ode.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of algebraic partitions: ............... ")); __mm_s.push_str(&*p_alg.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of ODE event partitions: ............... ")); __mm_s.push_str(&*p_ode_e.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of algebraic event partitions: ......... ")); __mm_s.push_str(&*p_alg_e.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of clocked partitions: ................. ")); __mm_s.push_str(&*p_clk.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of initial partitions: ................. ")); __mm_s.push_str(&*p_ini.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of initial(lambda=0) partitions: ....... ")); __mm_s.push_str(&*p_ini_0.clone()); ArcStr::from(__mm_s) }).clone())?;
-            Error::addCompilerNotification(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable statistics after passing the back-end:\n")); __mm_s.push_str(&*literal!(" * Number of states: ............................. ")); __mm_s.push_str(&*states.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of discrete states: .................... ")); __mm_s.push_str(&*discrete_states.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of clocked states: ..................... ")); __mm_s.push_str(&*clocked_states.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of discrete variables: ................. ")); __mm_s.push_str(&*discretes.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of clocks: ............................. ")); __mm_s.push_str(&*clocks.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of top-level inputs: ................... ")); __mm_s.push_str(&*inputs.clone()); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerNotification(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Partition statistics after passing the back-end:\n")); __mm_s.push_str(&*literal!(" * Number of ODE partitions: ..................... ")); __mm_s.push_str(&*p_ode); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of algebraic partitions: ............... ")); __mm_s.push_str(&*p_alg); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of ODE event partitions: ............... ")); __mm_s.push_str(&*p_ode_e); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of algebraic event partitions: ......... ")); __mm_s.push_str(&*p_alg_e); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of clocked partitions: ................. ")); __mm_s.push_str(&*p_clk); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of initial partitions: ................. ")); __mm_s.push_str(&*p_ini); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of initial(lambda=0) partitions: ....... ")); __mm_s.push_str(&*p_ini_0); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerNotification(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable statistics after passing the back-end:\n")); __mm_s.push_str(&*literal!(" * Number of states: ............................. ")); __mm_s.push_str(&*states); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of discrete states: .................... ")); __mm_s.push_str(&*discrete_states); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of clocked states: ..................... ")); __mm_s.push_str(&*clocked_states); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of discrete variables: ................. ")); __mm_s.push_str(&*discretes); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of clocks: ............................. ")); __mm_s.push_str(&*clocks); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!(" * Number of top-level inputs: ................... ")); __mm_s.push_str(&*inputs); ArcStr::from(__mm_s) }).clone())?;
             strongcomponentinfo((literal!("Simulation")).clone(), list![var_field!((*bdae).ode, NBackendDAE::MAIN).clone(), var_field!((*bdae).algebraic, NBackendDAE::MAIN).clone(), var_field!((*bdae).ode_event, NBackendDAE::MAIN).clone(), var_field!((*bdae).alg_event, NBackendDAE::MAIN).clone()])?;
             strongcomponentinfo((literal!("Initialization")).clone(), list![var_field!((*bdae).init, NBackendDAE::MAIN).clone()])?;
             if isSome(var_field!((*bdae).init_0, NBackendDAE::MAIN).clone()) {
@@ -1805,8 +1805,8 @@ pub(crate) fn debugFollowEquations(mut bdae: Arc<NBackendDAE>, mut eq_filter_opt
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => {
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations]: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), 1, eq_filter_opt)?); ArcStr::from(__mm_s) }).clone();
-            metamodelica::print((tmp.clone()).clone());
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), 1, eq_filter_opt)?); ArcStr::from(__mm_s) }).clone();
+            metamodelica::print((tmp).clone());
             ()
         },
         _ => {

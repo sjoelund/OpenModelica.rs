@@ -285,7 +285,7 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            Arc::new(DAE::Statement::STMT_ASSIGN { type_: t.clone(), exp1: lhs, exp: rhs_1.clone(), source: source })
+            Arc::new(DAE::Statement::STMT_ASSIGN { type_: t, exp1: lhs, exp: rhs_1, source: source })
         },
         Deref @ DAE::Exp::CREF { .. } => {
             let mut rhs_1: Arc<DAE::Exp>;
@@ -293,15 +293,15 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
             let mut ty: Arc<DAE::Type>;
             (rhs_1, _) = Types::matchProp(rhs, rhprop, lhprop.clone(), false)?;
             ty = Types::getPropType(lhprop.clone())?;
-            t = Types::simplifyType(ty.clone())?;
-            Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: t.clone(), lhs: lhs, exp: rhs_1.clone(), source: source })
+            t = Types::simplifyType(ty)?;
+            Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: t, lhs: lhs, exp: rhs_1, source: source })
         },
         e3 @ Deref @ DAE::Exp::ASUB { exp: _, sub: _ } => {
             let mut rhs_1: Arc<DAE::Exp>;
             let mut t: Arc<DAE::Type>;
             (rhs_1, _) = Types::matchProp(rhs, rhprop, lhprop.clone(), true)?;
             t = getPropExpType(lhprop.clone())?;
-            Arc::new(DAE::Statement::STMT_ASSIGN { type_: t.clone(), exp1: e3.clone(), exp: rhs_1.clone(), source: source })
+            Arc::new(DAE::Statement::STMT_ASSIGN { type_: t, exp1: e3.clone(), exp: rhs_1, source: source })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -338,7 +338,7 @@ pub fn makeAssignmentsList(mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
             let mut rest_ass: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             ass = makeAssignment(lhs.clone(), lhs_prop.clone(), rhs.clone(), rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?;
             rest_ass = makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes, initial_, source)?;
-            return Ok(metamodelica::cons(ass.clone(), rest_ass.clone()))
+            return Ok(metamodelica::cons(ass, rest_ass))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -553,7 +553,7 @@ pub(crate) fn makeIfFromBranches(mut branches: Arc<metamodelica::List<(Arc<DAE::
         Deref @ metamodelica::List::Cons { head: (e, br), tail: rest } => {
             let mut else_: Arc<DAE::Else>;
             else_ = makeElseFromBranches(rest.clone());
-            list![Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: br.clone(), else_: else_.clone(), source: source })]
+            list![Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: br.clone(), else_: else_, source: source })]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -572,7 +572,7 @@ fn makeElseFromBranches(mut inTpl: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<me
         Deref @ metamodelica::List::Cons { head: (e, b), tail: xs } => {
             let mut else_: Arc<DAE::Else>;
             else_ = makeElseFromBranches(xs.clone());
-            Arc::new(DAE::Else::ELSEIF { exp: e.clone(), statementLst: b.clone(), else_: else_.clone() })
+            Arc::new(DAE::Else::ELSEIF { exp: e.clone(), statementLst: b.clone(), else_: else_ })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -741,14 +741,14 @@ pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inPropertie
         (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
             let mut isArray: bool;
             isArray = Types::isNonscalarArray(t.clone(), dims.clone());
-            Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars, source: source })
+            Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray, iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars, source: source })
         },
         (_, e, DAE::Properties::PROP { type_: t, .. }, _) => {
             let mut e_str: ArcStr;
             let mut t_str: ArcStr;
             e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
             t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
-            Error::addSourceMessage(Error::FOR_EXPRESSION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source))?;
+            Error::addSourceMessage(Error::FOR_EXPRESSION_TYPE_ERROR.clone(), list![(e_str).clone(), (t_str).clone()], ElementSource::getElementSourceFileInfo(source))?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -767,7 +767,7 @@ pub fn makeWhile(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mu
             let mut t_str: ArcStr;
             e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
             t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
-            Error::addSourceMessage(Error::WHILE_CONDITION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source))?;
+            Error::addSourceMessage(Error::WHILE_CONDITION_TYPE_ERROR.clone(), list![(e_str).clone(), (t_str).clone()], ElementSource::getElementSourceFileInfo(source))?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -789,7 +789,7 @@ pub fn makeWhenA(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mu
             let mut t_str: ArcStr;
             e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
             t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
-            Error::addSourceMessage(Error::WHEN_CONDITION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source))?;
+            Error::addSourceMessage(Error::WHEN_CONDITION_TYPE_ERROR.clone(), list![(e_str).clone(), (t_str).clone()], ElementSource::getElementSourceFileInfo(source))?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -843,10 +843,10 @@ pub fn makeAssert(mut cond: Arc<DAE::Exp>, mut msg: Arc<DAE::Exp>, mut level: Ar
             info = ElementSource::getElementSourceFileInfo(source);
             strExp = (ExpressionBasics::printExpStr(cond)?).clone();
             strTy = (TypesDump::unparseType(t1.clone())?).clone();
-            Error::assertionOrAddSourceMessage(Types::isBooleanOrSubTypeBoolean(t1.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("Boolean")).clone(), (strTy.clone()).clone()], info.clone())?;
+            Error::assertionOrAddSourceMessage(Types::isBooleanOrSubTypeBoolean(t1.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp).clone(), (literal!("Boolean")).clone(), (strTy).clone()], info.clone())?;
             strExp = (ExpressionBasics::printExpStr(msg)?).clone();
             strTy = (TypesDump::unparseType(t2.clone())?).clone();
-            Error::assertionOrAddSourceMessage(Types::isString(t2.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("String")).clone(), (strTy.clone()).clone()], info.clone())?;
+            Error::assertionOrAddSourceMessage(Types::isString(t2.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp).clone(), (literal!("String")).clone(), (strTy).clone()], info.clone())?;
             if '__try0: {
                 ::match_deref::match_deref! { match &(t3.clone()) {
                     Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" }, .. } => (),
@@ -856,7 +856,7 @@ pub fn makeAssert(mut cond: Arc<DAE::Exp>, mut msg: Arc<DAE::Exp>, mut level: Ar
             }.is_ok() { bail!("failure(): body succeeded") }
             strExp = (ExpressionBasics::printExpStr(level)?).clone();
             strTy = (TypesDump::unparseType(t3.clone())?).clone();
-            Error::assertionOrAddSourceMessage(Types::isString(t3.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("AssertionLevel")).clone(), (strTy.clone()).clone()], info.clone())?;
+            Error::assertionOrAddSourceMessage(Types::isString(t3.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp).clone(), (literal!("AssertionLevel")).clone(), (strTy).clone()], info)?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -885,7 +885,7 @@ pub fn getAllExps(mut inAlgorithm: Arc<DAE::Algorithm>) -> Result<Arc<metamodeli
         Deref @ DAE::Algorithm { statementLst: stmts } => {
             let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             exps = getAllExpsStmts(stmts.clone())?;
-            exps.clone()
+            exps
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

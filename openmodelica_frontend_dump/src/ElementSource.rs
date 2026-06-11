@@ -71,7 +71,7 @@ pub fn mergeSources(mut src1: Arc<DAE::ElementSource>, mut src2: Arc<DAE::Elemen
             t = List::union(typeLst1.clone(), typeLst2.clone());
             o = listAppend(operations1.clone(), operations2.clone());
             comment = List::union(comment1.clone(), comment2.clone());
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: p.clone(), instance: i.clone(), connectEquationOptLst: c.clone(), typeLst: t.clone(), operations: o.clone(), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: p, instance: i, connectEquationOptLst: c, typeLst: t, operations: o, comment: comment })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -123,7 +123,7 @@ pub fn addAdditionalComment(mut source: Arc<DAE::ElementSource>, mut message: Ar
             let mut comment = (*comment).clone();
             c = Arc::new(SCode::Comment { annotation_: None, comment: Some((message).clone()) });
             b = listMember(c.clone(), comment.clone());
-            comment = if (b.clone()) {comment.clone()} else {metamodelica::cons(c.clone(), comment.clone())};
+            comment = if (b) {comment.clone()} else {metamodelica::cons(c, comment.clone())};
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: operations.clone(), comment: comment.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -175,7 +175,7 @@ pub fn addSymbolicTransformation(mut source: Arc<DAE::ElementSource>, mut op: Ar
         (Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SymbolicOperation::SUBSTITUTION { substitutions: es1 @ Deref @ metamodelica::List::Cons { head: h1, tail: _ }, source: t1 }, tail: operations }, comment }, Deref @ DAE::SymbolicOperation::SUBSTITUTION { substitutions: es2, source: t2 }) if (ExpressionBasics::expEqual(t2.clone(), h1.clone())?) => {
             let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             es = listAppend(es2.clone(), es1.clone());
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: metamodelica::cons(Arc::new(DAE::SymbolicOperation::SUBSTITUTION { substitutions: es.clone(), source: t1.clone() }), operations.clone()), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: metamodelica::cons(Arc::new(DAE::SymbolicOperation::SUBSTITUTION { substitutions: es, source: t1.clone() }), operations.clone()), comment: comment.clone() })
         },
         (Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment }, _) => {
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: metamodelica::cons(op, operations.clone()), comment: comment.clone() })
@@ -206,7 +206,7 @@ pub(crate) fn addSymbolicTransformationDeriveLst(mut source: Arc<DAE::ElementSou
         (Deref @ metamodelica::List::Cons { head: exp1, tail: rexplst1 }, Deref @ metamodelica::List::Cons { head: exp2, tail: rexplst2 }) => {
             let mut op: Arc<DAE::SymbolicOperation>;
             op = Arc::new(DAE::SymbolicOperation::OP_DIFFERENTIATE { cr: DAE::crefTime().clone(), before: exp1.clone(), after: exp2.clone() });
-            source = addSymbolicTransformation(source, op.clone())?;
+            source = addSymbolicTransformation(source, op)?;
             addSymbolicTransformationDeriveLst(source, rexplst1.clone(), rexplst2.clone())?
         },
         _ => bail!("match: no arm matched"),

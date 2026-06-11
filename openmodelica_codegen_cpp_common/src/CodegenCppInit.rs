@@ -111,14 +111,14 @@ pub fn modelInitXMLFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCod
             let mut txt_1: Tpl::Text;
             let mut l_variables: Tpl::Text;
             txt_1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_numRealVars.clone()).clone())?;
-            txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
+            txt_1 = Tpl::writeTok(txt_1, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
             txt_2 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_numIntVars.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_numBoolVars.clone()).clone())?;
-            txt_3 = Tpl::writeTok(txt_3.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
+            txt_3 = Tpl::writeTok(txt_3, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
             txt_4 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_numStringVars.clone()).clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
-            (l_variables, a_complexStartExpressions, a_stateDerVectorName) = modelVariablesXML(Tpl::emptyTxt.clone(), i_simCode.clone(), i_modelInfo.clone(), i_varToArrayIndexMapping.clone(), (Tpl::textString(txt_1.clone())?).clone(), (Tpl::textString(txt_2.clone())?).clone(), (Tpl::textString(txt_3.clone())?).clone(), (Tpl::textString(txt_4.clone())?).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" - 1")).clone() }))?;
+            (l_variables, a_complexStartExpressions, a_stateDerVectorName) = modelVariablesXML(Tpl::emptyTxt.clone(), i_simCode.clone(), i_modelInfo.clone(), i_varToArrayIndexMapping.clone(), (Tpl::textString(txt_1)?).clone(), (Tpl::textString(txt_2)?).clone(), (Tpl::textString(txt_3)?).clone(), (Tpl::textString(txt_4)?).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             l_descriptionTag = fun_52(Tpl::emptyTxt.clone(), a_generateFMUModelDescription.clone())?;
             l_fmiDescriptionAttributes = fun_53(Tpl::emptyTxt.clone(), a_generateFMUModelDescription.clone(), (a_FMUGuid.clone()).clone(), (a_FMUType.clone()).clone(), (a_FMUVersion.clone()).clone(), i_simCode.clone(), i_modelInfo_name.clone())?;
             l_fmiTypeDefinitions = fun_54(Tpl::emptyTxt.clone(), a_generateFMUModelDescription.clone(), (a_FMUVersion.clone()).clone(), i_simCode.clone())?;
@@ -128,22 +128,22 @@ pub fn modelInitXMLFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCod
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" -->\n")).clone(), (literal!("<!--Take care about array indices, they are stored in column major layout.-->\n")).clone(), (literal!("<")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_descriptionTag.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_fmiDescriptionAttributes.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_fmiDescriptionAttributes)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_fmiTypeDefinitions.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_fmiTypeDefinitions)?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_fmiDefaultExperiment.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_fmiDefaultExperiment)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<ModelVariables>\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_variables.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_variables)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("</ModelVariables>\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_descriptionTag.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_descriptionTag)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -199,39 +199,39 @@ pub(crate) fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simC
             let mut l_fmiVersion: Tpl::Text;
             l_fmiVersion = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("1.0")).clone() }))?;
             txt_2 = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
-            ret_3 = (System::stringReplace((Tpl::textString(txt_2.clone())?).clone(), (literal!("$")).clone(), (literal!("_D_")).clone())?).clone();
-            l_modelName = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_3.clone()).clone())?;
+            ret_3 = (System::stringReplace((Tpl::textString(txt_2)?).clone(), (literal!("$")).clone(), (literal!("_D_")).clone())?).clone();
+            l_modelName = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_3).clone())?;
             ret_5 = (System::stringReplace((i_fileNamePrefix.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
-            l_modelIdentifier = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_5.clone()).clone())?;
+            l_modelIdentifier = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_5).clone())?;
             l_description = Tpl::emptyTxt.clone();
             l_author = Tpl::emptyTxt.clone();
             l_version = Tpl::emptyTxt.clone();
             l_generationTool = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OpenModelica Compiler ")).clone() }))?;
             ret_10 = (Settings::getVersionNr()).clone();
-            l_generationTool = Tpl::writeStr(l_generationTool.clone(), (ret_10.clone()).clone())?;
+            l_generationTool = Tpl::writeStr(l_generationTool, (ret_10).clone())?;
             ret_12 = Util::getCurrentDateTime();
-            l_generationDateAndTime = CodegenFMUCommon::xsdateTime(Tpl::emptyTxt.clone(), ret_12.clone())?;
+            l_generationDateAndTime = CodegenFMUCommon::xsdateTime(Tpl::emptyTxt.clone(), ret_12)?;
             l_variableNamingConvention = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("structured")).clone() }))?;
             l_numberOfContinuousStates = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(i_vi_numStateVars.clone())).clone())?;
             l_numberOfEventIndicators = CodegenFMUCommon::getNumberOfEventIndicators(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fmiVersion=\"")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_fmiVersion.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_fmiVersion)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("modelName=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_modelName.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_modelName)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("modelIdentifier=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_modelIdentifier.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_modelIdentifier)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("guid=\"{")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_guid.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\"\n")).clone(), (literal!("generationTool=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_generationTool.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_generationTool)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("generationDateAndTime=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_generationDateAndTime.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_generationDateAndTime)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("variableNamingConvention=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_variableNamingConvention.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_variableNamingConvention)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("numberOfContinuousStates=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_numberOfContinuousStates.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_numberOfContinuousStates)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("numberOfEventIndicators=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_numberOfEventIndicators.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_numberOfEventIndicators)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },
@@ -623,7 +623,7 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             ret_0 = Types::arrayElementType(a_type__.clone());
-            (txt, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableType(txt.clone(), a_simCode.clone(), a_name.clone(), a_aliasvar.clone(), (a_unit.clone()).clone(), (a_displayUnit.clone()).clone(), a_minValue.clone(), a_maxValue.clone(), a_initialValue.clone(), a_nominalValue.clone(), a_isFixed.clone(), ret_0.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
+            (txt, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableType(txt.clone(), a_simCode.clone(), a_name.clone(), a_aliasvar.clone(), (a_unit.clone()).clone(), (a_displayUnit.clone()).clone(), a_minValue.clone(), a_maxValue.clone(), a_initialValue.clone(), a_nominalValue.clone(), a_isFixed.clone(), ret_0, a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
         },
         (txt, _, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _, _, _, _, _, _, _, _) => {
@@ -691,7 +691,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_s
             l_complexStartExpressionsForScalarsUnused = Tpl::emptyTxt.clone();
             ret_2 = SimCodeUtil::getScalarElements(i_simVar.clone())?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            (txt, a_stateDerVectorName, l_complexStartExpressionsForScalarsUnused) = lm_78(txt.clone(), ret_2.clone(), a_stateDerVectorName.clone(), l_complexStartExpressionsForScalarsUnused.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone())?;
+            (txt, a_stateDerVectorName, l_complexStartExpressionsForScalarsUnused) = lm_78(txt.clone(), ret_2, a_stateDerVectorName.clone(), l_complexStartExpressionsForScalarsUnused, a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -705,7 +705,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_s
             txt = scalarVariableAttributeXML(txt.clone(), i_simVar.clone(), a_simCode.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_generateFMUModelDescription.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::writeText(txt.clone(), l_variableCode.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_variableCode)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</ScalarVariable>")).clone() }))?;
@@ -738,7 +738,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_comment: ArcStr) -> Result<Tpl::Text> 
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("description=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_comment.clone()).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },
@@ -800,30 +800,30 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_s
             let mut l_valueReference: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = (SimCodeUtil::getValueReference(i_simVar.clone(), a_simCode.clone(), true)?).clone();
-            l_valueReference = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
+            l_valueReference = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1).clone())?;
             l_alias = getAliasAttribute(Tpl::emptyTxt.clone(), i_aliasvar.clone())?;
             l_causalityAtt = CodegenFMUCommon::getCausality(Tpl::emptyTxt.clone(), i_causality.clone())?;
             l_variability = CodegenUtil::getVariablity(Tpl::emptyTxt.clone(), i_varKind.clone())?;
             l_description = fun_82(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             l_hr = fun_83(Tpl::emptyTxt.clone(), i_hideResult.clone())?;
-            l_additionalAttributes = fun_84(Tpl::emptyTxt.clone(), a_generateFMUModelDescription.clone(), i_isValueChangeable.clone(), i_isDiscrete.clone(), l_hr.clone(), i_isProtected.clone())?;
+            l_additionalAttributes = fun_84(Tpl::emptyTxt.clone(), a_generateFMUModelDescription.clone(), i_isValueChangeable.clone(), i_isDiscrete.clone(), l_hr, i_isProtected.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("name=\"")).clone() }))?;
             txt_8 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_name.clone())?;
-            ret_9 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_8.clone())?).clone())?).clone();
-            ret_10 = (System::stringReplace((ret_9.clone()).clone(), (literal!("$")).clone(), (literal!("_D_")).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_10.clone()).clone())?;
+            ret_9 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_8)?).clone())?).clone();
+            ret_10 = (System::stringReplace((ret_9).clone(), (literal!("$")).clone(), (literal!("_D_")).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_10).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" valueReference=\"")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_valueReference.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_valueReference)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_description.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_description)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" variability=\"")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_variability.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_variability)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" causality=\"")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_causalityAtt.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_causalityAtt)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" alias=\"")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_alias.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_alias)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_additionalAttributes.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_additionalAttributes)?;
             txt.clone()
         },
         (txt, _, _, _) => {
@@ -880,21 +880,21 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             (l_start__, _, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableTypeStartAttribute(Tpl::emptyTxt.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), a_startValue.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Int")).clone() })), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             l_fixed__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
-            l_fixed__ = Tpl::writeStr(l_fixed__.clone(), (Tpl::booleanString(a_isFixed.clone())).clone())?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-            l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
+            l_fixed__ = Tpl::writeStr(l_fixed__, (Tpl::booleanString(a_isFixed.clone())).clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+            l_fixed__ = Tpl::popBlock(l_fixed__)?;
             l_min__ = attributeOptionString(Tpl::emptyTxt.clone(), a_minValue.clone(), (literal!("min")).clone())?;
             l_max__ = attributeOptionString(Tpl::emptyTxt.clone(), a_maxValue.clone(), (literal!("max")).clone())?;
             l_unit__ = unitString(Tpl::emptyTxt.clone(), (a_unit.clone()).clone(), (literal!("unit")).clone())?;
             l_disp__ = unitString(Tpl::emptyTxt.clone(), (a_displayUnit.clone()).clone(), (literal!("displayUnit")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Integer ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_start__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_fixed__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_min__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_max__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_unit__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_disp__.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_start__)?;
+            txt = Tpl::writeText(txt.clone(), l_fixed__)?;
+            txt = Tpl::writeText(txt.clone(), l_min__)?;
+            txt = Tpl::writeText(txt.clone(), l_max__)?;
+            txt = Tpl::writeText(txt.clone(), l_unit__)?;
+            txt = Tpl::writeText(txt.clone(), l_disp__)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" />")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -912,29 +912,29 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             (l_start__, _, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableTypeStartAttribute(Tpl::emptyTxt.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), a_startValue.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Real")).clone() })), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             l_fixed__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
-            l_fixed__ = Tpl::writeStr(l_fixed__.clone(), (Tpl::booleanString(a_isFixed.clone())).clone())?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-            l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
+            l_fixed__ = Tpl::writeStr(l_fixed__, (Tpl::booleanString(a_isFixed.clone())).clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+            l_fixed__ = Tpl::popBlock(l_fixed__)?;
             l_nom__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_nom__ = Tpl::writeTok(l_nom__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("useNominal=\"")).clone() }))?;
+            l_nom__ = Tpl::writeTok(l_nom__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("useNominal=\"")).clone() }))?;
             ret_7 = isSome(a_nominalValue.clone());
-            l_nom__ = Tpl::writeStr(l_nom__.clone(), (Tpl::booleanString(ret_7.clone())).clone())?;
-            l_nom__ = Tpl::writeTok(l_nom__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-            l_nom__ = attributeOptionString(l_nom__.clone(), a_nominalValue.clone(), (literal!("nominal")).clone())?;
-            l_nom__ = Tpl::popBlock(l_nom__.clone())?;
+            l_nom__ = Tpl::writeStr(l_nom__, (Tpl::booleanString(ret_7)).clone())?;
+            l_nom__ = Tpl::writeTok(l_nom__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+            l_nom__ = attributeOptionString(l_nom__, a_nominalValue.clone(), (literal!("nominal")).clone())?;
+            l_nom__ = Tpl::popBlock(l_nom__)?;
             l_min__ = attributeOptionString(Tpl::emptyTxt.clone(), a_minValue.clone(), (literal!("min")).clone())?;
             l_max__ = attributeOptionString(Tpl::emptyTxt.clone(), a_maxValue.clone(), (literal!("max")).clone())?;
             l_unit__ = unitString(Tpl::emptyTxt.clone(), (a_unit.clone()).clone(), (literal!("unit")).clone())?;
             l_disp__ = unitString(Tpl::emptyTxt.clone(), (a_displayUnit.clone()).clone(), (literal!("displayUnit")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Real ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_start__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_fixed__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_nom__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_min__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_max__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_unit__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_disp__.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_start__)?;
+            txt = Tpl::writeText(txt.clone(), l_fixed__)?;
+            txt = Tpl::writeText(txt.clone(), l_nom__)?;
+            txt = Tpl::writeText(txt.clone(), l_min__)?;
+            txt = Tpl::writeText(txt.clone(), l_max__)?;
+            txt = Tpl::writeText(txt.clone(), l_unit__)?;
+            txt = Tpl::writeText(txt.clone(), l_disp__)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" />")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -948,17 +948,17 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             (l_start__, _, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableTypeStartAttribute(Tpl::emptyTxt.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), a_startValue.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Bool")).clone() })), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             l_fixed__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
-            l_fixed__ = Tpl::writeStr(l_fixed__.clone(), (Tpl::booleanString(a_isFixed.clone())).clone())?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-            l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
+            l_fixed__ = Tpl::writeStr(l_fixed__, (Tpl::booleanString(a_isFixed.clone())).clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+            l_fixed__ = Tpl::popBlock(l_fixed__)?;
             l_unit__ = unitString(Tpl::emptyTxt.clone(), (a_unit.clone()).clone(), (literal!("unit")).clone())?;
             l_disp__ = unitString(Tpl::emptyTxt.clone(), (a_displayUnit.clone()).clone(), (literal!("displayUnit")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Boolean ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_start__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_fixed__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_unit__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_disp__.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_start__)?;
+            txt = Tpl::writeText(txt.clone(), l_fixed__)?;
+            txt = Tpl::writeText(txt.clone(), l_unit__)?;
+            txt = Tpl::writeText(txt.clone(), l_disp__)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" />")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -972,17 +972,17 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             (l_start__, _, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableTypeStartAttribute(Tpl::emptyTxt.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), a_startValue.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("String")).clone() })), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             l_fixed__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
-            l_fixed__ = Tpl::writeStr(l_fixed__.clone(), (Tpl::booleanString(a_isFixed.clone())).clone())?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-            l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
+            l_fixed__ = Tpl::writeStr(l_fixed__, (Tpl::booleanString(a_isFixed.clone())).clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+            l_fixed__ = Tpl::popBlock(l_fixed__)?;
             l_unit__ = unitString(Tpl::emptyTxt.clone(), (a_unit.clone()).clone(), (literal!("unit")).clone())?;
             l_disp__ = unitString(Tpl::emptyTxt.clone(), (a_displayUnit.clone()).clone(), (literal!("displayUnit")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<String ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_start__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_fixed__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_unit__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_disp__.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_start__)?;
+            txt = Tpl::writeText(txt.clone(), l_fixed__)?;
+            txt = Tpl::writeText(txt.clone(), l_unit__)?;
+            txt = Tpl::writeText(txt.clone(), l_disp__)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" />")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -996,17 +996,17 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             (l_start__, _, a_complexStartExpressions, a_stateDerVectorName) = ScalarVariableTypeStartAttribute(Tpl::emptyTxt.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), a_startValue.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Int")).clone() })), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             l_fixed__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
-            l_fixed__ = Tpl::writeStr(l_fixed__.clone(), (Tpl::booleanString(a_isFixed.clone())).clone())?;
-            l_fixed__ = Tpl::writeTok(l_fixed__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-            l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed=\"")).clone() }))?;
+            l_fixed__ = Tpl::writeStr(l_fixed__, (Tpl::booleanString(a_isFixed.clone())).clone())?;
+            l_fixed__ = Tpl::writeTok(l_fixed__, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+            l_fixed__ = Tpl::popBlock(l_fixed__)?;
             l_unit__ = unitString(Tpl::emptyTxt.clone(), (a_unit.clone()).clone(), (literal!("unit")).clone())?;
             l_disp__ = unitString(Tpl::emptyTxt.clone(), (a_displayUnit.clone()).clone(), (literal!("displayUnit")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Integer ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_start__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_fixed__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_unit__.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_disp__.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_start__)?;
+            txt = Tpl::writeText(txt.clone(), l_fixed__)?;
+            txt = Tpl::writeText(txt.clone(), l_unit__)?;
+            txt = Tpl::writeText(txt.clone(), l_disp__)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" />")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -1016,8 +1016,8 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<ExternalObject path=\"")).clone() }))?;
             txt_8 = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_ci_path.clone())?;
-            ret_9 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_8.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_9.clone()).clone())?;
+            ret_9 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_8)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_9).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" />")).clone() }))?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
@@ -1027,8 +1027,8 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             let mut txt = (*txt).clone();
             txt_10 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ScalarVariableType: ")).clone() }))?;
             ret_10 = (TypesDump::unparseType(i_type__.clone())?).clone();
-            txt_10 = Tpl::writeStr(txt_10.clone(), (ret_10.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCppInit.tpl")).clone(), 243, 16), (Tpl::textString(txt_10.clone())?).clone())?;
+            txt_10 = Tpl::writeStr(txt_10, (ret_10).clone())?;
+            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCppInit.tpl")).clone(), 243, 16), (Tpl::textString(txt_10)?).clone())?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1157,14 +1157,14 @@ pub(crate) fn attributeString(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Expression::isSimpleLiteralValue(i_exp.clone(), true)?;
-            txt = fun_91(txt.clone(), ret_0.clone(), i_array.clone(), (a_attr__name.clone()).clone())?;
+            txt = fun_91(txt.clone(), ret_0, i_array.clone(), (a_attr__name.clone()).clone())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::REDUCTION { expr: i_expr, .. }, a_attr__name) => {
             let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true)?;
-            txt = fun_92(txt.clone(), ret_1.clone(), (a_attr__name.clone()).clone(), i_expr.clone())?;
+            txt = fun_92(txt.clone(), ret_1, (a_attr__name.clone()).clone(), i_expr.clone())?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -1204,7 +1204,7 @@ pub(crate) fn unitString(mut in_txt: Tpl::Text, mut in_a_unit: ArcStr, mut in_a_
             txt = Tpl::writeStr(txt.clone(), (a_attr__name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_unit.clone()).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt.clone()
@@ -1232,16 +1232,16 @@ fn fun_96(mut in_txt: Tpl::Text, mut in_a_simVarAlias: SimCodeVar::AliasVariable
             l_varDecls = Tpl::emptyTxt.clone();
             l_extraFuncs = Tpl::emptyTxt.clone();
             l_extraFuncsDecl = Tpl::emptyTxt.clone();
-            (l_crefStr, l_extraFuncs, l_extraFuncsDecl, _, l_varDecls, a_stateDerVectorName) = CodegenCppCommon::cref1(Tpl::emptyTxt.clone(), a_simVarCref.clone(), a_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), SimCodeFunction::contextOther().clone(), l_varDecls.clone(), a_stateDerVectorName.clone(), false)?;
-            (l_expression, l_complexPreExpression, l_varDecls, l_extraFuncs, l_extraFuncsDecl, _, a_stateDerVectorName) = CodegenCppCommon::daeExp(Tpl::emptyTxt.clone(), a_exp.clone(), SimCodeFunction::contextOther().clone(), l_complexPreExpression.clone(), l_varDecls.clone(), a_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), a_stateDerVectorName.clone(), false)?;
-            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_varDecls.clone())?;
-            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_complexPreExpression.clone())?;
+            (l_crefStr, l_extraFuncs, l_extraFuncsDecl, _, l_varDecls, a_stateDerVectorName) = CodegenCppCommon::cref1(Tpl::emptyTxt.clone(), a_simVarCref.clone(), a_simCode.clone(), l_extraFuncs, l_extraFuncsDecl, Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), SimCodeFunction::contextOther().clone(), l_varDecls, a_stateDerVectorName.clone(), false)?;
+            (l_expression, l_complexPreExpression, l_varDecls, l_extraFuncs, l_extraFuncsDecl, _, a_stateDerVectorName) = CodegenCppCommon::daeExp(Tpl::emptyTxt.clone(), a_exp.clone(), SimCodeFunction::contextOther().clone(), l_complexPreExpression, l_varDecls, a_simCode.clone(), l_extraFuncs, l_extraFuncsDecl, Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), a_stateDerVectorName.clone(), false)?;
+            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_varDecls)?;
+            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_complexPreExpression)?;
             a_complexStartExpressions = Tpl::writeTok(a_complexStartExpressions.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SystemDefaultImplementation::set")).clone() }))?;
             a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), a_type.clone())?;
             a_complexStartExpressions = Tpl::writeTok(a_complexStartExpressions.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StartValue(")).clone() }))?;
-            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_crefStr.clone())?;
+            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_crefStr)?;
             a_complexStartExpressions = Tpl::writeTok(a_complexStartExpressions.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() }))?;
-            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_expression.clone())?;
+            a_complexStartExpressions = Tpl::writeText(a_complexStartExpressions.clone(), l_expression)?;
             a_complexStartExpressions = Tpl::writeTok(a_complexStartExpressions.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             a_complexStartExpressions = Tpl::writeTok(a_complexStartExpressions.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
@@ -1289,7 +1289,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_a_startValue: Option<Arc<DAE::Exp>>, mut
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             l_startString = attributeString(Tpl::emptyTxt.clone(), i_exp.clone(), (literal!("start")).clone())?;
             str_1 = (Tpl::textString(l_startString.clone())?).clone();
-            (txt, a_complexStartExpressions, a_stateDerVectorName) = fun_97(txt.clone(), (str_1.clone()).clone(), l_startString.clone(), a_type.clone(), a_complexStartExpressions.clone(), i_exp.clone(), a_stateDerVectorName.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone())?;
+            (txt, a_complexStartExpressions, a_stateDerVectorName) = fun_97(txt.clone(), (str_1).clone(), l_startString, a_type.clone(), a_complexStartExpressions.clone(), i_exp.clone(), a_stateDerVectorName.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone())?;
             (txt.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())
         },
         (txt, None, _, _, _, _, a_complexStartExpressions, a_stateDerVectorName) => {
@@ -1340,7 +1340,7 @@ fn lm_101(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Var type=\"double\" index=\"")).clone() }))?;
             ret_0 = SimCodeUtil::getVarIndexListByMapping(a_varToArrayIndexMapping.clone(), i_v_name.clone(), true, (a_indexForUndefinedReferences.clone()).clone())?;
-            txt = lm_100(txt.clone(), ret_0.clone())?;
+            txt = lm_100(txt.clone(), ret_0)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" />")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping) = (txt.clone(), rest.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone()); continue '__tco; }
@@ -1381,7 +1381,7 @@ fn lm_103(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::C
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Var type=\"double\" index=\"")).clone() }))?;
             ret_0 = SimCodeUtil::getVarIndexListByMapping(a_varToArrayIndexMapping.clone(), i_name.clone(), true, (a_indexForUndefinedReferences.clone()).clone())?;
-            txt = lm_102(txt.clone(), ret_0.clone())?;
+            txt = lm_102(txt.clone(), ret_0)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" />")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping) = (txt.clone(), rest.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone()); continue '__tco; }
@@ -1401,7 +1401,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_eqs: Arc<SimCode::SimEqSystem>, mut i
             txt = Tpl::writeStr(txt.clone(), (intString(i_ls_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" sparse=\"true\" size=\"")).clone() }))?;
             ret_0 = (i_ls_vars.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_0)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\">\n")).clone(), (literal!("  <Vars>\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1419,7 +1419,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_eqs: Arc<SimCode::SimEqSystem>, mut i
             txt = Tpl::writeStr(txt.clone(), (intString(i_nls_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" size=\"")).clone() }))?;
             ret_1 = (i_nls_crefs.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_1)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\">\n")).clone(), (literal!("  <Vars>\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1532,7 +1532,7 @@ fn lm_110(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
             let mut str_0: ArcStr;
             let mut txt = (*txt).clone();
             str_0 = (Tpl::textString(a_indexColumn.clone())?).clone();
-            txt = fun_109(txt.clone(), (str_0.clone()).clone(), i_i__index.clone(), a_index.clone())?;
+            txt = fun_109(txt.clone(), (str_0).clone(), i_i__index.clone(), a_index.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_index, in_a_indexColumn) = (txt.clone(), rest.clone(), a_index.clone(), a_indexColumn.clone()); continue '__tco; }
         },

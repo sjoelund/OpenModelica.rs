@@ -99,8 +99,8 @@ fn topologicalSort2<NodeType: Clone + 'static + metamodelica::gc::MMTrace>(mut i
                 node1 = __pa0.clone();
                 result = metamodelica::cons(node1.clone(), result.clone());
             }
-            result = result.clone().reverse();
-            return Ok((result.clone(), metamodelica::nil()))
+            result = result.reverse();
+            return Ok((result, metamodelica::nil()))
         },
         (Deref @ metamodelica::List::Cons { head: (node1, Deref @ metamodelica::List::Nil), tail: rest_start }, rest_rest) => {
             let mut rest_start_: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>;
@@ -109,8 +109,8 @@ fn topologicalSort2<NodeType: Clone + 'static + metamodelica::gc::MMTrace>(mut i
             let mut rest_rest = (*rest_rest).clone();
             rest_rest = List::map2(rest_rest.clone(), (std::sync::Arc::new(removeEdge) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>), node1.clone(), inEqualFunc.clone())?;
             (rest_rest, new_start) = List::splitOnTrue(rest_rest.clone(), std::sync::Arc::new(fnptr!(hasOutgoingEdges, _)))?;
-            rest_start_ = listAppend(rest_start.clone(), new_start.clone());
-            { (inStartNodes, inRestNodes, inAccumNodes, inEqualFunc) = (rest_start_.clone(), rest_rest.clone(), metamodelica::cons(node1.clone(), inAccumNodes), inEqualFunc.clone()); continue '__tco; }
+            rest_start_ = listAppend(rest_start.clone(), new_start);
+            { (inStartNodes, inRestNodes, inAccumNodes, inEqualFunc) = (rest_start_, rest_rest.clone(), metamodelica::cons(node1.clone(), inAccumNodes), inEqualFunc.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -731,8 +731,8 @@ pub fn printGraphInt(mut inGraph: Arc<metamodelica::List<(i32, Arc<metamodelica:
             let mut strEdges: Arc<metamodelica::List<ArcStr>>;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node : ")); __mm_s.push_str(&*intString(node.clone())); __mm_s.push_str(&*literal!(" Edges: ")); ArcStr::from(__mm_s) }).clone());
             strEdges = List::map(edges.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
-            strEdges = List::map1(strEdges.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(" ")).clone())?;
-            List::map_0(strEdges.clone(), Arc::new(fnptr!(print, ArcStr)))?;
+            strEdges = List::map1(strEdges, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(" ")).clone())?;
+            List::map_0(strEdges, Arc::new(fnptr!(print, ArcStr)))?;
             metamodelica::print((literal!("\n")).clone());
             printGraphInt(restGraph.clone())?;
             ()
@@ -752,8 +752,8 @@ pub(crate) fn printNodesInt(mut inListNodes: Arc<metamodelica::List<i32>>, mut i
             let mut strNodes: Arc<metamodelica::List<ArcStr>>;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*inName); __mm_s.push_str(&*literal!(" : ")); ArcStr::from(__mm_s) }).clone());
             strNodes = List::map(inListNodes, (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
-            strNodes = List::map1(strNodes.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(" ")).clone())?;
-            List::map_0(strNodes.clone(), Arc::new(fnptr!(print, ArcStr)))?;
+            strNodes = List::map1(strNodes, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(" ")).clone())?;
+            List::map_0(strNodes, Arc::new(fnptr!(print, ArcStr)))?;
             metamodelica::print((literal!("\n")).clone());
             ()
         },
@@ -945,7 +945,7 @@ fn merge2<NodeType: Clone + 'static + metamodelica::gc::MMTrace>(mut inGraph: Ar
             let mut b: bool;
             let mut rest = (*rest).clone();
             b = eqFunc(n1.clone(), n2.clone())?;
-            (node, rest) = merge3(b.clone(), n1.clone(), e1.clone(), n2.clone(), e2.clone(), rest.clone(), eqFunc.clone())?;
+            (node, rest) = merge3(b, n1.clone(), e1.clone(), n2.clone(), e2.clone(), rest.clone(), eqFunc.clone())?;
             { (inGraph, eqFunc, inAcc) = (rest.clone(), eqFunc.clone(), metamodelica::cons(node.clone(), inAcc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

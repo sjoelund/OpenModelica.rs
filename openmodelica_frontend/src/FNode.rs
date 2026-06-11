@@ -293,7 +293,7 @@ fn translateQualifiedImportToNamed(mut inImport: Import) -> Result<Import> {
         Absyn::Import::QUAL_IMPORT { path: mut path } => {
             let mut name: Name;
             name = (AbsynUtil::pathLastIdent(path.clone())?).clone();
-            Absyn::Import::NAMED_IMPORT { name: (name.clone()).clone(), path: path.clone() }
+            Absyn::Import::NAMED_IMPORT { name: (name).clone(), path: path.clone() }
         },
         _ => bail!("match: no arm matched"),
     });
@@ -562,7 +562,7 @@ pub(crate) fn element2Data(mut inElement: Arc<SCode::Element>, mut inKind: Kind)
             let mut i: Arc<DAE::Var>;
             nd = FCore::Data::CO { e: inElement, r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), kind: inKind, status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED };
             i = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl.clone(), variability: var.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None });
-            (nd.clone(), i.clone())
+            (nd, i)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1011,10 +1011,10 @@ pub(crate) fn isIn(mut inNode: Node, mut inFunctionRefIs: Arc<dyn ::std::ops::Fn
             let mut b1: bool;
             let mut b2: bool;
             s = originalScope(toRef(inNode.clone()))?;
-            b1 = List::applyAndFold(s.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), inFunctionRefIs.clone(), false)?;
+            b1 = List::applyAndFold(s, (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), inFunctionRefIs.clone(), false)?;
             s = contextualScope(toRef(inNode))?;
-            b2 = List::applyAndFold(s.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), inFunctionRefIs.clone(), false)?;
-            b = boolOr(b1.clone(), b2.clone());
+            b2 = List::applyAndFold(s, (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), inFunctionRefIs.clone(), false)?;
+            b = boolOr(b1, b2);
             b
         },
     });
@@ -1177,7 +1177,7 @@ pub(crate) fn lookupRef_dispatch(mut inRef: Ref, mut inScope: Scope) -> Result<R
             let mut n: Name;
             let mut r = (*r).clone();
             n = (name(fromRef(r.clone())?)?).clone();
-            r = child(inRef.clone(), (n.clone()).clone())?;
+            r = child(inRef.clone(), (n).clone())?;
             { (inRef, inScope) = (r.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1353,10 +1353,10 @@ pub(crate) fn dfs(mut inRef: Ref) -> Result<Refs> {
             let mut refs: Refs;
             let mut c: Children;
             c = children(fromRef(inRef.clone())?)?;
-            refs = FCore::RefTree::listValues(c.clone(), metamodelica::nil());
-            refs = List::flatten(List::map(refs.clone(), (std::sync::Arc::new(dfs) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>))?)?;
-            refs = metamodelica::cons(inRef.clone(), refs.clone());
-            refs.clone()
+            refs = FCore::RefTree::listValues(c, metamodelica::nil());
+            refs = List::flatten(List::map(refs, (std::sync::Arc::new(dfs) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>))?)?;
+            refs = metamodelica::cons(inRef.clone(), refs);
+            refs
         },
     });
     Ok(outRefs)
@@ -1380,7 +1380,7 @@ pub(crate) fn hasImports(mut inNode: Node) -> Result<bool> {
             let FCore::IMPORT_TABLE { hidden: _, qualifiedImports: __pa0, unqualifiedImports: __pa1 } = (importTable(fromRef(refImport(toRef(inNode))?)?)?) else { bail!("pattern mismatch") };
             qi = __pa0.clone();
             uqi = __pa1.clone();
-            b = boolOr(!(qi.clone().is_empty()), !(uqi.clone().is_empty()));
+            b = boolOr(!(qi.is_empty()), !(uqi.is_empty()));
             b
         },
         _ => {
@@ -1400,7 +1400,7 @@ pub(crate) fn imports(mut inNode: Node) -> Result<(Arc<metamodelica::List<Absyn:
             let FCore::IMPORT_TABLE { hidden: _, qualifiedImports: __pa0, unqualifiedImports: __pa1 } = (importTable(fromRef(refImport(toRef(inNode))?)?)?) else { bail!("pattern mismatch") };
             qi = __pa0.clone();
             uqi = __pa1.clone();
-            (qi.clone(), uqi.clone())
+            (qi, uqi)
         },
         _ => {
             (metamodelica::nil(), metamodelica::nil())
@@ -1426,9 +1426,9 @@ pub(crate) fn extendsRefs(mut inRef: Ref) -> Result<Refs> {
             let mut rd: Refs;
             rd = derivedRef(inRef.clone())?;
             refs = filter(inRef.clone(), (std::sync::Arc::new(isRefExtends) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?;
-            refs = List::flatten(List::map1(refs.clone(), (std::sync::Arc::new(filter) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>), (std::sync::Arc::new(isRefReference) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?)?;
-            refs = listAppend(rd.clone(), refs.clone());
-            refs.clone()
+            refs = List::flatten(List::map1(refs, (std::sync::Arc::new(filter) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>), (std::sync::Arc::new(isRefReference) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?)?;
+            refs = listAppend(rd, refs);
+            refs
         },
         _ => {
             metamodelica::nil()
@@ -1468,7 +1468,7 @@ pub(crate) fn clone(mut inNode: Node, mut inParentRef: Ref, mut inGraph: Graph) 
             parents = __pa3.clone();
             data = __pa4.clone();
             n = __pa5.clone();
-            r = toRef(n.clone());
+            r = toRef(n);
             (g, children) = cloneTree(children.clone(), r.clone(), g.clone())?;
             r = updateRef(r.clone(), FCore::Node { name: (name.clone()).clone(), id: id.clone(), parents: parents.clone(), children: children.clone(), data: data.clone() })?;
             (g.clone(), r.clone())
@@ -1533,9 +1533,9 @@ fn updateRefInGraph(mut name: Name, mut inRef: Ref, mut inTopRefAndGraph: (metam
             p = __pa2.clone();
             c = __pa3.clone();
             d = __pa4.clone();
-            p = List::map1r(p.clone(), (std::sync::Arc::new(lookupRefFromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>), t.clone())?;
-            d = updateRefInData(d.clone(), t.clone())?;
-            updateRef(inRef.clone(), FCore::Node { name: (n.clone()).clone(), id: i.clone(), parents: p.clone(), children: c.clone(), data: d.clone() })?;
+            p = List::map1r(p, (std::sync::Arc::new(lookupRefFromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>), t.clone())?;
+            d = updateRefInData(d, t.clone())?;
+            updateRef(inRef.clone(), FCore::Node { name: (n).clone(), id: i, parents: p, children: c, data: d })?;
             (t.clone(), g.clone())
         },
     });
@@ -1549,7 +1549,7 @@ pub(crate) fn lookupRefFromRef(mut inRef: Ref, mut inOldRef: Ref) -> Result<Ref>
             let mut r: Ref;
             let mut s: Scope;
             s = originalScope(inOldRef.clone())?;
-            r = lookupRef(inRef.clone(), s.clone())?;
+            r = lookupRef(inRef.clone(), s)?;
             r.clone()
         },
     });

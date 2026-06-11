@@ -246,9 +246,9 @@ pub mod SimVar {
             let mut result: Arc<SimVar>;
             comment = (parseComment(var.comment.clone())).clone();
             (varKind, unit, displayUnit, min, max, start, nominal, isFixed, isDiscrete, isProtected) = parseAttributes(var.backendinfo.clone())?;
-            (start, isValueChangeable, causality) = parseBinding(start.clone(), var.clone());
-            result = Arc::new(SimVar { name: var.name.clone(), varKind: varKind.clone(), comment: (comment.clone()).clone(), unit: (unit.clone()).clone(), displayUnit: (displayUnit.clone()).clone(), index: typeIndex, min: min.clone(), max: max.clone(), start: start.clone(), nominal: nominal.clone(), isFixed: isFixed.clone(), type_: var.ty.clone(), isDiscrete: isDiscrete.clone(), arrayCref: ComponentRef::getArrayCrefOpt(var.name.clone())?, aliasvar: alias, info: var.info.clone(), causality: Some(causality.clone()), variable_index: Some(uniqueIndex), fmi_index: Some(typeIndex), numArrayElement: metamodelica::nil(), isValueChangeable: isValueChangeable.clone(), isProtected: isProtected.clone(), hideResult: var.backendinfo.annotations.hideResult.clone(), isEncrypted: Variable::isEncrypted(var)?, inputIndex: None, matrixName: None, variability: None, initial_: None, exportVar: None });
-            result.clone()
+            (start, isValueChangeable, causality) = parseBinding(start, var.clone());
+            result = Arc::new(SimVar { name: var.name.clone(), varKind: varKind, comment: (comment).clone(), unit: (unit).clone(), displayUnit: (displayUnit).clone(), index: typeIndex, min: min, max: max, start: start, nominal: nominal, isFixed: isFixed, type_: var.ty.clone(), isDiscrete: isDiscrete, arrayCref: ComponentRef::getArrayCrefOpt(var.name.clone())?, aliasvar: alias, info: var.info.clone(), causality: Some(causality), variable_index: Some(uniqueIndex), fmi_index: Some(typeIndex), numArrayElement: metamodelica::nil(), isValueChangeable: isValueChangeable, isProtected: isProtected, hideResult: var.backendinfo.annotations.hideResult.clone(), isEncrypted: Variable::isEncrypted(var)?, inputIndex: None, matrixName: None, variability: None, initial_: None, exportVar: None });
+            result
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.create")); __mm_s.push_str(&*literal!(" failed for variable ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
@@ -516,7 +516,7 @@ pub mod SimVar {
             } else {
                 oldCrefOpt = None;
             }
-            OldBackendDAE::VarKind::STATE { index: var_field!((*varKind).index, VariableKind::VariableKind::STATE).clone(), derName: oldCrefOpt.clone(), natural: var_field!((*varKind).natural, VariableKind::VariableKind::STATE).clone() }
+            OldBackendDAE::VarKind::STATE { index: var_field!((*varKind).index, VariableKind::VariableKind::STATE).clone(), derName: oldCrefOpt, natural: var_field!((*varKind).natural, VariableKind::VariableKind::STATE).clone() }
         },
         Deref @ VariableKind::STATE_DER { .. } => {
             openmodelica_backend_types::BackendDAE::VarKind::STATE_DER
@@ -675,7 +675,7 @@ pub mod Alias {
             let mut offsetStr: ArcStr;
             gainStr = (if (var_field!((*alias).gain, Alias::ALIAS).clone() == metamodelica::OrderedFloat(1.0_f64)) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*realString(var_field!((*alias).gain, Alias::ALIAS).clone())); __mm_s.push_str(&*literal!("*")); ArcStr::from(__mm_s) }}).clone();
             offsetStr = (if (var_field!((*alias).offset, Alias::ALIAS).clone() == metamodelica::OrderedFloat(0.0_f64)) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("+")); __mm_s.push_str(&*realString(var_field!((*alias).offset, Alias::ALIAS).clone())); ArcStr::from(__mm_s) }}).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(bound alias: ")); __mm_s.push_str(&*gainStr.clone()); __mm_s.push_str(&*ComponentRef::toString(var_field!((*alias).alias, Alias::ALIAS).clone())?); __mm_s.push_str(&*offsetStr.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(bound alias: ")); __mm_s.push_str(&*gainStr); __mm_s.push_str(&*ComponentRef::toString(var_field!((*alias).alias, Alias::ALIAS).clone())?); __mm_s.push_str(&*offsetStr); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1371,7 +1371,7 @@ pub mod SimVars {
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 result = metamodelica::cons(getStrongComponentVars(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), simcode_map.clone())?, result.clone());
             }
-            List::flatten(result.clone())?
+            List::flatten(result)?
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.getPartitionVars")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*Partition::toString(partition, 0)?); ArcStr::from(__mm_s) }).clone()])?;

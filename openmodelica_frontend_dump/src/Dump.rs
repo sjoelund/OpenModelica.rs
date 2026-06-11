@@ -137,8 +137,8 @@ pub fn unparseClassAttributesStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcSt
             s2 = (if (f.clone()) {literal!("final ")} else {literal!("")}).clone();
             s2_1 = (if (e.clone()) {literal!("encapsulated ")} else {literal!("")}).clone();
             s3 = (unparseRestrictionStr(r.clone())?).clone();
-            r#str = stringAppendList(list![(s2_1.clone()).clone(), (s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone()]);
-            r#str.clone()
+            r#str = stringAppendList(list![(s2_1).clone(), (s1).clone(), (s2).clone(), (s3).clone()]);
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -342,7 +342,7 @@ pub fn printSubscriptStr(mut inSubscript: Arc<Absyn::Subscript>) -> Result<ArcSt
         Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e1 } => {
             let mut s: ArcStr;
             s = (printExpStr(e1.clone())?).clone();
-            s.clone()
+            s
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -433,8 +433,8 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
             let mut subsstr: ArcStr;
             let mut s_1: ArcStr;
             subsstr = (printSubscriptsStr(subs.clone())?).clone();
-            s_1 = (stringAppend((s.clone()).clone(), (subsstr.clone()).clone())).clone();
-            s_1.clone()
+            s_1 = (stringAppend((s.clone()).clone(), (subsstr).clone())).clone();
+            s_1
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { name: s, subscripts: subs, componentRef: cr } => {
             let mut subsstr: ArcStr;
@@ -444,17 +444,17 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
             let mut s_3: ArcStr;
             crs = (printComponentRefStr(cr.clone())?).clone();
             subsstr = (printSubscriptsStr(subs.clone())?).clone();
-            s_1 = (stringAppend((s.clone()).clone(), (subsstr.clone()).clone())).clone();
-            s_2 = (stringAppend((s_1.clone()).clone(), (literal!(".")).clone())).clone();
-            s_3 = (stringAppend((s_2.clone()).clone(), (crs.clone()).clone())).clone();
-            s_3.clone()
+            s_1 = (stringAppend((s.clone()).clone(), (subsstr).clone())).clone();
+            s_2 = (stringAppend((s_1).clone(), (literal!(".")).clone())).clone();
+            s_3 = (stringAppend((s_2).clone(), (crs).clone())).clone();
+            s_3
         },
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: cr } => {
             let mut crs: ArcStr;
             let mut s_3: ArcStr;
             crs = (printComponentRefStr(cr.clone())?).clone();
-            s_3 = (stringAppend((literal!(".")).clone(), (crs.clone()).clone())).clone();
-            s_3.clone()
+            s_3 = (stringAppend((literal!(".")).clone(), (crs).clone())).clone();
+            s_3
         },
         Deref @ Absyn::ComponentRef::ALLWILD { .. } => {
             literal!("__")
@@ -478,9 +478,9 @@ pub(crate) fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List
             let mut s_1: ArcStr;
             let mut s_2: ArcStr;
             s = (printListStr(l.clone(), (std::sync::Arc::new(printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?).clone();
-            s_1 = (stringAppend((literal!("[")).clone(), (s.clone()).clone())).clone();
-            s_2 = (stringAppend((s_1.clone()).clone(), (literal!("]")).clone())).clone();
-            s_2.clone()
+            s_1 = (stringAppend((literal!("[")).clone(), (s).clone())).clone();
+            s_2 = (stringAppend((s_1).clone(), (literal!("]")).clone())).clone();
+            s_2
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -620,8 +620,8 @@ pub fn printNamedArgStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> 
             let mut r#str: ArcStr;
             s1 = (stringAppend((ident.clone()).clone(), (literal!(" = ")).clone())).clone();
             s2 = (printExpStr(e.clone())?).clone();
-            r#str = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
-            r#str.clone()
+            r#str = (stringAppend((s1).clone(), (s2).clone())).clone();
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -634,7 +634,7 @@ pub fn printNamedArgValueStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<Arc
         Deref @ Absyn::NamedArg { argValue: e, .. } => {
             let mut r#str: ArcStr;
             r#str = (printExpStr(e.clone())?).clone();
-            r#str.clone()
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -650,7 +650,7 @@ pub fn shouldParenthesize(mut inOperand: Arc<Absyn::Exp>, mut inOperator: Arc<Ab
         _ => {
             let mut diff: i32;
             diff = Util::intCompare(expPriority(inOperand.clone(), inLhs)?, expPriority(inOperator, inLhs)?);
-            shouldParenthesize2(diff.clone(), inOperand, inLhs)
+            shouldParenthesize2(diff, inOperand, inLhs)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1019,7 +1019,7 @@ fn printStringCommentOption(mut inStringOption: Option<ArcStr>) -> Result<()> {
         Some(mut s) => {
             let mut r#str: ArcStr;
             r#str = stringAppendList(list![(literal!("SOME(\"")).clone(), (s.clone()).clone(), (literal!("\")")).clone()]);
-            Print::printBuf((r#str.clone()).clone())?;
+            Print::printBuf((r#str).clone())?;
             ()
         },
     });

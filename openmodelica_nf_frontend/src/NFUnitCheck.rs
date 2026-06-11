@@ -234,7 +234,7 @@ fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponen
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
             }
-            b.clone()
+            b
         },
         _ => {
             false
@@ -303,9 +303,9 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             let mut out_units: Arc<metamodelica::List<ArcStr>>;
             fn_name = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(Call::functionName(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?), (literal!(".")).clone(), true, false)?).clone();
             (_, out_vars, _, out_units) = getCallUnits((fn_name.clone()).clone(), var_field!((**rhs).call, Expression::NFExpression::CALL).clone(), fnCache.clone())?;
-            icu1 = foldCallArg1(var_field!((**lhs).elements, Expression::NFExpression::TUPLE).clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, out_units.clone(), out_vars.clone(), (fn_name.clone()).clone())?;
+            icu1 = foldCallArg1(var_field!((**lhs).elements, Expression::NFExpression::TUPLE).clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, out_units, out_vars, (fn_name).clone())?;
             (_, icu2) = insertUnitInEquation(rhs.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
-            List::append_reverse(icu1.clone(), icu2.clone())
+            List::append_reverse(icu1, icu2)
         },
         Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CALL { .. }, .. } if (!(Function::isBuiltin(Call::typedFunction(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?))) => {
             let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
@@ -321,17 +321,17 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             fn_name = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(Call::functionName(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?), (literal!(".")).clone(), true, false)?).clone();
             (_, out_vars, _, out_units) = getCallUnits((fn_name.clone()).clone(), var_field!((**rhs).call, Expression::NFExpression::CALL).clone(), fnCache.clone())?;
             (unit1, _) = insertUnitInEquation(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
-            formal_args = (listHead(out_units.clone())?).clone();
-            formal_var = (listHead(out_vars.clone())?).clone();
-            unit2 = if (formal_args.clone() == literal!("NONE")) {Unit::Unit::MASTER { varList: metamodelica::nil() }} else {Unit::parseUnitString((formal_args.clone()).clone(), htS2U.clone(), Equation::info(eq.clone())?)?};
+            formal_args = (listHead(out_units)?).clone();
+            formal_var = (listHead(out_vars)?).clone();
+            unit2 = if (formal_args.clone() == literal!("NONE")) {Unit::Unit::MASTER { varList: metamodelica::nil() }} else {Unit::parseUnitString((formal_args).clone(), htS2U.clone(), Equation::info(eq.clone())?)?};
             (b, _) = unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())?;
-            if b.clone() {
+            if b {
                 icu1 = metamodelica::nil();
             } else {
-                icu1 = list![list![(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), unit1.clone()), (makeNewCref((formal_var.clone()).clone(), (fn_name.clone()).clone()), unit2.clone())]];
+                icu1 = list![list![(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), unit1), (makeNewCref((formal_var).clone(), (fn_name).clone()), unit2)]];
             }
             (_, icu2) = insertUnitInEquation(rhs.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
-            List::append_reverse(icu1.clone(), icu2.clone())
+            List::append_reverse(icu1, icu2)
         },
         Deref @ Equation::EQUALITY { .. } => {
             let mut temp: Arc<Expression::NFExpression>;
@@ -340,7 +340,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
                 metamodelica::print((Expression::toString(temp.clone())?).clone());
                 metamodelica::print((literal!("--------------------\n")).clone());
             }
-            (_, inconsistentUnits) = insertUnitInEquation(temp.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
+            (_, inconsistentUnits) = insertUnitInEquation(temp, Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
             inconsistentUnits
         },
         Deref @ Equation::WHEN { branches: Deref @ metamodelica::List::Cons { head: Deref @ Equation::Branch::BRANCH { body: eql, .. }, tail: _ }, .. } => {
@@ -1215,9 +1215,9 @@ fn Errorfunction(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpres
             info = Equation::info(inEq.clone())?;
             s = (Equation::toString(inEq, (literal!("")).clone())?).clone();
             s1 = (Errorfunction2(expList.clone(), inHtU2S)?).clone();
-            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The following equation is INCONSISTENT due to specified unit information: ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            Error::addSourceMessage(Error::COMPILER_WARNING.clone(), list![(s2.clone()).clone()], info.clone())?;
-            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The units of following sub-expressions need to be equal:\n")); __mm_s.push_str(&*s1.clone()); ArcStr::from(__mm_s) }).clone())?;
+            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The following equation is INCONSISTENT due to specified unit information: ")); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            Error::addSourceMessage(Error::COMPILER_WARNING.clone(), list![(s2).clone()], info)?;
+            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The units of following sub-expressions need to be equal:\n")); __mm_s.push_str(&*s1); ArcStr::from(__mm_s) }).clone())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1233,8 +1233,8 @@ fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpre
             let mut s1: ArcStr;
             s = (Expression::toString(exp.clone())?).clone();
             s1 = (Unit::unitString(ut.clone(), inHtU2S)?).clone();
-            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
-            s.clone()
+            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
+            s
         },
         Deref @ metamodelica::List::Cons { head: (exp, ut), tail: expList } => {
             let mut s: ArcStr;
@@ -1243,8 +1243,8 @@ fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpre
             s = (Expression::toString(exp.clone())?).clone();
             s1 = (Unit::unitString(ut.clone(), inHtU2S.clone())?).clone();
             s2 = (Errorfunction2(expList.clone(), inHtU2S)?).clone();
-            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\"\n")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
-            s.clone()
+            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!("\"\n")); __mm_s.push_str(&*s2); ArcStr::from(__mm_s) }).clone();
+            s
         },
         _ => bail!("match: no arm matched"),
     } })).clone();

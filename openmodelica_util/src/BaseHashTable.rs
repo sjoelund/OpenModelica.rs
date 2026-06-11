@@ -210,8 +210,8 @@ pub fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Cl
             let mut indexes: HashNode<Key>;
             indx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
             (varr, newpos) = valueArrayAdd(varr.clone(), v.clone())?;
-            indexes = ({let __elt = hashvec.borrow()[(indx.clone()-1) as usize].clone(); __elt});
-            hashvec = metamodelica::arrayUpdate(hashvec.clone(), indx.clone(), metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()))?;
+            indexes = ({let __elt = hashvec.borrow()[(indx-1) as usize].clone(); __elt});
+            hashvec = metamodelica::arrayUpdate(hashvec.clone(), indx, metamodelica::cons((key.clone(), newpos), indexes))?;
             (hashvec.clone(), varr.clone(), bsize.clone(), fntpl.clone())
         },
     });

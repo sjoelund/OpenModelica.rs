@@ -110,9 +110,9 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
             let mut eventInfo: Arc<EventInfo::EventInfo>;
             (varData, eqData, eventInfo) = func(var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
-                varData = varData.clone(),
-                eqData = eqData.clone(),
-                eventInfo = eventInfo.clone()
+                varData = varData,
+                eqData = eqData,
+                eventInfo = eventInfo
             );
             bdae
         },
@@ -441,11 +441,11 @@ pub mod TimeEvent {
             let mut b2: bool;
             (exp1, bucket, b1) = create(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), bucket, iter.clone(), eqn.clone(), funcMap.clone(), createEqn)?;
             (exp2, bucket, b2) = create(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), bucket, iter.clone(), eqn, funcMap, createEqn)?;
-            failed = b1.clone() || b2.clone();
+            failed = b1 || b2;
             if !(failed) {
                 assign_variant_field!(exp => Expression::NFExpression::LBINARY;
-                    exp1 = exp1.clone(),
-                    exp2 = exp2.clone()
+                    exp1 = exp1,
+                    exp2 = exp2
                 );
             }
             (exp.clone(), bucket, failed)
@@ -471,7 +471,7 @@ pub mod TimeEvent {
         Deref @ Expression::CALL { .. } => {
             let mut call: Arc<Call::NFCall>;
             (call, bucket, failed, _) = createSample(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), bucket, iter)?;
-            assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());
+            assign_variant_field!(exp => Expression::NFExpression::CALL; call = call);
             (exp.clone(), failed)
         },
         Deref @ Expression::RELATION { .. } if (Operator::getMathClassification(var_field!((*exp).operator, Expression::NFExpression::RELATION).clone())? == Operator::MathClassification::RELATION.clone()) => {
@@ -484,30 +484,30 @@ pub mod TimeEvent {
             let mut timeEvent: Arc<TimeEvent>;
             tmpEqn = Pointer::access(BEquation::Equation::makeAssignment(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), Pointer::create(0), (arcstr::literal!(BVariable::TEMPORARY_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?);
             BEquation::Equation::map(tmpEqn.clone(), (std::sync::Arc::new({ let __pe_b1 = containsTime.clone(); move |__pe_a0| containsTimeTraverseExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = containsTime.clone(); move |__pe_a0| containsTimeTraverseCref(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            if Pointer::access(containsTime.clone()) {
-                (tmpEqn, status, invert) = Solve::solveBody(tmpEqn.clone(), Builtin::TIME_CREF().clone(), funcMap)?;
-                if status.clone() == Solve::Status::EXPLICIT.clone() && invert.clone() != Solve::RelationInversion::UNKNOWN.clone() {
-                    let __pa0 = ::match_deref::match_deref! { match &(BEquation::Equation::getRHS(tmpEqn.clone())?) {
+            if Pointer::access(containsTime) {
+                (tmpEqn, status, invert) = Solve::solveBody(tmpEqn, Builtin::TIME_CREF().clone(), funcMap)?;
+                if status == Solve::Status::EXPLICIT.clone() && invert != Solve::RelationInversion::UNKNOWN.clone() {
+                    let __pa0 = ::match_deref::match_deref! { match &(BEquation::Equation::getRHS(tmpEqn)?) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     trigger = __pa0.clone();
-                    assign_variant_field!(exp => Expression::NFExpression::RELATION; operator = if (invert.clone() == Solve::RelationInversion::TRUE.clone()) {Operator::invert(var_field!((*exp).operator, Expression::NFExpression::RELATION).clone())?} else {var_field!((*exp).operator, Expression::NFExpression::RELATION).clone()});
+                    assign_variant_field!(exp => Expression::NFExpression::RELATION; operator = if (invert == Solve::RelationInversion::TRUE.clone()) {Operator::invert(var_field!((*exp).operator, Expression::NFExpression::RELATION).clone())?} else {var_field!((*exp).operator, Expression::NFExpression::RELATION).clone()});
                     if BEquation::Equation::isWhenEquation(eqn)? {
                         can_trigger = (match var_field!((*exp).operator, Expression::NFExpression::RELATION).op.clone() {
         Operator::Op::GREATER => true,
         Operator::Op::GREATEREQ => true,
         _ => false,
     });
-                        new_exp = if (can_trigger.clone()) {Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SAMPLE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: UnorderedSet::size(bucket.time_set.clone()) + 1 }), trigger.clone(), Expression::makeMaxValue(openmodelica_nf_frontend::NFType::interned_REAL())?], Prefixes::Variability::DISCRETE.clone(), Prefixes::Purity::PURE.clone(), NFBuiltinFuncs::SAMPLE().returnType.clone()) })} else {Arc::new(Expression::NFExpression::BOOLEAN { value: false })};
+                        new_exp = if (can_trigger) {Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SAMPLE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: UnorderedSet::size(bucket.time_set.clone()) + 1 }), trigger.clone(), Expression::makeMaxValue(openmodelica_nf_frontend::NFType::interned_REAL())?], Prefixes::Variability::DISCRETE.clone(), Prefixes::Purity::PURE.clone(), NFBuiltinFuncs::SAMPLE().returnType.clone()) })} else {Arc::new(Expression::NFExpression::BOOLEAN { value: false })};
                     } else {
                         can_trigger = true;
                         new_exp = exp.clone();
                     }
-                    if can_trigger.clone() {
-                        timeEvent = Arc::new(TimeEvent::SINGLE { index: UnorderedSet::size(bucket.time_set.clone()), trigger: trigger.clone(), iter: iter });
+                    if can_trigger {
+                        timeEvent = Arc::new(TimeEvent::SINGLE { index: UnorderedSet::size(bucket.time_set.clone()), trigger: trigger, iter: iter });
                         if !(UnorderedSet::contains(timeEvent.clone(), bucket.time_set.clone())?) {
-                            UnorderedSet::add(timeEvent.clone(), bucket.time_set.clone())?;
+                            UnorderedSet::add(timeEvent, bucket.time_set.clone())?;
                         }
                     }
                     failed = false;
@@ -519,7 +519,7 @@ pub mod TimeEvent {
                 failed = true;
                 new_exp = exp.clone();
             }
-            (new_exp.clone(), failed)
+            (new_exp, failed)
         },
         _ => {
             (exp.clone(), true)
@@ -545,7 +545,7 @@ pub mod TimeEvent {
             if !(UnorderedSet::contains(timeEvent.clone(), bucket.time_set.clone())?) {
                 UnorderedSet::add(timeEvent.clone(), bucket.time_set.clone())?;
             }
-            call = Call::setArguments(call, list![Arc::new(Expression::NFExpression::INTEGER { value: getIndex(timeEvent.clone())? + 1 }), start.clone(), interval.clone()])?;
+            call = Call::setArguments(call, list![Arc::new(Expression::NFExpression::INTEGER { value: getIndex(timeEvent)? + 1 }), start.clone(), interval.clone()])?;
             (false, false)
         },
         (Deref @ "sample", _) => {
@@ -703,21 +703,21 @@ pub mod StateEvent {
             let mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             new_stmts = metamodelica::nil();
             name = ComponentRef::fromNode(var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
-            name = BackendDAE::lowerComponentReference(name.clone(), variables.clone(), true)?;
-            new_frames = metamodelica::cons((name.clone(), range.clone(), None), frames);
+            name = BackendDAE::lowerComponentReference(name, variables.clone(), true)?;
+            new_frames = metamodelica::cons((name, range.clone(), None), frames);
             for mut elem in &*var_field!((*stmt).body, Statement::NFStatement::FOR).clone() {
                 let mut elem = elem.clone();
                 new_stmt = fromStatement(elem.clone(), bucket_ptr.clone(), eqn.clone(), variables.clone(), funcMap.clone(), new_frames.clone())?;
                 new_stmts = metamodelica::cons(new_stmt.clone(), new_stmts.clone());
                 new_stmts = EventInfo::createAuxStatements(new_stmts.clone(), bucket_ptr.clone(), variables.clone())?;
             }
-            assign_variant_field!(stmt => Statement::NFStatement::FOR; body = new_stmts.clone().reverse());
+            assign_variant_field!(stmt => Statement::NFStatement::FOR; body = new_stmts.reverse());
             stmt
         },
         _ => {
             let mut iter: Arc<Iterator::Iterator>;
             iter = BEquation::Iterator::fromFrames(frames.reverse());
-            stmt = Statement::mapExp(stmt, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = bucket_ptr; let __pe_b2 = iter.clone(); let __pe_b3 = eqn; let __pe_b4 = funcMap; let __pe_b5 = false; move |__pe_a0| collectEventsTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::fakeMap(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            stmt = Statement::mapExp(stmt, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = bucket_ptr; let __pe_b2 = iter; let __pe_b3 = eqn; let __pe_b4 = funcMap; let __pe_b5 = false; move |__pe_a0| collectEventsTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::fakeMap(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             stmt
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1184,25 +1184,25 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
         Deref @ Expression::LUNARY { .. } => {
             let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp, Pointer::access(bucket_ptr.clone()), iter, eqn, funcMap, createEqn)?;
-            Pointer::update(bucket_ptr, bucket.clone());
+            Pointer::update(bucket_ptr, bucket);
             exp.clone()
         },
         Deref @ Expression::LBINARY { .. } => {
             let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp, Pointer::access(bucket_ptr.clone()), iter, eqn, funcMap, createEqn)?;
-            Pointer::update(bucket_ptr, bucket.clone());
+            Pointer::update(bucket_ptr, bucket);
             exp.clone()
         },
         Deref @ Expression::RELATION { .. } => {
             let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp, Pointer::access(bucket_ptr.clone()), iter, eqn, funcMap, createEqn)?;
-            Pointer::update(bucket_ptr, bucket.clone());
+            Pointer::update(bucket_ptr, bucket);
             exp.clone()
         },
         Deref @ Expression::CALL { .. } if (Call::isNamed(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), (literal!("sample")).clone())?) => {
             let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp, Pointer::access(bucket_ptr.clone()), iter, eqn, funcMap, createEqn)?;
-            Pointer::update(bucket_ptr, bucket.clone());
+            Pointer::update(bucket_ptr, bucket);
             exp.clone()
         },
         Deref @ Expression::CLKCONST { clk: clk @ Deref @ ClockKind::EVENT_CLOCK { condition, .. } } => {
@@ -1214,13 +1214,13 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, .. } } if (Call::isNamed(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), (literal!("pre")).clone())?) => {
             let mut bucket: Arc<Bucket>;
             (exp, bucket) = CompositeEvent::add(exp, iter, Pointer::access(bucket_ptr.clone()), createEqn)?;
-            Pointer::update(bucket_ptr, bucket.clone());
+            Pointer::update(bucket_ptr, bucket);
             exp.clone()
         },
         Deref @ Expression::CREF { .. } if (BVariable::isPrevious(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBEvents.mo"))?)) => {
             let mut bucket: Arc<Bucket>;
             (exp, bucket) = CompositeEvent::add(exp, iter, Pointer::access(bucket_ptr.clone()), createEqn)?;
-            Pointer::update(bucket_ptr, bucket.clone());
+            Pointer::update(bucket_ptr, bucket);
             exp.clone()
         },
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_REDUCTION { .. } } => {
@@ -1234,7 +1234,7 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
         }
         __acc.reverse()
     });
-            assign_variant_field!(call => Call::NFCall::TYPED_REDUCTION; exp = collectEventsTraverse(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone(), bucket_ptr, BEquation::Iterator::addFrames(iter, new_frames.clone())?, eqn, funcMap, createEqn)?);
+            assign_variant_field!(call => Call::NFCall::TYPED_REDUCTION; exp = collectEventsTraverse(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone(), bucket_ptr, BEquation::Iterator::addFrames(iter, new_frames)?, eqn, funcMap, createEqn)?);
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());
             exp.clone()
         },

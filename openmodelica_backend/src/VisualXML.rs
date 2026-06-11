@@ -1043,8 +1043,8 @@ fn isVisualizationVar(mut var: BackendDAE::Var) -> bool {
             let mut obj: ArcStr;
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             paths = ElementSource::getElementSourceTypes(source.clone());
-            (obj, _) = hasVisPath(paths.clone(), 1);
-            Util::stringNotEqual((obj.clone()).clone(), (literal!("")).clone())
+            (obj, _) = hasVisPath(paths, 1);
+            Util::stringNotEqual((obj).clone(), (literal!("")).clone())
         },
         _ => {
             false

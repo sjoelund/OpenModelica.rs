@@ -375,7 +375,7 @@ fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) ->
             let mut txt = (*txt).clone();
             let mut chars = (*chars).clone();
             (lschars, chars, isline) = takeLineOrString(chars.clone());
-            txt = writeLineOrStr(txt.clone(), stringAppendList(metamodelica::cons((c.clone()).clone(), lschars.clone())), isline.clone())?;
+            txt = writeLineOrStr(txt.clone(), stringAppendList(metamodelica::cons((c.clone()).clone(), lschars)), isline)?;
             { (inText, inChars) = (txt.clone(), chars.clone()); continue '__tco; }
         },
         (_, _) => {
@@ -428,7 +428,7 @@ fn takeLineOrString(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamo
             let mut restchars: Arc<metamodelica::List<ArcStr>>;
             let mut isline: bool;
             (tnlchars, restchars, isline) = takeLineOrString(chars.clone());
-            (metamodelica::cons((char.clone()).clone(), tnlchars.clone()), restchars.clone(), isline.clone())
+            (metamodelica::cons((char.clone()).clone(), tnlchars), restchars, isline)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -532,17 +532,17 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
             nchars = Mutable::access(var_field!(txt.nchars, Text::FILE_TEXT).clone());
             aind = Mutable::access(var_field!(txt.aind, Text::FILE_TEXT).clone());
             isstart = Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone());
-            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), metamodelica::cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars.clone(), aind: aind.clone(), isstart: isstart.clone(), tell: Mutable::create(textFileTell(txt.clone())?), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
+            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), metamodelica::cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars, aind: aind, isstart: isstart, tell: Mutable::create(textFileTell(txt.clone())?), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
             let () = (::match_deref::match_deref! { match &(inBlockType) {
         Deref @ BlockType::BT_INDENT { width: __esc_w } => {
             w = (*__esc_w).clone();
-            Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), nchars.clone() + w.clone());
-            Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), aind.clone() + w.clone());
+            Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), nchars + w.clone());
+            Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), aind + w.clone());
             ()
         },
         Deref @ BlockType::BT_ABS_INDENT { width: __esc_w } => {
             w = (*__esc_w).clone();
-            if isstart.clone() {
+            if isstart {
                 Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), 0);
             }
             Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), w.clone());
@@ -550,12 +550,12 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
         },
         Deref @ BlockType::BT_REL_INDENT { offset: __esc_w } => {
             w = (*__esc_w).clone();
-            Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), aind.clone() + w.clone());
+            Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), aind + w.clone());
             ()
         },
         Deref @ BlockType::BT_ANCHOR { offset: __esc_w } => {
             w = (*__esc_w).clone();
-            Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), nchars.clone() + w.clone());
+            Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), nchars + w.clone());
             ()
         },
         _ => (),
@@ -591,7 +591,7 @@ pub fn popBlock(mut txt: Text) -> Result<Text> {
             } };
             blk = __pa0.clone();
             rest = __pa1.clone();
-            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), rest.clone());
+            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), rest);
             let () = (::match_deref::match_deref! { match &(blk.bt.clone()) {
         Deref @ BlockType::BT_INDENT { .. } => {
             if Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone()) {
@@ -607,7 +607,7 @@ pub fn popBlock(mut txt: Text) -> Result<Text> {
         _ => bail!("match: no arm matched"),
     } })) => {
             oldisstart = Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone());
-            if oldisstart.clone() {
+            if oldisstart {
                 if textFileTell(txt.clone())? == Mutable::access(blk.tell.clone()) {
                     Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), blk.nchars.clone());
                 } else {
@@ -725,8 +725,8 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
             tell = (*__esc_tell).clone();
             septok = (*__esc_septok).clone();
             tellpos = textFileTell(txt.clone())?;
-            if Mutable::access(tell.clone()) != tellpos.clone() {
-                Mutable::update(tell.clone(), tellpos.clone());
+            if Mutable::access(tell.clone()) != tellpos {
+                Mutable::update(tell.clone(), tellpos);
                 txt2 = txt.clone();
                 haveToken = true;
             } else {
@@ -744,16 +744,16 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            if haveToken.clone() {
+            if haveToken {
                 curIndex = Mutable::access(i0.clone());
                 Mutable::update(septok.clone(), iopts.separator.clone());
-                Mutable::update(i0.clone(), curIndex.clone() + 1);
+                Mutable::update(i0.clone(), curIndex + 1);
             }
             ()
         },
         _ => bail!("match: no arm matched"),
     } });
-            txt2.clone()
+            txt2
         },
         _ => {
             Error::addInternalError((literal!("-!!!Tpl.nextIter failed - nextIter was called in a non-iteration context?")).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
@@ -799,8 +799,8 @@ pub fn textString(mut inText: Text) -> Result<ArcStr> {
             handle = Print::saveAndClearBuf()?;
             textStringBuf(txt.clone())?;
             r#str = (Print::getString()?).clone();
-            Print::restoreBuf(handle.clone())?;
-            r#str.clone()
+            Print::restoreBuf(handle)?;
+            r#str
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -868,15 +868,15 @@ fn tokString(mut inStringToken: Arc<StringToken>, mut inActualPositionOnLine: i3
             blen = Print::getBufLength();
             Print::printBufSpace(nchars.clone())?;
             Print::printBuf((r#str.clone()).clone())?;
-            blen = Print::getBufLength() - blen.clone();
-            (blen.clone(), false, aind.clone())
+            blen = Print::getBufLength() - blen;
+            (blen, false, aind.clone())
         },
         (Deref @ StringToken::ST_STRING { value: r#str }, nchars, false, aind) => {
             let mut blen: i32;
             blen = Print::getBufLength();
             Print::printBuf((r#str.clone()).clone())?;
-            blen = Print::getBufLength() - blen.clone();
-            (nchars.clone() + blen.clone(), false, aind.clone())
+            blen = Print::getBufLength() - blen;
+            (nchars.clone() + blen, false, aind.clone())
         },
         (Deref @ StringToken::ST_LINE { line: r#str }, nchars, true, aind) => {
             Print::printBufSpace(nchars.clone())?;
@@ -1010,10 +1010,10 @@ fn stringListString(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inAct
             blen = Print::getBufLength();
             Print::printBufSpace(nchars.clone())?;
             Print::printBuf((r#str.clone()).clone())?;
-            blen = Print::getBufLength() - blen.clone();
+            blen = Print::getBufLength() - blen;
             hasNL = Print::hasBufNewLineAtEnd();
-            nchars = if (hasNL.clone()) {aind.clone()} else {blen.clone()};
-            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone()); continue '__tco; }
+            nchars = if (hasNL) {aind.clone()} else {blen};
+            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), hasNL, aind.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, nchars, false, aind) => {
             let mut blen: i32;
@@ -1023,10 +1023,10 @@ fn stringListString(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inAct
             let mut aind = (*aind).clone();
             blen = Print::getBufLength();
             Print::printBuf((r#str.clone()).clone())?;
-            blen = Print::getBufLength() - blen.clone();
+            blen = Print::getBufLength() - blen;
             hasNL = Print::hasBufNewLineAtEnd();
-            nchars = if (hasNL.clone()) {aind.clone()} else {nchars.clone() + blen.clone()};
-            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone()); continue '__tco; }
+            nchars = if (hasNL) {aind.clone()} else {nchars.clone() + blen};
+            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), hasNL, aind.clone()); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -1062,8 +1062,8 @@ fn stringListFile(mut file: File::File, mut inStringList: Arc<metamodelica::List
             File::writeSpace(file.clone(), nchars.clone());
             File::write(file.clone(), (r#str.clone()).clone());
             hasNL = StringUtil::endsWithNewline((r#str.clone()).clone());
-            nchars = if (hasNL.clone()) {aind.clone()} else {nchars.clone() + ((r#str.clone()).clone().len() as i32)};
-            (nchars, isstart, aind) = stringListFile(file, strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone())?;
+            nchars = if (hasNL) {aind.clone()} else {nchars.clone() + ((r#str.clone()).clone().len() as i32)};
+            (nchars, isstart, aind) = stringListFile(file, strLst.clone(), nchars.clone(), hasNL, aind.clone())?;
             (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, __esc_nchars, false, __esc_aind) => {
@@ -1072,8 +1072,8 @@ fn stringListFile(mut file: File::File, mut inStringList: Arc<metamodelica::List
             let mut hasNL: bool;
             File::write(file.clone(), (r#str.clone()).clone());
             hasNL = StringUtil::endsWithNewline((r#str.clone()).clone());
-            nchars = if (hasNL.clone()) {aind.clone()} else {nchars.clone() + ((r#str.clone()).clone().len() as i32)};
-            (nchars, isstart, aind) = stringListFile(file, strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone())?;
+            nchars = if (hasNL) {aind.clone()} else {nchars.clone() + ((r#str.clone()).clone().len() as i32)};
+            (nchars, isstart, aind) = stringListFile(file, strLst.clone(), nchars.clone(), hasNL, aind.clone())?;
             (nchars.clone(), isstart, aind.clone())
         },
         _ => {
@@ -1103,8 +1103,8 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensString(toks.clone(), w.clone() + nchars.clone(), true, w.clone() + aind.clone())?;
-            nchars = if (isstart.clone()) {nchars.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {nchars.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_INDENT { width: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
@@ -1112,8 +1112,8 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             let mut nchars = (*nchars).clone();
             Print::printBufSpace(w.clone())?;
             (tsnchars, isstart, _) = tokensString(toks.clone(), w.clone() + nchars.clone(), false, w.clone() + aind.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ABS_INDENT { width: w }, toks, nchars, true, aind) => {
             let mut tsnchars: i32;
@@ -1122,17 +1122,17 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             let mut nchars = (*nchars).clone();
             blen = Print::getBufLength();
             (tsnchars, isstart, _) = tokensString(toks.clone(), 0, true, w.clone())?;
-            blen = Print::getBufLength() - blen.clone();
-            nchars = if (blen.clone() == 0) {nchars.clone()} else {if (isstart.clone()) {aind.clone()} else {tsnchars.clone()}};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            blen = Print::getBufLength() - blen;
+            nchars = if (blen == 0) {nchars.clone()} else {if (isstart) {aind.clone()} else {tsnchars}};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ABS_INDENT { width: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensString(toks.clone(), nchars.clone(), false, w.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_REL_INDENT { offset: w }, toks, nchars, true, aind) => {
             let mut tsnchars: i32;
@@ -1141,17 +1141,17 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             let mut nchars = (*nchars).clone();
             blen = Print::getBufLength();
             (tsnchars, isstart, _) = tokensString(toks.clone(), nchars.clone(), true, aind.clone() + w.clone())?;
-            blen = Print::getBufLength() - blen.clone();
-            nchars = if (blen.clone() == 0) {nchars.clone()} else {if (isstart.clone()) {aind.clone()} else {tsnchars.clone()}};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            blen = Print::getBufLength() - blen;
+            nchars = if (blen == 0) {nchars.clone()} else {if (isstart) {aind.clone()} else {tsnchars}};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_REL_INDENT { offset: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensString(toks.clone(), nchars.clone(), false, aind.clone() + w.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ANCHOR { offset: w }, toks, nchars, true, aind) => {
             let mut tsnchars: i32;
@@ -1160,17 +1160,17 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             let mut nchars = (*nchars).clone();
             blen = Print::getBufLength();
             (tsnchars, isstart, _) = tokensString(toks.clone(), nchars.clone(), true, nchars.clone() + w.clone())?;
-            blen = Print::getBufLength() - blen.clone();
-            nchars = if (blen.clone() == 0) {nchars.clone()} else {if (isstart.clone()) {aind.clone()} else {tsnchars.clone()}};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            blen = Print::getBufLength() - blen;
+            nchars = if (blen == 0) {nchars.clone()} else {if (isstart) {aind.clone()} else {tsnchars}};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ANCHOR { offset: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensString(toks.clone(), nchars.clone(), false, nchars.clone() + w.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ITER { .. }, Deref @ metamodelica::List::Nil, nchars, isstart, aind) => {
             (nchars.clone(), isstart.clone(), aind.clone())
@@ -1322,8 +1322,8 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensFile(file, toks.clone(), w.clone() + nchars.clone(), true, w.clone() + aind.clone())?;
-            nchars = if (isstart.clone()) {nchars.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {nchars.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_INDENT { width: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
@@ -1331,8 +1331,8 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             let mut nchars = (*nchars).clone();
             File::writeSpace(file.clone(), w.clone());
             (tsnchars, isstart, _) = tokensFile(file, toks.clone(), w.clone() + nchars.clone(), false, w.clone() + aind.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ABS_INDENT { width: w }, toks, nchars, true, aind) => {
             let mut tsnchars: i32;
@@ -1341,17 +1341,17 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             let mut nchars = (*nchars).clone();
             blen = File::tell(file.clone());
             (tsnchars, isstart, _) = tokensFile(file.clone(), toks.clone(), 0, true, w.clone())?;
-            blen = File::tell(file) - blen.clone();
-            nchars = if (blen.clone() == 0) {nchars.clone()} else {if (isstart.clone()) {aind.clone()} else {tsnchars.clone()}};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            blen = File::tell(file) - blen;
+            nchars = if (blen == 0) {nchars.clone()} else {if (isstart) {aind.clone()} else {tsnchars}};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ABS_INDENT { width: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensFile(file, toks.clone(), nchars.clone(), false, w.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_REL_INDENT { offset: w }, toks, nchars, true, aind) => {
             let mut tsnchars: i32;
@@ -1360,17 +1360,17 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             let mut nchars = (*nchars).clone();
             blen = File::tell(file.clone());
             (tsnchars, isstart, _) = tokensFile(file.clone(), toks.clone(), nchars.clone(), true, aind.clone() + w.clone())?;
-            blen = File::tell(file) - blen.clone();
-            nchars = if (blen.clone() == 0) {nchars.clone()} else {if (isstart.clone()) {aind.clone()} else {tsnchars.clone()}};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            blen = File::tell(file) - blen;
+            nchars = if (blen == 0) {nchars.clone()} else {if (isstart) {aind.clone()} else {tsnchars}};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_REL_INDENT { offset: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensFile(file, toks.clone(), nchars.clone(), false, aind.clone() + w.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ANCHOR { offset: w }, toks, nchars, true, aind) => {
             let mut tsnchars: i32;
@@ -1379,17 +1379,17 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             let mut nchars = (*nchars).clone();
             blen = File::tell(file.clone());
             (tsnchars, isstart, _) = tokensFile(file.clone(), toks.clone(), nchars.clone(), true, nchars.clone() + w.clone())?;
-            blen = File::tell(file) - blen.clone();
-            nchars = if (blen.clone() == 0) {nchars.clone()} else {if (isstart.clone()) {aind.clone()} else {tsnchars.clone()}};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            blen = File::tell(file) - blen;
+            nchars = if (blen == 0) {nchars.clone()} else {if (isstart) {aind.clone()} else {tsnchars}};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ANCHOR { offset: w }, toks, nchars, false, aind) => {
             let mut tsnchars: i32;
             let mut isstart: bool;
             let mut nchars = (*nchars).clone();
             (tsnchars, isstart, _) = tokensFile(file, toks.clone(), nchars.clone(), false, nchars.clone() + w.clone())?;
-            nchars = if (isstart.clone()) {aind.clone()} else {tsnchars.clone()};
-            (nchars.clone(), isstart.clone(), aind.clone())
+            nchars = if (isstart) {aind.clone()} else {tsnchars};
+            (nchars.clone(), isstart, aind.clone())
         },
         (Deref @ BlockType::BT_ITER { .. }, Deref @ metamodelica::List::Nil, nchars, isstart, aind) => {
             (nchars.clone(), isstart.clone(), aind.clone())

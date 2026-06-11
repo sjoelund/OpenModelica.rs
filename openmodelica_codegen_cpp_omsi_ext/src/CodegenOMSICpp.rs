@@ -31,10 +31,10 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<T
             let mut l_extraFuncs: Tpl::Text;
             l_extraFuncs = Tpl::emptyTxt.clone();
             l_extraFuncsDecl = Tpl::emptyTxt.clone();
-            (txt_2, l_extraFuncs, l_extraFuncsDecl, _) = simulationOMSUCPPMainRunScript(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (literal!("")).clone(), (literal!("")).clone(), (literal!("exec")).clone())?;
+            (txt_2, l_extraFuncs, l_extraFuncsDecl, _) = simulationOMSUCPPMainRunScript(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs, l_extraFuncsDecl, Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (literal!("")).clone(), (literal!("")).clone(), (literal!("exec")).clone())?;
             txt_3 = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
-            (txt_3, l_extraFuncs, l_extraFuncsDecl, _) = CodegenCppOMSI::simulationMainRunScriptSuffix(txt_3.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })))?;
-            Tpl::textFile(txt_2.clone(), (Tpl::textString(txt_3.clone())?).clone())?;
+            (txt_3, l_extraFuncs, l_extraFuncsDecl, _) = CodegenCppOMSI::simulationMainRunScriptSuffix(txt_3, i_simCode.clone(), l_extraFuncs, l_extraFuncsDecl, Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })))?;
+            Tpl::textFile(txt_2, (Tpl::textString(txt_3)?).clone())?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -133,19 +133,19 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
             let mut ret_0: i32;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-u true -p ")).clone() }))?;
             ret_0 = Flags::getConfigInt(Flags::ZEROMQ_PUB_PORT.clone())?;
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_0)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -s ")).clone() }))?;
             ret_1 = Flags::getConfigInt(Flags::ZEROMQ_SUB_PORT.clone())?;
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_1)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -v ")).clone() }))?;
             ret_2 = (Flags::getConfigString(Flags::ZEROMQ_SERVER_ID.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_2.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_2).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -c ")).clone() }))?;
             ret_3 = (Flags::getConfigString(Flags::ZEROMQ_CLIENT_ID.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_3.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_3).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -g ")).clone() }))?;
             ret_4 = (Flags::getConfigString(Flags::ZEROMQ_JOB_ID.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_4.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_4).clone())?;
             txt.clone()
         },
     });
@@ -283,44 +283,44 @@ pub(crate) fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_sim
             l_fileNamePrefixx = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             l_platformstr = fun_52(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
             l_execParameters = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-S ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_start.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -E ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_end.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -H ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_stepsize.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -G ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_intervals.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -P ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_outputformat.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -T ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_tol.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -I ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_solver.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -R ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_start)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -E ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_end)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -H ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_stepsize)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -G ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_intervals)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -P ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_outputformat)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -T ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_tol)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -I ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_solver)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -R ")).clone() }))?;
             ret_13 = (Config::simulationCodeTarget()?).clone();
-            (l_execParameters, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationLibDir(l_execParameters.clone(), (ret_13.clone()).clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -M ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_moLib.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -r ")).clone() }))?;
+            (l_execParameters, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationLibDir(l_execParameters, (ret_13).clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -M ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_moLib.clone())?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -r ")).clone() }))?;
             ret_14 = Testsuite::isRunning()?;
-            (l_execParameters, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationResults(l_execParameters.clone(), ret_14.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -a ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_moLib.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -o ")).clone() }))?;
-            l_execParameters = Tpl::writeText(l_execParameters.clone(), l_fileNamePrefixx.clone())?;
-            l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmu")).clone() }))?;
+            (l_execParameters, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationResults(l_execParameters, ret_14, i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -a ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_moLib)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -o ")).clone() }))?;
+            l_execParameters = Tpl::writeText(l_execParameters, l_fileNamePrefixx)?;
+            l_execParameters = Tpl::writeTok(l_execParameters, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmu")).clone() }))?;
             ret_16 = stringEq((i_settings_outputFormat.clone()).clone(), (literal!("empty")).clone());
-            l_outputParameter = fun_53(Tpl::emptyTxt.clone(), ret_16.clone())?;
+            l_outputParameter = fun_53(Tpl::emptyTxt.clone(), ret_16)?;
             ret_18 = (Config::simulationCodeTarget()?).clone();
-            (l_libFolder, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationLibDir(Tpl::emptyTxt.clone(), (ret_18.clone()).clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
+            (l_libFolder, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationLibDir(Tpl::emptyTxt.clone(), (ret_18).clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             ret_20 = (Config::simulationCodeTarget()?).clone();
-            l_binFolder = CodegenCppOMSI::simulationBinDir(Tpl::emptyTxt.clone(), (ret_20.clone()).clone(), i_simCode.clone())?;
+            l_binFolder = CodegenCppOMSI::simulationBinDir(Tpl::emptyTxt.clone(), (ret_20).clone(), i_simCode.clone())?;
             l_libPaths = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_libPaths = lm_54(l_libPaths.clone(), i_makefileParams_libPaths.clone())?;
-            l_libPaths = Tpl::popIter(l_libPaths.clone())?;
+            l_libPaths = lm_54(l_libPaths, i_makefileParams_libPaths.clone())?;
+            l_libPaths = Tpl::popIter(l_libPaths)?;
             ret_23 = Flags::getConfigBool(Flags::USE_ZEROMQ_IN_SIM.clone())?;
-            l_zermMQParams = fun_55(Tpl::emptyTxt.clone(), ret_23.clone())?;
-            txt = fun_56(txt.clone(), (i_makefileParams_platform.clone()).clone(), (a_preRunCommandWindows.clone()).clone(), l_libPaths.clone(), l_libFolder.clone(), l_outputParameter.clone(), l_zermMQParams.clone(), l_execParameters.clone(), l_binFolder.clone(), (a_execCommandLinux.clone()).clone(), (a_preRunCommandLinux.clone()).clone())?;
+            l_zermMQParams = fun_55(Tpl::emptyTxt.clone(), ret_23)?;
+            txt = fun_56(txt.clone(), (i_makefileParams_platform.clone()).clone(), (a_preRunCommandWindows.clone()).clone(), l_libPaths, l_libFolder, l_outputParameter, l_zermMQParams, l_execParameters, l_binFolder, (a_execCommandLinux.clone()).clone(), (a_preRunCommandLinux.clone()).clone())?;
             (txt.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())
         },
         (mut txt, _, mut a_extraFuncs, mut a_extraFuncsDecl, mut a_extraFuncsNamespace, _, _, _) => {

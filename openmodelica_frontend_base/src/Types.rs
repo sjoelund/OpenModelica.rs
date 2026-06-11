@@ -121,8 +121,8 @@ pub fn propsAnd(mut inProps: Arc<metamodelica::List<DAE::Properties>>) -> Result
             let DAE::PROP { type_: __pa0, constFlag: __pa1 } = (propsAnd(props.clone())?) else { bail!("pattern mismatch") };
             ty2 = __pa0.clone();
             c2 = __pa1.clone();
-            c = constAnd(c.clone(), c2.clone());
-            let true = (equivtypes(ty.clone(), ty2.clone())) else { bail!("pattern mismatch") };
+            c = constAnd(c.clone(), c2);
+            let true = (equivtypes(ty.clone(), ty2)) else { bail!("pattern mismatch") };
             DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() }
         },
         _ => bail!("match: no arm matched"),
@@ -151,14 +151,14 @@ pub fn getConstList(mut inPropertiesList: Arc<metamodelica::List<DAE::Properties
         Deref @ metamodelica::List::Cons { head: DAE::Properties::PROP { constFlag: c, .. }, tail: pcdr } => {
             let mut ccdr: Arc<metamodelica::List<DAE::Const>>;
             ccdr = getConstList(pcdr.clone())?;
-            metamodelica::cons(c.clone(), ccdr.clone())
+            metamodelica::cons(c.clone(), ccdr)
         },
         Deref @ metamodelica::List::Cons { head: DAE::Properties::PROP_TUPLE { tupleConst: tc, .. }, tail: pcdr } => {
             let mut c: Const;
             let mut ccdr: Arc<metamodelica::List<DAE::Const>>;
             c = propertiesListToConst2(tc.clone())?;
             ccdr = getConstList(pcdr.clone())?;
-            metamodelica::cons(c.clone(), ccdr.clone())
+            metamodelica::cons(c.clone(), ccdr)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -175,7 +175,7 @@ pub fn propertiesListToConst(mut p: Arc<metamodelica::List<DAE::Properties>>) ->
             let mut c2: Const;
             let mut c1 = (*c1).clone();
             c2 = propertiesListToConst(pps.clone())?;
-            c1 = constAnd(c1.clone(), c2.clone());
+            c1 = constAnd(c1.clone(), c2);
             c1.clone()
         },
         Deref @ metamodelica::List::Cons { head: DAE::Properties::PROP_TUPLE { type_: _, tupleConst: tc1 }, tail: pps } => {
@@ -183,7 +183,7 @@ pub fn propertiesListToConst(mut p: Arc<metamodelica::List<DAE::Properties>>) ->
             let mut c2: Const;
             c1 = propertiesListToConst2(tc1.clone())?;
             c2 = propertiesListToConst(pps.clone())?;
-            c1 = constAnd(c1.clone(), c2.clone());
+            c1 = constAnd(c1, c2);
             c1.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -202,7 +202,7 @@ fn propertiesListToConst2(mut t: Arc<DAE::TupleConst>) -> Result<DAE::Const> {
             let mut c2: Const;
             c1 = propertiesListToConst2(tc1.clone())?;
             c2 = tupleConstListToConst(tcxl.clone())?;
-            c1 = constAnd(c1.clone(), c2.clone());
+            c1 = constAnd(c1, c2);
             c1.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -220,7 +220,7 @@ pub fn tupleConstListToConst(mut t: Arc<metamodelica::List<Arc<DAE::TupleConst>>
             let mut c2: Const;
             let mut c1 = (*c1).clone();
             c2 = tupleConstListToConst(tcxl.clone())?;
-            c1 = constAnd(c1.clone(), c2.clone());
+            c1 = constAnd(c1.clone(), c2);
             c1.clone()
         },
         Deref @ metamodelica::List::Cons { head: p1 @ Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: _ }, tail: tcxl } => {
@@ -228,7 +228,7 @@ pub fn tupleConstListToConst(mut t: Arc<metamodelica::List<Arc<DAE::TupleConst>>
             let mut c2: Const;
             c1 = propertiesListToConst2(p1.clone())?;
             c2 = tupleConstListToConst(tcxl.clone())?;
-            c1 = constAnd(c1.clone(), c2.clone());
+            c1 = constAnd(c1, c2);
             c1.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -937,7 +937,7 @@ pub fn numberOfDimensions(mut inType: Arc<DAE::Type>) -> i32 {
         Deref @ DAE::Type::T_ARRAY { ty: t, dims } => {
             let mut n: i32;
             n = numberOfDimensions(t.clone());
-            return n.clone() + (dims.clone().len() as i32)
+            return n + (dims.clone().len() as i32)
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
             let mut n: i32;
@@ -2134,22 +2134,22 @@ fn lookupInBuiltin(mut inType: Arc<DAE::Type>, mut inIdent: ArcStr) -> Result<Ar
         (Deref @ DAE::Type::T_REAL { varLst: cs }, id) => {
             let mut v: Arc<DAE::Var>;
             v = lookupComponent2(cs.clone(), (id.clone()).clone())?;
-            v.clone()
+            v
         },
         (Deref @ DAE::Type::T_INTEGER { varLst: cs }, id) => {
             let mut v: Arc<DAE::Var>;
             v = lookupComponent2(cs.clone(), (id.clone()).clone())?;
-            v.clone()
+            v
         },
         (Deref @ DAE::Type::T_STRING { varLst: cs }, id) => {
             let mut v: Arc<DAE::Var>;
             v = lookupComponent2(cs.clone(), (id.clone()).clone())?;
-            v.clone()
+            v
         },
         (Deref @ DAE::Type::T_BOOL { varLst: cs }, id) => {
             let mut v: Arc<DAE::Var>;
             v = lookupComponent2(cs.clone(), (id.clone()).clone())?;
-            v.clone()
+            v
         },
         (Deref @ DAE::Type::T_ENUMERATION { index: Some(_), .. }, Deref @ "quantity") => {
             Arc::new(DAE::Var { name: (literal!("quantity")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None })
@@ -2211,7 +2211,7 @@ pub(crate) fn makeArray(mut inType: Arc<DAE::Type>, mut inArrayDim: Arc<metamode
         (t, l) => {
             let mut len: i32;
             len = (l.clone().len() as i32);
-            Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: len.clone() })] })
+            Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: len })] })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2507,7 +2507,7 @@ fn makeElementReturnType(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Eleme
         Deref @ metamodelica::List::Cons { head: element, tail: Deref @ metamodelica::List::Nil } => {
             let mut ty: Type;
             ty = makeElementReturnTypeSingle(element.clone())?;
-            ty.clone()
+            ty
         },
         elements => {
             let mut element: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
@@ -2524,9 +2524,9 @@ fn makeElementReturnType(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Eleme
             if names.clone().is_empty() {
                 namesOpt = None;
             } else {
-                namesOpt = Some(names.clone().reverse());
+                namesOpt = Some(names.reverse());
             }
-            Arc::new(DAE::Type::T_TUPLE { types: types.clone().reverse(), names: namesOpt.clone() })
+            Arc::new(DAE::Type::T_TUPLE { types: types.reverse(), names: namesOpt })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2604,8 +2604,8 @@ pub(crate) fn makeEnumerationType1(mut inPath: Arc<Absyn::Path>, mut inVarLst: A
             let mut var: Arc<DAE::Var>;
             vars = makeEnumerationType1(p.clone(), xs.clone(), names.clone(), idx.clone() + 1)?;
             t = Arc::new(DAE::Type::T_ENUMERATION { index: Some(idx.clone()), path: p.clone(), names: names.clone(), literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() });
-            var = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: attributes.clone(), ty: t.clone(), binding: binding.clone(), bind_from_outside: bsrc.clone(), constOfForIteratorRange: cnstForRange.clone() });
-            metamodelica::cons(var.clone(), vars.clone())
+            var = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: attributes.clone(), ty: t, binding: binding.clone(), bind_from_outside: bsrc.clone(), constOfForIteratorRange: cnstForRange.clone() });
+            metamodelica::cons(var, vars)
         },
         (_, Deref @ metamodelica::List::Nil, _, _) => {
             metamodelica::nil()
@@ -2910,7 +2910,7 @@ pub fn getBindingExp(mut inVar: Arc<DAE::Var>, mut inPath: Arc<Absyn::Path>) -> 
         Deref @ DAE::Var { name, binding: Deref @ DAE::Binding::UNBOUND { .. }, .. } => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Record '")); __mm_s.push_str(&*AbsynUtil::pathString(inPath, (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("' member '")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("' has no default value and is not modifiable by a constructor function.\n")); ArcStr::from(__mm_s) }).clone();
-            Error::addCompilerWarning((r#str.clone()).clone())?;
+            Error::addCompilerWarning((r#str).clone())?;
             Arc::new(DAE::Exp::ICONST { integer: 0 })
         },
         _ => bail!("match: no arm matched"),
@@ -2934,7 +2934,7 @@ fn makeFarg(mut variable: Arc<DAE::Var>) -> Result<Arc<DAE::FuncArg>> {
             c = variabilityToConst(var.clone())?;
             p = DAEUtil::scodePrlToDaePrl(par.clone())?;
             oexp = DAEUtil::bindingExp(bnd.clone())?;
-            Arc::new(DAE::FuncArg { name: (n.clone()).clone(), ty: ty.clone(), r#const: c.clone(), par: p.clone(), defaultBinding: oexp.clone() })
+            Arc::new(DAE::FuncArg { name: (n.clone()).clone(), ty: ty.clone(), r#const: c, par: p, defaultBinding: oexp })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2947,7 +2947,7 @@ fn makeElementFarg(mut inElement: Arc<DAE::Element>, mut inFarg: Arc<DAE::FuncAr
         Deref @ DAE::Element::VAR { componentRef: cref, .. } => {
             let mut name: ArcStr;
             name = (ComponentReferenceBasics::crefLastIdent(cref.clone())?).clone();
-            setFuncArgName(inFarg, (name.clone()).clone())?
+            setFuncArgName(inFarg, (name).clone())?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3346,7 +3346,7 @@ pub fn propTuplePropList(mut prop_tuple: DAE::Properties) -> Result<Arc<metamode
         DAE::Properties::PROP_TUPLE { type_: Deref @ DAE::Type::T_TUPLE { types: tl, .. }, tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: cl } } => {
             let mut pl: Arc<metamodelica::List<DAE::Properties>>;
             pl = propTuplePropList2(tl.clone(), cl.clone())?;
-            pl.clone()
+            pl
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3362,7 +3362,7 @@ fn propTuplePropList2(mut tl: Arc<metamodelica::List<Arc<DAE::Type>>>, mut cl: A
         (Deref @ metamodelica::List::Cons { head: t, tail: t_rest }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::TupleConst::SINGLE_CONST { r#const: c }, tail: c_rest }) => {
             let mut p_rest: Arc<metamodelica::List<DAE::Properties>>;
             p_rest = propTuplePropList2(t_rest.clone(), c_rest.clone())?;
-            metamodelica::cons(DAE::Properties::PROP { type_: t.clone(), constFlag: c.clone() }, p_rest.clone())
+            metamodelica::cons(DAE::Properties::PROP { type_: t.clone(), constFlag: c.clone() }, p_rest)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3675,7 +3675,7 @@ pub fn complicateType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
             let mut ty: Arc<DAE::Type>;
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             (ty, dims) = TypesDump::flattenArrayType(outType);
-            liftArrayListDims(ty.clone(), dims.clone())
+            liftArrayListDims(ty, dims)
         },
         Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { .. } => {
             var_field!((*outType).functionType, DAE::Type::T_FUNCTION_REFERENCE_VAR).clone()
@@ -4795,7 +4795,7 @@ fn liftExpType(mut ie: Arc<DAE::Exp>, mut dim: Arc<DAE::Dimension>) -> Arc<DAE::
         Deref @ DAE::Exp::CAST { ty, exp: e } => {
             let mut ty1: Arc<DAE::Type>;
             ty1 = Expression::liftArrayR(ty.clone(), dim);
-            Arc::new(DAE::Exp::CAST { ty: ty1.clone(), exp: e.clone() })
+            Arc::new(DAE::Exp::CAST { ty: ty1, exp: e.clone() })
         },
         e => {
             e.clone()
@@ -4811,13 +4811,13 @@ pub(crate) fn typeConvertArray(mut inArray: Arc<metamodelica::List<Arc<DAE::Exp>
         Deref @ metamodelica::List::Nil => {
             let mut e: Arc<DAE::Exp>;
             e = makeDummyExpFromType(inActualType.clone())?;
-            typeConvert(e.clone(), inActualType, inExpectedType, inPrintFailtrace)?;
+            typeConvert(e, inActualType, inExpectedType, inPrintFailtrace)?;
             metamodelica::nil()
         },
         _ => {
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (expl, _) = List::map_2(inArray, (std::sync::Arc::new({ let __pe_b1 = inActualType; let __pe_b2 = inExpectedType; let __pe_b3 = inPrintFailtrace; move |__pe_a0| typeConvert(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Type>)> + 'static>))?;
-            expl.clone()
+            expl
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4844,7 +4844,7 @@ fn typeConvertList(mut inExpExpLst1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
             let mut ty_1: Type;
             (rest_1, tyrest_1) = typeConvertList(rest.clone(), ty1rest.clone(), ty2rest.clone(), printFailtrace)?;
             (first_1, ty_1) = typeConvert(first.clone(), ty1.clone(), ty2.clone(), printFailtrace)?;
-            (metamodelica::cons(first_1.clone(), rest_1.clone()), metamodelica::cons(ty_1.clone(), tyrest_1.clone()))
+            (metamodelica::cons(first_1, rest_1), metamodelica::cons(ty_1, tyrest_1))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -5206,8 +5206,8 @@ pub fn printPropStr(mut inProperties: DAE::Properties) -> Result<ArcStr> {
             let mut res: ArcStr;
             ty_str = (TypesDump::unparseType(ty.clone())?).clone();
             const_str = (TypesDump::printConstStr(r#const.clone())?).clone();
-            res = stringAppendList(list![(literal!("DAE.PROP(")).clone(), (ty_str.clone()).clone(), (literal!(", ")).clone(), (const_str.clone()).clone(), (literal!(")")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(literal!("DAE.PROP(")).clone(), (ty_str).clone(), (literal!(", ")).clone(), (const_str).clone(), (literal!(")")).clone()]);
+            res
         },
         DAE::Properties::PROP_TUPLE { type_: ref ty, tupleConst: ref tconst } => {
             let mut ty_str: ArcStr;
@@ -5215,8 +5215,8 @@ pub fn printPropStr(mut inProperties: DAE::Properties) -> Result<ArcStr> {
             let mut res: ArcStr;
             ty_str = (TypesDump::unparseType(ty.clone())?).clone();
             const_str = (TypesDump::printTupleConstStr(tconst.clone())?).clone();
-            res = stringAppendList(list![(literal!("DAE.PROP_TUPLE(")).clone(), (ty_str.clone()).clone(), (literal!(", ")).clone(), (const_str.clone()).clone(), (literal!(")")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(literal!("DAE.PROP_TUPLE(")).clone(), (ty_str).clone(), (literal!(", ")).clone(), (const_str).clone(), (literal!(")")).clone()]);
+            res
         },
     })).clone();
     Ok(outString)
@@ -5532,8 +5532,8 @@ fn getAllExpsVar(mut inVar: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<
             let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             tyexps = getAllExps(ty.clone())?;
             bndexp = getAllExpsBinding(bnd.clone())?;
-            exps = listAppend(tyexps.clone(), bndexp.clone());
-            exps.clone()
+            exps = listAppend(tyexps, bndexp);
+            exps
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5633,25 +5633,25 @@ pub fn unboxedType(mut ity: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
         Deref @ DAE::Type::T_METAOPTION { .. } => {
             let mut ty: Type;
             ty = unboxedType(var_field!((*ity).ty, DAE::Type::T_METAOPTION).clone())?;
-            ty = boxIfUnboxedType(ty.clone());
-            return Ok(Arc::new(DAE::Type::T_METAOPTION { ty: ty.clone() }))
+            ty = boxIfUnboxedType(ty);
+            return Ok(Arc::new(DAE::Type::T_METAOPTION { ty: ty }))
         },
         Deref @ DAE::Type::T_METALIST { .. } => {
             let mut ty: Type;
             ty = unboxedType(var_field!((*ity).ty, DAE::Type::T_METALIST).clone())?;
-            ty = boxIfUnboxedType(ty.clone());
-            return Ok(Arc::new(DAE::Type::T_METALIST { ty: ty.clone() }))
+            ty = boxIfUnboxedType(ty);
+            return Ok(Arc::new(DAE::Type::T_METALIST { ty: ty }))
         },
         Deref @ DAE::Type::T_METATUPLE { .. } => {
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
             tys = List::mapMap(var_field!((*ity).types, DAE::Type::T_METATUPLE).clone(), (std::sync::Arc::new(unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>), (std::sync::Arc::new(fnptr!(boxIfUnboxedType, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
-            return Ok(Arc::new(DAE::Type::T_METATUPLE { types: tys.clone() }))
+            return Ok(Arc::new(DAE::Type::T_METATUPLE { types: tys }))
         },
         Deref @ DAE::Type::T_METAARRAY { .. } => {
             let mut ty: Type;
             ty = unboxedType(var_field!((*ity).ty, DAE::Type::T_METAARRAY).clone())?;
-            ty = boxIfUnboxedType(ty.clone());
-            return Ok(Arc::new(DAE::Type::T_METAARRAY { ty: ty.clone() }))
+            ty = boxIfUnboxedType(ty);
+            return Ok(Arc::new(DAE::Type::T_METAARRAY { ty: ty }))
         },
         t @ Deref @ DAE::Type::T_ARRAY { .. } => {
             let mut t = (*t).clone();
@@ -6437,11 +6437,11 @@ pub fn makeFunctionPolymorphicReference(mut inType: Arc<DAE::Type>) -> Result<Ar
             let mut resType2: Type;
             funcArgTypes1 = List::map(funcArgs1.clone(), (std::sync::Arc::new(funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
             (dummyExpList, dummyBoxedTypeList) = makeDummyExpAndTypeLists(funcArgTypes1.clone())?;
-            (_, funcArgTypes2) = matchTypeTuple(dummyExpList.clone(), funcArgTypes1.clone(), dummyBoxedTypeList.clone(), false)?;
-            funcArgs2 = List::threadMap(funcArgs1.clone(), funcArgTypes2.clone(), (std::sync::Arc::new(setFuncArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Arc<DAE::Type>) -> Result<Arc<DAE::FuncArg>> + 'static>))?;
+            (_, funcArgTypes2) = matchTypeTuple(dummyExpList, funcArgTypes1, dummyBoxedTypeList, false)?;
+            funcArgs2 = List::threadMap(funcArgs1.clone(), funcArgTypes2, (std::sync::Arc::new(setFuncArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Arc<DAE::Type>) -> Result<Arc<DAE::FuncArg>> + 'static>))?;
             resType2 = makeFunctionPolymorphicReferenceResType(resType1.clone())?;
-            ty2 = Arc::new(DAE::Type::T_FUNCTION { funcArg: funcArgs2.clone(), funcResultType: resType2.clone(), functionAttributes: functionAttributes.clone(), path: path.clone() });
-            ty2.clone()
+            ty2 = Arc::new(DAE::Type::T_FUNCTION { funcArg: funcArgs2, funcResultType: resType2, functionAttributes: functionAttributes.clone(), path: path.clone() });
+            ty2
         },
         _ => {
             bail!("fail")
@@ -6515,8 +6515,8 @@ fn makeDummyExpAndTypeLists(mut lst: Arc<metamodelica::List<Arc<DAE::Type>>>) ->
             let mut crefExp: Arc<DAE::Exp>;
             (restExp, restType) = makeDummyExpAndTypeLists(rest.clone())?;
             cref_ = ComponentReferenceBasics::makeCrefIdent((literal!("#DummyExp#")).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
-            crefExp = Expression::crefExp(cref_.clone())?;
-            (metamodelica::cons(crefExp.clone(), restExp.clone()), metamodelica::cons(Arc::new(DAE::Type::T_METABOXED { ty: DAE::T_UNKNOWN_DEFAULT().clone() }), restType.clone()))
+            crefExp = Expression::crefExp(cref_)?;
+            (metamodelica::cons(crefExp, restExp), metamodelica::cons(Arc::new(DAE::Type::T_METABOXED { ty: DAE::T_UNKNOWN_DEFAULT().clone() }), restType))
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -6555,7 +6555,7 @@ pub(crate) fn getRealOrIntegerDimensions(mut inType: Arc<DAE::Type>) -> Result<A
         Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d @ Deref @ DAE::Dimension::DIM_INTEGER { integer: _ }, tail: Deref @ metamodelica::List::Nil }, ty } => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             dims = getRealOrIntegerDimensions(ty.clone())?;
-            return Ok(metamodelica::cons(d.clone(), dims.clone()))
+            return Ok(metamodelica::cons(d.clone(), dims))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -7025,17 +7025,17 @@ fn replaceSolvedBinding(mut ity: Arc<DAE::Type>, mut isolvedBindings: Arc<metamo
             let mut ty: Arc<DAE::Type>;
             let mut args = (*args).clone();
             tys = List::map(args.clone(), (std::sync::Arc::new(funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
-            tys = replaceSolvedBindings(metamodelica::cons(resType.clone(), tys.clone()), solvedBindings.clone(), false)?;
-            tys = List::map(tys.clone(), (std::sync::Arc::new(unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::map(tys.clone(), (std::sync::Arc::new(fnptr!(boxIfUnboxedType, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?) {
+            tys = replaceSolvedBindings(metamodelica::cons(resType.clone(), tys), solvedBindings.clone(), false)?;
+            tys = List::map(tys, (std::sync::Arc::new(unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::map(tys, (std::sync::Arc::new(fnptr!(boxIfUnboxedType, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
             tys = __pa1.clone();
             args = List::threadMap(args.clone(), tys.clone(), (std::sync::Arc::new(setFuncArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Arc<DAE::Type>) -> Result<Arc<DAE::FuncArg>> + 'static>))?;
-            ty = makeRegularTupleFromMetaTupleOnTrue(isTuple(resType.clone()), ty.clone())?;
-            ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: args.clone(), funcResultType: ty.clone(), functionAttributes: functionAttributes.clone(), path: path.clone() });
+            ty = makeRegularTupleFromMetaTupleOnTrue(isTuple(resType.clone()), ty)?;
+            ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: args.clone(), funcResultType: ty, functionAttributes: functionAttributes.clone(), path: path.clone() });
             ty.clone()
         },
         (Deref @ DAE::Type::T_METAPOLYMORPHIC { name: id }, solvedBindings) => {
@@ -7467,84 +7467,84 @@ pub fn traverseType<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ty: Arc<
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METABOXED).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METABOXED; ty = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_METABOXED; ty = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_ARRAY { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_ARRAY).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_ARRAY; ty = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_ARRAY; ty = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_METATYPE { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METATYPE).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METATYPE; ty = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_METATYPE; ty = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_METALIST { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METALIST).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METALIST; ty = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_METALIST; ty = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_METAOPTION { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METAOPTION).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METAOPTION; ty = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_METAOPTION; ty = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_METAARRAY { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METAARRAY).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METAARRAY; ty = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_METAARRAY; ty = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).functionType, DAE::Type::T_FUNCTION_REFERENCE_VAR).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_FUNCTION_REFERENCE_VAR; functionType = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_FUNCTION_REFERENCE_VAR; functionType = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { .. } => {
             oty = (*__esc_oty).clone();
             let mut tyInner: Type;
             (tyInner, a) = traverseType(var_field!((*oty).functionType, DAE::Type::T_FUNCTION_REFERENCE_FUNC).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_FUNCTION_REFERENCE_FUNC; functionType = tyInner.clone());
+            assign_variant_field!(oty => DAE::Type::T_FUNCTION_REFERENCE_FUNC; functionType = tyInner);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_METATUPLE { .. } => {
             oty = (*__esc_oty).clone();
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
             (tys, a) = traverseTupleType(var_field!((*oty).types, DAE::Type::T_METATUPLE).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METATUPLE; types = tys.clone());
+            assign_variant_field!(oty => DAE::Type::T_METATUPLE; types = tys);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_TUPLE { .. } => {
             oty = (*__esc_oty).clone();
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
             (tys, a) = traverseTupleType(var_field!((*oty).types, DAE::Type::T_TUPLE).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_TUPLE; types = tys.clone());
+            assign_variant_field!(oty => DAE::Type::T_TUPLE; types = tys);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_METARECORD { .. } => {
             oty = (*__esc_oty).clone();
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
             (vars, a) = traverseVarTypes(var_field!((*oty).fields, DAE::Type::T_METARECORD).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_METARECORD; fields = vars.clone());
+            assign_variant_field!(oty => DAE::Type::T_METARECORD; fields = vars);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_COMPLEX { .. } => {
             oty = (*__esc_oty).clone();
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
             (vars, a) = traverseVarTypes(var_field!((*oty).varLst, DAE::Type::T_COMPLEX).clone(), a, r#fn.clone())?;
-            assign_variant_field!(oty => DAE::Type::T_COMPLEX; varLst = vars.clone());
+            assign_variant_field!(oty => DAE::Type::T_COMPLEX; varLst = vars);
             (oty.clone(), a)
         },
         __esc_oty @ Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => {
@@ -7554,8 +7554,8 @@ pub fn traverseType<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ty: Arc<
             (vars, a) = traverseVarTypes(var_field!((*oty).varLst, DAE::Type::T_SUBTYPE_BASIC).clone(), a, r#fn.clone())?;
             (tyInner, a) = traverseType(var_field!((*oty).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(), a, r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_SUBTYPE_BASIC;
-                varLst = vars.clone(),
-                complexType = tyInner.clone()
+                varLst = vars,
+                complexType = tyInner
             );
             (oty.clone(), a)
         },
@@ -7566,15 +7566,15 @@ pub fn traverseType<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ty: Arc<
             (farg, a) = traverseFuncArg(var_field!((*oty).funcArg, DAE::Type::T_FUNCTION).clone(), a, r#fn.clone())?;
             (tyInner, a) = traverseType(var_field!((*oty).funcResultType, DAE::Type::T_FUNCTION).clone(), a, r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_FUNCTION;
-                funcArg = farg.clone(),
-                funcResultType = tyInner.clone()
+                funcArg = farg,
+                funcResultType = tyInner
             );
             (oty.clone(), a)
         },
         _ => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Types.traverseType not implemented correctly: ")); __mm_s.push_str(&*TypesDump::unparseType(ty)?); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7620,8 +7620,8 @@ fn traverseVarTypes<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ivars: A
             let mut vars = (*vars).clone();
             let mut a = (*a).clone();
             ty = getVarType(var.clone())?;
-            (ty, a) = traverseType(ty.clone(), a.clone(), r#fn.clone())?;
-            var = setVarType(var.clone(), ty.clone());
+            (ty, a) = traverseType(ty, a.clone(), r#fn.clone())?;
+            var = setVarType(var.clone(), ty);
             (vars, a) = traverseVarTypes(vars.clone(), a.clone(), r#fn.clone())?;
             (metamodelica::cons(var.clone(), vars.clone()), a.clone())
         },
@@ -7645,7 +7645,7 @@ fn traverseFuncArg<A: Clone + 'static + metamodelica::gc::MMTrace>(mut iargs: Ar
             let mut args = (*args).clone();
             let mut a = (*a).clone();
             (ty, a) = traverseType(arg.ty.clone(), a.clone(), r#fn.clone())?;
-            assign_field!(arg.ty = ty.clone());
+            assign_field!(arg.ty = ty);
             (args, a) = traverseFuncArg(args.clone(), a.clone(), r#fn.clone())?;
             (metamodelica::cons(arg.clone(), args.clone()), a.clone())
         },
@@ -7697,7 +7697,7 @@ pub(crate) fn unboxedFunctionType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE:
             let mut ty1 = (*ty1).clone();
             tys1 = List::mapMap(args1.clone(), (std::sync::Arc::new(funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>), (std::sync::Arc::new(unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
             ty1 = unboxedType(ty1.clone())?;
-            args1 = List::threadMap(args1.clone(), tys1.clone(), (std::sync::Arc::new(setFuncArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Arc<DAE::Type>) -> Result<Arc<DAE::FuncArg>> + 'static>))?;
+            args1 = List::threadMap(args1.clone(), tys1, (std::sync::Arc::new(setFuncArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Arc<DAE::Type>) -> Result<Arc<DAE::FuncArg>> + 'static>))?;
             Arc::new(DAE::Type::T_FUNCTION { funcArg: args1.clone(), funcResultType: ty1.clone(), functionAttributes: functionAttributes.clone(), path: path.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -8079,9 +8079,9 @@ fn makeDummyExpFromType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
             idim = Expression::dimensionSize(dim.clone())?;
             exp = makeDummyExpFromType(ty.clone())?;
             ety = Expression::r#typeof(exp.clone())?;
-            ety = Expression::liftArrayLeft(ety.clone(), dim.clone());
-            expl = List::fill(exp.clone(), idim.clone());
-            Arc::new(DAE::Exp::ARRAY { ty: ety.clone(), scalar: true, array: expl.clone() })
+            ety = Expression::liftArrayLeft(ety, dim.clone());
+            expl = List::fill(exp, idim);
+            Arc::new(DAE::Exp::ARRAY { ty: ety, scalar: true, array: expl })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -8773,7 +8773,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(), inExp2, ty.clone(), false)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(), inExp2, ty, false)?;
             outCompatType
         },
         Deref @ DAE::Type::T_ENUMERATION { .. } => {
@@ -8783,7 +8783,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             names = __pa0.clone();
-            outCompatible = List::isEqualOnTrue(var_field!((*inType1).names, DAE::Type::T_ENUMERATION).clone(), names.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            outCompatible = List::isEqualOnTrue(var_field!((*inType1).names, DAE::Type::T_ENUMERATION).clone(), names, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
             inType1
         },
         Deref @ DAE::Type::T_ARRAY { .. } => {
@@ -8793,16 +8793,16 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
             let mut ety2: Arc<DAE::Type>;
             ety1 = arrayElementType(inType1.clone());
             ety2 = arrayElementType(inType2.clone());
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, ety1.clone(), inExp2, ety2.clone(), false)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, ety1, inExp2, ety2, false)?;
             if outCompatible {
                 dims1 = TypesDump::getDimensions(inType1);
                 dims2 = TypesDump::getDimensions(inType2);
                 if (dims1.clone().len() as i32) == (dims2.clone().len() as i32) {
                     dims1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-        let __thr_src0 = dims1.clone();
+        let __thr_src0 = dims1;
         let mut __thr_it0 = (&__thr_src0).into_iter();
-        let __thr_src1 = dims2.clone();
+        let __thr_src1 = dims2;
         let mut __thr_it1 = (&__thr_src1).into_iter();
         loop {
             match (__thr_it0.next(), __thr_it1.next()) {
@@ -8816,7 +8816,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
         }
         __acc.reverse()
     });
-                    outCompatType = liftArrayListDims(outCompatType, dims1.clone());
+                    outCompatType = liftArrayListDims(outCompatType, dims1);
                 } else {
                     outCompatible = false;
                 }
@@ -8830,7 +8830,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             vars = __pa0.clone();
-            outCompatible = List::isEqualOnTrue(var_field!((*inType1).varLst, DAE::Type::T_COMPLEX).clone(), vars.clone(), (std::sync::Arc::new(varEqualName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::Var>) -> Result<bool> + 'static>))?;
+            outCompatible = List::isEqualOnTrue(var_field!((*inType1).varLst, DAE::Type::T_COMPLEX).clone(), vars, (std::sync::Arc::new(varEqualName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::Var>) -> Result<bool> + 'static>))?;
             inType1
         },
         Deref @ DAE::Type::T_FUNCTION { .. } => {
@@ -8844,7 +8844,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
             } };
             ty = __pa0.clone();
             args = __pa1.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1.clone(), var_field!((*inType1).funcResultType, DAE::Type::T_FUNCTION).clone(), inExp2.clone(), ty.clone(), false)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1.clone(), var_field!((*inType1).funcResultType, DAE::Type::T_FUNCTION).clone(), inExp2.clone(), ty, false)?;
             if outCompatible {
                 tys = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -8856,13 +8856,13 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
     });
                 tys2 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-        for mut arg in (args.clone()).into_iter().cloned() {
+        for mut arg in (args).into_iter().cloned() {
             let __x = funcArgType(arg.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-                (_, outCompatible) = checkTypeCompatList(inExp1, tys.clone(), inExp2, tys2.clone())?;
+                (_, outCompatible) = checkTypeCompatList(inExp1, tys, inExp2, tys2)?;
             }
             inType1
         },
@@ -8873,8 +8873,8 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             tys = __pa0.clone();
-            (tys, outCompatible) = checkTypeCompatList(inExp1, var_field!((*inType1).types, DAE::Type::T_TUPLE).clone(), inExp2, tys.clone())?;
-            Arc::new(DAE::Type::T_TUPLE { types: tys.clone(), names: var_field!((*inType1).names, DAE::Type::T_TUPLE).clone() })
+            (tys, outCompatible) = checkTypeCompatList(inExp1, var_field!((*inType1).types, DAE::Type::T_TUPLE).clone(), inExp2, tys)?;
+            Arc::new(DAE::Type::T_TUPLE { types: tys, names: var_field!((*inType1).names, DAE::Type::T_TUPLE).clone() })
         },
         Deref @ DAE::Type::T_METALIST { .. } => {
             let mut ty: Arc<DAE::Type>;
@@ -8883,7 +8883,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METALIST).clone(), inExp2, ty.clone(), true)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METALIST).clone(), inExp2, ty, true)?;
             Arc::new(DAE::Type::T_METALIST { ty: outCompatType })
         },
         Deref @ DAE::Type::T_METAARRAY { .. } => {
@@ -8893,7 +8893,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METAARRAY).clone(), inExp2, ty.clone(), true)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METAARRAY).clone(), inExp2, ty, true)?;
             Arc::new(DAE::Type::T_METAARRAY { ty: outCompatType })
         },
         Deref @ DAE::Type::T_METAOPTION { .. } => {
@@ -8903,7 +8903,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METAOPTION).clone(), inExp2, ty.clone(), true)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METAOPTION).clone(), inExp2, ty, true)?;
             Arc::new(DAE::Type::T_METAOPTION { ty: outCompatType })
         },
         Deref @ DAE::Type::T_METATUPLE { .. } => {
@@ -8913,8 +8913,8 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             tys = __pa0.clone();
-            (tys, outCompatible) = checkTypeCompatList(inExp1, var_field!((*inType1).types, DAE::Type::T_METATUPLE).clone(), inExp2, tys.clone())?;
-            Arc::new(DAE::Type::T_METATUPLE { types: tys.clone() })
+            (tys, outCompatible) = checkTypeCompatList(inExp1, var_field!((*inType1).types, DAE::Type::T_METATUPLE).clone(), inExp2, tys)?;
+            Arc::new(DAE::Type::T_METATUPLE { types: tys })
         },
         Deref @ DAE::Type::T_METABOXED { .. } => {
             let mut ty: Arc<DAE::Type>;
@@ -8923,7 +8923,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METABOXED).clone(), inExp2, ty.clone(), false)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).ty, DAE::Type::T_METABOXED).clone(), inExp2, ty, false)?;
             Arc::new(DAE::Type::T_METABOXED { ty: outCompatType })
         },
         Deref @ DAE::Type::T_METAPOLYMORPHIC { .. } => {
@@ -8933,7 +8933,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             name = __pa0.clone();
-            outCompatible = var_field!((*inType1).name, DAE::Type::T_METAPOLYMORPHIC).clone() == name.clone();
+            outCompatible = var_field!((*inType1).name, DAE::Type::T_METAPOLYMORPHIC).clone() == name;
             inType1
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { path: p1, .. } => {
@@ -8943,7 +8943,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             p2 = __pa0.clone();
-            outCompatible = AbsynUtil::pathEqual(p1.clone(), p2.clone());
+            outCompatible = AbsynUtil::pathEqual(p1.clone(), p2);
             inType1
         },
         Deref @ DAE::Type::T_METARECORD { utPath: p1, .. } => {
@@ -8953,7 +8953,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             p2 = __pa0.clone();
-            outCompatible = AbsynUtil::pathEqual(p1.clone(), p2.clone());
+            outCompatible = AbsynUtil::pathEqual(p1.clone(), p2);
             inType1
         },
         Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { .. } => {
@@ -8963,7 +8963,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 _ => bail!("pattern mismatch"),
             } };
             ty = __pa0.clone();
-            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).functionType, DAE::Type::T_FUNCTION_REFERENCE_VAR).clone(), inExp2, ty.clone(), false)?;
+            (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1, var_field!((*inType1).functionType, DAE::Type::T_FUNCTION_REFERENCE_VAR).clone(), inExp2, ty, false)?;
             Arc::new(DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: outCompatType })
         },
         _ => {

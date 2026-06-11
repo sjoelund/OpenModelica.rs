@@ -200,19 +200,19 @@ pub(crate) fn fromIdentifier(mut ident_tpl: (Arc<Identifier::Identifier>, i32)) 
             body = (*__esc_body).clone();
             let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>;
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            Arc::new(NSimGenericCall::IF_GENERIC_CALL { index: index, iters: iters.clone(), branches: SimBranch::fromIfBody(var_field!((*body).body, Equation::Equation::IF_EQUATION).clone())?, resizable: resizable })
+            Arc::new(NSimGenericCall::IF_GENERIC_CALL { index: index, iters: iters, branches: SimBranch::fromIfBody(var_field!((*body).body, Equation::Equation::IF_EQUATION).clone())?, resizable: resizable })
         },
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body @ Deref @ Equation::WHEN_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             body = (*__esc_body).clone();
             let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>;
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            Arc::new(NSimGenericCall::WHEN_GENERIC_CALL { index: index, iters: iters.clone(), branches: SimBranch::fromWhenBody(var_field!((*body).body, Equation::Equation::WHEN_EQUATION).clone())?, resizable: resizable })
+            Arc::new(NSimGenericCall::WHEN_GENERIC_CALL { index: index, iters: iters, branches: SimBranch::fromWhenBody(var_field!((*body).body, Equation::Equation::WHEN_EQUATION).clone())?, resizable: resizable })
         },
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body, tail: Deref @ metamodelica::List::Nil }, .. } => {
             body = (*__esc_body).clone();
             let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>;
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            Arc::new(NSimGenericCall::SINGLE_GENERIC_CALL { index: index, iters: iters.clone(), lhs: Util::getOption(Equation::getLHS(body.clone())?)?, rhs: Util::getOption(Equation::getRHS(body.clone())?)?, resizable: resizable })
+            Arc::new(NSimGenericCall::SINGLE_GENERIC_CALL { index: index, iters: iters, lhs: Util::getOption(Equation::getLHS(body.clone())?)?, rhs: Util::getOption(Equation::getRHS(body.clone())?)?, resizable: resizable })
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimGenericCall.fromIdentifier")); __mm_s.push_str(&*literal!(" failed for incorrect equation: ")); __mm_s.push_str(&*Equation::toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;

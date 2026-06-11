@@ -80,15 +80,15 @@ pub(crate) fn dumpMmaDAEStr(mut inTuple: (BackendDAE::Variables, BackendDAE::Var
             let mut outputs: Arc<metamodelica::List<ArcStr>>;
             (states, algs, outputs, _) = printMmaVarsStr(vars.clone())?;
             (params, inputs) = printMmaParamsStr(knvars.clone())?;
-            s1_1 = (Util::stringDelimitListNonEmptyElts(states.clone(), (literal!(",")).clone())?).clone();
-            s1_2 = (Util::stringDelimitListNonEmptyElts(algs.clone(), (literal!(",")).clone())?).clone();
-            s1_3 = (Util::stringDelimitListNonEmptyElts(outputs.clone(), (literal!(",")).clone())?).clone();
-            s1_4 = (Util::stringDelimitListNonEmptyElts(inputs.clone(), (literal!(",")).clone())?).clone();
-            s1_5 = (Util::stringDelimitListNonEmptyElts(params.clone(), (literal!(",")).clone())?).clone();
-            allVarStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{{")); __mm_s.push_str(&*s1_1.clone()); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_2.clone()); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_3.clone()); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_4.clone()); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_5.clone()); __mm_s.push_str(&*literal!("}}")); ArcStr::from(__mm_s) }).clone();
+            s1_1 = (Util::stringDelimitListNonEmptyElts(states, (literal!(",")).clone())?).clone();
+            s1_2 = (Util::stringDelimitListNonEmptyElts(algs, (literal!(",")).clone())?).clone();
+            s1_3 = (Util::stringDelimitListNonEmptyElts(outputs, (literal!(",")).clone())?).clone();
+            s1_4 = (Util::stringDelimitListNonEmptyElts(inputs, (literal!(",")).clone())?).clone();
+            s1_5 = (Util::stringDelimitListNonEmptyElts(params, (literal!(",")).clone())?).clone();
+            allVarStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{{")); __mm_s.push_str(&*s1_1); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_2); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_3); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_4); __mm_s.push_str(&*literal!("},{")); __mm_s.push_str(&*s1_5); __mm_s.push_str(&*literal!("}}")); ArcStr::from(__mm_s) }).clone();
             s3 = (printMmaEqnsStr(eqns.clone(), (vars.clone(), knvars.clone()))?).clone();
             s4 = (printMmaEqnsStr(ieqns.clone(), (vars.clone(), knvars.clone()))?).clone();
-            res = stringAppendList(list![(literal!("{")).clone(), (allVarStr.clone()).clone(), (literal!(",")).clone(), (s3.clone()).clone(), (literal!(",")).clone(), (s4.clone()).clone(), (literal!("}")).clone()]);
+            res = stringAppendList(list![(literal!("{")).clone(), (allVarStr).clone(), (literal!(",")).clone(), (s3).clone(), (literal!(",")).clone(), (s4).clone(), (literal!("}")).clone()]);
             res
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -102,7 +102,7 @@ pub(crate) fn printMmaEqnsStr(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE:
         eqns => {
             let mut s1: ArcStr;
             s1 = (Util::stringDelimitListNonEmptyElts(List::map1(eqns.clone(), (std::sync::Arc::new(printMmaEqnStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, BackendDAE::Variables)) -> Result<ArcStr> + 'static>), inTuple)?, (literal!(",")).clone())?).clone();
-            res = stringAppendList(list![(literal!("{")).clone(), (s1.clone()).clone(), (literal!("}")).clone()]);
+            res = stringAppendList(list![(literal!("{")).clone(), (s1).clone(), (literal!("}")).clone()]);
             res
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -118,7 +118,7 @@ pub(crate) fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (B
             let mut s2: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
-            r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
+            r#str = stringAppendList(list![(s1).clone(), (literal!("==")).clone(), (s2).clone()]);
             r#str
         },
         (Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. }, (vars, knvars)) => {
@@ -126,7 +126,7 @@ pub(crate) fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (B
             let mut s2: ArcStr;
             s1 = (printComponentRefMmaStr(cr.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
-            r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
+            r#str = stringAppendList(list![(s1).clone(), (literal!("==")).clone(), (s2).clone()]);
             r#str
         },
         (Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, (vars, knvars)) => {
@@ -134,13 +134,13 @@ pub(crate) fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (B
             let mut s2: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
-            r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
+            r#str = stringAppendList(list![(s1).clone(), (literal!("==")).clone(), (s2).clone()]);
             r#str
         },
         (Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, .. }, (vars, knvars)) => {
             let mut s1: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
-            r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("== 0")).clone()]);
+            r#str = stringAppendList(list![(s1).clone(), (literal!("== 0")).clone()]);
             r#str
         },
         (Deref @ BackendDAE::Equation::ALGORITHM { alg, .. }, _) => {
@@ -156,7 +156,7 @@ pub(crate) fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (B
             let mut s2: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
-            r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
+            r#str = stringAppendList(list![(s1).clone(), (literal!("==")).clone(), (s2).clone()]);
             r#str
         },
         _ => bail!("match: no arm matched"),
@@ -934,9 +934,9 @@ fn dumpSingleAlgorithmStr(mut algs: Arc<DAE::Algorithm>) -> Result<ArcStr> {
             let mut r#str: ArcStr;
             let mut myStream: IOStream::IOStream;
             myStream = IOStream::create((literal!("")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
-            myStream = DAEDump::dumpAlgorithmStream(Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts.clone() }), source: DAE::emptyElementSource().clone() }), myStream.clone());
-            r#str = (IOStream::string(myStream.clone())?).clone();
-            r#str.clone()
+            myStream = DAEDump::dumpAlgorithmStream(Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts.clone() }), source: DAE::emptyElementSource().clone() }), myStream);
+            r#str = (IOStream::string(myStream)?).clone();
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -952,11 +952,11 @@ pub(crate) fn printMmaVarsStr(mut vars: BackendDAE::Variables) -> Result<(Arc<me
         _ => {
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = BackendVariable::varList(vars.clone())?;
-            varLst = varLst.clone().reverse();
+            varLst = varLst.reverse();
             states = List::map2(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaVarStr, BackendDAE::Var, bool, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool, BackendDAE::Variables) -> Result<ArcStr> + 'static>), true, vars.clone())?;
             algs = List::map2(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaVarStr, BackendDAE::Var, bool, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool, BackendDAE::Variables) -> Result<ArcStr> + 'static>), false, vars)?;
             outputs = List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaOutputStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
-            inputs = List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaInputStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
+            inputs = List::map(varLst, (std::sync::Arc::new(fnptr!(printMmaInputStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
             (states, algs, outputs, inputs)
         },
     });
@@ -1102,7 +1102,7 @@ pub(crate) fn printMmaParamsStr(mut knvars: BackendDAE::Variables) -> Result<(Ar
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = BackendVariable::varList(knvars)?;
             params = List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaParamStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
-            inputs = List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaInputStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
+            inputs = List::map(varLst, (std::sync::Arc::new(fnptr!(printMmaInputStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
             (params, inputs)
         },
     });

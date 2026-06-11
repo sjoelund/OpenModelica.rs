@@ -258,60 +258,60 @@ pub(crate) fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*realString(factor1.clone())); __mm_s.push_str(&*literal!(" * ")); ArcStr::from(__mm_s) }).clone();
             b = false;
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mol^(")); __mm_s.push_str(&*intString(i1.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i1.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i1.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone() && intNe(i2.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            s = (if (intEq(i1.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i1.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b && intNe(i2.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("cd^(")); __mm_s.push_str(&*intString(i2.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i2.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i2.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone() && intNe(i3.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            s = (if (intEq(i2.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i2.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b && intNe(i3.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("m^(")); __mm_s.push_str(&*intString(i3.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i3.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i3.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone() && intNe(i4.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            s = (if (intEq(i3.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i3.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b && intNe(i4.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("s^(")); __mm_s.push_str(&*intString(i4.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i4.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i4.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone() && intNe(i5.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            s = (if (intEq(i4.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i4.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b && intNe(i5.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("A^(")); __mm_s.push_str(&*intString(i5.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i5.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i5.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone() && intNe(i6.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            s = (if (intEq(i5.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i5.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b && intNe(i6.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("K^(")); __mm_s.push_str(&*intString(i6.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i6.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i6.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone() && intNe(i7.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            s = (if (intEq(i6.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i6.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b && intNe(i7.clone(), 0)) {literal!(" * ")} else {literal!("")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("g^(")); __mm_s.push_str(&*intString(i7.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            s = (if (intEq(i7.clone(), 0)) {literal!("")} else {s.clone()}).clone();
-            b = b.clone() || intNe(i7.clone(), 0);
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            s = (if (b.clone()) {literal!("")} else {literal!("1")}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            s = (if (intEq(i7.clone(), 0)) {literal!("")} else {s}).clone();
+            b = b || intNe(i7.clone(), 0);
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }).clone();
+            s = (if (b) {literal!("")} else {literal!("1")}).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
+            r#str
         },
         Unit::MASTER { varList: ref crefList } => {
             let mut r#str: ArcStr;
             r#str = (literal!("MASTER(")).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*printListCr(crefList.clone())?); ArcStr::from(__mm_s) }).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*printListCr(crefList.clone())?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+            r#str
         },
         Unit::UNKNOWN { unit: mut s } => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UNKOWN(")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str
         },
     })).clone();
     Ok(outString)
@@ -326,13 +326,13 @@ pub(crate) fn printListCr(mut inlCr: Arc<metamodelica::List<Arc<DAE::ComponentRe
         Deref @ metamodelica::List::Cons { head: cr, tail: Deref @ metamodelica::List::Nil } => {
             let mut s: ArcStr;
             s = (ComponentReference::crefStr(cr.clone())?).clone();
-            s.clone()
+            s
         },
         Deref @ metamodelica::List::Cons { head: cr, tail: lCr } => {
             let mut s: ArcStr;
             s = (ComponentReference::crefStr(cr.clone())?).clone();
-            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*printListCr(lCr.clone())?); ArcStr::from(__mm_s) }).clone();
-            s.clone()
+            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*printListCr(lCr.clone())?); ArcStr::from(__mm_s) }).clone();
+            s
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -538,7 +538,7 @@ pub(crate) fn unitString(mut inUnit: Unit, mut inHtU2S: (metamodelica::Array<Arc
         _ if (BaseHashTable::hasKey(inUnit.clone(), inHtU2S.clone())?) => {
             let mut s: ArcStr;
             s = (BaseHashTable::get(inUnit.clone(), inHtU2S.clone())?).clone();
-            s.clone()
+            s
         },
         mut unit @ Unit::UNIT { .. } => {
             let mut s: ArcStr;
@@ -552,44 +552,44 @@ pub(crate) fn unitString(mut inUnit: Unit, mut inHtU2S: (metamodelica::Array<Arc
             let mut sExponent: ArcStr;
             let mut b: bool;
             s = (prefix2String(var_field!(unit.factor, Unit::UNIT).clone())).clone();
-            s = (if (realEq(var_field!(unit.factor, Unit::UNIT).clone(), metamodelica::OrderedFloat(1.0_f64))) {literal!("")} else {s.clone()}).clone();
+            s = (if (realEq(var_field!(unit.factor, Unit::UNIT).clone(), metamodelica::OrderedFloat(1.0_f64))) {literal!("")} else {s}).clone();
             b = false;
             sExponent = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.mol, Unit::UNIT).clone())}).clone();
-            s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mol")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s1 = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 0)) {literal!("")} else {s1.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.mol, Unit::UNIT).clone(), 0);
-            s2 = (if (b.clone() && intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mol")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s1 = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 0)) {literal!("")} else {s1}).clone();
+            b = b || intNe(var_field!(unit.mol, Unit::UNIT).clone(), 0);
+            s2 = (if (b && intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.cd, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.cd, Unit::UNIT).clone())}).clone();
-            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("cd")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s2 = (if (intEq(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!("")} else {s2.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0);
-            s3 = (if (b.clone() && intNe(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s2); __mm_s.push_str(&*literal!("cd")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s2 = (if (intEq(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!("")} else {s2}).clone();
+            b = b || intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0);
+            s3 = (if (b && intNe(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.m, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.m, Unit::UNIT).clone())}).clone();
-            s3 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("m")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s3 = (if (intEq(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!("")} else {s3.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.m, Unit::UNIT).clone(), 0);
-            s4 = (if (b.clone() && intNe(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s3 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s3); __mm_s.push_str(&*literal!("m")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s3 = (if (intEq(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!("")} else {s3}).clone();
+            b = b || intNe(var_field!(unit.m, Unit::UNIT).clone(), 0);
+            s4 = (if (b && intNe(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.s, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.s, Unit::UNIT).clone())}).clone();
-            s4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("s")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s4 = (if (intEq(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!("")} else {s4.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.s, Unit::UNIT).clone(), 0);
-            s5 = (if (b.clone() && intNe(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s4); __mm_s.push_str(&*literal!("s")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s4 = (if (intEq(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!("")} else {s4}).clone();
+            b = b || intNe(var_field!(unit.s, Unit::UNIT).clone(), 0);
+            s5 = (if (b && intNe(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.A, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.A, Unit::UNIT).clone())}).clone();
-            s5 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s5.clone()); __mm_s.push_str(&*literal!("A")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s5 = (if (intEq(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!("")} else {s5.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.A, Unit::UNIT).clone(), 0);
-            s6 = (if (b.clone() && intNe(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s5 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s5); __mm_s.push_str(&*literal!("A")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s5 = (if (intEq(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!("")} else {s5}).clone();
+            b = b || intNe(var_field!(unit.A, Unit::UNIT).clone(), 0);
+            s6 = (if (b && intNe(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.K, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.K, Unit::UNIT).clone())}).clone();
-            s6 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s6.clone()); __mm_s.push_str(&*literal!("K")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s6 = (if (intEq(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!("")} else {s6.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.K, Unit::UNIT).clone(), 0);
-            s7 = (if (b.clone() && intNe(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s6 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s6); __mm_s.push_str(&*literal!("K")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s6 = (if (intEq(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!("")} else {s6}).clone();
+            b = b || intNe(var_field!(unit.K, Unit::UNIT).clone(), 0);
+            s7 = (if (b && intNe(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.g, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.g, Unit::UNIT).clone())}).clone();
-            s7 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s7.clone()); __mm_s.push_str(&*literal!("g")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s7 = (if (intEq(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!("")} else {s7.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.g, Unit::UNIT).clone(), 0);
-            s = (if (b.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*s5.clone()); __mm_s.push_str(&*s6.clone()); __mm_s.push_str(&*s7.clone()); ArcStr::from(__mm_s) }} else {literal!("1")}).clone();
-            s.clone()
+            s7 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s7); __mm_s.push_str(&*literal!("g")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s7 = (if (intEq(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!("")} else {s7}).clone();
+            b = b || intNe(var_field!(unit.g, Unit::UNIT).clone(), 0);
+            s = (if (b) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s); __mm_s.push_str(&*s1); __mm_s.push_str(&*s2); __mm_s.push_str(&*s3); __mm_s.push_str(&*s4); __mm_s.push_str(&*s5); __mm_s.push_str(&*s6); __mm_s.push_str(&*s7); ArcStr::from(__mm_s) }} else {literal!("1")}).clone();
+            s
         },
         _ => {
             Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function Unit.unitString failed for \"")); __mm_s.push_str(&*unit2string(inUnit.clone())?); __mm_s.push_str(&*literal!("\".")); ArcStr::from(__mm_s) }).clone())?;

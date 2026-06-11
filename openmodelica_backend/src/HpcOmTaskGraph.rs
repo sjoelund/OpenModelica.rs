@@ -1389,43 +1389,43 @@ fn getVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iAdjacency
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(list![eqnIdx.clone()], iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns, .. } => {
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(eqns.clone(), iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::SINGLEARRAY { eqn: eqnIdx, .. } => {
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(list![eqnIdx.clone()], iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: eqnIdx, .. } => {
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(list![eqnIdx.clone()], iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { eqn: eqnIdx, .. } => {
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(list![eqnIdx.clone()], iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { eqn: eqnIdx, .. } => {
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(list![eqnIdx.clone()], iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { eqn: eqnIdx, .. } => {
             let mut eqnVars: Arc<metamodelica::List<(i32, i32)>>;
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqnVars, paramVars) = getVarsByEqns(list![eqnIdx.clone()], iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { residualequations: resEqns, innerEquations, .. }, .. } => {
             let mut eqns: Arc<metamodelica::List<i32>>;
@@ -1433,7 +1433,7 @@ fn getVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iAdjacency
             let mut paramVars: Arc<metamodelica::List<i32>>;
             (eqns, _, _) = List::map_3(innerEquations.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnAndVarsFromInnerEquation) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::InnerEquation) -> Result<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<DAE::Constraint>>>)> + 'static>))?;
             (eqnVars, paramVars) = getVarsByEqns(listAppend(resEqns.clone(), eqns.clone()), iAdjacencyMatrix.clone(), iOrderedVars, iKnownVars, iOrderedEquations, iAnalyzeParameters)?;
-            (eqnVars.clone(), paramVars.clone())
+            (eqnVars, paramVars)
         },
         _ => {
             metamodelica::print((literal!("Error in getVarsBySCC! Unsupported component-type \n")).clone());
@@ -2098,10 +2098,10 @@ fn getAllSuccessors2(mut nodes: Arc<metamodelica::List<i32>>, mut graph: TaskGra
             let mut successors1: Arc<metamodelica::List<i32>>;
             successors1 = List::flatten(List::map1(nodes, (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), graph.clone())?)?;
             check = List::map1(successors1.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), alreadyVisited.clone())?;
-            (_, successors1) = List::filterOnTrueSync(check.clone(), (std::sync::Arc::new(fnptr!(boolNot, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool) -> Result<bool> + 'static>), successors1.clone())?;
-            successors1 = List::unique(successors1.clone());
+            (_, successors1) = List::filterOnTrueSync(check, (std::sync::Arc::new(fnptr!(boolNot, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool) -> Result<bool> + 'static>), successors1)?;
+            successors1 = List::unique(successors1);
             List::map2_0(successors1.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), true, alreadyVisited.clone())?;
-            { (nodes, graph, alreadyVisited, successorsIn) = (successors1.clone(), graph.clone(), alreadyVisited.clone(), listAppend(successors1.clone(), successorsIn)); continue '__tco; }
+            { (nodes, graph, alreadyVisited, successorsIn) = (successors1.clone(), graph.clone(), alreadyVisited.clone(), listAppend(successors1, successorsIn)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2149,7 +2149,7 @@ pub(crate) fn updateContinuousEntriesInList(mut lstIn: Arc<metamodelica::List<i3
             List::map2_0(deleteEntriesIn, (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), 1, deleteArr.clone())?;
             (deleteArr, _) = Array::mapFold(deleteArr.clone(), (std::sync::Arc::new(setDeleteArr) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<(i32, i32)> + 'static>), 0)?;
             lstTmp = List::map1(lstIn, (std::sync::Arc::new(fnptr!(removeContinuousEntries1, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<i32> + 'static>), deleteArr.clone())?;
-            lstTmp.clone()
+            lstTmp
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3303,7 +3303,7 @@ fn dumpAdjacencyRow(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> () {
         Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
             let mut s: ArcStr;
             s = (intString(x.clone())).clone();
-            metamodelica::print((s.clone()).clone());
+            metamodelica::print((s).clone());
             metamodelica::print((literal!(" ")).clone());
             dumpAdjacencyRow(xs.clone());
             ()
@@ -4830,13 +4830,13 @@ pub(crate) fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> (i32, m
             } else {
                 offset = 0;
             }
-            costs = offset.clone() + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
-            (ops.clone(), intReal(costs.clone()))
+            costs = offset + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
+            (ops, intReal(costs))
         },
         Deref @ BackendDAE::CompInfo::SYSTEM { size, density: dens, .. } => {
             let mut allOpCosts: metamodelica::Real;
             allOpCosts = (metamodelica::OrderedFloat(0.049_f64)) * (realPow((intReal(size.clone())) * ((metamodelica::OrderedFloat(1.0_f64)) + ((dens.clone()) * (metamodelica::OrderedFloat(19.0_f64)))), metamodelica::OrderedFloat(3.0_f64)));
-            (1, allOpCosts.clone())
+            (1, allOpCosts)
         },
         Deref @ BackendDAE::CompInfo::TORN_ANALYSE { tornEqs: torn, otherEqs: other, tornSize: size, .. } => {
             let mut ops: i32;
@@ -4846,8 +4846,8 @@ pub(crate) fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> (i32, m
             let mut otherCosts: metamodelica::Real;
             (ops, tornCosts) = calculateCosts(torn.clone());
             (ops1, otherCosts) = calculateCosts(other.clone());
-            allOpCosts = ((metamodelica::OrderedFloat(3000.0_f64)) + ((metamodelica::OrderedFloat(7.62_f64)) * (realPow(intReal(size.clone()), metamodelica::OrderedFloat(3.0_f64))))) + (((metamodelica::OrderedFloat(2.0_f64)) * (tornCosts.clone())) + ((metamodelica::OrderedFloat(1.4_f64)) * (otherCosts.clone())));
-            (ops.clone() + ops1.clone(), allOpCosts.clone())
+            allOpCosts = ((metamodelica::OrderedFloat(3000.0_f64)) + ((metamodelica::OrderedFloat(7.62_f64)) * (realPow(intReal(size.clone()), metamodelica::OrderedFloat(3.0_f64))))) + (((metamodelica::OrderedFloat(2.0_f64)) * (tornCosts)) + ((metamodelica::OrderedFloat(1.4_f64)) * (otherCosts)));
+            (ops + ops1, allOpCosts)
         },
         Deref @ BackendDAE::CompInfo::NO_COMP { numAdds, numMul, numDiv, numTrig, numRelations: numRel, numLog, numOth, funcCalls: numFuncs } => {
             let mut costs: i32;
@@ -4855,8 +4855,8 @@ pub(crate) fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> (i32, m
             let mut offset: i32;
             ops = numAdds.clone() + numMul.clone() + numOth.clone() + numTrig.clone() + numRel.clone() + numLog.clone();
             offset = 50;
-            costs = offset.clone() + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
-            (ops.clone(), intReal(costs.clone()))
+            costs = offset + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
+            (ops, intReal(costs))
         },
         _ => {
             metamodelica::print((literal!("calculate costs failed!\n")).clone());

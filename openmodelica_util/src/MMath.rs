@@ -90,10 +90,10 @@ pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             let mut d: i32;
             ri1 = i1.clone() * i4.clone() + i3.clone() * i2.clone();
             ri2 = i2.clone() * i4.clone();
-            d = intGcd(ri1.clone(), ri2.clone());
-            ri1 = intDiv(ri1.clone(), d.clone());
-            ri2 = intDiv(ri2.clone(), d.clone());
-            normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
+            d = intGcd(ri1, ri2);
+            ri1 = intDiv(ri1, d);
+            ri2 = intDiv(ri2, d);
+            normalizeZero(Rational { nom: ri1, denom: ri2 })
         },
     });
     Ok(r)
@@ -138,10 +138,10 @@ pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             let mut d: i32;
             ri1 = i1.clone() * i4.clone() - i3.clone() * i2.clone();
             ri2 = i2.clone() * i4.clone();
-            d = intGcd(ri1.clone(), ri2.clone());
-            ri1 = intDiv(ri1.clone(), d.clone());
-            ri2 = intDiv(ri2.clone(), d.clone());
-            normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
+            d = intGcd(ri1, ri2);
+            ri1 = intDiv(ri1, d);
+            ri2 = intDiv(ri2, d);
+            normalizeZero(Rational { nom: ri1, denom: ri2 })
         },
     });
     Ok(r)
@@ -156,10 +156,10 @@ pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             let mut d: i32;
             ri1 = i1.clone() * i3.clone();
             ri2 = i2.clone() * i4.clone();
-            d = intGcd(ri1.clone(), ri2.clone());
-            ri1 = intDiv(ri1.clone(), d.clone());
-            ri2 = intDiv(ri2.clone(), d.clone());
-            normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
+            d = intGcd(ri1, ri2);
+            ri1 = intDiv(ri1, d);
+            ri2 = intDiv(ri2, d);
+            normalizeZero(Rational { nom: ri1, denom: ri2 })
         },
     });
     Ok(r)
@@ -174,10 +174,10 @@ pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             let mut d: i32;
             ri1 = i1.clone() * i4.clone();
             ri2 = i3.clone() * i2.clone();
-            d = intGcd(ri1.clone(), ri2.clone());
-            ri1 = intDiv(ri1.clone(), d.clone());
-            ri2 = intDiv(ri2.clone(), d.clone());
-            normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
+            d = intGcd(ri1, ri2);
+            ri1 = intDiv(ri1, d);
+            ri2 = intDiv(ri2, d);
+            normalizeZero(Rational { nom: ri1, denom: ri2 })
         },
     });
     Ok(r)

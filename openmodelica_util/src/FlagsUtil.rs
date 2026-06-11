@@ -401,7 +401,7 @@ fn evaluateConfigFlag(mut inFlag: Flags::ConfigFlag, mut inValue: ArcStr, mut in
         (Flags::ConfigFlag { index: 2, .. }, _) => {
             let mut values: Arc<metamodelica::List<ArcStr>>;
             values = splitCSV((System::tolower((inValue).clone())).clone());
-            metamodelica::print((printHelp(values.clone())?).clone());
+            metamodelica::print((printHelp(values)?).clone());
             setConfigString(Flags::HELP.clone(), (literal!("omc")).clone())?;
             ()
         },
@@ -658,7 +658,7 @@ fn printExpectedTypeStr(mut inType: Flags::FlagData) -> Result<ArcStr> {
         Flags::FlagData::ENUM_FLAG { validValues: ref enums, .. } => {
             let mut enum_strs: Arc<metamodelica::List<ArcStr>>;
             enum_strs = List::map(enums.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("one of the values {")); __mm_s.push_str(&*stringDelimitList(enum_strs.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("one of the values {")); __mm_s.push_str(&*stringDelimitList(enum_strs, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }
         },
         _ => bail!("match: no arm matched"),
     })).clone();
@@ -1264,12 +1264,12 @@ fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
             let mut wrapped_str: Arc<metamodelica::List<ArcStr>>;
             desc_str = (desc.clone()).clone();
             name = (Util::stringPadRight(((printConfigFlagName(inFlag.clone(), false)?).0).clone(), 28, (literal!(" ")).clone())).clone();
-            flag_str = stringAppendList(list![(name.clone()).clone(), (literal!(" ")).clone(), (desc_str.clone()).clone()]);
+            flag_str = stringAppendList(list![(name).clone(), (literal!(" ")).clone(), (desc_str).clone()]);
             delim_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(descriptionIndent)); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone();
-            wrapped_str = StringUtil::wordWrap((flag_str.clone()).clone(), System::getTerminalWidth(), (delim_str.clone()).clone(), metamodelica::OrderedFloat(0.3_f64))?;
+            wrapped_str = StringUtil::wordWrap((flag_str).clone(), System::getTerminalWidth(), (delim_str).clone(), metamodelica::OrderedFloat(0.3_f64))?;
             opt_str = (printValidOptions(inFlag)?).clone();
-            flag_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(wrapped_str.clone(), (literal!("\n")).clone())); __mm_s.push_str(&*opt_str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            flag_str.clone()
+            flag_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(wrapped_str, (literal!("\n")).clone())); __mm_s.push_str(&*opt_str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            flag_str
         },
     })).clone();
     Ok(outString)
@@ -1288,12 +1288,12 @@ fn printConfigFlagSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
             let mut flag_str: ArcStr;
             let mut opt_str: ArcStr;
             desc_str = (desc.clone()).clone();
-            desc_str = (System::stringReplace((desc_str.clone()).clone(), (literal!("--help=debug")).clone(), (literal!(":ref:`--help=debug <omcflag-debug-section>`")).clone())?).clone();
-            desc_str = (System::stringReplace((desc_str.clone()).clone(), (literal!("--help=optmodules")).clone(), (literal!(":ref:`--help=optmodules <omcflag-optmodules-section>`")).clone())?).clone();
+            desc_str = (System::stringReplace((desc_str).clone(), (literal!("--help=debug")).clone(), (literal!(":ref:`--help=debug <omcflag-debug-section>`")).clone())?).clone();
+            desc_str = (System::stringReplace((desc_str).clone(), (literal!("--help=optmodules")).clone(), (literal!(":ref:`--help=optmodules <omcflag-optmodules-section>`")).clone())?).clone();
             (name, longName) = printConfigFlagName(inFlag.clone(), true)?;
             opt_str = (printValidOptionsSphinx(inFlag)?).clone();
-            flag_str = stringAppendList(list![(literal!(".. _omcflag-")).clone(), (longName.clone()).clone(), (literal!(":\n\n:ref:`")).clone(), (name.clone()).clone(), (literal!("<omcflag-")).clone(), (longName.clone()).clone(), (literal!(">`\n\n")).clone(), (desc_str.clone()).clone(), (literal!("\n")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*opt_str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()]);
-            flag_str.clone()
+            flag_str = stringAppendList(list![(literal!(".. _omcflag-")).clone(), (longName.clone()).clone(), (literal!(":\n\n:ref:`")).clone(), (name).clone(), (literal!("<omcflag-")).clone(), (longName).clone(), (literal!(">`\n\n")).clone(), (desc_str).clone(), (literal!("\n")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*opt_str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()]);
+            flag_str
         },
     })).clone();
     Ok(outString)
@@ -1325,10 +1325,10 @@ fn printValidOptions(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
             let mut opt_str: ArcStr;
             let mut strl = strl.clone();
             opt_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(descriptionIndent)); __mm_s.push_str(&*literal!("   ")); __mm_s.push_str(&*literal!("Valid options:")); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*stringDelimitList(strl.clone(), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone();
-            strl = StringUtil::wordWrap((opt_str.clone()).clone(), System::getTerminalWidth(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(descriptionIndent)); __mm_s.push_str(&*literal!("     ")); ArcStr::from(__mm_s) }).clone(), metamodelica::OrderedFloat(0.3_f64))?;
+            strl = StringUtil::wordWrap((opt_str).clone(), System::getTerminalWidth(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(descriptionIndent)); __mm_s.push_str(&*literal!("     ")); ArcStr::from(__mm_s) }).clone(), metamodelica::OrderedFloat(0.3_f64))?;
             opt_str = stringDelimitList(strl.clone(), (literal!("\n")).clone());
-            opt_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*opt_str.clone()); ArcStr::from(__mm_s) }).clone();
-            opt_str.clone()
+            opt_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*opt_str); ArcStr::from(__mm_s) }).clone();
+            opt_str
         },
         Flags::ConfigFlag { validOptions: Some(Flags::ValidOptions::STRING_DESC_OPTION { options: ref descl }), .. } => {
             let mut opt_str: ArcStr;
@@ -1340,7 +1340,7 @@ fn printValidOptions(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
         }
         __acc.reverse()
     }))); ArcStr::from(__mm_s) }).clone();
-            opt_str.clone()
+            opt_str
         },
         _ => bail!("match: no arm matched"),
     })).clone();
@@ -1363,7 +1363,7 @@ fn printValidOptionsSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
         }
         ArcStr::from(__acc)
     })); ArcStr::from(__mm_s) }).clone();
-            opt_str.clone()
+            opt_str
         },
         Flags::ConfigFlag { validOptions: Some(Flags::ValidOptions::STRING_DESC_OPTION { options: ref descl }), .. } => {
             let mut opt_str: ArcStr;
@@ -1375,7 +1375,7 @@ fn printValidOptionsSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
         }
         ArcStr::from(__acc)
     })); ArcStr::from(__mm_s) }).clone();
-            opt_str.clone()
+            opt_str
         },
         _ => bail!("match: no arm matched"),
     })).clone();
@@ -1411,7 +1411,7 @@ fn defaultFlagSphinx(mut flag: Flags::FlagData) -> ArcStr {
             for mut f in &*var_field!(flag.validValues, Flags::FlagData::ENUM_FLAG).clone() {
                 let mut f = f.clone();
                 (r#str, i) = f.clone();
-                if i.clone() == var_field!(flag.data, Flags::FlagData::ENUM_FLAG).clone() {
+                if i == var_field!(flag.data, Flags::FlagData::ENUM_FLAG).clone() {
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("String (default ")); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(").")); ArcStr::from(__mm_s) }).clone();
                     return r#str.clone();
                 }
@@ -1608,7 +1608,7 @@ pub(crate) fn flagDataString(mut flagData: Flags::FlagData) -> Result<ArcStr> {
             for mut vt in &*var_field!(flagData.validValues, Flags::FlagData::ENUM_FLAG).clone() {
                 let mut vt = vt.clone();
                 (r#str, v) = vt.clone();
-                if v.clone() == var_field!(flagData.data, Flags::FlagData::ENUM_FLAG).clone() {
+                if v == var_field!(flagData.data, Flags::FlagData::ENUM_FLAG).clone() {
                     return Ok(r#str.clone());
                 }
             }

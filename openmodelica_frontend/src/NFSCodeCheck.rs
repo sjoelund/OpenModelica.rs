@@ -185,9 +185,9 @@ pub(crate) fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mu
             let mut ok: bool;
             ty = (literal!("component")).clone();
             ok = checkCompRedeclarationReplaceable((name.clone()).clone(), repl.clone(), ty1.clone(), ty2.clone(), inInfo.clone(), info.clone())?;
-            ok = checkRedeclarationFinal((name.clone()).clone(), (ty.clone()).clone(), fin.clone(), inInfo.clone(), info.clone())? && ok.clone();
-            ok = checkRedeclarationVariability((name.clone()).clone(), (ty.clone()).clone(), var.clone(), inInfo, info.clone())? && ok.clone();
-            let true = (ok.clone()) else { bail!("pattern mismatch") };
+            ok = checkRedeclarationFinal((name.clone()).clone(), (ty.clone()).clone(), fin.clone(), inInfo.clone(), info.clone())? && ok;
+            ok = checkRedeclarationVariability((name.clone()).clone(), (ty).clone(), var.clone(), inInfo, info.clone())? && ok;
+            let true = (ok) else { bail!("pattern mismatch") };
             ()
         },
         (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, prefixes: Deref @ SCode::Prefixes { finalPrefix: fin, replaceablePrefix: repl, .. }, restriction: res, info, .. }, .. }, Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { .. }, .. }) => {
@@ -195,21 +195,21 @@ pub(crate) fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mu
             let mut ok: bool;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
             ok = checkClassRedeclarationReplaceable((name.clone()).clone(), repl.clone(), inInfo.clone(), info.clone())?;
-            ok = checkRedeclarationFinal((name.clone()).clone(), (ty.clone()).clone(), fin.clone(), inInfo, info.clone())? && ok.clone();
-            let true = (ok.clone()) else { bail!("pattern mismatch") };
+            ok = checkRedeclarationFinal((name.clone()).clone(), (ty).clone(), fin.clone(), inInfo, info.clone())? && ok;
+            let true = (ok) else { bail!("pattern mismatch") };
             ()
         },
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, info, .. }, .. }, Deref @ SCode::Element::CLASS { restriction: res, .. }) => {
             let mut ty: ArcStr;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
-            ty = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("a ")); __mm_s.push_str(&*ty.clone()); ArcStr::from(__mm_s) }).clone();
-            Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("component")).clone(), (name.clone()).clone(), (ty.clone()).clone()], list![inInfo, info.clone()])?;
+            ty = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("a ")); __mm_s.push_str(&*ty); ArcStr::from(__mm_s) }).clone();
+            Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("component")).clone(), (name.clone()).clone(), (ty).clone()], list![inInfo, info.clone()])?;
             bail!("fail")
         },
         (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { restriction: res, info, .. }, .. }, Deref @ SCode::Element::COMPONENT { name, .. }) => {
             let mut ty: ArcStr;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
-            Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(ty.clone()).clone(), (name.clone()).clone(), (literal!("a component")).clone()], list![inInfo, info.clone()])?;
+            Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(ty).clone(), (name.clone()).clone(), (literal!("a component")).clone()], list![inInfo, info.clone()])?;
             bail!("fail")
         },
         _ => {

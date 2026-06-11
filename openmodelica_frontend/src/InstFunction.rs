@@ -170,7 +170,7 @@ fn checkExternalObjectMod(mut inMod: Arc<DAE::Mod>, mut inClassName: ArcStr) -> 
         Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { ident: id, r#mod }, tail: _ }, .. } => {
             let mut info: SourceInfo;
             info = Mod::getModInfo(r#mod.clone());
-            Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(id.clone()).clone(), (inClassName).clone()], info.clone())?;
+            Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(id.clone()).clone(), (inClassName).clone()], info)?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -260,7 +260,7 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
             let mut ih = (*ih).clone();
             let mut c = (*c).clone();
             (cache, c, cenv) = Lookup::lookupRecordConstructorClass(cache.clone(), env.clone(), Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }))?;
-            let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(implicitFunctionInstantiation2(cache.clone(), cenv.clone(), ih.clone(), r#mod.clone(), pre.clone(), c.clone(), inst_dims.clone(), true)?) {
+            let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(implicitFunctionInstantiation2(cache.clone(), cenv, ih.clone(), r#mod.clone(), pre.clone(), c.clone(), inst_dims.clone(), true)?) {
                 (__pa0, __pa1, __pa2, Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { path: __pa3, type_: __pa4, source: __pa5, .. }, tail: Deref @ metamodelica::List::Nil }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -270,8 +270,8 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
             fpath = __pa3.clone();
             ty1 = __pa4.clone();
             source = __pa5.clone();
-            fun = DAE::Function::RECORD_CONSTRUCTOR { path: fpath.clone(), type_: ty1.clone(), source: source.clone() };
-            cache = InstUtil::addFunctionsToDAE(cache.clone(), list![fun.clone()], pPrefix.clone())?;
+            fun = DAE::Function::RECORD_CONSTRUCTOR { path: fpath, type_: ty1, source: source };
+            cache = InstUtil::addFunctionsToDAE(cache.clone(), list![fun], pPrefix.clone())?;
             (cache.clone(), env.clone(), ih.clone())
         },
         (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { restriction: r, partialPrefix: pPrefix, .. }, inst_dims) => {
@@ -284,7 +284,7 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             (cache, env, ih, funs) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), r#mod.clone(), pre.clone(), c.clone(), inst_dims.clone(), false)?;
-            cache = InstUtil::addFunctionsToDAE(cache.clone(), funs.clone(), pPrefix.clone())?;
+            cache = InstUtil::addFunctionsToDAE(cache.clone(), funs, pPrefix.clone())?;
             (cache.clone(), env.clone(), ih.clone())
         },
         (_, env, _, _, _, Deref @ SCode::Element::CLASS { name: n, .. }, _) => {
@@ -933,8 +933,8 @@ fn checkExtObjOutputWork(mut ty: Arc<DAE::Type>, mut inTpl: (Arc<Absyn::Path>, S
             str1 = AbsynUtil::pathStringNoQual(path2.clone(), (literal!(".")).clone(), false, false)?;
             str2 = AbsynUtil::pathStringNoQual(path1.clone(), (literal!(".")).clone(), false, false)?;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
-            Error::assertionOrAddSourceMessage(b.clone(), Error::FUNCTION_RETURN_EXT_OBJ.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
-            outTpl = if (b.clone()) {inTpl} else {(path2.clone(), info.clone(), false)};
+            Error::assertionOrAddSourceMessage(b, Error::FUNCTION_RETURN_EXT_OBJ.clone(), list![(str1).clone(), (str2).clone()], info.clone())?;
+            outTpl = if (b) {inTpl} else {(path2.clone(), info.clone(), false)};
             outTpl
         },
         _ => {

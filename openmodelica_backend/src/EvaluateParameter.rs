@@ -576,11 +576,11 @@ fn evaluateParameter(mut var: BackendDAE::Var, mut index: i32, mut globalKnownVa
             let mut e = (*e).clone();
             (e, _) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None);
             (cache, value) = Ceval::ceval(cache, graph, e.clone(), false, openmodelica_ast::Absyn::Msg::NO_MSG, 0)?;
-            e1 = ValuesUtil::valueExp(value.clone(), None)?;
+            e1 = ValuesUtil::valueExp(value, None)?;
             v = BackendVariable::setVarFinal(var.clone(), true)?;
-            globalKnownVars = BackendVariable::setVarAt(globalKnownVars, index, v.clone())?;
+            globalKnownVars = BackendVariable::setVarAt(globalKnownVars, index, v)?;
             repl = BackendVarTransform::addReplacement(repl, cr.clone(), e1.clone(), None)?;
-            replEvaluate = BackendVarTransform::addReplacement(replEvaluate, cr.clone(), e1.clone(), None)?;
+            replEvaluate = BackendVarTransform::addReplacement(replEvaluate, cr.clone(), e1, None)?;
             ()
         },
         BackendDAE::Var { varName: cr, varKind: BackendDAE::VarKind::PARAM { .. }, values: attr, .. } if (BackendVariable::varFixed(var.clone())) => {
@@ -589,13 +589,13 @@ fn evaluateParameter(mut var: BackendDAE::Var, mut index: i32, mut globalKnownVa
             let mut e1: Arc<DAE::Exp>;
             let mut value: Arc<Values::Value>;
             e = DAEUtil::getStartAttrFail(attr.clone())?;
-            (e, _) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None);
+            (e, _) = BackendVarTransform::replaceExp(e, repl.clone(), None);
             (cache, value) = Ceval::ceval(cache, graph, e.clone(), false, openmodelica_ast::Absyn::Msg::NO_MSG, 0)?;
-            e1 = ValuesUtil::valueExp(value.clone(), None)?;
+            e1 = ValuesUtil::valueExp(value, None)?;
             v = BackendVariable::setVarFinal(var.clone(), true)?;
-            globalKnownVars = BackendVariable::setVarAt(globalKnownVars, index, v.clone())?;
+            globalKnownVars = BackendVariable::setVarAt(globalKnownVars, index, v)?;
             repl = BackendVarTransform::addReplacement(repl, cr.clone(), e1.clone(), None)?;
-            replEvaluate = BackendVarTransform::addReplacement(replEvaluate, cr.clone(), e1.clone(), None)?;
+            replEvaluate = BackendVarTransform::addReplacement(replEvaluate, cr.clone(), e1, None)?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1009,7 +1009,7 @@ fn traverseExpVisitorWrapper(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendVarTra
             let mut b1: bool;
             let mut exp = (*exp).clone();
             (exp, b1) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), None);
-            (exp.clone(), (repl.clone(), b.clone() || b1.clone()))
+            (exp.clone(), (repl.clone(), b.clone() || b1))
         },
         _ => {
             (inExp, inTpl)

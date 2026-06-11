@@ -238,35 +238,35 @@ pub(crate) fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
-            if key_comp.clone() == -1 {
+            if key_comp == -1 {
                 assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
-            } else if key_comp.clone() == 1 {
+            } else if key_comp == 1 {
                 assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else {
                 value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::NODE).clone()),&*(value.clone()))) {
-                    assign_variant_field!(tree => Tree::NODE; value = value.clone());
+                    assign_variant_field!(tree => Tree::NODE; value = value);
                 }
             }
-            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
-            if key_comp.clone() == -1 {
+            if key_comp == -1 {
                 outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }), right: crate::NFDuplicateTree::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
+            } else if key_comp == 1 {
                 outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFDuplicateTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }) });
             } else {
                 value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
-                    assign_variant_field!(tree => Tree::LEAF; value = value.clone());
+                    assign_variant_field!(tree => Tree::LEAF; value = value);
                 }
                 outTree = tree;
             }
-            if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
+            if (key_comp == 0) {outTree} else {balance(outTree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -352,18 +352,18 @@ fn balance(mut inTree: Arc<Tree>) -> Result<Arc<Tree>> {
             let mut balanced_tree: Arc<Tree>;
             lh = height(var_field!((*outTree).left, Tree::NODE).clone());
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
-            diff = lh.clone() - rh.clone();
-            if diff.clone() < -1 {
+            diff = lh - rh;
+            if diff < -1 {
                 balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
-            } else if diff.clone() > 1 {
+            } else if diff > 1 {
                 balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
-            } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
-                assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
+            } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh, rh) + 1 {
+                assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh, rh) + 1);
                 balanced_tree = outTree;
             } else {
                 balanced_tree = outTree;
             }
-            balanced_tree.clone()
+            balanced_tree
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -412,7 +412,7 @@ pub(crate) fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
             (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
-            if c.clone() {
+            if c {
                 value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
                 value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
@@ -665,7 +665,7 @@ pub(crate) fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcS
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
-                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
+                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value, height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left, right: new_right });
             }
             outTree
         },
@@ -673,7 +673,7 @@ pub(crate) fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcS
             let mut new_value: Value;
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
-                assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
+                assign_variant_field!(outTree => Tree::LEAF; value = new_value);
             }
             outTree
         },
@@ -699,7 +699,7 @@ pub(crate) fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTre
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
-                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
+                outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value, height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left, right: new_right });
             }
             outTree
         },
@@ -707,7 +707,7 @@ pub(crate) fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTre
             let mut new_value: Value;
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
-                assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
+                assign_variant_field!(outTree => Tree::LEAF; value = new_value);
             }
             outTree
         },
@@ -780,12 +780,12 @@ fn rotateLeft(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
         Deref @ Tree::NODE { right: child @ Deref @ Tree::NODE { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), var_field!((**child).left, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), node.clone(), var_field!((**child).right, Tree::NODE).clone())?
+            setTreeLeftRight(child.clone(), node, var_field!((**child).right, Tree::NODE).clone())?
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::NFDuplicateTree::Tree::interned_EMPTY())?;
-            setTreeLeftRight(child.clone(), node.clone(), crate::NFDuplicateTree::Tree::interned_EMPTY())?
+            setTreeLeftRight(child.clone(), node, crate::NFDuplicateTree::Tree::interned_EMPTY())?
         },
         _ => {
             inNode
@@ -801,12 +801,12 @@ fn rotateRight(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
         Deref @ Tree::NODE { left: child @ Deref @ Tree::NODE { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((**child).right, Tree::NODE).clone(), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node.clone())?
+            setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node)?
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), crate::NFDuplicateTree::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), crate::NFDuplicateTree::Tree::interned_EMPTY(), node.clone())?
+            setTreeLeftRight(child.clone(), crate::NFDuplicateTree::Tree::interned_EMPTY(), node)?
         },
         _ => {
             inNode

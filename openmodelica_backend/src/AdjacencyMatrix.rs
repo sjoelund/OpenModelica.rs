@@ -100,9 +100,9 @@ fn traverseAdjacencyMatrix2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut 
             let mut eqns: Arc<metamodelica::List<i32>>;
             let mut eqns1: Arc<metamodelica::List<i32>>;
             (eqns, extArg) = func(({let __elt = inM.borrow()[(pos-1) as usize].clone(); __elt}), pos, inTypeA)?;
-            eqns1 = List::removeOnTrue(pos, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), eqns.clone())?;
-            (m1, extArg1) = traverseAdjacencyMatrixList(eqns1.clone(), inM.clone(), func.clone(), metamodelica::arrayLength(inM.clone()), pos, extArg.clone())?;
-            { (inM, func, pos, len, stop, inTypeA) = (m1.clone(), func.clone(), pos + 1, len, intGt(pos + 1, len), extArg1.clone()); continue '__tco; }
+            eqns1 = List::removeOnTrue(pos, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), eqns)?;
+            (m1, extArg1) = traverseAdjacencyMatrixList(eqns1, inM.clone(), func.clone(), metamodelica::arrayLength(inM.clone()), pos, extArg)?;
+            { (inM, func, pos, len, stop, inTypeA) = (m1.clone(), func.clone(), pos + 1, len, intGt(pos + 1, len), extArg1); continue '__tco; }
         },
     }
     }
@@ -187,7 +187,7 @@ pub(crate) fn getOtherEqSysAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamo
         }
         __acc.reverse()
     });
-            metamodelica::arrayUpdate(mnew.clone(), index, row.clone())?;
+            metamodelica::arrayUpdate(mnew.clone(), index, row)?;
             { (m, size, index, skip, rowskip, mnew) = (m.clone(), size, index + 1, skip.clone(), rowskip.clone(), mnew.clone()); continue '__tco; }
         },
         _ => {
@@ -227,10 +227,10 @@ fn transposeRow(mut row: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Arr
             let mut iabs: i32;
             let mut col: Arc<metamodelica::List<i32>>;
             iabs = intAbs(i.clone());
-            mt = Array::expand(iabs.clone() - metamodelica::arrayLength(mt.clone()), mt.clone(), metamodelica::nil())?;
-            col = ({let __elt = mt.borrow()[(iabs.clone()-1) as usize].clone(); __elt});
+            mt = Array::expand(iabs - metamodelica::arrayLength(mt.clone()), mt.clone(), metamodelica::nil())?;
+            col = ({let __elt = mt.borrow()[(iabs-1) as usize].clone(); __elt});
             indx1 = if (intLt(i.clone(), 0)) {-(indx)} else {indx};
-            metamodelica::arrayUpdate(mt.clone(), iabs.clone(), metamodelica::cons(indx1.clone(), col.clone()))?;
+            metamodelica::arrayUpdate(mt.clone(), iabs, metamodelica::cons(indx1, col))?;
             transposeRow(res.clone(), mt.clone(), indx)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

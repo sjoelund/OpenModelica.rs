@@ -157,12 +157,12 @@ fn treeGet3(mut inBinTree: Arc<BinTree>, mut ikey: Key, mut inCompResult: i32) -
         (Deref @ BinTree { rightSubTree: Some(right), .. }, 1) => {
             let mut compResult: i32;
             compResult = treeGet2(right.clone(), ikey)?;
-            { (inBinTree, ikey, inCompResult) = (right.clone(), ikey, compResult.clone()); continue '__tco; }
+            { (inBinTree, ikey, inCompResult) = (right.clone(), ikey, compResult); continue '__tco; }
         },
         (Deref @ BinTree { leftSubTree: Some(left), .. }, (-1)) => {
             let mut compResult: i32;
             compResult = treeGet2(left.clone(), ikey)?;
-            { (inBinTree, ikey, inCompResult) = (left.clone(), ikey, compResult.clone()); continue '__tco; }
+            { (inBinTree, ikey, inCompResult) = (left.clone(), ikey, compResult); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -179,7 +179,7 @@ pub(crate) fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamod
             let mut bt_1: Arc<BinTree>;
             let mut bt_2: Arc<BinTree>;
             bt_1 = treeAdd(bt.clone(), key.clone(), 0)?;
-            { (inBinTree, inKeyLst) = (bt_1.clone(), res.clone()); continue '__tco; }
+            { (inBinTree, inKeyLst) = (bt_1, res.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

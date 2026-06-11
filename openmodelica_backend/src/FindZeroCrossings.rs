@@ -130,11 +130,11 @@ fn encapsulateWhenConditions_EqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>,
             let mut syst = (*syst).clone();
             let mut orderedEqs = (*orderedEqs).clone();
             (orderedEqs, varLst, eqnLst, outIndex, outHT) = BackendEquation::traverseEquationArray(orderedEqs.clone(), (std::sync::Arc::new(encapsulateWhenConditions_Equation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))))> + 'static>), (BackendEquation::emptyEqnsSized(BackendEquation::getNumberOfEquations(orderedEqs.clone())), DoubleEnded::fromList(metamodelica::nil())?, DoubleEnded::fromList(metamodelica::nil())?, inIndex, inHT))?;
-            (removedEqs, varLst, eqnLst, outIndex, outHT) = BackendEquation::traverseEquationArray(syst.removedEqs.clone(), (std::sync::Arc::new(encapsulateWhenConditions_Equation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))))> + 'static>), (BackendEquation::emptyEqnsSized(BackendEquation::getNumberOfEquations(syst.removedEqs.clone())), varLst.clone(), eqnLst.clone(), outIndex, outHT))?;
+            (removedEqs, varLst, eqnLst, outIndex, outHT) = BackendEquation::traverseEquationArray(syst.removedEqs.clone(), (std::sync::Arc::new(encapsulateWhenConditions_Equation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))))> + 'static>), (BackendEquation::emptyEqnsSized(BackendEquation::getNumberOfEquations(syst.removedEqs.clone())), varLst, eqnLst, outIndex, outHT))?;
             assign_field!(
-                syst.removedEqs = removedEqs.clone(),
-                syst.orderedVars = BackendVariable::addVars(DoubleEnded::toListNoCopyNoClear(varLst.clone()), orderedVars.clone())?,
-                syst.orderedEqs = BackendEquation::addList(DoubleEnded::toListNoCopyNoClear(eqnLst.clone()), orderedEqs.clone())?
+                syst.removedEqs = removedEqs,
+                syst.orderedVars = BackendVariable::addVars(DoubleEnded::toListNoCopyNoClear(varLst), orderedVars.clone())?,
+                syst.orderedEqs = BackendEquation::addList(DoubleEnded::toListNoCopyNoClear(eqnLst), orderedEqs.clone())?
             );
             BackendDAEUtil::clearEqSyst(syst.clone())?
         },
@@ -156,11 +156,11 @@ fn encapsulateWhenConditions_Equation(mut inEq: Arc<BackendDAE::Equation>, mut i
             let mut index = (*index).clone();
             let mut ht = (*ht).clone();
             (whenEquation, vars1, eqns1, index, ht) = encapsulateWhenConditions_Equations(whenEquation.clone(), source.clone(), index.clone(), ht.clone())?;
-            DoubleEnded::push_list_back(vars.clone(), vars1.clone())?;
-            DoubleEnded::push_list_back(eqns.clone(), eqns1.clone())?;
+            DoubleEnded::push_list_back(vars.clone(), vars1)?;
+            DoubleEnded::push_list_back(eqns.clone(), eqns1)?;
             eqn = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEquation.clone(), source: source.clone(), attr: attr.clone() });
             equationArray = BackendEquation::add(eqn.clone(), equationArray.clone())?;
-            (eqn.clone(), (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
+            (eqn, (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
         },
         (Deref @ BackendDAE::Equation::ALGORITHM { size: 0, alg: alg_, source, expand: crefExpand, attr }, (equationArray, vars, eqns, index, ht)) => {
             let mut eqn: Arc<BackendDAE::Equation>;
@@ -188,18 +188,18 @@ fn encapsulateWhenConditions_Equation(mut inEq: Arc<BackendDAE::Equation>, mut i
                 allPreStmts = listAppend(preStmts.clone(), allPreStmts.clone());
                 allStmts = listAppend(stmts.clone(), allStmts.clone());
             }
-            stmts = allStmts.clone().reverse();
+            stmts = allStmts.reverse();
             sizePre = (allPreStmts.clone().len() as i32);
-            size = size.clone() + index.clone() - sizePre.clone();
-            alg_ = Arc::new(DAE::Algorithm { statementLst: stmts.clone() });
-            eqn = Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg_.clone(), source: source.clone(), expand: crefExpand.clone(), attr: attr.clone() });
+            size = size + index.clone() - sizePre;
+            alg_ = Arc::new(DAE::Algorithm { statementLst: stmts });
+            eqn = Arc::new(BackendDAE::Equation::ALGORITHM { size: size, alg: alg_.clone(), source: source.clone(), expand: crefExpand.clone(), attr: attr.clone() });
             equationArray = BackendEquation::add(eqn.clone(), equationArray.clone())?;
-            if sizePre.clone() > 0 {
-                alg_ = Arc::new(DAE::Algorithm { statementLst: allPreStmts.clone() });
-                eqn2 = Arc::new(BackendDAE::Equation::ALGORITHM { size: sizePre.clone(), alg: alg_.clone(), source: source.clone(), expand: crefExpand.clone(), attr: attr.clone() });
-                DoubleEnded::push_front(eqns.clone(), eqn2.clone());
+            if sizePre > 0 {
+                alg_ = Arc::new(DAE::Algorithm { statementLst: allPreStmts });
+                eqn2 = Arc::new(BackendDAE::Equation::ALGORITHM { size: sizePre, alg: alg_.clone(), source: source.clone(), expand: crefExpand.clone(), attr: attr.clone() });
+                DoubleEnded::push_front(eqns.clone(), eqn2);
             }
-            (eqn.clone(), (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
+            (eqn, (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
         },
         (Deref @ BackendDAE::Equation::ALGORITHM { size, alg: alg_, source, expand: crefExpand, attr }, (equationArray, vars, eqns, index, ht)) => {
             let mut eqn: Arc<BackendDAE::Equation>;
@@ -215,13 +215,13 @@ fn encapsulateWhenConditions_Equation(mut inEq: Arc<BackendDAE::Equation>, mut i
             } };
             stmts = __pa0.clone();
             size = size.clone() - index.clone();
-            (stmts, preStmts, index) = encapsulateWhenConditions_Algorithms(stmts.clone(), vars.clone(), index.clone())?;
+            (stmts, preStmts, index) = encapsulateWhenConditions_Algorithms(stmts, vars.clone(), index.clone())?;
             size = size.clone() + index.clone();
-            stmts = listAppend(preStmts.clone(), stmts.clone());
-            alg_ = Arc::new(DAE::Algorithm { statementLst: stmts.clone() });
+            stmts = listAppend(preStmts, stmts);
+            alg_ = Arc::new(DAE::Algorithm { statementLst: stmts });
             eqn = Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg_.clone(), source: source.clone(), expand: crefExpand.clone(), attr: attr.clone() });
             equationArray = BackendEquation::add(eqn.clone(), equationArray.clone())?;
-            (eqn.clone(), (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
+            (eqn, (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
         },
         (_, (equationArray, vars, eqns, index, ht)) => {
             let mut equationArray = (*equationArray).clone();
@@ -249,7 +249,7 @@ fn encapsulateWhenConditions_Equations(mut inWhenEquation: Arc<BackendDAE::WhenE
             let mut condition = (*condition).clone();
             (condition, vars, eqns, index, ht) = encapsulateWhenConditions_Equations1(condition.clone(), inSource, inIndex, inHT)?;
             whenEquation = Arc::new(BackendDAE::WhenEquation { condition: condition.clone(), whenStmtLst: whenStmtLst.clone(), elsewhenPart: None });
-            (whenEquation.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone())
+            (whenEquation, vars, eqns, index, ht)
         },
         Deref @ BackendDAE::WhenEquation { condition, whenStmtLst, elsewhenPart: Some(elsewhenPart) } => {
             let mut index: i32;
@@ -262,11 +262,11 @@ fn encapsulateWhenConditions_Equations(mut inWhenEquation: Arc<BackendDAE::WhenE
             let mut condition = (*condition).clone();
             let mut elsewhenPart = (*elsewhenPart).clone();
             (elsewhenPart, vars1, eqns1, index, ht) = encapsulateWhenConditions_Equations(elsewhenPart.clone(), inSource.clone(), inIndex, inHT)?;
-            (condition, vars, eqns, index, ht) = encapsulateWhenConditions_Equations1(condition.clone(), inSource, index.clone(), ht.clone())?;
+            (condition, vars, eqns, index, ht) = encapsulateWhenConditions_Equations1(condition.clone(), inSource, index, ht)?;
             whenEquation = Arc::new(BackendDAE::WhenEquation { condition: condition.clone(), whenStmtLst: whenStmtLst.clone(), elsewhenPart: Some(elsewhenPart.clone()) });
-            vars1 = listAppend(vars.clone(), vars1.clone());
-            eqns1 = listAppend(eqns.clone(), eqns1.clone());
-            (whenEquation.clone(), vars1.clone(), eqns1.clone(), index.clone(), ht.clone())
+            vars1 = listAppend(vars, vars1);
+            eqns1 = listAppend(eqns, eqns1);
+            (whenEquation, vars1, eqns1, index, ht)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.encapsulateWhenConditions_Equations")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
@@ -297,16 +297,16 @@ fn encapsulateWhenConditions_Equations1(mut inCondition: Arc<DAE::Exp>, mut inSo
             let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
             let mut array = (*array).clone();
             (array, vars, eqns, index, ht) = encapsulateWhenConditions_EquationsWithArrayConditions(array.clone(), inSource, inIndex, inHT.clone())?;
-            (Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: array.clone() }), vars.clone(), eqns.clone(), index.clone(), ht.clone())
+            (Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: array.clone() }), vars, eqns, index, ht)
         },
         _ if (BaseHashTable::hasKey(inCondition.clone(), inHT.clone())?) => {
             let mut localIndex: i32;
             let mut crStr: ArcStr;
             let mut condition: Arc<DAE::Exp>;
             localIndex = BaseHashTable::get(inCondition.clone(), inHT.clone())?;
-            crStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$whenCondition")); __mm_s.push_str(&*intString(localIndex.clone())); ArcStr::from(__mm_s) }).clone();
-            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
-            (condition.clone(), metamodelica::nil(), metamodelica::nil(), inIndex, inHT.clone())
+            crStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$whenCondition")); __mm_s.push_str(&*intString(localIndex)); ArcStr::from(__mm_s) }).clone();
+            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
+            (condition, metamodelica::nil(), metamodelica::nil(), inIndex, inHT.clone())
         },
         _ => {
             let mut var: BackendDAE::Var;
@@ -317,10 +317,10 @@ fn encapsulateWhenConditions_Equations1(mut inCondition: Arc<DAE::Exp>, mut inSo
             ht = BaseHashTable::add((inCondition.clone(), inIndex), inHT.clone())?;
             crStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$whenCondition")); __mm_s.push_str(&*intString(inIndex)); ArcStr::from(__mm_s) }).clone();
             var = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_BOOL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: inSource.clone(), values: DAEUtil::setProtectedAttr(Some(DAE::emptyVarAttrBool().clone()), true)?, tearingSelectOption: None, hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: Some(Arc::new(SCode::Comment { annotation_: None, comment: Some((ExpressionBasics::printExpStr(inCondition.clone())?).clone()) })), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            var = BackendVariable::setVarFixed(var.clone(), true)?;
+            var = BackendVariable::setVarFixed(var, true)?;
             eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: inCondition.clone(), source: inSource, attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
-            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
-            (condition.clone(), list![var.clone()], list![eqn.clone()], inIndex + 1, ht.clone())
+            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
+            (condition, list![var], list![eqn], inIndex + 1, ht)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -368,17 +368,17 @@ fn encapsulateWhenConditions_Algorithms(mut inStmts: Arc<metamodelica::List<Arc<
             let mut condition = (*condition).clone();
             (condition, vars1, preStmts, index) = encapsulateWhenConditions_Algorithms1(condition.clone(), source.clone(), inIndex)?;
             (conditions, initialCall) = BackendDAEUtil::getConditionList(condition.clone())?;
-            DoubleEnded::push_list_front(vars.clone(), vars1.clone())?;
+            DoubleEnded::push_list_front(vars.clone(), vars1)?;
             if CheckModel::algorithmStatementListOutputs(stmts1.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?.is_empty() {
-                (stmts, preStmts2, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index.clone())?;
-                preStmts = listAppend(preStmts.clone(), preStmts2.clone());
-                stmts = metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: condition.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts1.clone(), elseWhen: None, source: source.clone() }), stmts.clone());
+                (stmts, preStmts2, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index)?;
+                preStmts = listAppend(preStmts, preStmts2);
+                stmts = metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: condition.clone(), conditions: conditions, initialCall: initialCall, statementLst: stmts1.clone(), elseWhen: None, source: source.clone() }), stmts);
             } else {
-                (stmts, stmts_, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index.clone())?;
-                stmts_ = metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: condition.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts1.clone(), elseWhen: None, source: source.clone() }), stmts_.clone());
-                stmts = listAppend(stmts_.clone(), stmts.clone());
+                (stmts, stmts_, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index)?;
+                stmts_ = metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: condition.clone(), conditions: conditions, initialCall: initialCall, statementLst: stmts1.clone(), elseWhen: None, source: source.clone() }), stmts_);
+                stmts = listAppend(stmts_, stmts);
             }
-            (stmts.clone(), preStmts.clone(), index.clone())
+            (stmts, preStmts, index)
         },
         Deref @ metamodelica::List::Cons { head: stmt @ Deref @ DAE::Statement::STMT_WHEN { exp: condition, statementLst: stmts1, elseWhen: Some(elseWhen), source, .. }, tail: rest } => {
             let mut stmt2: Arc<DAE::Statement>;
@@ -395,38 +395,38 @@ fn encapsulateWhenConditions_Algorithms(mut inStmts: Arc<metamodelica::List<Arc<
             let mut elseWhen = (*elseWhen).clone();
             (condition, vars1, preStmts, index) = encapsulateWhenConditions_Algorithms1(condition.clone(), source.clone(), inIndex)?;
             (conditions, initialCall) = BackendDAEUtil::getConditionList(condition.clone())?;
-            DoubleEnded::push_list_front(vars.clone(), vars1.clone())?;
-            (elseWhenList, preStmts2, index) = encapsulateWhenConditions_Algorithms(list![elseWhen.clone()], vars.clone(), index.clone())?;
+            DoubleEnded::push_list_front(vars.clone(), vars1)?;
+            (elseWhenList, preStmts2, index) = encapsulateWhenConditions_Algorithms(list![elseWhen.clone()], vars.clone(), index)?;
             if elseWhenList.clone().is_empty() {
                 (stmts, preStmts, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, inIndex)?;
-                stmts_ = metamodelica::cons(stmt.clone(), listAppend(preStmts.clone(), stmts.clone()));
+                stmts_ = metamodelica::cons(stmt.clone(), listAppend(preStmts.clone(), stmts));
             } else {
                 elseWhen = List::last(elseWhenList.clone())?;
-                stmt2 = Arc::new(DAE::Statement::STMT_WHEN { exp: condition.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts1.clone(), elseWhen: Some(elseWhen.clone()), source: source.clone() });
+                stmt2 = Arc::new(DAE::Statement::STMT_WHEN { exp: condition.clone(), conditions: conditions, initialCall: initialCall, statementLst: stmts1.clone(), elseWhen: Some(elseWhen.clone()), source: source.clone() });
                 if CheckModel::algorithmStatementListOutputs(list![stmt2.clone()], openmodelica_frontend_types::DAE::Expand::EXPAND)?.is_empty() {
-                    preStmts2 = List::stripLast(elseWhenList.clone())?;
-                    preStmts = listAppend(preStmts.clone(), preStmts2.clone());
-                    (stmts, preStmts2, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index.clone())?;
-                    preStmts = listAppend(preStmts.clone(), preStmts2.clone());
-                    stmts_ = metamodelica::cons(stmt2.clone(), stmts.clone());
+                    preStmts2 = List::stripLast(elseWhenList)?;
+                    preStmts = listAppend(preStmts, preStmts2);
+                    (stmts, preStmts2, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index)?;
+                    preStmts = listAppend(preStmts, preStmts2);
+                    stmts_ = metamodelica::cons(stmt2, stmts);
                 } else if (elseWhenList.clone().len() as i32) == 1 {
-                    preStmts = listAppend(preStmts.clone(), preStmts2.clone());
-                    (stmts, stmts_, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index.clone())?;
-                    stmts_ = metamodelica::cons(stmt2.clone(), listAppend(stmts_.clone(), stmts.clone()));
+                    preStmts = listAppend(preStmts, preStmts2);
+                    (stmts, stmts_, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, index)?;
+                    stmts_ = metamodelica::cons(stmt2, listAppend(stmts_, stmts));
                 } else {
                     (stmts, preStmts, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, inIndex)?;
-                    stmts_ = listAppend(preStmts.clone(), stmts.clone());
+                    stmts_ = listAppend(preStmts.clone(), stmts);
                 }
             }
-            (stmts_.clone(), preStmts.clone(), index.clone())
+            (stmts_, preStmts, index)
         },
         Deref @ metamodelica::List::Cons { head: stmt, tail: rest } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut preStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut index: i32;
             (stmts, preStmts, index) = encapsulateWhenConditions_Algorithms(rest.clone(), vars, inIndex)?;
-            stmts = listAppend(preStmts.clone(), stmts.clone());
-            (metamodelica::cons(stmt.clone(), stmts.clone()), metamodelica::nil(), index.clone())
+            stmts = listAppend(preStmts, stmts);
+            (metamodelica::cons(stmt.clone(), stmts), metamodelica::nil(), index)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.encapsulateWhenConditions_Algorithms")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
@@ -456,10 +456,10 @@ fn encapsulateWhenConditions_Algorithms1(mut inCondition: Arc<DAE::Exp>, mut inS
             let mut condition = (*condition).clone();
             crStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$whenCondition")); __mm_s.push_str(&*intString(inIndex)); ArcStr::from(__mm_s) }).clone();
             var = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_BOOL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: inSource.clone(), values: DAEUtil::setProtectedAttr(Some(DAE::emptyVarAttrBool().clone()), true)?, tearingSelectOption: None, hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: Some(Arc::new(SCode::Comment { annotation_: None, comment: Some((ExpressionBasics::printExpStr(inCondition.clone())?).clone()) })), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            var = BackendVariable::setVarFixed(var.clone(), true)?;
+            var = BackendVariable::setVarFixed(var, true)?;
             stmt = Arc::new(DAE::Statement::STMT_ASSIGN { type_: DAE::T_BOOL_DEFAULT().clone(), exp1: Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() }), exp: condition.clone(), source: inSource });
-            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
-            (condition.clone(), list![var.clone()], list![stmt.clone()], inIndex + 1)
+            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
+            (condition.clone(), list![var], list![stmt], inIndex + 1)
         },
         Deref @ DAE::Exp::ARRAY { ty, scalar, array } => {
             let mut index: i32;
@@ -467,7 +467,7 @@ fn encapsulateWhenConditions_Algorithms1(mut inCondition: Arc<DAE::Exp>, mut inS
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut array = (*array).clone();
             (array, vars, stmts, index) = encapsulateWhenConditions_AlgorithmsWithArrayConditions(array.clone(), inSource, inIndex)?;
-            (Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: array.clone() }), vars.clone(), stmts.clone(), index.clone())
+            (Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: array.clone() }), vars, stmts, index)
         },
         _ => {
             let mut var: BackendDAE::Var;
@@ -476,10 +476,10 @@ fn encapsulateWhenConditions_Algorithms1(mut inCondition: Arc<DAE::Exp>, mut inS
             let mut condition: Arc<DAE::Exp>;
             crStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$whenCondition")); __mm_s.push_str(&*intString(inIndex)); ArcStr::from(__mm_s) }).clone();
             var = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_BOOL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: inSource.clone(), values: DAEUtil::setProtectedAttr(Some(DAE::emptyVarAttrBool().clone()), true)?, tearingSelectOption: None, hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: Some(Arc::new(SCode::Comment { annotation_: None, comment: Some((ExpressionBasics::printExpStr(inCondition.clone())?).clone()) })), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            var = BackendVariable::setVarFixed(var.clone(), true)?;
+            var = BackendVariable::setVarFixed(var, true)?;
             stmt = Arc::new(DAE::Statement::STMT_ASSIGN { type_: DAE::T_BOOL_DEFAULT().clone(), exp1: Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() }), exp: inCondition.clone(), source: inSource });
-            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr.clone()).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
-            (condition.clone(), list![var.clone()], list![stmt.clone()], inIndex + 1)
+            condition = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (crStr).clone(), identType: DAE::T_BOOL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_BOOL_DEFAULT().clone() });
+            (condition.clone(), list![var], list![stmt], inIndex + 1)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.encapsulateWhenConditions_Algorithms1")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
@@ -560,16 +560,16 @@ fn findZeroCrossings1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
             } };
             globalKnownVars = __pa0.clone();
             einfo = __pa1.clone();
-            let BackendDAE::EVENT_INFO { timeEvents: __pa2, zeroCrossings: __pa3, samples: __pa4, relations: __pa5, numberMathEvents: __pa6 } = (einfo.clone()) else { bail!("pattern mismatch") };
+            let BackendDAE::EVENT_INFO { timeEvents: __pa2, zeroCrossings: __pa3, samples: __pa4, relations: __pa5, numberMathEvents: __pa6 } = (einfo) else { bail!("pattern mismatch") };
             timeEvents = __pa2.clone();
             zero_crossings = __pa3.clone();
             sampleLst = __pa4.clone();
             relations = __pa5.clone();
             countMathFunctions = __pa6.clone();
             eqs_lst = BackendEquation::equationList(eqns)?;
-            (zero_crossings, eqs_lst1, countMathFunctions, relations, sampleLst) = findZeroCrossings2(vars.clone(), globalKnownVars.clone(), eqs_lst.clone(), 0, countMathFunctions.clone(), zero_crossings.clone(), relations.clone(), sampleLst.clone(), metamodelica::nil())?;
-            eqs_lst1 = eqs_lst1.clone().reverse();
-            eqns1 = BackendEquation::listEquation(eqs_lst1.clone())?;
+            (zero_crossings, eqs_lst1, countMathFunctions, relations, sampleLst) = findZeroCrossings2(vars.clone(), globalKnownVars.clone(), eqs_lst, 0, countMathFunctions, zero_crossings, relations, sampleLst, metamodelica::nil())?;
+            eqs_lst1 = eqs_lst1.reverse();
+            eqns1 = BackendEquation::listEquation(eqs_lst1)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("findZeroCrossings1 number of relations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("findZeroCrossings1 sample index: ")); __mm_s.push_str(&*intString(ZeroCrossings::length(sampleLst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -590,8 +590,8 @@ fn findZeroCrossings1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
             }
-            einfo = BackendDAE::EventInfo { timeEvents: timeEvents.clone(), zeroCrossings: zero_crossings.clone(), relations: relations.clone(), samples: sampleLst.clone(), numberMathEvents: countMathFunctions.clone() };
-            (outSyst, BackendDAEUtil::setSharedEventInfo(inShared, einfo.clone()))
+            einfo = BackendDAE::EventInfo { timeEvents: timeEvents, zeroCrossings: zero_crossings, relations: relations, samples: sampleLst, numberMathEvents: countMathFunctions };
+            (outSyst, BackendDAEUtil::setSharedEventInfo(inShared, einfo))
         },
     });
     Ok((outSyst, outShared))
@@ -614,14 +614,14 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut stmts_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             eq_count = inEqnCount + 1;
-            let (__pa0, (_, _, _, (__pa1, __pa2, __pa3, __pa4), _)) = traverseStmtsExps(stmts.clone(), (Arc::new(DAE::Exp::SCONST { string: (literal!("$$$")).clone() }), metamodelica::nil(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), (inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions), (eq_count.clone(), inVariables1.clone(), globalKnownVars.clone())), globalKnownVars.clone())?;
+            let (__pa0, (_, _, _, (__pa1, __pa2, __pa3, __pa4), _)) = traverseStmtsExps(stmts.clone(), (Arc::new(DAE::Exp::SCONST { string: (literal!("$$$")).clone() }), metamodelica::nil(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), (inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions), (eq_count, inVariables1.clone(), globalKnownVars.clone())), globalKnownVars.clone())?;
             stmts_1 = __pa0.clone();
             res = __pa1.clone();
             relationsLst = __pa2.clone();
             sampleLst = __pa3.clone();
             countMathFunctions = __pa4.clone();
-            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: stmts_1.clone() }), source: source_.clone(), expand: expand.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: stmts_1 }), source: source_.clone(), expand: expand.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation: weqn, source: source_, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet;
@@ -634,9 +634,9 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut weqn = (*weqn).clone();
             eq_count = inEqnCount + 1;
-            (weqn, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossingsWhenEqns(weqn.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
+            (weqn, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossingsWhenEqns(weqn.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: weqn.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source: source_, attr: eqAttr }, tail: xs } => {
             let mut zcs1: BackendDAE::ZeroCrossingSet;
@@ -651,10 +651,10 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eres1: Arc<DAE::Exp>;
             let mut eres2: Arc<DAE::Exp>;
             eq_count = inEqnCount + 1;
-            (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1.clone(), relationsLst.clone(), sampleLst.clone(), countMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: eres1.clone(), scalar: eres2.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1, relationsLst, sampleLst, countMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: eres1, scalar: eres2, source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e1, right: e2, source, attr: eqAttr }, tail: xs } => {
             let mut zcs1: BackendDAE::ZeroCrossingSet;
@@ -669,10 +669,10 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eres1: Arc<DAE::Exp>;
             let mut eres2: Arc<DAE::Exp>;
             eq_count = inEqnCount + 1;
-            (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1.clone(), relationsLst.clone(), sampleLst.clone(), countMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: eres1.clone(), right: eres2.clone(), source: source.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1, relationsLst, sampleLst, countMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: eres1, right: eres2, source: source.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize: dimsize, left: e1, right: e2, source, attr: eqAttr, recordSize }, tail: xs } => {
             let mut zcs1: BackendDAE::ZeroCrossingSet;
@@ -687,10 +687,10 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eres1: Arc<DAE::Exp>;
             let mut eres2: Arc<DAE::Exp>;
             eq_count = inEqnCount + 1;
-            (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1.clone(), relationsLst.clone(), sampleLst.clone(), countMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: dimsize.clone(), left: eres1.clone(), right: eres2.clone(), source: source.clone(), attr: eqAttr.clone(), recordSize: recordSize.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1, relationsLst, sampleLst, countMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: dimsize.clone(), left: eres1, right: eres2, source: source.clone(), attr: eqAttr.clone(), recordSize: recordSize.clone() }), inEquationLstAccum);
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref, exp: e1, source: source_, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet;
@@ -702,8 +702,8 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut eres1: Arc<DAE::Exp>;
             (eres1, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, inEqnCount, -1, inVariables1.clone(), globalKnownVars.clone())?;
-            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref.clone(), exp: eres1.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), inEqnCount, countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref.clone(), exp: eres1, source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), inEqnCount, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, source: source_, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet;
@@ -716,9 +716,9 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut eres1: Arc<DAE::Exp>;
             eq_count = inEqnCount + 1;
-            (eres1, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
-            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::RESIDUAL_EQUATION { exp: eres1.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            (eres1, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
+            eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::RESIDUAL_EQUATION { exp: eres1, source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum);
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e @ Deref @ BackendDAE::Equation::IF_EQUATION { .. }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet;
@@ -731,9 +731,9 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut e = (*e).clone();
             eq_count = inEqnCount + 1;
-            (e, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossingsIfEqns(e.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
+            (e, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossingsIfEqns(e.clone(), inZeroCrossingLst, inRelationsLst, inSamplesLst, inNumberOfMathFunctions, eq_count, -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(e.clone(), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, countMathFunctions, res, relationsLst, sampleLst, eqnsAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e, tail: xs } => {
             let mut res1: BackendDAE::ZeroCrossingSet;
@@ -745,7 +745,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             eq_count = inEqnCount + 1;
             eqnsAccum = metamodelica::cons(e.clone(), inEquationLstAccum);
-            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count.clone(), inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, eqnsAccum.clone()); continue '__tco; }
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1, globalKnownVars, xs.clone(), eq_count, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, eqnsAccum); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -777,12 +777,12 @@ fn findZeroCrossingsWhenEqns(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut i
                     _ => bail!("pattern mismatch"),
                 } };
                 we = __pa0.clone();
-                (we, countMathFunctions, zc, relations, samples) = findZeroCrossingsWhenEqns(we.clone(), zc.clone(), relations.clone(), samples.clone(), countMathFunctions.clone(), counteq, countwc, vars, globalKnownVars)?;
-                oweelse = Some(we.clone());
+                (we, countMathFunctions, zc, relations, samples) = findZeroCrossingsWhenEqns(we, zc, relations, samples, countMathFunctions, counteq, countwc, vars, globalKnownVars)?;
+                oweelse = Some(we);
             } else {
                 oweelse = None;
             }
-            (Arc::new(BackendDAE::WhenEquation { condition: cond.clone(), whenStmtLst: whenStmtLst.clone(), elsewhenPart: oweelse.clone() }), countMathFunctions.clone(), zc.clone(), relations.clone(), samples.clone())
+            (Arc::new(BackendDAE::WhenEquation { condition: cond.clone(), whenStmtLst: whenStmtLst.clone(), elsewhenPart: oweelse.clone() }), countMathFunctions, zc, relations, samples)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -804,7 +804,7 @@ fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCro
             let mut elseeqns = (*elseeqns).clone();
             (zc, elseeqns, countMathFunctions, relations, samples) = findZeroCrossings2(vars, globalKnownVars, elseeqns.clone(), counteq, incountMathFunctions, inZeroCrossings, inrelationsinZC, inSamplesLst, metamodelica::nil())?;
             elseeqns = elseeqns.clone().reverse();
-            (Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: metamodelica::nil(), eqnstrue: metamodelica::nil(), eqnsfalse: elseeqns.clone(), source: source_.clone(), attr: eqAttr.clone() }), countMathFunctions.clone(), zc.clone(), relations.clone(), samples.clone())
+            (Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: metamodelica::nil(), eqnstrue: metamodelica::nil(), eqnsfalse: elseeqns.clone(), source: source_.clone(), attr: eqAttr.clone() }), countMathFunctions, zc, relations, samples)
         },
         Deref @ BackendDAE::Equation::IF_EQUATION { conditions: Deref @ metamodelica::List::Cons { head: condition, tail: restconditions }, eqnstrue: Deref @ metamodelica::List::Cons { head: eqnstrue, tail: resteqns }, eqnsfalse: elseeqns, source: source_, attr: eqAttr } => {
             let mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -819,10 +819,10 @@ fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCro
             let mut elseeqns = (*elseeqns).clone();
             let mut source_ = (*source_).clone();
             (condition, countMathFunctions, zc, relations, samples) = findZeroCrossings3(condition.clone(), inZeroCrossings, inrelationsinZC, inSamplesLst, incountMathFunctions, counteq, countwc, vars.clone(), globalKnownVars.clone())?;
-            (zc, eqnstrue, countMathFunctions, relations, samples) = findZeroCrossings2(vars.clone(), globalKnownVars.clone(), eqnstrue.clone(), counteq, countMathFunctions.clone(), zc.clone(), relations.clone(), samples.clone(), metamodelica::nil())?;
+            (zc, eqnstrue, countMathFunctions, relations, samples) = findZeroCrossings2(vars.clone(), globalKnownVars.clone(), eqnstrue.clone(), counteq, countMathFunctions, zc, relations, samples, metamodelica::nil())?;
             eqnstrue = eqnstrue.clone().reverse();
             ifeqn = Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: restconditions.clone(), eqnstrue: resteqns.clone(), eqnsfalse: elseeqns.clone(), source: source_.clone(), attr: eqAttr.clone() });
-            let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(findZeroCrossingsIfEqns(ifeqn.clone(), zc.clone(), relations.clone(), samples.clone(), countMathFunctions.clone(), counteq, countwc, vars, globalKnownVars)?) {
+            let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(findZeroCrossingsIfEqns(ifeqn, zc, relations, samples, countMathFunctions, counteq, countwc, vars, globalKnownVars)?) {
                 (Deref @ BackendDAE::Equation::IF_EQUATION { conditions: __pa0, eqnstrue: __pa1, eqnsfalse: __pa2, source: __pa3, .. }, __pa4, __pa5, __pa6, __pa7) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -834,9 +834,9 @@ fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCro
             zc = __pa5.clone();
             relations = __pa6.clone();
             samples = __pa7.clone();
-            conditions = metamodelica::cons(condition.clone(), conditions.clone());
-            eqnsTrueLst = metamodelica::cons(eqnstrue.clone(), eqnsTrueLst.clone());
-            (Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: conditions.clone(), eqnstrue: eqnsTrueLst.clone(), eqnsfalse: elseeqns.clone(), source: source_.clone(), attr: eqAttr.clone() }), countMathFunctions.clone(), zc.clone(), relations.clone(), samples.clone())
+            conditions = metamodelica::cons(condition.clone(), conditions);
+            eqnsTrueLst = metamodelica::cons(eqnstrue.clone(), eqnsTrueLst);
+            (Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: conditions, eqnstrue: eqnsTrueLst, eqnsfalse: elseeqns.clone(), source: source_.clone(), attr: eqAttr.clone() }), countMathFunctions, zc, relations, samples)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1014,7 +1014,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, .. }, ((_, _, samples, _), (eq_count, _, _), iters), _) => {
             let mut zc: BackendDAE::ZeroCrossing;
             zc = createZeroCrossing(inExp.clone(), list![eq_count.clone()], iters.clone());
-            mergeZeroCrossings(zc.clone(), samples.clone())?;
+            mergeZeroCrossings(zc, samples.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample index: ")); __mm_s.push_str(&*intString(ZeroCrossings::length(samples.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -1080,17 +1080,17 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             iters = __pa11.clone();
             eres1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("delayZeroCrossing")).clone() }), expLst: list![index.clone(), Arc::new(DAE::Exp::ICONST { integer: DoubleEnded::length(relations.clone()) }), delay.clone()], attr: attr.clone() });
             e_1 = Arc::new(DAE::Exp::RELATION { exp1: eres1.clone(), operator: DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: DoubleEnded::length(relations.clone()), optionExpisASUB: None });
-            zc = createZeroCrossing(eres1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, relations, _) = zcIndexRelation(e_1.clone(), relations.clone(), DoubleEnded::length(relations.clone()), zc.clone())?;
+            zc = createZeroCrossing(eres1, list![eq_count.clone()], iters.clone());
+            (eres, relations, _) = zcIndexRelation(e_1, relations.clone(), DoubleEnded::length(relations.clone()), zc)?;
             zc = createZeroCrossing(eres.clone(), list![eq_count.clone()], iters.clone());
-            let (__pa12, __pa13) = ::match_deref::match_deref! { match &(zcIndex(eres.clone(), zeroCrossings.clone(), DoubleEnded::length(relations.clone()), zc.clone())?) {
+            let (__pa12, __pa13) = ::match_deref::match_deref! { match &(zcIndex(eres.clone(), zeroCrossings.clone(), DoubleEnded::length(relations.clone()), zc)?) {
                 (Deref @ DAE::Exp::RELATION { index: __pa12, .. }, __pa13, _) => (__pa12.clone(), __pa13.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             itmp = __pa12.clone();
             zeroCrossings = __pa13.clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres)?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("delay")).clone() }), expLst: list![index.clone(), e.clone(), delay.clone(), delayMax.clone()], attr: attr.clone() }), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1142,17 +1142,17 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             iters = __pa24.clone();
             eres1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("spatialDistributionZeroCrossing")).clone() }), expLst: list![index.clone(), Arc::new(DAE::Exp::ICONST { integer: DoubleEnded::length(relations.clone()) }), x.clone(), dir.clone()], attr: attr.clone() });
             e_1 = Arc::new(DAE::Exp::RELATION { exp1: eres1.clone(), operator: DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: DoubleEnded::length(relations.clone()), optionExpisASUB: None });
-            zc = createZeroCrossing(eres1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, relations, _) = zcIndexRelation(e_1.clone(), relations.clone(), DoubleEnded::length(relations.clone()), zc.clone())?;
+            zc = createZeroCrossing(eres1, list![eq_count.clone()], iters.clone());
+            (eres, relations, _) = zcIndexRelation(e_1, relations.clone(), DoubleEnded::length(relations.clone()), zc)?;
             zc = createZeroCrossing(eres.clone(), list![eq_count.clone()], iters.clone());
-            let (__pa25, __pa26) = ::match_deref::match_deref! { match &(zcIndex(eres.clone(), zeroCrossings.clone(), DoubleEnded::length(relations.clone()), zc.clone())?) {
+            let (__pa25, __pa26) = ::match_deref::match_deref! { match &(zcIndex(eres.clone(), zeroCrossings.clone(), DoubleEnded::length(relations.clone()), zc)?) {
                 (Deref @ DAE::Exp::RELATION { index: __pa25, .. }, __pa26, _) => (__pa25.clone(), __pa26.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             itmp = __pa25.clone();
             zeroCrossings = __pa26.clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres)?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("spatialDistribution")).clone() }), expLst: list![index.clone(), in0.clone(), in1.clone(), x.clone(), dir.clone(), initPnts.clone(), initVals.clone()], attr: attr.clone() }), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1183,15 +1183,15 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             eq_count = __pa1.clone();
             tpl = __pa2.clone();
             e_1 = Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: e1.clone() });
-            zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
+            zc = createZeroCrossing(e_1.clone(), list![eq_count], iters.clone());
             empty = !(ZeroCrossings::contains(zeroCrossings.clone(), zc.clone())?);
-            if empty.clone() {
-                ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
+            if empty {
+                ZeroCrossings::add(zeroCrossings.clone(), zc)?;
             }
             if Flags::isSet(Flags::RELIDX.clone())? {
                 BackendDump::debugExpStr(e_1.clone(), (literal!("\n")).clone())?;
             }
-            (e_1.clone(), false, if (empty.clone()) {tpl.clone()} else {inTpl})
+            (e_1, false, if (empty) {tpl} else {inTpl})
         },
         (Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 }, ((zeroCrossings, relations, samples, numMathFunctions), tp1, iters), _) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1225,13 +1225,13 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             eq_count = __pa10.clone();
             tp1 = __pa11.clone();
             iters = __pa12.clone();
-            if intGt(DoubleEnded::length(relations.clone()), oldNumRelations.clone()) {
-                e_1 = Arc::new(DAE::Exp::LBINARY { exp1: e_1.clone(), operator: op.clone(), exp2: e_2.clone() });
-                zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
+            if intGt(DoubleEnded::length(relations.clone()), oldNumRelations) {
+                e_1 = Arc::new(DAE::Exp::LBINARY { exp1: e_1, operator: op.clone(), exp2: e_2 });
+                zc = createZeroCrossing(e_1.clone(), list![eq_count], iters.clone());
                 empty = !(ZeroCrossings::contains(zeroCrossings.clone(), zc.clone())?);
                 cont = false;
-                if empty.clone() {
-                    ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
+                if empty {
+                    ZeroCrossings::add(zeroCrossings.clone(), zc)?;
                 }
                 if Flags::isSet(Flags::RELIDX.clone())? {
                     BackendDump::dumpZeroCrossingList(ZeroCrossings::toList(zeroCrossings.clone()), (literal!("LBINARY")).clone())?;
@@ -1240,7 +1240,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
                 empty = true;
                 cont = true;
             }
-            (if (cont) {inExp} else {e_1.clone()}, cont, if (!(cont) && empty.clone()) {((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone())} else {inTpl})
+            (if (cont) {inExp} else {e_1}, cont, if (!(cont) && empty) {((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone())} else {inTpl})
         },
         (Deref @ DAE::Exp::RELATION { exp1: e1, exp2: e2, .. }, ((_, relations, _, _), (_, vars, globalKnownVars), _), _) if (!(BackendDAEUtil::hasExpContinuousParts(e1.clone(), vars.clone(), globalKnownVars.clone())? || BackendDAEUtil::hasExpContinuousParts(e2.clone(), vars.clone(), globalKnownVars.clone())?)) => {
             if Flags::isSet(Flags::RELIDX.clone())? {
@@ -1260,18 +1260,18 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: None });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, relations, _) = zcIndexRelation(e_1.clone(), relations.clone(), DoubleEnded::length(relations.clone()), zc.clone())?;
+            (eres, relations, _) = zcIndexRelation(e_1, relations.clone(), DoubleEnded::length(relations.clone()), zc)?;
             zc = createZeroCrossing(eres.clone(), list![eq_count.clone()], iters.clone());
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(zcIndex(eres.clone(), zeroCrossings.clone(), DoubleEnded::length(relations.clone()), zc.clone())?) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(zcIndex(eres.clone(), zeroCrossings.clone(), DoubleEnded::length(relations.clone()), zc)?) {
                 (Deref @ DAE::Exp::RELATION { index: __pa0, .. }, __pa1, _) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             itmp = __pa0.clone();
             zeroCrossings = __pa1.clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (eres, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "integer" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, attr }, ((zeroCrossings, relations, samples, numMathFunctions), tp1 @ (eq_count, _, _), iters), _) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1284,11 +1284,11 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("integer")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (eres, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "floor" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, attr }, ((zeroCrossings, relations, samples, numMathFunctions), tp1 @ (eq_count, _, _), iters), _) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1301,11 +1301,11 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("floor")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (eres, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "ceil" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, attr }, ((zeroCrossings, relations, samples, numMathFunctions), tp1 @ (eq_count, _, _), iters), _) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1318,11 +1318,11 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("ceil")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (eres, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, attr }, ((zeroCrossings, relations, samples, numMathFunctions), tp1 @ (eq_count, _, _), iters), _) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1335,11 +1335,11 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (eres, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "mod" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, attr: attr @ Deref @ DAE::CallAttributes { .. } }, ((zeroCrossings, relations, samples, numMathFunctions), tp1 @ (eq_count, _, _), iters), _) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1352,12 +1352,12 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("mod")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             numMathFunctions = numMathFunctions.clone() + 1;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (eres, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "rem" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, attr: attr @ Deref @ DAE::CallAttributes { ty, .. } }, ((zeroCrossings, relations, samples, numMathFunctions), tp1 @ (eq_count, _, _), iters), _) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1371,12 +1371,12 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             e_2 = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: eres.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: e2.clone() }) });
             if Flags::isSet(Flags::RELIDX.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (e_2.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
+            (e_2, true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         _ => {
             (inExp, true, inTpl)
@@ -1401,8 +1401,8 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut eqs: Arc<metamodelica::List<i32>>;
             let mut zc: BackendDAE::ZeroCrossing;
             eqs = list![alg_indx.clone()];
-            zc = createZeroCrossing(inExp.clone(), eqs.clone(), None);
-            ZeroCrossings::add(samples.clone(), zc.clone())?;
+            zc = createZeroCrossing(inExp.clone(), eqs, None);
+            ZeroCrossings::add(samples.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample index algotihm: ")); __mm_s.push_str(&*intString(alg_indx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -1433,13 +1433,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             tpl = __pa5.clone();
             e_1 = Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: e1.clone() });
             (explst, _) = replaceIteratorWithStaticValues(e_1.clone(), iterator.clone(), inExpLst.clone(), DoubleEnded::length(relations.clone()))?;
-            zc_lst = createZeroCrossings(explst.clone(), list![alg_indx.clone()])?;
-            ZeroCrossings::add_list(zeroCrossings.clone(), zc_lst.clone())?;
+            zc_lst = createZeroCrossings(explst, list![alg_indx])?;
+            ZeroCrossings::add_list(zeroCrossings.clone(), zc_lst)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print((literal!("collectZCAlgsFor LUNARY with Iterator result zc: ")).clone());
                 BackendDump::debugExpStr(e_1.clone(), (literal!("\n")).clone())?;
             }
-            (e_1.clone(), false, tpl.clone())
+            (e_1, false, tpl)
         },
         (Deref @ DAE::Exp::LUNARY { exp: e1, operator: op }, (_, _, _, (zeroCrossings, relations, _, _), _)) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1455,13 +1455,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             alg_indx = __pa1.clone();
             tpl = __pa2.clone();
             e_1 = Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: e1.clone() });
-            zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
+            zc = createZeroCrossing(e_1.clone(), list![alg_indx], None);
+            ZeroCrossings::add(zeroCrossings.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print((literal!("collectZCAlgsFor LUNARY result zc: ")).clone());
                 BackendDump::debugExpStr(e_1.clone(), (literal!("\n")).clone())?;
             }
-            (e_1.clone(), false, tpl.clone())
+            (e_1, false, tpl)
         },
         (Deref @ DAE::Exp::LBINARY { exp1: e1, exp2: e2, .. }, (_, _, _, _, (_, vars, globalKnownVars))) if (!(BackendDAEUtil::hasExpContinuousParts(e1.clone(), vars.clone(), globalKnownVars.clone())? || BackendDAEUtil::hasExpContinuousParts(e2.clone(), vars.clone(), globalKnownVars.clone())?)) => {
             (inExp.clone(), true, inTpl)
@@ -1493,7 +1493,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             range = __pa2.clone();
             tp2 = __pa3.clone();
             tp1 = __pa4.clone();
-            let (__pa5, (_, __pa6, __pa7, (_, __pa8, __pa9, __pa10), ref __pa12 @ (ref __pa11, _, _))) = Expression::traverseExpTopDown(e2.clone(), (std::sync::Arc::new(collectZCAlgsFor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables))) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables)))> + 'static>), (iterator.clone(), inExpLst.clone(), range.clone(), tp2.clone(), tp1.clone()))?;
+            let (__pa5, (_, __pa6, __pa7, (_, __pa8, __pa9, __pa10), ref __pa12 @ (ref __pa11, _, _))) = Expression::traverseExpTopDown(e2.clone(), (std::sync::Arc::new(collectZCAlgsFor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables))) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables)))> + 'static>), (iterator.clone(), inExpLst.clone(), range.clone(), tp2, tp1.clone()))?;
             e_2 = __pa5.clone();
             inExpLst = __pa6.clone();
             range = __pa7.clone();
@@ -1502,19 +1502,19 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             numMathFunctions = __pa10.clone();
             alg_indx = __pa11.clone();
             tp1 = __pa12.clone();
-            if intGt(DoubleEnded::length(relations.clone()), oldNumRelations.clone()) {
-                e_1 = Arc::new(DAE::Exp::LBINARY { exp1: e_1.clone(), operator: op.clone(), exp2: e_2.clone() });
+            if intGt(DoubleEnded::length(relations.clone()), oldNumRelations) {
+                e_1 = Arc::new(DAE::Exp::LBINARY { exp1: e_1, operator: op.clone(), exp2: e_2 });
                 if Expression::expContains(e1.clone(), iterator.clone())? || Expression::expContains(e2.clone(), iterator.clone())? {
                     (explst, _) = replaceIteratorWithStaticValues(e_1.clone(), iterator.clone(), inExpLst.clone(), DoubleEnded::length(relations.clone()))?;
-                    zc_lst = createZeroCrossings(explst.clone(), list![alg_indx.clone()])?;
-                    ZeroCrossings::add_list(zeroCrossings.clone(), zc_lst.clone())?;
+                    zc_lst = createZeroCrossings(explst, list![alg_indx])?;
+                    ZeroCrossings::add_list(zeroCrossings.clone(), zc_lst)?;
                     if Flags::isSet(Flags::RELIDX.clone())? {
                         BackendDump::dumpZeroCrossingList(ZeroCrossings::toList(zeroCrossings.clone()), (literal!("collectZCAlgsFor LBINARY1 result zc")).clone())?;
                     }
                 } else {
-                    zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
+                    zc = createZeroCrossing(e_1.clone(), list![alg_indx], None);
                     if !(ZeroCrossings::contains(zeroCrossings.clone(), zc.clone())?) {
-                        ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
+                        ZeroCrossings::add(zeroCrossings.clone(), zc)?;
                     }
                     if Flags::isSet(Flags::RELIDX.clone())? {
                         BackendDump::dumpZeroCrossingList(ZeroCrossings::toList(zeroCrossings.clone()), (literal!("collectZCAlgsFor LBINARY2 result zc")).clone())?;
@@ -1527,7 +1527,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
                 cont = true;
                 tpl = inTpl;
             }
-            (e_1.clone(), cont, tpl.clone())
+            (e_1, cont, tpl)
         },
         (Deref @ DAE::Exp::RELATION { exp1: e1, exp2: e2, .. }, (_, _, _, _, (_, vars, globalKnownVars))) if (!(BackendDAEUtil::hasExpContinuousParts(e1.clone(), vars.clone(), globalKnownVars.clone())? || BackendDAEUtil::hasExpContinuousParts(e2.clone(), vars.clone(), globalKnownVars.clone())?)) => {
             (inExp.clone(), true, inTpl)
@@ -1545,26 +1545,26 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             stepvalue = Util::getOptionOrDefault(stepvalueopt.clone(), Arc::new(DAE::Exp::ICONST { integer: 1 }));
             istart = BackendDAEUtil::expInt(startvalue.clone(), globalKnownVars.clone())?;
-            istep = BackendDAEUtil::expInt(stepvalue.clone(), globalKnownVars.clone())?;
-            eres = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: Some((iterator.clone(), istart.clone(), istep.clone())) });
+            istep = BackendDAEUtil::expInt(stepvalue, globalKnownVars.clone())?;
+            eres = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: Some((iterator.clone(), istart, istep)) });
             (explst, itmp) = replaceIteratorWithStaticValues(inExp.clone(), iterator.clone(), inExpLst.clone(), DoubleEnded::length(relations.clone()))?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (1): ")); __mm_s.push_str(&*intString((explst.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            zcLstNew = createZeroCrossings(explst.clone(), list![alg_indx.clone()])?;
+            zcLstNew = createZeroCrossings(explst, list![alg_indx.clone()])?;
             DoubleEnded::push_list_back(relations.clone(), zcLstNew.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (2): ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             itmp = (zcLstNew.clone().len() as i32);
             if Flags::isSet(Flags::RELIDX.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" itmp: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" itmp: ")); __mm_s.push_str(&*intString(itmp)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            ZeroCrossings::add_list(zeroCrossings.clone(), zcLstNew.clone())?;
+            ZeroCrossings::add_list(zeroCrossings.clone(), zcLstNew)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), inExpLst.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), inExpLst.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::RELATION { exp1: e1, operator: op, exp2: e2, .. }, (iterator, inExpLst, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut eres: Arc<DAE::Exp>;
@@ -1572,11 +1572,11 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             eres = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: None });
             zc = createZeroCrossing(eres.clone(), list![alg_indx.clone()], None);
             DoubleEnded::push_back(relations.clone(), zc.clone())?;
-            ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
+            ZeroCrossings::add(zeroCrossings.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), inExpLst.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), inExpLst.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "integer" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, attr }, (iterator, le, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1589,11 +1589,11 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("integer")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "floor" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, attr }, (iterator, le, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1606,11 +1606,11 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("floor")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "ceil" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, attr }, (iterator, le, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1623,11 +1623,11 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("ceil")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, attr }, (iterator, le, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1640,11 +1640,11 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "mod" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, attr: attr @ Deref @ DAE::CallAttributes { .. } }, (iterator, le, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1657,11 +1657,11 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("mod")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (eres, true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "rem" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, attr: attr @ Deref @ DAE::CallAttributes { ty, .. } }, (iterator, le, range, (zeroCrossings, relations, samples, numMathFunctions), tp1 @ (alg_indx, _, _))) if (Flags::isSet(Flags::EVENTS.clone())?) => {
             let mut e_1: Arc<DAE::Exp>;
@@ -1675,12 +1675,12 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
-            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
+            (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1, zeroCrossings.clone(), numMathFunctions.clone(), zc)?;
             e_2 = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: eres.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: e2.clone() }) });
             if Flags::isSet(Flags::RELIDX.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (e_2.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
+            (e_2, true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
         _ => {
             (inExp.clone(), true, inTpl)
@@ -1703,10 +1703,10 @@ fn replaceIteratorWithStaticValues(mut inExp: Arc<DAE::Exp>, mut inIterator: Arc
             let mut res2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut index: i32;
             e_1 = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: inIndex, optionExpisASUB: None });
-            (res1, _) = Expression::replaceExpTpl(e_1.clone(), (inIterator.clone(), e.clone()))?;
+            (res1, _) = Expression::replaceExpTpl(e_1, (inIterator.clone(), e.clone()))?;
             (res2, index) = replaceIteratorWithStaticValues(inExp, inIterator, rest.clone(), inIndex + 1)?;
-            res2 = metamodelica::cons(res1.clone(), res2.clone());
-            (res2.clone(), index.clone())
+            res2 = metamodelica::cons(res1, res2);
+            (res2, index)
         },
         (Deref @ DAE::Exp::LUNARY { exp: e1, operator: op }, Deref @ metamodelica::List::Cons { head: e, tail: rest }) => {
             let mut res1: Arc<DAE::Exp>;
@@ -1714,10 +1714,10 @@ fn replaceIteratorWithStaticValues(mut inExp: Arc<DAE::Exp>, mut inIterator: Arc
             let mut res2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut index: i32;
             e_1 = Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: e1.clone() });
-            (res1, _) = Expression::replaceExpTpl(e_1.clone(), (inIterator.clone(), e.clone()))?;
+            (res1, _) = Expression::replaceExpTpl(e_1, (inIterator.clone(), e.clone()))?;
             (res2, index) = replaceIteratorWithStaticValues(inExp, inIterator, rest.clone(), inIndex + 1)?;
-            res2 = metamodelica::cons(res1.clone(), res2.clone());
-            (res2.clone(), index.clone())
+            res2 = metamodelica::cons(res1, res2);
+            (res2, index)
         },
         (Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 }, Deref @ metamodelica::List::Cons { head: e, tail: rest }) => {
             let mut res1: Arc<DAE::Exp>;
@@ -1725,10 +1725,10 @@ fn replaceIteratorWithStaticValues(mut inExp: Arc<DAE::Exp>, mut inIterator: Arc
             let mut res2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut index: i32;
             e_1 = Arc::new(DAE::Exp::LBINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() });
-            (res1, _) = Expression::replaceExpTpl(e_1.clone(), (inIterator.clone(), e.clone()))?;
+            (res1, _) = Expression::replaceExpTpl(e_1, (inIterator.clone(), e.clone()))?;
             (res2, index) = replaceIteratorWithStaticValues(inExp, inIterator, rest.clone(), inIndex + 1)?;
-            res2 = metamodelica::cons(res1.clone(), res2.clone());
-            (res2.clone(), index.clone())
+            res2 = metamodelica::cons(res1, res2);
+            (res2, index)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.replaceIteratorWithStaticValues")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
@@ -1842,19 +1842,19 @@ fn getMinZeroCrossings(mut inZCexp1: Arc<DAE::Exp>, mut inZCexp2: Arc<DAE::Exp>)
         (Deref @ DAE::Exp::RELATION { index: index1, .. }, Deref @ DAE::Exp::RELATION { index: index2, .. }) => {
             let mut res: Arc<DAE::Exp>;
             res = if (index1.clone() < index2.clone()) {inZCexp1} else {inZCexp2};
-            res.clone()
+            res
         },
         (Deref @ DAE::Exp::LUNARY { operator: op, exp: e1 }, Deref @ DAE::Exp::LUNARY { exp: e2, .. }) => {
             let mut res: Arc<DAE::Exp>;
             res = getMinZeroCrossings(e1.clone(), e2.clone())?;
-            Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: res.clone() })
+            Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: res })
         },
         (Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 }, Deref @ DAE::Exp::LBINARY { exp1: e3, exp2: e4, .. }) => {
             let mut res: Arc<DAE::Exp>;
             let mut res2: Arc<DAE::Exp>;
             res = getMinZeroCrossings(e1.clone(), e2.clone())?;
             res2 = getMinZeroCrossings(e3.clone(), e4.clone())?;
-            Arc::new(DAE::Exp::LBINARY { exp1: res.clone(), operator: op.clone(), exp2: res2.clone() })
+            Arc::new(DAE::Exp::LBINARY { exp1: res, operator: op.clone(), exp2: res2 })
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, .. }, _) => {
             inZCexp1
@@ -2054,15 +2054,15 @@ fn traverseStmtsElseExps(mut inElse: Arc<DAE::Else>, mut inExtraArg: ForArgType,
             let mut el_1: Arc<DAE::Else>;
             let mut extraArg: ForArgType;
             (el_1, extraArg) = traverseStmtsElseExps(el.clone(), inExtraArg, inKnvars.clone())?;
-            (st_1, extraArg) = traverseStmtsExps(st.clone(), extraArg.clone(), inKnvars)?;
-            (e_1, extraArg) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(collectZCAlgsFor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables))) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables)))> + 'static>), extraArg.clone())?;
-            (Arc::new(DAE::Else::ELSEIF { exp: e_1.clone(), statementLst: st_1.clone(), else_: el_1.clone() }), extraArg.clone())
+            (st_1, extraArg) = traverseStmtsExps(st.clone(), extraArg, inKnvars)?;
+            (e_1, extraArg) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(collectZCAlgsFor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables))) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables)))> + 'static>), extraArg)?;
+            (Arc::new(DAE::Else::ELSEIF { exp: e_1, statementLst: st_1, else_: el_1 }), extraArg)
         },
         Deref @ DAE::Else::ELSE { statementLst: st } => {
             let mut st_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut extraArg: ForArgType;
             (st_1, extraArg) = traverseStmtsExps(st.clone(), inExtraArg, inKnvars)?;
-            (Arc::new(DAE::Else::ELSE { statementLst: st_1.clone() }), extraArg.clone())
+            (Arc::new(DAE::Else::ELSE { statementLst: st_1 }), extraArg)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2080,7 +2080,7 @@ fn traverseStmtsForExps(mut inIteratorExp: Arc<DAE::Exp>, mut inExplst: Arc<meta
             let mut statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut extraArg: ForArgType;
             (statementLst, extraArg) = traverseStmtsExps(inStmts, (inIteratorExp, inExplst, inRange, tpl2.clone(), tpl3.clone()), inKnvars)?;
-            (statementLst.clone(), extraArg.clone())
+            (statementLst, extraArg)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.traverseStmtsForExps")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
@@ -2118,9 +2118,9 @@ fn createIterator(mut red_iter: Arc<DAE::ReductionIterator>) -> Result<BackendDA
             ty = Expression::r#typeof(var_field!((**exp).start, DAE::Exp::RANGE).clone())?;
             step = Util::getOptionOrDefault(var_field!((**exp).step, DAE::Exp::RANGE).clone(), Arc::new(DAE::Exp::ICONST { integer: 1 }));
             size = Arc::new(DAE::Exp::BINARY { exp1: var_field!((**exp).stop, DAE::Exp::RANGE).clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: var_field!((**exp).start, DAE::Exp::RANGE).clone() });
-            size = Arc::new(DAE::Exp::BINARY { exp1: size.clone(), operator: DAE::Operator::DIV { ty: ty.clone() }, exp2: step.clone() });
-            size = Arc::new(DAE::Exp::BINARY { exp1: size.clone(), operator: DAE::Operator::ADD { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: 1 }) });
-            (size, _) = ExpressionSimplify::simplify(size.clone())?;
+            size = Arc::new(DAE::Exp::BINARY { exp1: size, operator: DAE::Operator::DIV { ty: ty.clone() }, exp2: step.clone() });
+            size = Arc::new(DAE::Exp::BINARY { exp1: size, operator: DAE::Operator::ADD { ty: ty }, exp2: Arc::new(DAE::Exp::ICONST { integer: 1 }) });
+            (size, _) = ExpressionSimplify::simplify(size)?;
             match '__try0: {
                 non_resizable_size = unwrap_break_err!(Expression::getEvaluatedConstInteger(size.clone()), '__try0);
                 Ok::<_, anyhow::Error>((non_resizable_size.clone(),))
@@ -2132,7 +2132,7 @@ fn createIterator(mut red_iter: Arc<DAE::ReductionIterator>) -> Result<BackendDA
                     non_resizable_size = 0;
                 }
             }
-            BackendDAE::SimIterator::SIM_ITERATOR_RANGE { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (red_iter.id.clone()).clone(), identType: DAE::T_INTEGER_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), start: var_field!((**exp).start, DAE::Exp::RANGE).clone(), step: step.clone(), stop: var_field!((**exp).stop, DAE::Exp::RANGE).clone(), size: size.clone(), non_resizable_size: non_resizable_size.clone(), sub_iter: metamodelica::nil() }
+            BackendDAE::SimIterator::SIM_ITERATOR_RANGE { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (red_iter.id.clone()).clone(), identType: DAE::T_INTEGER_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), start: var_field!((**exp).start, DAE::Exp::RANGE).clone(), step: step, stop: var_field!((**exp).stop, DAE::Exp::RANGE).clone(), size: size, non_resizable_size: non_resizable_size, sub_iter: metamodelica::nil() }
         },
         exp @ Deref @ DAE::Exp::ARRAY { .. } => {
             BackendDAE::SimIterator::SIM_ITERATOR_LIST { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (red_iter.id.clone()).clone(), identType: DAE::T_INTEGER_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), lst: ({

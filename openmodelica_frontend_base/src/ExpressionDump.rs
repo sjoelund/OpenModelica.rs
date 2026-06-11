@@ -79,12 +79,12 @@ pub fn subscriptString(mut subscript: Arc<DAE::Subscript>) -> Result<ArcStr> {
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: i } } => {
             let mut res: ArcStr;
             res = (intString(i.clone())).clone();
-            res.clone()
+            res
         },
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ENUM_LITERAL { name: enum_lit, .. } } => {
             let mut res: ArcStr;
             res = (AbsynUtil::pathString(enum_lit.clone(), (literal!(".")).clone(), true, false)?).clone();
-            res.clone()
+            res
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
@@ -161,29 +161,29 @@ fn binopSymbol2(mut inOperator: DAE::Operator) -> Result<ArcStr> {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" +<")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" +<")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::SUB { ty: ref t } => {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" -<")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" -<")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::MUL { ty: ref t } => {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" *<")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" *<")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::DIV { ty: ref t } => {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" /<")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" /<")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::POW { .. } => {
             literal!(" ^ ")
@@ -192,15 +192,15 @@ fn binopSymbol2(mut inOperator: DAE::Operator) -> Result<ArcStr> {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" +<ADD_ARR><")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" +<ADD_ARR><")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::SUB_ARR { ty: ref t } => {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" -<SUB_ARR><")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" -<SUB_ARR><")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::MUL_ARR { .. } => {
             literal!(" *<MUL_ARRAY> ")
@@ -209,8 +209,8 @@ fn binopSymbol2(mut inOperator: DAE::Operator) -> Result<ArcStr> {
             let mut ts: ArcStr;
             let mut s: ArcStr;
             ts = (TypesDump::unparseType(t.clone())?).clone();
-            s = stringAppendList(list![(literal!(" /<DIV_ARR><")).clone(), (ts.clone()).clone(), (literal!("> ")).clone()]);
-            s.clone()
+            s = stringAppendList(list![(literal!(" /<DIV_ARR><")).clone(), (ts).clone(), (literal!("> ")).clone()]);
+            s
         },
         DAE::Operator::POW_ARR { .. } => {
             literal!(" ^<POW_ARR> ")
@@ -345,20 +345,20 @@ pub(crate) fn debugPrintSubscriptStr(mut inSubscript: Arc<DAE::Subscript>) -> Re
         Deref @ DAE::Subscript::INDEX { exp: e1 } => {
             let mut s: ArcStr;
             s = (dumpExpStr(e1.clone(), 0)?).clone();
-            s = (System::stringReplace((s.clone()).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
-            s.clone()
+            s = (System::stringReplace((s).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
+            s
         },
         Deref @ DAE::Subscript::SLICE { exp: e1 } => {
             let mut s: ArcStr;
             s = (dumpExpStr(e1.clone(), 0)?).clone();
-            s = (System::stringReplace((s.clone()).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
-            s.clone()
+            s = (System::stringReplace((s).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
+            s
         },
         Deref @ DAE::Subscript::WHOLE_NONEXP { exp: e1 } => {
             let mut s: ArcStr;
             s = (dumpExpStr(e1.clone(), 0)?).clone();
-            s = (System::stringReplace((s.clone()).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("1:")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }
+            s = (System::stringReplace((s).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("1:")); __mm_s.push_str(&*s); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1075,12 +1075,12 @@ fn printCase2Str(mut matchCase: Arc<DAE::MatchCase>) -> Result<ArcStr> {
             let mut patternsStr: ArcStr;
             patternsStr = (patternStr(Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() }))?).clone();
             resultStr = (ExpressionBasics::printExpStr(result.clone())?).clone();
-            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr.clone()).clone(), (literal!(" then ")).clone(), (resultStr.clone()).clone(), (literal!(";\n")).clone()])
+            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr).clone(), (literal!(" then ")).clone(), (resultStr).clone(), (literal!(";\n")).clone()])
         },
         Deref @ DAE::MatchCase { patterns, body: Deref @ metamodelica::List::Nil, result: None, .. } => {
             let mut patternsStr: ArcStr;
             patternsStr = (patternStr(Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() }))?).clone();
-            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr.clone()).clone(), (literal!(" then fail();\n")).clone()])
+            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr).clone(), (literal!(" then fail();\n")).clone()])
         },
         Deref @ DAE::MatchCase { patterns, body, result: Some(result), .. } => {
             let mut resultStr: ArcStr;
@@ -1089,14 +1089,14 @@ fn printCase2Str(mut matchCase: Arc<DAE::MatchCase>) -> Result<ArcStr> {
             patternsStr = (patternStr(Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() }))?).clone();
             resultStr = (ExpressionBasics::printExpStr(result.clone())?).clone();
             bodyStr = stringAppendList(List::map1(body.clone(), (std::sync::Arc::new(fnptr!(DAEDump::ppStmtStr, Arc<DAE::Statement>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, i32) -> Result<ArcStr> + 'static>), 8)?);
-            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr.clone()).clone(), (literal!("\n      algorithm\n")).clone(), (bodyStr.clone()).clone(), (literal!("      then ")).clone(), (resultStr.clone()).clone(), (literal!(";\n")).clone()])
+            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr).clone(), (literal!("\n      algorithm\n")).clone(), (bodyStr).clone(), (literal!("      then ")).clone(), (resultStr).clone(), (literal!(";\n")).clone()])
         },
         Deref @ DAE::MatchCase { patterns, body, result: None, .. } => {
             let mut patternsStr: ArcStr;
             let mut bodyStr: ArcStr;
             patternsStr = (patternStr(Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() }))?).clone();
             bodyStr = stringAppendList(List::map1(body.clone(), (std::sync::Arc::new(fnptr!(DAEDump::ppStmtStr, Arc<DAE::Statement>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, i32) -> Result<ArcStr> + 'static>), 8)?);
-            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr.clone()).clone(), (literal!("\n      algorithm\n")).clone(), (bodyStr.clone()).clone(), (literal!("      then fail();\n")).clone()])
+            stringAppendList(list![(literal!("    case ")).clone(), (patternsStr).clone(), (literal!("\n      algorithm\n")).clone(), (bodyStr).clone(), (literal!("      then fail();\n")).clone()])
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2053,9 +2053,9 @@ fn genStringNTime(mut inString: ArcStr, mut inInteger: i32) -> Result<ArcStr> {
             let mut res_str: ArcStr;
             let mut new_level: i32;
             new_level = level.clone() + -1;
-            new_str = (genStringNTime((r#str.clone()).clone(), new_level.clone())?).clone();
-            res_str = (stringAppend((r#str.clone()).clone(), (new_str.clone()).clone())).clone();
-            res_str.clone()
+            new_str = (genStringNTime((r#str.clone()).clone(), new_level)?).clone();
+            res_str = (stringAppend((r#str.clone()).clone(), (new_str).clone())).clone();
+            res_str
         },
     })).clone();
     Ok(outString)
@@ -2086,7 +2086,7 @@ pub(crate) fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -
             let mut s2: ArcStr;
             s = (printArraySizes(lst.clone())).clone();
             s2 = (intString(x.clone())).clone();
-            return stringAppendList(list![(s2.clone()).clone(), (s.clone()).clone()])
+            return stringAppendList(list![(s2).clone(), (s).clone()])
         },
         Deref @ metamodelica::List::Cons { head: _, tail: lst } => {
             let mut s: ArcStr;
@@ -2158,7 +2158,7 @@ pub fn dimensionIntString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
         Deref @ DAE::Dimension::DIM_EXP { exp: e } => {
             let mut s: ArcStr;
             s = (ExpressionBasics::printExpStr(e.clone())?).clone();
-            s.clone()
+            s
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2315,7 +2315,7 @@ pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
             id = (AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone();
             fields = List::map(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple32, _)))?;
             patsStr = List::map1r(List::mapMap(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple31, _)), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("=")).clone())?;
-            r#str = stringDelimitList(List::threadMap(fields.clone(), patsStr.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+            r#str = stringDelimitList(List::threadMap(fields, patsStr, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
             stringAppendList(list![(id.clone()).clone(), (literal!("(")).clone(), (r#str).clone(), (literal!(")")).clone()])
         },
         Deref @ DAE::Pattern::PAT_CONS { head, tail } => {

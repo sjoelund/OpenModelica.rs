@@ -291,18 +291,18 @@ fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDa
             let mut non_trivial_eqs: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
             let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
             (replacements, newEquations) = aliasCausalize(var_field!((*varData).unknowns, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), kind, (literal!("Simulation")).clone())?;
-            (replacements, auxEquations) = checkReplacements(replacements.clone(), eqData.clone())?;
+            (replacements, auxEquations) = checkReplacements(replacements, eqData.clone())?;
             (eqData, varData) = Replacements::applySimple(eqData, varData, replacements.clone())?;
             alias_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        for mut cref in (UnorderedMap::keyList(replacements.clone())).into_iter().cloned() {
+        for mut cref in (UnorderedMap::keyList(replacements)).into_iter().cloned() {
             let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
-                simulation = BEquation::EquationPointers::compress(newEquations.clone())?,
+                simulation = BEquation::EquationPointers::compress(newEquations)?,
                 equations = BEquation::EquationPointers::compress(var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
                 continuous = BEquation::EquationPointers::compress(var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?,
                 discretes = BEquation::EquationPointers::compress(var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone())?
@@ -315,9 +315,9 @@ fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDa
                 clocks = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone())?,
                 initials = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).initials, VarData::VarData::VAR_DATA_SIM).clone())?
             );
-            (non_trivial_alias, alias_vars) = List::splitOnTrue(alias_vars.clone(), (std::sync::Arc::new(BVariable::hasNonTrivialAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
+            (non_trivial_alias, alias_vars) = List::splitOnTrue(alias_vars, (std::sync::Arc::new(BVariable::hasNonTrivialAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
             assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; variables = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).variables, VarData::VarData::VAR_DATA_SIM).clone())?);
-            (const_vars, alias_vars) = List::splitOnTrue(alias_vars.clone(), (std::sync::Arc::new(BVariable::hasConstOrParamAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
+            (const_vars, alias_vars) = List::splitOnTrue(alias_vars, (std::sync::Arc::new(BVariable::hasConstOrParamAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
             for mut var in &*const_vars.clone() {
                 let mut var = var.clone();
                 BVariable::setVarKind(var.clone(), Arc::new(VariableKind::VariableKind::PARAMETER { resize_value: None }));
@@ -325,20 +325,20 @@ fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDa
             }
             assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
                 parameters = BVariable::VariablePointers::addList(const_vars.clone(), var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone())?,
-                knowns = BVariable::VariablePointers::addList(const_vars.clone(), var_field!((*varData).knowns, VarData::VarData::VAR_DATA_SIM).clone())?,
-                aliasVars = BVariable::VariablePointers::addList(alias_vars.clone(), var_field!((*varData).aliasVars, VarData::VarData::VAR_DATA_SIM).clone())?,
+                knowns = BVariable::VariablePointers::addList(const_vars, var_field!((*varData).knowns, VarData::VarData::VAR_DATA_SIM).clone())?,
+                aliasVars = BVariable::VariablePointers::addList(alias_vars, var_field!((*varData).aliasVars, VarData::VarData::VAR_DATA_SIM).clone())?,
                 nonTrivialAlias = BVariable::VariablePointers::addList(non_trivial_alias.clone(), var_field!((*varData).nonTrivialAlias, VarData::VarData::VAR_DATA_SIM).clone())?
             );
             non_trivial_eqs = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        for mut var in (non_trivial_alias.clone()).into_iter().cloned() {
+        for mut var in (non_trivial_alias).into_iter().cloned() {
             let __x = BEquation::Equation::generateBindingEquation(var.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_iters.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; removed = BEquation::EquationPointers::addList(non_trivial_eqs.clone(), var_field!((*eqData).removed, EqData::EqData::EQ_DATA_SIM).clone())?);
-            (BVariable::VarData::addTypedList(varData, UnorderedSet::toList(new_iters.clone()), BVariable::VarData::VarType::ITERATOR.clone())?, BEquation::EqData::addUntypedList(eqData, auxEquations.clone(), false)?)
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; removed = BEquation::EquationPointers::addList(non_trivial_eqs, var_field!((*eqData).removed, EqData::EqData::EQ_DATA_SIM).clone())?);
+            (BVariable::VarData::addTypedList(varData, UnorderedSet::toList(new_iters), BVariable::VarData::VarType::ITERATOR.clone())?, BEquation::EqData::addUntypedList(eqData, auxEquations, false)?)
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.aliasDefault")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -476,22 +476,22 @@ fn aliasClocks(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDat
             let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
             let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
             (replacements, newEquations) = aliasCausalize(var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).clocked, EqData::EqData::EQ_DATA_SIM).clone(), kind, (literal!("Clocked")).clone())?;
-            (replacements, auxEquations) = checkReplacements(replacements.clone(), eqData.clone())?;
+            (replacements, auxEquations) = checkReplacements(replacements, eqData.clone())?;
             (eqData, varData) = Replacements::applySimple(eqData, varData, replacements.clone())?;
             alias_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        for mut cref in (UnorderedMap::keyList(replacements.clone())).into_iter().cloned() {
+        for mut cref in (UnorderedMap::keyList(replacements)).into_iter().cloned() {
             let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; clocked = BEquation::EquationPointers::compress(newEquations.clone())?);
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; clocked = BEquation::EquationPointers::compress(newEquations)?);
             assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
                 clocks = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone())?,
-                aliasVars = BVariable::VariablePointers::addList(alias_vars.clone(), var_field!((*varData).aliasVars, VarData::VarData::VAR_DATA_SIM).clone())?
+                aliasVars = BVariable::VariablePointers::addList(alias_vars, var_field!((*varData).aliasVars, VarData::VarData::VAR_DATA_SIM).clone())?
             );
-            (varData, BEquation::EqData::addUntypedList(eqData, auxEquations.clone(), false)?)
+            (varData, BEquation::EqData::addUntypedList(eqData, auxEquations, false)?)
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.aliasClocks")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -563,16 +563,16 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
                     set.simple_variables = list![cr1.clone()],
                     set.const_opt = Some(Pointer::create(eq))
                 );
-                UnorderedMap::add(cr1.clone(), Pointer::create(set.clone()), map.clone())?;
+                UnorderedMap::add(cr1.clone(), Pointer::create(set), map.clone())?;
             } else {
                 set_ptr = UnorderedMap::getOrFail(cr1.clone(), map.clone())?;
                 set = Pointer::access(set_ptr.clone());
                 if isSome(set.const_opt.clone()) {
-                    Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.findSimpleEquation")); __mm_s.push_str(&*literal!(" failed to add Equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eq, (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n because the set already contains a constant binding.\n              Overdetermined Set!:")); __mm_s.push_str(&*AliasSet::toString(set.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                    Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.findSimpleEquation")); __mm_s.push_str(&*literal!(" failed to add Equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eq, (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n because the set already contains a constant binding.\n              Overdetermined Set!:")); __mm_s.push_str(&*AliasSet::toString(set)?); ArcStr::from(__mm_s) }).clone()])?;
                     bail!("fail");
                 } else {
                     assign_field!(set.const_opt = Some(Pointer::create(eq)));
-                    Pointer::update(set_ptr.clone(), set.clone());
+                    Pointer::update(set_ptr, set);
                 }
             }
             (map, true)
@@ -608,14 +608,14 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
                 }
                 if List::compareLength(set1.simple_variables.clone(), set2.simple_variables.clone())? > 0 {
                     assign_field!(set.simple_variables = metamodelica::Dangerous::listAppendDestroy(set2.simple_variables.clone(), set1.simple_variables.clone()));
-                    Pointer::update(set1_ptr.clone(), set.clone());
+                    Pointer::update(set1_ptr.clone(), set);
                     for mut cr in &*set2.simple_variables.clone() {
                         let mut cr = cr.clone();
                         UnorderedMap::add(cr.clone(), set1_ptr.clone(), map.clone())?;
                     }
                 } else {
                     assign_field!(set.simple_variables = metamodelica::Dangerous::listAppendDestroy(set2.simple_variables.clone(), set1.simple_variables.clone()));
-                    Pointer::update(set2_ptr.clone(), set.clone());
+                    Pointer::update(set2_ptr.clone(), set);
                     for mut cr in &*set1.simple_variables.clone() {
                         let mut cr = cr.clone();
                         UnorderedMap::add(cr.clone(), set2_ptr.clone(), map.clone())?;
@@ -628,8 +628,8 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
                     set.simple_variables = metamodelica::cons(cr2.clone(), set.simple_variables.clone()),
                     set.simple_equations = metamodelica::cons(Pointer::create(eq), set.simple_equations.clone())
                 );
-                Pointer::update(set_ptr.clone(), set.clone());
-                UnorderedMap::add(cr2.clone(), set_ptr.clone(), map.clone())?;
+                Pointer::update(set_ptr.clone(), set);
+                UnorderedMap::add(cr2.clone(), set_ptr, map.clone())?;
             } else if UnorderedMap::contains(cr2.clone(), map.clone())? {
                 set_ptr = UnorderedMap::getOrFail(cr2.clone(), map.clone())?;
                 set = Pointer::access(set_ptr.clone());
@@ -637,17 +637,17 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
                     set.simple_variables = metamodelica::cons(cr1.clone(), set.simple_variables.clone()),
                     set.simple_equations = metamodelica::cons(Pointer::create(eq), set.simple_equations.clone())
                 );
-                Pointer::update(set_ptr.clone(), set.clone());
-                UnorderedMap::add(cr1.clone(), set_ptr.clone(), map.clone())?;
+                Pointer::update(set_ptr.clone(), set);
+                UnorderedMap::add(cr1.clone(), set_ptr, map.clone())?;
             } else {
                 set = EMPTY_ALIAS_SET().clone();
                 assign_field!(
                     set.simple_variables = list![cr1.clone(), cr2.clone()],
                     set.simple_equations = list![Pointer::create(eq)]
                 );
-                set_ptr = Pointer::create(set.clone());
+                set_ptr = Pointer::create(set);
                 UnorderedMap::add(cr1.clone(), set_ptr.clone(), map.clone())?;
-                UnorderedMap::add(cr2.clone(), set_ptr.clone(), map.clone())?;
+                UnorderedMap::add(cr2.clone(), set_ptr, map.clone())?;
             }
             (map, true)
         },
@@ -734,7 +734,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
                 return (simple.clone(), num_cref.clone());
             }
             (simple, num_cref_tmp) = isSimpleExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), simple);
-            num_cref = num_cref + num_cref_tmp.clone();
+            num_cref = num_cref + num_cref_tmp;
             simple = if (simple) {checkOp(var_field!((*exp).operator, Expression::NFExpression::BINARY).clone(), num_cref)} else {false};
             (simple, num_cref)
         },
@@ -742,7 +742,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
             let mut num_cref_tmp: i32;
             (simple, num_cref) = isSimpleExp(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), true);
             (simple, num_cref_tmp) = isSimpleExp(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), simple);
-            num_cref = num_cref + num_cref_tmp.clone();
+            num_cref = num_cref + num_cref_tmp;
             simple = if (simple) {checkOp(var_field!((*exp).operator, Expression::NFExpression::LBINARY).clone(), num_cref)} else {false};
             (simple, num_cref)
         },
@@ -754,7 +754,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
                 if !(simple) {
                     return (simple.clone(), num_cref.clone());
                 }
-                num_cref = num_cref + num_cref_tmp.clone();
+                num_cref = num_cref + num_cref_tmp;
             }
             if op.clone() == Operator::Op::MUL.clone() && num_cref != 0 {
                 simple = false;
@@ -766,7 +766,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
                 if !(simple) {
                     return (simple.clone(), num_cref.clone());
                 }
-                num_cref = num_cref + num_cref_tmp.clone();
+                num_cref = num_cref + num_cref_tmp;
             }
             simple = if (simple) {checkOp(var_field!((*exp).operator, Expression::NFExpression::MULTARY).clone(), num_cref)} else {false};
             (simple, num_cref)
@@ -840,8 +840,8 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
         __acc.reverse()
     }), true)?;
             eqs = BEquation::EquationPointers::fromList(metamodelica::cons(const_eq.clone(), set.simple_equations.clone()))?;
-            (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind, NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
-            Replacements::simple(comps.clone(), replacements.clone())?;
+            (_, comps) = Causalize::simple(vars, eqs, kind, NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
+            Replacements::simple(comps, replacements.clone())?;
             replacements
         },
         _ => {
@@ -862,18 +862,18 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
         }
         __acc.reverse()
     }), var_to_keep.clone())?;
-            vars = BVariable::VariablePointers::fromList(alias_vars.clone(), false)?;
+            vars = BVariable::VariablePointers::fromList(alias_vars, false)?;
             eqs = BEquation::EquationPointers::fromList(set.simple_equations.clone())?;
-            (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind, NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
+            (_, comps) = Causalize::simple(vars.clone(), eqs, kind, NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes before replacements):")).clone())?); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            Replacements::simple(comps.clone(), replacements.clone())?;
-            var_lst = BVariable::VariablePointers::toList(vars.clone())?;
+            Replacements::simple(comps, replacements.clone())?;
+            var_lst = BVariable::VariablePointers::toList(vars)?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Attribute collector (before replacements): ")).clone())?); __mm_s.push_str(&*AttributeCollector::toString(collector.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            for mut var in &*var_lst.clone() {
+            for mut var in &*var_lst {
                 let mut var = var.clone();
                 rhs = UnorderedMap::getSafe(BVariable::getVarName(var.clone()), replacements.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
                 eq = BEquation::Equation::makeAssignment(BVariable::toExpression(var.clone())?, rhs.clone(), Pointer::create(0), (arcstr::literal!(BEquation::TMP_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?;
@@ -886,9 +886,9 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             diffTearingSelect(collector.tearingSelect_map.clone(), set.clone())?;
             stateSelectAlways(collector.stateSelect_map.clone(), set.clone())?;
             checkNominalThreshold(collector.nominal_map.clone(), set.clone())?;
-            setNewAttributes(var_to_keep.clone(), collector.clone(), set)?;
+            setNewAttributes(var_to_keep.clone(), collector, set)?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes after replacements):")).clone())?); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes after replacements):")).clone())?); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             replacements
         },

@@ -216,12 +216,12 @@ fn pairFuncParamsWithArgs(mut inElements: Arc<metamodelica::List<Arc<DAE::Elemen
         (Deref @ metamodelica::List::Cons { head: var @ Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT { .. }, .. }, tail: rest_vars }, Deref @ metamodelica::List::Cons { head: val, tail: rest_vals }) => {
             let mut params: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>;
             params = pairFuncParamsWithArgs(rest_vars.clone(), rest_vals.clone())?;
-            metamodelica::cons((var.clone(), Some(val.clone())), params.clone())
+            metamodelica::cons((var.clone(), Some(val.clone())), params)
         },
         (Deref @ metamodelica::List::Cons { head: var, tail: rest_vars }, _) => {
             let mut params: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>;
             params = pairFuncParamsWithArgs(rest_vars.clone(), inValues)?;
-            metamodelica::cons((var.clone(), None), params.clone())
+            metamodelica::cons((var.clone(), None), params)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -404,7 +404,7 @@ fn assignExtOutputs(mut inArgs: Arc<metamodelica::List<DAE::ExtArg>>, mut inValu
             let mut env = (*env).clone();
             cr = evaluateExtOutputArg(arg.clone())?;
             val = unliftExtOutputValue(cr.clone(), val.clone(), env.clone());
-            (cache, env) = assignVariable(cr.clone(), val.clone(), cache.clone(), env.clone())?;
+            (cache, env) = assignVariable(cr, val.clone(), cache.clone(), env.clone())?;
             { (inArgs, inValues, inCache, inEnv) = (rest_args.clone(), rest_vals.clone(), cache.clone(), env.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -487,17 +487,17 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDVR, cache) = evaluateExtIntArg(arg_LDVR.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, WR, WI, VL, VR, WORK, INFO) = Lapack::dgeev((JOBVL.clone()).clone(), (JOBVR.clone()).clone(), N.clone(), A.clone(), LDA.clone(), LDVL.clone(), LDVR.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_WR = ValuesMake::makeRealArray(WR.clone())?;
-            val_WI = ValuesMake::makeRealArray(WI.clone())?;
-            val_VL = ValuesMake::makeRealMatrix(VL.clone())?;
-            val_VR = ValuesMake::makeRealMatrix(VR.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, WR, WI, VL, VR, WORK, INFO) = Lapack::dgeev((JOBVL).clone(), (JOBVR).clone(), N, A, LDA, LDVL, LDVR, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_WR = ValuesMake::makeRealArray(WR)?;
+            val_WI = ValuesMake::makeRealArray(WI)?;
+            val_VL = ValuesMake::makeRealMatrix(VL)?;
+            val_VR = ValuesMake::makeRealMatrix(VR)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_WR.clone(), arg_WI.clone(), arg_VL.clone(), arg_VR.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_WR.clone(), val_WI.clone(), val_VL.clone(), val_VR.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_WR, val_WI, val_VL, val_VR, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgegv", Deref @ metamodelica::List::Cons { head: arg_JOBVL, tail: Deref @ metamodelica::List::Cons { head: arg_JOBVR, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_ALPHAR, tail: Deref @ metamodelica::List::Cons { head: arg_ALPHAI, tail: Deref @ metamodelica::List::Cons { head: arg_BETA, tail: Deref @ metamodelica::List::Cons { head: arg_VL, tail: Deref @ metamodelica::List::Cons { head: arg_LDVL, tail: Deref @ metamodelica::List::Cons { head: arg_VR, tail: Deref @ metamodelica::List::Cons { head: arg_LDVR, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } } } }, cache, env) => {
@@ -540,17 +540,17 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDVR, cache) = evaluateExtIntArg(arg_LDVR.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (ALPHAR, ALPHAI, BETA, VL, VR, WORK, INFO) = Lapack::dgegv((JOBVL.clone()).clone(), (JOBVR.clone()).clone(), N.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), LDVL.clone(), LDVR.clone(), WORK.clone(), LWORK.clone());
-            val_ALPHAR = ValuesMake::makeRealArray(ALPHAR.clone())?;
-            val_ALPHAI = ValuesMake::makeRealArray(ALPHAI.clone())?;
-            val_BETA = ValuesMake::makeRealArray(BETA.clone())?;
-            val_VL = ValuesMake::makeRealMatrix(VL.clone())?;
-            val_VR = ValuesMake::makeRealMatrix(VR.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (ALPHAR, ALPHAI, BETA, VL, VR, WORK, INFO) = Lapack::dgegv((JOBVL).clone(), (JOBVR).clone(), N, A, LDA, B, LDB, LDVL, LDVR, WORK, LWORK);
+            val_ALPHAR = ValuesMake::makeRealArray(ALPHAR)?;
+            val_ALPHAI = ValuesMake::makeRealArray(ALPHAI)?;
+            val_BETA = ValuesMake::makeRealArray(BETA)?;
+            val_VL = ValuesMake::makeRealMatrix(VL)?;
+            val_VR = ValuesMake::makeRealMatrix(VR)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_ALPHAR.clone(), arg_ALPHAI.clone(), arg_BETA.clone(), arg_VL.clone(), arg_VR.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_ALPHAR.clone(), val_ALPHAI.clone(), val_BETA.clone(), val_VL.clone(), val_VR.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_ALPHAR, val_ALPHAI, val_BETA, val_VL, val_VR, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgels", Deref @ metamodelica::List::Cons { head: arg_TRANS, tail: Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } }, cache, env) => {
@@ -583,14 +583,14 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDB, cache) = evaluateExtIntArg(arg_LDB.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, B, WORK, INFO) = Lapack::dgels((TRANS.clone()).clone(), M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, B, WORK, INFO) = Lapack::dgels((TRANS).clone(), M, N, NRHS, A, LDA, B, LDB, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_B.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_B.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_B, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgelsx", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_JPVT, tail: Deref @ metamodelica::List::Cons { head: arg_RCOND, tail: Deref @ metamodelica::List::Cons { head: arg_RANK, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } }, cache, env) => {
@@ -625,15 +625,15 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (JPVT, cache) = evaluateExtIntArrayArg(arg_JPVT.clone(), cache.clone(), env.clone())?;
             (RCOND, cache) = evaluateExtRealArg(arg_RCOND.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
-            (A, B, JPVT, RANK, INFO) = Lapack::dgelsx(M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), JPVT.clone(), RCOND.clone(), WORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_JPVT = ValuesMake::makeIntArray(JPVT.clone())?;
-            val_RANK = ValuesMake::makeInteger(RANK.clone());
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, B, JPVT, RANK, INFO) = Lapack::dgelsx(M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, WORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_JPVT = ValuesMake::makeIntArray(JPVT)?;
+            val_RANK = ValuesMake::makeInteger(RANK);
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_B.clone(), arg_JPVT.clone(), arg_RANK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_B.clone(), val_JPVT.clone(), val_RANK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_B, val_JPVT, val_RANK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgelsx", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_JPVT, tail: Deref @ metamodelica::List::Cons { head: arg_RCOND, tail: Deref @ metamodelica::List::Cons { head: arg_RANK, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } }, cache, env) => {
@@ -668,15 +668,15 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (JPVT, cache) = evaluateExtIntArrayArg(arg_JPVT.clone(), cache.clone(), env.clone())?;
             (RCOND, cache) = evaluateExtRealArg(arg_RCOND.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
-            (A, B, JPVT, RANK, INFO) = Lapack::dgelsx(M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), JPVT.clone(), RCOND.clone(), WORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_JPVT = ValuesMake::makeIntArray(JPVT.clone())?;
-            val_RANK = ValuesMake::makeInteger(RANK.clone());
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, B, JPVT, RANK, INFO) = Lapack::dgelsx(M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, WORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_JPVT = ValuesMake::makeIntArray(JPVT)?;
+            val_RANK = ValuesMake::makeInteger(RANK);
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_B.clone(), arg_JPVT.clone(), arg_RANK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_B.clone(), val_JPVT.clone(), val_RANK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_B, val_JPVT, val_RANK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgelsy", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_JPVT, tail: Deref @ metamodelica::List::Cons { head: arg_RCOND, tail: Deref @ metamodelica::List::Cons { head: arg_RANK, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } }, cache, env) => {
@@ -714,16 +714,16 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (RCOND, cache) = evaluateExtRealArg(arg_RCOND.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, B, JPVT, RANK, WORK, INFO) = Lapack::dgelsy(M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), JPVT.clone(), RCOND.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_JPVT = ValuesMake::makeIntArray(JPVT.clone())?;
-            val_RANK = ValuesMake::makeInteger(RANK.clone());
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, B, JPVT, RANK, WORK, INFO) = Lapack::dgelsy(M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_JPVT = ValuesMake::makeIntArray(JPVT)?;
+            val_RANK = ValuesMake::makeInteger(RANK);
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_B.clone(), arg_JPVT.clone(), arg_RANK.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_B.clone(), val_JPVT.clone(), val_RANK.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_B, val_JPVT, val_RANK, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgesv", Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_IPIV, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } }, cache, env) => {
@@ -749,14 +749,14 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDA, cache) = evaluateExtIntArg(arg_LDA.clone(), cache.clone(), env.clone())?;
             (B, cache) = evaluateExtRealMatrixArg(arg_B.clone(), cache.clone(), env.clone())?;
             (LDB, cache) = evaluateExtIntArg(arg_LDB.clone(), cache.clone(), env.clone())?;
-            (A, IPIV, B, INFO) = Lapack::dgesv(N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_IPIV = ValuesMake::makeIntArray(IPIV.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, IPIV, B, INFO) = Lapack::dgesv(N, NRHS, A, LDA, B, LDB);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_IPIV = ValuesMake::makeIntArray(IPIV)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_IPIV.clone(), arg_B.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_IPIV.clone(), val_B.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_IPIV, val_B, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgglse", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_P, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_C, tail: Deref @ metamodelica::List::Cons { head: arg_D, tail: Deref @ metamodelica::List::Cons { head: arg_X, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } }, cache, env) => {
@@ -795,17 +795,17 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (D, cache) = evaluateExtRealArrayArg(arg_D.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, B, C, D, X, WORK, INFO) = Lapack::dgglse(M.clone(), N.clone(), P.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), C.clone(), D.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_C = ValuesMake::makeRealArray(C.clone())?;
-            val_D = ValuesMake::makeRealArray(D.clone())?;
-            val_X = ValuesMake::makeRealArray(X.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, B, C, D, X, WORK, INFO) = Lapack::dgglse(M, N, P, A, LDA, B, LDB, C, D, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_C = ValuesMake::makeRealArray(C)?;
+            val_D = ValuesMake::makeRealArray(D)?;
+            val_X = ValuesMake::makeRealArray(X)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_B.clone(), arg_C.clone(), arg_D.clone(), arg_X.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_B.clone(), val_C.clone(), val_D.clone(), val_X.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_B, val_C, val_D, val_X, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgtsv", Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_DL, tail: Deref @ metamodelica::List::Cons { head: arg_D, tail: Deref @ metamodelica::List::Cons { head: arg_DU, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } }, cache, env) => {
@@ -833,15 +833,15 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (DU, cache) = evaluateExtRealArrayArg(arg_DU.clone(), cache.clone(), env.clone())?;
             (B, cache) = evaluateExtRealMatrixArg(arg_B.clone(), cache.clone(), env.clone())?;
             (LDB, cache) = evaluateExtIntArg(arg_LDB.clone(), cache.clone(), env.clone())?;
-            (DL, D, DU, B, INFO) = Lapack::dgtsv(N.clone(), NRHS.clone(), DL.clone(), D.clone(), DU.clone(), B.clone(), LDB.clone());
-            val_DL = ValuesMake::makeRealArray(DL.clone())?;
-            val_D = ValuesMake::makeRealArray(D.clone())?;
-            val_DU = ValuesMake::makeRealArray(DU.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (DL, D, DU, B, INFO) = Lapack::dgtsv(N, NRHS, DL, D, DU, B, LDB);
+            val_DL = ValuesMake::makeRealArray(DL)?;
+            val_D = ValuesMake::makeRealArray(D)?;
+            val_DU = ValuesMake::makeRealArray(DU)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_DL.clone(), arg_D.clone(), arg_DU.clone(), arg_B.clone(), arg_INFO.clone()];
-            val_out = list![val_DL.clone(), val_D.clone(), val_DU.clone(), val_B.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_DL, val_D, val_DU, val_B, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgbsv", Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_KL, tail: Deref @ metamodelica::List::Cons { head: arg_KU, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_AB, tail: Deref @ metamodelica::List::Cons { head: arg_LDAB, tail: Deref @ metamodelica::List::Cons { head: arg_IPIV, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } }, cache, env) => {
@@ -871,14 +871,14 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDAB, cache) = evaluateExtIntArg(arg_LDAB.clone(), cache.clone(), env.clone())?;
             (B, cache) = evaluateExtRealMatrixArg(arg_B.clone(), cache.clone(), env.clone())?;
             (LDB, cache) = evaluateExtIntArg(arg_LDB.clone(), cache.clone(), env.clone())?;
-            (AB, IPIV, B, INFO) = Lapack::dgbsv(N.clone(), KL.clone(), KU.clone(), NRHS.clone(), AB.clone(), LDAB.clone(), B.clone(), LDB.clone());
-            val_AB = ValuesMake::makeRealMatrix(AB.clone())?;
-            val_IPIV = ValuesMake::makeIntArray(IPIV.clone())?;
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (AB, IPIV, B, INFO) = Lapack::dgbsv(N, KL, KU, NRHS, AB, LDAB, B, LDB);
+            val_AB = ValuesMake::makeRealMatrix(AB)?;
+            val_IPIV = ValuesMake::makeIntArray(IPIV)?;
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_AB.clone(), arg_IPIV.clone(), arg_B.clone(), arg_INFO.clone()];
-            val_out = list![val_AB.clone(), val_IPIV.clone(), val_B.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_AB, val_IPIV, val_B, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgesvd", Deref @ metamodelica::List::Cons { head: arg_JOBU, tail: Deref @ metamodelica::List::Cons { head: arg_JOBVT, tail: Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_S, tail: Deref @ metamodelica::List::Cons { head: arg_U, tail: Deref @ metamodelica::List::Cons { head: arg_LDU, tail: Deref @ metamodelica::List::Cons { head: arg_VT, tail: Deref @ metamodelica::List::Cons { head: arg_LDVT, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } }, cache, env) => {
@@ -916,16 +916,16 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDVT, cache) = evaluateExtIntArg(arg_LDVT.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, S, U, VT, WORK, INFO) = Lapack::dgesvd((JOBU.clone()).clone(), (JOBVT.clone()).clone(), M.clone(), N.clone(), A.clone(), LDA.clone(), LDU.clone(), LDVT.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_S = ValuesMake::makeRealArray(S.clone())?;
-            val_U = ValuesMake::makeRealMatrix(U.clone())?;
-            val_VT = ValuesMake::makeRealMatrix(VT.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, S, U, VT, WORK, INFO) = Lapack::dgesvd((JOBU).clone(), (JOBVT).clone(), M, N, A, LDA, LDU, LDVT, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_S = ValuesMake::makeRealArray(S)?;
+            val_U = ValuesMake::makeRealMatrix(U)?;
+            val_VT = ValuesMake::makeRealMatrix(VT)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_S.clone(), arg_U.clone(), arg_VT.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_S.clone(), val_U.clone(), val_VT.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_S, val_U, val_VT, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgetrf", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_IPIV, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } }, cache, env) => {
@@ -946,13 +946,13 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (N, cache) = evaluateExtIntArg(arg_N.clone(), cache.clone(), env.clone())?;
             (A, cache) = evaluateExtRealMatrixArg(arg_A.clone(), cache.clone(), env.clone())?;
             (LDA, cache) = evaluateExtIntArg(arg_LDA.clone(), cache.clone(), env.clone())?;
-            (A, IPIV, INFO) = Lapack::dgetrf(M.clone(), N.clone(), A.clone(), LDA.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_IPIV = ValuesMake::makeIntArray(IPIV.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, IPIV, INFO) = Lapack::dgetrf(M, N, A, LDA);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_IPIV = ValuesMake::makeIntArray(IPIV)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_IPIV.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_IPIV.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_IPIV, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgetrs", Deref @ metamodelica::List::Cons { head: arg_TRANS, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_NRHS, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_IPIV, tail: Deref @ metamodelica::List::Cons { head: arg_B, tail: Deref @ metamodelica::List::Cons { head: arg_LDB, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } }, cache, env) => {
@@ -979,12 +979,12 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (IPIV, cache) = evaluateExtIntArrayArg(arg_IPIV.clone(), cache.clone(), env.clone())?;
             (B, cache) = evaluateExtRealMatrixArg(arg_B.clone(), cache.clone(), env.clone())?;
             (LDB, cache) = evaluateExtIntArg(arg_LDB.clone(), cache.clone(), env.clone())?;
-            (B, INFO) = Lapack::dgetrs((TRANS.clone()).clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), IPIV.clone(), B.clone(), LDB.clone());
-            val_B = ValuesMake::makeRealMatrix(B.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (B, INFO) = Lapack::dgetrs((TRANS).clone(), N, NRHS, A, LDA, IPIV, B, LDB);
+            val_B = ValuesMake::makeRealMatrix(B)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_B.clone(), arg_INFO.clone()];
-            val_out = list![val_B.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_B, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgetri", Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_IPIV, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } }, cache, env) => {
@@ -1008,13 +1008,13 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (IPIV, cache) = evaluateExtIntArrayArg(arg_IPIV.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, WORK, INFO) = Lapack::dgetri(N.clone(), A.clone(), LDA.clone(), IPIV.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, WORK, INFO) = Lapack::dgetri(N, A, LDA, IPIV, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dgeqpf", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_JPVT, tail: Deref @ metamodelica::List::Cons { head: arg_TAU, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } }, cache, env) => {
@@ -1040,14 +1040,14 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (LDA, cache) = evaluateExtIntArg(arg_LDA.clone(), cache.clone(), env.clone())?;
             (JPVT, cache) = evaluateExtIntArrayArg(arg_JPVT.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
-            (A, JPVT, TAU, INFO) = Lapack::dgeqpf(M.clone(), N.clone(), A.clone(), LDA.clone(), JPVT.clone(), WORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_JPVT = ValuesMake::makeIntArray(JPVT.clone())?;
-            val_TAU = ValuesMake::makeRealArray(TAU.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, JPVT, TAU, INFO) = Lapack::dgeqpf(M, N, A, LDA, JPVT, WORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_JPVT = ValuesMake::makeIntArray(JPVT)?;
+            val_TAU = ValuesMake::makeRealArray(TAU)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_JPVT.clone(), arg_TAU.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_JPVT.clone(), val_TAU.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_JPVT, val_TAU, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         (Deref @ "dorgqr", Deref @ metamodelica::List::Cons { head: arg_M, tail: Deref @ metamodelica::List::Cons { head: arg_N, tail: Deref @ metamodelica::List::Cons { head: arg_K, tail: Deref @ metamodelica::List::Cons { head: arg_A, tail: Deref @ metamodelica::List::Cons { head: arg_LDA, tail: Deref @ metamodelica::List::Cons { head: arg_TAU, tail: Deref @ metamodelica::List::Cons { head: arg_WORK, tail: Deref @ metamodelica::List::Cons { head: arg_LWORK, tail: Deref @ metamodelica::List::Cons { head: arg_INFO, tail: Deref @ metamodelica::List::Nil } } } } } } } } }, cache, env) => {
@@ -1075,13 +1075,13 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
             (TAU, cache) = evaluateExtRealArrayArg(arg_TAU.clone(), cache.clone(), env.clone())?;
             (WORK, cache) = evaluateExtRealArrayArg(arg_WORK.clone(), cache.clone(), env.clone())?;
             (LWORK, cache) = evaluateExtIntArg(arg_LWORK.clone(), cache.clone(), env.clone())?;
-            (A, WORK, INFO) = Lapack::dorgqr(M.clone(), N.clone(), K.clone(), A.clone(), LDA.clone(), TAU.clone(), WORK.clone(), LWORK.clone());
-            val_A = ValuesMake::makeRealMatrix(A.clone())?;
-            val_WORK = ValuesMake::makeRealArray(WORK.clone())?;
-            val_INFO = ValuesMake::makeInteger(INFO.clone());
+            (A, WORK, INFO) = Lapack::dorgqr(M, N, K, A, LDA, TAU, WORK, LWORK);
+            val_A = ValuesMake::makeRealMatrix(A)?;
+            val_WORK = ValuesMake::makeRealArray(WORK)?;
+            val_INFO = ValuesMake::makeInteger(INFO);
             arg_out = list![arg_A.clone(), arg_WORK.clone(), arg_INFO.clone()];
-            val_out = list![val_A.clone(), val_WORK.clone(), val_INFO.clone()];
-            (cache, env) = assignExtOutputs(arg_out.clone(), val_out.clone(), cache.clone(), env.clone())?;
+            val_out = list![val_A, val_WORK, val_INFO];
+            (cache, env) = assignExtOutputs(arg_out, val_out, cache.clone(), env.clone())?;
             (cache.clone(), env.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1103,7 +1103,7 @@ fn evaluateElements(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, 
             let mut env: FCore::Graph;
             let mut loop_ctrl: LoopControl;
             (cache, env, loop_ctrl) = evaluateElement(elem.clone(), inCache, inEnv)?;
-            { (inElements, inCache, inEnv, inLoopControl) = (rest_elems.clone(), cache.clone(), env.clone(), loop_ctrl.clone()); continue '__tco; }
+            { (inElements, inCache, inEnv, inLoopControl) = (rest_elems.clone(), cache, env, loop_ctrl); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1123,8 +1123,8 @@ fn evaluateElement(mut inElement: Arc<DAE::Element>, mut inCache: FCore::Cache, 
             let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(sl.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(optimizeExpTraverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, FCore::Graph) -> Result<(Arc<DAE::Exp>, FCore::Graph)> + 'static>), inEnv))?;
             sl = __pa0.clone();
             env = __pa1.clone();
-            (cache, env, loop_ctrl) = evaluateStatements(sl.clone(), inCache, env.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            (cache, env, loop_ctrl) = evaluateStatements(sl.clone(), inCache, env)?;
+            (cache, env, loop_ctrl)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1143,7 +1143,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
             let mut env = (*env).clone();
             (cache, rhs_val) = cevalExp(rhs.clone(), cache.clone(), env.clone())?;
             lhs_cref = extractLhsComponentRef(lhs.clone())?;
-            (cache, env) = assignVariable(lhs_cref.clone(), rhs_val.clone(), cache.clone(), env.clone())?;
+            (cache, env) = assignVariable(lhs_cref, rhs_val, cache.clone(), env.clone())?;
             (cache.clone(), env.clone(), crate::CevalFunction::LoopControl::NEXT)
         },
         (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { .. }, _, _) => {
@@ -1159,7 +1159,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
             let mut env = (*env).clone();
             (cache, rhs_val) = cevalExp(rhs.clone(), inCache, env.clone())?;
             lhs_cref = extractLhsComponentRef(lhs.clone())?;
-            (cache, env) = assignVariable(lhs_cref.clone(), rhs_val.clone(), cache.clone(), env.clone())?;
+            (cache, env) = assignVariable(lhs_cref, rhs_val, cache, env.clone())?;
             (cache.clone(), env.clone(), crate::CevalFunction::LoopControl::NEXT)
         },
         (Deref @ DAE::Statement::STMT_IF { .. }, _, _) => {
@@ -1167,21 +1167,21 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
             let mut env: FCore::Graph;
             let mut loop_ctrl: LoopControl;
             (cache, env, loop_ctrl) = evaluateIfStatement(inStatement, inCache, inEnv)?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            (cache.clone(), env.clone(), loop_ctrl)
         },
         (Deref @ DAE::Statement::STMT_FOR { .. }, _, _) => {
             let mut cache: FCore::Cache;
             let mut env: FCore::Graph;
             let mut loop_ctrl: LoopControl;
             (cache, env, loop_ctrl) = evaluateForStatement(inStatement, inCache, inEnv)?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            (cache.clone(), env.clone(), loop_ctrl)
         },
         (Deref @ DAE::Statement::STMT_WHILE { exp: condition, statementLst: statements, .. }, _, _) => {
             let mut cache: FCore::Cache;
             let mut env: FCore::Graph;
             let mut loop_ctrl: LoopControl;
             (cache, env, loop_ctrl) = evaluateWhileStatement(condition.clone(), statements.clone(), inCache, inEnv, crate::CevalFunction::LoopControl::NEXT)?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            (cache.clone(), env.clone(), loop_ctrl)
         },
         (Deref @ DAE::Statement::STMT_ASSERT { cond: condition, .. }, _, _) => {
             let mut cache: FCore::Cache;
@@ -1209,24 +1209,24 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
             let mut var: ArcStr = arcstr::literal!("");
             let mut vars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             (cache, vals) = cevalExpList(exps.clone(), inCache, inEnv.clone())?;
-            (cache, v) = cevalExp(rhs.clone(), cache.clone(), inEnv.clone())?;
+            (cache, v) = cevalExp(rhs.clone(), cache, inEnv.clone())?;
             (cache, env, outLoopControl) = (::match_deref::match_deref! { match &(tailCall.clone()) {
-        DAE::TailCall::NO_TAIL { .. } => (cache.clone(), inEnv, crate::CevalFunction::LoopControl::NEXT),
-        DAE::TailCall::TAIL { outVars: Deref @ metamodelica::List::Nil, .. } => (cache.clone(), inEnv, crate::CevalFunction::LoopControl::RETURN),
+        DAE::TailCall::NO_TAIL { .. } => (cache, inEnv, crate::CevalFunction::LoopControl::NEXT),
+        DAE::TailCall::TAIL { outVars: Deref @ metamodelica::List::Nil, .. } => (cache, inEnv, crate::CevalFunction::LoopControl::RETURN),
         DAE::TailCall::TAIL { outVars: Deref @ metamodelica::List::Cons { head: __esc_var, tail: Deref @ metamodelica::List::Nil }, .. } => {
             var = (*__esc_var).clone();
-            (cache, env) = assignVariable(ComponentReference::makeUntypedCrefIdent((var.clone()).clone()), v.clone(), cache.clone(), inEnv)?;
-            (cache.clone(), env.clone(), crate::CevalFunction::LoopControl::RETURN)
+            (cache, env) = assignVariable(ComponentReference::makeUntypedCrefIdent((var.clone()).clone()), v, cache, inEnv)?;
+            (cache, env, crate::CevalFunction::LoopControl::RETURN)
         },
         DAE::TailCall::TAIL { outVars: __esc_vars, .. } => {
             vars = (*__esc_vars).clone();
             env = inEnv.clone();
-            let __pa0 = ::match_deref::match_deref! { match &(v.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(v) {
                 Deref @ Values::Value::TUPLE { valueLst: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             vals = __pa0.clone();
-            for mut val in &*vals.clone() {
+            for mut val in &*vals {
                 let mut val = val.clone();
                 let (__pa1, __pa2) = ::match_deref::match_deref! { match &(vars.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } => (__pa1.clone(), __pa2.clone()),
@@ -1236,7 +1236,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
                 vars = __pa2.clone();
                 (cache, env) = assignVariable(ComponentReference::makeUntypedCrefIdent((var.clone()).clone()), val.clone(), cache.clone(), inEnv.clone())?;
             }
-            (cache.clone(), env.clone(), crate::CevalFunction::LoopControl::RETURN)
+            (cache, env, crate::CevalFunction::LoopControl::RETURN)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1284,7 +1284,7 @@ fn evaluateStatements2(mut inStatement: Arc<metamodelica::List<Arc<DAE::Statemen
             let mut env: FCore::Graph;
             let mut loop_ctrl: LoopControl;
             (cache, env, loop_ctrl) = evaluateStatement(stmt.clone(), inCache, inEnv)?;
-            { (inStatement, inCache, inEnv, inLoopControl) = (rest_stmts.clone(), cache.clone(), env.clone(), loop_ctrl.clone()); continue '__tco; }
+            { (inStatement, inCache, inEnv, inLoopControl) = (rest_stmts.clone(), cache, env, loop_ctrl); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1307,8 +1307,8 @@ fn evaluateTupleAssignStatement(mut inStatement: Arc<DAE::Statement>, mut inCach
             cache = __pa0.clone();
             rhs_vals = __pa1.clone();
             lhs_crefs = List::map(lhs_expl.clone(), (std::sync::Arc::new(extractLhsComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-            (cache, env) = assignTuple(lhs_crefs.clone(), rhs_vals.clone(), cache.clone(), env.clone())?;
-            (cache.clone(), env.clone())
+            (cache, env) = assignTuple(lhs_crefs, rhs_vals, cache, env.clone())?;
+            (cache, env.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1331,8 +1331,8 @@ fn evaluateIfStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore:
             } };
             cache = __pa0.clone();
             bool_cond = __pa1.clone();
-            (cache, env, loop_ctrl) = evaluateIfStatement2(bool_cond.clone(), stmts.clone(), else_branch.clone(), cache.clone(), inEnv)?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            (cache, env, loop_ctrl) = evaluateIfStatement2(bool_cond, stmts.clone(), else_branch.clone(), cache, inEnv)?;
+            (cache, env, loop_ctrl)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1365,7 +1365,7 @@ fn evaluateIfStatement2(mut inCondition: bool, mut inStatements: Arc<metamodelic
             } };
             cache = __pa0.clone();
             bool_condition = __pa1.clone();
-            { (inCondition, inStatements, inElse, inCache, inEnv) = (bool_condition.clone(), statements.clone(), else_branch.clone(), cache.clone(), env.clone()); continue '__tco; }
+            { (inCondition, inStatements, inElse, inCache, inEnv) = (bool_condition, statements.clone(), else_branch.clone(), cache, env.clone()); continue '__tco; }
         },
         (false, _, Deref @ DAE::Else::NOELSE { .. }, _) => {
             return Ok((inCache, inEnv, crate::CevalFunction::LoopControl::NEXT))
@@ -1437,7 +1437,7 @@ fn evaluateForLoopArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             let mut env = (*env).clone();
             env = updateVariableBinding(inIter.clone(), env.clone(), inIterType.clone(), value.clone())?;
             (cache, env, loop_ctrl) = evaluateStatements(inStatements.clone(), inCache, env.clone())?;
-            { (inCache, inEnv, inIter, inIterType, inValues, inStatements, inLoopControl) = (cache.clone(), env.clone(), inIter, inIterType, rest_vals.clone(), inStatements, loop_ctrl.clone()); continue '__tco; }
+            { (inCache, inEnv, inIter, inIterType, inValues, inStatements, inLoopControl) = (cache, env.clone(), inIter, inIterType, rest_vals.clone(), inStatements, loop_ctrl); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1466,14 +1466,14 @@ fn evaluateWhileStatement(mut inCondition: Arc<DAE::Exp>, mut inStatements: Arc<
             } };
             cache = __pa0.clone();
             b = __pa1.clone();
-            if b.clone() {
-                (cache, env, loop_ctrl) = evaluateStatements(inStatements.clone(), cache.clone(), inEnv)?;
-                (cache, env, loop_ctrl) = evaluateWhileStatement(inCondition, inStatements, cache.clone(), env.clone(), loop_ctrl.clone())?;
+            if b {
+                (cache, env, loop_ctrl) = evaluateStatements(inStatements.clone(), cache, inEnv)?;
+                (cache, env, loop_ctrl) = evaluateWhileStatement(inCondition, inStatements, cache, env, loop_ctrl)?;
             } else {
                 loop_ctrl = crate::CevalFunction::LoopControl::NEXT;
                 env = inEnv;
             }
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            (cache, env, loop_ctrl)
         },
     });
     Ok((outCache, outEnv, outLoopControl))
@@ -1589,7 +1589,7 @@ fn evaluateBinding(mut inBinding: Option<Arc<DAE::Exp>>, mut inCache: FCore::Cac
             let mut cache: FCore::Cache;
             let mut val: Arc<Values::Value>;
             (cache, val) = cevalExp(binding_exp.clone(), inCache, inEnv)?;
-            (Some(val.clone()), cache.clone())
+            (Some(val), cache)
         },
         None => {
             (None, inCache)
@@ -1608,8 +1608,8 @@ fn extendEnvWithElement(mut inElement: Arc<DAE::Element>, mut inBindingValue: Op
             let mut cache: FCore::Cache;
             let mut env: FCore::Graph;
             name = (ComponentReference::crefStr(cr.clone())?).clone();
-            (cache, env) = extendEnvWithVar((name.clone()).clone(), ty.clone(), inBindingValue, dims.clone(), inCache, inEnv)?;
-            (cache.clone(), env.clone())
+            (cache, env) = extendEnvWithVar((name).clone(), ty.clone(), inBindingValue, dims.clone(), inCache, inEnv)?;
+            (cache, env)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1688,12 +1688,12 @@ fn makeRecordEnvironment(mut inRecordType: Arc<DAE::Type>, mut inOptValue: Optio
             let mut node: FCore::Node;
             parent = FGraph::lastScopeRef(inGraph.clone())?;
             (graph, node) = FGraph::node(inGraph, (arcstr::literal!(FNode::feNodeName)).clone(), list![parent.clone()], FCore::Data::ND { scopeType: None });
-            child = FNode::toRef(node.clone());
+            child = FNode::toRef(node);
             FNode::addChildRef(parent.clone(), (arcstr::literal!(FNode::feNodeName)).clone(), child.clone(), false)?;
-            graph = FGraph::pushScopeRef(graph.clone(), child.clone())?;
+            graph = FGraph::pushScopeRef(graph, child.clone())?;
             vals = getRecordValues(inOptValue, inRecordType)?;
-            (cache, graph) = List::threadFold(var_lst.clone(), vals.clone(), (std::sync::Arc::new(extendEnvWithRecordVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Option<Arc<Values::Value>>, (FCore::Cache, FCore::Graph)) -> Result<(FCore::Cache, FCore::Graph)> + 'static>), (inCache, graph.clone()))?;
-            (cache.clone(), graph.clone())
+            (cache, graph) = List::threadFold(var_lst.clone(), vals, (std::sync::Arc::new(extendEnvWithRecordVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Option<Arc<Values::Value>>, (FCore::Cache, FCore::Graph)) -> Result<(FCore::Cache, FCore::Graph)> + 'static>), (inCache, graph))?;
+            (cache, graph)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1706,14 +1706,14 @@ fn getRecordValues(mut inOptValue: Option<Arc<Values::Value>>, mut inRecordType:
         (Some(Deref @ Values::Value::RECORD { orderd: vals, .. }), _) => {
             let mut opt_vals: Arc<metamodelica::List<Option<Arc<Values::Value>>>>;
             opt_vals = List::map(vals.clone(), std::sync::Arc::new(fnptr!(Util::makeOption, _)))?;
-            opt_vals.clone()
+            opt_vals
         },
         (None, Deref @ DAE::Type::T_COMPLEX { varLst: vars, .. }) => {
             let mut opt_vals: Arc<metamodelica::List<Option<Arc<Values::Value>>>>;
             let mut n: i32;
             n = (vars.clone().len() as i32);
-            opt_vals = List::fill(None, n.clone());
-            opt_vals.clone()
+            opt_vals = List::fill(None, n);
+            opt_vals
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1977,7 +1977,7 @@ fn assignRecord(mut inType: Arc<DAE::Type>, mut inValue: Arc<Values::Value>, mut
             let mut cache: FCore::Cache;
             let mut env: FCore::Graph;
             (cache, env) = assignRecordComponents(vars.clone(), values.clone(), inCache, inEnv)?;
-            (cache.clone(), env.clone())
+            (cache, env)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1995,8 +1995,8 @@ fn assignRecordComponents(mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>>, mu
             let mut cache: FCore::Cache;
             let mut env: FCore::Graph;
             cr = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), ty.clone(), metamodelica::nil());
-            (cache, env) = assignVariable(cr.clone(), val.clone(), inCache, inEnv)?;
-            { (inVars, inValues, inCache, inEnv) = (rest_vars.clone(), rest_vals.clone(), cache.clone(), env.clone()); continue '__tco; }
+            (cache, env) = assignVariable(cr, val.clone(), inCache, inEnv)?;
+            { (inVars, inValues, inCache, inEnv) = (rest_vars.clone(), rest_vals.clone(), cache, env); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2142,7 +2142,7 @@ fn assignWholeDim(mut inNewValues: Arc<metamodelica::List<Arc<Values::Value>>>, 
             let mut vl1 = (*vl1).clone();
             (cache, v1) = assignVector(v1.clone(), v2.clone(), inSubscripts.clone(), inCache.clone(), inEnv.clone())?;
             (cache, vl1) = assignWholeDim(vl1.clone(), vl2.clone(), inSubscripts, inCache, inEnv)?;
-            (cache.clone(), metamodelica::cons(v1.clone(), vl1.clone()))
+            (cache, metamodelica::cons(v1.clone(), vl1.clone()))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2367,7 +2367,7 @@ fn getFunctionReturnValue(mut inOutputVar: Arc<DAE::Element>, mut inEnv: FCore::
         Deref @ DAE::Element::VAR { componentRef: cr, ty, .. } => {
             let mut val: Arc<Values::Value>;
             val = getVariableValue(cr.clone(), ty.clone(), inEnv)?;
-            val.clone()
+            val
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2413,9 +2413,9 @@ fn getRecordValue(mut inRecordName: Arc<Absyn::Path>, mut inType: Arc<DAE::Type>
             let mut var_names: Arc<metamodelica::List<ArcStr>>;
             let mut env: FCore::Graph;
             (_, _, _, _, _, env) = Lookup::lookupIdentLocal(FCore::emptyCache(), inEnv, (id.clone()).clone())?;
-            vals = List::map1(vars.clone(), (std::sync::Arc::new(getRecordComponentValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, FCore::Graph) -> Result<Arc<Values::Value>> + 'static>), env.clone())?;
+            vals = List::map1(vars.clone(), (std::sync::Arc::new(getRecordComponentValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, FCore::Graph) -> Result<Arc<Values::Value>> + 'static>), env)?;
             var_names = List::map(vars.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
-            Arc::new(Values::Value::RECORD { record_: p.clone(), orderd: vals.clone(), comp: var_names.clone(), index: -1 })
+            Arc::new(Values::Value::RECORD { record_: p.clone(), orderd: vals, comp: var_names, index: -1 })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2428,7 +2428,7 @@ fn getRecordComponentValue(mut inVars: Arc<DAE::Var>, mut inEnv: FCore::Graph) -
         Deref @ DAE::Var { name: id, ty: ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, .. } => {
             let mut val: Arc<Values::Value>;
             val = getRecordValue(Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }), ty.clone(), inEnv)?;
-            val.clone()
+            val
         },
         Deref @ DAE::Var { name: id, ty, binding: tvbinding, .. } => {
             let mut val: Arc<Values::Value>;
@@ -2439,12 +2439,12 @@ fn getRecordComponentValue(mut inVars: Arc<DAE::Var>, mut inEnv: FCore::Graph) -
                 _ => bail!("pattern mismatch"),
             } };
             binding = __pa0.clone();
-            oval = getBindingValueOpt(binding.clone());
+            oval = getBindingValueOpt(binding);
             if isNone(oval.clone()) {
                 oval = getBindingValueOpt(tvbinding.clone());
             }
             if isSome(oval.clone()) {
-                let __pa1 = ::match_deref::match_deref! { match &(oval.clone()) {
+                let __pa1 = ::match_deref::match_deref! { match &(oval) {
                     Some(__pa1) => __pa1.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
@@ -2452,7 +2452,7 @@ fn getRecordComponentValue(mut inVars: Arc<DAE::Var>, mut inEnv: FCore::Graph) -
             } else {
                 val = generateDefaultBinding(ty.clone())?;
             }
-            val.clone()
+            val
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2716,15 +2716,15 @@ fn checkCyclicalComponents(mut inCycles: Arc<metamodelica::List<((Arc<DAE::Eleme
             let mut scope_str: ArcStr;
             let mut info: SourceInfo;
             cycles = Graph::findCycles(inCycles, (std::sync::Arc::new(isElementEqual) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Element>, Option<Arc<Values::Value>>), (Arc<DAE::Element>, Option<Arc<Values::Value>>)) -> Result<bool> + 'static>))?;
-            elements = List::mapList(cycles.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
-            crefs = List::mapList(elements.clone(), (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-            names = List::mapList(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?;
-            cycles_strs = List::map1(names.clone(), (std::sync::Arc::new(fnptr!(stringDelimitList, Arc<metamodelica::List<ArcStr>>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ArcStr>>, ArcStr) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?;
-            cycles_str = stringDelimitList(cycles_strs.clone(), (literal!("}, {")).clone());
-            cycles_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*cycles_str.clone()); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
+            elements = List::mapList(cycles, std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
+            crefs = List::mapList(elements, (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
+            names = List::mapList(crefs, (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?;
+            cycles_strs = List::map1(names, (std::sync::Arc::new(fnptr!(stringDelimitList, Arc<metamodelica::List<ArcStr>>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ArcStr>>, ArcStr) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?;
+            cycles_str = stringDelimitList(cycles_strs, (literal!("}, {")).clone());
+            cycles_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*cycles_str); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
             scope_str = (literal!("")).clone();
             info = ElementSource::getElementSourceFileInfo(inSource);
-            Error::addSourceMessage(Error::CIRCULAR_COMPONENTS.clone(), list![(scope_str.clone()).clone(), (cycles_str.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::CIRCULAR_COMPONENTS.clone(), list![(scope_str).clone(), (cycles_str).clone()], info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

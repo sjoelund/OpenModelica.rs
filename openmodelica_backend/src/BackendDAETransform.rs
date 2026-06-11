@@ -494,7 +494,7 @@ pub(crate) fn getEquationAndSolvedVar(mut inComp: Arc<BackendDAE::StrongComponen
             let mut var: BackendDAE::Var;
             eqn = BackendEquation::get(inEquationArray, e.clone())?;
             var = BackendVariable::getVarAt(inVariables, v.clone())?;
-            (list![eqn.clone()], list![var.clone()], e.clone())
+            (list![eqn], list![var], e.clone())
         },
         Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: elst, vars: vlst, .. } => {
             let mut e: i32;
@@ -503,42 +503,42 @@ pub(crate) fn getEquationAndSolvedVar(mut inComp: Arc<BackendDAE::StrongComponen
             eqnlst = BackendEquation::getList(elst.clone(), inEquationArray)?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
             e = listHead(elst.clone())?;
-            (eqnlst.clone(), varlst.clone(), e.clone())
+            (eqnlst, varlst, e)
         },
         Deref @ BackendDAE::StrongComponent::SINGLEARRAY { eqn: e, vars: vlst } => {
             let mut eqn: Arc<BackendDAE::Equation>;
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>>;
             eqn = BackendEquation::get(inEquationArray, e.clone())?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
-            (list![eqn.clone()], varlst.clone(), e.clone())
+            (list![eqn], varlst, e.clone())
         },
         Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { eqn: e, vars: vlst } => {
             let mut eqn: Arc<BackendDAE::Equation>;
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>>;
             eqn = BackendEquation::get(inEquationArray, e.clone())?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
-            (list![eqn.clone()], varlst.clone(), e.clone())
+            (list![eqn], varlst, e.clone())
         },
         Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: e, vars: vlst } => {
             let mut eqn: Arc<BackendDAE::Equation>;
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>>;
             eqn = BackendEquation::get(inEquationArray, e.clone())?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
-            (list![eqn.clone()], varlst.clone(), e.clone())
+            (list![eqn], varlst, e.clone())
         },
         Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { eqn: e, vars: vlst } => {
             let mut eqn: Arc<BackendDAE::Equation>;
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>>;
             eqn = BackendEquation::get(inEquationArray, e.clone())?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
-            (list![eqn.clone()], varlst.clone(), e.clone())
+            (list![eqn], varlst, e.clone())
         },
         Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { eqn: e, vars: vlst } => {
             let mut eqn: Arc<BackendDAE::Equation>;
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>>;
             eqn = BackendEquation::get(inEquationArray, e.clone())?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
-            (list![eqn.clone()], varlst.clone(), e.clone())
+            (list![eqn], varlst, e.clone())
         },
         Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: vlst, residualequations: elst, innerEquations, .. }, .. } => {
             let mut e: i32;
@@ -552,11 +552,11 @@ pub(crate) fn getEquationAndSolvedVar(mut inComp: Arc<BackendDAE::StrongComponen
             eqnlst = BackendEquation::getList(elst.clone(), inEquationArray.clone())?;
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables.clone())?;
             (otherEqns, otherVarsLst, _) = List::map_3(innerEquations.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnAndVarsFromInnerEquation) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::InnerEquation) -> Result<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<DAE::Constraint>>>)> + 'static>))?;
-            otherVars = List::flatten(otherVarsLst.clone())?;
-            eqnlst1 = BackendEquation::getList(otherEqns.clone(), inEquationArray)?;
-            varlst1 = List::map1r(otherVars.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
+            otherVars = List::flatten(otherVarsLst)?;
+            eqnlst1 = BackendEquation::getList(otherEqns, inEquationArray)?;
+            varlst1 = List::map1r(otherVars, (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inVariables)?;
             e = listHead(elst.clone())?;
-            (listAppend(eqnlst.clone(), eqnlst1.clone()), listAppend(varlst.clone(), varlst1.clone()), e.clone())
+            (listAppend(eqnlst, eqnlst1), listAppend(varlst, varlst1), e)
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -904,7 +904,7 @@ fn traverseBackendDAEExpsLstEqnWithSymbolicOperation<Type_a: Clone + 'static + m
             let mut arg: Type_a;
             let mut exp = (*exp).clone();
             (exp, arg) = func(exp.clone(), inTypeA)?;
-            { (inExps, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg.clone(), metamodelica::cons(exp.clone(), iAcc)); continue '__tco; }
+            { (inExps, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg, metamodelica::cons(exp.clone(), iAcc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -924,7 +924,7 @@ pub(crate) fn traverseBackendDAEExpsEqnLstWithSymbolicOperation<Type_a: Clone + 
             let mut arg: Type_a;
             let mut eqn = (*eqn).clone();
             (eqn, arg) = traverseBackendDAEExpsEqnWithSymbolicOperation(eqn.clone(), func.clone(), inTypeA)?;
-            { (inEqns, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc)); continue '__tco; }
+            { (inEqns, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg, metamodelica::cons(eqn.clone(), iAcc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -944,7 +944,7 @@ fn traverseBackendDAEExpsEqnLstLstWithSymbolicOperation<Type_a: Clone + 'static 
             let mut arg: Type_a;
             let mut eqn = (*eqn).clone();
             (eqn, arg) = traverseBackendDAEExpsEqnLstWithSymbolicOperation(eqn.clone(), func.clone(), inTypeA, metamodelica::nil())?;
-            { (inEqns, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc)); continue '__tco; }
+            { (inEqns, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg, metamodelica::cons(eqn.clone(), iAcc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

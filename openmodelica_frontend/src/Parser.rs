@@ -289,7 +289,7 @@ fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
             let mut libraryKey: ArcStr;
             let mut licenseFile: ArcStr;
             (libraryKey, licenseFile) = getLicenseAnnotationWork2(arglst.clone())?;
-            (libraryKey.clone(), licenseFile.clone())
+            (libraryKey, licenseFile)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -325,7 +325,7 @@ fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
             let mut licenseFile: ArcStr;
             libraryKey = (getLicenseAnnotationLibraryKey(arglst.clone())).clone();
             licenseFile = (getLicenseAnnotationLicenseFile(arglst.clone())).clone();
-            (libraryKey.clone(), licenseFile.clone())
+            (libraryKey, licenseFile)
         },
         _ => bail!("match: no arm matched"),
     } });

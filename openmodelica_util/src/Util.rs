@@ -939,13 +939,13 @@ pub fn buildMapStr(mut inLst1: Arc<metamodelica::List<ArcStr>>, mut inLst2: Arc<
         (Deref @ metamodelica::List::Cons { head: fa, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: fb, tail: Deref @ metamodelica::List::Nil }, md, _) => {
             let mut r#str: ArcStr;
             r#str = stringAppendList(list![(fa.clone()).clone(), (md.clone()).clone(), (fb.clone()).clone()]);
-            r#str.clone()
+            r#str
         },
         (Deref @ metamodelica::List::Cons { head: fa, tail: ra }, Deref @ metamodelica::List::Cons { head: fb, tail: rb }, md, ed) => {
             let mut r#str: ArcStr;
             r#str = (buildMapStr(ra.clone(), rb.clone(), (md.clone()).clone(), (ed.clone()).clone())?).clone();
-            r#str = stringAppendList(list![(fa.clone()).clone(), (md.clone()).clone(), (fb.clone()).clone(), (ed.clone()).clone(), (r#str.clone()).clone()]);
-            r#str.clone()
+            r#str = stringAppendList(list![(fa.clone()).clone(), (md.clone()).clone(), (fb.clone()).clone(), (ed.clone()).clone(), (r#str).clone()]);
+            r#str
         },
         _ => bail!("match: no arm matched"),
     } })).clone();

@@ -130,9 +130,9 @@ pub(crate) fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::P
                 _ => bail!("pattern mismatch"),
             } };
             name = __pa0.clone();
-            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: inPrefix, r#mod: inMod, kind: inKind, status: openmodelica_frontend_dump::FCore::Status::CLS_UNTYPED });
-            nr = FNode::toRef(n.clone());
-            FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), checkDuplicate)?;
+            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls, pre: inPrefix, r#mod: inMod, kind: inKind, status: openmodelica_frontend_dump::FCore::Status::CLS_UNTYPED });
+            nr = FNode::toRef(n);
+            FNode::addChildRef(inParentRef.clone(), (name).clone(), nr.clone(), checkDuplicate)?;
             g.clone()
         },
     });
@@ -393,8 +393,8 @@ pub(crate) fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef:
             let mut g = (*g).clone();
             name = (FNode::mkExtendsName(p.clone())?).clone();
             (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::EX { e: inElement, r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD() });
-            nr = FNode::toRef(n.clone());
-            FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
+            nr = FNode::toRef(n);
+            FNode::addChildRef(inParentRef.clone(), (name).clone(), nr.clone(), false)?;
             g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), nr.clone(), inKind, g.clone())?;
             g = mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), nr.clone(), g.clone())?;
             g.clone()
@@ -479,7 +479,7 @@ pub(crate) fn mkDimsNode(mut inName: Name, mut inArrayDims: Option<Arc<metamodel
             let mut nr: Ref;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::DIMS { name: (inName.clone()).clone(), dims: a.clone() });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), nr.clone(), false)?;
             g = mkDimsNode_helper(0, a.clone(), nr.clone(), inKind, g.clone())?;
             g.clone()
@@ -499,14 +499,14 @@ pub(crate) fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metam
             let mut name: Name;
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
-            g = mkExpressionNode((name.clone()).clone(), openmodelica_ast::Absyn::Exp::interned_END(), inParentRef.clone(), inKind.clone(), g.clone())?;
+            g = mkExpressionNode((name).clone(), openmodelica_ast::Absyn::Exp::interned_END(), inParentRef.clone(), inKind.clone(), g.clone())?;
             { (inStartWith, inArrayDims, inParentRef, inKind, inGraph) = (i.clone() + 1, rest.clone(), inParentRef.clone(), inKind, g.clone()); continue '__tco; }
         },
         (i, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e }, tail: rest }, g) => {
             let mut name: Name;
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
-            g = mkExpressionNode((name.clone()).clone(), e.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
+            g = mkExpressionNode((name).clone(), e.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             { (inStartWith, inArrayDims, inParentRef, inKind, inGraph) = (i.clone() + 1, rest.clone(), inParentRef.clone(), inKind, g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -581,7 +581,7 @@ pub(crate) fn mkExpressionNode(mut inName: Name, mut inExp: Arc<Absyn::Exp>, mut
             let mut nr: Ref;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::EXP { name: (inName.clone()).clone(), e: e.clone() });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), nr.clone(), false)?;
             g = analyseExp(e.clone(), nr.clone(), inKind, g.clone())?;
             g.clone()
@@ -616,8 +616,8 @@ pub(crate) fn mkCrefNode(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: 
             let mut name: Name;
             name = (Dump::printComponentRefStr(inCref.clone())?).clone();
             (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CR { r: inCref.clone() });
-            nr = FNode::toRef(n.clone());
-            FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
+            nr = FNode::toRef(n);
+            FNode::addChildRef(inParentRef.clone(), (name).clone(), nr.clone(), false)?;
             g = mkDimsNode((arcstr::literal!(FNode::subsNodeName)).clone(), List::mkOption(AbsynUtil::getSubsFromCref(inCref, true, true)?), nr.clone(), inKind, g.clone())?;
             g.clone()
         },
@@ -693,7 +693,7 @@ pub(crate) fn mkEqNode(mut inName: Name, mut inEqs: Arc<metamodelica::List<Arc<S
             let mut nr: Ref;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::EQ { name: (inName.clone()).clone(), e: inEqs.clone() });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), nr.clone(), false)?;
             g = List::fold2(inEqs, (std::sync::Arc::new(analyseEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), nr.clone(), inKind, g.clone())?;
             g.clone()
@@ -714,7 +714,7 @@ pub(crate) fn mkAlNode(mut inName: Name, mut inAlgs: Arc<metamodelica::List<Arc<
             let mut nr: Ref;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::AL { name: (inName.clone()).clone(), a: inAlgs.clone() });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), nr.clone(), false)?;
             g = List::fold2(inAlgs, (std::sync::Arc::new(analyseAlgorithm) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), nr.clone(), inKind, g.clone())?;
             g.clone()
@@ -735,7 +735,7 @@ pub(crate) fn mkOptNode(mut inName: Name, mut inConstraintLst: Arc<metamodelica:
             let mut nr: Ref;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::OT { constrainLst: inConstraintLst, clsAttrs: inClsAttrs });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), nr.clone(), false)?;
             g.clone()
         },
@@ -756,10 +756,10 @@ pub(crate) fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc
             let mut oae: Option<Arc<Absyn::Exp>>;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::ED { ed: ed.clone() });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), nr.clone(), false)?;
             oae = Util::applyOption(ocr.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::crefExp, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
-            g = mkCrefsFromExps(List::consOption(oae.clone(), exps.clone()), nr.clone(), inKind, g.clone())?;
+            g = mkCrefsFromExps(List::consOption(oae, exps.clone()), nr.clone(), inKind, g.clone())?;
             g.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -777,7 +777,7 @@ pub(crate) fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>
             let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
             let mut g = (*g).clone();
             crefs = AbsynUtil::getCrefFromExp(e.clone(), true, true)?;
-            g = mkCrefsNodes(crefs.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
+            g = mkCrefsNodes(crefs, inParentRef.clone(), inKind.clone(), g.clone())?;
             { (inExps, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind, g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -970,7 +970,7 @@ pub(crate) fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Ab
             let mut nr: Ref;
             let mut g = (*g).clone();
             (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::FI { fi: i.clone() });
-            nr = FNode::toRef(n.clone());
+            nr = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
             { (inIterators, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind, g.clone()); continue '__tco; }
         },
@@ -1007,7 +1007,7 @@ pub(crate) fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Ab
             let mut el: Arc<metamodelica::List<Arc<SCode::Element>>>;
             let mut g = (*g).clone();
             el = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
-            g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
+            g = List::fold2(el, (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
             { (inElements, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind, g.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, g) => {
@@ -1026,7 +1026,7 @@ pub(crate) fn mkRefNode(mut inName: Name, mut inTargetScope: Scope, mut inParent
             let mut n: Node;
             let mut rn: Ref;
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::REF { target: inTargetScope });
-            rn = FNode::toRef(n.clone());
+            rn = FNode::toRef(n);
             FNode::addChildRef(inParentRef.clone(), (inName).clone(), rn.clone(), false)?;
             g.clone()
         },

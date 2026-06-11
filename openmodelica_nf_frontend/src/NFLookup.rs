@@ -512,12 +512,12 @@ pub(crate) fn lookupNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::I
         Deref @ Absyn::Path::IDENT { .. } => {
             let mut node: Arc<InstNode::InstNode>;
             (node, state, _) = lookupFirstIdent((var_field!((*name).name, Absyn::Path::IDENT).clone()).clone(), scope, context)?;
-            (list![node.clone()], state)
+            (list![node], state)
         },
         Deref @ Absyn::Path::QUALIFIED { .. } => {
             let mut node: Arc<InstNode::InstNode>;
             (node, state, self_reference) = lookupFirstIdent((var_field!((*name).name, Absyn::Path::QUALIFIED).clone()).clone(), scope, context)?;
-            lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), list![node.clone()], state, context, self_reference)?
+            lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), list![node], state, context, self_reference)?
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
             lookupNames(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope)?, context)?
@@ -899,7 +899,7 @@ pub(crate) fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<Ins
             assign_field!(prefs.innerOuter = openmodelica_ast::Absyn::InnerOuter::INNER);
             assign_variant_field!(def => SCode::Element::COMPONENT; prefixes = prefs.clone());
             assign_variant_field!(comp => Component::NFComponent::COMPONENT_DEF; definition = def.clone());
-            (comp.clone(), def.clone())
+            (comp, def.clone())
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.makeInnerNode")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;
@@ -907,7 +907,7 @@ pub(crate) fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<Ins
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            InstNode::replaceComponent(comp.clone(), InstNode::setDefinition(def.clone(), node)?)?
+            InstNode::replaceComponent(comp, InstNode::setDefinition(def.clone(), node)?)?
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.makeInnerNode")); __mm_s.push_str(&*literal!(" got unknown node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;

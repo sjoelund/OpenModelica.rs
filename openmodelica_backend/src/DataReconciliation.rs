@@ -2237,7 +2237,7 @@ fn isEquationTaggedApproximatedOrBoundaryCondition(mut eqn: Arc<BackendDAE::Equa
             let mut isApproximatedEquation: bool;
             let mut isboundaryConditionEquations: bool;
             (isApproximatedEquation, isboundaryConditionEquations) = isEquationTaggedApproximatedOrBoundaryConditionHelper(comment.clone());
-            (isApproximatedEquation.clone(), isboundaryConditionEquations.clone())
+            (isApproximatedEquation, isboundaryConditionEquations)
         },
         _ => {
             (false, false)
@@ -2387,9 +2387,9 @@ pub(crate) fn findBlockTargetsHelper(mut inlist1: Arc<metamodelica::List<Arc<met
             if debug {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTargetBlocks :")); __mm_s.push_str(&*anyString(dependencyequation.clone())); __mm_s.push_str(&*literal!(" || EBLT_Block")); __mm_s.push_str(&*anyString(eBLTList1.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            targetblocks = getActualBlocks(dependencyequation.clone(), originalblocks.clone(), first.clone())?;
+            targetblocks = getActualBlocks(dependencyequation, originalblocks.clone(), first.clone())?;
             (targetblocks1, eBLTList2) = findBlockTargetsHelper(targetblocks.clone(), metamodelica::cons(firstitem.clone(), restitem.clone()), solvar.clone(), mxt1.clone(), originalblocks.clone(), b.clone())?;
-            (List::unique(listAppend(targetblocks.clone(), targetblocks1.clone())), List::unique(listAppend(eBLTList1.clone(), eBLTList2.clone())))
+            (List::unique(listAppend(targetblocks, targetblocks1)), List::unique(listAppend(eBLTList1, eBLTList2)))
         },
         (_, _, _, _, _, _) => {
             (metamodelica::nil(), metamodelica::nil())
@@ -2950,8 +2950,8 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut res: ArcStr;
             s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
             s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
-            res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
-            res.clone()
+            res = stringAppendList(list![(s1).clone(), (literal!(" = ")).clone(), (s2).clone()]);
+            res
         },
         Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. } => {
             let mut s1: ArcStr;
@@ -2959,8 +2959,8 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut res: ArcStr;
             s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
             s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
-            res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
-            res.clone()
+            res = stringAppendList(list![(s1).clone(), (literal!(" = ")).clone(), (s2).clone()]);
+            res
         },
         Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. } => {
             let mut s1: ArcStr;
@@ -2968,36 +2968,36 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut res: ArcStr;
             s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
             s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
-            res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
-            res.clone()
+            res = stringAppendList(list![(s1).clone(), (literal!(" = ")).clone(), (s2).clone()]);
+            res
         },
         Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. } => {
             let mut s1: ArcStr;
             let mut s2: ArcStr;
             let mut res: ArcStr;
             s1 = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
-            s1 = (System::stringReplace((s1.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
-            s1 = (System::stringReplace((s1.clone()).clone(), (literal!("$")).clone(), (literal!("")).clone())?).clone();
+            s1 = (System::stringReplace((s1).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
+            s1 = (System::stringReplace((s1).clone(), (literal!("$")).clone(), (literal!("")).clone())?).clone();
             s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
-            res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
-            res.clone()
+            res = stringAppendList(list![(s1).clone(), (literal!(" = ")).clone(), (s2).clone()]);
+            res
         },
         Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: weqn, .. } => {
             let mut res: ArcStr;
             res = (BackendDump::whenEquationString(weqn.clone(), true)?).clone();
-            res.clone()
+            res
         },
         Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. } => {
             let mut s1: ArcStr;
             let mut res: ArcStr;
             s1 = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("")).clone(), None, None)).clone();
-            res = stringAppendList(list![(s1.clone()).clone(), (literal!("= 0")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(s1).clone(), (literal!("= 0")).clone()]);
+            res
         },
         Deref @ BackendDAE::Equation::ALGORITHM { alg, source, .. } => {
             let mut res: ArcStr;
             res = (DAEDump::dumpAlgorithmsStr(list![Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() })])?).clone();
-            res.clone()
+            res
         },
         Deref @ BackendDAE::Equation::IF_EQUATION { conditions: Deref @ metamodelica::List::Cons { head: e1, tail: expl }, eqnstrue: Deref @ metamodelica::List::Cons { head: eqns, tail: eqnstrue }, eqnsfalse, .. } => {
             let mut s1: ArcStr;
@@ -3006,9 +3006,9 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut res: ArcStr;
             s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
             s2 = stringDelimitList(List::map(eqns.clone(), (std::sync::Arc::new(dumpEquationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n  ")).clone());
-            s3 = stringAppendList(list![(literal!("if ")).clone(), (s1.clone()).clone(), (literal!(" then\n  ")).clone(), (s2.clone()).clone()]);
-            res = (BackendDump::ifequationString(expl.clone(), eqnstrue.clone(), eqnsfalse.clone(), (s3.clone()).clone())?).clone();
-            res.clone()
+            s3 = stringAppendList(list![(literal!("if ")).clone(), (s1).clone(), (literal!(" then\n  ")).clone(), (s2).clone()]);
+            res = (BackendDump::ifequationString(expl.clone(), eqnstrue.clone(), eqnsfalse.clone(), (s3).clone())?).clone();
+            res
         },
         Deref @ BackendDAE::Equation::FOR_EQUATION { iter, start, stop, body: eqn, .. } => {
             let mut s1: ArcStr;
@@ -3016,8 +3016,8 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut res: ArcStr;
             s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(iter.clone(), (literal!("")).clone(), None, None)); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(start.clone(), (literal!("")).clone(), None, None)); __mm_s.push_str(&*literal!(" : ")); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(stop.clone(), (literal!("")).clone(), None, None)); ArcStr::from(__mm_s) }).clone();
             s2 = (dumpEquationString(eqn.clone())?).clone();
-            res = stringAppendList(list![(literal!("for ")).clone(), (s1.clone()).clone(), (literal!(" loop\n    ")).clone(), (s2.clone()).clone(), (literal!("; end for; ")).clone()]);
-            res.clone()
+            res = stringAppendList(list![(literal!("for ")).clone(), (s1).clone(), (literal!(" loop\n    ")).clone(), (s2).clone(), (literal!("; end for; ")).clone()]);
+            res
         },
         _ => bail!("match: no arm matched"),
     } })).clone();

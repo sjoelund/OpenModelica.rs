@@ -232,13 +232,13 @@ pub fn getDerivativePaths(mut inFuncDefs: Arc<metamodelica::List<DAE::FunctionDe
         Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: p1, defaultDerivative: Some(p2), lowerOrderDerivatives: pLst1, .. }, tail: funcDefs } => {
             let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             pLst2 = getDerivativePaths(funcDefs.clone());
-            paths = List::union(metamodelica::cons(p1.clone(), metamodelica::cons(p2.clone(), pLst1.clone())), pLst2.clone());
+            paths = List::union(metamodelica::cons(p1.clone(), metamodelica::cons(p2.clone(), pLst1.clone())), pLst2);
             paths
         },
         Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: p1, defaultDerivative: None, lowerOrderDerivatives: pLst1, .. }, tail: funcDefs } => {
             let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             pLst2 = getDerivativePaths(funcDefs.clone());
-            paths = List::union(metamodelica::cons(p1.clone(), pLst1.clone()), pLst2.clone());
+            paths = List::union(metamodelica::cons(p1.clone(), pLst1.clone()), pLst2);
             paths
         },
         Deref @ metamodelica::List::Cons { head: _, tail: funcDefs } => {
@@ -577,14 +577,14 @@ pub(crate) fn removeInnerAttr(mut var: Arc<DAE::ComponentRef>, mut dae: DAE::DAE
             let mut elist = (*elist).clone();
             newVar = nameInnerouterUniqueCref(oldVar.clone())?;
             o = Arc::new(DAE::Element::VAR { componentRef: oldVar.clone(), kind: kind.clone(), direction: dir.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: tp.clone(), binding: None, dims: dim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: attr.clone(), comment: cmt.clone(), innerOuter: openmodelica_ast::Absyn::InnerOuter::OUTER, encrypted: ie.clone() });
-            u = Arc::new(DAE::Element::VAR { componentRef: newVar.clone(), kind: kind.clone(), direction: dir.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: tp.clone(), binding: bind.clone(), dims: dim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: attr.clone(), comment: cmt.clone(), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: ie.clone() });
-            elist = metamodelica::cons(u.clone(), metamodelica::cons(o.clone(), elist.clone()));
+            u = Arc::new(DAE::Element::VAR { componentRef: newVar, kind: kind.clone(), direction: dir.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: tp.clone(), binding: bind.clone(), dims: dim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: attr.clone(), comment: cmt.clone(), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: ie.clone() });
+            elist = metamodelica::cons(u, metamodelica::cons(o, elist.clone()));
             DAE::DAElist { elementLst: elist.clone() }
         },
         DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { componentRef: cr, kind, direction: dir, parallelism: prl, protection: prot, ty: tp, binding: bind, dims: dim, connectorType: ct, source, variableAttributesOption: attr, comment: cmt, innerOuter: io, encrypted: ie }, tail: elist } } if (ComponentReferenceBasics::crefEqualNoStringCompare(var.clone(), cr.clone())?) => {
             let mut io2: Absyn::InnerOuter;
             io2 = removeInnerAttribute(io.clone());
-            DAE::DAElist { elementLst: metamodelica::cons(Arc::new(DAE::Element::VAR { componentRef: cr.clone(), kind: kind.clone(), direction: dir.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: tp.clone(), binding: bind.clone(), dims: dim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: attr.clone(), comment: cmt.clone(), innerOuter: io2.clone(), encrypted: ie.clone() }), elist.clone()) }
+            DAE::DAElist { elementLst: metamodelica::cons(Arc::new(DAE::Element::VAR { componentRef: cr.clone(), kind: kind.clone(), direction: dir.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: tp.clone(), binding: bind.clone(), dims: dim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: attr.clone(), comment: cmt.clone(), innerOuter: io2, encrypted: ie.clone() }), elist.clone()) }
         },
         DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { ident: id, dAElist: elist, source, comment: cmt }, tail: elist2 } } => {
             let mut elist = (*elist).clone();
@@ -629,7 +629,7 @@ pub(crate) fn nameInnerouterUniqueCref(mut inCr: Arc<DAE::ComponentRef>) -> Resu
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: idt, subscriptLst: subs, componentRef: child } => {
             let mut newChild: Arc<DAE::ComponentRef>;
             newChild = nameInnerouterUniqueCref(child.clone())?;
-            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), idt.clone(), subs.clone(), newChild.clone())
+            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), idt.clone(), subs.clone(), newChild)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -979,7 +979,7 @@ pub fn setStartAttrOption(mut attr: Option<Arc<DAE::VariableAttributes>>, mut st
                 assign_variant_field!(va => DAE::VariableAttributes::VAR_ATTR_REAL; start = start);
                 at = Some(va.clone());
             }
-            at.clone()
+            at
         },
         Some(va @ Deref @ DAE::VariableAttributes::VAR_ATTR_INT { .. }) => {
             let mut at: Option<Arc<DAE::VariableAttributes>>;
@@ -990,7 +990,7 @@ pub fn setStartAttrOption(mut attr: Option<Arc<DAE::VariableAttributes>>, mut st
                 assign_variant_field!(va => DAE::VariableAttributes::VAR_ATTR_INT; start = start);
                 at = Some(va.clone());
             }
-            at.clone()
+            at
         },
         Some(va @ Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { .. }) => {
             let mut at: Option<Arc<DAE::VariableAttributes>>;
@@ -1001,7 +1001,7 @@ pub fn setStartAttrOption(mut attr: Option<Arc<DAE::VariableAttributes>>, mut st
                 assign_variant_field!(va => DAE::VariableAttributes::VAR_ATTR_BOOL; start = start);
                 at = Some(va.clone());
             }
-            at.clone()
+            at
         },
         Some(va @ Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { .. }) => {
             let mut at: Option<Arc<DAE::VariableAttributes>>;
@@ -1012,7 +1012,7 @@ pub fn setStartAttrOption(mut attr: Option<Arc<DAE::VariableAttributes>>, mut st
                 assign_variant_field!(va => DAE::VariableAttributes::VAR_ATTR_STRING; start = start);
                 at = Some(va.clone());
             }
-            at.clone()
+            at
         },
         Some(va @ Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { .. }) => {
             let mut at: Option<Arc<DAE::VariableAttributes>>;
@@ -1023,7 +1023,7 @@ pub fn setStartAttrOption(mut attr: Option<Arc<DAE::VariableAttributes>>, mut st
                 assign_variant_field!(va => DAE::VariableAttributes::VAR_ATTR_ENUMERATION; start = start);
                 at = Some(va.clone());
             }
-            at.clone()
+            at
         },
         None => {
             if (isNone(start.clone())) {None} else {Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: None, unit: None, displayUnit: None, min: None, max: None, start: start, fixed: None, nominal: None, stateSelectOption: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None }))}
@@ -1895,7 +1895,7 @@ pub(crate) fn findElement(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Elem
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
-            e_1.clone()
+            e_1
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1963,10 +1963,10 @@ fn getBindingsStr(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) 
             let mut s4: ArcStr;
             let mut r#str: ArcStr;
             expstr = (ExpressionBasics::printExpStr(e.clone())?).clone();
-            s3 = (stringAppend((expstr.clone()).clone(), (literal!(",")).clone())).clone();
+            s3 = (stringAppend((expstr).clone(), (literal!(",")).clone())).clone();
             s4 = (getBindingsStr(lst.clone())?).clone();
-            r#str = (stringAppend((s3.clone()).clone(), (s4.clone()).clone())).clone();
-            r#str.clone()
+            r#str = (stringAppend((s3).clone(), (s4).clone())).clone();
+            r#str
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: None, .. }, tail: lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } => {
             let mut r#str: ArcStr;
@@ -1974,13 +1974,13 @@ fn getBindingsStr(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) 
             let mut s2: ArcStr;
             s1 = (literal!("-,")).clone();
             s2 = (getBindingsStr(lst.clone())?).clone();
-            r#str = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
-            r#str.clone()
+            r#str = (stringAppend((s1).clone(), (s2).clone())).clone();
+            r#str
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: Some(e), .. }, tail: Deref @ metamodelica::List::Nil } => {
             let mut r#str: ArcStr;
             r#str = (ExpressionBasics::printExpStr(e.clone())?).clone();
-            r#str.clone()
+            r#str
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: None, .. }, tail: Deref @ metamodelica::List::Nil } => {
             literal!("")
@@ -2184,7 +2184,7 @@ fn getFlowVariables2(mut inExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::C
             let mut cr_1: Arc<DAE::ComponentRef>;
             res = getFlowVariables2(xs.clone(), (id.clone()).clone())?;
             cr_1 = ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), cr.clone());
-            metamodelica::cons(cr_1.clone(), res.clone())
+            metamodelica::cons(cr_1, res)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2255,7 +2255,7 @@ fn getStreamVariables2(mut inExpComponentRefLst: Arc<metamodelica::List<Arc<DAE:
             let mut cr_1: Arc<DAE::ComponentRef>;
             res = getStreamVariables2(xs.clone(), (id.clone()).clone())?;
             cr_1 = ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), cr.clone());
-            metamodelica::cons(cr_1.clone(), res.clone())
+            metamodelica::cons(cr_1, res)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2268,7 +2268,7 @@ pub(crate) fn toModelicaForm(mut inDAElist: DAE::DAElist) -> Result<DAE::DAElist
         DAE::DAElist { elementLst: ref elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            DAE::DAElist { elementLst: elts_1.clone() }
+            DAE::DAElist { elementLst: elts_1 }
         },
     });
     Ok(outDAElist)
@@ -2288,12 +2288,12 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             let mut cref_: Arc<DAE::ComponentRef>;
             let mut ty: Arc<DAE::Type>;
             r#str = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
-            str_1 = (Util::stringReplaceChar((r#str.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
+            str_1 = (Util::stringReplaceChar((r#str).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
             elts_1 = toModelicaFormElts(elts.clone())?;
             d_1 = toModelicaFormExpOpt(d.clone());
             ty = ComponentReference::crefLastType(cr.clone())?;
-            cref_ = ComponentReferenceBasics::makeCrefIdent((str_1.clone()).clone(), ty.clone(), metamodelica::nil());
-            metamodelica::cons(Arc::new(DAE::Element::VAR { componentRef: cref_.clone(), kind: a.clone(), direction: b.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: t.clone(), binding: d_1.clone(), dims: instDim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: dae_var_attr.clone(), comment: comment.clone(), innerOuter: io.clone(), encrypted: encrypted.clone() }), elts_1.clone())
+            cref_ = ComponentReferenceBasics::makeCrefIdent((str_1).clone(), ty, metamodelica::nil());
+            metamodelica::cons(Arc::new(DAE::Element::VAR { componentRef: cref_, kind: a.clone(), direction: b.clone(), parallelism: prl.clone(), protection: prot.clone(), ty: t.clone(), binding: d_1, dims: instDim.clone(), connectorType: ct.clone(), source: source.clone(), variableAttributesOption: dae_var_attr.clone(), comment: comment.clone(), innerOuter: io.clone(), encrypted: encrypted.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { componentRef: cr, exp: e, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2302,7 +2302,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e_1 = toModelicaFormExp(e.clone());
             cr_1 = toModelicaFormCref(cr.clone())?;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::DEFINE { componentRef: cr_1.clone(), exp: e_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::DEFINE { componentRef: cr_1, exp: e_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALDEFINE { componentRef: cr, exp: e, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2311,7 +2311,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e_1 = toModelicaFormExp(e.clone());
             cr_1 = toModelicaFormCref(cr.clone())?;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::INITIALDEFINE { componentRef: cr_1.clone(), exp: e_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIALDEFINE { componentRef: cr_1, exp: e_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2320,7 +2320,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e1_1 = toModelicaFormExp(e1.clone());
             e2_1 = toModelicaFormExp(e2.clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: e1_1.clone(), scalar: e2_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: e1_1, scalar: e2_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2329,7 +2329,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e1_1 = toModelicaFormExp(e1.clone());
             e2_1 = toModelicaFormExp(e2.clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::COMPLEX_EQUATION { lhs: e1_1.clone(), rhs: e2_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::COMPLEX_EQUATION { lhs: e1_1, rhs: e2_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1, rhs: e2, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2338,7 +2338,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e1_1 = toModelicaFormExp(e1.clone());
             e2_1 = toModelicaFormExp(e2.clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1_1.clone(), rhs: e2_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1_1, rhs: e2_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2355,7 +2355,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             } };
             cr2 = __pa1.clone();
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::EQUEQUATION { cr1: cr1.clone(), cr2: cr2.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::EQUEQUATION { cr1: cr1.clone(), cr2: cr2.clone(), source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { condition: e1, equations: welts, elsewhen_: Some(elt), source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2370,7 +2370,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             } };
             elt_1 = __pa0.clone();
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: e1_1.clone(), equations: welts_1.clone(), elsewhen_: Some(elt_1.clone()), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: e1_1, equations: welts_1, elsewhen_: Some(elt_1), source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { condition: e1, equations: welts, elsewhen_: None, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2379,7 +2379,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e1_1 = toModelicaFormExp(e1.clone());
             welts_1 = toModelicaFormElts(welts.clone())?;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: e1_1.clone(), equations: welts_1.clone(), elsewhen_: None, source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: e1_1, equations: welts_1, elsewhen_: None, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { condition1: conds, equations2: trueBranches, equations3: eelts, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2390,7 +2390,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             trueBranches_1 = List::map(trueBranches.clone(), (std::sync::Arc::new(toModelicaFormElts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>))?;
             eelts_1 = toModelicaFormElts(eelts.clone())?;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::IF_EQUATION { condition1: conds_1.clone(), equations2: trueBranches_1.clone(), equations3: eelts_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::IF_EQUATION { condition1: conds_1, equations2: trueBranches_1, equations3: eelts_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_IF_EQUATION { condition1: conds, equations2: trueBranches, equations3: eelts, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2401,7 +2401,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             trueBranches_1 = List::map(trueBranches.clone(), (std::sync::Arc::new(toModelicaFormElts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>))?;
             eelts_1 = toModelicaFormElts(eelts.clone())?;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_IF_EQUATION { condition1: conds_1.clone(), equations2: trueBranches_1.clone(), equations3: eelts_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_IF_EQUATION { condition1: conds_1, equations2: trueBranches_1, equations3: eelts_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALEQUATION { exp1: e1, exp2: e2, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2410,26 +2410,26 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e1_1 = toModelicaFormExp(e1.clone());
             e2_1 = toModelicaFormExp(e2.clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::INITIALEQUATION { exp1: e1_1.clone(), exp2: e2_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIALEQUATION { exp1: e1_1, exp2: e2_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ALGORITHM { algorithm_: alg, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
             metamodelica::print((literal!("to_modelica_form_elts(ALGORITHM) not impl. yet\n")).clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALALGORITHM { algorithm_: alg, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
             metamodelica::print((literal!("to_modelica_form_elts(INITIALALGORITHM) not impl. yet\n")).clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: alg.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: alg.clone(), source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { ident: id, dAElist: elts2, source, comment }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
             let mut elts2 = (*elts2).clone();
             elts2 = toModelicaFormElts(elts2.clone())?;
             elts_1 = toModelicaFormElts(elts.clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::COMP { ident: (id.clone()).clone(), dAElist: elts2.clone(), source: source.clone(), comment: comment.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::COMP { ident: (id.clone()).clone(), dAElist: elts2.clone(), source: source.clone(), comment: comment.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ASSERT { condition: e1, message: e2, level: e3, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2440,7 +2440,7 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e_1 = toModelicaFormExp(e1.clone());
             e_2 = toModelicaFormExp(e2.clone());
             e_3 = toModelicaFormExp(e3.clone());
-            metamodelica::cons(Arc::new(DAE::Element::ASSERT { condition: e_1.clone(), message: e_2.clone(), level: e_3.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::ASSERT { condition: e_1, message: e_2, level: e_3, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_ASSERT { condition: e1, message: e2, level: e3, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -2451,21 +2451,21 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             e_1 = toModelicaFormExp(e1.clone());
             e_2 = toModelicaFormExp(e2.clone());
             e_3 = toModelicaFormExp(e3.clone());
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_ASSERT { condition: e_1.clone(), message: e_2.clone(), level: e_3.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_ASSERT { condition: e_1, message: e_2, level: e_3, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::TERMINATE { message: e1, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
             let mut e_1: Arc<DAE::Exp>;
             elts_1 = toModelicaFormElts(elts.clone())?;
             e_1 = toModelicaFormExp(e1.clone());
-            metamodelica::cons(Arc::new(DAE::Element::TERMINATE { message: e_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::TERMINATE { message: e_1, source: source.clone() }), elts_1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_TERMINATE { message: e1, source }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>>;
             let mut e_1: Arc<DAE::Exp>;
             elts_1 = toModelicaFormElts(elts.clone())?;
             e_1 = toModelicaFormExp(e1.clone());
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_TERMINATE { message: e_1.clone(), source: source.clone() }), elts_1.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_TERMINATE { message: e_1, source: source.clone() }), elts_1)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2523,7 +2523,7 @@ fn toModelicaFormExpOpt(mut inExpExpOption: Option<Arc<DAE::Exp>>) -> Option<Arc
         Some(e) => {
             let mut e_1: Arc<DAE::Exp>;
             e_1 = toModelicaFormExp(e.clone());
-            Some(e_1.clone())
+            Some(e_1)
         },
         None => {
             None
@@ -3098,7 +3098,7 @@ fn collectWhenEquationBranches(mut inElseWhen: Option<Arc<DAE::Element>>, mut in
             let mut msg: ArcStr;
             msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- DAEUtil.collectWhenEquationBranches failed on: ")); __mm_s.push_str(&*DAEDump::dumpElementsStr(list![el.clone()])?); ArcStr::from(__mm_s) }).clone();
             info = ElementSource::getElementSourceFileInfo(ElementSource::getElementSource(el.clone())?);
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(msg.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(msg).clone()], info)?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -3128,17 +3128,17 @@ fn verifyBoolWhenEquation1(mut inElems: Arc<metamodelica::List<Arc<DAE::Element>
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { exp: e, source, .. }, tail: rest } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             crefs = collectWhenCrefs1(e.clone(), source.clone(), inCrefs)?;
-            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, crefs.clone()); continue '__tco; }
+            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, crefs); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ARRAY_EQUATION { exp: e, source, .. }, tail: rest } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             crefs = collectWhenCrefs1(e.clone(), source.clone(), inCrefs)?;
-            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, crefs.clone()); continue '__tco; }
+            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, crefs); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e, source, .. }, tail: rest } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             crefs = collectWhenCrefs1(e.clone(), source.clone(), inCrefs)?;
-            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, crefs.clone()); continue '__tco; }
+            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, crefs); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { cr1: cr, .. }, tail: rest } => {
             { (inElems, initCond, inCrefs) = (rest.clone(), initCond, metamodelica::cons(cr.clone(), inCrefs)); continue '__tco; }
@@ -3151,15 +3151,15 @@ fn verifyBoolWhenEquation1(mut inElems: Arc<metamodelica::List<Arc<DAE::Element>
             let mut msg: ArcStr;
             crefsLists = List::map2(trueEqs.clone(), (std::sync::Arc::new(verifyBoolWhenEquation1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), initCond, metamodelica::nil())?;
             crefs = verifyBoolWhenEquation1(falseEqs.clone(), initCond, metamodelica::nil())?;
-            crefsLists = metamodelica::cons(crefs.clone(), crefsLists.clone());
-            (crefs, b) = compareCrefList(crefsLists.clone())?;
-            if !(b.clone()) {
+            crefsLists = metamodelica::cons(crefs, crefsLists);
+            (crefs, b) = compareCrefList(crefsLists)?;
+            if !(b) {
                 info = ElementSource::getElementSourceFileInfo(source.clone());
                 msg = (literal!("All branches must write to the same variable")).clone();
-                Error::addSourceMessage(Error::WHEN_EQ_LHS.clone(), list![(msg.clone()).clone()], info.clone())?;
+                Error::addSourceMessage(Error::WHEN_EQ_LHS.clone(), list![(msg).clone()], info)?;
                 bail!("fail");
             }
-            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, listAppend(crefs.clone(), inCrefs)); continue '__tco; }
+            { (inElems, initCond, inCrefs) = (rest.clone(), initCond, listAppend(crefs, inCrefs)); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ASSERT { .. }, tail: rest } => {
             { (inElems, initCond, inCrefs) = (rest.clone(), initCond, inCrefs); continue '__tco; }
@@ -3171,7 +3171,7 @@ fn verifyBoolWhenEquation1(mut inElems: Arc<metamodelica::List<Arc<DAE::Element>
             let mut info: SourceInfo;
             if initCond {
                 info = ElementSource::getElementSourceFileInfo(source.clone());
-                Error::addSourceMessage(Error::REINIT_IN_WHEN_INITIAL.clone(), metamodelica::nil(), info.clone())?;
+                Error::addSourceMessage(Error::REINIT_IN_WHEN_INITIAL.clone(), metamodelica::nil(), info)?;
                 bail!("fail");
             }
             { (inElems, initCond, inCrefs) = (rest.clone(), initCond, inCrefs); continue '__tco; }
@@ -3183,9 +3183,9 @@ fn verifyBoolWhenEquation1(mut inElems: Arc<metamodelica::List<Arc<DAE::Element>
             let mut info: SourceInfo;
             info = ElementSource::getElementSourceFileInfo(source.clone());
             if Types::isClockOrSubTypeClock(Expression::r#typeof(e.clone())?) {
-                Error::addSourceMessage(Error::CLOCKED_WHEN_IN_WHEN_EQ.clone(), metamodelica::nil(), info.clone())?;
+                Error::addSourceMessage(Error::CLOCKED_WHEN_IN_WHEN_EQ.clone(), metamodelica::nil(), info)?;
             } else {
-                Error::addSourceMessage(Error::NESTED_WHEN.clone(), metamodelica::nil(), info.clone())?;
+                Error::addSourceMessage(Error::NESTED_WHEN.clone(), metamodelica::nil(), info)?;
             }
             return Ok(bail!("fail"))
         },
@@ -3194,7 +3194,7 @@ fn verifyBoolWhenEquation1(mut inElems: Arc<metamodelica::List<Arc<DAE::Element>
             let mut msg: ArcStr;
             msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- DAEUtil.verifyWhenEquationStatements failed on: ")); __mm_s.push_str(&*DAEDump::dumpElementsStr(list![el.clone()])?); ArcStr::from(__mm_s) }).clone();
             info = ElementSource::getElementSourceFileInfo(ElementSource::getElementSource(el.clone())?);
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(msg.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(msg).clone()], info)?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -3226,7 +3226,7 @@ fn collectWhenCrefs1(mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSourc
             let mut info: SourceInfo;
             msg = (ExpressionBasics::printExpStr(inExp)?).clone();
             info = ElementSource::getElementSourceFileInfo(source);
-            Error::addSourceMessage(Error::WHEN_EQ_LHS.clone(), list![(msg.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::WHEN_EQ_LHS.clone(), list![(msg).clone()], info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3253,17 +3253,17 @@ fn compareCrefList(mut inCrefs: Arc<metamodelica::List<Arc<metamodelica::List<Ar
             let mut crefs = (*crefs).clone();
             (recRefs, b3) = compareCrefList(llrefs.clone())?;
             i = (recRefs.clone().len() as i32);
-            if intGt(i.clone(), 0) {
-                b1 = 0 == intMod((crefs.clone().len() as i32), i.clone());
-                crefs = List::unionOnTrueList(list![recRefs.clone(), crefs.clone()], (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-                b2 = intEq((crefs.clone().len() as i32), i.clone());
-                b1 = boolAnd(b1.clone(), boolAnd(b2.clone(), b3.clone()));
+            if intGt(i, 0) {
+                b1 = 0 == intMod((crefs.clone().len() as i32), i);
+                crefs = List::unionOnTrueList(list![recRefs, crefs.clone()], (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+                b2 = intEq((crefs.clone().len() as i32), i);
+                b1 = boolAnd(b1, boolAnd(b2, b3));
             } else {
-                let true = (intEq(i.clone(), 0)) else { bail!("pattern mismatch") };
+                let true = (intEq(i, 0)) else { bail!("pattern mismatch") };
                 let true = (crefs.clone().is_empty()) else { bail!("pattern mismatch") };
                 b1 = true;
             }
-            (crefs.clone(), b1.clone())
+            (crefs.clone(), b1)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3399,7 +3399,7 @@ fn traverseDAEList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut idae
             let mut extraArg = (*extraArg).clone();
             (branch2, extraArg) = traverseDAEElementList(branch.clone(), func.clone(), extraArg.clone())?;
             (recRes, extraArg) = traverseDAEList(daeList.clone(), func.clone(), extraArg.clone())?;
-            (metamodelica::cons(branch2.clone(), recRes.clone()), extraArg.clone())
+            (metamodelica::cons(branch2, recRes), extraArg.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3484,7 +3484,7 @@ fn traverseDAEFuncHelper<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
         Some(mut daeFunc1) => {
             let mut daeFunc2: DAE::Function;
             (daeFunc2, arg) = traverseDAEFunc(daeFunc1.clone(), func.clone(), arg)?;
-            (if ((match (&(daeFunc1.clone()), &(daeFunc2.clone())) { (DAE::Function::FUNCTION { path: __refeq_v0l, functions: __refeq_v1l, type_: __refeq_v2l, visibility: __refeq_v3l, partialPrefix: __refeq_v4l, isImpure: __refeq_v5l, inlineType: __refeq_v6l, unusedInputs: __refeq_v7l, source: __refeq_v8l, comment: __refeq_v9l }, DAE::Function::FUNCTION { path: __refeq_v0r, functions: __refeq_v1r, type_: __refeq_v2r, visibility: __refeq_v3r, partialPrefix: __refeq_v4r, isImpure: __refeq_v5r, inlineType: __refeq_v6r, unusedInputs: __refeq_v7r, source: __refeq_v8r, comment: __refeq_v9r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && metamodelica::ReferenceEq::reference_eq(&*(*__refeq_v1l), &*(*__refeq_v1r)) && referenceEq(&*(*__refeq_v2l),&*(*__refeq_v2r)) && (match (&(*__refeq_v3l), &(*__refeq_v3r)) { (SCode::Visibility::PROTECTED, SCode::Visibility::PROTECTED) => true, (SCode::Visibility::PUBLIC, SCode::Visibility::PUBLIC) => true, _ => false }) && ((*__refeq_v4l) == (*__refeq_v4r)) && ((*__refeq_v5l) == (*__refeq_v5r)) && (match (&(*__refeq_v6l), &(*__refeq_v6r)) { (DAE::InlineType::AFTER_INDEX_RED_INLINE, DAE::InlineType::AFTER_INDEX_RED_INLINE) => true, (DAE::InlineType::BUILTIN_EARLY_INLINE, DAE::InlineType::BUILTIN_EARLY_INLINE) => true, (DAE::InlineType::DEFAULT_INLINE, DAE::InlineType::DEFAULT_INLINE) => true, (DAE::InlineType::EARLY_INLINE, DAE::InlineType::EARLY_INLINE) => true, (DAE::InlineType::NORM_INLINE, DAE::InlineType::NORM_INLINE) => true, (DAE::InlineType::NO_INLINE, DAE::InlineType::NO_INLINE) => true, _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(*__refeq_v7l), &*(*__refeq_v7r)) && referenceEq(&*(*__refeq_v8l),&*(*__refeq_v8r)) && (match (&(*__refeq_v9l), &(*__refeq_v9r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }), (DAE::Function::RECORD_CONSTRUCTOR { path: __refeq_v0l, type_: __refeq_v1l, source: __refeq_v2l }, DAE::Function::RECORD_CONSTRUCTOR { path: __refeq_v0r, type_: __refeq_v1r, source: __refeq_v2r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && referenceEq(&*(*__refeq_v1l),&*(*__refeq_v1r)) && referenceEq(&*(*__refeq_v2l),&*(*__refeq_v2r)), _ => false })) {value} else {Some(daeFunc2.clone())}, arg)
+            (if ((match (&(daeFunc1.clone()), &(daeFunc2.clone())) { (DAE::Function::FUNCTION { path: __refeq_v0l, functions: __refeq_v1l, type_: __refeq_v2l, visibility: __refeq_v3l, partialPrefix: __refeq_v4l, isImpure: __refeq_v5l, inlineType: __refeq_v6l, unusedInputs: __refeq_v7l, source: __refeq_v8l, comment: __refeq_v9l }, DAE::Function::FUNCTION { path: __refeq_v0r, functions: __refeq_v1r, type_: __refeq_v2r, visibility: __refeq_v3r, partialPrefix: __refeq_v4r, isImpure: __refeq_v5r, inlineType: __refeq_v6r, unusedInputs: __refeq_v7r, source: __refeq_v8r, comment: __refeq_v9r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && metamodelica::ReferenceEq::reference_eq(&*(*__refeq_v1l), &*(*__refeq_v1r)) && referenceEq(&*(*__refeq_v2l),&*(*__refeq_v2r)) && (match (&(*__refeq_v3l), &(*__refeq_v3r)) { (SCode::Visibility::PROTECTED, SCode::Visibility::PROTECTED) => true, (SCode::Visibility::PUBLIC, SCode::Visibility::PUBLIC) => true, _ => false }) && ((*__refeq_v4l) == (*__refeq_v4r)) && ((*__refeq_v5l) == (*__refeq_v5r)) && (match (&(*__refeq_v6l), &(*__refeq_v6r)) { (DAE::InlineType::AFTER_INDEX_RED_INLINE, DAE::InlineType::AFTER_INDEX_RED_INLINE) => true, (DAE::InlineType::BUILTIN_EARLY_INLINE, DAE::InlineType::BUILTIN_EARLY_INLINE) => true, (DAE::InlineType::DEFAULT_INLINE, DAE::InlineType::DEFAULT_INLINE) => true, (DAE::InlineType::EARLY_INLINE, DAE::InlineType::EARLY_INLINE) => true, (DAE::InlineType::NORM_INLINE, DAE::InlineType::NORM_INLINE) => true, (DAE::InlineType::NO_INLINE, DAE::InlineType::NO_INLINE) => true, _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(*__refeq_v7l), &*(*__refeq_v7r)) && referenceEq(&*(*__refeq_v8l),&*(*__refeq_v8r)) && (match (&(*__refeq_v9l), &(*__refeq_v9r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }), (DAE::Function::RECORD_CONSTRUCTOR { path: __refeq_v0l, type_: __refeq_v1l, source: __refeq_v2l }, DAE::Function::RECORD_CONSTRUCTOR { path: __refeq_v0r, type_: __refeq_v1r, source: __refeq_v2r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && referenceEq(&*(*__refeq_v1l),&*(*__refeq_v1r)) && referenceEq(&*(*__refeq_v2l),&*(*__refeq_v2r)), _ => false })) {value} else {Some(daeFunc2)}, arg)
         },
         None => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -3515,7 +3515,7 @@ fn traverseDAEFunc<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut daeFun
             let mut fdef = (*fdef).clone();
             (el, arg) = traverseDAEElementList(var_field!(fdef.body, DAE::FunctionDefinition::FUNCTION_DEF).clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(var_field!(fdef.body, DAE::FunctionDefinition::FUNCTION_DEF).clone()), &*(el.clone()))) {
-                let __owned_variant_body_0 = el.clone();
+                let __owned_variant_body_0 = el;
                 if let DAE::FunctionDefinition::FUNCTION_DEF { body, .. } = &mut fdef {
                     *body = __owned_variant_body_0;
                 } else { panic!("owned-variant field-assign: value held a different variant than DAE::FunctionDefinition::FUNCTION_DEF"); }
@@ -3531,7 +3531,7 @@ fn traverseDAEFunc<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut daeFun
             let mut fdef = (*fdef).clone();
             (el, arg) = traverseDAEElementList(var_field!(fdef.body, DAE::FunctionDefinition::FUNCTION_EXT).clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(var_field!(fdef.body, DAE::FunctionDefinition::FUNCTION_EXT).clone()), &*(el.clone()))) {
-                let __owned_variant_body_0 = el.clone();
+                let __owned_variant_body_0 = el;
                 if let DAE::FunctionDefinition::FUNCTION_EXT { body, .. } = &mut fdef {
                     *body = __owned_variant_body_0;
                 } else { panic!("owned-variant field-assign: value held a different variant than DAE::FunctionDefinition::FUNCTION_EXT"); }
@@ -3581,7 +3581,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             if Expression::isCref(e1.clone()) {
                 new_cr1 = Expression::expCref(e1.clone())?;
                 if !(referenceEq(&*(cr1.clone()),&*(new_cr1.clone()))) {
-                    assign_variant_field!(element => DAE::Element::VAR; componentRef = new_cr1.clone());
+                    assign_variant_field!(element => DAE::Element::VAR; componentRef = new_cr1);
                 }
             }
             assign_variant_field!(element => DAE::Element::VAR; dims = ({
@@ -3636,7 +3636,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
         __acc.reverse()
     });
             if !(metamodelica::ReferenceEq::reference_eq(&*(varLst.clone()), &*(var_field!((*ty).varLst, DAE::Type::T_COMPLEX).clone()))) {
-                assign_variant_field!(ty => DAE::Type::T_COMPLEX; varLst = varLst.clone());
+                assign_variant_field!(ty => DAE::Type::T_COMPLEX; varLst = varLst);
             }
             ty.clone()
         },
@@ -3644,15 +3644,15 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }) };
             if !(referenceEq(&*(var_field!((*element).ty, DAE::Element::VAR).clone()),&*(new_ty.clone()))) {
-                assign_variant_field!(element => DAE::Element::VAR; ty = new_ty.clone());
+                assign_variant_field!(element => DAE::Element::VAR; ty = new_ty);
             }
             (new_binding, arg) = traverseDAEOptExp(binding.clone(), func.clone(), arg)?;
             if !((match (&(binding.clone()), &(new_binding.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false })) {
-                assign_variant_field!(element => DAE::Element::VAR; binding = new_binding.clone());
+                assign_variant_field!(element => DAE::Element::VAR; binding = new_binding);
             }
             (new_attr, arg) = traverseDAEVarAttr(attr.clone(), func.clone(), arg)?;
             if !((match (&(attr.clone()), &(new_attr.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false })) {
-                assign_variant_field!(element => DAE::Element::VAR; variableAttributesOption = new_attr.clone());
+                assign_variant_field!(element => DAE::Element::VAR; variableAttributesOption = new_attr);
             }
             ()
         },
@@ -3661,7 +3661,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_cr1: Arc<DAE::ComponentRef>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::DEFINE; exp = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::DEFINE; exp = new_e1);
             }
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(func(Expression::crefExp(cr1.clone())?, arg)?) {
                 (Deref @ DAE::Exp::CREF { componentRef: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -3670,7 +3670,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             new_cr1 = __pa0.clone();
             arg = __pa1.clone();
             if !(referenceEq(&*(cr1.clone()),&*(new_cr1.clone()))) {
-                assign_variant_field!(element => DAE::Element::DEFINE; componentRef = new_cr1.clone());
+                assign_variant_field!(element => DAE::Element::DEFINE; componentRef = new_cr1);
             }
             ()
         },
@@ -3679,7 +3679,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_cr1: Arc<DAE::ComponentRef>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIALDEFINE; exp = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::INITIALDEFINE; exp = new_e1);
             }
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(func(Expression::crefExp(cr1.clone())?, arg)?) {
                 (Deref @ DAE::Exp::CREF { componentRef: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -3688,7 +3688,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             new_cr1 = __pa0.clone();
             arg = __pa1.clone();
             if !(referenceEq(&*(cr1.clone()),&*(new_cr1.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIALDEFINE; componentRef = new_cr1.clone());
+                assign_variant_field!(element => DAE::Element::INITIALDEFINE; componentRef = new_cr1);
             }
             ()
         },
@@ -3708,7 +3708,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             new_cr2 = __pa2.clone();
             arg = __pa3.clone();
             if !(referenceEq(&*(cr1.clone()),&*(new_cr1.clone()))) || !(referenceEq(&*(cr2.clone()),&*(new_cr2.clone()))) {
-                element = Arc::new(DAE::Element::EQUEQUATION { cr1: new_cr1.clone(), cr2: new_cr2.clone(), source: var_field!((*element).source, DAE::Element::EQUEQUATION).clone() });
+                element = Arc::new(DAE::Element::EQUEQUATION { cr1: new_cr1, cr2: new_cr2, source: var_field!((*element).source, DAE::Element::EQUEQUATION).clone() });
             }
             ()
         },
@@ -3718,7 +3718,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             (new_e1, arg) = func(e1.clone(), arg)?;
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) || !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                element = Arc::new(DAE::Element::EQUATION { exp: new_e1.clone(), scalar: new_e2.clone(), source: var_field!((*element).source, DAE::Element::EQUATION).clone() });
+                element = Arc::new(DAE::Element::EQUATION { exp: new_e1, scalar: new_e2, source: var_field!((*element).source, DAE::Element::EQUATION).clone() });
             }
             ()
         },
@@ -3728,7 +3728,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             (new_e1, arg) = func(e1.clone(), arg)?;
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) || !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                element = Arc::new(DAE::Element::INITIALEQUATION { exp1: new_e1.clone(), exp2: new_e2.clone(), source: var_field!((*element).source, DAE::Element::INITIALEQUATION).clone() });
+                element = Arc::new(DAE::Element::INITIALEQUATION { exp1: new_e1, exp2: new_e2, source: var_field!((*element).source, DAE::Element::INITIALEQUATION).clone() });
             }
             ()
         },
@@ -3738,7 +3738,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             (new_e1, arg) = func(e1.clone(), arg)?;
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) || !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                element = Arc::new(DAE::Element::COMPLEX_EQUATION { lhs: new_e1.clone(), rhs: new_e2.clone(), source: var_field!((*element).source, DAE::Element::COMPLEX_EQUATION).clone() });
+                element = Arc::new(DAE::Element::COMPLEX_EQUATION { lhs: new_e1, rhs: new_e2, source: var_field!((*element).source, DAE::Element::COMPLEX_EQUATION).clone() });
             }
             ()
         },
@@ -3748,7 +3748,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             (new_e1, arg) = func(e1.clone(), arg)?;
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) || !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                element = Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: new_e1.clone(), rhs: new_e2.clone(), source: var_field!((*element).source, DAE::Element::INITIAL_COMPLEX_EQUATION).clone() });
+                element = Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: new_e1, rhs: new_e2, source: var_field!((*element).source, DAE::Element::INITIAL_COMPLEX_EQUATION).clone() });
             }
             ()
         },
@@ -3758,7 +3758,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             (new_e1, arg) = func(e1.clone(), arg)?;
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) || !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                element = Arc::new(DAE::Element::ARRAY_EQUATION { dimension: var_field!((*element).dimension, DAE::Element::ARRAY_EQUATION).clone(), exp: new_e1.clone(), array: new_e2.clone(), source: var_field!((*element).source, DAE::Element::ARRAY_EQUATION).clone() });
+                element = Arc::new(DAE::Element::ARRAY_EQUATION { dimension: var_field!((*element).dimension, DAE::Element::ARRAY_EQUATION).clone(), exp: new_e1, array: new_e2, source: var_field!((*element).source, DAE::Element::ARRAY_EQUATION).clone() });
             }
             ()
         },
@@ -3768,7 +3768,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             (new_e1, arg) = func(e1.clone(), arg)?;
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) || !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                element = Arc::new(DAE::Element::INITIAL_ARRAY_EQUATION { dimension: var_field!((*element).dimension, DAE::Element::INITIAL_ARRAY_EQUATION).clone(), exp: new_e1.clone(), array: new_e2.clone(), source: var_field!((*element).source, DAE::Element::INITIAL_ARRAY_EQUATION).clone() });
+                element = Arc::new(DAE::Element::INITIAL_ARRAY_EQUATION { dimension: var_field!((*element).dimension, DAE::Element::INITIAL_ARRAY_EQUATION).clone(), exp: new_e1, array: new_e2, source: var_field!((*element).source, DAE::Element::INITIAL_ARRAY_EQUATION).clone() });
             }
             ()
         },
@@ -3779,11 +3779,11 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e: Arc<DAE::Element>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::WHEN_EQUATION; condition = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::WHEN_EQUATION; condition = new_e1);
             }
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::WHEN_EQUATION; equations = new_el.clone());
+                assign_variant_field!(element => DAE::Element::WHEN_EQUATION; equations = new_el);
             }
             if isSome(var_field!((*element).elsewhen_, DAE::Element::WHEN_EQUATION).clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(var_field!((*element).elsewhen_, DAE::Element::WHEN_EQUATION).clone()) {
@@ -3792,8 +3792,8 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
                 } };
                 e = __pa0.clone();
                 (new_e, arg) = traverseDAEElement(e.clone(), func.clone(), arg)?;
-                if !(referenceEq(&*(e.clone()),&*(new_e.clone()))) {
-                    assign_variant_field!(element => DAE::Element::WHEN_EQUATION; elsewhen_ = Some(new_e.clone()));
+                if !(referenceEq(&*(e),&*(new_e.clone()))) {
+                    assign_variant_field!(element => DAE::Element::WHEN_EQUATION; elsewhen_ = Some(new_e));
                 }
             }
             ()
@@ -3803,11 +3803,11 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_el: Arc<metamodelica::List<Arc<DAE::Element>>>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::FOR_EQUATION; range = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::FOR_EQUATION; range = new_e1);
             }
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::FOR_EQUATION; equations = new_el.clone());
+                assign_variant_field!(element => DAE::Element::FOR_EQUATION; equations = new_el);
             }
             ()
         },
@@ -3816,11 +3816,11 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_el: Arc<metamodelica::List<Arc<DAE::Element>>>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_FOR_EQUATION; range = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_FOR_EQUATION; range = new_e1);
             }
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_FOR_EQUATION; equations = new_el.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_FOR_EQUATION; equations = new_el);
             }
             ()
         },
@@ -3828,7 +3828,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_el: Arc<metamodelica::List<Arc<DAE::Element>>>;
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::COMP; dAElist = new_el.clone());
+                assign_variant_field!(element => DAE::Element::COMP; dAElist = new_el);
             }
             ()
         },
@@ -3841,15 +3841,15 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e3: Arc<DAE::Exp>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::ASSERT; condition = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::ASSERT; condition = new_e1);
             }
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                assign_variant_field!(element => DAE::Element::ASSERT; message = new_e2.clone());
+                assign_variant_field!(element => DAE::Element::ASSERT; message = new_e2);
             }
             (new_e3, arg) = func(e3.clone(), arg)?;
             if !(referenceEq(&*(e3.clone()),&*(new_e3.clone()))) {
-                assign_variant_field!(element => DAE::Element::ASSERT; level = new_e3.clone());
+                assign_variant_field!(element => DAE::Element::ASSERT; level = new_e3);
             }
             ()
         },
@@ -3859,15 +3859,15 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e3: Arc<DAE::Exp>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_ASSERT; condition = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_ASSERT; condition = new_e1);
             }
             (new_e2, arg) = func(e2.clone(), arg)?;
             if !(referenceEq(&*(e2.clone()),&*(new_e2.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_ASSERT; message = new_e2.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_ASSERT; message = new_e2);
             }
             (new_e3, arg) = func(e3.clone(), arg)?;
             if !(referenceEq(&*(e3.clone()),&*(new_e3.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_ASSERT; level = new_e3.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_ASSERT; level = new_e3);
             }
             ()
         },
@@ -3875,7 +3875,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e1: Arc<DAE::Exp>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::TERMINATE; message = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::TERMINATE; message = new_e1);
             }
             ()
         },
@@ -3883,7 +3883,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e1: Arc<DAE::Exp>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_TERMINATE; message = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_TERMINATE; message = new_e1);
             }
             ()
         },
@@ -3891,7 +3891,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e1: Arc<DAE::Exp>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::NORETCALL; exp = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::NORETCALL; exp = new_e1);
             }
             ()
         },
@@ -3899,7 +3899,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_e1: Arc<DAE::Exp>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_NORETCALL; exp = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_NORETCALL; exp = new_e1);
             }
             ()
         },
@@ -3908,7 +3908,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_cr1: Arc<DAE::ComponentRef>;
             (new_e1, arg) = func(e1.clone(), arg)?;
             if !(referenceEq(&*(e1.clone()),&*(new_e1.clone()))) {
-                assign_variant_field!(element => DAE::Element::REINIT; exp = new_e1.clone());
+                assign_variant_field!(element => DAE::Element::REINIT; exp = new_e1);
             }
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(func(Expression::crefExp(cr1.clone())?, arg)?) {
                 (Deref @ DAE::Exp::CREF { componentRef: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -3917,7 +3917,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             new_cr1 = __pa0.clone();
             arg = __pa1.clone();
             if !(referenceEq(&*(cr1.clone()),&*(new_cr1.clone()))) {
-                assign_variant_field!(element => DAE::Element::REINIT; componentRef = new_cr1.clone());
+                assign_variant_field!(element => DAE::Element::REINIT; componentRef = new_cr1);
             }
             ()
         },
@@ -3925,7 +3925,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (new_stmts, arg) = traverseDAEEquationsStmts(stmts.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(new_stmts.clone()))) {
-                assign_variant_field!(element => DAE::Element::ALGORITHM; algorithm_ = Arc::new(DAE::Algorithm { statementLst: new_stmts.clone() }));
+                assign_variant_field!(element => DAE::Element::ALGORITHM; algorithm_ = Arc::new(DAE::Algorithm { statementLst: new_stmts }));
             }
             ()
         },
@@ -3933,7 +3933,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (new_stmts, arg) = traverseDAEEquationsStmts(stmts.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(stmts.clone()), &*(new_stmts.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIALALGORITHM; algorithm_ = Arc::new(DAE::Algorithm { statementLst: new_stmts.clone() }));
+                assign_variant_field!(element => DAE::Element::INITIALALGORITHM; algorithm_ = Arc::new(DAE::Algorithm { statementLst: new_stmts }));
             }
             ()
         },
@@ -3941,7 +3941,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (new_expl, arg) = traverseDAEExpList(expl.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(expl.clone()), &*(new_expl.clone()))) {
-                assign_variant_field!(element => DAE::Element::CONSTRAINT; constraints = Arc::new(DAE::Constraint::CONSTRAINT_EXPS { constraintLst: new_expl.clone() }));
+                assign_variant_field!(element => DAE::Element::CONSTRAINT; constraints = Arc::new(DAE::Constraint::CONSTRAINT_EXPS { constraintLst: new_expl }));
             }
             ()
         },
@@ -3954,15 +3954,15 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (new_expl, arg) = traverseDAEExpList(expl.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(expl.clone()), &*(new_expl.clone()))) {
-                assign_variant_field!(element => DAE::Element::IF_EQUATION; condition1 = new_expl.clone());
+                assign_variant_field!(element => DAE::Element::IF_EQUATION; condition1 = new_expl);
             }
             (new_eqll, arg) = traverseDAEList(eqll.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(eqll.clone()), &*(new_eqll.clone()))) {
-                assign_variant_field!(element => DAE::Element::IF_EQUATION; equations2 = new_eqll.clone());
+                assign_variant_field!(element => DAE::Element::IF_EQUATION; equations2 = new_eqll);
             }
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::IF_EQUATION; equations3 = new_el.clone());
+                assign_variant_field!(element => DAE::Element::IF_EQUATION; equations3 = new_el);
             }
             ()
         },
@@ -3972,15 +3972,15 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (new_expl, arg) = traverseDAEExpList(expl.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(expl.clone()), &*(new_expl.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_IF_EQUATION; condition1 = new_expl.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_IF_EQUATION; condition1 = new_expl);
             }
             (new_eqll, arg) = traverseDAEList(eqll.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(eqll.clone()), &*(new_eqll.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_IF_EQUATION; equations2 = new_eqll.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_IF_EQUATION; equations2 = new_eqll);
             }
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::INITIAL_IF_EQUATION; equations3 = new_el.clone());
+                assign_variant_field!(element => DAE::Element::INITIAL_IF_EQUATION; equations3 = new_el);
             }
             ()
         },
@@ -3988,7 +3988,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_el: Arc<metamodelica::List<Arc<DAE::Element>>>;
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::FLAT_SM; dAElist = new_el.clone());
+                assign_variant_field!(element => DAE::Element::FLAT_SM; dAElist = new_el);
             }
             ()
         },
@@ -3996,7 +3996,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
             let mut new_el: Arc<metamodelica::List<Arc<DAE::Element>>>;
             (new_el, arg) = traverseDAEElementList(el.clone(), func.clone(), arg)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(el.clone()), &*(new_el.clone()))) {
-                assign_variant_field!(element => DAE::Element::SM_COMP; dAElist = new_el.clone());
+                assign_variant_field!(element => DAE::Element::SM_COMP; dAElist = new_el);
             }
             ()
         },
@@ -4035,7 +4035,7 @@ pub fn traverseAlgorithmExps<Type_a: Clone + 'static + metamodelica::gc::MMTrace
         Deref @ DAE::Algorithm { statementLst: stmts } => {
             let mut ext_arg_1: Type_a;
             (_, ext_arg_1) = traverseDAEEquationsStmts(stmts.clone(), func.clone(), inTypeA)?;
-            ext_arg_1.clone()
+            ext_arg_1
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4382,15 +4382,15 @@ fn traverseDAEEquationsStmtsElse<Type_a: Clone + 'static + metamodelica::gc::MMT
             (st_1, extraArg) = traverseDAEEquationsStmtsList(st.clone(), func.clone(), opt, extraArg.clone())?;
             (e_1, extraArg) = func(e.clone(), extraArg.clone())?;
             outElse = Algorithm::optimizeElseIf(e_1.clone(), st_1.clone(), el_1.clone());
-            b = referenceEq(&*(el.clone()),&*(el_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(st.clone()), &*(st_1.clone())) && referenceEq(&*(e.clone()),&*(e_1.clone()));
-            outElse = if (b.clone()) {inElse} else {outElse};
+            b = referenceEq(&*(el.clone()),&*(el_1)) && metamodelica::ReferenceEq::reference_eq(&*(st.clone()), &*(st_1)) && referenceEq(&*(e.clone()),&*(e_1));
+            outElse = if (b) {inElse} else {outElse};
             (outElse, extraArg.clone())
         },
         (Deref @ DAE::Else::ELSE { statementLst: st }, extraArg) => {
             let mut st_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut extraArg = (*extraArg).clone();
             (st_1, extraArg) = traverseDAEEquationsStmtsList(st.clone(), func.clone(), opt, extraArg.clone())?;
-            outElse = if (metamodelica::ReferenceEq::reference_eq(&*(st.clone()), &*(st_1.clone()))) {inElse} else {Arc::new(DAE::Else::ELSE { statementLst: st_1.clone() })};
+            outElse = if (metamodelica::ReferenceEq::reference_eq(&*(st.clone()), &*(st_1.clone()))) {inElse} else {Arc::new(DAE::Else::ELSE { statementLst: st_1 })};
             (outElse, extraArg.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -4696,13 +4696,13 @@ fn traverseDAEStmtsElse<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut
             (el_1, extraArg) = traverseDAEStmtsElse(el.clone(), func.clone(), istmt.clone(), extraArg.clone())?;
             (st_1, extraArg) = traverseDAEStmts(st.clone(), func.clone(), extraArg.clone())?;
             (e_1, extraArg) = func(e.clone(), istmt, extraArg.clone())?;
-            (Algorithm::optimizeElseIf(e_1.clone(), st_1.clone(), el_1.clone()), extraArg.clone())
+            (Algorithm::optimizeElseIf(e_1, st_1, el_1), extraArg.clone())
         },
         (Deref @ DAE::Else::ELSE { statementLst: st }, extraArg) => {
             let mut st_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut extraArg = (*extraArg).clone();
             (st_1, extraArg) = traverseDAEStmts(st.clone(), func.clone(), extraArg.clone())?;
-            (Arc::new(DAE::Else::ELSE { statementLst: st_1.clone() }), extraArg.clone())
+            (Arc::new(DAE::Else::ELSE { statementLst: st_1 }), extraArg.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -4920,7 +4920,7 @@ pub fn joinDaes(mut dae1: DAE::DAElist, mut dae2: DAE::DAElist) -> Result<DAE::D
         (DAE::DAElist { elementLst: ref elts1 }, DAE::DAElist { elementLst: ref elts2 }) => {
             let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>;
             elts = listAppend(elts1.clone(), elts2.clone());
-            DAE::DAElist { elementLst: elts.clone() }
+            DAE::DAElist { elementLst: elts }
         },
     });
     Ok(outDae)
@@ -4936,7 +4936,7 @@ pub fn joinDaeLst(mut idaeLst: Arc<metamodelica::List<DAE::DAElist>>) -> Result<
             let mut dae1: DAE::DAElist;
             let mut dae = (*dae).clone();
             dae1 = joinDaeLst(daeLst.clone())?;
-            dae = joinDaes(dae.clone(), dae1.clone())?;
+            dae = joinDaes(dae.clone(), dae1)?;
             dae.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -5143,7 +5143,7 @@ pub(crate) fn collectLocalDecls(mut e: Arc<DAE::Exp>, mut inElements: Arc<metamo
         (Deref @ DAE::Exp::MATCHEXPRESSION { localDecls: ld1, .. }, ld2) => {
             let mut ld: Arc<metamodelica::List<Arc<DAE::Element>>>;
             ld = listAppend(ld1.clone(), ld2.clone());
-            (e, ld.clone())
+            (e, ld)
         },
         _ => {
             (e, inElements)
@@ -5197,8 +5197,8 @@ fn getUniontypePathsFunctions(mut elements: Arc<metamodelica::List<DAE::Function
             let (_, (_, __pa0)) = traverseDAEFunctions(elements.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(collectLocalDecls, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>)> + 'static>), metamodelica::nil()))?;
             els1 = __pa0.clone();
             els2 = getFunctionsElements(elements)?;
-            els = listAppend(els1.clone(), els2.clone());
-            outPaths = getUniontypePathsElements(els.clone(), metamodelica::nil())?;
+            els = listAppend(els1, els2);
+            outPaths = getUniontypePathsElements(els, metamodelica::nil())?;
             outPaths
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -5215,7 +5215,7 @@ fn getUniontypePathsElements(mut elements: Arc<metamodelica::List<Arc<DAE::Eleme
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { ty: ft, .. }, tail: rest } => {
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
             tys = Types::getAllInnerTypesOfType(ft.clone(), (std::sync::Arc::new(fnptr!(Types::uniontypeFilter, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
-            { (elements, acc) = (rest.clone(), listAppend(tys.clone(), acc)); continue '__tco; }
+            { (elements, acc) = (rest.clone(), listAppend(tys, acc)); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             { (elements, acc) = (rest.clone(), acc); continue '__tco; }
@@ -5337,7 +5337,7 @@ fn makeEvaluatedParamFinal(mut inElement: Arc<DAE::Element>, mut ht: Arc<AvlSetC
         Deref @ DAE::Element::VAR { componentRef: cr, kind: DAE::VarKind::PARAM { .. }, variableAttributesOption: varOpt, .. } => {
             let mut elt: Arc<DAE::Element>;
             elt = if (AvlSetCR::hasKey(ht, cr.clone())?) {setVariableAttributes(inElement, setFinalAttr(varOpt.clone(), true)?)?} else {inElement};
-            elt.clone()
+            elt
         },
         Deref @ DAE::Element::COMP { ident: id, dAElist: elts, source, comment: cmt } => {
             let mut elts = (*elts).clone();
@@ -5439,7 +5439,7 @@ pub(crate) fn getFunctionsInfo(mut ft: Arc<AvlTreePathFunction::Tree>) -> Result
         _ => {
             let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Option<DAE::Function>)>>;
             lst = AvlTreePathFunction::toList(ft, metamodelica::nil());
-            strs = List::map(lst.clone(), (std::sync::Arc::new(getInfo) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Path>, Option<DAE::Function>)) -> Result<ArcStr> + 'static>))?;
+            strs = List::map(lst, (std::sync::Arc::new(getInfo) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Path>, Option<DAE::Function>)) -> Result<ArcStr> + 'static>))?;
             strs = List::sort(strs, (std::sync::Arc::new(fnptr!(Util::strcmpBool, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
             strs
         },
@@ -5469,7 +5469,7 @@ fn showCacheFuncs(mut tree: Arc<AvlTreePathFunction::Tree>) -> Result<()> {
         _ => {
             let mut msg: ArcStr;
             msg = stringDelimitList(getFunctionsInfo(tree)?, (literal!("\n  ")).clone());
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cache has: \n  ")); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cache has: \n  ")); __mm_s.push_str(&*msg); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -5804,8 +5804,8 @@ fn splitVariableNamed(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             let mut accNamed = (*accNamed).clone();
             let mut accRest = (*accRest).clone();
             equal = stringEq((ComponentReferenceBasics::crefFirstIdent(cr.clone())?).clone(), (inName.clone()).clone());
-            accNamed = List::consOnTrue(equal.clone(), x.clone(), accNamed.clone());
-            accRest = List::consOnTrue(boolNot(equal.clone()), x.clone(), accRest.clone());
+            accNamed = List::consOnTrue(equal, x.clone(), accNamed.clone());
+            accRest = List::consOnTrue(boolNot(equal), x.clone(), accRest.clone());
             { (inElementLst, inName, inAccNamed, inAccRest) = (lst.clone(), (inName).clone(), accNamed.clone(), accRest.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: x, tail: lst }, accNamed, accRest) => {
@@ -5884,7 +5884,7 @@ pub fn getAssertConditionCrefs(mut stmt: Arc<DAE::Statement>, mut crefsIn: Arc<m
         Deref @ DAE::Statement::STMT_ASSERT { cond, .. } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             crefs = Expression::extractCrefsFromExp(cond.clone())?;
-            listAppend(crefsIn, crefs.clone())
+            listAppend(crefsIn, crefs)
         },
         _ => {
             crefsIn
@@ -6172,7 +6172,7 @@ pub fn connectorTypeStr(mut connectorType: Arc<DAE::ConnectorType>) -> Result<Ar
         Deref @ DAE::ConnectorType::STREAM { associatedFlow: Some(cref) } => {
             let mut cref_str: ArcStr;
             cref_str = (ComponentReferenceBasics::printComponentRefStr(cref.clone())?).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("stream(")); __mm_s.push_str(&*cref_str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("stream(")); __mm_s.push_str(&*cref_str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => {
             literal!("non connector")
@@ -6314,7 +6314,7 @@ pub fn getParameters(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>, mut a
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { dAElist: celts, .. }, tail: rest } => {
             let mut a: Arc<metamodelica::List<Arc<DAE::Element>>>;
             a = getParameters(celts.clone(), acc);
-            { (elts, acc) = (rest.clone(), a.clone()); continue '__tco; }
+            { (elts, acc) = (rest.clone(), a); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Element::VAR { .. }, tail: rest } => {
             if (isParameterOrConstant(e.clone())) {return metamodelica::cons(e.clone(), getParameters(rest.clone(), acc))} else {{ (elts, acc) = (rest.clone(), acc); continue '__tco; }}
@@ -6366,34 +6366,34 @@ fn optMRFAInStmt(mut stmt: Arc<DAE::Statement>, mut tempVars: Arc<metamodelica::
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut els: Arc<DAE::Else>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).statementLst, DAE::Statement::STMT_IF).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_IF; statementLst = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_IF; statementLst = stmts);
             (els, tempVars) = optMRFAInElse(var_field!((*stmt).else_, DAE::Statement::STMT_IF).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_IF; else_ = els.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_IF; else_ = els);
             (stmt, tempVars)
         },
         Deref @ DAE::Statement::STMT_FOR { .. } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).statementLst, DAE::Statement::STMT_FOR).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_FOR; statementLst = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_FOR; statementLst = stmts);
             (stmt, tempVars)
         },
         Deref @ DAE::Statement::STMT_PARFOR { .. } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).statementLst, DAE::Statement::STMT_PARFOR).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_PARFOR; statementLst = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_PARFOR; statementLst = stmts);
             (stmt, tempVars)
         },
         Deref @ DAE::Statement::STMT_WHILE { .. } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).statementLst, DAE::Statement::STMT_WHILE).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_WHILE; statementLst = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_WHILE; statementLst = stmts);
             (stmt, tempVars)
         },
         Deref @ DAE::Statement::STMT_WHEN { .. } => {
             let mut ew: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).statementLst, DAE::Statement::STMT_WHEN).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_WHEN; statementLst = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_WHEN; statementLst = stmts);
             assign_variant_field!(stmt => DAE::Statement::STMT_WHEN; elseWhen = (::match_deref::match_deref! { match &(var_field!((*stmt).elseWhen, DAE::Statement::STMT_WHEN).clone()) {
         Some(__esc_ew) => {
             ew = (*__esc_ew).clone();
@@ -6408,7 +6408,7 @@ fn optMRFAInStmt(mut stmt: Arc<DAE::Statement>, mut tempVars: Arc<metamodelica::
         Deref @ DAE::Statement::STMT_FAILURE { .. } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).body, DAE::Statement::STMT_FAILURE).clone(), tempVars)?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_FAILURE; body = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_FAILURE; body = stmts);
             (stmt, tempVars)
         },
         _ => {
@@ -6427,15 +6427,15 @@ fn optMRFAInElse(mut els: Arc<DAE::Else>, mut tempVars: Arc<metamodelica::List<A
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             let mut nestedEls: Arc<DAE::Else>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*els).statementLst, DAE::Else::ELSEIF).clone(), tempVars)?;
-            assign_variant_field!(els => DAE::Else::ELSEIF; statementLst = stmts.clone());
+            assign_variant_field!(els => DAE::Else::ELSEIF; statementLst = stmts);
             (nestedEls, tempVars) = optMRFAInElse(var_field!((*els).else_, DAE::Else::ELSEIF).clone(), tempVars)?;
-            assign_variant_field!(els => DAE::Else::ELSEIF; else_ = nestedEls.clone());
+            assign_variant_field!(els => DAE::Else::ELSEIF; else_ = nestedEls);
             (els, tempVars)
         },
         Deref @ DAE::Else::ELSE { .. } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*els).statementLst, DAE::Else::ELSE).clone(), tempVars)?;
-            assign_variant_field!(els => DAE::Else::ELSE; statementLst = stmts.clone());
+            assign_variant_field!(els => DAE::Else::ELSE; statementLst = stmts);
             (els, tempVars)
         },
         _ => {
@@ -6670,14 +6670,14 @@ fn optMRFAMatch(mut stmt: Arc<DAE::Statement>) -> Option<(Arc<DAE::Exp>, Arc<DAE
             let mut baseExp: Arc<DAE::Exp>;
             let mut topCref: Arc<DAE::ComponentRef>;
             topCref = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident.clone()).clone(), identType: identTy.clone(), subscriptLst: subs.clone() });
-            baseExp = Arc::new(DAE::Exp::CREF { componentRef: topCref.clone(), ty: identTy.clone() });
+            baseExp = Arc::new(DAE::Exp::CREF { componentRef: topCref, ty: identTy.clone() });
             Some((baseExp.clone(), t1.clone(), fname.clone(), rhs.clone()))
         },
         Deref @ DAE::Statement::STMT_ASSIGN { exp1: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: identTy @ Deref @ DAE::Type::T_METATYPE { ty: t1 @ Deref @ DAE::Type::T_METAUNIONTYPE { knownSingleton: true, .. } }, subscriptLst: subs, componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: fname, .. } }, .. }, exp: rhs, .. } if (optMRFAResolvableSingleton(t1.clone())) => {
             let mut baseExp: Arc<DAE::Exp>;
             let mut topCref: Arc<DAE::ComponentRef>;
             topCref = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident.clone()).clone(), identType: identTy.clone(), subscriptLst: subs.clone() });
-            baseExp = Arc::new(DAE::Exp::CREF { componentRef: topCref.clone(), ty: identTy.clone() });
+            baseExp = Arc::new(DAE::Exp::CREF { componentRef: topCref, ty: identTy.clone() });
             Some((baseExp.clone(), t1.clone(), fname.clone(), rhs.clone()))
         },
         _ => {

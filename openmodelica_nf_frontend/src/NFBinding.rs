@@ -257,7 +257,7 @@ pub(crate) fn fromAbsyn(mut bindingExp: Option<Arc<Absyn::Exp>>, mut eachPrefix:
             let mut source: Source;
             each_ty = if (eachPrefix) {EachType::EACH.clone()} else {EachType::NOT_EACH.clone()};
             source = if (fromType) {Source::TYPE.clone()} else {Source::BINDING.clone()};
-            Arc::new(NFBinding::RAW_BINDING { bindingExp: exp.clone(), scope: scope, subs: metamodelica::nil(), eachType: each_ty.clone(), source: source.clone(), confidence: instanceLevel, info: info })
+            Arc::new(NFBinding::RAW_BINDING { bindingExp: exp.clone(), scope: scope, subs: metamodelica::nil(), eachType: each_ty, source: source, confidence: instanceLevel, info: info })
         },
         _ => {
             EMPTY_BINDING().clone()

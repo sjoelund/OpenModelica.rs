@@ -181,16 +181,16 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
             let mut ty2: Arc<DAE::Type>;
             let mut optVal: Option<Arc<Values::Value>>;
             mod2 = Mod::lookupIdxModification(r#mod.clone(), Arc::new(DAE::Exp::ICONST { integer: index.clone() }))?;
-            let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Mod::modEquation(mod2.clone())?) {
+            let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Mod::modEquation(mod2)?) {
                 Some(DAE::EqMod::TYPED { modifierAsExp: __pa0, modifierAsValue: __pa1, properties: DAE::Properties::PROP { type_: __pa2, constFlag: _ }, modifierAsAbsynExp: _, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa0.clone();
             optVal = __pa1.clone();
             ty2 = __pa2.clone();
-            (e_1, _) = Types::matchType(e.clone(), ty2.clone(), etype.clone(), true)?;
-            e_1 = InstUtil::checkUseConstValue(useConstValue, e_1.clone(), optVal.clone());
-            Some(e_1.clone())
+            (e_1, _) = Types::matchType(e, ty2, etype.clone(), true)?;
+            e_1 = InstUtil::checkUseConstValue(useConstValue, e_1, optVal);
+            Some(e_1)
         },
         (r#mod, etype, Deref @ metamodelica::List::Cons { head: index, tail: res }, bind_name) => {
             let mut mod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
@@ -211,7 +211,7 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
-            result.clone()
+            result
         },
         _ => bail!("match: no arm matched"),
     } });

@@ -745,7 +745,7 @@ pub mod SuperNode {
             let mut eqn_arr_idx: i32;
             let mut var_arr_idx: i32;
             (m_local, matching_local, map_back) = BackendUtil::getLocalSystem(m.clone(), matching.clone(), var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?;
-            sorted_body_components = tarjanScalar(m_local.clone(), matching_local.clone())?;
+            sorted_body_components = tarjanScalar(m_local.clone(), matching_local)?;
             sorted_body_indices = List::flatten(sorted_body_components.clone())?;
             sorted_body_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -761,7 +761,7 @@ pub mod SuperNode {
             indep = Array::all(m_local.clone(), std::sync::Arc::new(fnptr!(List::hasOneElement, _)))?;
             eqn_arr_idx = ({let __elt = mapping.eqn_StA.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone(); __elt});
             var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(({let __elt = matching.eqn_to_var.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
-            StrongComponent::createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), var_field!((**node).cref_to_solve, SuperNode::ARRAY_BUCKET).clone(), sorted_body_indices, matching.eqn_to_var.clone(), eqns, mapping, indep.clone())?
+            StrongComponent::createPseudoSlice(var_arr_idx, eqn_arr_idx, var_field!((**node).cref_to_solve, SuperNode::ARRAY_BUCKET).clone(), sorted_body_indices, matching.eqn_to_var.clone(), eqns, mapping, indep)?
         },
         _ if (List::all(node_comp.clone(), (std::sync::Arc::new(fnptr!(isArrayBucket, Arc<SuperNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<bool> + 'static>))?) => {
             let mut m_local: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -775,7 +775,7 @@ pub mod SuperNode {
         }
         __acc.reverse()
     }))?)?;
-            sorted_body_components = tarjanScalar(m_local.clone(), matching_local.clone())?;
+            sorted_body_components = tarjanScalar(m_local.clone(), matching_local)?;
             sorted_body_indices = List::flatten(sorted_body_components.clone())?;
             sorted_body_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();

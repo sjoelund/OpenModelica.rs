@@ -68,8 +68,8 @@ pub fn main(mut inFile: ArcStr) -> Result<()> {
             Print::clearBuf();
             translateFile((file.clone()).clone())?;
             strErrBuf = (Print::getErrorString()?).clone();
-            strErrBuf = (if (strErrBuf.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Error Buffer ###\n")); __mm_s.push_str(&*strErrBuf.clone()); __mm_s.push_str(&*literal!("\n### End of Error Buffer ###\n")); ArcStr::from(__mm_s) }}).clone();
-            metamodelica::print((strErrBuf.clone()).clone());
+            strErrBuf = (if (strErrBuf.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Error Buffer ###\n")); __mm_s.push_str(&*strErrBuf); __mm_s.push_str(&*literal!("\n### End of Error Buffer ###\n")); ArcStr::from(__mm_s) }}).clone();
+            metamodelica::print((strErrBuf).clone());
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

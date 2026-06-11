@@ -306,7 +306,7 @@ pub(crate) fn evaluateDimension(mut dim: Arc<Dimension::NFDimension>, mut info: 
         Deref @ Dimension::EXP { .. } => {
             let mut e: Arc<Expression::NFExpression>;
             e = evaluateExp(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), info)?;
-            if (referenceEq(&*(e.clone()),&*(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone()))) {dim} else {Dimension::fromExp(e.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
+            if (referenceEq(&*(e.clone()),&*(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone()))) {dim} else {Dimension::fromExp(e, var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
         },
         _ => {
             dim
@@ -373,7 +373,7 @@ pub(crate) fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<
             ty = Type::mapDims(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
             e1 = evaluateExp(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), info)?;
-            Arc::new(Equation::NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: ty.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() })
+            Arc::new(Equation::NFEquation::EQUALITY { lhs: e1, rhs: e2, ty: ty, scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() })
         },
         Deref @ Equation::FOR { .. } => {
             assign_variant_field!(eq => Equation::NFEquation::FOR;
@@ -411,7 +411,7 @@ pub(crate) fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<
             e1 = evaluateExp(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), info.clone())?;
             e3 = evaluateExp(var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), info)?;
-            Arc::new(Equation::NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::ASSERT).clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() })
+            Arc::new(Equation::NFEquation::ASSERT { condition: e1, message: e2, level: e3, scope: var_field!((*eq).scope, Equation::NFEquation::ASSERT).clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() })
         },
         Deref @ Equation::TERMINATE { .. } => {
             assign_variant_field!(eq => Equation::NFEquation::TERMINATE; message = evaluateExp(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), info)?);
@@ -492,7 +492,7 @@ pub(crate) fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result
             ty = Type::mapDims(var_field!((*stmt).ty, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
             e1 = evaluateExp(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), info)?;
-            Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: e1.clone(), rhs: e2.clone(), ty: ty.clone(), source: var_field!((*stmt).source, Statement::NFStatement::ASSIGNMENT).clone() })
+            Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: e1, rhs: e2, ty: ty, source: var_field!((*stmt).source, Statement::NFStatement::ASSIGNMENT).clone() })
         },
         Deref @ Statement::FOR { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::FOR;
@@ -530,7 +530,7 @@ pub(crate) fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result
             e1 = evaluateExp(var_field!((*stmt).condition, Statement::NFStatement::ASSERT).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*stmt).message, Statement::NFStatement::ASSERT).clone(), info.clone())?;
             e3 = evaluateExp(var_field!((*stmt).level, Statement::NFStatement::ASSERT).clone(), info)?;
-            Arc::new(Statement::NFStatement::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*stmt).source, Statement::NFStatement::ASSERT).clone() })
+            Arc::new(Statement::NFStatement::ASSERT { condition: e1, message: e2, level: e3, source: var_field!((*stmt).source, Statement::NFStatement::ASSERT).clone() })
         },
         Deref @ Statement::TERMINATE { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::TERMINATE; message = evaluateExp(var_field!((*stmt).message, Statement::NFStatement::TERMINATE).clone(), info)?);

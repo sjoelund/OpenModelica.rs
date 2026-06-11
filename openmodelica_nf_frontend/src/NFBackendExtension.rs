@@ -236,7 +236,7 @@ pub mod BackendInfo {
             scalar_attributes = VariableAttributes::scalarize(binfo.attributes.clone(), length)?;
             ({
         let mut __acc: Arc<metamodelica::List<Arc<BackendInfo>>> = metamodelica::nil();
-        for mut attr in (scalar_attributes.clone()).into_iter().cloned() {
+        for mut attr in (scalar_attributes).into_iter().cloned() {
             let __x = Arc::new(BackendInfo { varKind: binfo.varKind.clone(), attributes: attr.clone(), annotations: binfo.annotations.clone(), var_pre: binfo.var_pre.clone(), var_seed: binfo.var_seed.clone(), var_pder_res: binfo.var_pder_res.clone(), var_pder_tmp: binfo.var_pder_tmp.clone(), var_start: binfo.var_start.clone(), parent: binfo.parent.clone() });
             __acc = cons(__x, __acc);
         }

@@ -100,8 +100,8 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc
             }
             (eqData, varData) = inline(var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), inline_types, init)?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
-                eqData = eqData.clone(),
-                varData = varData.clone()
+                eqData = eqData,
+                varData = varData
             );
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
                 metamodelica::print((literal!("\n")).clone());
@@ -130,13 +130,13 @@ pub(crate) fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<
             let mut new_eqn = (*new_eqn).clone();
             replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             (names, ranges, _) = BEquation::Iterator::getFrames(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            for mut tpl in &*List::zip(names.clone(), ranges.clone()) {
+            for mut tpl in &*List::zip(names, ranges) {
                 let mut tpl = tpl.clone();
                 (name, range) = tpl.clone();
                 (start, _, _) = Expression::getIntegerRange(range.clone(), true)?;
-                UnorderedMap::add(name.clone(), Arc::new(Expression::NFExpression::INTEGER { value: start.clone() }), replacements.clone())?;
+                UnorderedMap::add(name.clone(), Arc::new(Expression::NFExpression::INTEGER { value: start }), replacements.clone())?;
             }
-            new_eqn = BEquation::Equation::map(new_eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            new_eqn = BEquation::Equation::map(new_eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements; move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*literal!("NBInline.inlineForEquation")); __mm_s.push_str(&*literal!("] Inlining: ")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-- Result: ")); __mm_s.push_str(&*BEquation::Equation::toString(new_eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -669,14 +669,14 @@ fn inlineCatCallLiterals(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
             let mut is_cat_dim: bool;
             let mut sub: Arc<Subscript::NFSubscript>;
             is_cat_dim = n == (subs.clone().len() as i32) + 1;
-            sub_idx = if (is_cat_dim.clone()) {bumpShift(shift.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }))?} else {Arc::new(Expression::NFExpression::INTEGER { value: 1 })};
+            sub_idx = if (is_cat_dim) {bumpShift(shift.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }))?} else {Arc::new(Expression::NFExpression::INTEGER { value: 1 })};
             let __range0 = var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut elem in __range0 {
                 sub = Arc::new(Subscript::NFSubscript::INDEX { index: sub_idx.clone() });
                 (eqns, shift) = inlineCatCallLiterals(elem.clone(), cref.clone(), iter.clone(), attr.clone(), n, index.clone(), eqns.clone(), shift.clone(), metamodelica::cons(sub.clone(), subs.clone()))?;
                 sub_idx = bumpShift(sub_idx.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }))?;
             }
-            if is_cat_dim.clone() {
+            if is_cat_dim {
                 shift = bumpShift(shift, Arc::new(Expression::NFExpression::INTEGER { value: metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()) }))?;
             }
             ()
@@ -686,11 +686,11 @@ fn inlineCatCallLiterals(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
             let mut lhs_exp: Arc<Expression::NFExpression>;
             let mut new_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
             lhs = ComponentRef::mergeSubscripts(subs.reverse(), cref, false, false, false)?;
-            lhs_exp = Expression::fromCref(lhs.clone(), false)?;
-            new_eqn = BEquation::Equation::makeAssignment(lhs_exp.clone(), exp, index, (arcstr::literal!(BEquation::SIMULATION_STR)).clone(), iter, attr)?;
+            lhs_exp = Expression::fromCref(lhs, false)?;
+            new_eqn = BEquation::Equation::makeAssignment(lhs_exp, exp, index, (arcstr::literal!(BEquation::SIMULATION_STR)).clone(), iter, attr)?;
             eqns = metamodelica::cons(new_eqn.clone(), eqns);
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-- Result: ")); __mm_s.push_str(&*BEquation::Equation::pointerToString(new_eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-- Result: ")); __mm_s.push_str(&*BEquation::Equation::pointerToString(new_eqn, (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             ()
         },
@@ -761,7 +761,7 @@ fn inlineRecordConstructorElements(mut exp: Arc<Expression::NFExpression>) -> Re
             } else {
                 new_exp = exp;
             }
-            new_exp.clone()
+            new_exp
         },
         _ => {
             exp
@@ -785,7 +785,7 @@ fn getElementList(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamode
             } else {
                 elem = (var_field!((**sub_exp).elements, Expression::NFExpression::TUPLE).clone()).get(var_field!((*exp).index, Expression::NFExpression::TUPLE_ELEMENT).clone())?;
             }
-            list![elem.clone()]
+            list![elem]
         },
         _ => {
             metamodelica::nil()
@@ -921,7 +921,7 @@ pub mod InlineRating {
             let mut iro: Option<Arc<InlineRating>>;
             iro = UnorderedMap::get(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), local_map)?;
             if isSome(iro.clone()) {
-                Pointer::update(irp.clone(), add(Pointer::access(irp), multiply(Util::getOption(iro.clone())?, i))?);
+                Pointer::update(irp.clone(), add(Pointer::access(irp), multiply(Util::getOption(iro)?, i))?);
             }
             ()
         },
@@ -987,10 +987,10 @@ pub mod InlineRating {
             r#fn = Call::typedFunction(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?;
             lir = UnorderedMap::get(r#fn.clone(), func_map.clone())?;
             if isSome(lir.clone()) {
-                Pointer::update(irp.clone(), addMapped(Pointer::access(irp.clone()), Util::getOption(lir.clone())?, metamodelica::arrayFromVec(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.into_iter().cloned().collect()), local_map.clone())?);
+                Pointer::update(irp.clone(), addMapped(Pointer::access(irp.clone()), Util::getOption(lir)?, metamodelica::arrayFromVec(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.into_iter().cloned().collect()), local_map.clone())?);
                 cont = false;
             } else if DAEUtil::inlineTypeEqual(Function::inlineBuiltin(r#fn.clone()), openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE) {
-                Pointer::update(irp.clone(), addMapped(Pointer::access(irp.clone()), fromFunction(r#fn.clone(), func_map.clone())?, metamodelica::arrayFromVec(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.into_iter().cloned().collect()), local_map.clone())?);
+                Pointer::update(irp.clone(), addMapped(Pointer::access(irp.clone()), fromFunction(r#fn, func_map.clone())?, metamodelica::arrayFromVec(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.into_iter().cloned().collect()), local_map.clone())?);
                 cont = false;
             } else {
                 cont = true;

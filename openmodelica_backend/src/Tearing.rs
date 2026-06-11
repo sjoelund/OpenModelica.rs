@@ -289,7 +289,7 @@ fn traverseComponents(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::Strong
             let mut b: bool;
             let mut comp = (*comp).clone();
             (comp, b, strongComponentIndexOut) = traverseComponent(comp.clone(), isyst.clone(), ishared.clone(), inMethod.clone(), strongComponentIndexOut)?;
-            outRunMatching = outRunMatching || b.clone();
+            outRunMatching = outRunMatching || b;
             comp.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -325,10 +325,10 @@ fn traverseComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut isyst: Ar
             let mut isLinear: bool;
             let mut useTearing: bool;
             isLinear = BackendDAEUtil::getLinearfromJacType(jacType.clone())?;
-            useTearing = checkTearingSettings(isLinear.clone(), strongComponentIndexOut, (vindx.clone().len() as i32))?;
-            if useTearing.clone() {
+            useTearing = checkTearingSettings(isLinear, strongComponentIndexOut, (vindx.clone().len() as i32))?;
+            if useTearing {
                 if debugFlag {
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTearing of ")); __mm_s.push_str(&*if (isLinear.clone()) {literal!("LINEAR")} else {literal!("NONLINEAR")}); __mm_s.push_str(&*literal!(" component\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTearing of ")); __mm_s.push_str(&*if (isLinear) {literal!("LINEAR")} else {literal!("NONLINEAR")}); __mm_s.push_str(&*literal!(" component\n")); ArcStr::from(__mm_s) }).clone());
                     let () = (match (Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())?, Flags::isSet(Flags::ITERATION_VARS.clone())?) {
         (false, false) => {
             metamodelica::print((literal!("Use Flag '-d=tearingdumpV' and '-d=iterationVars' for more details\n\n")).clone());
@@ -353,7 +353,7 @@ fn traverseComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut isyst: Ar
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Jacobian:\n")); __mm_s.push_str(&*BackendDump::dumpJacobianStr(ojac.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                 }
                 if debug {
-                    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.traverseComponent ")); __mm_s.push_str(&*if (isLinear.clone()) {literal!("LS")} else {literal!("NLS")}); __mm_s.push_str(&*literal!(" start")); ArcStr::from(__mm_s) }).clone())?;
+                    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.traverseComponent ")); __mm_s.push_str(&*if (isLinear) {literal!("LS")} else {literal!("NLS")}); __mm_s.push_str(&*literal!(" start")); ArcStr::from(__mm_s) }).clone())?;
                 }
                 match '__try0: {
                     (oComp, _) = unwrap_break_err!(callTearingMethod(inMethod.clone(), isyst.clone(), ishared.clone(), eindex.clone(), vindx.clone(), ojac.clone(), jacType.clone(), mixedSystem.clone(), strongComponentIndexOut), '__try0);
@@ -648,8 +648,8 @@ fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::Li
             let mut vars: Arc<metamodelica::List<i32>>;
             v = ({let __elt = ass2.borrow()[(c.clone()-1) as usize].clone(); __elt});
             vars = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            tvars = tVarsofEqn(vars.clone(), ass1.clone(), mT.clone(), visited.clone(), iMark, metamodelica::nil())?;
-            metamodelica::arrayUpdate(mT.clone(), v.clone(), tvars.clone())?;
+            tvars = tVarsofEqn(vars, ass1.clone(), mT.clone(), visited.clone(), iMark, metamodelica::nil())?;
+            metamodelica::arrayUpdate(mT.clone(), v, tvars)?;
             { (iComps, ass1, ass2, m, mT, visited, iMark) = (comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark + 1); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: comp, tail: comps } => {
@@ -657,7 +657,7 @@ fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::Li
             let mut vars: Arc<metamodelica::List<i32>>;
             vars = List::map1r(comp.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone())?;
             tvars = tVarsofEqns(comp.clone(), m.clone(), ass1.clone(), mT.clone(), visited.clone(), iMark)?;
-            List::fold1r(vars.clone(), Arc::new(arrayUpdate.clone()), tvars.clone(), mT.clone())?;
+            List::fold1r(vars, Arc::new(arrayUpdate.clone()), tvars, mT.clone())?;
             { (iComps, ass1, ass2, m, mT, visited, iMark) = (comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark + 1); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -767,8 +767,8 @@ fn getTVarResiduals(mut index: i32, mut v1: metamodelica::Array<i32>, mut eqnLoc
         _ => {
             let mut e: i32;
             e = ({let __elt = v1.borrow()[(index-1) as usize].clone(); __elt});
-            e = ({let __elt = eqnLocalGlobal.borrow()[(e.clone()-1) as usize].clone(); __elt});
-            { (index, v1, eqnLocalGlobal, iAcc) = (index - 1, v1.clone(), eqnLocalGlobal.clone(), metamodelica::cons(e.clone(), iAcc)); continue '__tco; }
+            e = ({let __elt = eqnLocalGlobal.borrow()[(e-1) as usize].clone(); __elt});
+            { (index, v1, eqnLocalGlobal, iAcc) = (index - 1, v1.clone(), eqnLocalGlobal.clone(), metamodelica::cons(e, iAcc)); continue '__tco; }
         },
     }
     }
@@ -1036,7 +1036,7 @@ fn solvabilityWeightsnoStates(mut inTpl: (i32, BackendDAE::Solvability, Arc<meta
         (eq, s, _) if (intGt(eq.clone(), 0) && !(intGt(({let __elt = ass.borrow()[(eq.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut w: i32;
             w = solvabilityWeights(s.clone());
-            intAdd(w.clone(), iW)
+            intAdd(w, iW)
         },
         _ => {
             iW
@@ -1141,11 +1141,11 @@ fn tearingBFS(mut queue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, A
         (Deref @ metamodelica::List::Nil, _) => {
             let mut newqueue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>;
             newqueue = List::removeOnTrue(ass2.clone(), (std::sync::Arc::new(fnptr!(isAssignedSaveEnhanced, metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>))) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)) -> Result<bool> + 'static>), nextQueue)?;
-            newqueue = sortEqnsSolvable(newqueue.clone(), m.clone())?;
+            newqueue = sortEqnsSolvable(newqueue, m.clone())?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print((literal!("Use next Queue!\n")).clone());
             }
-            tearingBFS(newqueue.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size, ass1.clone(), ass2.clone(), metamodelica::nil())?;
+            tearingBFS(newqueue, m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size, ass1.clone(), ass2.clone(), metamodelica::nil())?;
             ()
         },
         (Deref @ metamodelica::List::Cons { head: (c, _, _), tail: rest }, _) => {
@@ -1160,20 +1160,20 @@ fn tearingBFS(mut queue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, A
             }
             rows = List::removeOnTrue(ass1.clone(), (std::sync::Arc::new(fnptr!(isAssignedSaveEnhanced, metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>))) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)) -> Result<bool> + 'static>), ({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}))?;
             cnonscalar = ({let __elt = mapIncRowEqn.borrow()[(c.clone()-1) as usize].clone(); __elt});
-            eqnsize = (({let __elt = mapEqnIncRow.borrow()[(cnonscalar.clone()-1) as usize].clone(); __elt}).len() as i32);
+            eqnsize = (({let __elt = mapEqnIncRow.borrow()[(cnonscalar-1) as usize].clone(); __elt}).len() as i32);
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Eqn Size: ")); __mm_s.push_str(&*intString(eqnsize.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Eqn Size: ")); __mm_s.push_str(&*intString(eqnsize)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Rows (not assigned variables in eqn ")); __mm_s.push_str(&*intString(c.clone())); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::dumpAdjacencyRowEnhanced(rows.clone())?;
                 metamodelica::print((literal!("\n")).clone());
             }
-            newqueue = tearingBFS1(rows.clone(), eqnsize.clone(), ({let __elt = mapEqnIncRow.borrow()[(cnonscalar.clone()-1) as usize].clone(); __elt}), mt.clone(), ass1.clone(), ass2.clone(), nextQueue)?;
+            newqueue = tearingBFS1(rows, eqnsize, ({let __elt = mapEqnIncRow.borrow()[(cnonscalar-1) as usize].clone(); __elt}), mt.clone(), ass1.clone(), ass2.clone(), nextQueue)?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print((literal!("Next Queue:\n")).clone());
                 BackendDump::dumpAdjacencyRowEnhanced(newqueue.clone())?;
                 metamodelica::print((literal!("\n\n")).clone());
             }
-            tearingBFS(rest.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size, ass1.clone(), ass2.clone(), newqueue.clone())?;
+            tearingBFS(rest.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size, ass1.clone(), ass2.clone(), newqueue)?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1308,8 +1308,8 @@ fn tearingBFS2(mut rows: Arc<metamodelica::List<(i32, BackendDAE::Solvability, A
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ass2: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(ass2.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             vareqns = List::removeOnTrue(ass2.clone(), (std::sync::Arc::new(fnptr!(isAssignedSaveEnhanced, metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>))) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)) -> Result<bool> + 'static>), ({let __elt = mt.borrow()[(r.clone()-1) as usize].clone(); __elt}))?;
-            newqueue = listAppend(inNextQueue, vareqns.clone());
-            { (rows, clst, mt, ass1, ass2, inNextQueue) = (rest.clone(), ilst.clone(), mt.clone(), ass1.clone(), ass2.clone(), newqueue.clone()); continue '__tco; }
+            newqueue = listAppend(inNextQueue, vareqns);
+            { (rows, clst, mt, ass1, ass2, inNextQueue) = (rest.clone(), ilst.clone(), mt.clone(), ass1.clone(), ass2.clone(), newqueue); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1376,10 +1376,10 @@ fn omcTearing4_1(mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i
             let mut e: i32;
             let mut v: i32;
             e = ({let __elt = mapIncRowEqn.borrow()[(c.clone()-1) as usize].clone(); __elt});
-            e = ({let __elt = eindxarr.borrow()[(e.clone()-1) as usize].clone(); __elt});
+            e = ({let __elt = eindxarr.borrow()[(e-1) as usize].clone(); __elt});
             v = ({let __elt = ass2.borrow()[(c.clone()-1) as usize].clone(); __elt});
-            v = ({let __elt = varindxarr.borrow()[(v.clone()-1) as usize].clone(); __elt});
-            BackendDAE::InnerEquation::INNEREQUATION { eqn: e.clone(), vars: list![v.clone()] }
+            v = ({let __elt = varindxarr.borrow()[(v-1) as usize].clone(); __elt});
+            BackendDAE::InnerEquation::INNEREQUATION { eqn: e, vars: list![v] }
         },
         clst => {
             let mut vlst: Arc<metamodelica::List<i32>>;
@@ -1392,10 +1392,10 @@ fn omcTearing4_1(mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa0.clone();
-            e = ({let __elt = eindxarr.borrow()[(e.clone()-1) as usize].clone(); __elt});
+            e = ({let __elt = eindxarr.borrow()[(e-1) as usize].clone(); __elt});
             vlst = List::map1r(clst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone())?;
             vlst = List::map1r(vlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varindxarr.clone())?;
-            BackendDAE::InnerEquation::INNEREQUATION { eqn: e.clone(), vars: vlst.clone() }
+            BackendDAE::InnerEquation::INNEREQUATION { eqn: e, vars: vlst.clone() }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2129,13 +2129,13 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of selectTearingVar\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            metamodelica::arrayUpdate(ass1In.clone(), tvar.clone(), metamodelica::arrayLength(ass1In.clone()) * 2)?;
-            deleteEntriesFromAdjacencyMatrix(mIn.clone(), mtIn.clone(), list![tvar.clone()])?;
+            metamodelica::arrayUpdate(ass1In.clone(), tvar, metamodelica::arrayLength(ass1In.clone()) * 2)?;
+            deleteEntriesFromAdjacencyMatrix(mIn.clone(), mtIn.clone(), list![tvar])?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print((literal!("\n\n###BEGIN print Adjacency Matrix w/o tvar############\n(Function: CellierTearing2)\n")).clone());
                 BackendDump::dumpAdjacencyMatrix(mIn.clone())?;
             }
-            Array::replaceAtWithFill(tvar.clone(), metamodelica::nil(), metamodelica::nil(), mtIn.clone())?;
+            Array::replaceAtWithFill(tvar, metamodelica::nil(), metamodelica::nil(), mtIn.clone())?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 BackendDump::dumpAdjacencyMatrixT(mtIn.clone())?;
                 metamodelica::print((literal!("\n###END print Adjacency Matrix w/o tvar##############\n(Function: CellierTearing2)\n\n\n")).clone());
@@ -2143,7 +2143,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 1.1")).clone())?;
             }
-            tvars = metamodelica::cons(tvar.clone(), tvarsIn);
+            tvars = metamodelica::cons(tvar, tvarsIn);
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nBEGINNING of TarjanMatching\n\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -2157,7 +2157,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("* ass2: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(ass2In.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("* order: ")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            if causal.clone() && (Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())?) {
+            if causal && (Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())?) {
                 metamodelica::print((literal!("\n")).clone());
                 BackendDump::dumpMatching(ass1In.clone())?;
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\norder: ")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -2166,12 +2166,12 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 1.3")).clone())?;
             }
-            (_, unsolvables, _) = List::intersection1OnTrue(unsolvables.clone(), tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            (_, unsolvables, _) = List::intersection1OnTrue(unsolvables, tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 1 done")).clone())?;
             }
-            (tvars, order) = CellierTearing2(causal.clone(), mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables.clone(), tvars.clone(), discreteVars, tSel_always, tSel_prefer, tSel_avoid, tSel_never, order.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
-            (tvars.clone(), order.clone())
+            (tvars, order) = CellierTearing2(causal, mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables, tvars, discreteVars, tSel_always, tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+            (tvars, order)
         },
         _ => {
             let mut tvars: Arc<metamodelica::List<i32>>;
@@ -2183,10 +2183,10 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             tvars = List::unique(listAppend(Unsolvables.clone(), tSel_always.clone()));
             tVar_never = List::intersectionOnTrue(tSel_never.clone(), tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             tVar_discrete = List::intersectionOnTrue(discreteVars.clone(), tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-            if !(tVar_never.clone().is_empty()) {
+            if !(tVar_never.is_empty()) {
                 Error::addCompilerWarning((literal!("There are tearing variables with annotation attribute '__OpenModelica_tearingSelect = TearingSelect.never'. Use -d=tearingdump and -d=tearingdumpV for more information.")).clone())?;
             }
-            if !(tVar_discrete.clone().is_empty()) {
+            if !(tVar_discrete.is_empty()) {
                 Error::addCompilerWarning((literal!("There are discrete tearing variables because otherwise the system could not have been torn (unsolvables). This may lead to problems during simulation.")).clone())?;
             }
             if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
@@ -2203,7 +2203,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
                 metamodelica::print((literal!("\n###END print Adjacency Matrix w/o tvars#############\n(Function: CellierTearing2)\n\n\n")).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nBEGINNING of TarjanMatching\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            tvars = listAppend(tvars.clone(), tvarsIn);
+            tvars = listAppend(tvars, tvarsIn);
             (order, causal) = TarjanMatching(mIn.clone(), mtIn.clone(), meIn.clone(), ass1In.clone(), ass2In.clone(), orderIn, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of TarjanMatching\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -2211,18 +2211,18 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("* ass2: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(ass2In.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("* order: ")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            if causal.clone() && (Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())?) {
+            if causal && (Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())?) {
                 metamodelica::print((literal!("\n")).clone());
                 BackendDump::dumpMatching(ass1In.clone())?;
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\norder: ")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             unsolvables = getUnsolvableVarsConsiderMatching(metamodelica::arrayLength(meTIn.clone()), meTIn.clone(), ass1In.clone(), ass2In.clone())?;
-            (_, unsolvables, _) = List::intersection1OnTrue(unsolvables.clone(), tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            (_, unsolvables, _) = List::intersection1OnTrue(unsolvables, tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 2")).clone())?;
             }
-            (tvars, order) = CellierTearing2(causal.clone(), mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables.clone(), tvars.clone(), discreteVars, metamodelica::nil(), tSel_prefer, tSel_avoid, tSel_never, order.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
-            (tvars.clone(), order.clone())
+            (tvars, order) = CellierTearing2(causal, mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables, tvars, discreteVars, metamodelica::nil(), tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+            (tvars, order)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3217,7 +3217,7 @@ fn assignInnerEquations(mut inEqns: Arc<metamodelica::List<i32>>, mut eindex: Ar
             vars = List::map1r(({let __elt = mapEqnIncRow.borrow()[(eq.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone())?;
             otherEqn = (eindex.clone()).get(eq.clone())?;
             otherVars = selectFromList_rev(vindex.clone(), vars.clone())?;
-            BackendDAE::InnerEquation::INNEREQUATION { eqn: otherEqn.clone(), vars: otherVars.clone() }
+            BackendDAE::InnerEquation::INNEREQUATION { eqn: otherEqn, vars: otherVars.clone() }
         },
         (mut eq, Some(mut me)) => {
             let mut otherEqn: i32;
@@ -3232,9 +3232,9 @@ fn assignInnerEquations(mut inEqns: Arc<metamodelica::List<i32>>, mut eindex: Ar
             otherVars = selectFromList_rev(vindex.clone(), vars.clone())?;
             constraints = findConstraintForInnerEquation(({let __elt = me.borrow()[(listHead(eqns.clone())?-1) as usize].clone(); __elt}), listHead(vars.clone())?);
             if constraints.clone().is_empty() {
-                innerEquation = BackendDAE::InnerEquation::INNEREQUATION { eqn: otherEqn.clone(), vars: otherVars.clone() };
+                innerEquation = BackendDAE::InnerEquation::INNEREQUATION { eqn: otherEqn, vars: otherVars.clone() };
             } else {
-                innerEquation = BackendDAE::InnerEquation::INNEREQUATIONCONSTRAINTS { eqn: otherEqn.clone(), vars: otherVars.clone(), cons: constraints.clone() };
+                innerEquation = BackendDAE::InnerEquation::INNEREQUATIONCONSTRAINTS { eqn: otherEqn, vars: otherVars.clone(), cons: constraints.clone() };
             }
             innerEquation.clone()
         },
@@ -3324,7 +3324,7 @@ fn countMultiples3(mut lstIn: Arc<metamodelica::List<i32>>, mut set: Arc<metamod
             let mut val: Arc<metamodelica::List<i32>>;
             let mut num: Arc<metamodelica::List<i32>>;
             number = (lstIn.clone().len() as i32) - (List::removeOnTrue(value.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), lstIn.clone())?.len() as i32);
-            { (lstIn, set, valIn, numIn) = (lstIn, rest.clone(), metamodelica::cons(value.clone(), valIn), metamodelica::cons(number.clone(), numIn)); continue '__tco; }
+            { (lstIn, set, valIn, numIn) = (lstIn, rest.clone(), metamodelica::cons(value.clone(), valIn), metamodelica::cons(number, numIn)); continue '__tco; }
         },
         _ => {
             return Ok((valIn, numIn))

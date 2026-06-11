@@ -215,8 +215,8 @@ pub(crate) fn node(mut inGraph: Graph, mut inName: Name, mut inParents: Parents,
             let mut i: i32;
             let mut n: Node;
             i = System::tmpTickIndex(Global::fgraph_nextId.clone());
-            n = FNode::new((inName).clone(), i.clone(), inParents, inData);
-            (g.clone(), n.clone())
+            n = FNode::new((inName).clone(), i, inParents, inData);
+            (g.clone(), n)
         },
     });
     (outGraph, outNode)
@@ -237,7 +237,7 @@ pub(crate) fn clone(mut inGraph: Graph) -> Result<Graph> {
             t = FCore::Top { graph: ag.clone(), name: (t.name.clone()).clone(), node: nt.clone(), extra: t.extra.clone() };
             g = FCore::Graph::G { top: t.clone(), scope: s.clone() };
             metamodelica::arrayUpdate(ag.clone(), 1, g.clone())?;
-            g.clone()
+            g
         },
         _ => bail!("match: no arm matched"),
     });
@@ -465,7 +465,7 @@ pub(crate) fn updateClassElement(mut inRef: Ref, mut inElement: Arc<SCode::Eleme
             p = __pa1.clone();
             c = __pa2.clone();
             k = __pa3.clone();
-            r = FNode::updateRef(r.clone(), FCore::Node { name: (n.clone()).clone(), id: id.clone(), parents: p.clone(), children: c.clone(), data: FCore::Data::CL { e: e.clone(), pre: inPrefix, r#mod: inMod, kind: k.clone(), status: instStatus } })?;
+            r = FNode::updateRef(r.clone(), FCore::Node { name: (n.clone()).clone(), id: id, parents: p, children: c, data: FCore::Data::CL { e: e.clone(), pre: inPrefix, r#mod: inMod, kind: k, status: instStatus } })?;
             r.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -483,8 +483,8 @@ pub(crate) fn addForIterator(mut inGraph: Graph, mut name: ArcStr, mut ty: Arc<D
             c = Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
             v = Arc::new(DAE::Var { name: (name).clone(), attributes: Arc::new(DAE::Attributes { connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: variability, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC }), ty: ty, binding: binding, bind_from_outside: false, constOfForIteratorRange: constOfForIteratorRange });
             r = lastScopeRef(g.clone())?;
-            g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::BUILTIN, g.clone())?;
-            g = updateVarAndMod(g.clone(), v.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty());
+            g = FGraphBuildEnv::mkCompNode(c, r.clone(), openmodelica_frontend_dump::FCore::Kind::BUILTIN, g.clone())?;
+            g = updateVarAndMod(g.clone(), v, openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty());
             g.clone()
         },
     });
@@ -1303,12 +1303,12 @@ pub(crate) fn splitGraphScope_dispatch(mut inGraph: Graph, mut inAcc: Scope) -> 
             let mut s: Scope;
             if FNode::isImplicitRefName(r.clone())? {
                 (g, _) = stripLastScopeRef(inGraph)?;
-                (g, s) = splitGraphScope_dispatch(g.clone(), metamodelica::cons(r.clone(), inAcc))?;
+                (g, s) = splitGraphScope_dispatch(g, metamodelica::cons(r.clone(), inAcc))?;
             } else {
                 g = inGraph;
                 s = inAcc.reverse();
             }
-            (g.clone(), s.clone())
+            (g, s)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1327,7 +1327,7 @@ pub(crate) fn getVariablesFromGraphScope(mut inGraph: Graph) -> Result<Arc<metam
         FCore::Graph::G { scope: Deref @ metamodelica::List::Cons { head: r, tail: _ }, .. } => {
             let mut lst: Arc<metamodelica::List<ArcStr>>;
             lst = List::map(FNode::filter(r.clone(), (std::sync::Arc::new(FNode::isRefComponent) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(FNode::refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>))?;
-            lst.clone()
+            lst
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1518,7 +1518,7 @@ pub(crate) fn mkVersionName(mut inSourceEnv: Graph, mut inSourceName: Name, mut 
             let mut name: Name;
             crefPrefix = PrefixUtil::prefixAdd((inSourceName).clone(), metamodelica::nil(), metamodelica::nil(), inPrefix, openmodelica_frontend_types::SCode::Variability::CONST, ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, Absyn::dummyInfo.clone())?;
             name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inTargetClassName); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*AbsynUtil::pathString(AbsynUtil::stringListPath(AbsynUtil::pathToStringList(PrefixUtil::prefixToPath(crefPrefix.clone())?)?.reverse())?, (literal!("$")).clone(), false, false)?); ArcStr::from(__mm_s) }).clone();
-            (name.clone(), crefPrefix.clone())
+            (name, crefPrefix)
         },
     });
     Ok((outName, outCrefPrefix))
@@ -1653,7 +1653,7 @@ pub(crate) fn getStatus(mut inEnv: Graph, mut inName: Name) -> Result<FCore::Dat
             let true = (FNode::refHasChild(r#ref.clone(), (arcstr::literal!(FNode::statusNodeName)).clone())?) else { bail!("pattern mismatch") };
             r#ref = FNode::child(r#ref.clone(), (arcstr::literal!(FNode::statusNodeName)).clone())?;
             s = FNode::refData(r#ref.clone())?;
-            s.clone()
+            s
         },
         _ => {
             bail!("fail")
@@ -1675,14 +1675,14 @@ pub(crate) fn selectScope(mut inEnv: Graph, mut inPath: Arc<Absyn::Path>) -> Res
             let mut p: Arc<Absyn::Path>;
             p = AbsynUtil::stripLast(inPath)?;
             let true = (AbsynUtil::pathPrefixOf(p.clone(), getGraphName(inEnv.clone())?)) else { bail!("pattern mismatch") };
-            pl = AbsynUtil::pathToStringList(p.clone())?;
-            lp = (pl.clone().len() as i32);
+            pl = AbsynUtil::pathToStringList(p)?;
+            lp = (pl.len() as i32);
             cs = currentScope(inEnv.clone())?;
             le = (cs.clone().len() as i32) - 1;
-            diff = le.clone() - lp.clone();
-            cs = List::stripN(cs.clone(), diff.clone())?;
-            env = setScope(inEnv, cs.clone())?;
-            env.clone()
+            diff = le - lp;
+            cs = List::stripN(cs, diff)?;
+            env = setScope(inEnv, cs)?;
+            env
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

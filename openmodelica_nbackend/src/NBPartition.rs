@@ -320,7 +320,7 @@ pub mod Association {
             } else {
                 clock_opt = None;
             }
-            let () = (::match_deref::match_deref! { match &((clock_opt.clone(), Pointer::access(clock_ptr.clone()))) {
+            let () = (::match_deref::match_deref! { match &((clock_opt, Pointer::access(clock_ptr.clone()))) {
         (Some(Deref @ BClock::BASE_CLOCK { .. }), Some((name, Deref @ BClock::SUB_CLOCK { .. }))) => {
             removeInferredClock(name.clone(), var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info, infer_del)?;
             ()

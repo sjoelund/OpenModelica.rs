@@ -149,10 +149,10 @@ pub(crate) fn reduceTerms(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode:
             let mut modelInfo_1: SimCode::ModelInfo;
             let mut eqns = (*eqns).clone();
             (_, outExpList) = AbsynUtil::getNamedFuncArgNamesAndValues(inNamedArgList.clone());
-            reduceListStr = (System::stringReplace((ExpressionBasics::printExpStr(Expression::fromAbsynExp((outExpList.clone()).get(1)?)?)?).clone(), (literal!("\"")).clone(), (literal!("")).clone())?).clone();
-            reduceList = StringDelimit2Int((reduceListStr.clone()).clone(), (literal!(",")).clone());
-            (eqns, modelInfo_1) = buildLabels(eqns.clone(), modelInfo.clone(), reduceList.clone(), Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: inExpArgList.clone(), argNames: inNamedArgList.clone() }))?;
-            (eqns.clone(), modelInfo_1.clone())
+            reduceListStr = (System::stringReplace((ExpressionBasics::printExpStr(Expression::fromAbsynExp((outExpList).get(1)?)?)?).clone(), (literal!("\"")).clone(), (literal!("")).clone())?).clone();
+            reduceList = StringDelimit2Int((reduceListStr).clone(), (literal!(",")).clone());
+            (eqns, modelInfo_1) = buildLabels(eqns.clone(), modelInfo.clone(), reduceList, Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: inExpArgList.clone(), argNames: inNamedArgList.clone() }))?;
+            (eqns.clone(), modelInfo_1)
         },
         _ => bail!("match: no arm matched"),
     } })
@@ -170,10 +170,10 @@ fn meanValueReplacements(mut inVarLst: SimCodeVar::SimVars, mut exp_list: Arc<me
             let mut repl: BackendVarTransform::VariableReplacements;
             repl = BackendVarTransform::emptyReplacements();
             listVars1 = listAppend(alg.clone(), intAlg.clone());
-            listVars2 = listAppend(listVars1.clone(), boolAlg.clone());
-            listVars = listAppend(listVars2.clone(), states.clone());
-            repl = meanValueReplacements2(repl.clone(), listVars.clone(), exp_list)?;
-            repl.clone()
+            listVars2 = listAppend(listVars1, boolAlg.clone());
+            listVars = listAppend(listVars2, states.clone());
+            repl = meanValueReplacements2(repl, listVars, exp_list)?;
+            repl
         },
     });
     Ok(outVarRepl)
@@ -777,9 +777,9 @@ fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i3
             vars_1 = __pa1.clone();
             idx2 = __pa2.clone();
             labels = __pa3.clone();
-            (rest2, vars_2, idx3, labels2) = addLabelToLinearEquationSystems(rest.clone(), vars_1.clone(), idx2.clone(), reduceList, inVarRepl)?;
-            labels3 = listAppend(labels.clone(), labels2.clone());
-            (metamodelica::cons((i.clone(), j.clone(), el2.clone()), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone())
+            (rest2, vars_2, idx3, labels2) = addLabelToLinearEquationSystems(rest.clone(), vars_1, idx2, reduceList, inVarRepl)?;
+            labels3 = listAppend(labels, labels2);
+            (metamodelica::cons((i.clone(), j.clone(), el2), rest2), vars_2, idx3, labels3)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2105,10 +2105,10 @@ fn linearizeExp(mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::Exp>, mut inVarLs
             tmp = ComponentReferenceBasics::makeCrefIdent((literal!("linVar")).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
             tmpExp = Expression::crefExp(tmp.clone())?;
             (e3, _) = Expression::replaceExp(e1.clone(), e2.clone(), tmpExp.clone())?;
-            e4 = Differentiate::differentiateExpSolve(e3.clone(), tmp.clone(), None)?;
-            (e5, _) = Expression::replaceExp(e4.clone(), tmpExp.clone(), replExp.clone())?;
-            e6 = Expression::expAdd(e.clone(), Expression::expMul(e5.clone(), Expression::expSub(e2.clone(), replExp.clone())?)?)?;
-            e6.clone()
+            e4 = Differentiate::differentiateExpSolve(e3, tmp, None)?;
+            (e5, _) = Expression::replaceExp(e4, tmpExp, replExp.clone())?;
+            e6 = Expression::expAdd(e, Expression::expMul(e5, Expression::expSub(e2.clone(), replExp)?)?)?;
+            e6
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2619,7 +2619,7 @@ fn substituteExp(mut inExp: Arc<DAE::Exp>, mut inVarRepl: BackendVarTransform::V
         (e, repl) => {
             let mut e1: Arc<DAE::Exp>;
             (e1, replPerformed) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None);
-            (e1.clone(), replPerformed)
+            (e1, replPerformed)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2635,7 +2635,7 @@ fn multiply(mut inExp: Arc<DAE::Exp>, mut inString: ArcStr) -> Result<Arc<DAE::E
             if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                 Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("generate label  ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!(" for term ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
             }
-            e2.clone()
+            e2
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2657,17 +2657,17 @@ fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut 
             let mut indexStr: ArcStr;
             let mut param = param.clone();
             indexStr = (intString(i.clone())).clone();
-            name = (stringAppend((arcstr::literal!(LABELNAME)).clone(), (indexStr.clone()).clone())).clone();
+            name = (stringAppend((arcstr::literal!(LABELNAME)).clone(), (indexStr).clone())).clone();
             name1 = (stringAppend((name.clone()).clone(), (literal!("_1")).clone())).clone();
             name2 = (stringAppend((name.clone()).clone(), (literal!("_2")).clone())).clone();
-            simVar_1 = SimCodeVar::SimVar { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name1.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: p.clone(), minValue: None, maxValue: None, initialValue: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })), nominalValue: None, isFixed: true, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(openmodelica_simcode_types::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: false, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: None, relativeQuantity: false };
+            simVar_1 = SimCodeVar::SimVar { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name1).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: p.clone(), minValue: None, maxValue: None, initialValue: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })), nominalValue: None, isFixed: true, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(openmodelica_simcode_types::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: false, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: None, relativeQuantity: false };
             param = param.clone().reverse();
-            param_1 = metamodelica::cons(simVar_1.clone(), param.clone());
+            param_1 = metamodelica::cons(simVar_1, param.clone());
             p = p.clone() + 1;
-            simVar_2 = SimCodeVar::SimVar { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name2.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: p.clone(), minValue: None, maxValue: None, initialValue: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), nominalValue: None, isFixed: true, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(openmodelica_simcode_types::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: false, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: None, relativeQuantity: false };
-            param_2 = metamodelica::cons(simVar_2.clone(), param_1.clone());
-            param_2 = param_2.clone().reverse();
-            (SimCodeVar::SimVars { stateVars: states.clone(), derivativeVars: derVar.clone(), algVars: alg.clone(), discreteAlgVars: disAlg.clone(), intAlgVars: intAlg.clone(), boolAlgVars: boolAlg.clone(), inputVars: inVar.clone(), outputVars: outVar.clone(), aliasVars: algAlias.clone(), intAliasVars: intAlias.clone(), boolAliasVars: boolAlias.clone(), paramVars: param_2.clone(), intParamVars: intParam.clone(), boolParamVars: boolParam.clone(), stringAlgVars: stringAlg.clone(), stringParamVars: stringParam.clone(), stringAliasVars: stringAlias.clone(), extObjVars: extObjVar.clone(), constVars: r#const.clone(), intConstVars: intConst.clone(), boolConstVars: boolConst.clone(), stringConstVars: stringConst.clone(), jacobianVars: jacobianVar.clone(), seedVars: seedVar.clone(), realOptimizeConstraintsVars: realOptConst.clone(), realOptimizeFinalConstraintsVars: realOptFinalConst.clone(), sensitivityVars: sensVar.clone(), dataReconSetcVars: setcVar.clone(), dataReconinputVars: datareconinputvar.clone(), dataReconSetBVars: setBVar.clone() }, name.clone())
+            simVar_2 = SimCodeVar::SimVar { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name2).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: p.clone(), minValue: None, maxValue: None, initialValue: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), nominalValue: None, isFixed: true, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(openmodelica_simcode_types::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: false, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: None, relativeQuantity: false };
+            param_2 = metamodelica::cons(simVar_2, param_1);
+            param_2 = param_2.reverse();
+            (SimCodeVar::SimVars { stateVars: states.clone(), derivativeVars: derVar.clone(), algVars: alg.clone(), discreteAlgVars: disAlg.clone(), intAlgVars: intAlg.clone(), boolAlgVars: boolAlg.clone(), inputVars: inVar.clone(), outputVars: outVar.clone(), aliasVars: algAlias.clone(), intAliasVars: intAlias.clone(), boolAliasVars: boolAlias.clone(), paramVars: param_2, intParamVars: intParam.clone(), boolParamVars: boolParam.clone(), stringAlgVars: stringAlg.clone(), stringParamVars: stringParam.clone(), stringAliasVars: stringAlias.clone(), extObjVars: extObjVar.clone(), constVars: r#const.clone(), intConstVars: intConst.clone(), boolConstVars: boolConst.clone(), stringConstVars: stringConst.clone(), jacobianVars: jacobianVar.clone(), seedVars: seedVar.clone(), realOptimizeConstraintsVars: realOptConst.clone(), realOptimizeFinalConstraintsVars: realOptFinalConst.clone(), sensitivityVars: sensVar.clone(), dataReconSetcVars: setcVar.clone(), dataReconinputVars: datareconinputvar.clone(), dataReconSetBVars: setBVar.clone() }, name)
         },
     });
     Ok((outVariables, outString))
@@ -2684,8 +2684,8 @@ fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inLi
             let mut lst2: Arc<metamodelica::List<i32>>;
             let mut lst3: Arc<metamodelica::List<i32>>;
             i = v.clone();
-            lst2 = listAppend(lst.clone(), list![i.clone()]);
-            { (expLst, inList) = (expLstRest.clone(), lst2.clone()); continue '__tco; }
+            lst2 = listAppend(lst.clone(), list![i]);
+            { (expLst, inList) = (expLstRest.clone(), lst2); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2726,7 +2726,7 @@ pub(crate) fn createBackendLabelVars(mut modelInfo: SimCode::ModelInfo) -> Resul
         SimCode::ModelInfo { varInfo: SimCode::VarInfo { numParams: mut numParams, .. }, labels: mut labels, .. } => {
             let mut list1: Arc<metamodelica::List<BackendDAE::Var>>;
             list1 = createBackendLabelVars2(labels.clone(), numParams.clone())?;
-            list1.clone()
+            list1
         },
         _ => bail!("match: no arm matched"),
     });
@@ -2750,14 +2750,14 @@ fn createBackendLabelVars2(mut inLabels: Arc<metamodelica::List<ArcStr>>, mut in
             let mut p = (*p).clone();
             name1 = (stringAppend((name.clone()).clone(), (literal!("_1")).clone())).clone();
             name2 = (stringAppend((name.clone()).clone(), (literal!("_2")).clone())).clone();
-            var1 = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name1.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })), arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: None, unit: None, displayUnit: None, min: None, max: None, start: None, fixed: None, nominal: None, stateSelectOption: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None })), tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            var1 = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name1).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })), arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: None, unit: None, displayUnit: None, min: None, max: None, start: None, fixed: None, nominal: None, stateSelectOption: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None })), tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             p = p.clone() + 1;
-            var2 = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name2.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: None, unit: None, displayUnit: None, min: None, max: None, start: None, fixed: None, nominal: None, stateSelectOption: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None })), tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
-            list1 = list![var1.clone(), var2.clone()];
+            var2 = BackendDAE::Var { varName: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name2).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: openmodelica_backend_types::BackendDAE::VarKind::PARAM, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: None, unit: None, displayUnit: None, min: None, max: None, start: None, fixed: None, nominal: None, stateSelectOption: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None })), tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            list1 = list![var1, var2];
             p = p.clone() + 1;
             list2 = createBackendLabelVars2(rest.clone(), p.clone())?;
-            list3 = listAppend(list1.clone(), list2.clone());
-            list3.clone()
+            list3 = listAppend(list1, list2);
+            list3
         },
         _ => bail!("match: no arm matched"),
     } });

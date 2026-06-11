@@ -87,7 +87,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
         }
         __acc.reverse()
     });
-            for mut var in &*bound_vars.clone() {
+            for mut var in &*bound_vars {
                 let mut var = var.clone();
                 skip_record_element = (match BVariable::getParent(var.clone()) {
         Some(mut __esc_parent) => {
@@ -96,7 +96,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
         },
         _ => false,
     });
-                if !(skip_record_element.clone()) {
+                if !(skip_record_element) {
                     bind_eqn = Equation::generateBindingEquation(var.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_iters.clone())?;
                     if BVariable::isContinuous(var.clone(), false)? {
                         binding_cont = metamodelica::cons(bind_eqn.clone(), binding_cont.clone());
@@ -114,7 +114,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
         }
         __acc.reverse()
     });
-            for mut var in &*bound_vars.clone() {
+            for mut var in &*bound_vars {
                 let mut var = var.clone();
                 binding_rec = metamodelica::cons(Equation::generateBindingEquation(var.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_iters.clone())?, binding_rec.clone());
             }
@@ -127,7 +127,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
         }
         __acc.reverse()
     });
-            for mut var in &*bound_clocks.clone() {
+            for mut var in &*bound_clocks {
                 let mut var = var.clone();
                 binding_clck = metamodelica::cons(Equation::generateBindingEquation(var.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_iters.clone())?, binding_clck.clone());
             }
@@ -149,16 +149,16 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
             );
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
                 eqData = eqData.clone(),
-                varData = BVariable::VarData::addTypedList(var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), UnorderedSet::toList(new_iters.clone()), BVariable::VarData::VarType::ITERATOR.clone())?
+                varData = BVariable::VarData::addTypedList(var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), UnorderedSet::toList(new_iters), BVariable::VarData::VarType::ITERATOR.clone())?
             );
             if Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone())? {
                 Error::addSourceMessage(Error::BACKENDDAEINFO_LOWER.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(EqData::scalarSize(eqData.clone(), false)?)); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(EqData::size(eqData.clone())?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BVariable::VarData::scalarSize(varData.clone(), false)?)); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BVariable::VarData::size(varData.clone())?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()], Absyn::dummyInfo.clone())?;
             }
             if Flags::isSet(Flags::DUMP_BINDINGS.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_cont.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Continuous Binding Equations (")); __mm_s.push_str(&*intString((binding_cont.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_clck.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Clocked Binding Equations (")); __mm_s.push_str(&*intString((binding_clck.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_disc.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Discrete Binding Equations (")); __mm_s.push_str(&*intString((binding_disc.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_rec.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Record Binding Equations (")); __mm_s.push_str(&*intString((binding_rec.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_cont.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Continuous Binding Equations (")); __mm_s.push_str(&*intString((binding_cont.len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_clck.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Clocked Binding Equations (")); __mm_s.push_str(&*intString((binding_clck.len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_disc.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Discrete Binding Equations (")); __mm_s.push_str(&*intString((binding_disc.len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(binding_rec.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Record Binding Equations (")); __mm_s.push_str(&*intString((binding_rec.len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())?).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             bdae
         },

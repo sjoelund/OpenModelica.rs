@@ -510,11 +510,11 @@ pub mod SimCode {
             let mut collect_literals: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
             simCodeIndices = EMPTY_SIM_CODE_INDICES();
             funcMap = BackendDAE::getFunctionMap(bdae.clone())?;
-            collect_literals = (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = literals_map.clone(); let __pe_b2 = literals_idx.clone(); move |__pe_a0| Expression::replaceLiteral(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::fakeMap(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>);
+            collect_literals = (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = literals_map.clone(); let __pe_b2 = literals_idx; move |__pe_a0| Expression::replaceLiteral(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::fakeMap(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>);
             UnorderedMap::apply(funcMap.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = collect_literals.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = collect_literals.clone(); let __pe_b3 = true; let __pe_b4 = true; move |__pe_a0| Function::mapExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
             residual_vars = BackendDAE::getLoopResiduals(bdae.clone())?;
-            (vars, simCodeIndices) = SimVars::create(varData.clone(), residual_vars.clone(), simCodeIndices.clone())?;
-            (extObjInfo, vars, simCodeIndices) = ExtObjInfo::create(var_field!((**varData).external_objects, VarData::VarData::VAR_DATA_SIM).clone(), vars.clone(), simCodeIndices.clone())?;
+            (vars, simCodeIndices) = SimVars::create(varData.clone(), residual_vars, simCodeIndices)?;
+            (extObjInfo, vars, simCodeIndices) = ExtObjInfo::create(var_field!((**varData).external_objects, VarData::VarData::VAR_DATA_SIM).clone(), vars, simCodeIndices)?;
             simcode_map = SimCodeUtil::createSimCodeMap(vars.clone(), extObjInfo.clone())?;
             equation_map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             independent = metamodelica::nil();
@@ -523,13 +523,13 @@ pub mod SimCode {
             max = metamodelica::nil();
             param = metamodelica::nil();
             algorithms = metamodelica::nil();
-            (init, simCodeIndices) = SimStrongComponent::Block::createInitialBlocks(var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
+            (init, simCodeIndices) = SimStrongComponent::Block::createInitialBlocks(var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices, simcode_map.clone(), equation_map.clone())?;
             if isSome(var_field!((*bdae).init_0, BackendDAE::NBackendDAE::MAIN).clone()) {
-                (init_0, simCodeIndices) = SimStrongComponent::Block::createInitialBlocks(Util::getOption(var_field!((*bdae).init_0, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
+                (init_0, simCodeIndices) = SimStrongComponent::Block::createInitialBlocks(Util::getOption(var_field!((*bdae).init_0, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices, simcode_map.clone(), equation_map.clone())?;
             } else {
                 init_0 = metamodelica::nil();
             }
-            (no_ret, simCodeIndices) = SimStrongComponent::Block::createNoReturnBlocks(var_field!((**eqData).removed, EqData::EqData::EQ_DATA_SIM).clone(), simCodeIndices.clone(), Partition::Kind::ODE.clone(), simcode_map.clone(), equation_map.clone())?;
+            (no_ret, simCodeIndices) = SimStrongComponent::Block::createNoReturnBlocks(var_field!((**eqData).removed, EqData::EqData::EQ_DATA_SIM).clone(), simCodeIndices, Partition::Kind::ODE.clone(), simcode_map.clone(), equation_map.clone())?;
             init_no_ret = metamodelica::nil();
             start = metamodelica::nil();
             discreteVars = metamodelica::nil();
@@ -537,21 +537,21 @@ pub mod SimCode {
             if isSome(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone()) {
                 ode = metamodelica::nil();
                 algebraic = metamodelica::nil();
-                (daeModeData, simCodeIndices) = DaeModeData::create(Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
+                (daeModeData, simCodeIndices) = DaeModeData::create(Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices, simcode_map.clone(), equation_map.clone())?;
             } else {
                 daeModeData = None;
-                (ode, allSim, simCodeIndices) = SimStrongComponent::Block::createBlocks(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), allSim.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
-                (algebraic, allSim, simCodeIndices) = SimStrongComponent::Block::createBlocks(var_field!((*bdae).algebraic, BackendDAE::NBackendDAE::MAIN).clone(), allSim.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
-                (ode, allSim, event_blocks, simCodeIndices) = SimStrongComponent::Block::createDiscreteBlocks(var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone(), ode.clone(), allSim.clone(), event_blocks.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
-                (algebraic, allSim, event_blocks, simCodeIndices) = SimStrongComponent::Block::createDiscreteBlocks(var_field!((*bdae).alg_event, BackendDAE::NBackendDAE::MAIN).clone(), algebraic.clone(), allSim.clone(), event_blocks.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
+                (ode, allSim, simCodeIndices) = SimStrongComponent::Block::createBlocks(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), allSim, simCodeIndices, simcode_map.clone(), equation_map.clone())?;
+                (algebraic, allSim, simCodeIndices) = SimStrongComponent::Block::createBlocks(var_field!((*bdae).algebraic, BackendDAE::NBackendDAE::MAIN).clone(), allSim, simCodeIndices, simcode_map.clone(), equation_map.clone())?;
+                (ode, allSim, event_blocks, simCodeIndices) = SimStrongComponent::Block::createDiscreteBlocks(var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone(), ode, allSim, event_blocks, simCodeIndices, simcode_map.clone(), equation_map.clone())?;
+                (algebraic, allSim, event_blocks, simCodeIndices) = SimStrongComponent::Block::createDiscreteBlocks(var_field!((*bdae).alg_event, BackendDAE::NBackendDAE::MAIN).clone(), algebraic, allSim, event_blocks, simCodeIndices, simcode_map.clone(), equation_map.clone())?;
             }
-            (clockedPartitions, event_clocks, simCodeIndices) = SimStrongComponent::Block::createClockedBlocks(var_field!((*bdae).clocked, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone())?;
+            (clockedPartitions, event_clocks, simCodeIndices) = SimStrongComponent::Block::createClockedBlocks(var_field!((*bdae).clocked, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices, simcode_map.clone(), equation_map.clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone())?;
             if !(no_ret.clone().is_empty()) {
-                algebraic = metamodelica::cons(no_ret.clone(), algebraic.clone().reverse()).reverse();
+                algebraic = metamodelica::cons(no_ret.clone(), algebraic.reverse()).reverse();
             }
-            no_ret = listAppend(event_clocks.clone(), no_ret.clone());
+            no_ret = listAppend(event_clocks, no_ret);
             if !(no_ret.clone().is_empty()) {
-                allSim = listAppend(no_ret.clone(), allSim.clone().reverse()).reverse();
+                allSim = listAppend(no_ret.clone(), allSim.reverse()).reverse();
             }
             allSim = listAppend(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>> = metamodelica::nil();
@@ -560,35 +560,35 @@ pub mod SimCode {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, allSim.clone());
+    }))?, allSim);
             inlineEquations = metamodelica::nil();
             directory = (ProgramUtil::getFileDir(AbsynUtil::pathToCref(name.clone())?, program.clone())).clone();
-            oldFunctionTree = ConvertDAE::convertFunctionTree(NFFlatten::FunctionTreeImpl::fromList(UnorderedMap::toList(funcMap.clone()), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
+            oldFunctionTree = ConvertDAE::convertFunctionTree(NFFlatten::FunctionTreeImpl::fromList(UnorderedMap::toList(funcMap), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
             (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = SimCodeUtilShared::createFunctions(program.clone(), oldFunctionTree.clone())?;
-            makefileParams = OldSimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), false, false)?;
+            makefileParams = OldSimCodeFunctionUtil::createMakefileParams(includeDirs, libs, libPaths, false, false)?;
             fileName = (System::basename((AbsynUtil::classFilename(ProgramUtil::getPathedClassInProgram(name.clone(), program, false, false)?)?).clone())).clone();
-            (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = collectAlgebraicLoops(init.clone(), init_0.clone(), ode.clone(), algebraic.clone(), daeModeData.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = collectAlgebraicLoops(init.clone(), init_0.clone(), ode.clone(), algebraic.clone(), daeModeData.clone(), simCodeIndices, simcode_map.clone())?;
             if isSome(daeModeData.clone()) {
-                (jacA, jacAdjoint, simCodeIndices) = SimJacobian::createSimulationJacobian(Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices.clone(), simcode_map.clone())?;
-                daeModeData = DaeModeData::addJacobian(daeModeData.clone(), jacA.clone());
+                (jacA, jacAdjoint, simCodeIndices) = SimJacobian::createSimulationJacobian(Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices, simcode_map.clone())?;
+                daeModeData = DaeModeData::addJacobian(daeModeData, jacA.clone());
             } else {
-                (jacA, jacAdjoint, simCodeIndices) = SimJacobian::createSimulationJacobian(listAppend(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()), simCodeIndices.clone(), simcode_map.clone())?;
+                (jacA, jacAdjoint, simCodeIndices) = SimJacobian::createSimulationJacobian(listAppend(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()), simCodeIndices, simcode_map.clone())?;
             }
-            (jacB, simCodeIndices) = SimJacobian::empty((literal!("B")).clone(), simCodeIndices.clone())?;
-            (jacC, simCodeIndices) = SimJacobian::empty((literal!("C")).clone(), simCodeIndices.clone())?;
-            (jacD, simCodeIndices) = SimJacobian::empty((literal!("D")).clone(), simCodeIndices.clone())?;
-            (jacF, simCodeIndices) = SimJacobian::empty((literal!("F")).clone(), simCodeIndices.clone())?;
-            (jacH, simCodeIndices) = SimJacobian::empty((literal!("H")).clone(), simCodeIndices.clone())?;
-            (jacLfg, jacMrf, jacR0, simCodeIndices) = SimJacobian::createOptimizationJacobian(listAppend(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()), simCodeIndices.clone(), simcode_map.clone())?;
-            jacobians = metamodelica::cons(jacR0.clone(), metamodelica::cons(jacMrf.clone(), metamodelica::cons(jacLfg.clone(), metamodelica::cons(jacAdjoint.clone(), metamodelica::cons(jacH.clone(), metamodelica::cons(jacF.clone(), metamodelica::cons(jacD.clone(), metamodelica::cons(jacC.clone(), metamodelica::cons(jacB.clone(), metamodelica::cons(jacA.clone(), jacobians.clone())))))))))).reverse();
+            (jacB, simCodeIndices) = SimJacobian::empty((literal!("B")).clone(), simCodeIndices)?;
+            (jacC, simCodeIndices) = SimJacobian::empty((literal!("C")).clone(), simCodeIndices)?;
+            (jacD, simCodeIndices) = SimJacobian::empty((literal!("D")).clone(), simCodeIndices)?;
+            (jacF, simCodeIndices) = SimJacobian::empty((literal!("F")).clone(), simCodeIndices)?;
+            (jacH, simCodeIndices) = SimJacobian::empty((literal!("H")).clone(), simCodeIndices)?;
+            (jacLfg, jacMrf, jacR0, simCodeIndices) = SimJacobian::createOptimizationJacobian(listAppend(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()), simCodeIndices, simcode_map.clone())?;
+            jacobians = metamodelica::cons(jacR0.clone(), metamodelica::cons(jacMrf.clone(), metamodelica::cons(jacLfg.clone(), metamodelica::cons(jacAdjoint.clone(), metamodelica::cons(jacH.clone(), metamodelica::cons(jacF.clone(), metamodelica::cons(jacD.clone(), metamodelica::cons(jacC.clone(), metamodelica::cons(jacB.clone(), metamodelica::cons(jacA.clone(), jacobians)))))))))).reverse();
             for mut jac in &*jacobians.clone() {
                 let mut jac = jac.clone();
                 if isSome(jac.jac_map.clone()) {
                     vars = SimVars::addSeedAndJacobianVars(vars.clone(), UnorderedMap::toList(Util::getOption(jac.jac_map.clone())?))?;
                 }
             }
-            jac_blocks = SimJacobian::getJacobiansBlocks(list![jacA.clone(), jacB.clone(), jacC.clone(), jacD.clone(), jacF.clone(), jacH.clone(), jacAdjoint.clone(), jacLfg.clone(), jacMrf.clone(), jacR0.clone()])?;
-            (jac_blocks, simCodeIndices) = SimStrongComponent::Block::fixIndices(jac_blocks.clone(), metamodelica::nil(), simCodeIndices.clone())?;
+            jac_blocks = SimJacobian::getJacobiansBlocks(list![jacA, jacB, jacC, jacD, jacF, jacH, jacAdjoint, jacLfg, jacMrf, jacR0])?;
+            (jac_blocks, simCodeIndices) = SimStrongComponent::Block::fixIndices(jac_blocks, metamodelica::nil(), simCodeIndices)?;
             generic_loop_calls = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimGenericCall::NSimGenericCall>>> = metamodelica::nil();
         for mut tpl in (UnorderedMap::toList(simCodeIndices.generic_call_map.clone())).into_iter().cloned() {
@@ -599,15 +599,15 @@ pub mod SimCode {
     });
             generic_loop_calls = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimGenericCall::NSimGenericCall>>> = metamodelica::nil();
-        for mut call in (generic_loop_calls.clone()).into_iter().cloned() {
+        for mut call in (generic_loop_calls).into_iter().cloned() {
             let __x = SimGenericCall::mapShallow(call.clone(), collect_literals.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            literals = UnorderedMap::keyList(literals_map.clone());
-            (modelInfo, simCodeIndices) = ModelInfo::create(vars.clone(), name, (fileName.clone()).clone(), (directory.clone()).clone(), functions.clone(), linearLoops.clone(), nonlinearLoops.clone(), var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices.clone())?;
-            simCode = Arc::new(SimCode { modelInfo: modelInfo.clone(), literals: literals.clone(), recordDecls: recordDecls.clone(), externalFunctionIncludes: externalFunctionIncludes.clone(), generic_loop_calls: generic_loop_calls.clone(), independent: independent.clone(), allSim: allSim.clone(), ode: ode.clone(), algebraic: algebraic.clone(), clockedPartitions: clockedPartitions.clone(), nominal: nominal.clone(), min: min.clone(), max: max.clone(), param: param.clone(), no_ret: no_ret.clone(), algorithms: algorithms.clone(), event_blocks: event_blocks.clone(), jac_blocks: jac_blocks.clone(), start: start.clone(), init: init.clone(), init_0: init_0.clone(), init_no_ret: init_no_ret.clone(), discreteVars: discreteVars.clone(), extObjInfo: extObjInfo.clone(), makefileParams: makefileParams.clone(), jacobians: jacobians.clone(), simulationSettingsOpt: simSettingsOpt, fileNamePrefix: (fileNamePrefix).clone(), simcode_map: simcode_map.clone(), equation_map: equation_map.clone(), eventInfo: var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), daeModeData: daeModeData.clone(), inlineEquations: inlineEquations.clone() });
+            literals = UnorderedMap::keyList(literals_map);
+            (modelInfo, simCodeIndices) = ModelInfo::create(vars, name, (fileName).clone(), (directory).clone(), functions, linearLoops, nonlinearLoops, var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices)?;
+            simCode = Arc::new(SimCode { modelInfo: modelInfo, literals: literals, recordDecls: recordDecls, externalFunctionIncludes: externalFunctionIncludes, generic_loop_calls: generic_loop_calls, independent: independent, allSim: allSim, ode: ode, algebraic: algebraic, clockedPartitions: clockedPartitions, nominal: nominal, min: min, max: max, param: param, no_ret: no_ret, algorithms: algorithms, event_blocks: event_blocks, jac_blocks: jac_blocks, start: start, init: init, init_0: init_0, init_no_ret: init_no_ret, discreteVars: discreteVars, extObjInfo: extObjInfo, makefileParams: makefileParams, jacobians: jacobians, simulationSettingsOpt: simSettingsOpt, fileNamePrefix: (fileNamePrefix).clone(), simcode_map: simcode_map, equation_map: equation_map, eventInfo: var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), daeModeData: daeModeData, inlineEquations: inlineEquations });
             simCode
         },
         _ => {

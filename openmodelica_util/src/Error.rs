@@ -1401,7 +1401,7 @@ pub fn addSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens
         (ErrorTypes::Message { id: error_id, ty: msg_type, severity, message: msg }, tokens, SourceInfo { fileName: file, isReadOnly, lineNumberStart: sline, columnNumberStart: scol, lineNumberEnd: eline, columnNumberEnd: ecol, .. }) => {
             let mut msg_str: ArcStr;
             msg_str = (msg.clone()).clone();
-            ErrorExt::addSourceMessage(error_id.clone(), msg_type.clone(), severity.clone(), sline.clone(), scol.clone(), eline.clone(), ecol.clone(), isReadOnly.clone(), (Testsuite::friendly((file.clone()).clone())?).clone(), (msg_str.clone()).clone(), tokens.clone());
+            ErrorExt::addSourceMessage(error_id.clone(), msg_type.clone(), severity.clone(), sline.clone(), scol.clone(), eline.clone(), ecol.clone(), isReadOnly.clone(), (Testsuite::friendly((file.clone()).clone())?).clone(), (msg_str).clone(), tokens.clone());
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1589,7 +1589,7 @@ pub fn infoStr(mut info: SourceInfo) -> Result<ArcStr> {
         SourceInfo { fileName: mut filename, lineNumberStart: mut line_start, columnNumberStart: mut col_start, lineNumberEnd: mut line_end, columnNumberEnd: mut col_end, .. } => {
             let mut info_str: ArcStr;
             info_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Testsuite::friendly((filename.clone()).clone())?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(line_start.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(col_start.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(line_end.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(col_end.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
-            info_str.clone()
+            info_str
         },
         _ => bail!("match: no arm matched"),
     })).clone();

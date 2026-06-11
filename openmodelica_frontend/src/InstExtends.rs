@@ -320,7 +320,7 @@ fn lookupBaseClass(mut inPath: Arc<Absyn::Path>, mut inSelfReference: bool, mut 
             let mut elem: Arc<SCode::Element>;
             let mut env: FCore::Graph;
             (elem, env) = Lookup::lookupClassLocal(inEnv, (name.clone()).clone())?;
-            (inCache, Some(elem.clone()), env.clone())
+            (inCache, Some(elem), env)
         },
         (_, _) => {
             let mut elem: Arc<SCode::Element>;
@@ -328,8 +328,8 @@ fn lookupBaseClass(mut inPath: Arc<Absyn::Path>, mut inSelfReference: bool, mut 
             let mut cache: FCore::Cache;
             let mut path: Arc<Absyn::Path>;
             path = AbsynUtil::removePartialPrefix(Arc::new(Absyn::Path::IDENT { name: (inClassName).clone() }), inPath);
-            (cache, elem, env) = Lookup::lookupClass(inCache, inEnv, path.clone(), None)?;
-            (cache.clone(), Some(elem.clone()), env.clone())
+            (cache, elem, env) = Lookup::lookupClass(inCache, inEnv, path, None)?;
+            (cache, Some(elem), env)
         },
         _ => {
             (inCache, None, inEnv)
@@ -1541,7 +1541,7 @@ fn fixSubscript(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         Deref @ Absyn::Subscript::SUBSCRIPT { subscript: exp1 } => {
             let mut exp2: Arc<Absyn::Exp>;
             exp2 = fixExp(cache.clone(), inEnv, exp1.clone(), tree)?;
-            if (referenceEq(&*(exp1.clone()),&*(exp2.clone()))) {inSub} else {Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: exp2.clone() })}
+            if (referenceEq(&*(exp1.clone()),&*(exp2.clone()))) {inSub} else {Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: exp2 })}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1556,7 +1556,7 @@ fn fixTypeSpec(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
             let mut arrayDim2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>;
             arrayDim2 = fixOption(cache.clone(), inEnv.clone(), arrayDim1.clone(), tree.clone(), (std::sync::Arc::new(fixArrayDim) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arc<AvlSetString::Tree>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>))?;
             path2 = fixPath(cache.clone(), inEnv, path1.clone(), tree);
-            if ((match (&(arrayDim2.clone()), &(arrayDim1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) && referenceEq(&*(path1.clone()),&*(path2.clone()))) {inTs} else {Arc::new(Absyn::TypeSpec::TPATH { path: path2.clone(), arrayDim: arrayDim2.clone() })}
+            if ((match (&(arrayDim2.clone()), &(arrayDim1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) && referenceEq(&*(path1.clone()),&*(path2.clone()))) {inTs} else {Arc::new(Absyn::TypeSpec::TPATH { path: path2, arrayDim: arrayDim2 })}
         },
         Deref @ Absyn::TypeSpec::TCOMPLEX { path: path1, typeSpecs: typeSpecs1, arrayDim: arrayDim1 } => {
             let mut path2: Arc<Absyn::Path>;
@@ -1565,7 +1565,7 @@ fn fixTypeSpec(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
             arrayDim2 = fixOption(cache.clone(), inEnv.clone(), arrayDim1.clone(), tree.clone(), (std::sync::Arc::new(fixArrayDim) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arc<AvlSetString::Tree>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>))?;
             path2 = fixPath(cache.clone(), inEnv.clone(), path1.clone(), tree.clone());
             typeSpecs2 = fixList(cache.clone(), inEnv, typeSpecs1.clone(), tree, (std::sync::Arc::new(fixTypeSpec) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<Absyn::TypeSpec>, Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::TypeSpec>> + 'static>))?;
-            if ((match (&(arrayDim2.clone()), &(arrayDim1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) && referenceEq(&*(path1.clone()),&*(path2.clone())) && metamodelica::ReferenceEq::reference_eq(&*(typeSpecs1.clone()), &*(typeSpecs2.clone()))) {inTs} else {Arc::new(Absyn::TypeSpec::TCOMPLEX { path: path2.clone(), typeSpecs: typeSpecs2.clone(), arrayDim: arrayDim2.clone() })}
+            if ((match (&(arrayDim2.clone()), &(arrayDim1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) && referenceEq(&*(path1.clone()),&*(path2.clone())) && metamodelica::ReferenceEq::reference_eq(&*(typeSpecs1.clone()), &*(typeSpecs2.clone()))) {inTs} else {Arc::new(Absyn::TypeSpec::TCOMPLEX { path: path2, typeSpecs: typeSpecs2, arrayDim: arrayDim2 })}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1841,17 +1841,17 @@ fn fixExpTraverse(mut exp: Arc<Absyn::Exp>, mut tpl: (metamodelica::Array<FCore:
         (Deref @ Absyn::Exp::CREF { componentRef: cref }, (cache, env, tree)) => {
             let mut cref1: Arc<Absyn::ComponentRef>;
             cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone());
-            if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp} else {Arc::new(Absyn::Exp::CREF { componentRef: cref1.clone() })}
+            if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp} else {Arc::new(Absyn::Exp::CREF { componentRef: cref1 })}
         },
         (Deref @ Absyn::Exp::CALL { function_: cref, .. }, (cache, env, tree)) => {
             let mut cref1: Arc<Absyn::ComponentRef>;
             cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone());
-            if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp} else {Arc::new(Absyn::Exp::CALL { function_: cref1.clone(), functionArgs: var_field!((*exp).functionArgs, Absyn::Exp::CALL).clone(), typeVars: var_field!((*exp).typeVars, Absyn::Exp::CALL).clone() })}
+            if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp} else {Arc::new(Absyn::Exp::CALL { function_: cref1, functionArgs: var_field!((*exp).functionArgs, Absyn::Exp::CALL).clone(), typeVars: var_field!((*exp).typeVars, Absyn::Exp::CALL).clone() })}
         },
         (Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cref, functionArgs: fargs }, (cache, env, tree)) => {
             let mut cref1: Arc<Absyn::ComponentRef>;
             cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone());
-            if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp} else {Arc::new(Absyn::Exp::PARTEVALFUNCTION { function_: cref1.clone(), functionArgs: fargs.clone() })}
+            if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp} else {Arc::new(Absyn::Exp::PARTEVALFUNCTION { function_: cref1, functionArgs: fargs.clone() })}
         },
         _ => {
             exp
@@ -1872,7 +1872,7 @@ fn fixOption<Type_A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica:
         Some(mut A1) => {
             let mut A2: Type_A;
             A2 = fixA(inCache.clone(), inEnv, A1.clone(), tree)?;
-            if (metamodelica::ReferenceEq::reference_eq(&(A1.clone()), &(A2.clone()))) {inA} else {Some(A2.clone())}
+            if (metamodelica::ReferenceEq::reference_eq(&(A1.clone()), &(A2.clone()))) {inA} else {Some(A2)}
         },
     });
     Ok(outA)

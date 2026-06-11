@@ -101,14 +101,14 @@ pub(crate) fn solveSimpleEquations(mut dae: Arc<BackendDAE::BackendDAE>) -> Resu
             } };
             eindex = __pa0.clone();
             vindx = __pa1.clone();
-            eqn = BackendEquation::get(syst.orderedEqs.clone(), eindex.clone())?;
+            eqn = BackendEquation::get(syst.orderedEqs.clone(), eindex)?;
             tmpComp = comp.clone();
             if BackendEquation::isEquation(eqn.clone()) {
-                var = BackendVariable::getVarAt(syst.orderedVars.clone(), vindx.clone())?;
+                var = BackendVariable::getVarAt(syst.orderedVars.clone(), vindx)?;
                 (eqn, solved) = solveSimpleEquation(eqn.clone(), var.clone(), dae.shared.clone())?;
-                assign_field!(syst.orderedEqs = BackendEquation::setAtIndex(syst.orderedEqs.clone(), eindex.clone(), eqn.clone())?);
-                if !(solved.clone()) {
-                    tmpComp = Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: list![eindex.clone()], vars: list![vindx.clone()], jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN(), jacType: openmodelica_backend_types::BackendDAE::JacobianType::JAC_NONLINEAR, mixedSystem: false });
+                assign_field!(syst.orderedEqs = BackendEquation::setAtIndex(syst.orderedEqs.clone(), eindex, eqn.clone())?);
+                if !(solved) {
+                    tmpComp = Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: list![eindex], vars: list![vindx], jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN(), jacType: openmodelica_backend_types::BackendDAE::JacobianType::JAC_NONLINEAR, mixedSystem: false });
                 }
             }
             tmpComp.clone()
@@ -386,7 +386,7 @@ fn solveSimple(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3:
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Integer" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }) if (ComponentReferenceBasics::crefEqual(cr.clone(), cr1.clone())? && !(Expression::expHasCrefNoPreorDer(inExp2.clone(), cr.clone())?)) => {
             let mut asserts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             asserts = generateAssertType(tp.clone(), cr.clone(), inExp3, metamodelica::nil())?;
-            (Arc::new(DAE::Exp::CAST { ty: tp.clone(), exp: inExp2.clone() }), asserts.clone())
+            (Arc::new(DAE::Exp::CAST { ty: tp.clone(), exp: inExp2.clone() }), asserts)
         },
         _ => {
             bail!("fail")
@@ -414,16 +414,16 @@ fn generateAssertType(mut tp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>, mu
             p1 = AbsynUtil::suffixPath(path.clone(), (listHead(names.clone())?).clone())?;
             e1 = Arc::new(DAE::Exp::ENUM_LITERAL { name: p1.clone(), index: 1 });
             n = (names.clone().len() as i32);
-            pn = AbsynUtil::suffixPath(path.clone(), ((names.clone()).get(n.clone())?).clone())?;
-            en = Arc::new(DAE::Exp::ENUM_LITERAL { name: p1.clone(), index: n.clone() });
-            s1 = (AbsynUtil::pathString(p1.clone(), (literal!(".")).clone(), true, false)?).clone();
-            sn = (AbsynUtil::pathString(pn.clone(), (literal!(".")).clone(), true, false)?).clone();
+            pn = AbsynUtil::suffixPath(path.clone(), ((names.clone()).get(n)?).clone())?;
+            en = Arc::new(DAE::Exp::ENUM_LITERAL { name: p1.clone(), index: n });
+            s1 = (AbsynUtil::pathString(p1, (literal!(".")).clone(), true, false)?).clone();
+            sn = (AbsynUtil::pathString(pn, (literal!(".")).clone(), true, false)?).clone();
             crstr = (ComponentReferenceBasics::printComponentRefStr(cr)?).clone();
-            estr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression for ")); __mm_s.push_str(&*crstr.clone()); __mm_s.push_str(&*literal!(" out of min(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")/max(")); __mm_s.push_str(&*sn.clone()); __mm_s.push_str(&*literal!(") = ")); ArcStr::from(__mm_s) }).clone();
-            e = Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::RELATION { exp1: iExp.clone(), operator: DAE::Operator::GREATEREQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: e1.clone(), index: -1, optionExpisASUB: None }), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RELATION { exp1: iExp.clone(), operator: DAE::Operator::LESSEQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: en.clone(), index: -1, optionExpisASUB: None }) });
+            estr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression for ")); __mm_s.push_str(&*crstr); __mm_s.push_str(&*literal!(" out of min(")); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!(")/max(")); __mm_s.push_str(&*sn); __mm_s.push_str(&*literal!(") = ")); ArcStr::from(__mm_s) }).clone();
+            e = Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::RELATION { exp1: iExp.clone(), operator: DAE::Operator::GREATEREQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: e1, index: -1, optionExpisASUB: None }), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RELATION { exp1: iExp.clone(), operator: DAE::Operator::LESSEQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: en, index: -1, optionExpisASUB: None }) });
             es = Expression::makePureBuiltinCall((literal!("String")).clone(), list![iExp, Arc::new(DAE::Exp::SCONST { string: (literal!("d")).clone() })], DAE::T_STRING_DEFAULT().clone());
-            es = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::SCONST { string: (estr.clone()).clone() }), operator: DAE::Operator::ADD { ty: DAE::T_STRING_DEFAULT().clone() }, exp2: es.clone() });
-            metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e.clone(), msg: es.clone(), level: DAE::ASSERTIONLEVEL_ERROR().clone(), source: DAE::emptyElementSource().clone() }), inAsserts)
+            es = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::SCONST { string: (estr).clone() }), operator: DAE::Operator::ADD { ty: DAE::T_STRING_DEFAULT().clone() }, exp2: es });
+            metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e, msg: es, level: DAE::ASSERTIONLEVEL_ERROR().clone(), source: DAE::emptyElementSource().clone() }), inAsserts)
         },
         _ => {
             inAsserts
@@ -527,7 +527,7 @@ fn preprocessingSolve2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
         Deref @ DAE::Exp::BINARY { exp1: b, operator: DAE::Operator::DIV { ty: _ }, exp2: fa } if (expHasCref(fa.clone(), inExp3.clone())? && !(expHasCref(b.clone(), inExp3.clone())?) && !(expHasCref(inExp2.clone(), inExp3.clone())?)) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::makeDiv(b.clone(), inExp2.clone())?;
-            (fa.clone(), e.clone(), true)
+            (fa.clone(), e, true)
         },
         Deref @ DAE::Exp::BINARY { exp1: b, operator: DAE::Operator::MUL { ty: _ }, exp2: fa } if (expHasCref(fa.clone(), inExp3.clone())? && !(expHasCref(b.clone(), inExp3.clone())?) && !(expHasCref(inExp2.clone(), inExp3.clone())?)) => {
             let mut e: Arc<DAE::Exp>;
@@ -537,34 +537,34 @@ fn preprocessingSolve2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
             let mut pWithX: Arc<DAE::Exp>;
             let mut pWithoutX: Arc<DAE::Exp>;
             eWithX = Expression::expandFactors(inExp1)?;
-            (factorWithX, factorWithoutX) = List::split1OnTrue(eWithX.clone(), (std::sync::Arc::new(expHasCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), inExp3.clone())?;
-            pWithX = makeProductLstSort(factorWithX.clone())?;
-            pWithoutX = makeProductLstSort(factorWithoutX.clone())?;
-            e = Expression::makeDiv(inExp2.clone(), pWithoutX.clone())?;
-            (pWithX.clone(), e.clone(), true)
+            (factorWithX, factorWithoutX) = List::split1OnTrue(eWithX, (std::sync::Arc::new(expHasCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), inExp3.clone())?;
+            pWithX = makeProductLstSort(factorWithX)?;
+            pWithoutX = makeProductLstSort(factorWithoutX)?;
+            e = Expression::makeDiv(inExp2.clone(), pWithoutX)?;
+            (pWithX, e, true)
         },
         Deref @ DAE::Exp::BINARY { exp1: b, operator: DAE::Operator::MUL { ty: _ }, exp2: fa } if (expHasCref(fa.clone(), inExp3.clone())? && !(expHasCref(b.clone(), inExp3.clone())?) && !(expHasCref(inExp2.clone(), inExp3.clone())?)) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::makeDiv(inExp2.clone(), b.clone())?;
-            (fa.clone(), e.clone(), true)
+            (fa.clone(), e, true)
         },
         Deref @ DAE::Exp::BINARY { exp1: fa, operator: DAE::Operator::MUL { ty: _ }, exp2: b } if (expHasCref(fa.clone(), inExp3.clone())? && !(expHasCref(b.clone(), inExp3.clone())?) && !(expHasCref(inExp2.clone(), inExp3.clone())?)) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::makeDiv(inExp2.clone(), b.clone())?;
-            (fa.clone(), e.clone(), true)
+            (fa.clone(), e, true)
         },
         Deref @ DAE::Exp::BINARY { exp1: fa, operator: DAE::Operator::DIV { ty: _ }, exp2: b } if (expHasCref(fa.clone(), inExp3.clone())? && !(expHasCref(b.clone(), inExp3.clone())?) && !(expHasCref(inExp2.clone(), inExp3.clone())?)) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::expMul(inExp2.clone(), b.clone())?;
-            (fa.clone(), e.clone(), true)
+            (fa.clone(), e, true)
         },
         Deref @ DAE::Exp::BINARY { exp1: ga, operator: DAE::Operator::DIV { ty: tp }, exp2: fa } if (expHasCref(fa.clone(), inExp3.clone())? && expHasCref(ga.clone(), inExp3.clone())? && !(expHasCref(inExp2.clone(), inExp3.clone())?)) => {
             let mut e: Arc<DAE::Exp>;
             let mut lhs: Arc<DAE::Exp>;
             e = Expression::expMul(inExp2.clone(), fa.clone())?;
-            lhs = Expression::expSub(e.clone(), ga.clone())?;
+            lhs = Expression::expSub(e, ga.clone())?;
             e = Expression::makeConstZero(tp.clone());
-            (lhs.clone(), e.clone(), true)
+            (lhs, e, true)
         },
         _ => {
             (inExp1, inExp2.clone(), false)
@@ -583,8 +583,8 @@ fn preprocessingSolve3(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
             let mut r: metamodelica::Real;
             let mut res: Arc<DAE::Exp>;
             r = (r2.clone()).ln() / (r1.clone()).ln();
-            res = Arc::new(DAE::Exp::RCONST { real: r.clone() });
-            (e2.clone(), res.clone(), true)
+            res = Arc::new(DAE::Exp::RCONST { real: r });
+            (e2.clone(), res, true)
         },
         (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: _ }, exp2: e2 }, Deref @ DAE::Exp::RCONST { real: __rlit_0 }) if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) && (expHasCref(e1.clone(), inExp3.clone())? && !(expHasCref(e2.clone(), inExp3.clone())?)) => {
             (e1.clone(), inExp2.clone(), true)
@@ -592,13 +592,13 @@ fn preprocessingSolve3(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
         (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: _ }, exp2: e2 @ Deref @ DAE::Exp::RCONST { real: r } }, _) if (!(expHasCref(inExp2.clone(), inExp3.clone())?) && expHasCref(e1.clone(), inExp3.clone())? && metamodelica::OrderedFloat(1.0_f64) == realMod(r.clone(), metamodelica::OrderedFloat(2.0_f64))) => {
             let mut res: Arc<DAE::Exp>;
             res = Expression::makeDiv(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), e2.clone())?;
-            res = Expression::expPow(inExp2.clone(), res.clone())?;
-            (e1.clone(), res.clone(), true)
+            res = Expression::expPow(inExp2.clone(), res)?;
+            (e1.clone(), res, true)
         },
         (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: _ }, exp2: Deref @ DAE::Exp::RCONST { real: __rlit_1 } }, _) if __rlit_1.eq(&metamodelica::OrderedFloat((0.5) as f64)) && (!(expHasCref(inExp2.clone(), inExp3.clone())?) && expHasCref(e1.clone(), inExp3.clone())?) => {
             let mut res: Arc<DAE::Exp>;
             res = Expression::expPow(inExp2.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }))?;
-            (e1.clone(), res.clone(), true)
+            (e1.clone(), res, true)
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::RCONST { real: __rlit_2 }) if __rlit_2.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
             (e1.clone(), inExp2.clone(), true)
@@ -646,12 +646,12 @@ fn preprocessingSolve4(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
         (Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e3, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sinh" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. } }, operator: DAE::Operator::SUB { ty: tp }, exp2: Deref @ DAE::Exp::BINARY { exp1: e4, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cosh" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. } } }, Deref @ DAE::Exp::RCONST { real: __rlit_12 }) if __rlit_12.eq(&metamodelica::OrderedFloat((0.0) as f64)) && (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::makePureBuiltinCall((literal!("tanh")).clone(), list![e1.clone()], tp.clone());
-            (Expression::expMul(e3.clone(), e.clone())?, e4.clone(), true)
+            (Expression::expMul(e3.clone(), e)?, e4.clone(), true)
         },
         (Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e4, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cosh" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. } }, operator: DAE::Operator::SUB { ty: tp }, exp2: Deref @ DAE::Exp::BINARY { exp1: e3, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sinh" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. } } }, Deref @ DAE::Exp::RCONST { real: __rlit_13 }) if __rlit_13.eq(&metamodelica::OrderedFloat((0.0) as f64)) && (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::makePureBuiltinCall((literal!("tanh")).clone(), list![e1.clone()], tp.clone());
-            (Expression::expMul(e3.clone(), e.clone())?, e4.clone(), true)
+            (Expression::expMul(e3.clone(), e)?, e4.clone(), true)
         },
         (Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, operator: DAE::Operator::SUB { ty: _ }, exp2: e2 }, Deref @ DAE::Exp::RCONST { real: __rlit_14 }) if __rlit_14.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
             (e1.clone(), Expression::expPow(e2.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }))?, true)
@@ -664,8 +664,8 @@ fn preprocessingSolve4(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
             let mut e_1: Arc<DAE::Exp>;
             let mut e_2: Arc<DAE::Exp>;
             e = Expression::expPow(Expression::makeDiv(e1.clone(), e3.clone())?, e2.clone())?;
-            (e_1, e_2, _) = preprocessingSolve3(e.clone(), Expression::makeConstOne(tp.clone()), inExp3.clone())?;
-            (e_1.clone(), e_2.clone(), true)
+            (e_1, e_2, _) = preprocessingSolve3(e, Expression::makeConstOne(tp.clone()), inExp3.clone())?;
+            (e_1, e_2, true)
         },
         _ => {
             (inExp1, inExp2, false)
@@ -853,8 +853,8 @@ fn unifyFunCallsWork(mut inExp: Arc<DAE::Exp>, mut iT: Arc<DAE::Exp>) -> Result<
             let mut e: Arc<DAE::Exp>;
             let mut tp: Arc<DAE::Type>;
             tp = Expression::r#typeof(e1.clone())?;
-            e = Arc::new(DAE::Exp::IFEXP { expCond: Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: DAE::Operator::GREATEREQ { ty: tp.clone() }, exp2: Expression::makeConstZero(tp.clone()), index: -1, optionExpisASUB: None }), expThen: Expression::expMul(e1.clone(), e2.clone())?, expElse: Expression::expMul(e1.clone(), e3.clone())? });
-            (e.clone(), true, iT)
+            e = Arc::new(DAE::Exp::IFEXP { expCond: Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: DAE::Operator::GREATEREQ { ty: tp.clone() }, exp2: Expression::makeConstZero(tp), index: -1, optionExpisASUB: None }), expThen: Expression::expMul(e1.clone(), e2.clone())?, expElse: Expression::expMul(e1.clone(), e3.clone())? });
+            (e, true, iT)
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "$_DF$DER" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, X) if (expHasCref(e1.clone(), X.clone())?) => {
             let mut e: Arc<DAE::Exp>;
@@ -863,10 +863,10 @@ fn unifyFunCallsWork(mut inExp: Arc<DAE::Exp>, mut iT: Arc<DAE::Exp>) -> Result<
             let mut tp: Arc<DAE::Type>;
             tp = Expression::r#typeof(e1.clone())?;
             e2 = Expression::crefExp(ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()))?;
-            e3 = Expression::makePureBuiltinCall((literal!("pre")).clone(), list![e1.clone()], tp.clone());
-            e3 = Expression::expSub(e1.clone(), e3.clone())?;
+            e3 = Expression::makePureBuiltinCall((literal!("pre")).clone(), list![e1.clone()], tp);
+            e3 = Expression::expSub(e1.clone(), e3)?;
             e = Expression::expDiv(e3.clone(), e2.clone())?;
-            (e.clone(), true, iT)
+            (e, true, iT)
         },
         _ => {
             (inExp, true, iT)
@@ -1187,12 +1187,12 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             tp = Expression::r#typeof(rhs.clone())?;
             (y, eqns, vars) = makeTmpEqnAndCrefFromExp(rhs.clone(), tp.clone(), (literal!("Y$TANH")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
             e1 = Expression::expAdd(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), y.clone())?;
-            e2 = Expression::expSub(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), y.clone())?;
-            e1 = Expression::makeDiv(e1.clone(), e2.clone())?;
-            e1 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1.clone()], tp.clone());
-            inv = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.5_f64) }), e1.clone())?;
+            e2 = Expression::expSub(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), y)?;
+            e1 = Expression::makeDiv(e1, e2)?;
+            e1 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1], tp);
+            inv = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.5_f64) }), e1)?;
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(-1.0_f64), false)), Some((metamodelica::OrderedFloat(1.0_f64), false)))?;
-            (inv.clone(), true, metamodelica::cons(ass.clone(), eqns.clone()), vars.clone(), idepth + 1)
+            (inv, true, metamodelica::cons(ass, eqns), vars, idepth + 1)
         },
         Deref @ "sinh" => {
             let mut y: Arc<DAE::Exp>;
@@ -1203,11 +1203,11 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             tp = Expression::r#typeof(rhs.clone())?;
             (y, eqns, vars) = makeTmpEqnAndCrefFromExp(rhs, tp.clone(), (literal!("Y$SINH")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
             e1 = Expression::expPow(y.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }))?;
-            e1 = Expression::expAdd(e1.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }))?;
-            e1 = Expression::makePureBuiltinCall((literal!("sqrt")).clone(), list![e1.clone()], tp.clone());
-            e1 = Expression::expAdd(y.clone(), e1.clone())?;
-            e1 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1.clone()], tp.clone());
-            (e1.clone(), true, eqns.clone(), vars.clone(), idepth + 1)
+            e1 = Expression::expAdd(e1, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }))?;
+            e1 = Expression::makePureBuiltinCall((literal!("sqrt")).clone(), list![e1], tp.clone());
+            e1 = Expression::expAdd(y, e1)?;
+            e1 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1], tp);
+            (e1, true, eqns, vars, idepth + 1)
         },
         Deref @ "cosh" => {
             let mut y: Arc<DAE::Exp>;
@@ -1221,16 +1221,16 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             tp = Expression::r#typeof(rhs.clone())?;
             (y, eqns, vars) = makeTmpEqnAndCrefFromExp(rhs.clone(), tp.clone(), (literal!("Y$COSH")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
             exP = makeInitialGuess(tp.clone(), inExp3, arg)?;
-            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP.clone(), tp.clone(), (literal!("SIGN$COSH")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            sgn = Expression::makePureBuiltinCall((literal!("$_signNoNull")).clone(), list![exP.clone()], tp.clone());
+            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP, tp.clone(), (literal!("SIGN$COSH")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            sgn = Expression::makePureBuiltinCall((literal!("$_signNoNull")).clone(), list![exP], tp.clone());
             e1 = Expression::expPow(y.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }))?;
-            e1 = Expression::expSub(e1.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }))?;
-            e1 = Expression::makePureBuiltinCall((literal!("sqrt")).clone(), list![e1.clone()], tp.clone());
-            e1 = Expression::expMul(sgn.clone(), e1.clone())?;
-            e1 = Expression::expAdd(y.clone(), e1.clone())?;
-            e1 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1.clone()], tp.clone());
+            e1 = Expression::expSub(e1, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }))?;
+            e1 = Expression::makePureBuiltinCall((literal!("sqrt")).clone(), list![e1], tp.clone());
+            e1 = Expression::expMul(sgn, e1)?;
+            e1 = Expression::expAdd(y, e1)?;
+            e1 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1], tp);
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(1.0_f64), true)), None)?;
-            (e1.clone(), true, metamodelica::cons(ass.clone(), eqns.clone()), vars.clone(), idepth + 1)
+            (e1, true, metamodelica::cons(ass, eqns), vars, idepth + 1)
         },
         Deref @ "cos" => {
             let mut y: Arc<DAE::Exp>;
@@ -1247,21 +1247,21 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(rhs.clone())?;
             (y, eqns, vars) = makeTmpEqnAndCrefFromExp(rhs.clone(), tp.clone(), (literal!("Y$COS")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
-            inv = Expression::makePureBuiltinCall((literal!("acos")).clone(), list![y.clone()], tp.clone());
-            (inv, eqns, vars) = makeTmpEqnAndCrefFromExp(inv.clone(), tp.clone(), (literal!("INV$COS")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
+            inv = Expression::makePureBuiltinCall((literal!("acos")).clone(), list![y], tp.clone());
+            (inv, eqns, vars) = makeTmpEqnAndCrefFromExp(inv, tp.clone(), (literal!("INV$COS")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
             exP = makeInitialGuess(tp.clone(), inExp3, arg)?;
-            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP.clone(), tp.clone(), (literal!("PREX$COS")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
+            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP, tp.clone(), (literal!("PREX$COS")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
             k1 = helpInvCos(inv.clone(), exP.clone(), tp.clone(), true)?;
             k2 = helpInvCos(inv.clone(), exP.clone(), tp.clone(), false)?;
-            (k1, eqns, vars) = makeTmpEqnAndCrefFromExp(k1.clone(), tp.clone(), (literal!("k1$COS")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            (k2, eqns, vars) = makeTmpEqnAndCrefFromExp(k2.clone(), tp.clone(), (literal!("k2$COS")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            x1 = helpInvCos2(k1.clone(), inv.clone(), tp.clone(), true)?;
-            x2 = helpInvCos2(k2.clone(), inv.clone(), tp.clone(), false)?;
-            (x1, eqns, vars) = makeTmpEqnAndCrefFromExp(x1.clone(), tp.clone(), (literal!("x1$COS")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            (x2, eqns, vars) = makeTmpEqnAndCrefFromExp(x2.clone(), tp.clone(), (literal!("x2$COS")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            e1 = helpInvCos3(x1.clone(), x2.clone(), exP.clone(), tp.clone())?;
+            (k1, eqns, vars) = makeTmpEqnAndCrefFromExp(k1, tp.clone(), (literal!("k1$COS")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            (k2, eqns, vars) = makeTmpEqnAndCrefFromExp(k2, tp.clone(), (literal!("k2$COS")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            x1 = helpInvCos2(k1, inv.clone(), tp.clone(), true)?;
+            x2 = helpInvCos2(k2, inv, tp.clone(), false)?;
+            (x1, eqns, vars) = makeTmpEqnAndCrefFromExp(x1, tp.clone(), (literal!("x1$COS")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            (x2, eqns, vars) = makeTmpEqnAndCrefFromExp(x2, tp.clone(), (literal!("x2$COS")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            e1 = helpInvCos3(x1, x2, exP, tp)?;
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(-1.0_f64), true)), Some((metamodelica::OrderedFloat(1.0_f64), true)))?;
-            (e1.clone(), true, metamodelica::cons(ass.clone(), eqns.clone()), vars.clone(), idepth + 1)
+            (e1, true, metamodelica::cons(ass, eqns), vars, idepth + 1)
         },
         Deref @ "sin" => {
             let mut y: Arc<DAE::Exp>;
@@ -1278,21 +1278,21 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(rhs.clone())?;
             (y, eqns, vars) = makeTmpEqnAndCrefFromExp(rhs.clone(), tp.clone(), (literal!("Y$SIN")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
-            inv = Expression::makePureBuiltinCall((literal!("asin")).clone(), list![y.clone()], tp.clone());
-            (inv, eqns, vars) = makeTmpEqnAndCrefFromExp(inv.clone(), tp.clone(), (literal!("INV$SIN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
+            inv = Expression::makePureBuiltinCall((literal!("asin")).clone(), list![y], tp.clone());
+            (inv, eqns, vars) = makeTmpEqnAndCrefFromExp(inv, tp.clone(), (literal!("INV$SIN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
             exP = makeInitialGuess(tp.clone(), inExp3, arg.clone())?;
-            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP.clone(), tp.clone(), (literal!("PREX$SIN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
+            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP, tp.clone(), (literal!("PREX$SIN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
             k1 = helpInvSin(inv.clone(), arg.clone(), tp.clone(), true)?;
             k2 = helpInvSin(inv.clone(), arg, tp.clone(), false)?;
-            (k1, eqns, vars) = makeTmpEqnAndCrefFromExp(k1.clone(), tp.clone(), (literal!("k1$SIN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            (k2, eqns, vars) = makeTmpEqnAndCrefFromExp(k2.clone(), tp.clone(), (literal!("k2$SIN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            x1 = helpInvSin2(k1.clone(), inv.clone(), tp.clone(), true)?;
-            x2 = helpInvSin2(k2.clone(), inv.clone(), tp.clone(), false)?;
-            (x1, eqns, vars) = makeTmpEqnAndCrefFromExp(x1.clone(), tp.clone(), (literal!("x1$SIN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            (x2, eqns, vars) = makeTmpEqnAndCrefFromExp(x2.clone(), tp.clone(), (literal!("x2$SIN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            e1 = helpInvCos3(x1.clone(), x2.clone(), exP.clone(), tp.clone())?;
+            (k1, eqns, vars) = makeTmpEqnAndCrefFromExp(k1, tp.clone(), (literal!("k1$SIN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            (k2, eqns, vars) = makeTmpEqnAndCrefFromExp(k2, tp.clone(), (literal!("k2$SIN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            x1 = helpInvSin2(k1, inv.clone(), tp.clone(), true)?;
+            x2 = helpInvSin2(k2, inv, tp.clone(), false)?;
+            (x1, eqns, vars) = makeTmpEqnAndCrefFromExp(x1, tp.clone(), (literal!("x1$SIN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            (x2, eqns, vars) = makeTmpEqnAndCrefFromExp(x2, tp.clone(), (literal!("x2$SIN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            e1 = helpInvCos3(x1, x2, exP, tp)?;
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(-1.0_f64), true)), Some((metamodelica::OrderedFloat(1.0_f64), true)))?;
-            (e1.clone(), true, metamodelica::cons(ass.clone(), eqns.clone()), vars.clone(), idepth + 1)
+            (e1, true, metamodelica::cons(ass, eqns), vars, idepth + 1)
         },
         Deref @ "tan" => {
             let mut y: Arc<DAE::Exp>;
@@ -1305,16 +1305,16 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             let mut vars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             tp = Expression::r#typeof(rhs.clone())?;
             (y, eqns, vars) = makeTmpEqnAndCrefFromExp(rhs, tp.clone(), (literal!("Y$TAN")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
-            inv = Expression::makePureBuiltinCall((literal!("atan")).clone(), list![y.clone()], tp.clone());
-            (inv, eqns, vars) = makeTmpEqnAndCrefFromExp(inv.clone(), tp.clone(), (literal!("INV$TAN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
+            inv = Expression::makePureBuiltinCall((literal!("atan")).clone(), list![y], tp.clone());
+            (inv, eqns, vars) = makeTmpEqnAndCrefFromExp(inv, tp.clone(), (literal!("INV$TAN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
             exP = makeInitialGuess(tp.clone(), inExp3, arg)?;
-            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP.clone(), tp.clone(), (literal!("PREX$TAN")).clone(), uniqueEqIndex, idepth, eqns.clone(), vars.clone(), false)?;
-            k1 = Expression::expSub(exP.clone(), inv.clone())?;
-            k1 = Expression::makeDiv(k1.clone(), DAE::PI().clone())?;
-            k1 = Expression::makePureBuiltinCall((literal!("$_round")).clone(), list![k1.clone()], tp.clone());
-            e1 = Expression::expMul(k1.clone(), DAE::PI().clone())?;
-            e1 = Expression::expAdd(inv.clone(), e1.clone())?;
-            (e1.clone(), true, eqns.clone(), vars.clone(), idepth + 1)
+            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP, tp.clone(), (literal!("PREX$TAN")).clone(), uniqueEqIndex, idepth, eqns, vars, false)?;
+            k1 = Expression::expSub(exP, inv.clone())?;
+            k1 = Expression::makeDiv(k1, DAE::PI().clone())?;
+            k1 = Expression::makePureBuiltinCall((literal!("$_round")).clone(), list![k1], tp);
+            e1 = Expression::expMul(k1, DAE::PI().clone())?;
+            e1 = Expression::expAdd(inv, e1)?;
+            (e1, true, eqns, vars, idepth + 1)
         },
         Deref @ "abs" => {
             let mut exP: Arc<DAE::Exp>;
@@ -1326,66 +1326,66 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(arg.clone())?;
             exP = makeInitialGuess(tp.clone(), inExp3, arg)?;
-            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP.clone(), tp.clone(), (literal!("SIGN$ABS")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
-            sgn = Expression::makePureBuiltinCall((literal!("$_signNoNull")).clone(), list![exP.clone()], tp.clone());
-            e1 = Expression::expMul(sgn.clone(), rhs.clone())?;
+            (exP, eqns, vars) = makeTmpEqnAndCrefFromExp(exP, tp.clone(), (literal!("SIGN$ABS")).clone(), uniqueEqIndex, idepth, metamodelica::nil(), metamodelica::nil(), false)?;
+            sgn = Expression::makePureBuiltinCall((literal!("$_signNoNull")).clone(), list![exP], tp);
+            e1 = Expression::expMul(sgn, rhs.clone())?;
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(0.0_f64), true)), None)?;
-            (e1.clone(), true, metamodelica::cons(ass.clone(), eqns.clone()), vars.clone(), idepth + 1)
+            (e1, true, metamodelica::cons(ass, eqns), vars, idepth + 1)
         },
         Deref @ "sqrt" => {
             let mut inv: Arc<DAE::Exp>;
             let mut ass: Arc<BackendDAE::Equation>;
             inv = Expression::expPow(rhs.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }))?;
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(0.0_f64), true)), None)?;
-            (inv.clone(), true, list![ass.clone()], metamodelica::nil(), idepth + 1)
+            (inv, true, list![ass], metamodelica::nil(), idepth + 1)
         },
         Deref @ "asin" => {
             let mut inv: Arc<DAE::Exp>;
             let mut tp: Arc<DAE::Type>;
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(rhs.clone())?;
-            inv = Expression::makePureBuiltinCall((literal!("sin")).clone(), list![rhs.clone()], tp.clone());
+            inv = Expression::makePureBuiltinCall((literal!("sin")).clone(), list![rhs.clone()], tp);
             ass = makeDomainAssert((name).clone(), rhs, Some((-(metamodelica::OrderedFloat(0.5_f64) * Expression::toReal(DAE::PI().clone())?), true)), Some((metamodelica::OrderedFloat(0.5_f64) * Expression::toReal(DAE::PI().clone())?, true)))?;
-            (inv.clone(), true, list![ass.clone()], metamodelica::nil(), idepth + 1)
+            (inv, true, list![ass], metamodelica::nil(), idepth + 1)
         },
         Deref @ "acos" => {
             let mut inv: Arc<DAE::Exp>;
             let mut tp: Arc<DAE::Type>;
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(rhs.clone())?;
-            inv = Expression::makePureBuiltinCall((literal!("cos")).clone(), list![rhs.clone()], tp.clone());
+            inv = Expression::makePureBuiltinCall((literal!("cos")).clone(), list![rhs.clone()], tp);
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(0.0_f64), true)), Some((Expression::toReal(DAE::PI().clone())?, true)))?;
-            (inv.clone(), true, list![ass.clone()], metamodelica::nil(), idepth + 1)
+            (inv, true, list![ass], metamodelica::nil(), idepth + 1)
         },
         Deref @ "atan" => {
             let mut inv: Arc<DAE::Exp>;
             let mut tp: Arc<DAE::Type>;
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(rhs.clone())?;
-            inv = Expression::makePureBuiltinCall((literal!("tan")).clone(), list![rhs.clone()], tp.clone());
+            inv = Expression::makePureBuiltinCall((literal!("tan")).clone(), list![rhs.clone()], tp);
             ass = makeDomainAssert((name).clone(), rhs, Some((-(metamodelica::OrderedFloat(0.5_f64) * Expression::toReal(DAE::PI().clone())?), true)), Some((metamodelica::OrderedFloat(0.5_f64) * Expression::toReal(DAE::PI().clone())?, true)))?;
-            (inv.clone(), true, list![ass.clone()], metamodelica::nil(), idepth + 1)
+            (inv, true, list![ass], metamodelica::nil(), idepth + 1)
         },
         Deref @ "exp" => {
             let mut inv: Arc<DAE::Exp>;
             let mut tp: Arc<DAE::Type>;
             let mut ass: Arc<BackendDAE::Equation>;
             tp = Expression::r#typeof(rhs.clone())?;
-            inv = Expression::makePureBuiltinCall((literal!("log")).clone(), list![rhs.clone()], tp.clone());
+            inv = Expression::makePureBuiltinCall((literal!("log")).clone(), list![rhs.clone()], tp);
             ass = makeDomainAssert((name).clone(), rhs, Some((metamodelica::OrderedFloat(0.0_f64), false)), None)?;
-            (inv.clone(), true, list![ass.clone()], metamodelica::nil(), idepth + 1)
+            (inv, true, list![ass], metamodelica::nil(), idepth + 1)
         },
         Deref @ "log" => {
             let mut inv: Arc<DAE::Exp>;
             let mut tp: Arc<DAE::Type>;
             tp = Expression::r#typeof(rhs.clone())?;
-            inv = Expression::makePureBuiltinCall((literal!("exp")).clone(), list![rhs], tp.clone());
-            (inv.clone(), true, metamodelica::nil(), metamodelica::nil(), idepth + 1)
+            inv = Expression::makePureBuiltinCall((literal!("exp")).clone(), list![rhs], tp);
+            (inv, true, metamodelica::nil(), metamodelica::nil(), idepth + 1)
         },
         Deref @ "log10" => {
             let mut inv: Arc<DAE::Exp>;
             inv = Expression::expPow(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(10.0_f64) }), rhs)?;
-            (inv.clone(), true, metamodelica::nil(), metamodelica::nil(), idepth + 1)
+            (inv, true, metamodelica::nil(), metamodelica::nil(), idepth + 1)
         },
         Deref @ "sign" => {
             (rhs, false, metamodelica::nil(), metamodelica::nil(), idepth)
@@ -1395,8 +1395,8 @@ fn preprocessingSolveFunctionCall(mut name: ArcStr, mut arg: Arc<DAE::Exp>, mut 
             let mut e1: Arc<DAE::Exp>;
             e1 = Expression::crefExp(ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()))?;
             exP = Expression::makePureBuiltinCall((literal!("pre")).clone(), list![arg.clone()], Expression::r#typeof(arg)?);
-            e1 = Expression::expAdd(Expression::expMul(rhs, e1.clone())?, exP.clone())?;
-            (e1.clone(), true, metamodelica::nil(), metamodelica::nil(), idepth + 1)
+            e1 = Expression::expAdd(Expression::expMul(rhs, e1)?, exP)?;
+            (e1, true, metamodelica::nil(), metamodelica::nil(), idepth + 1)
         },
         _ => {
             (rhs, false, metamodelica::nil(), metamodelica::nil(), idepth)
@@ -1547,11 +1547,11 @@ fn solveIfExp(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: 
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            (lhs, asserts1, eqns, var, depth) = solveWork(eThen.clone(), inExp2.clone(), inExp3.clone(), Some(cond1.clone()), functions.clone(), uniqueEqIndex.clone(), idepth, doInline, isContinuousIntegration)?;
-            (rhs, _, eqns1, var1, depth) = solveWork(eElse.clone(), inExp2, inExp3.clone(), Some(cond2.clone()), functions, uniqueEqIndex, depth.clone(), doInline, isContinuousIntegration)?;
-            res = Arc::new(DAE::Exp::IFEXP { expCond: eCond.clone(), expThen: lhs.clone(), expElse: rhs.clone() });
-            asserts = listAppend(asserts1.clone(), asserts1.clone());
-            (res.clone(), asserts.clone(), listAppend(eqns1.clone(), eqns.clone()), listAppend(var1.clone(), var.clone()), depth.clone())
+            (lhs, asserts1, eqns, var, depth) = solveWork(eThen.clone(), inExp2.clone(), inExp3.clone(), Some(cond1), functions.clone(), uniqueEqIndex.clone(), idepth, doInline, isContinuousIntegration)?;
+            (rhs, _, eqns1, var1, depth) = solveWork(eElse.clone(), inExp2, inExp3.clone(), Some(cond2), functions, uniqueEqIndex, depth, doInline, isContinuousIntegration)?;
+            res = Arc::new(DAE::Exp::IFEXP { expCond: eCond.clone(), expThen: lhs, expElse: rhs });
+            asserts = listAppend(asserts1.clone(), asserts1);
+            (res, asserts, listAppend(eqns1, eqns), listAppend(var1, var), depth)
         },
         _ => {
             bail!("fail")
@@ -1577,20 +1577,20 @@ fn solveLinearSystem(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut i
             let mut i: i32;
             let false = (hasOnlyFactors(inExp1.clone(), inExp2.clone())) else { bail!("pattern mismatch") };
             e = Expression::expSub(inExp1, inExp2)?;
-            (e, _) = ExpressionSimplify::simplify1(e.clone())?;
+            (e, _) = ExpressionSimplify::simplify1(e)?;
             dere = Differentiate::differentiateExpSolve(e.clone(), cr.clone(), functions)?;
-            (dere, _) = ExpressionSimplify::simplify(dere.clone())?;
+            (dere, _) = ExpressionSimplify::simplify(dere)?;
             let false = (Expression::isZero(dere.clone())?) else { bail!("pattern mismatch") };
             let false = (Expression::expHasCrefNoPreOrStart(dere.clone(), cr.clone())?) else { bail!("pattern mismatch") };
             tp = Expression::r#typeof(inExp3.clone())?;
-            (z, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
-            (e, i) = Expression::replaceExp(e.clone(), inExp3, z.clone())?;
-            if i.clone() < 1 {
+            (z, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp))?;
+            (e, i) = Expression::replaceExp(e, inExp3, z)?;
+            if i < 1 {
                 bail!("fail");
             }
-            (e, _) = ExpressionSimplify::simplify(e.clone())?;
-            rhs = Expression::negate(Expression::makeDiv(e.clone(), dere.clone())?)?;
-            (rhs.clone(), metamodelica::nil())
+            (e, _) = ExpressionSimplify::simplify(e)?;
+            rhs = Expression::negate(Expression::makeDiv(e, dere)?)?;
+            (rhs, metamodelica::nil())
         },
         _ => {
             bail!("fail")
@@ -1776,7 +1776,7 @@ fn makeDomainAssert(mut name: ArcStr, mut rhs: Arc<DAE::Exp>, mut lowerBound: Op
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" outside the range ")); __mm_s.push_str(&*realString(lower.clone())); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*realString(upper.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             l = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::RCONST { real: lower.clone() }), operator: DAE::Operator::LESSEQ { ty: tp.clone() }, exp2: rhs.clone(), index: -1, optionExpisASUB: None });
             u = Arc::new(DAE::Exp::RELATION { exp1: rhs, operator: DAE::Operator::LESSEQ { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: upper.clone() }), index: -1, optionExpisASUB: None });
-            (r#str.clone(), Arc::new(DAE::Exp::LBINARY { exp1: l.clone(), operator: DAE::Operator::AND { ty: tp }, exp2: u.clone() }))
+            (r#str, Arc::new(DAE::Exp::LBINARY { exp1: l, operator: DAE::Operator::AND { ty: tp }, exp2: u }))
         },
         (Some((mut lower, true)), Some((mut upper, false))) => {
             let mut r#str: ArcStr;
@@ -1785,7 +1785,7 @@ fn makeDomainAssert(mut name: ArcStr, mut rhs: Arc<DAE::Exp>, mut lowerBound: Op
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" outside the range ")); __mm_s.push_str(&*realString(lower.clone())); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" < ")); __mm_s.push_str(&*realString(upper.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             l = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::RCONST { real: lower.clone() }), operator: DAE::Operator::LESSEQ { ty: tp.clone() }, exp2: rhs.clone(), index: -1, optionExpisASUB: None });
             u = Arc::new(DAE::Exp::RELATION { exp1: rhs, operator: DAE::Operator::LESS { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: upper.clone() }), index: -1, optionExpisASUB: None });
-            (r#str.clone(), Arc::new(DAE::Exp::LBINARY { exp1: l.clone(), operator: DAE::Operator::AND { ty: tp }, exp2: u.clone() }))
+            (r#str, Arc::new(DAE::Exp::LBINARY { exp1: l, operator: DAE::Operator::AND { ty: tp }, exp2: u }))
         },
         (Some((mut lower, false)), Some((mut upper, true))) => {
             let mut r#str: ArcStr;
@@ -1794,7 +1794,7 @@ fn makeDomainAssert(mut name: ArcStr, mut rhs: Arc<DAE::Exp>, mut lowerBound: Op
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" outside the range ")); __mm_s.push_str(&*realString(lower.clone())); __mm_s.push_str(&*literal!(" < ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*realString(upper.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             l = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::RCONST { real: lower.clone() }), operator: DAE::Operator::LESS { ty: tp.clone() }, exp2: rhs.clone(), index: -1, optionExpisASUB: None });
             u = Arc::new(DAE::Exp::RELATION { exp1: rhs, operator: DAE::Operator::LESSEQ { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: upper.clone() }), index: -1, optionExpisASUB: None });
-            (r#str.clone(), Arc::new(DAE::Exp::LBINARY { exp1: l.clone(), operator: DAE::Operator::AND { ty: tp }, exp2: u.clone() }))
+            (r#str, Arc::new(DAE::Exp::LBINARY { exp1: l, operator: DAE::Operator::AND { ty: tp }, exp2: u }))
         },
         (Some((mut lower, false)), Some((mut upper, false))) => {
             let mut r#str: ArcStr;
@@ -1803,35 +1803,35 @@ fn makeDomainAssert(mut name: ArcStr, mut rhs: Arc<DAE::Exp>, mut lowerBound: Op
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" outside the range ")); __mm_s.push_str(&*realString(lower.clone())); __mm_s.push_str(&*literal!(" < ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" < ")); __mm_s.push_str(&*realString(upper.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             l = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::RCONST { real: lower.clone() }), operator: DAE::Operator::LESS { ty: tp.clone() }, exp2: rhs.clone(), index: -1, optionExpisASUB: None });
             u = Arc::new(DAE::Exp::RELATION { exp1: rhs, operator: DAE::Operator::LESS { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: upper.clone() }), index: -1, optionExpisASUB: None });
-            (r#str.clone(), Arc::new(DAE::Exp::LBINARY { exp1: l.clone(), operator: DAE::Operator::AND { ty: tp }, exp2: u.clone() }))
+            (r#str, Arc::new(DAE::Exp::LBINARY { exp1: l, operator: DAE::Operator::AND { ty: tp }, exp2: u }))
         },
         (Some((mut lower, true)), None) => {
             let mut r#str: ArcStr;
             let mut l: Arc<DAE::Exp>;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" should be ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" >= ")); __mm_s.push_str(&*realString(lower.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             l = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::RCONST { real: lower.clone() }), operator: DAE::Operator::LESSEQ { ty: tp }, exp2: rhs, index: -1, optionExpisASUB: None });
-            (r#str.clone(), l.clone())
+            (r#str, l)
         },
         (Some((mut lower, true)), None) => {
             let mut r#str: ArcStr;
             let mut l: Arc<DAE::Exp>;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" should be ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" > ")); __mm_s.push_str(&*realString(lower.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             l = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::RCONST { real: lower.clone() }), operator: DAE::Operator::LESS { ty: tp }, exp2: rhs, index: -1, optionExpisASUB: None });
-            (r#str.clone(), l.clone())
+            (r#str, l)
         },
         (None, Some((mut upper, true))) => {
             let mut r#str: ArcStr;
             let mut u: Arc<DAE::Exp>;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" should be ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*realString(upper.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             u = Arc::new(DAE::Exp::RELATION { exp1: rhs, operator: DAE::Operator::LESSEQ { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: upper.clone() }), index: -1, optionExpisASUB: None });
-            (r#str.clone(), u.clone())
+            (r#str, u)
         },
         (None, Some((mut upper, false))) => {
             let mut r#str: ArcStr;
             let mut u: Arc<DAE::Exp>;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Model error: Result of ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" should be ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!(" < ")); __mm_s.push_str(&*realString(upper.clone())); __mm_s.push_str(&*literal!(". Unable to invert.")); ArcStr::from(__mm_s) }).clone();
             u = Arc::new(DAE::Exp::RELATION { exp1: rhs, operator: DAE::Operator::LESS { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: upper.clone() }), index: -1, optionExpisASUB: None });
-            (r#str.clone(), u.clone())
+            (r#str, u)
         },
         _ => bail!("match: no arm matched"),
     });
@@ -1858,7 +1858,7 @@ fn makeInitialGuess2(mut iExp: Arc<DAE::Exp>, mut itpl: (Arc<DAE::Exp>, ArcStr, 
         (Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, (Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, fun, tp, _)) if (ComponentReferenceBasics::crefEqual(cr1.clone(), cr2.clone())?) => {
             let mut e: Arc<DAE::Exp>;
             e = Expression::makePureBuiltinCall((fun.clone()).clone(), list![iExp], tp.clone());
-            e.clone()
+            e
         },
         (_, (_, _, tp, true)) => {
             let mut e: Arc<DAE::Exp>;
@@ -1877,7 +1877,7 @@ fn makeInitialGuess2(mut iExp: Arc<DAE::Exp>, mut itpl: (Arc<DAE::Exp>, ArcStr, 
                     e = iExp.clone();
                 }
             }
-            e.clone()
+            e
         },
         _ => {
             iExp
@@ -1894,29 +1894,29 @@ fn makeInitialGuess3(mut iExp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Option<
             let mut con: Arc<DAE::Exp>;
             let mut o: Arc<DAE::Exp>;
             con = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
-            o = Arc::new(DAE::Exp::IFEXP { expCond: con.clone(), expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::OrderedFloat((1) as f64) / metamodelica::OrderedFloat(0.000000001_f64)) }), expElse: iExp });
-            Some(o.clone())
+            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::OrderedFloat((1) as f64) / metamodelica::OrderedFloat(0.000000001_f64)) }), expElse: iExp });
+            Some(o)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log10" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut con: Arc<DAE::Exp>;
             let mut o: Arc<DAE::Exp>;
             con = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
-            o = Arc::new(DAE::Exp::IFEXP { expCond: con.clone(), expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::OrderedFloat((1) as f64) / metamodelica::OrderedFloat(0.000000001_f64)) }), expElse: iExp });
-            Some(o.clone())
+            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::OrderedFloat((1) as f64) / metamodelica::OrderedFloat(0.000000001_f64)) }), expElse: iExp });
+            Some(o)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut con: Arc<DAE::Exp>;
             let mut o: Arc<DAE::Exp>;
             con = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
-            o = Arc::new(DAE::Exp::IFEXP { expCond: con.clone(), expThen: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), expElse: iExp });
-            Some(o.clone())
+            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), expElse: iExp });
+            Some(o)
         },
         Deref @ DAE::Exp::BINARY { exp2: e, .. } => {
             let mut con: Arc<DAE::Exp>;
             let mut o: Arc<DAE::Exp>;
             con = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::EQUAL { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
-            o = Arc::new(DAE::Exp::IFEXP { expCond: con.clone(), expThen: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), expElse: iExp });
-            Some(o.clone())
+            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), expElse: iExp });
+            Some(o)
         },
         _ => {
             None

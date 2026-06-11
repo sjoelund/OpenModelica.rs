@@ -122,7 +122,7 @@ fn getScalarArrayEqns0(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equa
             let mut eqns1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut b: bool;
             (eqns1, b) = getScalarArrayEqns1(eqn.clone(), inAccEqnLst);
-            { (inEqnLst, inAccEqnLst, inFound) = (eqns.clone(), eqns1.clone(), b.clone() || inFound); continue '__tco; }
+            { (inEqnLst, inAccEqnLst, inFound) = (eqns.clone(), eqns1, b || inFound); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }

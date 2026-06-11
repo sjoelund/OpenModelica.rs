@@ -258,7 +258,7 @@ pub(crate) fn addConnectorVariablesFromDAE(mut ignore: bool, mut classState: Cla
             if !(Flags::isSet(Flags::DISABLE_SINGLE_FLOW_EQ.clone())?) {
                 (flows, streams) = getStreamAndFlowVariables(vars);
                 sets = List::fold2(flows.clone(), (std::sync::Arc::new(addFlowVariableFromDAE) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ElementSource>, DAE::Prefix, Sets) -> Result<Sets> + 'static>), elementSource, prefix.clone(), sets)?;
-                sets = addStreamFlowAssociations(sets, prefix, streams.clone(), flows.clone())?;
+                sets = addStreamFlowAssociations(sets, prefix, streams, flows)?;
             }
             sets
         },
@@ -501,14 +501,14 @@ fn getNextIndex(mut dim: Arc<DAE::Dimension>) -> Result<(Arc<DAE::Exp>, Arc<DAE:
         Deref @ DAE::Dimension::DIM_INTEGER { integer: new_idx } => {
             let mut dim_size: i32;
             dim_size = new_idx.clone() - 1;
-            (Arc::new(DAE::Exp::ICONST { integer: new_idx.clone() }), Arc::new(DAE::Dimension::DIM_INTEGER { integer: dim_size.clone() }))
+            (Arc::new(DAE::Exp::ICONST { integer: new_idx.clone() }), Arc::new(DAE::Dimension::DIM_INTEGER { integer: dim_size }))
         },
         Deref @ DAE::Dimension::DIM_ENUM { enumTypeName: p, literals: Deref @ metamodelica::List::Cons { head: l, tail: l_rest }, size: new_idx } => {
             let mut dim_size: i32;
             let mut ep: Arc<Absyn::Path>;
             ep = AbsynUtil::joinPaths(p.clone(), Arc::new(Absyn::Path::IDENT { name: (l.clone()).clone() }))?;
             dim_size = new_idx.clone() - 1;
-            (Arc::new(DAE::Exp::ENUM_LITERAL { name: ep.clone(), index: new_idx.clone() }), Arc::new(DAE::Dimension::DIM_ENUM { enumTypeName: p.clone(), literals: l_rest.clone(), size: dim_size.clone() }))
+            (Arc::new(DAE::Exp::ENUM_LITERAL { name: ep, index: new_idx.clone() }), Arc::new(DAE::Dimension::DIM_ENUM { enumTypeName: p.clone(), literals: l_rest.clone(), size: dim_size }))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -657,8 +657,8 @@ fn collectOuterElements2(mut node: Arc<SetTrieNode>, mut face: Face, mut prefix:
             let mut e: ConnectorElement;
             e = setTrieGetLeafElement(node, face)?;
             cr = getElementName(e.clone())?;
-            e = setElementName(e.clone(), optPrefixCref(prefix, cr.clone())?);
-            list![e.clone()]
+            e = setElementName(e, optPrefixCref(prefix, cr.clone())?);
+            list![e]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -773,7 +773,7 @@ fn setTrieNewNode(mut cref: Arc<DAE::ComponentRef>, mut element: ConnectorElemen
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
             let mut id: ArcStr;
             id = (ComponentReferenceBasics::printComponentRefStr(cref.clone())?).clone();
-            setTrieNewLeaf((id.clone()).clone(), setElementName(element, cref))?
+            setTrieNewLeaf((id).clone(), setElementName(element, cref))?
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
             let mut id: ArcStr;
@@ -781,7 +781,7 @@ fn setTrieNewNode(mut cref: Arc<DAE::ComponentRef>, mut element: ConnectorElemen
             cr = ComponentReferenceBasics::crefFirstCref(cref.clone())?;
             id = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             node = setTrieNewNode(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), element)?;
-            Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id.clone()).clone(), cref: cr.clone(), nodes: list![node], connectCount: 0 })
+            Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id).clone(), cref: cr, nodes: list![node], connectCount: 0 })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -930,13 +930,13 @@ fn setTrieUpdate<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. }) => {
             let mut id: ArcStr;
             id = (ComponentReferenceBasics::printComponentRef2Str((var_field!((*cref).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), var_field!((*cref).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?).clone();
-            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateNode((id.clone()).clone(), cref.clone(), var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg, updateFunc.clone(), var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone())?);
+            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateNode((id).clone(), cref.clone(), var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg, updateFunc.clone(), var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone())?);
             ()
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. }) => {
             let mut id: ArcStr;
             id = (ComponentReferenceBasics::printComponentRef2Str((var_field!((*cref).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), var_field!((*cref).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?).clone();
-            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateLeaf((id.clone()).clone(), arg, var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), updateFunc.clone())?);
+            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateLeaf((id).clone(), arg, var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), updateFunc.clone())?);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -973,9 +973,9 @@ fn setTrieUpdateNode2<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref
             let mut id: ArcStr;
             let mut node: Arc<SetTrieNode>;
             id = (ComponentReferenceBasics::printComponentRefStr(cref)?).clone();
-            node = Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id.clone()).clone(), insideElement: None, outsideElement: None, flowAssociation: None, connectCount: 0 });
-            node = updateFunc(arg, node.clone())?;
-            metamodelica::cons(node.clone(), nodes)
+            node = Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id).clone(), insideElement: None, outsideElement: None, flowAssociation: None, connectCount: 0 });
+            node = updateFunc(arg, node)?;
+            metamodelica::cons(node, nodes)
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
             let mut id: ArcStr;
@@ -984,7 +984,7 @@ fn setTrieUpdateNode2<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref
             cr = ComponentReferenceBasics::crefFirstCref(cref.clone())?;
             id = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             child_nodes = setTrieUpdateNode2(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg, updateFunc.clone(), metamodelica::nil())?;
-            metamodelica::cons(Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id.clone()).clone(), cref: cr.clone(), nodes: child_nodes.clone(), connectCount: 0 }), nodes)
+            metamodelica::cons(Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id).clone(), cref: cr, nodes: child_nodes, connectCount: 0 }), nodes)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1028,7 +1028,7 @@ fn setTrieTraverseLeaves<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut n
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => {
             let mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>;
             (nodes, arg) = List::map1Fold(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(setTrieTraverseLeaves) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, _, _) -> Result<_> + 'static>), updateFunc.clone(), arg)?;
-            assign_variant_field!(node => SetTrieNode::SET_TRIE_NODE; nodes = nodes.clone());
+            assign_variant_field!(node => SetTrieNode::SET_TRIE_NODE; nodes = nodes);
             ()
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
@@ -1196,7 +1196,7 @@ fn mergeEquSetsAsCrefs(mut setsAsCrefs: Arc<metamodelica::List<Arc<metamodelica:
             let mut rest = (*rest).clone();
             (set, rest) = mergeWithRest(set.clone(), rest.clone(), metamodelica::nil())?;
             sets = mergeEquSetsAsCrefs(rest.clone())?;
-            metamodelica::cons(set.clone(), sets.clone())
+            metamodelica::cons(set.clone(), sets)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1214,8 +1214,8 @@ fn mergeWithRest(mut set: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut s
             let mut b: bool;
             let mut rest = (*rest).clone();
             b = List::intersectionOnTrue(set1.clone(), set2.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?.is_empty();
-            set = if (!(b.clone())) {List::unionOnTrue(set1.clone(), set2.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?} else {set1.clone()};
-            (set, rest) = mergeWithRest(set, rest.clone(), List::consOnTrue(b.clone(), set2.clone(), acc))?;
+            set = if (!(b)) {List::unionOnTrue(set1.clone(), set2.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?} else {set1.clone()};
+            (set, rest) = mergeWithRest(set, rest.clone(), List::consOnTrue(b, set2.clone(), acc))?;
             (set, rest.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1328,7 +1328,7 @@ fn generateSetArray2(mut sets: Arc<SetTrieNode>, mut prefix: Arc<metamodelica::L
             oe = insertFlowAssociationInStreamElement(oe.clone(), flow_cr.clone())?;
             prefix_cr = buildElementPrefix(prefix)?;
             setArray = setArrayAddElement(ie.clone(), prefix_cr.clone(), setArray.clone())?;
-            setArray = setArrayAddElement(oe.clone(), prefix_cr.clone(), setArray.clone())?;
+            setArray = setArrayAddElement(oe.clone(), prefix_cr, setArray.clone())?;
             setArray.clone()
         },
         _ => {
@@ -1605,8 +1605,8 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<ConnectorElement
             e1 = makeInStreamCall(cref2.clone())?;
             e2 = makeInStreamCall(cref1.clone())?;
             src = ElementSource::mergeSources(src1.clone(), src2.clone())?;
-            dae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::EQUATION { exp: cref1.clone(), scalar: e1.clone(), source: src.clone() }), Arc::new(DAE::Element::EQUATION { exp: cref2.clone(), scalar: e2.clone(), source: src.clone() })] };
-            dae.clone()
+            dae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::EQUATION { exp: cref1, scalar: e1, source: src.clone() }), Arc::new(DAE::Element::EQUATION { exp: cref2, scalar: e2, source: src })] };
+            dae
         },
         Deref @ metamodelica::List::Cons { head: ConnectorElement { name: cr1, source: src1, .. }, tail: Deref @ metamodelica::List::Cons { head: ConnectorElement { name: cr2, source: src2, .. }, tail: Deref @ metamodelica::List::Nil } } => {
             let mut src: Arc<DAE::ElementSource>;
@@ -1616,16 +1616,16 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<ConnectorElement
             src = ElementSource::mergeSources(src1.clone(), src2.clone())?;
             e1 = Expression::crefExp(cr1.clone())?;
             e2 = Expression::crefExp(cr2.clone())?;
-            dae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::EQUATION { exp: e1.clone(), scalar: e2.clone(), source: src.clone() })] };
-            dae.clone()
+            dae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::EQUATION { exp: e1, scalar: e2, source: src })] };
+            dae
         },
         _ => {
             let mut dae: DAE::DAElist;
             let mut inside: Arc<metamodelica::List<ConnectorElement>>;
             let mut outside: Arc<metamodelica::List<ConnectorElement>>;
             (outside, inside) = List::splitOnTrue(elements, (std::sync::Arc::new(fnptr!(isOutsideElement, ConnectorElement)) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
-            dae = streamEquationGeneral(outside.clone(), inside.clone(), flowThreshold)?;
-            dae.clone()
+            dae = streamEquationGeneral(outside, inside, flowThreshold)?;
+            dae
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1870,17 +1870,17 @@ fn evaluateConnectionOperatorsExp(mut exp: Arc<DAE::Exp>, mut sets: Sets, mut se
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "inStream" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut e: Arc<DAE::Exp>;
             e = evaluateInStream(cr.clone(), sets, setArray.clone(), flowThreshold)?;
-            (e.clone(), true)
+            (e, true)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "actualStream" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut e: Arc<DAE::Exp>;
             e = evaluateActualStream(cr.clone(), sets, setArray.clone(), flowThreshold)?;
-            (e.clone(), true)
+            (e, true)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cardinality" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut e: Arc<DAE::Exp>;
             e = evaluateCardinality(cr.clone(), sets);
-            (e.clone(), true)
+            (e, true)
         },
         _ => {
             (exp, changed)
@@ -1937,7 +1937,7 @@ fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<
             } };
             c = __pa0.clone();
             e = Expression::crefExp(c.clone())?;
-            e.clone()
+            e
         },
         Deref @ metamodelica::List::Cons { head: ConnectorElement { face: f1, .. }, tail: Deref @ metamodelica::List::Cons { head: ConnectorElement { face: f2, .. }, tail: Deref @ metamodelica::List::Nil } } if (!(faceEqual(f1.clone(), f2.clone()))) => {
             let mut c: Arc<DAE::ComponentRef>;
@@ -1948,7 +1948,7 @@ fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<
             } };
             c = __pa0.clone();
             e = evaluateInStream(c.clone(), sets, setArray.clone(), flowThreshold)?;
-            e.clone()
+            e
         },
         _ => {
             let mut e: Arc<DAE::Exp>;
@@ -1956,14 +1956,14 @@ fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<
             let mut inside: Arc<metamodelica::List<ConnectorElement>>;
             let mut outside: Arc<metamodelica::List<ConnectorElement>>;
             (outside, inside) = List::splitOnTrue(reducedStreams, (std::sync::Arc::new(fnptr!(isOutsideElement, ConnectorElement)) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
-            inside = removeStreamSetElement(streamCref, inside.clone())?;
-            e = streamSumEquationExp(outside.clone(), inside.clone(), flowThreshold)?;
+            inside = removeStreamSetElement(streamCref, inside)?;
+            e = streamSumEquationExp(outside, inside.clone(), flowThreshold)?;
             if !(inside.clone().is_empty()) {
-                (expr, _) = streamFlowExp(listHead(inside.clone())?)?;
-                e = Expression::makePureBuiltinCall((literal!("$OMC$inStreamDiv")).clone(), list![e.clone(), expr.clone()], Expression::r#typeof(e.clone())?);
+                (expr, _) = streamFlowExp(listHead(inside)?)?;
+                e = Expression::makePureBuiltinCall((literal!("$OMC$inStreamDiv")).clone(), list![e.clone(), expr], Expression::r#typeof(e)?);
             }
-            (e, _) = evaluateConnectionOperators2(e.clone(), sets, setArray.clone(), false, flowThreshold)?;
-            e.clone()
+            (e, _) = evaluateConnectionOperators2(e, sets, setArray.clone(), false, flowThreshold)?;
+            e
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2331,7 +2331,7 @@ pub(crate) fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes:
             } else {
                 pv = 1;
             }
-            checkConnectorBalance2(pv.clone(), fv.clone(), sv.clone(), var_field!(state.path, ClassInf::State::CONNECTOR).clone(), info)?
+            checkConnectorBalance2(pv, fv, sv, var_field!(state.path, ClassInf::State::CONNECTOR).clone(), info)?
         },
         _ => {
             true
@@ -2383,10 +2383,10 @@ fn printSetTrieStr(mut trie: Arc<SetTrieNode>, mut accumName: ArcStr) -> Result<
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
             let mut res: ArcStr;
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*accumName); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*trie).name, SetTrieNode::SET_TRIE_LEAF).clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone();
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printLeafElementStr(var_field!((*trie).insideElement, SetTrieNode::SET_TRIE_LEAF).clone())?); ArcStr::from(__mm_s) }).clone();
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printLeafElementStr(var_field!((*trie).outsideElement, SetTrieNode::SET_TRIE_LEAF).clone())?); ArcStr::from(__mm_s) }).clone();
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printOptFlowAssociation(var_field!((*trie).flowAssociation, SetTrieNode::SET_TRIE_LEAF).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            res.clone()
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res); __mm_s.push_str(&*printLeafElementStr(var_field!((*trie).insideElement, SetTrieNode::SET_TRIE_LEAF).clone())?); ArcStr::from(__mm_s) }).clone();
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res); __mm_s.push_str(&*printLeafElementStr(var_field!((*trie).outsideElement, SetTrieNode::SET_TRIE_LEAF).clone())?); ArcStr::from(__mm_s) }).clone();
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res); __mm_s.push_str(&*printOptFlowAssociation(var_field!((*trie).flowAssociation, SetTrieNode::SET_TRIE_LEAF).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            res
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { name: Deref @ "", .. } => {
             stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (accumName).clone())?)
@@ -2395,8 +2395,8 @@ fn printSetTrieStr(mut trie: Arc<SetTrieNode>, mut accumName: ArcStr) -> Result<
             let mut name: ArcStr;
             let mut res: ArcStr;
             name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*accumName); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*trie).name, SetTrieNode::SET_TRIE_NODE).clone()); ArcStr::from(__mm_s) }).clone();
-            res = stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (name.clone()).clone())?);
-            res.clone()
+            res = stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (name).clone())?);
+            res
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2409,8 +2409,8 @@ fn printLeafElementStr(mut element: Option<ConnectorElement>) -> Result<ArcStr> 
         Some(mut e @ ConnectorElement { .. }) => {
             let mut res: ArcStr;
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*printFaceStr(e.face.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printConnectorTypeStr(e.ty.clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", e.set.clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
-            res.clone()
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res); __mm_s.push_str(&*printConnectorTypeStr(e.ty.clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", e.set.clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+            res
         },
         _ => {
             literal!("")

@@ -1711,8 +1711,8 @@ fn checkConnectionsArgument(mut arg: Arc<Expression::NFExpression>, mut ty: Arc<
         _ => (false, false),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            if !(valid_cref.clone() && isConnector.clone()) {
-                if valid_cref.clone() {
+            if !(valid_cref && isConnector) {
+                if valid_cref {
                     Error::addSourceMessage(if (argIndex == 1) {Error::W_INVALID_ARGUMENT_TYPE_BRANCH_FIRST.clone()} else {Error::W_INVALID_ARGUMENT_TYPE_BRANCH_SECOND.clone()}, list![(ComponentRef::toString(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?).clone(), (ComponentRef::toString(fnRef)?).clone()], info)?;
                 } else {
                     Error::addSourceMessageAndFail(if (argIndex == 1) {Error::INVALID_ARGUMENT_TYPE_BRANCH_FIRST.clone()} else {Error::INVALID_ARGUMENT_TYPE_BRANCH_SECOND.clone()}, list![(ComponentRef::toString(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?).clone(), (ComponentRef::toString(fnRef)?).clone()], info)?;
@@ -1958,7 +1958,7 @@ fn typeActualInStreamCall2(mut name: ArcStr, mut r#fn: Arc<Function::Function>, 
         Deref @ Expression::CREF { .. } => {
             let mut arg_node: Arc<InstNode::InstNode>;
             arg_node = ComponentRef::node(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?;
-            if !(InstNode::isComponent(arg_node.clone())?) || !(Prefixes::ConnectorType::isStream(Component::connectorType(InstNode::component(arg_node.clone())?))) {
+            if !(InstNode::isComponent(arg_node.clone())?) || !(Prefixes::ConnectorType::isStream(Component::connectorType(InstNode::component(arg_node)?))) {
                 Error::addSourceMessageAndFail(Error::NON_STREAM_OPERAND_IN_STREAM_OPERATOR.clone(), list![(ComponentRef::toString(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?).clone(), (name).clone()], info.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }

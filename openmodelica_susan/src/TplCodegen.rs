@@ -163,7 +163,7 @@ fn fun_9(mut in_txt: Tpl::Text, mut in_a_statements: Arc<metamodelica::List<Arc<
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("algorithm")).clone() }))?;
             ret_0 = Tpl::debugSusan()?;
-            txt = fun_6(txt.clone(), ret_0.clone())?;
+            txt = fun_6(txt.clone(), ret_0)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -172,7 +172,7 @@ fn fun_9(mut in_txt: Tpl::Text, mut in_a_statements: Arc<metamodelica::List<Arc<
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             ret_1 = Tpl::debugSusan()?;
-            txt = fun_8(txt.clone(), ret_1.clone())?;
+            txt = fun_8(txt.clone(), ret_1)?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -641,7 +641,7 @@ fn lm_30(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Ar
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = TplAbsyn::isTupleListMember((i_nm.clone()).clone(), a_outArgs.clone());
-            txt = fun_29(txt.clone(), ret_0.clone())?;
+            txt = fun_29(txt.clone(), ret_0)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = typeSig(txt.clone(), i_ts.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -2049,7 +2049,7 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sl: Arc<metamodelic
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = TplAbsyn::canBeEscapedUnquoted(a_sl.clone());
-            txt = fun_93(txt.clone(), ret_0.clone(), a_sl.clone())?;
+            txt = fun_93(txt.clone(), ret_0, a_sl.clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2083,7 +2083,7 @@ pub(crate) fn sConstStringToken(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::Str
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = TplAbsyn::canBeOnOneLine(i_sl.clone());
-            txt = fun_94(txt.clone(), ret_0.clone(), i_sl.clone())?;
+            txt = fun_94(txt.clone(), ret_0, i_sl.clone())?;
             txt.clone()
         },
         (txt, _) => {

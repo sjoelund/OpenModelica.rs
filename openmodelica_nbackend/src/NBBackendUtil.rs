@@ -197,14 +197,14 @@ pub(crate) fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i
             hash1 = noNameHashExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), r#mod)?;
             hash2 = noNameHashExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), r#mod)?;
             hash = (match Operator::classify(var_field!((*exp).operator, Expression::NFExpression::BINARY).clone())? {
-        (Operator::MathClassification::ADDITION, _) => hash1.clone() + hash2.clone(),
-        (Operator::MathClassification::SUBTRACTION, _) => hash1.clone() - hash2.clone(),
-        (Operator::MathClassification::MULTIPLICATION, _) => hash1.clone() * hash2.clone(),
-        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1.clone()) as f64) / metamodelica::OrderedFloat((hash2.clone()) as f64)).0.floor() as i32),
-        (Operator::MathClassification::POWER, _) => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0.floor() as i32),
-        (Operator::MathClassification::LOGICAL, _) => -(hash1.clone() + hash2.clone()),
-        (Operator::MathClassification::RELATION, _) => hash2.clone() - hash1.clone(),
-        _ => hash2.clone() - hash1.clone(),
+        (Operator::MathClassification::ADDITION, _) => hash1 + hash2,
+        (Operator::MathClassification::SUBTRACTION, _) => hash1 - hash2,
+        (Operator::MathClassification::MULTIPLICATION, _) => hash1 * hash2,
+        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1) as f64) / metamodelica::OrderedFloat((hash2) as f64)).0.floor() as i32),
+        (Operator::MathClassification::POWER, _) => (((metamodelica::OrderedFloat((hash1) as f64)).powf(metamodelica::OrderedFloat((hash2) as f64))).0.floor() as i32),
+        (Operator::MathClassification::LOGICAL, _) => -(hash1 + hash2),
+        (Operator::MathClassification::RELATION, _) => hash2 - hash1,
+        _ => hash2 - hash1,
     });
             hash
         },
@@ -217,9 +217,9 @@ pub(crate) fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i
             hash1 = noNameHashExp(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), r#mod)?;
             hash2 = noNameHashExp(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), r#mod)?;
             hash = (match var_field!((*exp).operator, Expression::NFExpression::LBINARY).op.clone() {
-        Operator::Op::AND => hash1.clone() + hash2.clone(),
-        Operator::Op::OR => hash1.clone() - hash2.clone(),
-        _ => hash2.clone() - hash1.clone(),
+        Operator::Op::AND => hash1 + hash2,
+        Operator::Op::OR => hash1 - hash2,
+        _ => hash2 - hash1,
     });
             hash
         },
@@ -232,13 +232,13 @@ pub(crate) fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i
             hash1 = noNameHashExp(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), r#mod)?;
             hash2 = noNameHashExp(var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), r#mod)?;
             hash = (match var_field!((*exp).operator, Expression::NFExpression::RELATION).op.clone() {
-        Operator::Op::LESS => hash1.clone() + hash2.clone(),
-        Operator::Op::LESSEQ => -(hash1.clone() + hash2.clone()),
-        Operator::Op::GREATER => hash1.clone() - hash2.clone(),
-        Operator::Op::GREATEREQ => hash2.clone() - hash1.clone(),
-        Operator::Op::EQUAL => hash1.clone() * hash2.clone(),
-        Operator::Op::NEQUAL => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0.floor() as i32),
-        _ => hash2.clone() - hash1.clone(),
+        Operator::Op::LESS => hash1 + hash2,
+        Operator::Op::LESSEQ => -(hash1 + hash2),
+        Operator::Op::GREATER => hash1 - hash2,
+        Operator::Op::GREATEREQ => hash2 - hash1,
+        Operator::Op::EQUAL => hash1 * hash2,
+        Operator::Op::NEQUAL => (((metamodelica::OrderedFloat((hash1) as f64)).powf(metamodelica::OrderedFloat((hash2) as f64))).0.floor() as i32),
+        _ => hash2 - hash1,
     });
             hash
         },

@@ -375,7 +375,7 @@ pub(crate) fn extractRedeclaresFromModifier(mut inMod: Arc<SCode::Mod>) -> Resul
         Deref @ SCode::Mod::MOD { subModLst: sub_mods, .. } => {
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
             redeclares = List::fold(sub_mods.clone(), (std::sync::Arc::new(extractRedeclareFromSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> + 'static>), metamodelica::nil())?;
-            redeclares.clone()
+            redeclares
         },
         _ => {
             metamodelica::nil()
@@ -392,7 +392,7 @@ fn extractRedeclareFromSubMod(mut inMod: Arc<SCode::SubMod>, mut inRedeclares: A
             let mut redecl: Arc<NFSCodeEnv::Redeclaration>;
             redecl = Arc::new(NFSCodeEnv::Redeclaration::RAW_MODIFIER { modifier: el.clone() });
             NFSCodeCheck::checkDuplicateRedeclarations(redecl.clone(), inRedeclares.clone())?;
-            metamodelica::cons(redecl.clone(), inRedeclares)
+            metamodelica::cons(redecl, inRedeclares)
         },
         _ => {
             inRedeclares
@@ -535,9 +535,9 @@ fn pushRedeclareIntoExtends2(mut inName: ArcStr, mut inRedeclare: Item, mut inBa
         }
         __acc.reverse()
     });
-            bcl_str = stringDelimitList(bc_strl.clone(), (literal!(", ")).clone());
-            err_msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSCodeFlattenRedeclare.pushRedeclareIntoExtends2 couldn't find the base classes {")); __mm_s.push_str(&*bcl_str.clone()); __mm_s.push_str(&*literal!("} for ")); __mm_s.push_str(&*inName); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(err_msg.clone()).clone()])?;
+            bcl_str = stringDelimitList(bc_strl, (literal!(", ")).clone());
+            err_msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSCodeFlattenRedeclare.pushRedeclareIntoExtends2 couldn't find the base classes {")); __mm_s.push_str(&*bcl_str); __mm_s.push_str(&*literal!("} for ")); __mm_s.push_str(&*inName); ArcStr::from(__mm_s) }).clone();
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(err_msg).clone()])?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -573,10 +573,10 @@ pub(crate) fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: It
             let mut repl = (*repl).clone();
             old_item = NFSCodeEnv::EnvTree::get(tree.clone(), (inElementName.clone()).clone())?;
             new_item = propagateItemPrefixes(old_item.clone(), inElement)?;
-            new_item = NFSCodeEnv::linkItemUsage(old_item.clone(), new_item.clone());
+            new_item = NFSCodeEnv::linkItemUsage(old_item.clone(), new_item);
             tree = NFSCodeEnv::EnvTree::add(tree.clone(), (inElementName.clone()).clone(), new_item.clone(), (std::sync::Arc::new(fnptr!(NFSCodeEnv::EnvTree::addConflictReplace, Arc<NFSCodeEnv::Item>, Arc<NFSCodeEnv::Item>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Item>, Arc<NFSCodeEnv::Item>, ArcStr) -> Result<Arc<NFSCodeEnv::Item>> + 'static>))?;
             env = NFSCodeEnv::setEnvClsAndVars(tree.clone(), env.clone())?;
-            repl = metamodelica::cons(Replacement::REPLACED { name: (inElementName).clone(), old: old_item.clone(), new: new_item.clone(), env: env.clone() }, repl.clone());
+            repl = metamodelica::cons(Replacement::REPLACED { name: (inElementName).clone(), old: old_item, new: new_item, env: env.clone() }, repl.clone());
             (env.clone(), repl.clone())
         },
         _ => bail!("match: no arm matched"),

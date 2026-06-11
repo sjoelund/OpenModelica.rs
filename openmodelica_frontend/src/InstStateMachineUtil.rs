@@ -414,11 +414,11 @@ fn mergingRhs_der(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef
             let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
-            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty });
-            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp.clone()], attr: callAttributes });
+            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState, ty: ty });
+            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp], attr: callAttributes });
             expElse = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((0) as f64) });
-            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: outerCrefExp.clone(), expElse: expElse.clone() });
-            ifExp.clone()
+            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond, expThen: outerCrefExp, expElse: expElse });
+            ifExp
         },
         Deref @ metamodelica::List::Cons { head: outerCref, tail: rest } => {
             let mut crefState: Arc<DAE::ComponentRef>;
@@ -429,11 +429,11 @@ fn mergingRhs_der(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef
             let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
-            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty.clone() });
-            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp.clone()], attr: callAttributes });
+            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState, ty: ty.clone() });
+            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp], attr: callAttributes });
             expElse = mergingRhs_der(rest.clone(), inInnerCref, ty)?;
-            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: outerCrefExp.clone(), expElse: expElse.clone() });
-            ifExp.clone()
+            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond, expThen: outerCrefExp, expElse: expElse });
+            ifExp
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -486,11 +486,11 @@ fn mergingRhs(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             innerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: inInnerCref, ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
-            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty });
-            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp.clone()], attr: callAttributes.clone() });
-            expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![innerCrefExp.clone()], attr: callAttributes });
-            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: outerCrefExp.clone(), expElse: expElse.clone() });
-            ifExp.clone()
+            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState, ty: ty });
+            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp], attr: callAttributes.clone() });
+            expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![innerCrefExp], attr: callAttributes });
+            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond, expThen: outerCrefExp, expElse: expElse });
+            ifExp
         },
         Deref @ metamodelica::List::Cons { head: outerCref, tail: rest } => {
             let mut crefState: Arc<DAE::ComponentRef>;
@@ -501,11 +501,11 @@ fn mergingRhs(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
             let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
-            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty.clone() });
-            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp.clone()], attr: callAttributes });
+            crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState, ty: ty.clone() });
+            expCond = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("activeState")).clone() }), expLst: list![crefStateExp], attr: callAttributes });
             expElse = mergingRhs(rest.clone(), inInnerCref, ty)?;
-            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: outerCrefExp.clone(), expElse: expElse.clone() });
-            ifExp.clone()
+            ifExp = Arc::new(DAE::Exp::IFEXP { expCond: expCond, expThen: outerCrefExp, expElse: expElse });
+            ifExp
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -951,32 +951,32 @@ fn extractSMStates2(mut inElement: Arc<DAE::Element>, mut inTable: SMNodeTable) 
             let mut edges1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             let mut edges2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             smnode1 = if (BaseHashTable::hasKey(cref1.clone(), outTable.clone())?) {BaseHashTable::get(cref1.clone(), outTable.clone())?} else {SMNode { componentRef: cref1.clone(), isInitial: false, edges: HashSet::emptyHashSet() }};
-            let SMNode { componentRef: _, isInitial: __pa0, edges: __pa1 } = (smnode1.clone()) else { bail!("pattern mismatch") };
+            let SMNode { componentRef: _, isInitial: __pa0, edges: __pa1 } = (smnode1) else { bail!("pattern mismatch") };
             isInitial1 = __pa0.clone();
             edges1 = __pa1.clone();
-            edges1 = BaseHashSet::add(cref1.clone(), edges1.clone())?;
-            edges1 = BaseHashSet::add(cref2.clone(), edges1.clone())?;
-            smnode1 = SMNode { componentRef: cref1.clone(), isInitial: isInitial1.clone(), edges: edges1.clone() };
-            outTable = BaseHashTable::add((cref1.clone(), smnode1.clone()), outTable)?;
+            edges1 = BaseHashSet::add(cref1.clone(), edges1)?;
+            edges1 = BaseHashSet::add(cref2.clone(), edges1)?;
+            smnode1 = SMNode { componentRef: cref1.clone(), isInitial: isInitial1, edges: edges1 };
+            outTable = BaseHashTable::add((cref1.clone(), smnode1), outTable)?;
             smnode2 = if (BaseHashTable::hasKey(cref2.clone(), outTable.clone())?) {BaseHashTable::get(cref2.clone(), outTable.clone())?} else {SMNode { componentRef: cref2.clone(), isInitial: false, edges: HashSet::emptyHashSet() }};
-            let SMNode { componentRef: _, isInitial: __pa2, edges: __pa3 } = (smnode2.clone()) else { bail!("pattern mismatch") };
+            let SMNode { componentRef: _, isInitial: __pa2, edges: __pa3 } = (smnode2) else { bail!("pattern mismatch") };
             isInitial2 = __pa2.clone();
             edges2 = __pa3.clone();
-            edges2 = BaseHashSet::add(cref1.clone(), edges2.clone())?;
-            edges2 = BaseHashSet::add(cref2.clone(), edges2.clone())?;
-            smnode2 = SMNode { componentRef: cref2.clone(), isInitial: isInitial2.clone(), edges: edges2.clone() };
-            outTable = BaseHashTable::add((cref2.clone(), smnode2.clone()), outTable)?;
+            edges2 = BaseHashSet::add(cref1.clone(), edges2)?;
+            edges2 = BaseHashSet::add(cref2.clone(), edges2)?;
+            smnode2 = SMNode { componentRef: cref2.clone(), isInitial: isInitial2, edges: edges2 };
+            outTable = BaseHashTable::add((cref2.clone(), smnode2), outTable)?;
             outTable
         },
         Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
             let mut smnode1: SMNode;
             let mut edges1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             smnode1 = if (BaseHashTable::hasKey(cref1.clone(), outTable.clone())?) {BaseHashTable::get(cref1.clone(), outTable.clone())?} else {SMNode { componentRef: cref1.clone(), isInitial: true, edges: HashSet::emptyHashSet() }};
-            let SMNode { componentRef: _, isInitial: _, edges: __pa0 } = (smnode1.clone()) else { bail!("pattern mismatch") };
+            let SMNode { componentRef: _, isInitial: _, edges: __pa0 } = (smnode1) else { bail!("pattern mismatch") };
             edges1 = __pa0.clone();
-            edges1 = BaseHashSet::add(cref1.clone(), edges1.clone())?;
-            smnode1 = SMNode { componentRef: cref1.clone(), isInitial: true, edges: edges1.clone() };
-            outTable = BaseHashTable::add((cref1.clone(), smnode1.clone()), outTable)?;
+            edges1 = BaseHashSet::add(cref1.clone(), edges1)?;
+            smnode1 = SMNode { componentRef: cref1.clone(), isInitial: true, edges: edges1 };
+            outTable = BaseHashTable::add((cref1.clone(), smnode1), outTable)?;
             outTable
         },
         _ => bail!("match: no arm matched"),

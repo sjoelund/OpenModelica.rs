@@ -352,7 +352,7 @@ fn inlineEqsLst(mut inEqnsList: Arc<metamodelica::List<Arc<metamodelica::List<Ar
             let mut inlined: bool;
             let mut eqn = (*eqn).clone();
             (eqn, inlined) = inlineEqs(eqn.clone(), inFunctions.clone(), metamodelica::nil(), false);
-            { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(eqn.clone(), iAcc), inlined.clone() || iInlined); continue '__tco; }
+            { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(eqn.clone(), iAcc), inlined || iInlined); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -370,7 +370,7 @@ pub(crate) fn inlineEqs(mut inEqnsList: Arc<metamodelica::List<Arc<BackendDAE::E
             let mut inlined: bool;
             let mut eqn = (*eqn).clone();
             (eqn, inlined) = inlineEq(eqn.clone(), inFunctions.clone());
-            { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(eqn.clone(), iAcc), inlined.clone() || iInlined); continue '__tco; }
+            { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions, metamodelica::cons(eqn.clone(), iAcc), inlined || iInlined); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -399,13 +399,13 @@ fn inlineWhenEq(mut inWhenEquation: Arc<BackendDAE::WhenEquation>, mut fns: (Opt
                     _ => bail!("pattern mismatch"),
                 } };
                 elsewe = __pa0.clone();
-                (elsewe, source, b3) = inlineWhenEq(elsewe.clone(), fns, source.clone())?;
-                oelsewe = Some(elsewe.clone());
+                (elsewe, source, b3) = inlineWhenEq(elsewe, fns, source)?;
+                oelsewe = Some(elsewe);
             } else {
                 oelsewe = None;
                 b3 = false;
             }
-            (Arc::new(BackendDAE::WhenEquation { condition: cond.clone(), whenStmtLst: whenStmtLst.clone(), elsewhenPart: oelsewe.clone() }), source.clone(), b1.clone() || b2.clone() || b3.clone())
+            (Arc::new(BackendDAE::WhenEquation { condition: cond.clone(), whenStmtLst: whenStmtLst.clone(), elsewhenPart: oelsewe.clone() }), source, b1 || b2 || b3)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -423,8 +423,8 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             let mut e2 = e2.clone();
             let mut source = source.clone();
             (e2, source, b, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
-            outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::ASSIGN { left: e1.clone(), right: e2.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
-            inlined = inlined || b.clone();
+            outWhenOps = metamodelica::cons(if (b) {BackendDAE::WhenOperator::ASSIGN { left: e1.clone(), right: e2.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
+            inlined = inlined || b;
             ()
         },
         BackendDAE::WhenOperator::REINIT { stateVar: ref cr, value: ref e2, source: mut source } => {
@@ -432,8 +432,8 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             let mut e2 = e2.clone();
             let mut source = source.clone();
             (e2, source, b, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
-            outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::REINIT { stateVar: cr.clone(), value: e2.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
-            inlined = inlined || b.clone();
+            outWhenOps = metamodelica::cons(if (b) {BackendDAE::WhenOperator::REINIT { stateVar: cr.clone(), value: e2.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
+            inlined = inlined || b;
             ()
         },
         BackendDAE::WhenOperator::ASSERT { condition: ref e1, message: ref e2, level: mut level, source: mut source } => {
@@ -444,8 +444,8 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
             (e2, source, b2, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
-            outWhenOps = metamodelica::cons(if (b.clone() || b2.clone()) {BackendDAE::WhenOperator::ASSERT { condition: e1.clone(), message: e2.clone(), level: level.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
-            inlined = inlined || b.clone() || b2.clone();
+            outWhenOps = metamodelica::cons(if (b || b2) {BackendDAE::WhenOperator::ASSERT { condition: e1.clone(), message: e2.clone(), level: level.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
+            inlined = inlined || b || b2;
             ()
         },
         BackendDAE::WhenOperator::TERMINATE { message: ref e1, source: mut source } => {
@@ -453,8 +453,8 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             let mut e1 = e1.clone();
             let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
-            outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::TERMINATE { message: e1.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
-            inlined = inlined || b.clone();
+            outWhenOps = metamodelica::cons(if (b) {BackendDAE::WhenOperator::TERMINATE { message: e1.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
+            inlined = inlined || b;
             ()
         },
         BackendDAE::WhenOperator::NORETCALL { exp: ref e1, source: mut source } => {
@@ -462,8 +462,8 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             let mut e1 = e1.clone();
             let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
-            outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::NORETCALL { exp: e1.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
-            inlined = inlined || b.clone();
+            outWhenOps = metamodelica::cons(if (b) {BackendDAE::WhenOperator::NORETCALL { exp: e1.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
+            inlined = inlined || b;
             ()
         },
     });
@@ -527,7 +527,7 @@ fn inlineVarOpt(mut inVarOption: Option<BackendDAE::Var>, mut fns: (Option<Arc<A
             let mut var2: BackendDAE::Var;
             let mut b: bool;
             (var2, b) = inlineVar(var.clone(), fns);
-            (if ({ let __refeq_sl = &(var.clone()); let __refeq_sr = &(var2.clone()); referenceEq(&*(__refeq_sl.varName),&*(__refeq_sr.varName)) && (match (&(__refeq_sl.varKind), &(__refeq_sr.varKind)) { (BackendDAE::VarKind::ALG_STATE, BackendDAE::VarKind::ALG_STATE) => true, (BackendDAE::VarKind::ALG_STATE_OLD, BackendDAE::VarKind::ALG_STATE_OLD) => true, (BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0l, isStartFixed: __refeq_v1l }, BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0r, isStartFixed: __refeq_v1r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && ((*__refeq_v1l) == (*__refeq_v1r)), (BackendDAE::VarKind::CONST, BackendDAE::VarKind::CONST) => true, (BackendDAE::VarKind::DAE_AUX_VAR, BackendDAE::VarKind::DAE_AUX_VAR) => true, (BackendDAE::VarKind::DAE_RESIDUAL_VAR, BackendDAE::VarKind::DAE_RESIDUAL_VAR) => true, (BackendDAE::VarKind::DISCRETE, BackendDAE::VarKind::DISCRETE) => true, (BackendDAE::VarKind::DUMMY_DER, BackendDAE::VarKind::DUMMY_DER) => true, (BackendDAE::VarKind::DUMMY_STATE, BackendDAE::VarKind::DUMMY_STATE) => true, (BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0l }, BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::JAC_TMP_VAR, BackendDAE::VarKind::JAC_TMP_VAR) => true, (BackendDAE::VarKind::JAC_VAR, BackendDAE::VarKind::JAC_VAR) => true, (BackendDAE::VarKind::LOOP_ITERATION, BackendDAE::VarKind::LOOP_ITERATION) => true, (BackendDAE::VarKind::LOOP_SOLVED, BackendDAE::VarKind::LOOP_SOLVED) => true, (BackendDAE::VarKind::OPT_CONSTR, BackendDAE::VarKind::OPT_CONSTR) => true, (BackendDAE::VarKind::OPT_FCONSTR, BackendDAE::VarKind::OPT_FCONSTR) => true, (BackendDAE::VarKind::OPT_INPUT_DER, BackendDAE::VarKind::OPT_INPUT_DER) => true, (BackendDAE::VarKind::OPT_INPUT_WITH_DER, BackendDAE::VarKind::OPT_INPUT_WITH_DER) => true, (BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0l }, BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::OPT_TGRID, BackendDAE::VarKind::OPT_TGRID) => true, (BackendDAE::VarKind::PARAM, BackendDAE::VarKind::PARAM) => true, (BackendDAE::VarKind::SEED_VAR, BackendDAE::VarKind::SEED_VAR) => true, (BackendDAE::VarKind::STATE { index: __refeq_v0l, derName: __refeq_v1l, natural: __refeq_v2l }, BackendDAE::VarKind::STATE { index: __refeq_v0r, derName: __refeq_v1r, natural: __refeq_v2r }) => ((*__refeq_v0l) == (*__refeq_v0r)) && (match (&(*__refeq_v1l), &(*__refeq_v1r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && ((*__refeq_v2l) == (*__refeq_v2r)), (BackendDAE::VarKind::STATE_DER, BackendDAE::VarKind::STATE_DER) => true, (BackendDAE::VarKind::VARIABLE, BackendDAE::VarKind::VARIABLE) => true, _ => false }) && (match (&(__refeq_sl.varDirection), &(__refeq_sr.varDirection)) { (DAE::VarDirection::BIDIR, DAE::VarDirection::BIDIR) => true, (DAE::VarDirection::INPUT, DAE::VarDirection::INPUT) => true, (DAE::VarDirection::OUTPUT, DAE::VarDirection::OUTPUT) => true, _ => false }) && (match (&(__refeq_sl.varParallelism), &(__refeq_sr.varParallelism)) { (DAE::VarParallelism::NON_PARALLEL, DAE::VarParallelism::NON_PARALLEL) => true, (DAE::VarParallelism::PARGLOBAL, DAE::VarParallelism::PARGLOBAL) => true, (DAE::VarParallelism::PARLOCAL, DAE::VarParallelism::PARLOCAL) => true, _ => false }) && referenceEq(&*(__refeq_sl.varType),&*(__refeq_sr.varType)) && (match (&(__refeq_sl.bindExp), &(__refeq_sr.bindExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tplExp), &(__refeq_sr.tplExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.arryDim), &*(__refeq_sr.arryDim)) && referenceEq(&*(__refeq_sl.source),&*(__refeq_sr.source)) && (match (&(__refeq_sl.values), &(__refeq_sr.values)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tearingSelectOption), &(__refeq_sr.tearingSelectOption)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => (match (&(*__refeq_l), &(*__refeq_r)) { (BackendDAE::TearingSelect::ALWAYS, BackendDAE::TearingSelect::ALWAYS) => true, (BackendDAE::TearingSelect::AVOID, BackendDAE::TearingSelect::AVOID) => true, (BackendDAE::TearingSelect::DEFAULT, BackendDAE::TearingSelect::DEFAULT) => true, (BackendDAE::TearingSelect::NEVER, BackendDAE::TearingSelect::NEVER) => true, (BackendDAE::TearingSelect::PREFER, BackendDAE::TearingSelect::PREFER) => true, _ => false }), _ => false }) && (match (&(__refeq_sl.hideResult), &(__refeq_sr.hideResult)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.comment), &(__refeq_sr.comment)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(__refeq_sl.connectorType),&*(__refeq_sr.connectorType)) && (match (&(__refeq_sl.innerOuter), &(__refeq_sr.innerOuter)) { (DAE::VarInnerOuter::INNER, DAE::VarInnerOuter::INNER) => true, (DAE::VarInnerOuter::INNER_OUTER, DAE::VarInnerOuter::INNER_OUTER) => true, (DAE::VarInnerOuter::NOT_INNER_OUTER, DAE::VarInnerOuter::NOT_INNER_OUTER) => true, (DAE::VarInnerOuter::OUTER, DAE::VarInnerOuter::OUTER) => true, _ => false }) && ((__refeq_sl.unreplaceable) == (__refeq_sr.unreplaceable)) && ((__refeq_sl.initNonlinear) == (__refeq_sr.initNonlinear)) && ((__refeq_sl.encrypted) == (__refeq_sr.encrypted)) }) {inVarOption} else {Some(var2.clone())}, b.clone())
+            (if ({ let __refeq_sl = &(var.clone()); let __refeq_sr = &(var2.clone()); referenceEq(&*(__refeq_sl.varName),&*(__refeq_sr.varName)) && (match (&(__refeq_sl.varKind), &(__refeq_sr.varKind)) { (BackendDAE::VarKind::ALG_STATE, BackendDAE::VarKind::ALG_STATE) => true, (BackendDAE::VarKind::ALG_STATE_OLD, BackendDAE::VarKind::ALG_STATE_OLD) => true, (BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0l, isStartFixed: __refeq_v1l }, BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0r, isStartFixed: __refeq_v1r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && ((*__refeq_v1l) == (*__refeq_v1r)), (BackendDAE::VarKind::CONST, BackendDAE::VarKind::CONST) => true, (BackendDAE::VarKind::DAE_AUX_VAR, BackendDAE::VarKind::DAE_AUX_VAR) => true, (BackendDAE::VarKind::DAE_RESIDUAL_VAR, BackendDAE::VarKind::DAE_RESIDUAL_VAR) => true, (BackendDAE::VarKind::DISCRETE, BackendDAE::VarKind::DISCRETE) => true, (BackendDAE::VarKind::DUMMY_DER, BackendDAE::VarKind::DUMMY_DER) => true, (BackendDAE::VarKind::DUMMY_STATE, BackendDAE::VarKind::DUMMY_STATE) => true, (BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0l }, BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::JAC_TMP_VAR, BackendDAE::VarKind::JAC_TMP_VAR) => true, (BackendDAE::VarKind::JAC_VAR, BackendDAE::VarKind::JAC_VAR) => true, (BackendDAE::VarKind::LOOP_ITERATION, BackendDAE::VarKind::LOOP_ITERATION) => true, (BackendDAE::VarKind::LOOP_SOLVED, BackendDAE::VarKind::LOOP_SOLVED) => true, (BackendDAE::VarKind::OPT_CONSTR, BackendDAE::VarKind::OPT_CONSTR) => true, (BackendDAE::VarKind::OPT_FCONSTR, BackendDAE::VarKind::OPT_FCONSTR) => true, (BackendDAE::VarKind::OPT_INPUT_DER, BackendDAE::VarKind::OPT_INPUT_DER) => true, (BackendDAE::VarKind::OPT_INPUT_WITH_DER, BackendDAE::VarKind::OPT_INPUT_WITH_DER) => true, (BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0l }, BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::OPT_TGRID, BackendDAE::VarKind::OPT_TGRID) => true, (BackendDAE::VarKind::PARAM, BackendDAE::VarKind::PARAM) => true, (BackendDAE::VarKind::SEED_VAR, BackendDAE::VarKind::SEED_VAR) => true, (BackendDAE::VarKind::STATE { index: __refeq_v0l, derName: __refeq_v1l, natural: __refeq_v2l }, BackendDAE::VarKind::STATE { index: __refeq_v0r, derName: __refeq_v1r, natural: __refeq_v2r }) => ((*__refeq_v0l) == (*__refeq_v0r)) && (match (&(*__refeq_v1l), &(*__refeq_v1r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && ((*__refeq_v2l) == (*__refeq_v2r)), (BackendDAE::VarKind::STATE_DER, BackendDAE::VarKind::STATE_DER) => true, (BackendDAE::VarKind::VARIABLE, BackendDAE::VarKind::VARIABLE) => true, _ => false }) && (match (&(__refeq_sl.varDirection), &(__refeq_sr.varDirection)) { (DAE::VarDirection::BIDIR, DAE::VarDirection::BIDIR) => true, (DAE::VarDirection::INPUT, DAE::VarDirection::INPUT) => true, (DAE::VarDirection::OUTPUT, DAE::VarDirection::OUTPUT) => true, _ => false }) && (match (&(__refeq_sl.varParallelism), &(__refeq_sr.varParallelism)) { (DAE::VarParallelism::NON_PARALLEL, DAE::VarParallelism::NON_PARALLEL) => true, (DAE::VarParallelism::PARGLOBAL, DAE::VarParallelism::PARGLOBAL) => true, (DAE::VarParallelism::PARLOCAL, DAE::VarParallelism::PARLOCAL) => true, _ => false }) && referenceEq(&*(__refeq_sl.varType),&*(__refeq_sr.varType)) && (match (&(__refeq_sl.bindExp), &(__refeq_sr.bindExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tplExp), &(__refeq_sr.tplExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.arryDim), &*(__refeq_sr.arryDim)) && referenceEq(&*(__refeq_sl.source),&*(__refeq_sr.source)) && (match (&(__refeq_sl.values), &(__refeq_sr.values)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tearingSelectOption), &(__refeq_sr.tearingSelectOption)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => (match (&(*__refeq_l), &(*__refeq_r)) { (BackendDAE::TearingSelect::ALWAYS, BackendDAE::TearingSelect::ALWAYS) => true, (BackendDAE::TearingSelect::AVOID, BackendDAE::TearingSelect::AVOID) => true, (BackendDAE::TearingSelect::DEFAULT, BackendDAE::TearingSelect::DEFAULT) => true, (BackendDAE::TearingSelect::NEVER, BackendDAE::TearingSelect::NEVER) => true, (BackendDAE::TearingSelect::PREFER, BackendDAE::TearingSelect::PREFER) => true, _ => false }), _ => false }) && (match (&(__refeq_sl.hideResult), &(__refeq_sr.hideResult)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.comment), &(__refeq_sr.comment)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(__refeq_sl.connectorType),&*(__refeq_sr.connectorType)) && (match (&(__refeq_sl.innerOuter), &(__refeq_sr.innerOuter)) { (DAE::VarInnerOuter::INNER, DAE::VarInnerOuter::INNER) => true, (DAE::VarInnerOuter::INNER_OUTER, DAE::VarInnerOuter::INNER_OUTER) => true, (DAE::VarInnerOuter::NOT_INNER_OUTER, DAE::VarInnerOuter::NOT_INNER_OUTER) => true, (DAE::VarInnerOuter::OUTER, DAE::VarInnerOuter::OUTER) => true, _ => false }) && ((__refeq_sl.unreplaceable) == (__refeq_sr.unreplaceable)) && ((__refeq_sl.initNonlinear) == (__refeq_sr.initNonlinear)) && ((__refeq_sl.encrypted) == (__refeq_sr.encrypted)) }) {inVarOption} else {Some(var2)}, b)
         },
     });
     (outVarOption, inlined)
@@ -544,7 +544,7 @@ fn inlineVar(mut inVar: BackendDAE::Var, mut inElementList: (Option<Arc<AvlTreeP
             let mut source = source.clone();
             (bind, source, b1) = Inline::inlineExpOpt(bind.clone(), inElementList.clone(), source.clone());
             (values1, source, b2) = Inline::inlineStartAttribute(values.clone(), source.clone(), inElementList);
-            (BackendDAE::Var { varName: varName.clone(), varKind: varKind.clone(), varDirection: varDirection.clone(), varParallelism: varParallelism.clone(), varType: varType.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: arrayDim.clone(), source: source.clone(), values: values1.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: unreplaceable.clone(), initNonlinear: false, encrypted: e.clone() }, b1.clone() || b2.clone())
+            (BackendDAE::Var { varName: varName.clone(), varKind: varKind.clone(), varDirection: varDirection.clone(), varParallelism: varParallelism.clone(), varType: varType.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: arrayDim.clone(), source: source.clone(), values: values1, tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: unreplaceable.clone(), initNonlinear: false, encrypted: e.clone() }, b1 || b2)
         },
         _ => {
             (inVar, false)
@@ -584,7 +584,7 @@ fn inlineZeroCrossing(mut zc: BackendDAE::ZeroCrossing, mut fns: (Option<Arc<Avl
         BackendDAE::ZeroCrossing { relation_: ref e, .. } => {
             let mut e_1: Arc<DAE::Exp>;
             (e_1, _, _, _) = Inline::inlineExp(e.clone(), fns, DAE::emptyElementSource().clone());
-            if (!(referenceEq(&*(e.clone()),&*(e_1.clone())))) {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: e_1.clone(), occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }} else {zc}
+            if (!(referenceEq(&*(e.clone()),&*(e_1.clone())))) {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: e_1, occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }} else {zc}
         },
         _ => {
             zc
@@ -1197,7 +1197,7 @@ fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut 
             crefs = ComponentReference::expandCref(iCr, false)?;
             repl = iRepl;
             arrExp = Expression::getArrayOrRangeContents(iExp)?;
-            for mut c in &*crefs.clone() {
+            for mut c in &*crefs {
                 let mut c = c.clone();
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(arrExp.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1207,7 +1207,7 @@ fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut 
                 arrExp = __pa1.clone();
                 repl = BackendVarTransform::addReplacement(repl.clone(), c.clone(), e.clone(), None)?;
             }
-            repl.clone()
+            repl
         },
         _ => {
             bail!("fail")

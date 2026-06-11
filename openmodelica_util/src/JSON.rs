@@ -269,7 +269,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
             for mut i in 1..=UnorderedMap::size(var_field!((*value).values, JSON::OBJECT).clone()) {
                 pairs = metamodelica::cons((UnorderedMap::keyAt(var_field!((*value).values, JSON::OBJECT).clone(), i.clone())?, toListForm(UnorderedMap::valueAt(var_field!((*value).values, JSON::OBJECT).clone(), i.clone())?)?), pairs.clone());
             }
-            Arc::new(JSON::LIST_OBJECT { values: pairs.clone().reverse() })
+            Arc::new(JSON::LIST_OBJECT { values: pairs.reverse() })
         },
         Deref @ LIST_OBJECT { .. } => {
             let mut pairs: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>;
@@ -281,7 +281,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
                 (key, v) = p.clone();
                 pairs = metamodelica::cons((key.clone(), toListForm(v.clone())?), pairs.clone());
             }
-            Arc::new(JSON::LIST_OBJECT { values: pairs.clone().reverse() })
+            Arc::new(JSON::LIST_OBJECT { values: pairs.reverse() })
         },
         Deref @ ARRAY { .. } => {
             let mut elems: Arc<metamodelica::List<Arc<JSON>>>;
@@ -289,7 +289,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
             for mut i in ({let __s=Vector::size(var_field!((*value).values, JSON::ARRAY).clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 elems = metamodelica::cons(toListForm(Vector::getNoBounds(var_field!((*value).values, JSON::ARRAY).clone(), i.clone()))?, elems.clone());
             }
-            Arc::new(JSON::LIST { values: elems.clone() })
+            Arc::new(JSON::LIST { values: elems })
         },
         Deref @ LIST { .. } => {
             let mut elems: Arc<metamodelica::List<Arc<JSON>>>;
@@ -298,7 +298,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
                 let mut e = e.clone();
                 elems = metamodelica::cons(toListForm(e.clone())?, elems.clone());
             }
-            Arc::new(JSON::LIST { values: elems.clone() })
+            Arc::new(JSON::LIST { values: elems })
         },
         _ => {
             value

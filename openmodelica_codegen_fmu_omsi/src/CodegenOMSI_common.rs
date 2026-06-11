@@ -47,16 +47,16 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_mo
             l_modelNamePrefix = Tpl::writeText(Tpl::emptyTxt.clone(), a_modelNameOMSIC.clone())?;
             l_content = generateOmsiFunctionCode(Tpl::emptyTxt.clone(), i_simulation.clone(), (Tpl::textString(l_modelNamePrefix.clone())?).clone(), (literal!("")).clone(), (literal!("sim_eqns")).clone())?;
             txt_2 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fullPathPrefix.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
-            txt_2 = Tpl::writeStr(txt_2.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_sim_eqns.c")).clone() }))?;
-            Tpl::textFile(l_content.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
-            l_content_1 = generateOmsiFunctionCode(Tpl::emptyTxt.clone(), i_initialization.clone(), (Tpl::textString(l_modelNamePrefix.clone())?).clone(), (literal!("")).clone(), (literal!("init_eqns")).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
+            txt_2 = Tpl::writeStr(txt_2, (i_fileNamePrefix.clone()).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_sim_eqns.c")).clone() }))?;
+            Tpl::textFile(l_content, (Tpl::textString(txt_2)?).clone())?;
+            l_content_1 = generateOmsiFunctionCode(Tpl::emptyTxt.clone(), i_initialization.clone(), (Tpl::textString(l_modelNamePrefix)?).clone(), (literal!("")).clone(), (literal!("init_eqns")).clone())?;
             txt_4 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fullPathPrefix.clone()).clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
-            txt_4 = Tpl::writeStr(txt_4.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_init_eqns.c")).clone() }))?;
-            Tpl::textFile(l_content_1.clone(), (Tpl::textString(txt_4.clone())?).clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
+            txt_4 = Tpl::writeStr(txt_4, (i_fileNamePrefix.clone()).clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_init_eqns.c")).clone() }))?;
+            Tpl::textFile(l_content_1, (Tpl::textString(txt_4)?).clone())?;
             txt.clone()
         },
         (txt, _, _) => {
@@ -220,8 +220,8 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             (a_evaluationCode, a_functionPrototypes) = CodegenOMSIC_Equations::generateEquationFunction(a_evaluationCode.clone(), i_eqsystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), a_context.clone(), a_functionPrototypes.clone())?;
             a_evaluationCode = Tpl::writeTok(a_evaluationCode.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_0 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_funcCallArgName.clone()).clone())?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", model_vars_and_params")).clone() }))?;
-            a_functionCall = CodegenOMSIC_Equations::equationCall(a_functionCall.clone(), i_eqsystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_0.clone())?).clone(), (a_omsiName.clone()).clone())?;
+            txt_0 = Tpl::writeTok(txt_0, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", model_vars_and_params")).clone() }))?;
+            a_functionCall = CodegenOMSIC_Equations::equationCall(a_functionCall.clone(), i_eqsystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_0)?).clone(), (a_omsiName.clone()).clone())?;
             a_functionCall = Tpl::writeTok(a_functionCall.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
@@ -233,8 +233,8 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             (a_evaluationCode, a_functionPrototypes) = CodegenOMSIC_Equations::generateEquationFunction(a_evaluationCode.clone(), i_eqsystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), a_context.clone(), a_functionPrototypes.clone())?;
             a_evaluationCode = Tpl::writeTok(a_evaluationCode.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_funcCallArgName.clone()).clone())?;
-            txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", model_vars_and_params, &res[i++]")).clone() }))?;
-            a_residualCall = CodegenOMSIC_Equations::equationCall(a_residualCall.clone(), i_eqsystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_1.clone())?).clone(), (a_omsiName.clone()).clone())?;
+            txt_1 = Tpl::writeTok(txt_1, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", model_vars_and_params, &res[i++]")).clone() }))?;
+            a_residualCall = CodegenOMSIC_Equations::equationCall(a_residualCall.clone(), i_eqsystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_1)?).clone(), (a_omsiName.clone()).clone())?;
             a_residualCall = Tpl::writeTok(a_residualCall.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
@@ -253,24 +253,24 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".h\"")).clone() }))?;
             a_includes = Tpl::writeTok(a_includes.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("&")).clone() }))?;
-            txt_2 = Tpl::writeStr(txt_2.clone(), (a_funcCallArgName.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("->algebraic_system_t[")).clone() }))?;
-            txt_2 = Tpl::writeStr(txt_2.clone(), (intString(i_algSysIndex.clone())).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("], model_vars_and_params, ")).clone() }))?;
-            txt_2 = Tpl::writeStr(txt_2.clone(), (a_omsiName.clone()).clone())?;
-            txt_2 = Tpl::writeTok(txt_2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("->function_vars")).clone() }))?;
-            a_functionCall = CodegenOMSIC_Equations::equationCall(a_functionCall.clone(), i_algSystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_2.clone())?).clone(), (a_omsiName.clone()).clone())?;
+            txt_2 = Tpl::writeStr(txt_2, (a_funcCallArgName.clone()).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("->algebraic_system_t[")).clone() }))?;
+            txt_2 = Tpl::writeStr(txt_2, (intString(i_algSysIndex.clone())).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("], model_vars_and_params, ")).clone() }))?;
+            txt_2 = Tpl::writeStr(txt_2, (a_omsiName.clone()).clone())?;
+            txt_2 = Tpl::writeTok(txt_2, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("->function_vars")).clone() }))?;
+            a_functionCall = CodegenOMSIC_Equations::equationCall(a_functionCall.clone(), i_algSystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_2)?).clone(), (a_omsiName.clone()).clone())?;
             a_functionCall = Tpl::writeTok(a_functionCall.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             l_content = generateOmsiAlgSystemCode(Tpl::emptyTxt.clone(), i_algSystem.clone(), (a_FileNamePrefix.clone()).clone(), (a_omsiName.clone()).clone())?;
             txt_4 = Tpl::writeText(Tpl::emptyTxt.clone(), a_fullPathPrefix.clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
-            txt_4 = Tpl::writeText(txt_4.clone(), a_fileNamePrefix.clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt_4 = Tpl::writeStr(txt_4.clone(), (a_omsiName.clone()).clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_algSyst_")).clone() }))?;
-            txt_4 = Tpl::writeStr(txt_4.clone(), (intString(i_algSystem_algSysIndex.clone())).clone())?;
-            txt_4 = Tpl::writeTok(txt_4.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".c")).clone() }))?;
-            Tpl::textFile(l_content.clone(), (Tpl::textString(txt_4.clone())?).clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
+            txt_4 = Tpl::writeText(txt_4, a_fileNamePrefix.clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            txt_4 = Tpl::writeStr(txt_4, (a_omsiName.clone()).clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_algSyst_")).clone() }))?;
+            txt_4 = Tpl::writeStr(txt_4, (intString(i_algSystem_algSysIndex.clone())).clone())?;
+            txt_4 = Tpl::writeTok(txt_4, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".c")).clone() }))?;
+            Tpl::textFile(l_content, (Tpl::textString(txt_4)?).clone())?;
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
         (txt, i_whenEq @ Deref @ SimCode::SimEqSystem::SES_WHEN { index: _, .. }, _, _, a_includes, a_residualCall, a_omsiName, a_funcCallArgName, a_functionCall, a_functionPrototypes, a_context, a_modelFunctionnamePrefixStr, a_FileNamePrefix, a_evaluationCode) => {
@@ -281,8 +281,8 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             (a_evaluationCode, a_functionPrototypes) = CodegenOMSIC_Equations::generateEquationFunction(a_evaluationCode.clone(), i_whenEq.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), a_context.clone(), a_functionPrototypes.clone())?;
             a_evaluationCode = Tpl::writeTok(a_evaluationCode.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_5 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_funcCallArgName.clone()).clone())?;
-            txt_5 = Tpl::writeTok(txt_5.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", model_vars_and_params")).clone() }))?;
-            a_functionCall = CodegenOMSIC_Equations::equationCall(a_functionCall.clone(), i_whenEq.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_5.clone())?).clone(), (a_omsiName.clone()).clone())?;
+            txt_5 = Tpl::writeTok(txt_5, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", model_vars_and_params")).clone() }))?;
+            a_functionCall = CodegenOMSIC_Equations::equationCall(a_functionCall.clone(), i_whenEq.clone(), (a_FileNamePrefix.clone()).clone(), (a_modelFunctionnamePrefixStr.clone()).clone(), (Tpl::textString(txt_5)?).clone(), (a_omsiName.clone()).clone())?;
             a_functionCall = Tpl::writeTok(a_functionCall.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
@@ -490,7 +490,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             (l_initlaizationFunction, a_functionPrototypes, a_includes) = generateInitalizationAlgSystem(Tpl::emptyTxt.clone(), i_algSystem.clone(), (a_FileNamePrefix.clone()).clone(), a_functionPrototypes.clone(), a_includes.clone(), (a_omsiName.clone()).clone())?;
             (l_0__, a_includes, a_evaluationCode, a_functionCall, a_residualCall, a_functionPrototypes) = generateOmsiFunctionCode_inner(Tpl::emptyTxt.clone(), i_residual.clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), (literal!("this_function")).clone(), a_includes.clone(), a_evaluationCode.clone(), a_functionCall.clone(), a_residualCall.clone(), a_functionPrototypes.clone(), (a_omsiName.clone()).clone())?;
             ret_3 = List::fill(i_algSystem.clone(), 1);
-            l_equationInfos = CodegenUtilSimulation::dumpEqs(Tpl::emptyTxt.clone(), ret_3.clone())?;
+            l_equationInfos = CodegenUtilSimulation::dumpEqs(Tpl::emptyTxt.clone(), ret_3)?;
             l_matrixString = Tpl::emptyTxt.clone();
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("omsi_status ")).clone() }))?;
             a_functionPrototypes = Tpl::writeStr(a_functionPrototypes.clone(), (a_FileNamePrefix.clone()).clone())?;
@@ -506,25 +506,25 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             a_functionPrototypes = Tpl::writeStr(a_functionPrototypes.clone(), (intString(i_algSystem_algSysIndex.clone())).clone())?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(omsi_algebraic_system_t* this_alg_system, const omsi_values* model_vars_and_params, void* data);")).clone() }))?;
             l_headerFileName = Tpl::writeText(Tpl::emptyTxt.clone(), a_fileNamePrefix.clone())?;
-            l_headerFileName = Tpl::writeTok(l_headerFileName.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            l_headerFileName = Tpl::writeStr(l_headerFileName.clone(), (a_omsiName.clone()).clone())?;
-            l_headerFileName = Tpl::writeTok(l_headerFileName.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_algSyst_")).clone() }))?;
-            l_headerFileName = Tpl::writeStr(l_headerFileName.clone(), (intString(i_algSystem_algSysIndex.clone())).clone())?;
+            l_headerFileName = Tpl::writeTok(l_headerFileName, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            l_headerFileName = Tpl::writeStr(l_headerFileName, (a_omsiName.clone()).clone())?;
+            l_headerFileName = Tpl::writeTok(l_headerFileName, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_algSyst_")).clone() }))?;
+            l_headerFileName = Tpl::writeStr(l_headerFileName, (intString(i_algSystem_algSysIndex.clone())).clone())?;
             (l_headerFileContent, a_includes, a_functionPrototypes) = generateCodeHeader(Tpl::emptyTxt.clone(), (a_FileNamePrefix.clone()).clone(), a_includes.clone(), (Tpl::textString(l_headerFileName.clone())?).clone(), a_functionPrototypes.clone())?;
             txt_7 = Tpl::writeText(Tpl::emptyTxt.clone(), a_fullPathPrefix.clone())?;
-            txt_7 = Tpl::writeTok(txt_7.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
-            txt_7 = Tpl::writeText(txt_7.clone(), l_headerFileName.clone())?;
-            txt_7 = Tpl::writeTok(txt_7.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".h")).clone() }))?;
-            Tpl::textFile(l_headerFileContent.clone(), (Tpl::textString(txt_7.clone())?).clone())?;
+            txt_7 = Tpl::writeTok(txt_7, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
+            txt_7 = Tpl::writeText(txt_7, l_headerFileName.clone())?;
+            txt_7 = Tpl::writeTok(txt_7, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".h")).clone() }))?;
+            Tpl::textFile(l_headerFileContent, (Tpl::textString(txt_7)?).clone())?;
             txt = insertCopyrightOpenModelica(txt.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("/* Algebraic system code */\n")).clone(), (literal!("#include \"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_headerFileName.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_headerFileName)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".h\"\n")).clone(), (literal!("\n")).clone(), (literal!("#if defined(__cplusplus)\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone(), (literal!("/* Instantiation and initialization */\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_initlaizationFunction.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_initlaizationFunction)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = Tpl::writeText(txt.clone(), l_matrixString.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_matrixString)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("/* Evaluation functions for ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_FileNamePrefix.clone()).clone())?;
@@ -550,7 +550,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("return omsi_ok;\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("/* Algebraic system evaluation */\n")).clone(), (literal!("/*\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_equationInfos.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_equationInfos)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("*/\n")).clone(), (literal!("omsi_status ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_FileNamePrefix.clone()).clone())?;
@@ -589,7 +589,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             (l_initlaizationFunction, a_functionPrototypes, a_includes) = generateInitalizationAlgSystem(Tpl::emptyTxt.clone(), i_algSystem.clone(), (a_FileNamePrefix.clone()).clone(), a_functionPrototypes.clone(), a_includes.clone(), (a_omsiName.clone()).clone())?;
             (l_0__, a_includes, a_evaluationCode, a_functionCall, a_residualCall, a_functionPrototypes) = generateOmsiFunctionCode_inner(Tpl::emptyTxt.clone(), i_residual.clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), (literal!("this_function")).clone(), a_includes.clone(), a_evaluationCode.clone(), a_functionCall.clone(), a_residualCall.clone(), a_functionPrototypes.clone(), (a_omsiName.clone()).clone())?;
             ret_8 = List::fill(i_algSystem.clone(), 1);
-            l_equationInfos = CodegenUtilSimulation::dumpEqs(Tpl::emptyTxt.clone(), ret_8.clone())?;
+            l_equationInfos = CodegenUtilSimulation::dumpEqs(Tpl::emptyTxt.clone(), ret_8)?;
             l_matrixString = CodegenOMSIC_Equations::generateMatrixInitialization(Tpl::emptyTxt.clone(), i_matrix.clone())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#include \"")).clone() }))?;
             a_includes = Tpl::writeText(a_includes.clone(), a_fileNamePrefix.clone())?;
@@ -614,25 +614,25 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             a_functionPrototypes = Tpl::writeStr(a_functionPrototypes.clone(), (intString(i_algSystem_algSysIndex.clone())).clone())?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(omsi_algebraic_system_t* this_alg_system, const omsi_values* model_vars_and_params, void* data);")).clone() }))?;
             l_headerFileName = Tpl::writeText(Tpl::emptyTxt.clone(), a_fileNamePrefix.clone())?;
-            l_headerFileName = Tpl::writeTok(l_headerFileName.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            l_headerFileName = Tpl::writeStr(l_headerFileName.clone(), (a_omsiName.clone()).clone())?;
-            l_headerFileName = Tpl::writeTok(l_headerFileName.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_algSyst_")).clone() }))?;
-            l_headerFileName = Tpl::writeStr(l_headerFileName.clone(), (intString(i_algSystem_algSysIndex.clone())).clone())?;
+            l_headerFileName = Tpl::writeTok(l_headerFileName, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            l_headerFileName = Tpl::writeStr(l_headerFileName, (a_omsiName.clone()).clone())?;
+            l_headerFileName = Tpl::writeTok(l_headerFileName, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_algSyst_")).clone() }))?;
+            l_headerFileName = Tpl::writeStr(l_headerFileName, (intString(i_algSystem_algSysIndex.clone())).clone())?;
             (l_headerFileContent, a_includes, a_functionPrototypes) = generateCodeHeader(Tpl::emptyTxt.clone(), (a_FileNamePrefix.clone()).clone(), a_includes.clone(), (Tpl::textString(l_headerFileName.clone())?).clone(), a_functionPrototypes.clone())?;
             txt_10 = Tpl::writeText(Tpl::emptyTxt.clone(), a_fullPathPrefix.clone())?;
-            txt_10 = Tpl::writeTok(txt_10.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
-            txt_10 = Tpl::writeText(txt_10.clone(), l_headerFileName.clone())?;
-            txt_10 = Tpl::writeTok(txt_10.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".h")).clone() }))?;
-            Tpl::textFile(l_headerFileContent.clone(), (Tpl::textString(txt_10.clone())?).clone())?;
+            txt_10 = Tpl::writeTok(txt_10, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
+            txt_10 = Tpl::writeText(txt_10, l_headerFileName.clone())?;
+            txt_10 = Tpl::writeTok(txt_10, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".h")).clone() }))?;
+            Tpl::textFile(l_headerFileContent, (Tpl::textString(txt_10)?).clone())?;
             txt = insertCopyrightOpenModelica(txt.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("/* Algebraic system code */\n")).clone(), (literal!("#include \"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_headerFileName.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_headerFileName)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".h\"\n")).clone(), (literal!("\n")).clone(), (literal!("#if defined(__cplusplus)\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone(), (literal!("/* Instantiation and initialization */\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_initlaizationFunction.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_initlaizationFunction)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = Tpl::writeText(txt.clone(), l_matrixString.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_matrixString)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("/* Evaluation functions for ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_FileNamePrefix.clone()).clone())?;
@@ -658,7 +658,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("return omsi_ok;\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("/* Algebraic system evaluation */\n")).clone(), (literal!("/*\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_equationInfos.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_equationInfos)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("*/\n")).clone(), (literal!("omsi_status ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_FileNamePrefix.clone()).clone())?;
@@ -749,8 +749,8 @@ fn lm_70(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             let mut a_includes = (*a_includes).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("derivativeMatFunc_")).clone() }))?;
-            txt_0 = Tpl::writeStr(txt_0.clone(), (a_index.clone()).clone())?;
-            (txt, a_functionPrototypes, a_includes) = generateInitalizationOMSIFunction(txt.clone(), i_column.clone(), (Tpl::textString(txt_0.clone())?).clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), a_functionPrototypes.clone(), a_includes.clone(), true, (a_omsiName.clone()).clone())?;
+            txt_0 = Tpl::writeStr(txt_0, (a_index.clone()).clone())?;
+            (txt, a_functionPrototypes, a_includes) = generateInitalizationOMSIFunction(txt.clone(), i_column.clone(), (Tpl::textString(txt_0)?).clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), a_functionPrototypes.clone(), a_includes.clone(), true, (a_omsiName.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_omsiName, in_a_includes, in_a_functionPrototypes, in_a_FileNamePrefix, in_a_index) = (txt.clone(), rest.clone(), (a_omsiName.clone()).clone(), a_includes.clone(), a_functionPrototypes.clone(), (a_FileNamePrefix.clone()).clone(), (a_index.clone()).clone()); continue '__tco; }
         },
@@ -770,9 +770,9 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
             let mut a_includes = (*a_includes).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             l_initalizationCodeCol = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            (l_initalizationCodeCol, a_includes, a_functionPrototypes) = lm_70(l_initalizationCodeCol.clone(), i_derMat_columns.clone(), (a_omsiName.clone()).clone(), a_includes.clone(), a_functionPrototypes.clone(), (a_FileNamePrefix.clone()).clone(), (a_index.clone()).clone())?;
-            l_initalizationCodeCol = Tpl::popIter(l_initalizationCodeCol.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_initalizationCodeCol.clone())?;
+            (l_initalizationCodeCol, a_includes, a_functionPrototypes) = lm_70(l_initalizationCodeCol, i_derMat_columns.clone(), (a_omsiName.clone()).clone(), a_includes.clone(), a_functionPrototypes.clone(), (a_FileNamePrefix.clone()).clone(), (a_index.clone()).clone())?;
+            l_initalizationCodeCol = Tpl::popIter(l_initalizationCodeCol)?;
+            txt = Tpl::writeText(txt.clone(), l_initalizationCodeCol)?;
             (txt.clone(), a_includes.clone(), a_functionPrototypes.clone())
         },
         (txt, _, _, a_includes, a_functionPrototypes, _, _) => {
@@ -964,8 +964,8 @@ pub(crate) fn generateInitalizationAlgSystem(mut in_txt: Tpl::Text, mut in_a_equ
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(omsi_algebraic_system_t* algSystem, omsi_values* function_vars, omsi_values* pre_vars);")).clone() }))?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             l_zeroCrossingIndices = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_zeroCrossingIndices = lm_73(l_zeroCrossingIndices.clone(), i_zeroCrossingConditions.clone())?;
-            l_zeroCrossingIndices = Tpl::popIter(l_zeroCrossingIndices.clone())?;
+            l_zeroCrossingIndices = lm_73(l_zeroCrossingIndices, i_zeroCrossingConditions.clone())?;
+            l_zeroCrossingIndices = Tpl::popIter(l_zeroCrossingIndices)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Function instantiate omsi_algebraic_system_t struct */\n")).clone(), (literal!("omsi_status ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_FileNamePrefix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
@@ -978,10 +978,10 @@ pub(crate) fn generateInitalizationAlgSystem(mut in_txt: Tpl::Text, mut in_a_equ
             txt = Tpl::writeStr(txt.clone(), (intString(i_dim__n.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("\n")).clone(), (literal!("algSystem->n_conditions = ")).clone()], lastHasNewLine: false }))?;
             ret_1 = (i_zeroCrossingConditions.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_1)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() }))?;
             ret_2 = (i_zeroCrossingConditions.clone().len() as i32);
-            txt = fun_74(txt.clone(), ret_2.clone(), l_zeroCrossingIndices.clone())?;
+            txt = fun_74(txt.clone(), ret_2, l_zeroCrossingIndices)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("algSystem->isLinear = ")).clone()], lastHasNewLine: false }))?;
             txt = fun_75(txt.clone(), i_linearSystem.clone())?;
@@ -1007,8 +1007,8 @@ pub(crate) fn generateInitalizationAlgSystem(mut in_txt: Tpl::Text, mut in_a_equ
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt_3 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resFunction_")).clone() }))?;
-            txt_3 = Tpl::writeStr(txt_3.clone(), (intString(i_algSysIndex.clone())).clone())?;
-            (txt, a_functionPrototypes, a_includes) = generateInitalizationOMSIFunction(txt.clone(), i_residual.clone(), (Tpl::textString(txt_3.clone())?).clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), a_functionPrototypes.clone(), a_includes.clone(), false, (a_omsiName.clone()).clone())?;
+            txt_3 = Tpl::writeStr(txt_3, (intString(i_algSysIndex.clone())).clone())?;
+            (txt, a_functionPrototypes, a_includes) = generateInitalizationOMSIFunction(txt.clone(), i_residual.clone(), (Tpl::textString(txt_3)?).clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), a_functionPrototypes.clone(), a_includes.clone(), false, (a_omsiName.clone()).clone())?;
             (txt.clone(), a_functionPrototypes.clone(), a_includes.clone())
         },
         (txt, _, _, a_functionPrototypes, a_includes, _) => {
@@ -1077,8 +1077,8 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_variable: SimCodeVar::SimVar, mut in_a
             let mut ret_0: SimCode::SimCode;
             a_stringName = CodegenUtil::crefCCommentWithVariability(a_stringName.clone(), i_var.clone())?;
             ret_0 = SimCodeUtil::getSimCode()?;
-            ret_1 = (SimCodeUtil::getValueReference(i_var.clone(), ret_0.clone(), false)?).clone();
-            a_stringIndex = Tpl::writeStr(a_stringIndex.clone(), (ret_1.clone()).clone())?;
+            ret_1 = (SimCodeUtil::getValueReference(i_var.clone(), ret_0, false)?).clone();
+            a_stringIndex = Tpl::writeStr(a_stringIndex.clone(), (ret_1).clone())?;
             (txt.clone(), a_stringIndex.clone(), a_stringName.clone())
         },
         (mut txt, _, mut a_stringIndex, mut a_stringName) => {
@@ -1105,20 +1105,20 @@ fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             l_stringType = fun_79(Tpl::emptyTxt.clone(), i_variable.clone())?;
             l_stringName = Tpl::emptyTxt.clone();
             l_stringIndex = Tpl::emptyTxt.clone();
-            (l_0__, l_stringIndex, l_stringName) = fun_80(Tpl::emptyTxt.clone(), i_variable.clone(), l_stringIndex.clone(), l_stringName.clone())?;
+            (l_0__, l_stringIndex, l_stringName) = fun_80(Tpl::emptyTxt.clone(), i_variable.clone(), l_stringIndex, l_stringName)?;
             txt = Tpl::writeStr(txt.clone(), (a_omsiFuncName.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_i0.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_i0)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("].type  = ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_stringType.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_stringType)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_omsiFuncName.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_i0.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_i0)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("].index = ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_stringIndex.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_stringIndex)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";   ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_stringName.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_stringName)?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_omsiFuncName) = (txt.clone(), rest.clone(), (a_omsiFuncName.clone()).clone()); continue '__tco; }
         },
@@ -1244,10 +1244,10 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
             a_functionPrototypes = Tpl::writeStr(a_functionPrototypes.clone(), (a_functionName.clone()).clone())?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_OMSIFunc (struct omsi_function_t* omsi_function);\n")).clone() }))?;
             l_evaluationTarget = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_FileNamePrefix.clone()).clone())?;
-            l_evaluationTarget = Tpl::writeTok(l_evaluationTarget.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            l_evaluationTarget = Tpl::writeStr(l_evaluationTarget.clone(), (a_omsiName.clone()).clone())?;
-            l_evaluationTarget = Tpl::writeTok(l_evaluationTarget.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            l_evaluationTarget = Tpl::writeStr(l_evaluationTarget.clone(), (a_functionName.clone()).clone())?;
+            l_evaluationTarget = Tpl::writeTok(l_evaluationTarget, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            l_evaluationTarget = Tpl::writeStr(l_evaluationTarget, (a_omsiName.clone()).clone())?;
+            l_evaluationTarget = Tpl::writeTok(l_evaluationTarget, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            l_evaluationTarget = Tpl::writeStr(l_evaluationTarget, (a_functionName.clone()).clone())?;
             l_algSystemInit = generateAlgebraicSystemInstantiation(Tpl::emptyTxt.clone(), (a_FileNamePrefix.clone()).clone(), i_nAlgebraicSystems.clone(), i_equations.clone(), (a_omsiName.clone()).clone())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("#include <omsu_helper.h>\n")).clone() }))?;
             a_includes = fun_84(a_includes.clone(), i_nAlgebraicSystems.clone())?;
@@ -1271,22 +1271,22 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
             txt = Tpl::writeStr(txt.clone(), (intString(i_nAlgebraicSystems.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("\n")).clone(), (literal!("omsi_function->n_input_vars = ")).clone()], lastHasNewLine: false }))?;
             ret_2 = (i_inputVars.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_2.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_2)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("omsi_function->n_inner_vars = ")).clone()], lastHasNewLine: false }))?;
             ret_3 = (i_innerVars.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_3.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_3)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("omsi_function->n_output_vars = ")).clone()], lastHasNewLine: false }))?;
             ret_4 = (i_outputVars.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_4.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_4)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = fun_85(txt.clone(), i_nAlgebraicSystems.clone(), l_algSystemInit.clone())?;
+            txt = fun_85(txt.clone(), i_nAlgebraicSystems.clone(), l_algSystemInit)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("if (instantiate_input_inner_output_indices (omsi_function, ")).clone()], lastHasNewLine: false }))?;
             ret_5 = (i_inputVars.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_5.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_5)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             ret_6 = (i_outputVars.clone().len() as i32);
-            txt = Tpl::writeStr(txt.clone(), (intString(ret_6.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(ret_6)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(") == omsi_error) {\n")).clone(), (literal!("  return omsi_error;\n")).clone(), (literal!("}\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt = fun_86(txt.clone(), a_hasLocalVars.clone(), i_nAllVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -1294,12 +1294,12 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
             txt = generateOmsiIndexTypeInitialization(txt.clone(), i_inputVars.clone(), (literal!("omsi_function->input_vars_indices")).clone(), (literal!("sim_data->model_vars_and_params")).clone(), (literal!("omsi_function->input_vars_indices")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_7 = (i_inputVars.clone().len() as i32);
-            txt = fun_87(txt.clone(), ret_7.clone())?;
+            txt = fun_87(txt.clone(), ret_7)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = generateOmsiIndexTypeInitialization(txt.clone(), i_outputVars.clone(), (literal!("omsi_function->output_vars_indices")).clone(), (literal!("sim_data->model_vars_and_params")).clone(), (literal!("omsi_function->output_vars_indices")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("/* Set pointer for evaluation function */\n")).clone(), (literal!("omsi_function->evaluate = ")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_evaluationTarget.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_evaluationTarget)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("\n")).clone(), (literal!("return omsi_ok;\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
@@ -1366,7 +1366,7 @@ fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             let mut x_i0: i32;
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
-            txt = fun_90(txt.clone(), i_equation.clone(), x_i0.clone(), (a_omsiName.clone()).clone(), (a_FileNamePrefix.clone()).clone())?;
+            txt = fun_90(txt.clone(), i_equation.clone(), x_i0, (a_omsiName.clone()).clone(), (a_FileNamePrefix.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_omsiName, in_a_FileNamePrefix) = (txt.clone(), rest.clone(), (a_omsiName.clone()).clone(), (a_FileNamePrefix.clone()).clone()); continue '__tco; }
         },
@@ -1395,9 +1395,9 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_timeEvent: BackendDAE::TimeEvent, mut 
             let mut l_e1: Tpl::Text;
             let mut l_preExp: Tpl::Text;
             l_preExp = Tpl::emptyTxt.clone();
-            (l_e1, l_preExp, a_varDecls, a_auxFunction) = CodegenCFunctions::daeExp(Tpl::emptyTxt.clone(), i_startExp.clone(), SimCodeFunction::contextOther().clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
-            (l_e2, l_preExp, a_varDecls, a_auxFunction) = CodegenCFunctions::daeExp(Tpl::emptyTxt.clone(), i_intervalExp.clone(), SimCodeFunction::contextOther().clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
-            txt = Tpl::writeText(txt.clone(), l_preExp.clone())?;
+            (l_e1, l_preExp, a_varDecls, a_auxFunction) = CodegenCFunctions::daeExp(Tpl::emptyTxt.clone(), i_startExp.clone(), SimCodeFunction::contextOther().clone(), l_preExp, a_varDecls.clone(), a_auxFunction.clone())?;
+            (l_e2, l_preExp, a_varDecls, a_auxFunction) = CodegenCFunctions::daeExp(Tpl::emptyTxt.clone(), i_intervalExp.clone(), SimCodeFunction::contextOther().clone(), l_preExp, a_varDecls.clone(), a_auxFunction.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_preExp)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* sample ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
@@ -1408,11 +1408,11 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_timeEvent: BackendDAE::TimeEvent, mut 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("sample_events[")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_i0.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("].start_time = ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_e1.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_e1)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("sample_events[")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_i0.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("].interval = ")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_e2.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_e2)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone())
         },
@@ -1435,7 +1435,7 @@ fn lm_94(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE:
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
-            (txt, a_auxFunction, a_varDecls) = fun_93(txt.clone(), i_timeEvent.clone(), x_i0.clone(), a_auxFunction.clone(), a_varDecls.clone())?;
+            (txt, a_auxFunction, a_varDecls) = fun_93(txt.clone(), i_timeEvent.clone(), x_i0, a_auxFunction.clone(), a_varDecls.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items, in_a_auxFunction, in_a_varDecls) = (txt.clone(), rest.clone(), a_auxFunction.clone(), a_varDecls.clone()); continue '__tco; }
         },

@@ -117,14 +117,14 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut
             let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
             let mut fkey: Option<Key>;
             (fkey, indx) = get1(key.clone(), hashSet)?;
-            if isSome(fkey.clone()) {
-                varr = valueArraySetnth(varr.clone(), indx.clone(), key.clone())?;
+            if isSome(fkey) {
+                varr = valueArraySetnth(varr.clone(), indx, key.clone())?;
             } else {
                 indx = intMod(hashFunc(key.clone())?, bsize.clone());
                 newpos = valueArrayLength(varr.clone());
                 varr = valueArrayAdd(varr.clone(), key.clone())?;
-                indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-                hashvec = metamodelica::arrayUpdate(hashvec.clone(), indx.clone() + 1, metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()))?;
+                indexes = ({let __elt = hashvec.borrow()[(indx + 1-1) as usize].clone(); __elt});
+                hashvec = metamodelica::arrayUpdate(hashvec.clone(), indx + 1, metamodelica::cons((key.clone(), newpos), indexes))?;
                 n = valueArrayLength(varr.clone());
             }
             (hashvec.clone(), varr.clone(), bsize.clone(), n.clone(), fntpl.clone())
@@ -137,9 +137,9 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut
             metamodelica::print((intString(bsize.clone())).clone());
             metamodelica::print((literal!(" key: ")).clone());
             s = (keystrFunc(key.clone())?).clone();
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" Hash: ")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!(" Hash: ")); ArcStr::from(__mm_s) }).clone());
             hval = intMod(hashFunc(key.clone())?, bsize.clone());
-            metamodelica::print((intString(hval.clone())).clone());
+            metamodelica::print((intString(hval)).clone());
             metamodelica::print((literal!("\n")).clone());
             bail!("fail")
         },
@@ -160,10 +160,10 @@ pub(crate) fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace>(mu
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
-            indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-            hashvec_1 = metamodelica::arrayUpdate(hashvec.clone(), indx.clone() + 1, metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()))?;
+            indexes = ({let __elt = hashvec.borrow()[(indx + 1-1) as usize].clone(); __elt});
+            hashvec_1 = metamodelica::arrayUpdate(hashvec.clone(), indx + 1, metamodelica::cons((key.clone(), newpos), indexes))?;
             n_1 = valueArrayLength(varr_1.clone());
-            (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
+            (hashvec_1.clone(), varr_1, bsize.clone(), n_1, fntpl.clone())
         },
     });
     Ok(outHashSet)
@@ -182,10 +182,10 @@ pub fn addUnique<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key,
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
-            indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-            hashvec_1 = metamodelica::arrayUpdate(hashvec.clone(), indx.clone() + 1, metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()))?;
+            indexes = ({let __elt = hashvec.borrow()[(indx + 1-1) as usize].clone(); __elt});
+            hashvec_1 = metamodelica::arrayUpdate(hashvec.clone(), indx + 1, metamodelica::cons((key.clone(), newpos), indexes))?;
             n_1 = valueArrayLength(varr_1.clone());
-            (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
+            (hashvec_1.clone(), varr_1, bsize.clone(), n_1, fntpl.clone())
         },
         _ => bail!("match: no arm matched"),
     });
@@ -221,7 +221,7 @@ pub fn has<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut h
         _ => {
             let mut oKey: Option<Key>;
             (oKey, _) = get1(key, hashSet)?;
-            isSome(oKey.clone())
+            isSome(oKey)
         },
     });
     Ok(b)
@@ -255,10 +255,10 @@ fn get1<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hash
             let mut k: Option<Key>;
             let mut b: bool;
             hashindx = intMod(hashFunc(key.clone())?, bsize.clone());
-            indexes = ({let __elt = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone(); __elt});
-            (indx, b) = get2(key, indexes.clone(), keyEqual.clone())?;
-            k = if (b.clone()) {valueArrayNthT(varr.clone(), indx)?} else {None};
-            (k.clone(), indx)
+            indexes = ({let __elt = hashvec.borrow()[(hashindx + 1-1) as usize].clone(); __elt});
+            (indx, b) = get2(key, indexes, keyEqual.clone())?;
+            k = if (b) {valueArrayNthT(varr.clone(), indx)?} else {None};
+            (k, indx)
         },
     });
     Ok((okey, indx))
@@ -404,7 +404,7 @@ pub(crate) fn valueArrayNth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mu
                 _ => bail!("pattern mismatch"),
             } };
             k = __pa0.clone();
-            k.clone()
+            k
         },
         _ => bail!("match: no arm matched"),
     });

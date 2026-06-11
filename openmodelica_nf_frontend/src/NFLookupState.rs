@@ -373,7 +373,7 @@ pub mod LookupState {
         (Deref @ COMP_FUNC { .. }, _) => {
             let mut name_str: ArcStr;
             name_str = (LookupStateName::toString(name)?).clone();
-            Error::addSourceMessage(Error::FOUND_FUNC_NAME_VIA_COMP_NONCALL.clone(), list![(name_str.clone()).clone()], info)?;
+            Error::addSourceMessage(Error::FOUND_FUNC_NAME_VIA_COMP_NONCALL.clone(), list![(name_str).clone()], info)?;
             bail!("fail")
         },
         (Deref @ COMP_CLASS { .. }, _) => {
@@ -385,37 +385,37 @@ pub mod LookupState {
             let mut info2: SourceInfo;
             name_str = (InstNode::name(node.clone())?).clone();
             info2 = InstNode::info(node.clone());
-            Error::addSourceMessage(Error::NON_CLASS_IN_COMP_FUNC_NAME.clone(), list![(name_str.clone()).clone()], info2.clone())?;
+            Error::addSourceMessage(Error::NON_CLASS_IN_COMP_FUNC_NAME.clone(), list![(name_str).clone()], info2)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, Deref @ COMP { .. }) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::UNEXPECTED_COMPONENT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
+            Error::addSourceMessage(Error::UNEXPECTED_COMPONENT_IN_COMPOSITE_NAME.clone(), list![(name_str).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, _) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
+            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ CLASS_COMP { .. } }, Deref @ COMP { .. }) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::CLASS_IN_COMPOSITE_COMP_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
+            Error::addSourceMessage(Error::CLASS_IN_COMPOSITE_COMP_NAME.clone(), list![(name_str).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ CLASS_COMP { .. } }, _) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
+            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ IMPORT { .. } }, _) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::IMPORT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
+            Error::addSourceMessage(Error::IMPORT_IN_COMPOSITE_NAME.clone(), list![(name_str).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ PARTIAL_CLASS { .. } }, _) => {
@@ -423,7 +423,7 @@ pub mod LookupState {
             if !(InstContext::inRelaxed(context) || InstContext::inRedeclared(context)) {
                 node2 = listHead(InstNode::scopeList(node.clone(), false, metamodelica::nil())?)?;
                 if InstNode::isComponent(node2.clone())? {
-                    Error::addMultiSourceMessage(Error::USE_OF_PARTIAL_CLASS.clone(), list![(InstNode::name(node2.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(Class::constrainingClassPath(node.clone())?, (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(node.clone()), InstNode::info(node2.clone())])?;
+                    Error::addMultiSourceMessage(Error::USE_OF_PARTIAL_CLASS.clone(), list![(InstNode::name(node2.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(Class::constrainingClassPath(node.clone())?, (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(node.clone()), InstNode::info(node2)])?;
                 } else {
                     Error::addSourceMessage(Error::LOOKUP_IN_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], info)?;
                 }

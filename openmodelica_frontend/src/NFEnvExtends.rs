@@ -178,7 +178,7 @@ fn qualify3(mut name: ArcStr, mut item: Item, mut inEnv: Env, mut inExtendsTable
             let mut env: Env;
             let mut cls_env = (*cls_env).clone();
             env = NFSCodeEnv::enterFrame(cls_env.clone(), inEnv);
-            let __pa0 = ::match_deref::match_deref! { match &(qualify2(env.clone(), cls_ty.clone(), inExtendsTable.clone())?) {
+            let __pa0 = ::match_deref::match_deref! { match &(qualify2(env, cls_ty.clone(), inExtendsTable.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -315,7 +315,7 @@ fn qualifyExtends3(mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Env, mut inExte
             let mut ep: Option<Arc<Absyn::Path>>;
             let mut opath: Option<Arc<Absyn::Path>>;
             (opath, env, ep) = qualifyExtendsPart((name.clone()).clone(), inEnv, inExtendsTable.clone(), inIsFirst, inFullPath, inInfo)?;
-            return Ok(makeExtendsPath(opath.clone(), None, env.clone(), ep.clone(), inIsFirst)?)
+            return Ok(makeExtendsPath(opath, None, env, ep, inIsFirst)?)
         },
         (Deref @ Absyn::Path::QUALIFIED { name, path: rest_path }, _) => {
             let mut env: Env;
@@ -324,12 +324,12 @@ fn qualifyExtends3(mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Env, mut inExte
             let mut rest_path = (*rest_path).clone();
             (opath, env, ep) = qualifyExtendsPart((name.clone()).clone(), inEnv, inExtendsTable.clone(), inIsFirst, inFullPath.clone(), inInfo.clone())?;
             rest_path = qualifyExtends3(rest_path.clone(), env.clone(), inExtendsTable.clone(), false, inFullPath, inInfo, ep.clone())?;
-            return Ok(makeExtendsPath(opath.clone(), Some(rest_path.clone()), env.clone(), ep.clone(), inIsFirst)?)
+            return Ok(makeExtendsPath(opath, Some(rest_path.clone()), env, ep, inIsFirst)?)
         },
         (Deref @ Absyn::Path::FULLYQUALIFIED { path: rest_path }, _) => {
             let mut env: Env;
             env = NFSCodeEnv::getEnvTopScope(inEnv)?;
-            { (inBaseClass, inEnv, inExtendsTable, inIsFirst, inFullPath, inInfo, inErrorPath) = (rest_path.clone(), env.clone(), inExtendsTable.clone(), inIsFirst, rest_path.clone(), inInfo, None); continue '__tco; }
+            { (inBaseClass, inEnv, inExtendsTable, inIsFirst, inFullPath, inInfo, inErrorPath) = (rest_path.clone(), env, inExtendsTable.clone(), inIsFirst, rest_path.clone(), inInfo, None); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -351,8 +351,8 @@ fn makeExtendsPath(mut inFirstPath: Option<Arc<Absyn::Path>>, mut inRestPath: Op
         (_, _, _, true) => {
             let mut path: Arc<Absyn::Path>;
             path = NFSCodeEnv::getEnvPath(inEnv)?;
-            path = AbsynUtil::joinPathsOptSuffix(path.clone(), inRestPath)?;
-            path = AbsynUtil::makeFullyQualified(path.clone());
+            path = AbsynUtil::joinPathsOptSuffix(path, inRestPath)?;
+            path = AbsynUtil::makeFullyQualified(path);
             path.clone()
         },
         (Some(path), _, _, _) => {
@@ -384,7 +384,7 @@ fn qualifyExtendsPart2(mut inPartName: Arc<Absyn::Path>, mut inItem: Option<Arc<
             let mut env = (*env).clone();
             ep = checkExtendsPart(inIsFirst, inFromExtends, inPartName, item.clone(), inFullPath, env.clone(), inOriginEnv)?;
             env = NFSCodeEnv::mergeItemEnv(item.clone(), env.clone());
-            (env.clone(), ep.clone())
+            (env.clone(), ep)
         },
         _ => {
             (NFSCodeEnv::emptyEnv.clone(), makeExtendsError(inFullPath, inPartName, (arcstr::literal!(BASECLASS_NOT_FOUND_ERROR)).clone())?)
@@ -400,8 +400,8 @@ fn makeExtendsError(mut inBaseClass: Arc<Absyn::Path>, mut inPart: Arc<Absyn::Pa
         _ => {
             let mut path: Arc<Absyn::Path>;
             path = AbsynUtil::joinPaths(inPart, Arc::new(Absyn::Path::QUALIFIED { name: (literal!("$bc")).clone(), path: inBaseClass }))?;
-            path = Arc::new(Absyn::Path::QUALIFIED { name: (literal!("$E")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (inError).clone(), path: path.clone() }) });
-            Some(path.clone())
+            path = Arc::new(Absyn::Path::QUALIFIED { name: (literal!("$E")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (inError).clone(), path: path }) });
+            Some(path)
         },
     });
     Ok(outError)
@@ -784,10 +784,10 @@ fn lookupInBaseClasses2(mut inName: ArcStr, mut inExtends: Option<Arc<NFSCodeEnv
             let mut opt_item: Option<Arc<NFSCodeEnv::Item>>;
             let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
             (item, env) = lookupFullyQualified(bc.clone(), inEnv, inExtendsTable.clone())?;
-            env = NFSCodeEnv::mergeItemEnv(item.clone(), env.clone());
-            env = NFSCodeEnv::setImportTableHidden(env.clone(), true)?;
-            (opt_item, _, opt_env, _) = lookupInLocalScope((inName).clone(), env.clone(), inExtendsTable.clone())?;
-            (opt_item.clone(), opt_env.clone())
+            env = NFSCodeEnv::mergeItemEnv(item, env);
+            env = NFSCodeEnv::setImportTableHidden(env, true)?;
+            (opt_item, _, opt_env, _) = lookupInLocalScope((inName).clone(), env, inExtendsTable.clone())?;
+            (opt_item, opt_env)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -902,7 +902,7 @@ fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExt
             } };
             item = __pa0.clone();
             env = __pa1.clone();
-            return Ok((item.clone(), env.clone()))
+            return Ok((item, env))
         },
         Deref @ Absyn::Path::QUALIFIED { name, path: rest_path } => {
             let mut item: Item;
@@ -913,8 +913,8 @@ fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExt
             } };
             item = __pa0.clone();
             env = __pa1.clone();
-            env = NFSCodeEnv::mergeItemEnv(item.clone(), env.clone());
-            { (inName, inEnv, inExtendsTable) = (rest_path.clone(), env.clone(), inExtendsTable.clone()); continue '__tco; }
+            env = NFSCodeEnv::mergeItemEnv(item, env);
+            { (inName, inEnv, inExtendsTable) = (rest_path.clone(), env, inExtendsTable.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -996,8 +996,8 @@ fn update3(mut name: ArcStr, mut item: Item, mut inEnv: Env) -> Result<Item> {
             let mut cls = (*cls).clone();
             let mut cls_env = (*cls_env).clone();
             env = NFSCodeEnv::enterFrame(cls_env.clone(), inEnv);
-            (cls, env) = updateClassExtends(cls.clone(), env.clone(), cls_ty.clone())?;
-            let __pa0 = ::match_deref::match_deref! { match &(update2(env.clone())?) {
+            (cls, env) = updateClassExtends(cls.clone(), env, cls_ty.clone())?;
+            let __pa0 = ::match_deref::match_deref! { match &(update2(env)?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1028,8 +1028,8 @@ fn updateClassExtends(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inCl
             } };
             mods = __pa0.clone();
             info = __pa1.clone();
-            (cls, env) = updateClassExtends2(inClass, (name.clone()).clone(), mods.clone(), info.clone(), inEnv);
-            (cls.clone(), env.clone())
+            (cls, env) = updateClassExtends2(inClass, (name.clone()).clone(), mods, info, inEnv);
+            (cls, env)
         },
         _ => {
             (inClass, inEnv)
@@ -1121,9 +1121,9 @@ pub(crate) fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>,
             cls = Arc::new(SCode::Element::CLASS { name: (name.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: ep.clone(), partialPrefix: pp.clone(), restriction: res.clone(), classDef: cdef.clone(), cmt: cmt.clone(), info: info.clone() });
             cls_env = NFSCodeEnv::makeClassEnvironment(cls.clone(), false)?;
             ext = Arc::new(SCode::Element::EXTENDS { baseClassPath: Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, modifications: mods.clone(), ann: None, info: info.clone() });
-            cls_env = addClassExtendsInfoToEnv(ext.clone(), cls_env.clone())?;
-            env = NFSCodeEnv::extendEnvWithItem(NFSCodeEnv::newClassItem(cls.clone(), cls_env.clone(), crate::NFSCodeEnv::ClassType::CLASS_EXTENDS), inEnv, (name.clone()).clone())?;
-            env.clone()
+            cls_env = addClassExtendsInfoToEnv(ext, cls_env)?;
+            env = NFSCodeEnv::extendEnvWithItem(NFSCodeEnv::newClassItem(cls, cls_env, crate::NFSCodeEnv::ClassType::CLASS_EXTENDS), inEnv, (name.clone()).clone())?;
+            env
         },
         _ => {
             let mut info: SourceInfo;
@@ -1133,8 +1133,8 @@ pub(crate) fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>,
             info = SCodeUtil::elementInfo(inClassExtends.clone());
             el_str = (SCodeDump::unparseElementStr(inClassExtends, SCodeDump::defaultOptions.clone())?).clone();
             env_str = (NFSCodeEnv::getEnvName(inEnv)).clone();
-            err_msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSCodeFlattenRedeclare.extendEnvWithClassExtends failed on unknown element ")); __mm_s.push_str(&*el_str.clone()); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*env_str.clone()); ArcStr::from(__mm_s) }).clone();
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(err_msg.clone()).clone()], info.clone())?;
+            err_msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSCodeFlattenRedeclare.extendEnvWithClassExtends failed on unknown element ")); __mm_s.push_str(&*el_str); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*env_str); ArcStr::from(__mm_s) }).clone();
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(err_msg).clone()], info.clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

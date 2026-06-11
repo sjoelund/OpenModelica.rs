@@ -209,13 +209,13 @@ fn symSolverUpdateStates(mut inExp: Arc<DAE::Exp>, mut inTl: (Arc<metamodelica::
             e2 = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cr.clone())?)?;
             e3 = Expression::crefExp(ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()))?;
             cont = false;
-            (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: e3.clone() }), (List::unionElt(cr.clone(), cr_lst.clone()), orderedVars))
+            (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: e2 }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: e3 }), (List::unionElt(cr.clone(), cr_lst.clone()), orderedVars))
         },
         (cr_lst, Deref @ DAE::Exp::CREF { componentRef: cr, .. }) => {
             let mut e: Arc<DAE::Exp>;
             let mut cr_lst = (*cr_lst).clone();
             (e, cr_lst) = symSolverAppendStringToStates(cr.clone(), cr_lst.clone(), orderedVars.clone())?;
-            (e.clone(), (cr_lst.clone(), orderedVars))
+            (e, (cr_lst.clone(), orderedVars))
         },
         _ => {
             (inExp, inTl)
@@ -246,7 +246,7 @@ fn symSolverUpdateDer(mut inExp: Arc<DAE::Exp>, mut inTpl: Arc<metamodelica::Lis
             let mut e3: Arc<DAE::Exp>;
             e2 = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cr.clone())?)?;
             e3 = Expression::crefExp(ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()))?;
-            (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: e3.clone() }), List::unionElt(cr.clone(), cr_lst.clone()))
+            (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: e2 }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: e3 }), List::unionElt(cr.clone(), cr_lst.clone()))
         },
         _ => {
             (inExp, inTpl)

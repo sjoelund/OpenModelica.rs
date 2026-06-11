@@ -222,7 +222,7 @@ pub mod BClock {
         Deref @ INFERRED_CLOCK { .. } => {
             let mut base_clock: Arc<BClock>;
             base_clock = UnorderedMap::getSafe(var_field!((*clock).base_ref, BClock::INFERRED_CLOCK).clone(), base_clock_inferrence.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
-            baseClockInferrence(base_clock.clone(), base_clock_inferrence)?
+            baseClockInferrence(base_clock, base_clock_inferrence)?
         },
         Deref @ BASE_CLOCK { clock: Deref @ ClockKind::INFERRED_CLOCK { .. } } => {
             DEFAULT_BASE_CLOCK().clone()
@@ -598,11 +598,11 @@ pub(crate) fn categorize(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<B
                 Partition::Partition::categorize(syst.clone(), ode.clone(), alg.clone(), ode_evt.clone(), alg_evt.clone(), clocked.clone())?;
             }
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
-                ode = DoubleEnded::toListAndClear(ode.clone(), metamodelica::nil())?,
-                algebraic = DoubleEnded::toListAndClear(alg.clone(), metamodelica::nil())?,
-                ode_event = DoubleEnded::toListAndClear(ode_evt.clone(), metamodelica::nil())?,
-                alg_event = DoubleEnded::toListAndClear(alg_evt.clone(), metamodelica::nil())?,
-                clocked = DoubleEnded::toListAndClear(clocked.clone(), metamodelica::nil())?
+                ode = DoubleEnded::toListAndClear(ode, metamodelica::nil())?,
+                algebraic = DoubleEnded::toListAndClear(alg, metamodelica::nil())?,
+                ode_event = DoubleEnded::toListAndClear(ode_evt, metamodelica::nil())?,
+                alg_event = DoubleEnded::toListAndClear(alg_evt, metamodelica::nil())?,
+                clocked = DoubleEnded::toListAndClear(clocked, metamodelica::nil())?
             );
             bdae
         },
@@ -658,21 +658,21 @@ pub(crate) fn extractClocks(mut exp: Arc<Expression::NFExpression>, mut clck_col
             let mut clock_name: Arc<ComponentRef::NFComponentRef>;
             clock = Arc::new(BClock::BClock::BASE_CLOCK { clock: var_field!((*exp).clk, Expression::NFExpression::CLKCONST).clone() });
             if UnorderedMap::contains(clock.clone(), clck_coll.clone())? {
-                clock_name = UnorderedMap::getSafe(clock.clone(), clck_coll, metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
+                clock_name = UnorderedMap::getSafe(clock, clck_coll, metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             } else if UnorderedMap::contains(clock.clone(), infr_coll.clone())? {
-                clock_name = UnorderedMap::getSafe(clock.clone(), infr_coll, metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
+                clock_name = UnorderedMap::getSafe(clock, infr_coll, metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             } else {
                 (clock_var, clock_name) = BVariable::makeClockVar(Pointer::access(idx.clone()), Expression::typeOf(exp.clone()))?;
                 if BClock::isInferredClock(clock.clone()) {
-                    UnorderedMap::add(clock.clone(), clock_name.clone(), infr_coll)?;
-                    Pointer::update(new_infers.clone(), metamodelica::cons(clock_var.clone(), Pointer::access(new_infers)));
+                    UnorderedMap::add(clock, clock_name.clone(), infr_coll)?;
+                    Pointer::update(new_infers.clone(), metamodelica::cons(clock_var, Pointer::access(new_infers)));
                 } else {
-                    UnorderedMap::add(clock.clone(), clock_name.clone(), clck_coll)?;
-                    Pointer::update(new_clocks.clone(), metamodelica::cons(clock_var.clone(), Pointer::access(new_clocks)));
+                    UnorderedMap::add(clock, clock_name.clone(), clck_coll)?;
+                    Pointer::update(new_clocks.clone(), metamodelica::cons(clock_var, Pointer::access(new_clocks)));
                 }
                 Pointer::update(idx.clone(), Pointer::access(idx) + 1);
             }
-            Expression::fromCref(clock_name.clone(), false)?
+            Expression::fromCref(clock_name, false)?
         },
         _ => {
             exp.clone()
@@ -1377,12 +1377,12 @@ fn collectPartitioningCrefs(mut exp: Arc<Expression::NFExpression>, mut var_cref
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            Expression::mapShallow(arg.clone(), (std::sync::Arc::new({ let __pe_b1 = var_crefs; move |__pe_a0| collectPartitioningCrefs(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
+            Expression::mapShallow(arg, (std::sync::Arc::new({ let __pe_b1 = var_crefs; move |__pe_a0| collectPartitioningCrefs(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },
         _ => Expression::mapShallow(exp, (std::sync::Arc::new({ let __pe_b1 = var_crefs; move |__pe_a0| collectPartitioningCrefs(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            newExp.clone()
+            newExp
         },
         Deref @ Expression::CREF { .. } => {
             let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -1403,7 +1403,7 @@ fn collectPartitioningCrefs(mut exp: Arc<Expression::NFExpression>, mut var_cref
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            for mut child in &*children.clone() {
+            for mut child in &*children {
                 let mut child = child.clone();
                 stripped = ComponentRef::stripSubscriptsAll(child.clone());
                 if !(BVariable::checkCref(stripped.clone(), (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?) {
@@ -1496,12 +1496,12 @@ fn replaceClockedFunctions(mut exp: Arc<Expression::NFExpression>, mut held_cref
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            replaceClockedFunctionExp(arg.clone())?
+            replaceClockedFunctionExp(arg)?
         },
         _ => exp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            newExp.clone()
+            newExp
         },
         _ => {
             exp

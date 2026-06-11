@@ -223,7 +223,7 @@ fn ConvertSimCodeVars(mut simcodevar: Arc<SimCodeFunction::Variable::Variable>, 
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            midcodevar.clone()
+            midcodevar
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -241,7 +241,7 @@ fn GetCrefIndexVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result
         Deref @ metamodelica::List::Cons { head: subscript @ Deref @ DAE::Subscript::INDEX { exp: _ }, tail: Deref @ metamodelica::List::Nil } => {
             let mut indexvar: MidCode::Var;
             indexvar = RValueToVar(ExpToMid(var_field!((**subscript).exp, DAE::Subscript::INDEX).clone(), state.clone())?, state)?;
-            Some(indexvar.clone())
+            Some(indexvar)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -312,7 +312,7 @@ fn RValueToVar(mut rvalue: MidCode::RValue, mut state: State) -> Result<MidCode:
             let mut tmpvar: MidCode::Var;
             tmpvar = GenTmpVar(Types::complicateType(RValueType(rvalue.clone())?)?, state.clone())?;
             DoubleEnded::push_back(state.stmts.clone(), MidCode::Stmt::ASSIGN { dest: tmpvar.clone(), src: rvalue })?;
-            tmpvar.clone()
+            tmpvar
         },
     });
     Ok(var)
@@ -374,8 +374,8 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             let mut cref: Arc<DAE::ComponentRef>;
             let mut varCref: MidCode::Var;
             cref = ComponentReferenceBasics::crefLastCref(var_field!((**exp1).componentRef, DAE::Exp::CREF).clone())?;
-            varCref = CrefToMidVar(cref.clone(), state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varCref.clone(), src: ExpToMid(exp.clone(), state.clone())? }, state.clone())?;
+            varCref = CrefToMidVar(cref, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varCref, src: ExpToMid(exp.clone(), state.clone())? }, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_ASSIGN { type_: _, exp1: exp1 @ Deref @ DAE::Exp::ASUB { exp: _, .. }, exp, source: _ } => {
@@ -392,13 +392,13 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
     } });
             varValue = RValueToVar(ExpToMid(exp.clone(), state.clone())?, state.clone())?;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayUpdate")).clone() }), builtin: true, inputs: list![varArray.clone(), varIndex.clone(), varValue.clone()], outputs: metamodelica::nil(), next: labelNext.clone() }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayUpdate")).clone() }), builtin: true, inputs: list![varArray, varIndex, varValue], outputs: metamodelica::nil(), next: labelNext }, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_ASSIGN { type_: _, exp1: Deref @ DAE::Exp::PATTERN { pattern }, exp, source: _ } => {
             let mut varRHS: MidCode::Var;
             varRHS = RValueToVar(ExpToMid(exp.clone(), state.clone())?, state.clone())?;
-            patternToMidCode(list![(varRHS.clone(), pattern.clone())], 1, state.clone())?;
+            patternToMidCode(list![(varRHS, pattern.clone())], 1, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_ASSIGN { type_: _, .. } => {
@@ -431,11 +431,11 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             }
             let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CALL { path: _, .. } => {
-            CallToMid(exp.clone(), DoubleEnded::toListAndClear(outvars.clone(), metamodelica::nil())?, state.clone())?;
+            CallToMid(exp.clone(), DoubleEnded::toListAndClear(outvars, metamodelica::nil())?, state.clone())?;
             ()
         },
         Deref @ DAE::Exp::MATCHEXPRESSION { matchType: _, .. } => {
-            MatchExpressionToMid(exp.clone(), DoubleEnded::toListAndClear(outvars.clone(), metamodelica::nil())?, state.clone())?;
+            MatchExpressionToMid(exp.clone(), DoubleEnded::toListAndClear(outvars, metamodelica::nil())?, state.clone())?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -454,13 +454,13 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             labelCondition = GenBlockId();
             labelBody = GenBlockId();
             labelNext = GenBlockId();
-            Mutable::update(state.continuejumps.clone(), metamodelica::cons(labelCondition.clone(), Mutable::access(state.continuejumps.clone())));
-            Mutable::update(state.breakjumps.clone(), metamodelica::cons(labelNext.clone(), Mutable::access(state.breakjumps.clone())));
-            stateTerminate(labelCondition.clone(), MidCode::Terminator::GOTO { next: labelCondition.clone() }, state.clone())?;
+            Mutable::update(state.continuejumps.clone(), metamodelica::cons(labelCondition, Mutable::access(state.continuejumps.clone())));
+            Mutable::update(state.breakjumps.clone(), metamodelica::cons(labelNext, Mutable::access(state.breakjumps.clone())));
+            stateTerminate(labelCondition, MidCode::Terminator::GOTO { next: labelCondition }, state.clone())?;
             varCondition = RValueToVar(ExpToMid(var_field!((**stmt).exp, DAE::Statement::STMT_WHILE).clone(), state.clone())?, state.clone())?;
-            stateTerminate(labelBody.clone(), MidCode::Terminator::BRANCH { condition: varCondition.clone(), onTrue: labelBody.clone(), onFalse: labelNext.clone() }, state.clone())?;
+            stateTerminate(labelBody, MidCode::Terminator::BRANCH { condition: varCondition, onTrue: labelBody, onFalse: labelNext }, state.clone())?;
             StmtsToMid(var_field!((**stmt).statementLst, DAE::Statement::STMT_WHILE).clone(), state.clone())?;
-            stateTerminate(labelNext.clone(), MidCode::Terminator::GOTO { next: labelCondition.clone() }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::GOTO { next: labelCondition }, state.clone())?;
             Mutable::update(state.continuejumps.clone(), listRest(Mutable::access(state.continuejumps.clone()))?);
             Mutable::update(state.breakjumps.clone(), listRest(Mutable::access(state.breakjumps.clone()))?);
             ()
@@ -472,19 +472,19 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
         Deref @ DAE::Statement::STMT_BREAK { source: _ } => {
             let mut labelNext: i32;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), MidCode::Terminator::GOTO { next: listHead(Mutable::access(state.breakjumps.clone()))? }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::GOTO { next: listHead(Mutable::access(state.breakjumps.clone()))? }, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_CONTINUE { source: _ } => {
             let mut labelNext: i32;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), MidCode::Terminator::GOTO { next: listHead(Mutable::access(state.continuejumps.clone()))? }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::GOTO { next: listHead(Mutable::access(state.continuejumps.clone()))? }, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_RETURN { source: _ } => {
             let mut labelNext: i32;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), openmodelica_backend::MidCode::Terminator::RETURN, state.clone())?;
+            stateTerminate(labelNext, openmodelica_backend::MidCode::Terminator::RETURN, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_NORETCALL { exp: _, .. } => {
@@ -510,7 +510,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             varMessage = RValueToVar(ExpToMid(var_field!((**stmt).msg, DAE::Statement::STMT_ASSERT).clone(), state.clone())?, state.clone())?;
             varLevel = RValueToVar(ExpToMid(var_field!((**stmt).level, DAE::Statement::STMT_ASSERT).clone(), state.clone())?, state.clone())?;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), MidCode::Terminator::ASSERT { condition: varCondition.clone(), message: varMessage.clone(), level: varLevel.clone(), next: labelNext.clone() }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::ASSERT { condition: varCondition, message: varMessage, level: varLevel, next: labelNext }, state.clone())?;
             ()
         },
         Deref @ DAE::Statement::STMT_TERMINATE { msg: _, .. } => {
@@ -518,7 +518,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             let mut labelNext: i32;
             varMessage = RValueToVar(ExpToMid(var_field!((**stmt).msg, DAE::Statement::STMT_TERMINATE).clone(), state.clone())?, state.clone())?;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), MidCode::Terminator::TERMINATE { message: varMessage.clone() }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::TERMINATE { message: varMessage }, state.clone())?;
             ()
         },
         _ => {
@@ -556,12 +556,12 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
         Deref @ DAE::Exp::BOX { exp: _ } => {
             let mut varExp: MidCode::Var;
             varExp = RValueToVar(ExpToMid(var_field!((*exp).exp, DAE::Exp::BOX).clone(), state.clone())?, state)?;
-            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::BOX, src: varExp.clone() }
+            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::BOX, src: varExp }
         },
         Deref @ DAE::Exp::UNBOX { exp: _, .. } => {
             let mut varExp: MidCode::Var;
             varExp = RValueToVar(ExpToMid(var_field!((*exp).exp, DAE::Exp::UNBOX).clone(), state.clone())?, state)?;
-            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::UNBOX, src: varExp.clone() }
+            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::UNBOX, src: varExp }
         },
         Deref @ DAE::Exp::BCONST { bool: _ } => {
             MidCode::RValue::LITERALBOOLEAN { value: var_field!((*exp).bool, DAE::Exp::BCONST).clone() }
@@ -583,7 +583,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
                 varExp = RValueToVar(ExpToMid(exp.clone(), state.clone())?, state.clone())?;
                 DoubleEnded::push_back(values.clone(), varExp.clone())?;
             }
-            MidCode::RValue::LITERALMETATYPE { elements: DoubleEnded::toListAndClear(values.clone(), metamodelica::nil())?, ty: Types::complicateType(Expression::r#typeof(exp)?)? }
+            MidCode::RValue::LITERALMETATYPE { elements: DoubleEnded::toListAndClear(values, metamodelica::nil())?, ty: Types::complicateType(Expression::r#typeof(exp)?)? }
         },
         Deref @ DAE::Exp::METARECORDCALL { path: _, args: expLst, fieldNames: _, index: _, typeVars: _ } => {
             let mut varExp: MidCode::Var;
@@ -594,14 +594,14 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
                 varExp = RValueToVar(ExpToMid(exp.clone(), state.clone())?, state.clone())?;
                 DoubleEnded::push_back(values.clone(), varExp.clone())?;
             }
-            MidCode::RValue::LITERALMETATYPE { elements: DoubleEnded::toListAndClear(values.clone(), metamodelica::nil())?, ty: Types::complicateType(Expression::r#typeof(exp)?)? }
+            MidCode::RValue::LITERALMETATYPE { elements: DoubleEnded::toListAndClear(values, metamodelica::nil())?, ty: Types::complicateType(Expression::r#typeof(exp)?)? }
         },
         Deref @ DAE::Exp::CONS { car: _, .. } => {
             let mut varCar: MidCode::Var;
             let mut varCdr: MidCode::Var;
             varCar = RValueToVar(ExpToMid(var_field!((*exp).car, DAE::Exp::CONS).clone(), state.clone())?, state.clone())?;
             varCdr = RValueToVar(ExpToMid(var_field!((*exp).cdr, DAE::Exp::CONS).clone(), state.clone())?, state)?;
-            MidCode::RValue::LITERALMETATYPE { elements: list![varCar.clone(), varCdr.clone()], ty: Types::complicateType(Arc::new(DAE::Type::T_METALIST { ty: varCar.ty.clone() }))? }
+            MidCode::RValue::LITERALMETATYPE { elements: list![varCar.clone(), varCdr], ty: Types::complicateType(Arc::new(DAE::Type::T_METALIST { ty: varCar.ty.clone() }))? }
         },
         Deref @ DAE::Exp::LIST { valList: expLst } => {
             let mut varCar: MidCode::Var;
@@ -618,7 +618,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
                 DoubleEnded::push_back(state.stmts.clone(), MidCode::Stmt::ASSIGN { dest: varTmp.clone(), src: MidCode::RValue::LITERALMETATYPE { elements: list![varCar.clone(), varCdr.clone()], ty: Types::complicateType(Arc::new(DAE::Type::T_METALIST { ty: varCar.ty.clone() }))? } })?;
                 varCdr = varTmp.clone();
             }
-            MidCode::RValue::VARIABLE { src: varCdr.clone() }
+            MidCode::RValue::VARIABLE { src: varCdr }
         },
         Deref @ DAE::Exp::CREF { componentRef: cref, ty: _ } => {
             let mut varCref: MidCode::Var;
@@ -628,16 +628,16 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
             varCref = CrefToMidVar(cref.clone(), state.clone())?;
             rvalue = (match GetCrefIndexVar(cref.clone(), state.clone())? {
         None => {
-            MidCode::RValue::VARIABLE { src: varCref.clone() }
+            MidCode::RValue::VARIABLE { src: varCref }
         },
         Some(mut indexvar) => {
             labelNext = GenBlockId();
             varTmp = GenTmpVar(Types::complicateType(Expression::r#typeof(exp)?)?, state.clone())?;
-            stateTerminate(labelNext.clone(), MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayGet")).clone() }), builtin: true, inputs: list![varCref.clone(), indexvar.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varTmp.clone() }], next: labelNext.clone() }, state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            stateTerminate(labelNext, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayGet")).clone() }), builtin: true, inputs: list![varCref, indexvar.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varTmp.clone() }], next: labelNext }, state)?;
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
     });
-            rvalue.clone()
+            rvalue
         },
         Deref @ DAE::Exp::ASUB { exp: exp1, sub: subscripts } => {
             let mut varExp: MidCode::Var;
@@ -662,8 +662,8 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
     } });
             varTmp = GenTmpVar(Types::complicateType(Expression::r#typeof(exp)?)?, state.clone())?;
             labelNext = GenBlockId();
-            stateTerminate(labelNext.clone(), MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayGet")).clone() }), builtin: true, inputs: list![varExp.clone(), varExp2.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varTmp.clone() }], next: labelNext.clone() }, state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            stateTerminate(labelNext, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayGet")).clone() }), builtin: true, inputs: list![varExp, varExp2], outputs: list![MidCode::OutVar::OUT_VAR { var: varTmp.clone() }], next: labelNext }, state)?;
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
         Deref @ DAE::Exp::TSUB { exp: exp1 @ Deref @ DAE::Exp::CALL { path: _, expLst: _, attr: callattrs }, ix: 1, ty: _ } => {
             let mut varTmp: MidCode::Var;
@@ -681,32 +681,32 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
     } });
             varTmp = GenTmpVar(Types::complicateType(ty.clone())?, state.clone())?;
             outvars = metamodelica::nil();
-            for mut i in 1..=numTailTypes.clone() {
+            for mut i in 1..=numTailTypes {
                 outvars = metamodelica::cons(openmodelica_backend::MidCode::OutVar::OUT_WILD, outvars.clone());
             }
-            outvars = metamodelica::cons(MidCode::OutVar::OUT_VAR { var: varTmp.clone() }, outvars.clone());
-            CallToMid(exp1.clone(), outvars.clone(), state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            outvars = metamodelica::cons(MidCode::OutVar::OUT_VAR { var: varTmp.clone() }, outvars);
+            CallToMid(exp1.clone(), outvars, state)?;
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
         Deref @ DAE::Exp::TSUB { exp: _, .. } => {
             let mut varExp: MidCode::Var;
             varExp = RValueToVar(ExpToMid(var_field!((*exp).exp, DAE::Exp::TSUB).clone(), state.clone())?, state)?;
-            MidCode::RValue::METAFIELD { src: varExp.clone(), index: var_field!((*exp).ix, DAE::Exp::TSUB).clone(), ty: Types::complicateType(var_field!((*exp).ty, DAE::Exp::TSUB).clone())? }
+            MidCode::RValue::METAFIELD { src: varExp, index: var_field!((*exp).ix, DAE::Exp::TSUB).clone(), ty: Types::complicateType(var_field!((*exp).ty, DAE::Exp::TSUB).clone())? }
         },
         Deref @ DAE::Exp::RSUB { exp: _, .. } => {
             let mut varExp: MidCode::Var;
             varExp = RValueToVar(ExpToMid(var_field!((*exp).exp, DAE::Exp::RSUB).clone(), state.clone())?, state)?;
-            MidCode::RValue::METAFIELD { src: varExp.clone(), index: var_field!((*exp).ix, DAE::Exp::RSUB).clone(), ty: Types::complicateType(var_field!((*exp).ty, DAE::Exp::RSUB).clone())? }
+            MidCode::RValue::METAFIELD { src: varExp, index: var_field!((*exp).ix, DAE::Exp::RSUB).clone(), ty: Types::complicateType(var_field!((*exp).ty, DAE::Exp::RSUB).clone())? }
         },
         Deref @ DAE::Exp::CAST { ty: _, exp: exp1 } => {
             let mut varExp: MidCode::Var;
             varExp = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state)?;
-            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::MOVE, src: varExp.clone() }
+            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::MOVE, src: varExp }
         },
         Deref @ DAE::Exp::LUNARY { operator: _, exp: exp1 } => {
             let mut varExp: MidCode::Var;
             varExp = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state)?;
-            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::NOT, src: varExp.clone() }
+            MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::NOT, src: varExp }
         },
         Deref @ DAE::Exp::LBINARY { exp1, operator, exp2 } => {
             let mut varTmp: MidCode::Var;
@@ -723,15 +723,15 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
     });
             varTmp = GenTmpVar(ty.clone(), state.clone())?;
             terminator = (match operator.clone() {
-        DAE::Operator::AND { ty: _ } => MidCode::Terminator::BRANCH { condition: varTmp.clone(), onTrue: labelElse.clone(), onFalse: labelNext.clone() },
-        DAE::Operator::OR { ty: _ } => MidCode::Terminator::BRANCH { condition: varTmp.clone(), onTrue: labelNext.clone(), onFalse: labelElse.clone() },
+        DAE::Operator::AND { ty: _ } => MidCode::Terminator::BRANCH { condition: varTmp.clone(), onTrue: labelElse, onFalse: labelNext },
+        DAE::Operator::OR { ty: _ } => MidCode::Terminator::BRANCH { condition: varTmp.clone(), onTrue: labelNext, onFalse: labelElse },
         _ => bail!("match: no arm matched"),
     });
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varTmp.clone(), src: ExpToMid(exp1.clone(), state.clone())? }, state.clone())?;
-            stateTerminate(labelElse.clone(), terminator.clone(), state.clone())?;
+            stateTerminate(labelElse, terminator, state.clone())?;
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varTmp.clone(), src: ExpToMid(exp2.clone(), state.clone())? }, state.clone())?;
-            stateTerminate(labelNext.clone(), MidCode::Terminator::GOTO { next: labelNext.clone() }, state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            stateTerminate(labelNext, MidCode::Terminator::GOTO { next: labelNext }, state)?;
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
         Deref @ DAE::Exp::UNARY { operator, exp: exp1 } => {
             let mut varExp: MidCode::Var;
@@ -741,7 +741,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
         _ => bail!("match: no arm matched"),
     });
             varExp = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state)?;
-            MidCode::RValue::UNARYOP { op: unop.clone(), src: varExp.clone() }
+            MidCode::RValue::UNARYOP { op: unop, src: varExp }
         },
         Deref @ DAE::Exp::BINARY { exp1, operator, exp2 } => {
             let mut varExp: MidCode::Var;
@@ -757,7 +757,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
     });
             varExp = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state.clone())?;
             varExp2 = RValueToVar(ExpToMid(exp2.clone(), state.clone())?, state)?;
-            MidCode::RValue::BINARYOP { op: binop.clone(), lsrc: varExp.clone(), rsrc: varExp2.clone() }
+            MidCode::RValue::BINARYOP { op: binop, lsrc: varExp, rsrc: varExp2 }
         },
         Deref @ DAE::Exp::RELATION { exp1, operator, exp2, index: _, optionExpisASUB: _ } => {
             let mut varExp: MidCode::Var;
@@ -774,7 +774,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
     });
             varExp = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state.clone())?;
             varExp2 = RValueToVar(ExpToMid(exp2.clone(), state.clone())?, state)?;
-            MidCode::RValue::BINARYOP { op: binop.clone(), lsrc: varExp.clone(), rsrc: varExp2.clone() }
+            MidCode::RValue::BINARYOP { op: binop, lsrc: varExp, rsrc: varExp2 }
         },
         Deref @ DAE::Exp::IFEXP { expCond: exp1, expThen: exp2, expElse: exp3 } => {
             let mut varExp: MidCode::Var;
@@ -787,18 +787,18 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
             labelNext = GenBlockId();
             varExp = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state.clone())?;
             varTmp = GenTmpVar(Types::complicateType(Expression::r#typeof(exp2.clone())?)?, state.clone())?;
-            stateTerminate(labelBody.clone(), MidCode::Terminator::BRANCH { condition: varExp.clone(), onTrue: labelBody.clone(), onFalse: labelElse.clone() }, state.clone())?;
+            stateTerminate(labelBody, MidCode::Terminator::BRANCH { condition: varExp, onTrue: labelBody, onFalse: labelElse }, state.clone())?;
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varTmp.clone(), src: ExpToMid(exp2.clone(), state.clone())? }, state.clone())?;
-            stateTerminate(labelElse.clone(), MidCode::Terminator::GOTO { next: labelNext.clone() }, state.clone())?;
+            stateTerminate(labelElse, MidCode::Terminator::GOTO { next: labelNext }, state.clone())?;
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varTmp.clone(), src: ExpToMid(exp3.clone(), state.clone())? }, state.clone())?;
-            stateTerminate(labelNext.clone(), MidCode::Terminator::GOTO { next: labelNext.clone() }, state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            stateTerminate(labelNext, MidCode::Terminator::GOTO { next: labelNext }, state)?;
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
         Deref @ DAE::Exp::CALL { path: _, expLst: _, attr: callattrs } => {
             let mut varTmp: MidCode::Var;
             varTmp = GenTmpVar(Types::complicateType(callattrs.ty.clone())?, state.clone())?;
             CallToMid(exp, list![MidCode::OutVar::OUT_VAR { var: varTmp.clone() }], state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
         Deref @ DAE::Exp::MATCHEXPRESSION { et: ty, .. } => {
             let mut varTmp: MidCode::Var;
@@ -812,7 +812,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             MatchExpressionToMid(exp, list![MidCode::OutVar::OUT_VAR { var: varTmp.clone() }], state)?;
-            MidCode::RValue::VARIABLE { src: varTmp.clone() }
+            MidCode::RValue::VARIABLE { src: varTmp }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Exp to Mid conversion failed:\n")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
@@ -836,7 +836,7 @@ fn CallToMid(mut call: Arc<DAE::Exp>, mut outvars: Arc<metamodelica::List<MidCod
                 var1 = RValueToVar(ExpToMid(exp1.clone(), state.clone())?, state.clone())?;
                 DoubleEnded::push_back(inputs.clone(), var1.clone())?;
             }
-            stateTerminate(labelNext.clone(), MidCode::Terminator::CALL { func: path.clone(), builtin: callattr.builtin.clone(), inputs: DoubleEnded::toListAndClear(inputs.clone(), metamodelica::nil())?, outputs: outvars, next: labelNext.clone() }, state)?;
+            stateTerminate(labelNext, MidCode::Terminator::CALL { func: path.clone(), builtin: callattr.builtin.clone(), inputs: DoubleEnded::toListAndClear(inputs, metamodelica::nil())?, outputs: outvars, next: labelNext }, state)?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -885,14 +885,14 @@ fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varStep.clone(), src: rvalueStep.clone() }, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varStep.clone(), src: rvalueStep }, state.clone())?;
             stateTerminate(labelCondition, MidCode::Terminator::GOTO { next: labelCondition }, state.clone())?;
-            stateTerminate(labelCondition2.clone(), MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("in_range_integer")).clone() }), builtin: true, inputs: list![varIter.clone(), varFirst.clone(), varLast.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varCondition.clone() }], next: labelCondition2.clone() }, state.clone())?;
+            stateTerminate(labelCondition2, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("in_range_integer")).clone() }), builtin: true, inputs: list![varIter.clone(), varFirst, varLast], outputs: list![MidCode::OutVar::OUT_VAR { var: varCondition.clone() }], next: labelCondition2 }, state.clone())?;
             stateTerminate(labelBody, MidCode::Terminator::BRANCH { condition: varCondition, onTrue: labelBody, onFalse: labelNext }, state.clone())?;
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varCref, src: MidCode::RValue::VARIABLE { src: varIter.clone() } }, state.clone())?;
             StmtsToMid(daestmtLst, state.clone())?;
             stateTerminate(labelStep, MidCode::Terminator::GOTO { next: labelStep }, state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varIter.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::ADD, lsrc: varIter.clone(), rsrc: varStep.clone() } }, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varIter.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::ADD, lsrc: varIter, rsrc: varStep } }, state.clone())?;
             stateTerminate(labelNext, MidCode::Terminator::GOTO { next: labelCondition }, state.clone())?;
             ()
         },
@@ -916,25 +916,25 @@ fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varIter.clone(), src: MidCode::RValue::LITERALINTEGER { value: 1 } }, state.clone())?;
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varStep.clone(), src: MidCode::RValue::LITERALINTEGER { value: 1 } }, state.clone())?;
             stateTerminate(labelCondition, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayLength")).clone() }), builtin: true, inputs: list![varRange.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varLast.clone() }], next: labelCondition }, state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varCondition.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::LESSEQ, lsrc: varIter.clone(), rsrc: varLast.clone() } }, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varCondition.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::LESSEQ, lsrc: varIter.clone(), rsrc: varLast } }, state.clone())?;
             stateTerminate(labelBody, MidCode::Terminator::BRANCH { condition: varCondition, onTrue: labelBody, onFalse: labelNext }, state.clone())?;
-            stateTerminate(labelBody2.clone(), MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayGet")).clone() }), builtin: true, inputs: list![varRange.clone(), varIter.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varCref }], next: labelBody2.clone() }, state.clone())?;
+            stateTerminate(labelBody2, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("arrayGet")).clone() }), builtin: true, inputs: list![varRange, varIter.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varCref }], next: labelBody2 }, state.clone())?;
             StmtsToMid(daestmtLst, state.clone())?;
             stateTerminate(labelStep, MidCode::Terminator::GOTO { next: labelStep }, state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varIter.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::ADD, lsrc: varIter.clone(), rsrc: varStep.clone() } }, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: varIter.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::ADD, lsrc: varIter, rsrc: varStep } }, state.clone())?;
             stateTerminate(labelNext, MidCode::Terminator::GOTO { next: labelCondition }, state.clone())?;
             ()
         },
         Deref @ DAE::Type::T_METALIST { ty: _ } => {
             labelBody2 = GenBlockId();
-            varIter = varRange.clone();
+            varIter = varRange;
             stateTerminate(labelCondition, MidCode::Terminator::GOTO { next: labelCondition }, state.clone())?;
             stateAddStmt(MidCode::Stmt::ASSIGN { dest: varCondition.clone(), src: MidCode::RValue::ISCONS { src: varIter.clone() } }, state.clone())?;
             stateTerminate(labelBody, MidCode::Terminator::BRANCH { condition: varCondition, onTrue: labelBody, onFalse: labelNext }, state.clone())?;
-            stateTerminate(labelBody2.clone(), MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("listHead")).clone() }), builtin: true, inputs: list![varIter.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varCref }], next: labelBody2.clone() }, state.clone())?;
+            stateTerminate(labelBody2, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("listHead")).clone() }), builtin: true, inputs: list![varIter.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varCref }], next: labelBody2 }, state.clone())?;
             StmtsToMid(daestmtLst, state.clone())?;
             stateTerminate(labelStep, MidCode::Terminator::GOTO { next: labelStep }, state.clone())?;
-            stateTerminate(labelNext, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("listRest")).clone() }), builtin: true, inputs: list![varIter.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varIter.clone() }], next: labelCondition }, state.clone())?;
+            stateTerminate(labelNext, MidCode::Terminator::CALL { func: Arc::new(Absyn::Path::IDENT { name: (literal!("listRest")).clone() }), builtin: true, inputs: list![varIter.clone()], outputs: list![MidCode::OutVar::OUT_VAR { var: varIter }], next: labelCondition }, state.clone())?;
             ()
         },
         _ => {
@@ -1242,14 +1242,14 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             let mut ty: Arc<DAE::Type>;
             ty = RValueType(MidCode::RValue::VARIABLE { src: scrutinee.clone() })?;
             midvar = MidCode::Var { name: (id.clone()).clone(), ty: ty.clone(), volatile: false };
-            metamodelica::arrayUpdate(assignBlock.clone(), 1, metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::VARIABLE { src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?))?;
+            metamodelica::arrayUpdate(assignBlock.clone(), 1, metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar, src: MidCode::RValue::VARIABLE { src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?))?;
             patternToMidCode2(state, metamodelica::cons((scrutinee.clone(), pattern.clone()), restMatches.clone()), labelNoMatch, assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (scrutinee, Deref @ DAE::Pattern::PAT_AS { id, ty: Some(ty), pat: pattern, .. }), tail: restMatches } => {
             let mut midvar: MidCode::Var;
             midvar = MidCode::Var { name: (id.clone()).clone(), ty: ty.clone(), volatile: false };
-            metamodelica::arrayUpdate(assignBlock.clone(), 1, metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::UNBOX, src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?))?;
+            metamodelica::arrayUpdate(assignBlock.clone(), 1, metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar, src: MidCode::RValue::UNARYOP { op: openmodelica_backend::MidCode::UnaryOp::UNBOX, src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?))?;
             patternToMidCode2(state, metamodelica::cons((scrutinee.clone(), pattern.clone()), restMatches.clone()), labelNoMatch, assignBlock.clone())?;
             ()
         },
@@ -1321,8 +1321,8 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             ok = GenTmpVar(DAE::T_BOOL_DEFAULT().clone(), state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar.clone(), rsrc: patCompareVar.clone() } }, state.clone())?;
-            stateAddBailOnFalse(ok.clone(), labelNoMatch, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar, rsrc: patCompareVar } }, state.clone())?;
+            stateAddBailOnFalse(ok, labelNoMatch, state.clone())?;
             patternToMidCode2(state, restMatches.clone(), labelNoMatch, assignBlock.clone())?;
             ()
         },
@@ -1352,8 +1352,8 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
                 iterator = listRest(iterator.clone())?;
                 listTypes = listRest(listTypes.clone())?;
             }
-            moreMatches = moreMatches.clone().reverse();
-            patternToMidCode2(state, listAppend(moreMatches.clone(), restMatches.clone()), labelNoMatch, assignBlock.clone())?;
+            moreMatches = moreMatches.reverse();
+            patternToMidCode2(state, listAppend(moreMatches, restMatches.clone()), labelNoMatch, assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (scrutinee, Deref @ DAE::Pattern::PAT_SOME { pat: pattern }), tail: restMatches } => {
@@ -1365,8 +1365,8 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             ok = GenTmpVar(DAE::T_BOOL_DEFAULT().clone(), state.clone())?;
             scrutineeCompareVar = RValueToVar(MidCode::RValue::ISSOME { src: scrutinee.clone() }, state.clone())?;
             patCompareVar = RValueToVar(MidCode::RValue::LITERALBOOLEAN { value: true }, state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar.clone(), rsrc: patCompareVar.clone() } }, state.clone())?;
-            stateAddBailOnFalse(ok.clone(), labelNoMatch, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar, rsrc: patCompareVar } }, state.clone())?;
+            stateAddBailOnFalse(ok, labelNoMatch, state.clone())?;
             ty = (::match_deref::match_deref! { match &(scrutinee.ty.clone()) {
         Deref @ DAE::Type::T_METAOPTION { ty: __esc_ty } => {
             ty = (*__esc_ty).clone();
@@ -1379,7 +1379,7 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             midvar = RValueToVar(MidCode::RValue::METAFIELD { src: scrutinee.clone(), index: 0, ty: ty.clone() }, state.clone())?;
-            patternToMidCode2(state, metamodelica::cons((midvar.clone(), pattern.clone()), restMatches.clone()), labelNoMatch, assignBlock.clone())?;
+            patternToMidCode2(state, metamodelica::cons((midvar, pattern.clone()), restMatches.clone()), labelNoMatch, assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (scrutinee, Deref @ DAE::Pattern::PAT_CONS { head: headPattern, tail: restPattern }), tail: restMatches } => {
@@ -1392,8 +1392,8 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             scrutineeCompareVar = RValueToVar(MidCode::RValue::ISCONS { src: scrutinee.clone() }, state.clone())?;
             patCompareVar = RValueToVar(MidCode::RValue::LITERALBOOLEAN { value: true }, state.clone())?;
             ok = GenTmpVar(DAE::T_BOOL_DEFAULT().clone(), state.clone())?;
-            stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar.clone(), rsrc: patCompareVar.clone() } }, state.clone())?;
-            stateAddBailOnFalse(ok.clone(), labelNoMatch, state.clone())?;
+            stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar, rsrc: patCompareVar } }, state.clone())?;
+            stateAddBailOnFalse(ok, labelNoMatch, state.clone())?;
             ty = (::match_deref::match_deref! { match &(scrutinee.ty.clone()) {
         Deref @ DAE::Type::T_METALIST { ty: Deref @ DAE::Type::T_UNKNOWN { .. } } => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found list of unknown in cons pattern: ")); __mm_s.push_str(&*DAEDump::daeTypeStr(scrutinee.ty.clone())?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
@@ -1411,7 +1411,7 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
     } });
             headVar = RValueToVar(MidCode::RValue::METAFIELD { src: scrutinee.clone(), index: 0, ty: ty.clone() }, state.clone())?;
             restVar = RValueToVar(MidCode::RValue::METAFIELD { src: scrutinee.clone(), index: 1, ty: scrutinee.ty.clone() }, state.clone())?;
-            patternToMidCode2(state, metamodelica::cons((headVar.clone(), headPattern.clone()), metamodelica::cons((restVar.clone(), restPattern.clone()), restMatches.clone())), labelNoMatch, assignBlock.clone())?;
+            patternToMidCode2(state, metamodelica::cons((headVar, headPattern.clone()), metamodelica::cons((restVar, restPattern.clone()), restMatches.clone())), labelNoMatch, assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (scrutinee, Deref @ DAE::Pattern::PAT_CALL { name: _, index: __esc_index, patterns: __esc_morePatterns, fields: __esc_fields, typeVars: _, knownSingleton: __esc_knownSingleton }), tail: restMatches } => {
@@ -1429,8 +1429,8 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
                 ok = GenTmpVar(DAE::T_BOOL_DEFAULT().clone(), state.clone())?;
                 scrutineeCompareVar = RValueToVar(MidCode::RValue::UNIONTYPEVARIANT { src: scrutinee.clone() }, state.clone())?;
                 patCompareVar = RValueToVar(MidCode::RValue::LITERALINTEGER { value: index.clone() }, state.clone())?;
-                stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar.clone(), rsrc: patCompareVar.clone() } }, state.clone())?;
-                stateAddBailOnFalse(ok.clone(), labelNoMatch, state.clone())?;
+                stateAddStmt(MidCode::Stmt::ASSIGN { dest: ok.clone(), src: MidCode::RValue::BINARYOP { op: openmodelica_backend::MidCode::BinaryOp::EQUAL, lsrc: scrutineeCompareVar, rsrc: patCompareVar } }, state.clone())?;
+                stateAddBailOnFalse(ok, labelNoMatch, state.clone())?;
             }
             listTypes = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -1450,8 +1450,8 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
                 iterator = listRest(iterator.clone())?;
                 listTypes = listRest(listTypes.clone())?;
             }
-            moreMatches = moreMatches.clone().reverse();
-            patternToMidCode2(state, listAppend(moreMatches.clone(), restMatches.clone()), labelNoMatch, assignBlock.clone())?;
+            moreMatches = moreMatches.reverse();
+            patternToMidCode2(state, listAppend(moreMatches, restMatches.clone()), labelNoMatch, assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (_, Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { .. }), tail: _ } => {

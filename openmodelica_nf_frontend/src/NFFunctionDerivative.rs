@@ -290,7 +290,7 @@ fn instDerivativeMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstN
             (_, der_node, _) = Function::instFunction(acref.clone(), scope, InstContext::NO_CONTEXT.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
             addLowerOrderDerivative(der_node.clone(), fnNode.clone())?;
             (order, conds) = getDerivativeAttributes(attrs.clone(), r#fn, fnNode.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
-            metamodelica::cons(Arc::new(NFFunctionDerivative { derivativeFn: der_node.clone(), derivedFn: fnNode, order: order.clone(), conditions: conds.clone(), lowerOrderDerivatives: metamodelica::nil() }), fnDers)
+            metamodelica::cons(Arc::new(NFFunctionDerivative { derivativeFn: der_node, derivedFn: fnNode, order: order, conditions: conds, lowerOrderDerivatives: metamodelica::nil() }), fnDers)
         },
         Deref @ SCode::Mod::MOD { .. } => {
             Error::addStrictMessage(Error::MISSING_FUNCTION_DERIVATIVE_NAME.clone(), list![(AbsynUtil::pathString(Function::name(r#fn), (literal!(".")).clone(), true, false)?).clone()], var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;

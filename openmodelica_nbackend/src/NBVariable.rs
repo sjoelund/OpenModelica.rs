@@ -1312,11 +1312,11 @@ pub(crate) fn makeDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut scalar
             let mut state: Pointer::Pointer<Arc<Variable::NFVariable>>;
             let mut var: Arc<Variable::NFVariable>;
             state = getVarPointer(state_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
-            derNode = Arc::new(InstNode::InstNode::VAR_NODE { name: (arcstr::literal!(DERIVATIVE_STR)).clone(), varPointer: dummy_ptr.clone() });
-            der_cref = ComponentRef::append(state_cref.clone(), ComponentRef::fromNode(derNode.clone(), ComponentRef::scalarType(state_cref)?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
+            derNode = Arc::new(InstNode::InstNode::VAR_NODE { name: (arcstr::literal!(DERIVATIVE_STR)).clone(), varPointer: dummy_ptr });
+            der_cref = ComponentRef::append(state_cref.clone(), ComponentRef::fromNode(derNode, ComponentRef::scalarType(state_cref)?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
             var = fromCref(ComponentRef::stripSubscriptsAll(der_cref.clone()), Variable::attributes(Pointer::access(state.clone())), Binding::EMPTY_BINDING().clone())?;
-            assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::STATE_DER { state: state.clone(), alias: None })));
-            (var_ptr, der_cref) = makeVarPtrCyclic(var.clone(), der_cref)?;
+            assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::STATE_DER { state: state, alias: None })));
+            (var_ptr, der_cref) = makeVarPtrCyclic(var, der_cref)?;
             if !(scalarized) {
                 der_cref = ComponentRef::copySubscripts(cref, der_cref)?;
             }
@@ -1428,7 +1428,7 @@ pub(crate) fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVa
             der_var = Pointer::access(derivative.clone());
             assign_field!(der_var.backendinfo = BackendExtension::BackendInfo::setVarKind(der_var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::DUMMY_DER { dummy_state: varPointer.clone() })));
             assign_field!(der_var.backendinfo = BackendExtension::BackendInfo::setStateSelect(der_var.backendinfo.clone(), BackendExtension::StateSelect::AVOID.clone(), false));
-            Pointer::update(derivative.clone(), der_var.clone());
+            Pointer::update(derivative.clone(), der_var);
             BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::DUMMY_STATE { dummy_der: derivative.clone() }))
         },
         Deref @ BackendExtension::VariableKind::DUMMY_STATE { dummy_der: __esc_derivative } => {
@@ -1465,8 +1465,8 @@ pub(crate) fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<
             pre_cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref)?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
             pre = fromCref(pre_cref.clone(), Variable::attributes(Pointer::access(var_ptr.clone())), Binding::EMPTY_BINDING().clone())?;
             assign_field!(pre.backendinfo = BackendExtension::BackendInfo::setVarKind(pre.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_PREVIOUS()));
-            (pre_ptr, pre_cref) = makeVarPtrCyclic(pre.clone(), pre_cref)?;
-            connectPartners(var_ptr.clone(), pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
+            (pre_ptr, pre_cref) = makeVarPtrCyclic(pre, pre_cref)?;
+            connectPartners(var_ptr, pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             ()
         },
         _ => {
@@ -1491,7 +1491,7 @@ pub(crate) fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name:
             old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             (ovar, _) = getVarSeed(old_var_ptr.clone());
             if isSome(ovar.clone()) {
-                var_ptr = Util::getOption(ovar.clone())?;
+                var_ptr = Util::getOption(ovar)?;
                 cref = getVarName(var_ptr.clone());
             } else {
                 assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = { let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(SEED_STR)); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) });
@@ -1506,9 +1506,9 @@ pub(crate) fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name:
         _ => openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_SEED_VAR(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
-                (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref)?;
-                connectPartners(old_var_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarSeed, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
+                assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind));
+                (var_ptr, cref) = makeVarPtrCyclic(var, cref)?;
+                connectPartners(old_var_ptr, var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarSeed, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             }
             ()
         },
@@ -1534,7 +1534,7 @@ pub(crate) fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name:
             res_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             (ovar, _) = getVarPDer(res_ptr.clone(), isTmp);
             if isSome(ovar.clone()) {
-                var_ptr = Util::getOption(ovar.clone())?;
+                var_ptr = Util::getOption(ovar)?;
                 cref = getVarName(var_ptr.clone());
             } else {
                 assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = { let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(PARTIAL_DERIVATIVE_STR)); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) });
@@ -1549,9 +1549,9 @@ pub(crate) fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name:
         _ => if (isTmp) {openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_JAC_TMP_VAR()} else {openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_JAC_VAR()},
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
-                (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref)?;
-                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new({ let __pe_b2 = isTmp; move |__pe_a0, __pe_a1| Ok(BackendExtension::BackendInfo::setVarPDer(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
+                assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind));
+                (var_ptr, cref) = makeVarPtrCyclic(var, cref)?;
+                connectPartners(res_ptr, var_ptr.clone(), (std::sync::Arc::new({ let __pe_b2 = isTmp; move |__pe_a0, __pe_a1| Ok(BackendExtension::BackendInfo::setVarPDer(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             }
             ()
         },
@@ -1619,10 +1619,10 @@ pub(crate) fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Resul
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::START { original: old_var_ptr.clone() })));
             }
             assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarStart(var.backendinfo.clone(), Some(old_var_ptr.clone())));
-            (var_ptr, start_cref) = makeVarPtrCyclic(var.clone(), start_cref)?;
+            (var_ptr, start_cref) = makeVarPtrCyclic(var, start_cref)?;
             old_var = Pointer::access(old_var_ptr.clone());
             assign_field!(old_var.backendinfo = BackendExtension::BackendInfo::setVarStart(old_var.backendinfo.clone(), Some(var_ptr.clone())));
-            Pointer::update(old_var_ptr.clone(), old_var.clone());
+            Pointer::update(old_var_ptr, old_var);
             (start_cref, var_ptr.clone())
         },
     });
@@ -1738,8 +1738,8 @@ pub(crate) fn makeTmpVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(TEMPORARY_STR));
             tmp_cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
             var = fromCref(tmp_cref.clone(), Variable::attributes(getVar(cref, metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?), Binding::EMPTY_BINDING().clone())?;
-            assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), getVarKind(old_var_ptr.clone())));
-            (var_ptr, tmp_cref) = makeVarPtrCyclic(var.clone(), tmp_cref)?;
+            assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), getVarKind(old_var_ptr)));
+            (var_ptr, tmp_cref) = makeVarPtrCyclic(var, tmp_cref)?;
             ()
         },
         _ => {
@@ -1874,7 +1874,7 @@ pub(crate) fn setBindingAsStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVa
             let mut start: Arc<Expression::NFExpression>;
             let mut binfo = (*binfo).clone();
             start = Binding::getExp(var.binding.clone())?;
-            assign_field!(binfo.attributes = BackendExtension::VariableAttributes::setStartAttribute(binfo.attributes.clone(), start.clone(), overwrite));
+            assign_field!(binfo.attributes = BackendExtension::VariableAttributes::setStartAttribute(binfo.attributes.clone(), start, overwrite));
             assign_field!(var.backendinfo = binfo.clone());
             var
         },
@@ -2687,37 +2687,37 @@ pub mod VarData {
         (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => {
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable Data Simulation (scalar unknowns: ")); __mm_s.push_str(&*intString(VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((tmp.clone()).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((tmp).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             if !(full) {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), (literal!("Unknown")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).states, VarData::VAR_DATA_SIM).clone(), (literal!("Local Known")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone(), (literal!("Global Known")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), (literal!("Unknown")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).states, VarData::VAR_DATA_SIM).clone(), (literal!("Local Known")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone(), (literal!("Global Known")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
             } else {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).states, VarData::VAR_DATA_SIM).clone(), (literal!("State")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).derivatives, VarData::VAR_DATA_SIM).clone(), (literal!("Derivative")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).algebraics, VarData::VAR_DATA_SIM).clone(), (literal!("Algebraic")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).discretes, VarData::VAR_DATA_SIM).clone(), (literal!("Discrete")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).discrete_states, VarData::VAR_DATA_SIM).clone(), (literal!("Discrete State")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).clocked_states, VarData::VAR_DATA_SIM).clone(), (literal!("Clocked State")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).previous, VarData::VAR_DATA_SIM).clone(), (literal!("Previous")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).clocks, VarData::VAR_DATA_SIM).clone(), (literal!("Clock")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).top_level_inputs, VarData::VAR_DATA_SIM).clone(), (literal!("Top Level Input")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).resizables, VarData::VAR_DATA_SIM).clone(), (literal!("Resizable Parameter")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).parameters, VarData::VAR_DATA_SIM).clone(), (literal!("Parameter")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).constants, VarData::VAR_DATA_SIM).clone(), (literal!("Constant")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), (literal!("Record")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).external_objects, VarData::VAR_DATA_SIM).clone(), (literal!("External Object")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).artificials, VarData::VAR_DATA_SIM).clone(), (literal!("Artificial")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).states, VarData::VAR_DATA_SIM).clone(), (literal!("State")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).derivatives, VarData::VAR_DATA_SIM).clone(), (literal!("Derivative")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).algebraics, VarData::VAR_DATA_SIM).clone(), (literal!("Algebraic")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).discretes, VarData::VAR_DATA_SIM).clone(), (literal!("Discrete")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).discrete_states, VarData::VAR_DATA_SIM).clone(), (literal!("Discrete State")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).clocked_states, VarData::VAR_DATA_SIM).clone(), (literal!("Clocked State")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).previous, VarData::VAR_DATA_SIM).clone(), (literal!("Previous")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).clocks, VarData::VAR_DATA_SIM).clone(), (literal!("Clock")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).top_level_inputs, VarData::VAR_DATA_SIM).clone(), (literal!("Top Level Input")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).resizables, VarData::VAR_DATA_SIM).clone(), (literal!("Resizable Parameter")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).parameters, VarData::VAR_DATA_SIM).clone(), (literal!("Parameter")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).constants, VarData::VAR_DATA_SIM).clone(), (literal!("Constant")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), (literal!("Record")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).external_objects, VarData::VAR_DATA_SIM).clone(), (literal!("External Object")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).artificials, VarData::VAR_DATA_SIM).clone(), (literal!("Artificial")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
             }
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).auxiliaries, VarData::VAR_DATA_SIM).clone(), (literal!("Auxiliary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).aliasVars, VarData::VAR_DATA_SIM).clone(), (literal!("Alias")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
-            tmp.clone()
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).auxiliaries, VarData::VAR_DATA_SIM).clone(), (literal!("Auxiliary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).aliasVars, VarData::VAR_DATA_SIM).clone(), (literal!("Alias")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
+            tmp
         },
         Deref @ VAR_DATA_JAC { .. } => {
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).unknowns, VarData::VAR_DATA_JAC).clone(), (literal!("Partial Derivative")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).seedVars, VarData::VAR_DATA_JAC).clone(), (literal!("Seed")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
             if full {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).diffVars, VarData::VAR_DATA_JAC).clone(), (literal!("Differentiation")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).resultVars, VarData::VAR_DATA_JAC).clone(), (literal!("Residual")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).tmpVars, VarData::VAR_DATA_JAC).clone(), (literal!("Inner")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).dependencies, VarData::VAR_DATA_JAC).clone(), (literal!("Dependencies")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).auxiliaries, VarData::VAR_DATA_JAC).clone(), (literal!("Auxiliary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).aliasVars, VarData::VAR_DATA_JAC).clone(), (literal!("Alias")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).diffVars, VarData::VAR_DATA_JAC).clone(), (literal!("Differentiation")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).resultVars, VarData::VAR_DATA_JAC).clone(), (literal!("Residual")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).tmpVars, VarData::VAR_DATA_JAC).clone(), (literal!("Inner")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).dependencies, VarData::VAR_DATA_JAC).clone(), (literal!("Dependencies")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).auxiliaries, VarData::VAR_DATA_JAC).clone(), (literal!("Auxiliary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).aliasVars, VarData::VAR_DATA_JAC).clone(), (literal!("Alias")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
             }
-            tmp.clone()
+            tmp
         },
         Deref @ VAR_DATA_HES { .. } => {
             let mut lambdaVars: Arc<VariablePointers::VariablePointers>;
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Variable Data Hessian")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).unknowns, VarData::VAR_DATA_HES).clone(), (literal!("Unknown")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).knowns, VarData::VAR_DATA_HES).clone(), (literal!("Known")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).auxiliaries, VarData::VAR_DATA_HES).clone(), (literal!("Auxiliary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).aliasVars, VarData::VAR_DATA_HES).clone(), (literal!("Alias")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
             if full {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).diffVars, VarData::VAR_DATA_HES).clone(), (literal!("Differentiation")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).dependencies, VarData::VAR_DATA_HES).clone(), (literal!("Dependencies")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).resultVars, VarData::VAR_DATA_HES).clone(), (literal!("Result")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).tmpVars, VarData::VAR_DATA_HES).clone(), (literal!("Temporary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).seedVars, VarData::VAR_DATA_HES).clone(), (literal!("First Seed")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).seedVars2, VarData::VAR_DATA_HES).clone(), (literal!("Second Seed")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).diffVars, VarData::VAR_DATA_HES).clone(), (literal!("Differentiation")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).dependencies, VarData::VAR_DATA_HES).clone(), (literal!("Dependencies")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).resultVars, VarData::VAR_DATA_HES).clone(), (literal!("Result")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).tmpVars, VarData::VAR_DATA_HES).clone(), (literal!("Temporary")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).seedVars, VarData::VAR_DATA_HES).clone(), (literal!("First Seed")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).seedVars2, VarData::VAR_DATA_HES).clone(), (literal!("Second Seed")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
                 if isSome(var_field!((*varData).lambdaVars, VarData::VAR_DATA_HES).clone()) {
                     let __pa0 = ::match_deref::match_deref! { match &(var_field!((*varData).lambdaVars, VarData::VAR_DATA_HES).clone()) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     lambdaVars = __pa0.clone();
-                    tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(lambdaVars.clone(), (literal!("Lagrangian Lambda")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
+                    tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp); __mm_s.push_str(&*VariablePointers::toString(lambdaVars, (literal!("Lagrangian Lambda")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
                 }
             }
-            tmp.clone()
+            tmp
         },
         _ => {
             bail!("fail")

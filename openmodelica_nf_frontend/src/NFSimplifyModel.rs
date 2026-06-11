@@ -145,7 +145,7 @@ pub(crate) fn simplifyDimension(mut dim: Arc<Dimension::NFDimension>) -> Result<
         Deref @ Dimension::EXP { .. } => {
             let mut e: Arc<Expression::NFExpression>;
             e = SimplifyExp::simplify(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), false)?;
-            if (referenceEq(&*(e.clone()),&*(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone()))) {dim} else {Dimension::fromExp(e.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
+            if (referenceEq(&*(e.clone()),&*(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone()))) {dim} else {Dimension::fromExp(e, var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
         },
         _ => {
             dim
@@ -175,11 +175,11 @@ pub(crate) fn simplifyEquation(mut eq: Arc<Equation::NFEquation>, mut equations:
             let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
             body = simplifyEquations(var_field!((*eq).body, Equation::NFEquation::FOR).clone())?;
             if !(Equation::containsExpList(body.clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(); move |__pe_a0| Expression::containsIterator(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
-                equations = List::append_reverse(body.clone(), equations);
+                equations = List::append_reverse(body, equations);
             } else {
                 assign_variant_field!(eq => Equation::NFEquation::FOR;
                     range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
-                    body = body.clone()
+                    body = body
                 );
                 equations = metamodelica::cons(eq, equations);
             }
@@ -220,7 +220,7 @@ pub(crate) fn simplifyEquation(mut eq: Arc<Equation::NFEquation>, mut equations:
             let mut e: Arc<Expression::NFExpression>;
             e = SimplifyExp::simplify(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?;
             if Expression::isCall(e.clone()) {
-                assign_variant_field!(eq => Equation::NFEquation::NORETCALL; exp = removeEmptyFunctionArguments(e.clone(), false)?);
+                assign_variant_field!(eq => Equation::NFEquation::NORETCALL; exp = removeEmptyFunctionArguments(e, false)?);
                 equations = metamodelica::cons(eq, equations);
             }
             equations
@@ -308,7 +308,7 @@ pub(crate) fn simplifyStatement(mut stmt: Arc<Statement::NFStatement>, mut state
         Deref @ Statement::FOR { range: Some(e), .. } => {
             let mut dim: Arc<Dimension::NFDimension>;
             dim = Type::nthDimension(Expression::typeOf(e.clone()), 1)?;
-            if !(Dimension::isZero(dim.clone())?) {
+            if !(Dimension::isZero(dim)?) {
                 assign_variant_field!(stmt => Statement::NFStatement::FOR;
                     range = Some(SimplifyExp::simplify(e.clone(), false)?),
                     body = simplifyStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?

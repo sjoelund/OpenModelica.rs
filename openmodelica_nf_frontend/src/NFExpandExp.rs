@@ -266,7 +266,7 @@ pub(crate) fn expandTypename(mut ty: Arc<Type::NFType>) -> Result<Arc<Expression
         Deref @ Type::ARRAY { elementType: Deref @ Type::ENUMERATION { .. }, .. } => {
             let mut lits: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             lits = Expression::makeEnumLiterals(var_field!((*ty).elementType, Type::NFType::ARRAY).clone())?;
-            Expression::makeArray(ty, metamodelica::arrayFromVec(lits.clone().into_iter().cloned().collect()), true)
+            Expression::makeArray(ty, metamodelica::arrayFromVec(lits.into_iter().cloned().collect()), true)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpandExp.expandTypename")); __mm_s.push_str(&*literal!(" got invalid typename")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpandExp.mo"))?;
@@ -533,13 +533,13 @@ pub(crate) fn expandSize(mut exp: Arc<Expression::NFExpression>) -> (Arc<Express
             dims = Type::dimensionCount(ty.clone());
             expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (1..=dims.clone()).into_iter() {
+        for mut i in (1..=dims).into_iter() {
             let __x = Arc::new(Expression::NFExpression::SIZE { exp: e.clone(), dimIndex: Some(Arc::new(Expression::NFExpression::INTEGER { value: i.clone() })) });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![Dimension::fromInteger(dims.clone(), Variability::CONSTANT.clone())] }), metamodelica::arrayFromVec(expl.clone().into_iter().cloned().collect()), false)
+            Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty, dimensions: list![Dimension::fromInteger(dims, Variability::CONSTANT.clone())] }), metamodelica::arrayFromVec(expl.into_iter().cloned().collect()), false)
         },
         _ => {
             exp

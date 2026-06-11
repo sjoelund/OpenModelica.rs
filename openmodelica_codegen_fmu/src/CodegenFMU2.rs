@@ -83,17 +83,17 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
             txt = fmiModelDescriptionAttributes(txt.clone(), i_simCode.clone(), (a_guid.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
             ret_0 = FMI::isFMIMEType((a_FMUType.clone()).clone());
-            txt = fun_50(txt.clone(), ret_0.clone(), a_sourceFiles.clone(), i_simCode.clone())?;
+            txt = fun_50(txt.clone(), ret_0, a_sourceFiles.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_1 = FMI::isFMICSType((a_FMUType.clone()).clone());
-            txt = fun_51(txt.clone(), ret_1.clone(), a_sourceFiles.clone(), i_simCode.clone())?;
+            txt = fun_51(txt.clone(), ret_1, a_sourceFiles.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = CodegenFMUCommon::UnitDefinitions(txt.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = CodegenFMUCommon::fmiTypeDefinitions(txt.clone(), i_simCode.clone(), (literal!("2.0")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_2 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_52(txt.clone(), ret_2.clone())?;
+            txt = fun_52(txt.clone(), ret_2)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = CodegenFMUCommon::DefaultExperiment(txt.clone(), i_simulationSettingsOpt.clone(), (literal!("2.0")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -120,7 +120,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) 
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("author=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((Tpl::textString(a_author.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },
@@ -138,7 +138,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Tex
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("copyright=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((Tpl::textString(a_copyright.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },
@@ -156,7 +156,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text)
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("license=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((Tpl::textString(a_license.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },
@@ -201,44 +201,44 @@ pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: Si
             l_license = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_modelInfo_license.clone()).clone())?;
             l_generationTool = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OpenModelica Compiler ")).clone() }))?;
             ret_8 = (Settings::getVersionNr()).clone();
-            l_generationTool = Tpl::writeStr(l_generationTool.clone(), (ret_8.clone()).clone())?;
+            l_generationTool = Tpl::writeStr(l_generationTool, (ret_8).clone())?;
             ret_10 = Util::getCurrentDateTime();
-            l_generationDateAndTime = CodegenFMUCommon::xsdateTime(Tpl::emptyTxt.clone(), ret_10.clone())?;
+            l_generationDateAndTime = CodegenFMUCommon::xsdateTime(Tpl::emptyTxt.clone(), ret_10)?;
             l_variableNamingConvention = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("structured")).clone() }))?;
             l_numberOfEventIndicators = CodegenFMUCommon::getNumberOfEventIndicators(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fmiVersion=\"")).clone() }))?;
-            txt = Tpl::writeText(txt.clone(), l_fmiVersion.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_fmiVersion)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("modelName=\"")).clone()], lastHasNewLine: false }))?;
-            ret_13 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_modelName.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_13.clone()).clone())?;
+            ret_13 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_modelName)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_13).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("guid=\"{")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (a_guid.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\"\n")).clone(), (literal!("description=\"")).clone()], lastHasNewLine: false }))?;
-            ret_14 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_description.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_14.clone()).clone())?;
+            ret_14 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_description)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_14).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("version=\"")).clone()], lastHasNewLine: false }))?;
-            ret_15 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_version.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_15.clone()).clone())?;
+            ret_15 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_version)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_15).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("\"\n")).clone() }))?;
             ret_16 = stringEq((Tpl::textString(l_author.clone())?).clone(), (literal!("")).clone());
-            txt = fun_54(txt.clone(), ret_16.clone(), l_author.clone())?;
+            txt = fun_54(txt.clone(), ret_16, l_author)?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_17 = stringEq((Tpl::textString(l_copyright.clone())?).clone(), (literal!("")).clone());
-            txt = fun_55(txt.clone(), ret_17.clone(), l_copyright.clone())?;
+            txt = fun_55(txt.clone(), ret_17, l_copyright)?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_18 = stringEq((Tpl::textString(l_license.clone())?).clone(), (literal!("")).clone());
-            txt = fun_56(txt.clone(), ret_18.clone(), l_license.clone())?;
+            txt = fun_56(txt.clone(), ret_18, l_license)?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("generationTool=\"")).clone() }))?;
-            ret_19 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_generationTool.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_19.clone()).clone())?;
+            ret_19 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_generationTool)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_19).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("generationDateAndTime=\"")).clone()], lastHasNewLine: false }))?;
-            ret_20 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_generationDateAndTime.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_20.clone()).clone())?;
+            ret_20 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_generationDateAndTime)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_20).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("variableNamingConvention=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_variableNamingConvention.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_variableNamingConvention)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("numberOfEventIndicators=\"")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::writeText(txt.clone(), l_numberOfEventIndicators.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_numberOfEventIndicators)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt.clone()
         },
@@ -308,17 +308,17 @@ pub(crate) fn CoSimulation(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<CoSimulation\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("modelIdentifier=\"")).clone() }))?;
-            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_modelIdentifier.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
+            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_modelIdentifier)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_1).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("needsExecutionTool=\"false\"\n")).clone(), (literal!("canHandleVariableCommunicationStepSize=\"true\"\n")).clone(), (literal!("canInterpolateInputs=\"true\"\n")).clone(), (literal!("maxOutputDerivativeOrder=\"1\"\n")).clone(), (literal!("canRunAsynchronuously = \"false\"\n")).clone(), (literal!("canBeInstantiatedOnlyOncePerProcess=\"false\"\n")).clone(), (literal!("canNotUseMemoryManagementFunctions=\"false\"\n")).clone()], lastHasNewLine: true }))?;
             ret_2 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_58(txt.clone(), ret_2.clone())?;
+            txt = fun_58(txt.clone(), ret_2)?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_3 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_59(txt.clone(), ret_3.clone())?;
+            txt = fun_59(txt.clone(), ret_3)?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_4 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_60(txt.clone(), ret_4.clone())?;
+            txt = fun_60(txt.clone(), ret_4)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
             txt = CodegenFMUCommon::SourceFiles(txt.clone(), a_sourceFiles.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;

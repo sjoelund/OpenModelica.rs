@@ -170,9 +170,9 @@ pub(crate) fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRa
                     values = metamodelica::cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (listHead(literals.clone())?).clone(), index: i.clone() }), values.clone());
                     literals = listRest(literals.clone())?;
                 }
-                values = values.clone().reverse();
+                values = values.reverse();
             }
-            Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(values.clone().into_iter().cloned().collect()), index: 1 })
+            Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(values.into_iter().cloned().collect()), index: 1 })
         },
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: ty @ Deref @ Type::ENUMERATION { literals, .. }, .. } } => {
             let mut istep: i32;
@@ -181,10 +181,10 @@ pub(crate) fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRa
             istep = 0;
             for mut l in &*literals.clone() {
                 let mut l = l.clone();
-                istep = istep.clone() + 1;
-                values = metamodelica::cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (l.clone()).clone(), index: istep.clone() }), values.clone());
+                istep = istep + 1;
+                values = metamodelica::cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (l.clone()).clone(), index: istep }), values.clone());
             }
-            Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(values.clone().into_iter().cloned().collect()), index: 1 })
+            Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(values.into_iter().cloned().collect()), index: 1 })
         },
         _ => {
             Arc::new(NFRangeIterator::INVALID_RANGE { exp: exp })

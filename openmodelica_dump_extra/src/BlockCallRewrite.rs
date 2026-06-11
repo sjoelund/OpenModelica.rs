@@ -54,8 +54,8 @@ pub fn rewriteBlockCall(mut inPg: Absyn::Program, mut inDefs: Absyn::Program) ->
             let mut res: ArcStr;
             pg2 = parseProgram(inPg, inDefs)?;
             res = (Dump::unparseStr(pg2.clone(), false, Dump::defaultDumpOptions.clone())?).clone();
-            metamodelica::print((res.clone()).clone());
-            pg2.clone()
+            metamodelica::print((res).clone());
+            pg2
         },
     });
     Ok(newOut)
@@ -83,7 +83,7 @@ pub(crate) fn parseClasses(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>
             let mut n_cls: Arc<Absyn::Class>;
             nr_classes = parseClasses(r_classes.clone(), defs.clone())?;
             n_cls = parseClass(cls.clone(), defs)?;
-            metamodelica::cons(n_cls.clone(), nr_classes.clone())
+            metamodelica::cons(n_cls, nr_classes)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -111,7 +111,7 @@ fn parseClassDef(mut in_def: Arc<Absyn::ClassDef>, mut defs: Absyn::Program) -> 
             let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             (nclsp, eqs, elems, _) = parseClassParts(classParts.clone(), defs, metamodelica::nil(), metamodelica::nil(), 0)?;
-            Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: elems.clone() }), metamodelica::cons(Arc::new(Absyn::ClassPart::EQUATIONS { contents: eqs.clone() }), nclsp.clone())), ann: ann.clone(), comment: comment.clone() })
+            Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: elems }), metamodelica::cons(Arc::new(Absyn::ClassPart::EQUATIONS { contents: eqs }), nclsp)), ann: ann.clone(), comment: comment.clone() })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -137,8 +137,8 @@ fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, 
             let mut count: i32;
             let mut count1: i32;
             (n_cls, eqs2, elems2, count1) = parseClassPart(cls.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nr_classes, eqs1, elems1, count) = parseClassParts(r_classes.clone(), defs, eqs2.clone(), elems2.clone(), count1.clone())?;
-            (metamodelica::cons(n_cls.clone(), nr_classes.clone()), eqs1.clone(), elems1.clone(), count.clone())
+            (nr_classes, eqs1, elems1, count) = parseClassParts(r_classes.clone(), defs, eqs2, elems2, count1)?;
+            (metamodelica::cons(n_cls, nr_classes), eqs1, elems1, count)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -166,7 +166,7 @@ fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, m
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (neqs, eqs1, elems1, count) = parseEquations(eqs.clone(), defs, oldEqs, oldElems, instNo)?;
-            (Arc::new(Absyn::ClassPart::EQUATIONS { contents: neqs.clone() }), eqs1.clone(), elems1.clone(), count.clone())
+            (Arc::new(Absyn::ClassPart::EQUATIONS { contents: neqs }), eqs1, elems1, count)
         },
         Deref @ Absyn::ClassPart::INITIALEQUATIONS { contents: eqs } => {
             let mut neqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
@@ -174,7 +174,7 @@ fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, m
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (neqs, eqs1, elems1, count) = parseEquations(eqs.clone(), defs, oldEqs, oldElems, instNo)?;
-            (Arc::new(Absyn::ClassPart::INITIALEQUATIONS { contents: neqs.clone() }), eqs1.clone(), elems1.clone(), count.clone())
+            (Arc::new(Absyn::ClassPart::INITIALEQUATIONS { contents: neqs }), eqs1, elems1, count)
         },
         Deref @ Absyn::ClassPart::ALGORITHMS { contents: algs } => {
             (Arc::new(Absyn::ClassPart::ALGORITHMS { contents: algs.clone() }), metamodelica::nil(), metamodelica::nil(), instNo)
@@ -209,8 +209,8 @@ fn parseEquations(mut classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>
             let mut count: i32;
             let mut count1: i32;
             (neq, eqs2, elems2, count1) = parseEquation(eq.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nr_classes, eqs1, elems1, count) = parseEquations(r_classes.clone(), defs, eqs2.clone(), elems2.clone(), count1.clone())?;
-            (metamodelica::cons(Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: neq.clone(), comment: cmt.clone(), info: info.clone() }), nr_classes.clone()), eqs1.clone(), elems1.clone(), count.clone())
+            (nr_classes, eqs1, elems1, count) = parseEquations(r_classes.clone(), defs, eqs2, elems2, count1)?;
+            (metamodelica::cons(Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: neq, comment: cmt.clone(), info: info.clone() }), nr_classes), eqs1, elems1, count)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::EquationItem::EQUATIONITEMCOMMENT { comment }, tail: r_classes } => {
             let mut nr_classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
@@ -218,7 +218,7 @@ fn parseEquations(mut classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (nr_classes, eqs1, elems1, count) = parseEquations(r_classes.clone(), defs, oldEqs, oldElems, instNo)?;
-            (metamodelica::cons(Arc::new(Absyn::EquationItem::EQUATIONITEMCOMMENT { comment: (comment.clone()).clone() }), nr_classes.clone()), eqs1.clone(), elems1.clone(), count.clone())
+            (metamodelica::cons(Arc::new(Absyn::EquationItem::EQUATIONITEMCOMMENT { comment: (comment.clone()).clone() }), nr_classes), eqs1, elems1, count)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -245,9 +245,9 @@ fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut 
             let mut count1: i32;
             let mut count2: i32;
             (nexp1, eqs1, elems1, count) = parseExpression(exp1.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nleq1, eqs2, elems2, count1) = parseEquations(leq1.clone(), defs.clone(), eqs1.clone(), elems1.clone(), count.clone())?;
-            (nleq2, eqs3, elems3, count2) = parseEquations(leq2.clone(), defs, eqs2.clone(), elems2.clone(), count1.clone())?;
-            (Arc::new(Absyn::Equation::EQ_IF { ifExp: nexp1.clone(), equationTrueItems: nleq1.clone(), elseIfBranches: tup1.clone(), equationElseItems: nleq2.clone() }), eqs3.clone(), elems3.clone(), count2.clone())
+            (nleq1, eqs2, elems2, count1) = parseEquations(leq1.clone(), defs.clone(), eqs1, elems1, count)?;
+            (nleq2, eqs3, elems3, count2) = parseEquations(leq2.clone(), defs, eqs2, elems2, count1)?;
+            (Arc::new(Absyn::Equation::EQ_IF { ifExp: nexp1, equationTrueItems: nleq1, elseIfBranches: tup1.clone(), equationElseItems: nleq2 }), eqs3, elems3, count2)
         },
         Deref @ Absyn::Equation::EQ_EQUALS { leftSide: exp1, rightSide: exp2 } => {
             let mut nexp1: Arc<Absyn::Exp>;
@@ -259,8 +259,8 @@ fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut 
             let mut count: i32;
             let mut count1: i32;
             (nexp1, eqs1, elems1, count) = parseExpression(exp1.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nexp2, eqs2, elems2, count1) = parseExpression(exp2.clone(), defs, eqs1.clone(), elems1.clone(), count.clone())?;
-            (Arc::new(Absyn::Equation::EQ_EQUALS { leftSide: nexp1.clone(), rightSide: nexp2.clone() }), eqs2.clone(), elems2.clone(), count1.clone())
+            (nexp2, eqs2, elems2, count1) = parseExpression(exp2.clone(), defs, eqs1, elems1, count)?;
+            (Arc::new(Absyn::Equation::EQ_EQUALS { leftSide: nexp1, rightSide: nexp2 }), eqs2, elems2, count1)
         },
         Deref @ Absyn::Equation::EQ_PDE { leftSide: exp1, rightSide: exp2, domain } => {
             let mut nexp1: Arc<Absyn::Exp>;
@@ -272,8 +272,8 @@ fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut 
             let mut count: i32;
             let mut count1: i32;
             (nexp1, eqs1, elems1, count) = parseExpression(exp1.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nexp2, eqs2, elems2, count1) = parseExpression(exp2.clone(), defs, eqs1.clone(), elems1.clone(), count.clone())?;
-            (Arc::new(Absyn::Equation::EQ_PDE { leftSide: nexp1.clone(), rightSide: nexp2.clone(), domain: domain.clone() }), eqs2.clone(), elems2.clone(), count1.clone())
+            (nexp2, eqs2, elems2, count1) = parseExpression(exp2.clone(), defs, eqs1, elems1, count)?;
+            (Arc::new(Absyn::Equation::EQ_PDE { leftSide: nexp1, rightSide: nexp2, domain: domain.clone() }), eqs2, elems2, count1)
         },
         Deref @ Absyn::Equation::EQ_CONNECT { connector1: cr1, connector2: cr2 } => {
             (Arc::new(Absyn::Equation::EQ_CONNECT { connector1: cr1.clone(), connector2: cr2.clone() }), oldEqs, oldElems, instNo)
@@ -284,14 +284,14 @@ fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut 
             let mut elems2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (nleq1, eqs2, elems2, count) = parseEquations(leq1.clone(), defs, oldEqs, oldElems, instNo)?;
-            (Arc::new(Absyn::Equation::EQ_FOR { iterators: fi.clone(), forEquations: nleq1.clone() }), eqs2.clone(), elems2.clone(), count.clone())
+            (Arc::new(Absyn::Equation::EQ_FOR { iterators: fi.clone(), forEquations: nleq1 }), eqs2, elems2, count)
         },
         Deref @ Absyn::Equation::EQ_WHEN_E { whenExp: exp1, whenEquations: leq1, elseWhenEquations: tup1 } => {
             let mut nexp1: Arc<Absyn::Exp>;
             let mut nleq1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             (nexp1, _, _, _) = parseExpression(exp1.clone(), defs.clone(), oldEqs.clone(), oldElems.clone(), instNo)?;
             (nleq1, _, _, _) = parseEquations(leq1.clone(), defs, oldEqs.clone(), oldElems.clone(), instNo)?;
-            (Arc::new(Absyn::Equation::EQ_WHEN_E { whenExp: nexp1.clone(), whenEquations: nleq1.clone(), elseWhenEquations: tup1.clone() }), oldEqs, oldElems, instNo)
+            (Arc::new(Absyn::Equation::EQ_WHEN_E { whenExp: nexp1, whenEquations: nleq1, elseWhenEquations: tup1.clone() }), oldEqs, oldElems, instNo)
         },
         Deref @ Absyn::Equation::EQ_NORETCALL { functionName: cr1, functionArgs: farg } => {
             (Arc::new(Absyn::Equation::EQ_NORETCALL { functionName: cr1.clone(), functionArgs: farg.clone() }), oldEqs, oldElems, instNo)
@@ -320,8 +320,8 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
             let mut count: i32;
             let mut count2: i32;
             (nexp1, eqs1, elems1, count) = parseExpression(exp1.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nexp2, eqs2, elems2, count2) = parseExpression(exp2.clone(), defs, eqs1.clone(), elems1.clone(), count.clone())?;
-            (Arc::new(Absyn::Exp::BINARY { exp1: nexp1.clone(), op: op.clone(), exp2: nexp2.clone() }), eqs2.clone(), elems2.clone(), count2.clone())
+            (nexp2, eqs2, elems2, count2) = parseExpression(exp2.clone(), defs, eqs1, elems1, count)?;
+            (Arc::new(Absyn::Exp::BINARY { exp1: nexp1, op: op.clone(), exp2: nexp2 }), eqs2, elems2, count2)
         },
         Deref @ Absyn::Exp::LBINARY { exp1, op, exp2 } => {
             let mut nexp1: Arc<Absyn::Exp>;
@@ -333,8 +333,8 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
             let mut count: i32;
             let mut count2: i32;
             (nexp1, eqs1, elems1, count) = parseExpression(exp1.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nexp2, eqs2, elems2, count2) = parseExpression(exp2.clone(), defs, eqs1.clone(), elems1.clone(), count.clone())?;
-            (Arc::new(Absyn::Exp::LBINARY { exp1: nexp1.clone(), op: op.clone(), exp2: nexp2.clone() }), eqs2.clone(), elems2.clone(), count2.clone())
+            (nexp2, eqs2, elems2, count2) = parseExpression(exp2.clone(), defs, eqs1, elems1, count)?;
+            (Arc::new(Absyn::Exp::LBINARY { exp1: nexp1, op: op.clone(), exp2: nexp2 }), eqs2, elems2, count2)
         },
         Deref @ Absyn::Exp::UNARY { op, exp: exp2 } => {
             let mut nexp2: Arc<Absyn::Exp>;
@@ -342,7 +342,7 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
             let mut elems2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (nexp2, eqs2, elems2, count) = parseExpression(exp2.clone(), defs, oldEqs, oldElems, instNo)?;
-            (Arc::new(Absyn::Exp::UNARY { op: op.clone(), exp: nexp2.clone() }), eqs2.clone(), elems2.clone(), count.clone())
+            (Arc::new(Absyn::Exp::UNARY { op: op.clone(), exp: nexp2 }), eqs2, elems2, count)
         },
         Deref @ Absyn::Exp::LUNARY { op, exp: exp2 } => {
             let mut nexp2: Arc<Absyn::Exp>;
@@ -350,7 +350,7 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
             let mut elems2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (nexp2, eqs2, elems2, count) = parseExpression(exp2.clone(), defs, oldEqs, oldElems, instNo)?;
-            (Arc::new(Absyn::Exp::LUNARY { op: op.clone(), exp: nexp2.clone() }), eqs2.clone(), elems2.clone(), count.clone())
+            (Arc::new(Absyn::Exp::LUNARY { op: op.clone(), exp: nexp2 }), eqs2, elems2, count)
         },
         Deref @ Absyn::Exp::IFEXP { ifExp: ife, trueBranch: exp1, elseBranch: exp2, elseIfBranch: elif } => {
             let mut nexp1: Arc<Absyn::Exp>;
@@ -370,10 +370,10 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
             let mut count4: i32;
             let mut nelif: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>;
             (nife, eqs1, elems1, count) = parseExpression(ife.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nexp1, eqs2, elems2, count2) = parseExpression(exp1.clone(), defs.clone(), eqs1.clone(), elems1.clone(), count.clone())?;
-            (nexp2, eqs3, elems3, count3) = parseExpression(exp2.clone(), defs.clone(), eqs2.clone(), elems2.clone(), count2.clone())?;
-            (nelif, eqs4, elems4, count4) = parseExpressionTuple(elif.clone(), defs, eqs3.clone(), elems3.clone(), count3.clone())?;
-            (Arc::new(Absyn::Exp::IFEXP { ifExp: nife.clone(), trueBranch: nexp1.clone(), elseBranch: nexp2.clone(), elseIfBranch: nelif.clone() }), eqs4.clone(), elems4.clone(), count4.clone())
+            (nexp1, eqs2, elems2, count2) = parseExpression(exp1.clone(), defs.clone(), eqs1, elems1, count)?;
+            (nexp2, eqs3, elems3, count3) = parseExpression(exp2.clone(), defs.clone(), eqs2, elems2, count2)?;
+            (nelif, eqs4, elems4, count4) = parseExpressionTuple(elif.clone(), defs, eqs3, elems3, count3)?;
+            (Arc::new(Absyn::Exp::IFEXP { ifExp: nife, trueBranch: nexp1, elseBranch: nexp2, elseIfBranch: nelif }), eqs4, elems4, count4)
         },
         Deref @ Absyn::Exp::CALL { .. } => {
             let mut nexp1: Arc<Absyn::Exp>;
@@ -381,7 +381,7 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
             let mut count: i32;
             (nexp1, eqs1, elems1, count) = parseCall(in_eq, defs, instNo, oldEqs, oldElems)?;
-            (nexp1.clone(), eqs1.clone(), elems1.clone(), count.clone())
+            (nexp1, eqs1, elems1, count)
         },
         _ => {
             (in_eq, oldEqs, oldElems, instNo)
@@ -411,9 +411,9 @@ fn parseExpressionTuple(mut tuple_list: Arc<metamodelica::List<(Arc<Absyn::Exp>,
             let mut nexp1: Arc<Absyn::Exp>;
             let mut nexp2: Arc<Absyn::Exp>;
             (nexp1, eqs1, elems1, count1) = parseExpression(exp1.clone(), defs.clone(), oldEqs, oldElems, instNo)?;
-            (nexp2, _, _, _) = parseExpression(exp2.clone(), defs.clone(), eqs1.clone(), elems1.clone(), count1.clone())?;
-            (ntuples, eqs3, elems3, count3) = parseExpressionTuple(r_tuple_list.clone(), defs, eqs1.clone(), elems1.clone(), count1.clone())?;
-            (metamodelica::cons((nexp1.clone(), nexp2.clone()), ntuples.clone()), eqs3.clone(), elems3.clone(), count3.clone())
+            (nexp2, _, _, _) = parseExpression(exp2.clone(), defs.clone(), eqs1.clone(), elems1.clone(), count1)?;
+            (ntuples, eqs3, elems3, count3) = parseExpressionTuple(r_tuple_list.clone(), defs, eqs1, elems1, count1)?;
+            (metamodelica::cons((nexp1, nexp2), ntuples), eqs3, elems3, count3)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -641,7 +641,7 @@ fn parseArgs(mut elemId: ArcStr, mut classes: Arc<metamodelica::List<Arc<Absyn::
             let mut eqs1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut mods1: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             (eqs1, mods1) = matchArgsClass((elemId.clone()).clone(), args.clone(), classes.clone(), oldEqs, oldModif)?;
-            matchNamedArgsClass((elemId).clone(), argNames.clone(), classes, eqs1.clone(), mods1.clone())?
+            matchNamedArgsClass((elemId).clone(), argNames.clone(), classes, eqs1, mods1)?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -672,7 +672,7 @@ fn matchArgsClass(mut elemId: ArcStr, mut args: Arc<metamodelica::List<Arc<Absyn
             let mut r_args: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
             let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             (eq1, modif, r_args) = matchArgsElems((elemId.clone()).clone(), args, elems1.clone(), oldEqs, oldModif)?;
-            { (elemId, args, classes, oldEqs, oldModif) = ((elemId).clone(), r_args.clone(), r_classes.clone(), eq1.clone(), modif.clone()); continue '__tco; }
+            { (elemId, args, classes, oldEqs, oldModif) = ((elemId).clone(), r_args, r_classes.clone(), eq1, modif); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: r_classes }, _) => {
             { (elemId, args, classes, oldEqs, oldModif) = ((elemId).clone(), args, r_classes.clone(), oldEqs, oldModif); continue '__tco; }
@@ -695,13 +695,13 @@ fn matchArgsElems(mut elemId: ArcStr, mut args: Arc<metamodelica::List<Arc<Absyn
             let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut r_args = (*r_args).clone();
             (modif, r_args) = matchParamArgs(args, comps.clone(), oldModif)?;
-            { (elemId, args, elems, oldEqs, oldModif) = ((elemId).clone(), r_args.clone(), r_elems.clone(), oldEqs, modif.clone()); continue '__tco; }
+            { (elemId, args, elems, oldEqs, oldModif) = ((elemId).clone(), r_args.clone(), r_elems.clone(), oldEqs, modif); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: r_args }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { finalPrefix: _, redeclareKeywords: _, innerOuter: _, specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { flowPrefix: _, streamPrefix: _, parallelism: _, variability: Absyn::Variability::VAR { .. }, direction: _, isField: _, .. }, typeSpec: _, components: comps }, info: _, constrainClass: _ } }, tail: r_elems }) => {
             let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut r_args = (*r_args).clone();
             (eqs, r_args) = matchVarArgs((elemId.clone()).clone(), args, comps.clone(), oldEqs)?;
-            { (elemId, args, elems, oldEqs, oldModif) = ((elemId).clone(), r_args.clone(), r_elems.clone(), eqs.clone(), oldModif); continue '__tco; }
+            { (elemId, args, elems, oldEqs, oldModif) = ((elemId).clone(), r_args.clone(), r_elems.clone(), eqs, oldModif); continue '__tco; }
         },
         (_, Deref @ metamodelica::List::Cons { head: _, tail: r_elems }) => {
             { (elemId, args, elems, oldEqs, oldModif) = ((elemId).clone(), args, r_elems.clone(), oldEqs, oldModif); continue '__tco; }
@@ -723,7 +723,7 @@ fn matchParamArgs(mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut comps:
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: r_comps }, Deref @ metamodelica::List::Cons { head: arg, tail: r_args }) => {
             let mut modif: Arc<Absyn::ElementArg>;
             modif = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (cName.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: arg.clone(), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() });
-            { (args, comps, oldModif) = (r_args.clone(), r_comps.clone(), metamodelica::cons(modif.clone(), oldModif)); continue '__tco; }
+            { (args, comps, oldModif) = (r_args.clone(), r_comps.clone(), metamodelica::cons(modif, oldModif)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -739,7 +739,7 @@ fn matchVarArgs(mut elemId: ArcStr, mut args: Arc<metamodelica::List<Arc<Absyn::
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: r_comps }, Deref @ metamodelica::List::Cons { head: arg, tail: r_args }) => {
             let mut eq: Arc<Absyn::EquationItem>;
             eq = Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: Arc::new(Absyn::Equation::EQ_EQUALS { leftSide: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (elemId.clone()).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (cName.clone()).clone(), subscripts: metamodelica::nil() }) }) }), rightSide: arg.clone() }), comment: None, info: Absyn::dummyInfo.clone() });
-            { (elemId, args, comps, oldEqs) = ((elemId).clone(), r_args.clone(), r_comps.clone(), metamodelica::cons(eq.clone(), oldEqs)); continue '__tco; }
+            { (elemId, args, comps, oldEqs) = ((elemId).clone(), r_args.clone(), r_comps.clone(), metamodelica::cons(eq, oldEqs)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -759,7 +759,7 @@ fn matchNamedArgsClass(mut elemId: ArcStr, mut nargs: Arc<metamodelica::List<Arc
             let mut eq1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
             let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             (eq1, modif) = matchNamedArgClass((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), classes.clone(), oldEqs, oldModif);
-            { (elemId, nargs, classes, oldEqs, oldModif) = ((elemId).clone(), r_nargs.clone(), classes, eq1.clone(), modif.clone()); continue '__tco; }
+            { (elemId, nargs, classes, oldEqs, oldModif) = ((elemId).clone(), r_nargs.clone(), classes, eq1, modif); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -872,7 +872,7 @@ fn matchParamNamedArg(mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut co
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: _ } if (cName.clone() == argName.clone()) => {
             let mut modif: Arc<Absyn::ElementArg>;
             modif = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (cName.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: argValue, info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() });
-            return (metamodelica::cons(modif.clone(), oldModif), true)
+            return (metamodelica::cons(modif, oldModif), true)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: r_comps } => {
             { (argName, argValue, comps, oldModif) = ((argName.clone()).clone(), argValue, r_comps.clone(), oldModif); continue '__tco; }
@@ -891,7 +891,7 @@ fn matchVarNamedArg(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<A
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: _ } if (cName.clone() == argName.clone()) => {
             let mut eq: Arc<Absyn::EquationItem>;
             eq = Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: Arc::new(Absyn::Equation::EQ_EQUALS { leftSide: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (elemId).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (cName.clone()).clone(), subscripts: metamodelica::nil() }) }) }), rightSide: argValue }), comment: None, info: Absyn::dummyInfo.clone() });
-            return (metamodelica::cons(eq.clone(), oldEqs), true)
+            return (metamodelica::cons(eq, oldEqs), true)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: r_comps } => {
             { (elemId, argName, argValue, comps, oldEqs) = ((elemId).clone(), (argName.clone()).clone(), argValue, r_comps.clone(), oldEqs); continue '__tco; }

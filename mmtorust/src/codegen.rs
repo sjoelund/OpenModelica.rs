@@ -13708,6 +13708,14 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
     let saved_fn_env_vars_hoist: Vec<(String, Option<Ty>)> = hoisted_locals.iter()
         .map(|(n, t, _, _)| (n.clone(), ctx.fn_env_vars.insert(n.clone(), t.clone())))
         .collect();
+    // Hoisted case-locals are owned match-level `let mut` bindings, exactly
+    // like a function-scope protected local. Record the binding mode so the
+    // `Var` arm of `emit_exp` may copy (Copy types) or move (last use) instead
+    // of cloning at a read (see [`GenCtx::place_mode`]). Restored after the
+    // match alongside `saved_fn_env_vars_hoist`.
+    let saved_place_mode_hoist: Vec<(String, Option<PlaceMode>)> = hoisted_locals.iter()
+        .map(|(n, _, _, _)| (n.clone(), ctx.place_mode.insert(n.clone(), PlaceMode::Owned)))
+        .collect();
     let hoist_alias_scope = current_scope_children(ctx, top_level);
     let mut hoisted_prefix = String::new();
     for (name, ty, default, type_spec) in &hoisted_locals {
@@ -13872,6 +13880,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // requires a `.borrow()`). Saved/restored around the arm.
                 let saved_fn_env_vars = ctx.fn_env_vars.clone();
                 let saved_fn_scope_vars_arm = ctx.fn_scope_vars.clone();
+                let saved_place_mode = ctx.place_mode.clone();
                 let saved_uninit_arrays_match = ctx.uninit_arrays.clone();
                 let typed_pat_bindings: Vec<(String, Ty)> =
                     typedexp::pat_bindings_with_scrut_ty_tl(&case.pattern, &input_ty, top_level);
@@ -13891,6 +13900,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // the outer `match txt` locals and assigned inside an inner
                 // `match listGet(...)` algorithm. Mirrors the MatchContinue
                 // path. Saved/restored alongside saved_fn_env_vars.
+                // Names bound by this arm's pattern; a case-local that is also a
+                // pattern variable must not be force-marked owned (see below).
+                let arm_pattern_bindings: HashSet<String> = {
+                    let mut v = Vec::new();
+                    pat_collect_all_bindings(&case.pattern, &mut v);
+                    v.into_iter().collect()
+                };
                 for (n, t, _, _) in &case.locals {
                     if !matches!(t, Ty::Unknown) {
                         ctx.fn_env_vars.insert(n.clone(), t.clone());
@@ -13902,6 +13918,21 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     // `escaping_outputs` collection above). Restored with
                     // `saved_fn_scope_vars_arm` at the arm's end.
                     ctx.fn_scope_vars.insert(n.clone());
+                    // A case-local that is *not* also a pattern binding of this
+                    // arm is a plain owned `let mut <name>: <Ty>;` declaration,
+                    // so reads of it may copy (Copy types) or move (last use)
+                    // instead of clone — record the owned binding mode, restored
+                    // with `saved_place_mode` at the arm's end. A case-local that
+                    // *is* pattern-bound (a `local` declared variable also used as
+                    // a pattern variable) takes its binding mode from the pattern:
+                    // under a borrowed scrutinee (`ref x @ …` / `match_deref!`) it
+                    // is a `&T` reference, so it must keep its `.clone()`. Leaving
+                    // those out of `place_mode` falls back to the safe non-owned
+                    // default; the existing match-ergonomics / `match_refbound`
+                    // machinery already governs them.
+                    if !arm_pattern_bindings.contains(n) {
+                        ctx.place_mode.insert(n.clone(), PlaceMode::Owned);
+                    }
                 }
                 let user_guard = case.guard.as_ref()
                     .map(|g| emit_exp(g, is_const, ctx, top_level));
@@ -14195,6 +14226,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 };
                 ctx.fn_env_vars = saved_fn_env_vars;
                 ctx.fn_scope_vars = saved_fn_scope_vars_arm;
+                ctx.place_mode = saved_place_mode;
                 ctx.variants = saved_variants;
                 ctx.variant_shapes = saved_shapes;
                 ctx.uninit_arrays = saved_uninit_arrays_match;
@@ -14866,6 +14898,12 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
         match prev {
             Some(t) => { ctx.fn_env_vars.insert(name, t); }
             None => { ctx.fn_env_vars.remove(&name); }
+        }
+    }
+    for (name, prev) in saved_place_mode_hoist {
+        match prev {
+            Some(m) => { ctx.place_mode.insert(name, m); }
+            None => { ctx.place_mode.remove(&name); }
         }
     }
     let wrapped = if hoisted_prefix.is_empty() {

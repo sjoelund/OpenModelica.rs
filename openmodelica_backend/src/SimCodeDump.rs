@@ -31,11 +31,11 @@ fn lm_46(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
-            txt = Tpl::writeStr(txt.clone(), (intString(x_index0.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(x_index0)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(": ")).clone() }))?;
             txt_0 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_v_name.clone())?;
-            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
+            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_1).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
@@ -68,8 +68,8 @@ pub(crate) fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::Alias
             let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<alias>")).clone() }))?;
             txt_0 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_varName.clone())?;
-            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
+            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_1).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</alias>")).clone() }))?;
             txt.clone()
         },
@@ -79,8 +79,8 @@ pub(crate) fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::Alias
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<alias negated=\"true\">")).clone() }))?;
             txt_2 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_varName.clone())?;
-            ret_3 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_2.clone())?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_3.clone()).clone())?;
+            ret_3 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_2)?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_3).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</alias>")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt.clone()

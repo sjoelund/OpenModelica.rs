@@ -153,7 +153,7 @@ pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IO
         IOStreamType::FILE { name: mut fileName } => {
             let mut fileID: i32;
             fileID = IOStreamExt::createFile((fileName.clone()).clone())?;
-            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::FILE_DATA { data: fileID.clone() } }
+            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::FILE_DATA { data: fileID } }
         },
         IOStreamType::LIST { .. } => {
             IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::LIST_DATA { data: metamodelica::nil() } }
@@ -161,7 +161,7 @@ pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IO
         IOStreamType::BUFFER { .. } => {
             let mut bufferID: i32;
             bufferID = IOStreamExt::createBuffer()?;
-            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::BUFFER_DATA { data: bufferID.clone() } }
+            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::BUFFER_DATA { data: bufferID } }
         },
     });
     Ok(outStream)
@@ -306,17 +306,17 @@ pub fn string(mut inStream: IOStream) -> Result<ArcStr> {
         IOStream { data: IOStreamData::FILE_DATA { data: mut fileID }, .. } => {
             let mut r#str: ArcStr;
             r#str = (IOStreamExt::readFile(fileID.clone())?).clone();
-            r#str.clone()
+            r#str
         },
         IOStream { data: IOStreamData::LIST_DATA { data: ref listData }, .. } => {
             let mut r#str: ArcStr;
             r#str = (IOStreamExt::appendReversedList(listData.clone())).clone();
-            r#str.clone()
+            r#str
         },
         IOStream { data: IOStreamData::BUFFER_DATA { data: mut bufferID }, .. } => {
             let mut r#str: ArcStr;
             r#str = (IOStreamExt::readBuffer(bufferID.clone())?).clone();
-            r#str.clone()
+            r#str
         },
         _ => bail!("match: no arm matched"),
     })).clone();

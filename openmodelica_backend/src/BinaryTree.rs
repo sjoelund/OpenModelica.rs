@@ -174,12 +174,12 @@ fn treeGet3(mut inBinTree: Arc<BinTree>, mut keystr: ArcStr, mut keyhash: i32, m
         (Deref @ BinTree { rightSubTree: Some(right), .. }, 1) => {
             let mut compResult: i32;
             compResult = treeGet2(right.clone(), (keystr.clone()).clone(), keyhash)?;
-            { (inBinTree, keystr, keyhash, inCompResult) = (right.clone(), (keystr).clone(), keyhash, compResult.clone()); continue '__tco; }
+            { (inBinTree, keystr, keyhash, inCompResult) = (right.clone(), (keystr).clone(), keyhash, compResult); continue '__tco; }
         },
         (Deref @ BinTree { leftSubTree: Some(left), .. }, (-1)) => {
             let mut compResult: i32;
             compResult = treeGet2(left.clone(), (keystr.clone()).clone(), keyhash)?;
-            { (inBinTree, keystr, keyhash, inCompResult) = (left.clone(), (keystr).clone(), keyhash, compResult.clone()); continue '__tco; }
+            { (inBinTree, keystr, keyhash, inCompResult) = (left.clone(), (keystr).clone(), keyhash, compResult); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -196,7 +196,7 @@ pub(crate) fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamod
             let mut bt_1: Arc<BinTree>;
             let mut bt_2: Arc<BinTree>;
             bt_1 = treeAdd(bt.clone(), key.clone(), 0)?;
-            { (inBinTree, inKeyLst) = (bt_1.clone(), res.clone()); continue '__tco; }
+            { (inBinTree, inKeyLst) = (bt_1, res.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -531,7 +531,7 @@ fn bintreeToListOpt(mut inBinTreeOption: Option<Arc<BinTree>>, mut inKeyLst: Arc
             let mut klst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut vlst: Arc<metamodelica::List<i32>>;
             (klst, vlst) = bintreeToList2(bt.clone(), inKeyLst, inValueLst)?;
-            (klst.clone(), vlst.clone())
+            (klst, vlst)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

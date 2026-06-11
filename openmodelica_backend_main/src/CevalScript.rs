@@ -2358,8 +2358,8 @@ fn errorToValue(mut err: ErrorTypes::TotalMessage) -> Result<Arc<Values::Value>>
             tyVal = errorTypeToValue(ty.clone())?;
             severityVal = errorLevelToValue(severity.clone())?;
             infoVal = infoToValue(info.clone())?;
-            values = list![infoVal.clone(), Arc::new(Values::Value::STRING { string: (msg_str.clone()).clone() }), tyVal.clone(), severityVal.clone(), Arc::new(Values::Value::INTEGER { integer: id.clone() })];
-            Arc::new(Values::Value::RECORD { record_: msgpath.clone(), orderd: values.clone(), comp: list![(literal!("info")).clone(), (literal!("message")).clone(), (literal!("kind")).clone(), (literal!("level")).clone(), (literal!("id")).clone()], index: -1 })
+            values = list![infoVal, Arc::new(Values::Value::STRING { string: (msg_str).clone() }), tyVal, severityVal, Arc::new(Values::Value::INTEGER { integer: id.clone() })];
+            Arc::new(Values::Value::RECORD { record_: msgpath, orderd: values, comp: list![(literal!("info")).clone(), (literal!("message")).clone(), (literal!("kind")).clone(), (literal!("level")).clone(), (literal!("id")).clone()], index: -1 })
         },
         _ => bail!("match: no arm matched"),
     });
@@ -2374,7 +2374,7 @@ fn infoToValue(mut info: SourceInfo) -> Result<Arc<Values::Value>> {
             let mut infopath: Arc<Absyn::Path>;
             infopath = Arc::new(Absyn::Path::FULLYQUALIFIED { path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("OpenModelica")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Scripting")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SourceInfo")).clone() }) }) }) });
             values = list![Arc::new(Values::Value::STRING { string: (filename.clone()).clone() }), Arc::new(Values::Value::BOOL { boolean: readonly.clone() }), Arc::new(Values::Value::INTEGER { integer: ls.clone() }), Arc::new(Values::Value::INTEGER { integer: cs.clone() }), Arc::new(Values::Value::INTEGER { integer: le.clone() }), Arc::new(Values::Value::INTEGER { integer: ce.clone() })];
-            Arc::new(Values::Value::RECORD { record_: infopath.clone(), orderd: values.clone(), comp: list![(literal!("filename")).clone(), (literal!("readonly")).clone(), (literal!("lineStart")).clone(), (literal!("columnStart")).clone(), (literal!("lineEnd")).clone(), (literal!("columnEnd")).clone()], index: -1 })
+            Arc::new(Values::Value::RECORD { record_: infopath, orderd: values, comp: list![(literal!("filename")).clone(), (literal!("readonly")).clone(), (literal!("lineStart")).clone(), (literal!("columnStart")).clone(), (literal!("lineEnd")).clone(), (literal!("columnEnd")).clone()], index: -1 })
         },
         _ => bail!("match: no arm matched"),
     });
@@ -2599,7 +2599,7 @@ fn generateFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: Ab
         (_, _, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::CLASS { encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, name, info: info @ SourceInfo { fileName: file, .. }, .. }, tail: _ }) => {
             let mut n: i32;
             (n, _) = System::regex((file.clone()).clone(), (literal!("ModelicaBuiltin.mo$")).clone(), 1, false, false);
-            Error::assertion(n.clone() > 0, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Not an encapsulated class (required for separate compilation): ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), info.clone())?;
+            Error::assertion(n > 0, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Not an encapsulated class (required for separate compilation): ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), info.clone())?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -3038,7 +3038,7 @@ fn isCevaluableFunction(mut inElement: Arc<SCode::Element>) -> Result<()> {
                 _ => bail!("pattern mismatch"),
             } };
             lib = __pa0.clone();
-            let true = (checkLibraryUsage((literal!("Lapack")).clone(), lib.clone())? || checkLibraryUsage((literal!("lapack")).clone(), lib.clone())?) else { bail!("pattern mismatch") };
+            let true = (checkLibraryUsage((literal!("Lapack")).clone(), lib.clone())? || checkLibraryUsage((literal!("lapack")).clone(), lib)?) else { bail!("pattern mismatch") };
             isCevaluableFunction2((fid.clone()).clone())?;
             ()
         },
@@ -3203,7 +3203,7 @@ fn getInterfaceTypeAssocElt(mut val: Arc<Values::Value>, mut info: SourceInfo) -
         Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: vals }, .. } => {
             let mut strs: Arc<metamodelica::List<ArcStr>>;
             strs = List::select(List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(fnptr!(Util::isNotEmptyString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>))?;
-            (r#str.clone(), metamodelica::cons((r#str.clone()).clone(), strs.clone()))
+            (r#str.clone(), metamodelica::cons((r#str.clone()).clone(), strs))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3222,14 +3222,14 @@ fn buildDependencyGraph(mut name: ArcStr, mut sp: Arc<metamodelica::List<Arc<SCo
             elts = __pa0.clone();
             elts = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-        for mut e in (elts.clone()).into_iter().cloned() {
+        for mut e in (elts).into_iter().cloned() {
             if !(SCodeUtil::isImport(e.clone())) { continue; }
             let __x = e.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            List::map(elts.clone(), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?
+            List::map(elts, (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3246,8 +3246,8 @@ fn buildDependencyGraphPublicImports(mut name: ArcStr, mut sp: Arc<metamodelica:
                 _ => bail!("pattern mismatch"),
             } };
             elts = __pa0.clone();
-            elts = List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsPublicImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
-            List::map(elts.clone(), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?
+            elts = List::select(elts, (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsPublicImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
+            List::map(elts, (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3303,7 +3303,7 @@ fn importDependency(mut simp: Arc<SCode::Element>) -> Result<ArcStr> {
         Deref @ SCode::Element::IMPORT { imp, info, .. } => {
             let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CevalScript.importDependency could not handle:")); __mm_s.push_str(&*Dump::unparseImportStr(imp.clone())?); ArcStr::from(__mm_s) }).clone();
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(r#str).clone()], info.clone())?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -3356,8 +3356,8 @@ fn containsPublicInterface(mut elt: Arc<SCode::Element>) -> Result<bool> {
         _ => {
             let mut name: ArcStr;
             name = (SCodeUtil::elementName(elt)?).clone();
-            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CevalScript.containsPublicInterface failed: ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(name.clone()).clone()])?;
+            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CevalScript.containsPublicInterface failed: ")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone();
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(name).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3388,8 +3388,8 @@ fn containsImport(mut elt: Arc<SCode::Element>, mut visibility: SCode::Visibilit
         _ => {
             let mut name: ArcStr;
             name = (SCodeUtil::elementName(elt)?).clone();
-            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CevalScript.containsPublicInterface failed: ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(name.clone()).clone()])?;
+            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CevalScript.containsPublicInterface failed: ")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone();
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(name).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3587,15 +3587,15 @@ pub(crate) fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, 
             libs = __pa5.clone();
             libPaths = __pa6.clone();
             SimCodeFunctionUtil::checkValidMainFunction((name.clone()).clone(), mainFunction.clone())?;
-            makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), true, false)?;
-            fnCode = SimCodeFunction::FunctionCode { name: (name.clone()).clone(), mainFunction: Some(mainFunction.clone()), functions: fns.clone(), literals: literals.clone(), externalFunctionIncludes: includes.clone(), makefileParams: makefileParams.clone(), extraRecordDecls: extraRecordDecls.clone() };
+            makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs, libs, libPaths, true, false)?;
+            fnCode = SimCodeFunction::FunctionCode { name: (name.clone()).clone(), mainFunction: Some(mainFunction.clone()), functions: fns.clone(), literals: literals, externalFunctionIncludes: includes.clone(), makefileParams: makefileParams, extraRecordDecls: extraRecordDecls };
             if Config::simCodeTarget()? == literal!("MidC") {
-                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctionHeaderFiles) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode.clone())?;
-                midfuncs = DAEToMid::DAEFunctionsToMid(metamodelica::cons(mainFunction.clone(), fns.clone()))?;
-                midCode = Tpl::tplCallWithFailError((std::sync::Arc::new(CodegenMidToC::genProgram) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, MidCode::Program) -> Result<Tpl::Text> + 'static>), MidCode::Program { name: (name.clone()).clone(), functions: midfuncs.clone() }, Tpl::emptyTxt.clone())?;
-                Tpl::textFileConvertLines(midCode.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(".c")); ArcStr::from(__mm_s) }).clone())?;
+                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctionHeaderFiles) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode)?;
+                midfuncs = DAEToMid::DAEFunctionsToMid(metamodelica::cons(mainFunction, fns))?;
+                midCode = Tpl::tplCallWithFailError((std::sync::Arc::new(CodegenMidToC::genProgram) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, MidCode::Program) -> Result<Tpl::Text> + 'static>), MidCode::Program { name: (name.clone()).clone(), functions: midfuncs }, Tpl::emptyTxt.clone())?;
+                Tpl::textFileConvertLines(midCode, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(".c")); ArcStr::from(__mm_s) }).clone())?;
             } else {
-                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctions) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode.clone())?;
+                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctions) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode)?;
             }
             ()
         },
@@ -3614,17 +3614,17 @@ pub(crate) fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, 
             let mut includes = (*includes).clone();
             (daeElements, literals) = SimCodeFunctionUtil::findLiterals(daeElements.clone())?;
             (fns, extraRecordDecls, includes, includeDirs, libs, libPaths) = SimCodeFunctionUtil::elaborateFunctions(program, daeElements.clone(), metarecordTypes, literals.clone(), includes.clone())?;
-            makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), true, false)?;
-            fns = removeThreadDataFunction(fns.clone(), metamodelica::nil());
-            extraRecordDecls = removeThreadDataRecord(extraRecordDecls.clone(), metamodelica::nil());
-            fnCode = SimCodeFunction::FunctionCode { name: (name.clone()).clone(), mainFunction: None, functions: fns.clone(), literals: literals.clone(), externalFunctionIncludes: includes.clone(), makefileParams: makefileParams.clone(), extraRecordDecls: extraRecordDecls.clone() };
+            makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs, libs, libPaths, true, false)?;
+            fns = removeThreadDataFunction(fns, metamodelica::nil());
+            extraRecordDecls = removeThreadDataRecord(extraRecordDecls, metamodelica::nil());
+            fnCode = SimCodeFunction::FunctionCode { name: (name.clone()).clone(), mainFunction: None, functions: fns.clone(), literals: literals, externalFunctionIncludes: includes.clone(), makefileParams: makefileParams, extraRecordDecls: extraRecordDecls };
             if Config::simCodeTarget()? == literal!("MidC") {
-                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctionHeaderFiles) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode.clone())?;
-                midfuncs = DAEToMid::DAEFunctionsToMid(fns.clone())?;
-                midCode = Tpl::tplCallWithFailError((std::sync::Arc::new(CodegenMidToC::genProgram) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, MidCode::Program) -> Result<Tpl::Text> + 'static>), MidCode::Program { name: (name.clone()).clone(), functions: midfuncs.clone() }, Tpl::emptyTxt.clone())?;
-                Tpl::textFileConvertLines(midCode.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(".c")); ArcStr::from(__mm_s) }).clone())?;
+                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctionHeaderFiles) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode)?;
+                midfuncs = DAEToMid::DAEFunctionsToMid(fns)?;
+                midCode = Tpl::tplCallWithFailError((std::sync::Arc::new(CodegenMidToC::genProgram) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, MidCode::Program) -> Result<Tpl::Text> + 'static>), MidCode::Program { name: (name.clone()).clone(), functions: midfuncs }, Tpl::emptyTxt.clone())?;
+                Tpl::textFileConvertLines(midCode, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(".c")); ArcStr::from(__mm_s) }).clone())?;
             } else {
-                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctions) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode.clone())?;
+                Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctions) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode)?;
             }
             ()
         },

@@ -63,8 +63,8 @@ pub fn crefDims(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
             let mut res: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             dims = TypesDump::getDimensions(idType.clone());
             res = crefDims(cr.clone())?;
-            res = listAppend(dims.clone(), res.clone());
-            res.clone()
+            res = listAppend(dims, res);
+            res
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -80,8 +80,8 @@ pub fn crefSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, subscriptLst: subs, .. } => {
             let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             res = crefSubs(cr.clone())?;
-            res = listAppend(subs.clone(), res.clone());
-            res.clone()
+            res = listAppend(subs.clone(), res);
+            res
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -911,7 +911,7 @@ fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut 
         (_, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n1, componentRef: cr1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n2, componentRef: cr2, .. }) => {
             let mut r: bool;
             r = stringEq((n1.clone()).clone(), (n2.clone()).clone());
-            if (r.clone()) {{ (refEq, icr1, icr2) = (referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone()); continue '__tco; }} else {return false}
+            if (r) {{ (refEq, icr1, icr2) = (referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone()); continue '__tco; }} else {return false}
         },
         _ => {
             return false
@@ -930,7 +930,7 @@ pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<A
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: t2, subscriptLst: s, componentRef: cr } => {
             let mut cr_1: Arc<DAE::ComponentRef>;
             cr_1 = crefStripLastSubs(cr.clone())?;
-            makeCrefQual((id.clone()).clone(), t2.clone(), s.clone(), cr_1.clone())
+            makeCrefQual((id.clone()).clone(), t2.clone(), s.clone(), cr_1)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -958,7 +958,7 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: s, subscriptLst: subs, .. } => {
             let mut r#str: ArcStr;
             r#str = (printComponentRef2Str((s.clone()).clone(), subs.clone())?).clone();
-            r#str.clone()
+            r#str
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: s, subscriptLst: subs, componentRef: cr, .. } => {
             let mut r#str: ArcStr;
@@ -968,9 +968,9 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
             b = Config::modelicaOutput()?;
             r#str = (printComponentRef2Str((s.clone()).clone(), subs.clone())?).clone();
             strrest = (printComponentRefStr(cr.clone())?).clone();
-            strseb = (if (b.clone()) {literal!("__")} else {literal!(".")}).clone();
-            r#str = stringAppendList(list![(r#str.clone()).clone(), (strseb.clone()).clone(), (strrest.clone()).clone()]);
-            r#str.clone()
+            strseb = (if (b) {literal!("__")} else {literal!(".")}).clone();
+            r#str = stringAppendList(list![(r#str).clone(), (strseb).clone(), (strrest).clone()]);
+            r#str
         },
         Deref @ DAE::ComponentRef::WILD { .. } => {
             literal!("_")
@@ -993,9 +993,9 @@ pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamo
             let mut b: bool;
             b = Config::modelicaOutput()?;
             r#str = (ExpressionBasics::printListStr(l.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?).clone();
-            (strseba, strsebb) = if (b.clone()) {(literal!("_L"), literal!("_R"))} else {(literal!("["), literal!("]"))};
-            r#str = stringAppendList(list![(s.clone()).clone(), (strseba.clone()).clone(), (r#str.clone()).clone(), (strsebb.clone()).clone()]);
-            r#str.clone()
+            (strseba, strsebb) = if (b) {(literal!("_L"), literal!("_R"))} else {(literal!("["), literal!("]"))};
+            r#str = stringAppendList(list![(s.clone()).clone(), (strseba).clone(), (r#str).clone(), (strsebb).clone()]);
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
