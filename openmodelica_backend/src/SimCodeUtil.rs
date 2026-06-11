@@ -2660,11 +2660,11 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     expl = List::flatten(List::map1(expl.clone(), (std::sync::Arc::new(Expression::generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), None)?)?;
                     crexplst = List::flatten(List::map1(expl.clone(), (std::sync::Arc::new(Expression::generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), Some(cr.clone()))?)?;
                     crlst = List::map(crexplst.clone(), (std::sync::Arc::new(Expression::expCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-                    crlstlst = List::map1(crlst.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?;
+                    crlstlst = List::map1(crlst.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?;
                     crlst = List::flatten(crlstlst.clone())?;
                     crexplst = List::map(crlst.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     crlst = List::map(expl.clone(), (std::sync::Arc::new(Expression::expCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-                    crlstlst = List::map1(crlst.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?;
+                    crlstlst = List::map1(crlst.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?;
                     crlst = List::flatten(crlstlst.clone())?;
                     expl = List::map(crlst.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     exptl = List::zip(expl.clone(), crexplst.clone());
@@ -2790,7 +2790,7 @@ fn createTmpCrefExpsForComplexEqnSys_work(mut inExp: Arc<DAE::Exp>, mut inCrefPr
             let mut tmp_exp: Arc<DAE::Exp>;
             let mut isEqCref: bool;
             let mut cr = (*cr).clone();
-            crlist = ComponentReference::expandCref(cr.clone(), true);
+            crlist = ComponentReference::expandCref(cr.clone(), true)?;
             for mut c in &*crlist.clone() {
                 let mut c = c.clone();
                 name = (ComponentReference::crefModelicaStr(c.clone())).clone();
@@ -2931,7 +2931,7 @@ fn createTempVars(mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inCref
             let mut var: SimCodeVar::SimVar;
             let mut ty = (*ty).clone();
             cr = ComponentReference::crefPrependIdent(inCrefPrefix.clone(), (name.clone()).clone(), metamodelica::nil(), ty.clone())?;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ComponentReference::expandCref(cr.clone(), true)) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ComponentReference::expandCref(cr.clone(), true)?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -3010,7 +3010,7 @@ pub fn createNonlinearResidualEquations(mut eqs: Arc<metamodelica::List<Arc<Back
             lhse = Arc::new(DAE::Exp::CREF { componentRef: left.clone(), ty: ty.clone() });
             res_exp = unwrap_break_err!(Expression::createResidualExp(e1.clone(), e2.clone()), '__try0);
             res_exp = unwrap_break_err!(Expression::replaceDerOpInExp(res_exp.clone()), '__try0);
-            crefstmp = ComponentReference::expandCref(left.clone(), false);
+            crefstmp = unwrap_break_err!(ComponentReference::expandCref(left.clone(), false), '__try0);
             explst1 = unwrap_break_err!(List::map(crefstmp.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>)), '__try0);
             let (__pa0, (__pa1, __pa2)) = unwrap_break_err!(List::map2Fold(explst1.clone(), (std::sync::Arc::new(fnptr!(makeSES_RESIDUAL, Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, (i32, i32)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, i32))> + 'static>), source.clone(), eqAttr.clone(), (eq_idx, res_idx), metamodelica::nil()), '__try0);
             eqSystlst = __pa0.clone();
@@ -6582,7 +6582,7 @@ fn createSingleComplexEqnCode3(mut inExp: Arc<DAE::Exp>, mut iht: (metamodelica:
                 Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
-                    crefs = ComponentReference::expandCref(cr.clone(), true);
+                    crefs = ComponentReference::expandCref(cr.clone(), true)?;
                     let false = (list![cr.clone()] == crefs.clone()) else { bail!("pattern mismatch") };
                     expLst = List::map(crefs.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     List::foldAllValue(expLst.clone(), (std::sync::Arc::new(fnptr!(createSingleComplexEqnCode3, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), true, iht.clone())?;
@@ -6728,7 +6728,7 @@ fn createSingleArrayEqnCode(mut genDiscrete: bool, mut inEquations: Arc<metamode
                     ty = Arc::new(DAE::Type::T_ARRAY { ty: basety.clone(), dims: dims.clone() });
                     left = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*intString(iuniqueEqIndex)); ArcStr::from(__mm_s) }).clone(), ty.clone(), metamodelica::nil());
                     lhse = Arc::new(DAE::Exp::CREF { componentRef: left.clone(), ty: ty.clone() });
-                    crefstmp = ComponentReference::expandCref(left.clone(), false);
+                    crefstmp = ComponentReference::expandCref(left.clone(), false)?;
                     expLstTmp = List::map(crefstmp.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     tempvars = createArrayTempVar(left.clone(), ds.clone(), expLstTmp.clone(), itempvars.clone())?;
                     exptl = List::zip(expLst.clone(), expLstTmp.clone());
@@ -6895,12 +6895,12 @@ fn createSingleAlgorithmCode(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Eq
                         BackendDump::dumpAlgorithms(list![Arc::new(DAE::Algorithm { statementLst: algStatements.clone() })], 0)?;
                     }
                     solvedVars = List::map(vars.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-                    solvedVars = List::unionList(List::map1(solvedVars.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
+                    solvedVars = List::unionList(List::map1(solvedVars.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
                     if debug.clone() {
                         BackendDump::debugStrCrefLstStr((literal!("solvedVars : ")).clone(), solvedVars.clone(), (literal!(", ")).clone(), (literal!("\n")).clone())?;
                     }
                     algOutVars = CheckModel::checkAndGetAlgorithmOutputs(alg.clone(), source.clone(), crefExpand.clone())?;
-                    algOutVars = List::unionList(List::map1(algOutVars.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
+                    algOutVars = List::unionList(List::map1(algOutVars.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
                     knownOutputCrefs = List::setDifference(algOutVars.clone(), solvedVars.clone())?;
                     solvedVars = List::map(List::filterOnTrue(vars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarNonDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
                     discreteVarsExp = ({
@@ -8432,7 +8432,7 @@ fn extractVarFromVar(mut dlowVar: BackendDAE::Var, mut inAliasVars: BackendDAE::
     let mut binding_opt: Option<Arc<DAE::Exp>>;
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     if Types::isArray(dlowVar.varType.clone()) {
-        scalar_crefs = ComponentReference::expandCref(dlowVar.varName.clone(), false);
+        scalar_crefs = ComponentReference::expandCref(dlowVar.varName.clone(), false)?;
         match '__try0: {
             scalar_bindings = (::match_deref::match_deref! { match &(dlowVar.bindExp.clone()) {
         Some(__esc_binding @ Deref @ DAE::Exp::ARRAY { .. }) => {
@@ -11484,40 +11484,23 @@ pub(crate) fn compareSimVarTupleIndexGt<anyT: Clone + 'static + metamodelica::gc
 }
 
 pub fn countDynamicExternalFunctions(mut inFncLst: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> i32 {
-    let mut outDynLoadFuncs: i32;
-    outDynLoadFuncs = 'mc: {
-        let __mc_input = inFncLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(0)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, .. }, tail: rest } => {
-                    let mut i: i32;
-                    i = countDynamicExternalFunctions(rest.clone());
-                    Ok(intAdd(i.clone(), 1))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut i: i32;
-                    i = countDynamicExternalFunctions(rest.clone());
-                    Ok(i.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    outDynLoadFuncs
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inFncLst) {
+        Deref @ metamodelica::List::Nil => {
+            return 0
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, .. }, tail: rest } => {
+            let mut i: i32;
+            i = countDynamicExternalFunctions(rest.clone());
+            return intAdd(i.clone(), 1)
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
+            let mut i: i32;
+            { inFncLst = rest.clone(); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn getFilesFromSimVar(mut var: SimCodeVar::SimVar, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> (SimCodeVar::SimVar, Arc<metamodelica::List<SimCode::FileInfo>>) {
@@ -15155,7 +15138,7 @@ pub fn codegenExpSanityCheck(mut e: Arc<DAE::Exp>, mut context: SimCodeFunction:
     e = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => {
             simCode = getSimCode()?;
-            crf_lst = ComponentReference::expandCref(var_field!((*e).componentRef, DAE::Exp::CREF).clone(), true);
+            crf_lst = ComponentReference::expandCref(var_field!((*e).componentRef, DAE::Exp::CREF).clone(), true)?;
             vars = ({
         let mut __acc: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
         for mut cr in (crf_lst).into_iter().cloned() {

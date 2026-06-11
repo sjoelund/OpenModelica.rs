@@ -3135,7 +3135,7 @@ pub(crate) fn simplifyScalarProduct(mut inVector1: Arc<DAE::Exp>, mut inVector2:
             let mut exp: Arc<DAE::Exp>;
             expl1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for mut c in (ComponentReference::expandCref(cr1.clone(), true)).into_iter().cloned() {
+        for mut c in (ComponentReference::expandCref(cr1.clone(), true)?).into_iter().cloned() {
             let __x = Expression::crefToExp(c.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -3144,7 +3144,7 @@ pub(crate) fn simplifyScalarProduct(mut inVector1: Arc<DAE::Exp>, mut inVector2:
             let true = ((expl1.clone().len() as i32) <= 3) else { bail!("pattern mismatch") };
             expl2 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for mut c in (ComponentReference::expandCref(cr2.clone(), true)).into_iter().cloned() {
+        for mut c in (ComponentReference::expandCref(cr2.clone(), true)?).into_iter().cloned() {
             let __x = Expression::crefToExp(c.clone())?;
             __acc = cons(__x, __acc);
         }

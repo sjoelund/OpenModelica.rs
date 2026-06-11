@@ -526,36 +526,16 @@ pub(crate) fn getUnknown(mut suin: UnitAbsyn::SpecUnit) -> Result<(i32, UnitAbsy
 
 pub(crate) fn hasUnknown(mut su: UnitAbsyn::SpecUnit) -> Result<bool> {
     let mut res: bool;
-    res = 'mc: {
-        let __mc_input = su;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                UnitAbsyn::SpecUnit { typeParameters: Deref @ metamodelica::List::Nil, units: _ } => {
-                    Ok(false)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                UnitAbsyn::SpecUnit { typeParameters: _, units: _ } => {
-                    Ok(true)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::trace((literal!("UnitChecker::hasUnknown() failed\n")).clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    res = (::match_deref::match_deref! { match &(su) {
+        UnitAbsyn::SpecUnit { typeParameters: Deref @ metamodelica::List::Nil, units: _ } => false,
+        UnitAbsyn::SpecUnit { typeParameters: _, units: _ } => true,
+        _ => {
+            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+            Debug::trace((literal!("UnitChecker::hasUnknown() failed\n")).clone())?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(res)
 }
 

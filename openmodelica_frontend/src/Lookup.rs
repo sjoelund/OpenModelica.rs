@@ -1346,33 +1346,22 @@ pub(crate) fn lookupVarIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
 }
 
 fn checkPackageVariableConstant(mut parentEnv: FCore::Graph, mut classEnv: FCore::Graph, mut componentEnv: FCore::Graph, mut attr: Arc<DAE::Attributes>, mut tp: Arc<DAE::Type>, mut cref: Arc<DAE::ComponentRef>) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = attr;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Attributes { variability: SCode::Variability::CONST { .. }, .. } => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let mut s1: ArcStr;
-                    let mut s2: ArcStr;
-                    s1 = (ComponentReferenceBasics::printComponentRefStr(cref.clone())?).clone();
-                    s2 = (FGraph::printGraphPathStr(classEnv.clone())).clone();
-                    Error::addMessage(Error::PACKAGE_VARIABLE_NOT_CONSTANT.clone(), list![(s1.clone()).clone(), (s2.clone()).clone()])?;
-                    let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Lookup.checkPackageVariableConstant failed: ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(attr) {
+        Deref @ DAE::Attributes { variability: SCode::Variability::CONST { .. }, .. } => {
+            ()
+        },
+        _ => {
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            s1 = (ComponentReferenceBasics::printComponentRefStr(cref)?).clone();
+            s2 = (FGraph::printGraphPathStr(classEnv)).clone();
+            Error::addMessage(Error::PACKAGE_VARIABLE_NOT_CONSTANT.clone(), list![(s1.clone()).clone(), (s2.clone()).clone()])?;
+            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Lookup.checkPackageVariableConstant failed: ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone())?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -2667,26 +2656,11 @@ fn buildRecordConstructorClass2(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
 
 fn selectModifier(mut inModID: Arc<DAE::Mod>, mut inModNoID: Arc<DAE::Mod>) -> Arc<DAE::Mod> {
     let mut outMod: Arc<DAE::Mod>;
-    outMod = 'mc: {
-        let __mc_input = inModID.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD { .. } => {
-                    Ok(inModNoID.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(inModID.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outMod = (::match_deref::match_deref! { match &(inModID.clone()) {
+        Deref @ DAE::Mod::NOMOD { .. } => inModNoID,
+        _ => inModID,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outMod
 }
 

@@ -1038,22 +1038,18 @@ fn printVisualization(mut vis: Visualization) -> Result<ArcStr> {
 
 fn isVisualizationVar(mut var: BackendDAE::Var) -> bool {
     let mut isVisVar: bool;
-    isVisVar = 'mc: {
-        let __mc_input = var;
-        if let Ok(__v) = (|| -> Result<_> {
-            let BackendDAE::Var { source: mut source, .. } = __mc_input.clone() else { bail!("nomatch") };
+    isVisVar = (match var {
+        BackendDAE::Var { source: mut source, .. } => {
             let mut obj: ArcStr;
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             paths = ElementSource::getElementSourceTypes(source.clone());
             (obj, _) = hasVisPath(paths.clone(), 1);
-            Ok(Util::stringNotEqual((obj.clone()).clone(), (literal!("")).clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(false)
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+            Util::stringNotEqual((obj.clone()).clone(), (literal!("")).clone())
+        },
+        _ => {
+            false
+        },
+    });
     isVisVar
 }
 
@@ -1093,52 +1089,29 @@ fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica
 }
 
 fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn: i32) -> (ArcStr, i32) {
-    let mut visPath: ArcStr;
-    let mut numOut: i32;
-    (visPath, numOut) = 'mc: {
-        let __mc_input = pathsIn;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok((literal!(""), -1))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Path::FULLYQUALIFIED { path }, tail: rest } => {
-                    Ok(hasVisPath(metamodelica::cons(path.clone(), rest.clone()), numIn))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Modelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Mechanics", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "MultiBody", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Visualizers", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Advanced", path: Deref @ Absyn::Path::IDENT { name } } } } } }, tail: _ } => {
-                    if !(((::match_deref::match_deref! { match &(name.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(pathsIn) {
+        Deref @ metamodelica::List::Nil => {
+            return (literal!(""), -1)
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Path::FULLYQUALIFIED { path }, tail: rest } => {
+            { (pathsIn, numIn) = (metamodelica::cons(path.clone(), rest.clone()), numIn); continue '__tco; }
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Modelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Mechanics", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "MultiBody", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Visualizers", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Advanced", path: Deref @ Absyn::Path::IDENT { name } } } } } }, tail: _ } if ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "Shape" => true,
         Deref @ "Vector" => true,
         Deref @ "Surface" => true,
         _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } }))) { bail!("guard") }
-                    Ok((name.clone(), numIn))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(hasVisPath(rest.clone(), numIn + 1))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    (visPath, numOut)
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } })) => {
+            return (name.clone(), numIn)
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
+            { (pathsIn, numIn) = (rest.clone(), numIn + 1); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn dumpVis(mut visIn: metamodelica::Array<Visualization>, mut iFileName: ArcStr) -> Result<()> {

@@ -862,33 +862,22 @@ fn replaceAtPositionFromList<ElementType: Clone + 'static + metamodelica::gc::MM
 
 fn updateIndicesInComp(mut compIn: Arc<BackendDAE::StrongComponent>, mut varOffset: i32, mut eqOffset: i32) -> Result<Arc<BackendDAE::StrongComponent>> {
     let mut compOut: Arc<BackendDAE::StrongComponent>;
-    compOut = 'mc: {
-        let __mc_input = compIn;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx, var: varIdx } => {
-                    let mut compTmp: Arc<BackendDAE::StrongComponent>;
-                    let mut eqIdx = (*eqIdx).clone();
-                    let mut varIdx = (*varIdx).clone();
-                    varIdx = varIdx.clone() + varOffset;
-                    eqIdx = eqIdx.clone() + eqOffset;
-                    compTmp = Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx.clone(), var: varIdx.clone() });
-                    Ok(compTmp.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print((literal!("updateVarEqIndices failed\n")).clone());
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    compOut = (::match_deref::match_deref! { match &(compIn) {
+        Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx, var: varIdx } => {
+            let mut compTmp: Arc<BackendDAE::StrongComponent>;
+            let mut eqIdx = (*eqIdx).clone();
+            let mut varIdx = (*varIdx).clone();
+            varIdx = varIdx.clone() + varOffset;
+            eqIdx = eqIdx.clone() + eqOffset;
+            compTmp = Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx.clone(), var: varIdx.clone() });
+            compTmp.clone()
+        },
+        _ => {
+            metamodelica::print((literal!("updateVarEqIndices failed\n")).clone());
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(compOut)
 }
 
@@ -1302,61 +1291,37 @@ fn getResidualExpressionForEquation(mut eq: Arc<BackendDAE::Equation>) -> Result
 
 fn varInFrontList(mut varIn: BackendDAE::Var, mut lstLstIn: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>>> {
     let mut lstLstOut: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>> = metamodelica::nil();
-    lstLstOut = 'mc: {
-        let __mc_input = lstLstIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(lstLstIn.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
-                    let mut lstLstOut: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>> = lstLstOut.clone();
-                    varLst = listHead(lstLstIn.clone())?;
-                    varLst = metamodelica::cons(varIn.clone(), varLst.clone());
-                    lstLstOut = List::replaceAt(varLst.clone(), 1, lstLstIn.clone())?;
-                    Ok((lstLstOut.clone(), lstLstOut.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { lstLstOut = __wb0; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    lstLstOut = (::match_deref::match_deref! { match &(lstLstIn.clone()) {
+        Deref @ metamodelica::List::Nil => {
+            lstLstIn
+        },
+        _ => {
+            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
+            varLst = listHead(lstLstIn.clone())?;
+            varLst = metamodelica::cons(varIn, varLst.clone());
+            lstLstOut = List::replaceAt(varLst.clone(), 1, lstLstIn)?;
+            lstLstOut
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(lstLstOut)
 }
 
 fn eqInFrontList(mut eqIn: Arc<BackendDAE::Equation>, mut lstLstIn: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>> {
     let mut lstLstOut: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
-    lstLstOut = 'mc: {
-        let __mc_input = lstLstIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(lstLstIn.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
-                    let mut lstLstOut: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = lstLstOut.clone();
-                    eqLst = listHead(lstLstIn.clone())?;
-                    eqLst = metamodelica::cons(eqIn.clone(), eqLst.clone());
-                    lstLstOut = List::replaceAt(eqLst.clone(), 1, lstLstIn.clone())?;
-                    Ok((lstLstOut.clone(), lstLstOut.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { lstLstOut = __wb0; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    lstLstOut = (::match_deref::match_deref! { match &(lstLstIn.clone()) {
+        Deref @ metamodelica::List::Nil => {
+            lstLstIn
+        },
+        _ => {
+            let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+            eqLst = listHead(lstLstIn.clone())?;
+            eqLst = metamodelica::cons(eqIn, eqLst.clone());
+            lstLstOut = List::replaceAt(eqLst.clone(), 1, lstLstIn)?;
+            lstLstOut
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(lstLstOut)
 }
 
@@ -1579,26 +1544,15 @@ fn containsFunctioncallOfCref(mut expIn: Arc<DAE::Exp>, mut cref: Arc<DAE::Compo
 fn getCallExpLst(mut eIn: Arc<DAE::Exp>, mut eLstIn: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) {
     let mut eOut: Arc<DAE::Exp>;
     let mut eLstOut: Arc<metamodelica::List<Arc<DAE::Exp>>>;
-    (eOut, eLstOut) = 'mc: {
-        let __mc_input = eIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst, .. } => {
-                    Ok((eIn.clone(), listAppend(expLst.clone(), eLstIn.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok((eIn.clone(), eLstIn.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    (eOut, eLstOut) = (::match_deref::match_deref! { match &(eIn.clone()) {
+        Deref @ DAE::Exp::CALL { expLst, .. } => {
+            (eIn, listAppend(expLst.clone(), eLstIn))
+        },
+        _ => {
+            (eIn, eLstIn)
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     (eOut, eLstOut)
 }
 

@@ -447,20 +447,16 @@ fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
     let mut outRepl: VariableReplacements;
     let mut outSrc: Arc<DAE::ComponentRef>;
     let mut outDst: Arc<DAE::Exp>;
-    (outRepl, outSrc, outDst) = 'mc: {
-        let __mc_input = inFuncTypeExpExpToBooleanOption.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
+    (outRepl, outSrc, outDst) = (match inFuncTypeExpExpToBooleanOption.clone() {
+        _ => {
             let mut dst_1: Arc<DAE::Exp>;
-            (dst_1, _) = replaceExp(dst.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone());
-            Ok((repl.clone(), src.clone(), dst_1.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok((repl.clone(), src.clone(), dst.clone()))
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+            (dst_1, _) = replaceExp(dst, repl.clone(), inFuncTypeExpExpToBooleanOption);
+            (repl, src, dst_1.clone())
+        },
+        _ => {
+            (repl, src, dst)
+        },
+    });
     (outRepl, outSrc, outDst)
 }
 
@@ -2891,41 +2887,33 @@ pub(crate) fn replaceEventInfo(mut eInfoIn: BackendDAE::EventInfo, mut inVariabl
 
 fn replaceTimeEvents(mut teIn: BackendDAE::TimeEvent, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> BackendDAE::TimeEvent {
     let mut teOut: BackendDAE::TimeEvent;
-    teOut = 'mc: {
-        let __mc_input = teIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            let BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: mut index, startExp: mut startExp, intervalExp: mut intervalExp, .. } = __mc_input.clone() else { bail!("nomatch") };
+    teOut = (match teIn.clone() {
+        BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: mut index, startExp: mut startExp, intervalExp: mut intervalExp, .. } => {
             let mut startExp = startExp.clone();
             let mut intervalExp = intervalExp.clone();
             (startExp, _) = replaceExp(startExp.clone(), inVariableReplacements.clone(), inFuncTypeExpExpToBooleanOption.clone());
-            (intervalExp, _) = replaceExp(intervalExp.clone(), inVariableReplacements.clone(), inFuncTypeExpExpToBooleanOption.clone());
-            Ok(BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: index.clone(), startExp: startExp.clone(), intervalExp: intervalExp.clone(), iter: var_field!(teIn.iter, BackendDAE::TimeEvent::SAMPLE_TIME_EVENT).clone() })
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(teIn.clone())
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+            (intervalExp, _) = replaceExp(intervalExp.clone(), inVariableReplacements, inFuncTypeExpExpToBooleanOption);
+            BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: index.clone(), startExp: startExp.clone(), intervalExp: intervalExp.clone(), iter: var_field!(teIn.iter, BackendDAE::TimeEvent::SAMPLE_TIME_EVENT).clone() }
+        },
+        _ => {
+            teIn
+        },
+    });
     teOut
 }
 
 fn replaceZeroCrossing(mut zcIn: BackendDAE::ZeroCrossing, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> BackendDAE::ZeroCrossing {
     let mut zcOut: BackendDAE::ZeroCrossing;
-    zcOut = 'mc: {
-        let __mc_input = zcIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            let BackendDAE::ZeroCrossing { relation_: mut relation_, .. } = __mc_input.clone() else { bail!("nomatch") };
+    zcOut = (match zcIn.clone() {
+        BackendDAE::ZeroCrossing { relation_: mut relation_, .. } => {
             let mut relation_ = relation_.clone();
-            (relation_, _) = replaceExp(relation_.clone(), inVariableReplacements.clone(), inFuncTypeExpExpToBooleanOption.clone());
-            Ok(BackendDAE::ZeroCrossing { index: zcIn.index.clone(), relation_: relation_.clone(), occurEquLst: zcIn.occurEquLst.clone(), iter: zcIn.iter.clone() })
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(zcIn.clone())
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+            (relation_, _) = replaceExp(relation_.clone(), inVariableReplacements, inFuncTypeExpExpToBooleanOption);
+            BackendDAE::ZeroCrossing { index: zcIn.index.clone(), relation_: relation_.clone(), occurEquLst: zcIn.occurEquLst.clone(), iter: zcIn.iter.clone() }
+        },
+        _ => {
+            zcIn
+        },
+    });
     zcOut
 }
 

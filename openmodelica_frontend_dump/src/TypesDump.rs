@@ -787,44 +787,26 @@ pub fn printConnectorTypeStr(mut it: Arc<DAE::Type>) -> Result<(ArcStr, ArcStr)>
 
 pub(crate) fn printParamsStr(mut inFuncArgLst: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ('mc: {
-        let __mc_input = inFuncArgLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: n, ty: t, .. }, tail: Deref @ metamodelica::List::Nil } => {
-                    let mut s1: ArcStr;
-                    let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(t.clone())).clone();
-                    r#str = stringAppendList(list![(n.clone()).clone(), (literal!(" :: ")).clone(), (s1.clone()).clone()]);
-                    Ok((r#str.clone(), r#str.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { r#str = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: n, ty: t, .. }, tail: params } => {
-                    let mut s1: ArcStr;
-                    let mut s2: ArcStr;
-                    let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(t.clone())).clone();
-                    s2 = (printParamsStr(params.clone())?).clone();
-                    r#str = stringAppendList(list![(n.clone()).clone(), (literal!(" :: ")).clone(), (s1.clone()).clone(), (literal!(" * ")).clone(), (s2.clone()).clone()]);
-                    Ok((r#str.clone(), r#str.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { r#str = __wb0; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
+    r#str = ((::match_deref::match_deref! { match &(inFuncArgLst) {
+        Deref @ metamodelica::List::Nil => {
+            literal!("")
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: n, ty: t, .. }, tail: Deref @ metamodelica::List::Nil } => {
+            let mut s1: ArcStr;
+            s1 = (printTypeStr(t.clone())).clone();
+            r#str = stringAppendList(list![(n.clone()).clone(), (literal!(" :: ")).clone(), (s1.clone()).clone()]);
+            r#str
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: n, ty: t, .. }, tail: params } => {
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            s1 = (printTypeStr(t.clone())).clone();
+            s2 = (printParamsStr(params.clone())?).clone();
+            r#str = stringAppendList(list![(n.clone()).clone(), (literal!(" :: ")).clone(), (s1.clone()).clone(), (literal!(" * ")).clone(), (s2.clone()).clone()]);
+            r#str
+        },
+        _ => bail!("match: no arm matched"),
+    } })).clone();
     Ok(r#str)
 }
 
@@ -888,42 +870,13 @@ pub fn unparseVar(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
 
 pub(crate) fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ('mc: {
-        let __mc_input = ct;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::ConnectorType::POTENTIAL { .. } => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::ConnectorType::FLOW { .. } => {
-                    Ok(literal!("flow "))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::ConnectorType::STREAM { associatedFlow: _ } => {
-                    Ok(literal!("stream "))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
+    r#str = ((::match_deref::match_deref! { match &(ct) {
+        Deref @ DAE::ConnectorType::POTENTIAL { .. } => literal!(""),
+        Deref @ DAE::ConnectorType::FLOW { .. } => literal!("flow "),
+        Deref @ DAE::ConnectorType::STREAM { associatedFlow: _ } => literal!("stream "),
+        _ => literal!(""),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     r#str
 }
 

@@ -1018,39 +1018,22 @@ pub(crate) fn mergeElement(mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementI
 }
 
 pub(crate) fn mergeElements(mut inEls1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inEls2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
-    let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
-    outEls = 'mc: {
-        let __mc_input = (inEls1.clone(), inEls2.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, _) => {
-                    Ok(inEls2.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Nil) => {
-                    Ok(inEls1.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Cons { head: e2, tail: rest }) => {
-                    let mut merged: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
-                    merged = mergeElement(inEls1.clone(), e2.clone())?;
-                    merged = mergeElements(merged.clone(), rest.clone())?;
-                    Ok(merged.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
-    Ok(outEls)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inEls1.clone(), inEls2.clone())) {
+        (Deref @ metamodelica::List::Nil, _) => {
+            return Ok(inEls2)
+        },
+        (_, Deref @ metamodelica::List::Nil) => {
+            return Ok(inEls1)
+        },
+        (_, Deref @ metamodelica::List::Cons { head: e2, tail: rest }) => {
+            let mut merged: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+            merged = mergeElement(inEls1, e2.clone())?;
+            { (inEls1, inEls2) = (merged.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub(crate) fn excludeElementsFromFile(mut inFile: ArcStr, mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {

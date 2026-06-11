@@ -50,26 +50,15 @@ use openmodelica_frontend_types::SCode;
 
 pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> DAE::InlineType {
     let mut outInlineType: DAE::InlineType;
-    outInlineType = 'mc: {
-        let __mc_input = cmt;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: smlst, .. } }), .. } => {
-                    Ok(isInlineFunc2(smlst.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outInlineType = (::match_deref::match_deref! { match &(cmt) {
+        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: smlst, .. } }), .. } => {
+            isInlineFunc2(smlst.clone())
+        },
+        _ => {
+            openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outInlineType
 }
 

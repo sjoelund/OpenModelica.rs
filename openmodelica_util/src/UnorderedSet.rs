@@ -282,43 +282,30 @@ pub fn fold<T: Clone + 'static + metamodelica::gc::MMTrace, FT: Clone + 'static 
     Ok(result)
 }
 
-pub fn apply<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<()> {
-    pub type ApplyFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>;
+pub fn selfMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
+    pub type MapFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>;
 
-    let mut hashfn: Hash<T> = set.hashFn.clone();
-    let mut eqfn: KeyEq<T> = set.eqFn.clone();
-    let mut bucket_count: i32;
-    let mut hash: i32;
-    let mut size: i32 = 0;
-    let mut new_buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
-    let mut newKey: T;
-    let mut bucket: Arc<metamodelica::List<T>>;
-    let mut duplicate: bool;
-    bucket_count = Util::nextPrime(Mutable::access(set.size.clone()));
-    new_buckets = arrayCreate(bucket_count, metamodelica::nil());
+    let mut outSet: Arc<UnorderedSet<T>> = new(set.hashFn.clone(), set.eqFn.clone(), 13);
     let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
         for mut k in &*b.clone() {
             let mut k = k.clone();
-            newKey = r#fn(k.clone())?;
-            hash = intMod(hashfn(newKey.clone())?, bucket_count);
-            bucket = metamodelica::arrayGet(new_buckets.clone(), hash + 1)?;
-            duplicate = false;
-            for mut nk in &*bucket.clone() {
-                let mut nk = nk.clone();
-                if eqfn(nk.clone(), newKey.clone())? {
-                    duplicate = true;
-                    break;
-                }
-            }
-            if !(duplicate) {
-                metamodelica::arrayUpdate(new_buckets.clone(), hash + 1, metamodelica::cons(newKey.clone(), bucket.clone()))?;
-                size = size + 1;
-            }
+            add(r#fn(k.clone())?, outSet.clone())?;
         }
     }
-    Mutable::update(set.buckets.clone(), new_buckets.clone());
-    Mutable::update(set.size.clone(), size);
+    Ok(outSet)
+}
+
+pub fn apply<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>) -> Result<()> {
+    pub type ApplyFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>;
+
+    let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+    for mut b in __range0 {
+        for mut k in &*b.clone() {
+            let mut k = k.clone();
+            r#fn(k.clone())?;
+        }
+    }
     Ok(())
 }
 
@@ -489,19 +476,28 @@ pub fn unique_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: A
 
 pub fn union<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
-    let mut buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
-    if Mutable::access(set1.size.clone()) > Mutable::access(set2.size.clone()) {
+    let mut sz1: i32;
+    let mut sz2: i32;
+    let mut small_sz: i32;
+    let mut small_set: Arc<UnorderedSet<T>>;
+    sz1 = Mutable::access(set1.size.clone());
+    sz2 = Mutable::access(set2.size.clone());
+    if sz1 > sz2 {
         set = set1;
-        buckets = Mutable::access(set2.buckets.clone());
+        small_set = set2;
+        small_sz = sz2;
     } else {
         set = set2;
-        buckets = Mutable::access(set1.buckets.clone());
+        small_set = set1;
+        small_sz = sz1;
     }
-    let __range0 = buckets.clone().borrow().iter().cloned().collect::<Vec<_>>();
-    for mut b in __range0 {
-        for mut k in &*b.clone() {
-            let mut k = k.clone();
-            add(k.clone(), set.clone())?;
+    if small_sz > 0 {
+        let __range0 = Mutable::access(small_set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        for mut b in __range0 {
+            for mut k in &*b.clone() {
+                let mut k = k.clone();
+                add(k.clone(), set.clone())?;
+            }
         }
     }
     Ok(set)
@@ -524,6 +520,9 @@ pub fn union_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set_lst: A
 
 pub fn merge<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set1: Arc<UnorderedSet<T>> = set1;
+    if isEmpty(set2.clone()) {
+        return Ok(set1.clone());
+    }
     let __range0 = Mutable::access(set2.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
         for mut k in &*b.clone() {
@@ -546,12 +545,14 @@ pub(crate) fn intersection<T: Clone + 'static + metamodelica::gc::MMTrace>(mut s
         set_small = set1.clone();
         set_big = set2;
     }
-    let __range0 = Mutable::access(set_small.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
-    for mut b in __range0 {
-        for mut k in &*b.clone() {
-            let mut k = k.clone();
-            if contains(k.clone(), set_big.clone())? {
-                acc = metamodelica::cons(k.clone(), acc.clone());
+    if !(isEmpty(set_small.clone())) {
+        let __range0 = Mutable::access(set_small.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        for mut b in __range0 {
+            for mut k in &*b.clone() {
+                let mut k = k.clone();
+                if contains(k.clone(), set_big.clone())? {
+                    acc = metamodelica::cons(k.clone(), acc.clone());
+                }
             }
         }
     }
@@ -623,12 +624,14 @@ pub fn equal_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList1: A
 pub fn difference<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut acc: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let __range0 = Mutable::access(set1.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
-    for mut b in __range0 {
-        for mut k in &*b.clone() {
-            let mut k = k.clone();
-            if !(contains(k.clone(), set2.clone())?) {
-                acc = metamodelica::cons(k.clone(), acc.clone());
+    if !(isEmpty(set1.clone())) {
+        let __range0 = Mutable::access(set1.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        for mut b in __range0 {
+            for mut k in &*b.clone() {
+                let mut k = k.clone();
+                if !(contains(k.clone(), set2.clone())?) {
+                    acc = metamodelica::cons(k.clone(), acc.clone());
+                }
             }
         }
     }
@@ -639,21 +642,25 @@ pub fn difference<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<
 pub fn sym_difference<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut acc: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let __range0 = Mutable::access(set1.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
-    for mut b in __range0 {
-        for mut k in &*b.clone() {
-            let mut k = k.clone();
-            if !(contains(k.clone(), set2.clone())?) {
-                acc = metamodelica::cons(k.clone(), acc.clone());
+    if !(isEmpty(set1.clone())) {
+        let __range0 = Mutable::access(set1.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        for mut b in __range0 {
+            for mut k in &*b.clone() {
+                let mut k = k.clone();
+                if !(contains(k.clone(), set2.clone())?) {
+                    acc = metamodelica::cons(k.clone(), acc.clone());
+                }
             }
         }
     }
-    let __range1 = Mutable::access(set2.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
-    for mut b in __range1 {
-        for mut k in &*b.clone() {
-            let mut k = k.clone();
-            if !(contains(k.clone(), set1.clone())?) {
-                acc = metamodelica::cons(k.clone(), acc.clone());
+    if !(isEmpty(set2.clone())) {
+        let __range1 = Mutable::access(set2.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        for mut b in __range1 {
+            for mut k in &*b.clone() {
+                let mut k = k.clone();
+                if !(contains(k.clone(), set1.clone())?) {
+                    acc = metamodelica::cons(k.clone(), acc.clone());
+                }
             }
         }
     }
@@ -672,13 +679,15 @@ pub fn isDisjoint<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<
         set_small = set1;
         set_big = set2;
     }
-    let __range0 = Mutable::access(set_small.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
-    for mut buckets in __range0 {
-        for mut k in &*buckets.clone() {
-            let mut k = k.clone();
-            if contains(k.clone(), set_big.clone())? {
-                b = false;
-                return Ok(b.clone());
+    if !(isEmpty(set_small.clone())) {
+        let __range0 = Mutable::access(set_small.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        for mut buckets in __range0 {
+            for mut k in &*buckets.clone() {
+                let mut k = k.clone();
+                if contains(k.clone(), set_big.clone())? {
+                    b = false;
+                    return Ok(b.clone());
+                }
             }
         }
     }

@@ -3440,7 +3440,7 @@ fn expandCref1(mut iCref: Arc<DAE::ComponentRef>, mut iElems: i32, mut iDimElemC
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut tmpCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = tmpCrefs.clone();
-                    tmpCrefs = ComponentReference::expandCref(iCref.clone(), false);
+                    tmpCrefs = ComponentReference::expandCref(iCref.clone(), false)?;
                     let true = (intEq((tmpCrefs.clone().len() as i32), iElems)) else { bail!("pattern mismatch") };
                     Ok((tmpCrefs.clone(), tmpCrefs.clone()))
                 }

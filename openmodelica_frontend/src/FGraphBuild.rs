@@ -848,28 +848,17 @@ fn analyseExpTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut r#ref: Ref, mut kind
 
 fn analyseCref(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
-    outGraph = 'mc: {
-        let __mc_input = (inCref.clone(), inGraph);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::ComponentRef::WILD { .. }, g) => {
-                    Ok(g.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, g) => {
-                    let mut g = (*g).clone();
-                    g = mkCrefNode(inCref.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-                    Ok(g.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outGraph = (::match_deref::match_deref! { match &((inCref.clone(), inGraph)) {
+        (Deref @ Absyn::ComponentRef::WILD { .. }, g) => {
+            g.clone()
+        },
+        (_, g) => {
+            let mut g = (*g).clone();
+            g = mkCrefNode(inCref, inParentRef.clone(), inKind, g.clone())?;
+            g.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outGraph)
 }
 

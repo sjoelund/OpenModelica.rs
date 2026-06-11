@@ -1039,8 +1039,8 @@ fn createReplacementVariables(mut inCref: Arc<DAE::ComponentRef>, mut funcName: 
     eVar = Expression::crefExp(crVar.clone())?;
     let false = (Expression::isRecord(eVar.clone())) else { bail!("pattern mismatch") };
     outRepls = BackendVarTransform::addReplacement(outRepls, inCref.clone(), eVar.clone(), None)?;
-    crefs = ComponentReference::expandCref(inCref, false);
-    crefs1 = ComponentReference::expandCref(crVar.clone(), false);
+    crefs = ComponentReference::expandCref(inCref, false)?;
+    crefs1 = ComponentReference::expandCref(crVar.clone(), false)?;
     match '__try0: {
         arrExp = unwrap_break_err!(Expression::getArrayOrRangeContents(eVar.clone()), '__try0);
         Ok::<_, anyhow::Error>((arrExp.clone(),))
@@ -1194,7 +1194,7 @@ fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut 
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut arrExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut e: Arc<DAE::Exp>;
-            crefs = ComponentReference::expandCref(iCr, false);
+            crefs = ComponentReference::expandCref(iCr, false)?;
             repl = iRepl;
             arrExp = Expression::getArrayOrRangeContents(iExp)?;
             for mut c in &*crefs.clone() {

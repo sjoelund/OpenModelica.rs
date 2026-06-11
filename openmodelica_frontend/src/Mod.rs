@@ -977,28 +977,17 @@ pub(crate) fn getModifs(mut inMods: Arc<DAE::Mod>, mut inName: ArcStr, mut inSMo
 
 fn mergeModifiers(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut inSMod: Arc<SCode::Mod>) -> Arc<DAE::Mod> {
     let mut outMod: Arc<DAE::Mod>;
-    outMod = 'mc: {
-        let __mc_input = inSMod;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: sl, binding: _, comment: _, .. } => {
-                    let mut m: Arc<DAE::Mod>;
-                    m = mergeSubMods(inMods.clone(), inMod.clone(), f.clone(), e.clone(), sl.clone());
-                    Ok(m.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(inMod.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outMod = (::match_deref::match_deref! { match &(inSMod) {
+        Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: sl, binding: _, comment: _, .. } => {
+            let mut m: Arc<DAE::Mod>;
+            m = mergeSubMods(inMods, inMod, f.clone(), e.clone(), sl.clone());
+            m.clone()
+        },
+        _ => {
+            inMod
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outMod
 }
 
@@ -2721,43 +2710,22 @@ pub(crate) fn addEachIfNeeded(mut inMod: Arc<DAE::Mod>, mut inDimensions: Arc<me
 
 pub(crate) fn addEachOneLevel(mut inMod: Arc<DAE::Mod>) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod>;
-    outMod = 'mc: {
-        let __mc_input = inMod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD { .. } => {
-                    Ok(openmodelica_frontend_types::DAE::Mod::interned_NOMOD())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::REDECL { finalPrefix, eachPrefix: _, element: el, r#mod } => {
-                    Ok(Arc::new(DAE::Mod::REDECL { finalPrefix: finalPrefix.clone(), eachPrefix: openmodelica_frontend_types::SCode::Each::EACH, element: el.clone(), r#mod: r#mod.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::MOD { finalPrefix, eachPrefix: _, subModLst: subs, binding: eq, info } => {
-                    Ok(Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: openmodelica_frontend_types::SCode::Each::EACH, subModLst: subs.clone(), binding: eq.clone(), info: info.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mod.addEachOneLevel failed on: ")); __mm_s.push_str(&*printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
+        Deref @ DAE::Mod::NOMOD { .. } => {
+            openmodelica_frontend_types::DAE::Mod::interned_NOMOD()
+        },
+        Deref @ DAE::Mod::REDECL { finalPrefix, eachPrefix: _, element: el, r#mod } => {
+            Arc::new(DAE::Mod::REDECL { finalPrefix: finalPrefix.clone(), eachPrefix: openmodelica_frontend_types::SCode::Each::EACH, element: el.clone(), r#mod: r#mod.clone() })
+        },
+        Deref @ DAE::Mod::MOD { finalPrefix, eachPrefix: _, subModLst: subs, binding: eq, info } => {
+            Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: openmodelica_frontend_types::SCode::Each::EACH, subModLst: subs.clone(), binding: eq.clone(), info: info.clone() })
+        },
+        _ => {
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mod.addEachOneLevel failed on: ")); __mm_s.push_str(&*printModStr(inMod)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outMod)
 }
 

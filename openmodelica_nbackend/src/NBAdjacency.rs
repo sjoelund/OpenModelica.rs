@@ -2416,7 +2416,7 @@ pub(crate) fn collectDependenciesEquation(mut eqn: Arc<Equation::Equation>, mut 
             inputs = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut c in (inputs).into_iter().cloned() {
-            let __x = collectDependenciesCref(c.clone(), 0, map.clone(), dep_map.clone(), sol_map.clone())?;
+            let __x = UnorderedSet::toList(collectDependenciesCref(c.clone(), 0, kind, map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone(), true)?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2424,7 +2424,7 @@ pub(crate) fn collectDependenciesEquation(mut eqn: Arc<Equation::Equation>, mut 
             outputs = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut c in (var_field!((*eqn).alg, Equation::Equation::ALGORITHM).outputs.clone()).into_iter().cloned() {
-            let __x = collectDependenciesCref(c.clone(), 0, map.clone(), dep_map.clone(), sol_map.clone())?;
+            let __x = UnorderedSet::toList(collectDependenciesCref(c.clone(), 0, kind, map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone(), true)?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2466,7 +2466,7 @@ pub(crate) fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut de
         let mut sets: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            UnorderedSet::fromList(collectDependenciesCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), depth, map, dep_map, sol_map)?, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?
+            collectDependenciesCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), depth, kind, map, dep_map, sol_map, rep_set, true)?
         },
         Deref @ Expression::ARRAY { literal: false, .. } => {
             let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
@@ -2492,7 +2492,8 @@ pub(crate) fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut de
             set
         },
         Deref @ Expression::SUBSCRIPTED_EXP { .. } => {
-            set = collectDependencies(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone(), depth, kind, map, dep_map.clone(), sol_map, rep_set)?;
+            set = collectDependenciesSubs(var_field!((*exp).subscripts, Expression::NFExpression::SUBSCRIPTED_EXP).clone(), depth, kind, map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
+            set = UnorderedSet::union(set, collectDependencies(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone(), depth, kind, map, dep_map.clone(), sol_map, rep_set)?)?;
             Dependency::updateList(UnorderedSet::toList(set.clone()), (var_field!((*exp).subscripts, Expression::NFExpression::SUBSCRIPTED_EXP).clone().len() as i32), true, dep_map.clone())?;
             Dependency::removeSkipsList(UnorderedSet::toList(set.clone()), dep_map)?;
             set
@@ -2682,21 +2683,41 @@ pub(crate) fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut de
     Ok(set)
 }
 
-pub(crate) fn collectDependenciesCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut depth: i32, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+pub(crate) fn collectDependenciesSubs(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut depth: i32, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
+    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    for mut sub in &*subs {
+        let mut sub = sub.clone();
+        if '__try0: {
+            set = unwrap_break_err!(UnorderedSet::union(set.clone(), unwrap_break_err!(collectDependencies(unwrap_break_err!(Subscript::toExp(sub.clone()), '__try0), depth, kind, map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone()), '__try0)), '__try0);
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+        }
+    }
+    UnorderedSet::apply(set.clone(), (std::sync::Arc::new({ let __pe_b1 = crate::NBAdjacency::Solvability::interned_UNSOLVABLE(); let __pe_b2 = sol_map; move |__pe_a0| Solvability::update(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<()> + 'static>))?;
+    Ok(set)
+}
+
+pub(crate) fn collectDependenciesCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut depth: i32, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut doSubscripts: bool) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
+    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
+    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut sk: i32 = 1;
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = ComponentRef::subscriptsAllFlat(cref.clone())?;
+    if doSubscripts {
+        set = collectDependenciesSubs(subs.clone(), depth, kind, map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
+    } else {
+        set = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    }
     if UnorderedMap::contains(cref.clone(), map.clone())? {
         if !(UnorderedMap::contains(cref.clone(), dep_map.clone())?) {
             UnorderedMap::add(cref.clone(), Dependency::create(ComponentRef::getSubscriptedType(cref.clone(), false)?, depth)?, dep_map)?;
         }
         Solvability::update(cref.clone(), Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { pars: None, vars: None }), sol_map)?;
-        crefs = list![cref];
+        UnorderedSet::add(cref, set.clone())?;
+        set = UnorderedSet::fromList(UnorderedSet::toList(set), (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     } else {
-        var = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
+        var = BVariable::getVarPointer(cref, metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
         if BVariable::isRecord(var.clone()) {
-            subs = ComponentRef::subscriptsAllFlat(cref)?;
             crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut child in (BVariable::getRecordChildren(var)).into_iter().cloned() {
@@ -2716,21 +2737,20 @@ pub(crate) fn collectDependenciesCref(mut cref: Arc<ComponentRef::NFComponentRef
             crefs = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut child in (crefs).into_iter().cloned() {
-            let __x = collectDependenciesCref(child.clone(), depth + 1, map.clone(), dep_map.clone(), sol_map.clone())?;
+            let __x = UnorderedSet::toList(collectDependenciesCref(child.clone(), depth + 1, kind, map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone(), false)?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }))?;
-            for mut cref in &*crefs.clone() {
+            for mut cref in &*crefs {
                 let mut cref = cref.clone();
+                UnorderedSet::add(cref.clone(), set.clone())?;
                 Dependency::skip(cref.clone(), depth + 1, sk, dep_map.clone())?;
                 sk = sk + 1;
             }
-        } else {
-            crefs = metamodelica::nil();
         }
     }
-    Ok(crefs)
+    Ok(set)
 }
 
 pub(crate) fn addRepetitionsCond(mut occ: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut exp: Arc<Expression::NFExpression>, mut isRep: bool, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {

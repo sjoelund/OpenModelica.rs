@@ -213,8 +213,8 @@ pub(crate) fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRe
     let mut crefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut cr2: Arc<DAE::ComponentRef>;
-    crefs1 = ComponentReference::expandCref(cref1, false);
-    crefs2 = ComponentReference::expandCref(cref2, false);
+    crefs1 = ComponentReference::expandCref(cref1, false)?;
+    crefs2 = ComponentReference::expandCref(cref2, false)?;
     for mut cr1 in &*crefs1 {
         let mut cr1 = cr1.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crefs2.clone()) {
@@ -1551,9 +1551,9 @@ pub(crate) fn increaseConnectRefCount(mut lhsCref: Arc<DAE::ComponentRef>, mut r
     let mut sets: Sets = sets;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     if System::getUsesCardinality() {
-        crefs = ComponentReference::expandCref(lhsCref, false);
+        crefs = ComponentReference::expandCref(lhsCref, false)?;
         sets.sets = increaseConnectRefCount2(crefs, sets.sets.clone())?;
-        crefs = ComponentReference::expandCref(rhsCref, false);
+        crefs = ComponentReference::expandCref(rhsCref, false)?;
         sets.sets = increaseConnectRefCount2(crefs, sets.sets.clone())?;
     }
     Ok(sets)

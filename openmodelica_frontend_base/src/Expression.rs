@@ -2848,7 +2848,7 @@ fn getAllCrefsExpanded2(mut inExp: Arc<DAE::Exp>, mut inCrefList: Arc<metamodeli
             _ => bail!("pattern mismatch"),
         } };
         cr = __pa0.clone();
-        crlst = ComponentReference::expandCref(cr, true);
+        crlst = ComponentReference::expandCref(cr, true)?;
         for mut c in &*crlst {
             let mut c = c.clone();
             if !(ComponentReferenceBasics::crefEqual(c.clone(), DAE::crefTime().clone())?) && !(listMember(c.clone(), inCrefList.clone())) {
@@ -6487,7 +6487,7 @@ pub(crate) fn extractUniqueCrefsFromExp(mut inExp: Arc<DAE::Exp>, mut expand: bo
     let mut ocrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     ocrefs = ComponentReference::uniqueList(extractCrefsFromExp(inExp)?)?;
     if expand {
-        ocrefs = List::flatten(List::map1(ocrefs, (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
+        ocrefs = List::flatten(List::map1(ocrefs, (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
     }
     Ok(ocrefs)
 }
@@ -6525,7 +6525,7 @@ pub fn extractCrefsFromExpDerPreStart(mut inExp: Arc<DAE::Exp>, mut expand: bool
     let mut ocrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     (_, ocrefs) = traverseExpTopDown(inExp, (std::sync::Arc::new(traversingComponentRefFinderDerPreStart) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
     if expand {
-        ocrefs = List::flatten(List::map1(ocrefs, (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
+        ocrefs = List::flatten(List::map1(ocrefs, (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
     }
     Ok(ocrefs)
 }
@@ -11177,7 +11177,7 @@ pub fn arrayElements(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut crl: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crl = ComponentReference::expandCref(cr.clone(), false);
+            crl = ComponentReference::expandCref(cr.clone(), false)?;
             expl = List::map(crl.clone(), (std::sync::Arc::new(crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             expl.clone()
         },
@@ -11677,7 +11677,7 @@ pub fn expandCrefs(mut inExp: Arc<DAE::Exp>, mut expandRecord: bool, mut dummy: 
             let mut exp: Arc<DAE::Exp>;
             exp_lst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for mut cr in (ComponentReference::expandCref(var_field!((*inExp).componentRef, DAE::Exp::CREF).clone(), expandRecord)).into_iter().cloned() {
+        for mut cr in (ComponentReference::expandCref(var_field!((*inExp).componentRef, DAE::Exp::CREF).clone(), expandRecord)?).into_iter().cloned() {
             let __x = makeCrefExp(cr.clone(), var_field!((**arr_ty).ty, DAE::Type::T_ARRAY).clone())?;
             __acc = cons(__x, __acc);
         }
@@ -11701,7 +11701,7 @@ pub fn expandExpression(mut inExp: Arc<DAE::Exp>, mut expandRecord: bool) -> Res
         (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ } => {
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crlst = ComponentReference::expandCref(cr.clone(), expandRecord);
+            crlst = ComponentReference::expandCref(cr.clone(), expandRecord)?;
             outExps = List::map(crlst.clone(), (std::sync::Arc::new(crefToExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             outExps
         },

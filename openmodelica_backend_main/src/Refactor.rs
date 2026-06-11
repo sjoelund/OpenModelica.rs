@@ -298,26 +298,15 @@ fn refactorGraphAnnInEqItem(mut inItem: Arc<Absyn::EquationItem>, mut inProgram:
 
 fn refactorGraphAnnInAlgItem(mut inItem: Arc<Absyn::AlgorithmItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::AlgorithmItem> {
     let mut outItem: Arc<Absyn::AlgorithmItem>;
-    outItem = 'mc: {
-        let __mc_input = inItem.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, info, comment: Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: annList }), comment: com }) } => {
-                    Ok(Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg.clone(), comment: Some(Arc::new(Absyn::Comment { annotation_: Some(Arc::new(Absyn::Annotation { elementArgs: annList.clone() })), comment: com.clone() })), info: info.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(inItem.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outItem = (::match_deref::match_deref! { match &(inItem.clone()) {
+        Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, info, comment: Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: annList }), comment: com }) } => {
+            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg.clone(), comment: Some(Arc::new(Absyn::Comment { annotation_: Some(Arc::new(Absyn::Annotation { elementArgs: annList.clone() })), comment: com.clone() })), info: info.clone() })
+        },
+        _ => {
+            inItem
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outItem
 }
 

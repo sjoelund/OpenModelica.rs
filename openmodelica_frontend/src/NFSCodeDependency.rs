@@ -259,33 +259,22 @@ fn analyseItem(mut inItem: Item, mut inEnv: Env) -> Result<()> {
 }
 
 fn analyseItemIfRedeclares(mut inRepls: Arc<metamodelica::List<NFSCodeFlattenRedeclare::Replacement>>, mut inItem: Item, mut inEnv: Env) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = inRepls;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let mut env: Env;
-                    let __pa0 = ::match_deref::match_deref! { match &(inEnv.clone()) {
-                        Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
-                        _ => bail!("pattern mismatch"),
-                    } };
-                    env = __pa0.clone();
-                    analyseItemNoStopOnUsed(inItem.clone(), env.clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(inRepls) {
+        Deref @ metamodelica::List::Nil => {
+            ()
+        },
+        _ => {
+            let mut env: Env;
+            let __pa0 = ::match_deref::match_deref! { match &(inEnv) {
+                Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
+                _ => bail!("pattern mismatch"),
+            } };
+            env = __pa0.clone();
+            analyseItemNoStopOnUsed(inItem, env.clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 

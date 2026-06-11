@@ -1416,7 +1416,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
                     (scalarLst, _) = BackendVariable::getVar(cr.clone(), timevars.clone())?;
                     arrayType = ComponentReference::crefTypeFull(cr.clone())?;
                     if !(scalarLst.clone().is_empty()) && (scalarLst.clone().len() as i32) != Types::getDimensionProduct(arrayType.clone())? {
-                        scalarCrefs = ComponentReference::expandCref(cr.clone(), true);
+                        scalarCrefs = ComponentReference::expandCref(cr.clone(), true)?;
                         outFunctionTree = inFunctionTree.clone();
                         for mut cref in &*scalarCrefs.clone() {
                             let mut cref = cref.clone();
@@ -1545,7 +1545,7 @@ pub(crate) fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatri
     outCref = ComponentReference::crefSetLastType(outCref, DAE::T_UNKNOWN_DEFAULT().clone())?;
     outCref = ComponentReference::joinCrefs(outCref, ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Seed")); __mm_s.push_str(&*inMatrixName); ArcStr::from(__mm_s) }).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
     if debug {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(ComponentReference::expandCref(outCref.clone(), true))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(ComponentReference::expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     outCref = ComponentReference::crefSetLastSubs(outCref, subs)?;
     outCref = ComponentReference::crefSetLastType(outCref, ComponentReference::crefLastType(inCref)?)?;

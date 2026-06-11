@@ -242,38 +242,22 @@ pub fn isConstant(mut inVariability: SCode::Variability) -> bool {
 
 pub(crate) fn countParts(mut inClass: Arc<SCode::Element>) -> i32 {
     let mut outInteger: i32;
-    outInteger = 'mc: {
-        let __mc_input = inClass;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. } => {
-                    let mut res: i32;
-                    res = (elts.clone().len() as i32);
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. }, .. } => {
-                    let mut res: i32;
-                    res = (elts.clone().len() as i32);
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(0)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outInteger = (::match_deref::match_deref! { match &(inClass) {
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. } => {
+            let mut res: i32;
+            res = (elts.clone().len() as i32);
+            res.clone()
+        },
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. }, .. } => {
+            let mut res: i32;
+            res = (elts.clone().len() as i32);
+            res.clone()
+        },
+        _ => {
+            0
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outInteger
 }
 
@@ -4019,62 +4003,36 @@ pub(crate) fn mergeClassDef(mut inNew: Arc<SCode::ClassDef>, mut inOld: Arc<SCod
 
 pub fn mergeModifiers(mut inNewMod: Arc<SCode::Mod>, mut inOldMod: Arc<SCode::Mod>) -> Arc<SCode::Mod> {
     let mut outMod: Arc<SCode::Mod>;
-    outMod = 'mc: {
-        let __mc_input = (inNewMod.clone(), inOldMod.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ SCode::Mod::NOMOD { .. }) => {
-                    Ok(inNewMod.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Mod::NOMOD { .. }, _) => {
-                    Ok(inOldMod.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Mod::REDECL { .. }, _) => {
-                    Ok(inNewMod.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Mod::MOD { finalPrefix: f1, eachPrefix: e1, subModLst: sl1, binding: b1, comment: cmt, info: i1 }, Deref @ SCode::Mod::MOD { finalPrefix: f2, eachPrefix: e2, subModLst: sl2, binding: b2, comment: _, .. }) => {
-                    let mut sl: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
-                    let mut b: Option<Arc<Absyn::Exp>>;
-                    let mut m: Arc<SCode::Mod>;
-                    b = if (isSome(b1.clone())) {b1.clone()} else {b2.clone()};
-                    sl = mergeSubMods(sl1.clone(), sl2.clone());
-                    if (match (&(b.clone()), &(b1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(sl.clone()), &*(sl1.clone())) {
-                        m = inNewMod.clone();
-                    } else if (match (&(b.clone()), &(b2.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(sl.clone()), &*(sl2.clone())) && f1.clone() == f2.clone() && e1.clone() == e2.clone() {
-                        m = inOldMod.clone();
-                    } else {
-                        m = Arc::new(SCode::Mod::MOD { finalPrefix: f1.clone(), eachPrefix: e1.clone(), subModLst: sl.clone(), binding: b.clone(), comment: cmt.clone(), info: i1.clone() });
-                    }
-                    Ok(m.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(inNewMod.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outMod = (::match_deref::match_deref! { match &((inNewMod.clone(), inOldMod.clone())) {
+        (_, Deref @ SCode::Mod::NOMOD { .. }) => {
+            inNewMod
+        },
+        (Deref @ SCode::Mod::NOMOD { .. }, _) => {
+            inOldMod
+        },
+        (Deref @ SCode::Mod::REDECL { .. }, _) => {
+            inNewMod
+        },
+        (Deref @ SCode::Mod::MOD { finalPrefix: f1, eachPrefix: e1, subModLst: sl1, binding: b1, comment: cmt, info: i1 }, Deref @ SCode::Mod::MOD { finalPrefix: f2, eachPrefix: e2, subModLst: sl2, binding: b2, comment: _, .. }) => {
+            let mut sl: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
+            let mut b: Option<Arc<Absyn::Exp>>;
+            let mut m: Arc<SCode::Mod>;
+            b = if (isSome(b1.clone())) {b1.clone()} else {b2.clone()};
+            sl = mergeSubMods(sl1.clone(), sl2.clone());
+            if (match (&(b.clone()), &(b1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(sl.clone()), &*(sl1.clone())) {
+                m = inNewMod;
+            } else if (match (&(b.clone()), &(b2.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(sl.clone()), &*(sl2.clone())) && f1.clone() == f2.clone() && e1.clone() == e2.clone() {
+                m = inOldMod;
+            } else {
+                m = Arc::new(SCode::Mod::MOD { finalPrefix: f1.clone(), eachPrefix: e1.clone(), subModLst: sl.clone(), binding: b.clone(), comment: cmt.clone(), info: i1.clone() });
+            }
+            m.clone()
+        },
+        _ => {
+            inNewMod
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outMod
 }
 

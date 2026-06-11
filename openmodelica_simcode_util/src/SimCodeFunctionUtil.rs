@@ -148,61 +148,39 @@ pub fn crefIsScalar(mut cref: Arc<DAE::ComponentRef>, mut context: SimCodeFuncti
 
 pub(crate) fn buildCrefExpFromAsub(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::Exp>> {
     let mut cRefOut: Arc<DAE::Exp>;
-    cRefOut = 'mc: {
-        let __mc_input = (cref.clone(), subs.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Nil) => {
-                    Ok(cref.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { componentRef: crNew, ty }, _) => {
-                    let mut crefExp: Arc<DAE::Exp>;
-                    let mut indexes: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
-                    let mut crNew = (*crNew).clone();
-                    indexes = List::map(subs.clone(), (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
-                    crNew = ComponentReference::subscriptCref(crNew.clone(), indexes.clone())?;
-                    crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
-                    Ok(crefExp.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    cRefOut = (::match_deref::match_deref! { match &((cref.clone(), subs.clone())) {
+        (_, Deref @ metamodelica::List::Nil) => {
+            cref
+        },
+        (Deref @ DAE::Exp::CREF { componentRef: crNew, ty }, _) => {
+            let mut crefExp: Arc<DAE::Exp>;
+            let mut indexes: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut crNew = (*crNew).clone();
+            indexes = List::map(subs, (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
+            crNew = ComponentReference::subscriptCref(crNew.clone(), indexes.clone())?;
+            crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
+            crefExp.clone()
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(cRefOut)
 }
 
 pub fn buildCrefExpFromSubs(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::Exp>> {
     let mut cRefOut: Arc<DAE::Exp>;
-    cRefOut = 'mc: {
-        let __mc_input = (cref.clone(), subs.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Nil) => {
-                    Ok(cref.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { componentRef: crNew, ty }, _) => {
-                    let mut crefExp: Arc<DAE::Exp>;
-                    let mut crNew = (*crNew).clone();
-                    crNew = ComponentReference::subscriptCref(crNew.clone(), subs.clone())?;
-                    crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
-                    Ok(crefExp.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    cRefOut = (::match_deref::match_deref! { match &((cref.clone(), subs.clone())) {
+        (_, Deref @ metamodelica::List::Nil) => {
+            cref
+        },
+        (Deref @ DAE::Exp::CREF { componentRef: crNew, ty }, _) => {
+            let mut crefExp: Arc<DAE::Exp>;
+            let mut crNew = (*crNew).clone();
+            crNew = ComponentReference::subscriptCref(crNew.clone(), subs)?;
+            crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
+            crefExp.clone()
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(cRefOut)
 }
 
@@ -2241,34 +2219,20 @@ fn getLinkerLibraryPaths(mut uri: ArcStr, mut path: Arc<Absyn::Path>, mut inLibs
     let mut libPaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut installationDir: ArcStr;
     installationDir = (Settings::getInstallationDirectoryPath()?).clone();
-    let () = 'mc: {
-        let __mc_input = (uri.clone(), path.clone(), inLibs);
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, _, Deref @ metamodelica::List::Cons { head: Deref @ "-lWinmm", tail: Deref @ metamodelica::List::Nil }) => {
-                    if !((arcstr::literal!(Autoconf::os) == literal!("Windows_NT"))) { bail!("guard") }
-                    let mut libPaths: Arc<metamodelica::List<ArcStr>> = libPaths.clone();
-                    libPaths = list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); __mm_s.push_str(&*literal!("/omc")); ArcStr::from(__mm_s) }).clone()];
-                    Ok(((), libPaths.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { libPaths = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _) => {
-                    let mut libPaths: Arc<metamodelica::List<ArcStr>> = libPaths.clone();
-                    libPaths = list![(uri.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*uri.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::modelicaPlatform()); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*uri.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatform()); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*uri.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatformAlternative()); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getHomeDir(false)); __mm_s.push_str(&*literal!("/.openmodelica/binaries/")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(path.clone())?); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/lib/")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); __mm_s.push_str(&*literal!("/omc")); ArcStr::from(__mm_s) }).clone()];
-                    if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
-                        libPaths = List::appendElt(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/bin/")); ArcStr::from(__mm_s) }).clone(), libPaths.clone());
-                    }
-                    Ok(((), libPaths.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { libPaths = __wb0; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &((uri.clone(), path.clone(), inLibs)) {
+        (_, _, Deref @ metamodelica::List::Cons { head: Deref @ "-lWinmm", tail: Deref @ metamodelica::List::Nil }) if (arcstr::literal!(Autoconf::os) == literal!("Windows_NT")) => {
+            libPaths = list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); __mm_s.push_str(&*literal!("/omc")); ArcStr::from(__mm_s) }).clone()];
+            ()
+        },
+        (_, _, _) => {
+            libPaths = list![(uri.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*uri.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::modelicaPlatform()); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*uri.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatform()); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*uri); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatformAlternative()); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getHomeDir(false)); __mm_s.push_str(&*literal!("/.openmodelica/binaries/")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(path)?); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/lib/")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); __mm_s.push_str(&*literal!("/omc")); ArcStr::from(__mm_s) }).clone()];
+            if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
+                libPaths = List::appendElt(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir); __mm_s.push_str(&*literal!("/bin/")); ArcStr::from(__mm_s) }).clone(), libPaths);
+            }
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(libPaths)
 }
 
@@ -3203,22 +3167,17 @@ pub fn isParallelFunctionContext(mut context: SimCodeFunction::Context) -> bool 
 
 pub fn twodigit(mut i: i32) -> ArcStr {
     let mut outS: ArcStr;
-    outS = ('mc: {
-        let __mc_input = i;
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            if !((i < 10)) { bail!("guard") }
+    outS = ((match i {
+        _ if (i < 10) => {
             let mut s: ArcStr;
             s = (intString(i)).clone();
             s = (stringAppend((literal!("0")).clone(), (s.clone()).clone())).clone();
-            Ok(s.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(intString(i))
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
+            s.clone()
+        },
+        _ => {
+            intString(i)
+        },
+    })).clone();
     outS
 }
 

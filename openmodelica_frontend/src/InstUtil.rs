@@ -787,7 +787,7 @@ pub(crate) fn handleUnitChecking(mut cache: FCore::Cache, mut env: FCore::Graph,
             let mut ut: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
             daetemp = DAEUtil::joinDaeLst(daes)?;
             (store, ut) = UnitAbsynBuilder::instBuildUnitTerms(env.clone(), daetemp.clone(), compDAE.clone(), store.clone())?;
-            UnitAbsynBuilder::registerUnitWeights(cache.clone(), env.clone(), compDAE);
+            UnitAbsynBuilder::registerUnitWeights(cache.clone(), env.clone(), compDAE)?;
             store = UnitChecker::check(ut.clone(), store.clone());
             (cache, env, store.clone())
         },
@@ -1456,29 +1456,16 @@ pub(crate) fn sortElementList(mut inElements: Arc<metamodelica::List<(Arc<SCode:
 fn printGraph(mut env: FCore::Graph, mut g: Arc<metamodelica::List<((Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>)>>, mut order: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut cycles: Arc<metamodelica::List<((Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>)>>) -> Result<()> {
     pub(crate) type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
 
-    let () = 'mc: {
-        let __mc_input = g.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Graph for env: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Graph::printGraph(g.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Element order:\n\t")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cycles:\n")); __mm_s.push_str(&*Graph::printGraph(cycles.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(g.clone()) {
+        Deref @ metamodelica::List::Nil => (),
+        _ => {
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Graph for env: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env)); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Graph::printGraph(g, (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Element order:\n\t")); __mm_s.push_str(&*stringDelimitList(List::map(order, (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cycles:\n")); __mm_s.push_str(&*Graph::printGraph(cycles, (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -6851,34 +6838,23 @@ pub(crate) fn extractComment(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>
 
 fn mergeClassComments(mut comment1: Arc<SCode::Comment>, mut comment2: Arc<SCode::Comment>) -> Result<Arc<SCode::Comment>> {
     let mut outComment: Arc<SCode::Comment>;
-    outComment = 'mc: {
-        let __mc_input = (comment1, comment2);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: mods1, info, .. } }), comment: str1 }, Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: mods2, .. } }), comment: str2 }) => {
-                    let mut r#str: Option<ArcStr>;
-                    let mut mods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
-                    r#str = if (isSome(str1.clone())) {str1.clone()} else {str2.clone()};
-                    mods = listAppend(mods1.clone(), mods2.clone());
-                    Ok(Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: mods.clone(), binding: None, comment: None, info: info.clone() }) })), comment: r#str.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Comment { annotation_: ann1, comment: str1 }, Deref @ SCode::Comment { annotation_: ann2, comment: str2 }) => {
-                    let mut ann: Option<Arc<SCode::Annotation>>;
-                    let mut r#str: Option<ArcStr>;
-                    r#str = if (isSome(str1.clone())) {str1.clone()} else {str2.clone()};
-                    ann = if (isSome(ann1.clone())) {ann1.clone()} else {ann2.clone()};
-                    Ok(Arc::new(SCode::Comment { annotation_: ann.clone(), comment: r#str.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outComment = (::match_deref::match_deref! { match &((comment1, comment2)) {
+        (Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: mods1, info, .. } }), comment: str1 }, Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: mods2, .. } }), comment: str2 }) => {
+            let mut r#str: Option<ArcStr>;
+            let mut mods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
+            r#str = if (isSome(str1.clone())) {str1.clone()} else {str2.clone()};
+            mods = listAppend(mods1.clone(), mods2.clone());
+            Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: mods.clone(), binding: None, comment: None, info: info.clone() }) })), comment: r#str.clone() })
+        },
+        (Deref @ SCode::Comment { annotation_: ann1, comment: str1 }, Deref @ SCode::Comment { annotation_: ann2, comment: str2 }) => {
+            let mut ann: Option<Arc<SCode::Annotation>>;
+            let mut r#str: Option<ArcStr>;
+            r#str = if (isSome(str1.clone())) {str1.clone()} else {str2.clone()};
+            ann = if (isSome(ann1.clone())) {ann1.clone()} else {ann2.clone()};
+            Arc::new(SCode::Comment { annotation_: ann.clone(), comment: r#str.clone() })
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outComment)
 }
 

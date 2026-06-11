@@ -864,40 +864,22 @@ fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
 }
 
 fn matchParamNamedArg(mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool) {
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
-    let mut found: bool;
-    (newModif, found) = 'mc: {
-        let __mc_input = comps;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok((oldModif.clone(), false))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: _ } => {
-                    if !((cName.clone() == argName.clone())) { bail!("guard") }
-                    let mut modif: Arc<Absyn::ElementArg>;
-                    modif = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (cName.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: argValue.clone(), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() });
-                    Ok((metamodelica::cons(modif.clone(), oldModif.clone()), true))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: r_comps } => {
-                    Ok(matchParamNamedArg((argName.clone()).clone(), argValue.clone(), r_comps.clone(), oldModif.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    (newModif, found)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(comps) {
+        Deref @ metamodelica::List::Nil => {
+            return (oldModif, false)
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: _ } if (cName.clone() == argName.clone()) => {
+            let mut modif: Arc<Absyn::ElementArg>;
+            modif = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (cName.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: argValue, info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() });
+            return (metamodelica::cons(modif.clone(), oldModif), true)
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: r_comps } => {
+            { (argName, argValue, comps, oldModif) = ((argName.clone()).clone(), argValue, r_comps.clone(), oldModif); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn matchVarNamedArg(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, bool) {

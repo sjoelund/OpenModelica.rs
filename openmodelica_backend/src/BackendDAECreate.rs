@@ -577,18 +577,18 @@ fn getExternalObjectAlias3(mut eqIn: Arc<BackendDAE::Equation>, mut extVars: Bac
         (crefs_lhs, crefs_rhs) = unwrap_break_err!(BackendEquation::equationCrefsSolved(eq.clone()), '__try2);
         (extAliasVars, repl) = (::match_deref::match_deref! { match &((crefs_lhs.clone(), crefs_rhs.clone())) {
         (Deref @ metamodelica::List::Cons { head: lhs, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: rhs, tail: Deref @ metamodelica::List::Nil }) => {
-            crefs_lhs = ComponentReference::expandCref(lhs.clone(), true);
-            crefs_rhs = ComponentReference::expandCref(rhs.clone(), true);
+            crefs_lhs = unwrap_break_err!(ComponentReference::expandCref(lhs.clone(), true), '__try2);
+            crefs_rhs = unwrap_break_err!(ComponentReference::expandCref(rhs.clone(), true), '__try2);
             (extAliasVars, repl) = unwrap_break_err!(addExternalObjectReplacementRules(crefs_lhs.clone(), crefs_rhs.clone(), extVars.clone(), extAliasVars.clone(), repl.clone()), '__try2);
             (extAliasVars.clone(), repl.clone())
         },
         (Deref @ metamodelica::List::Cons { head: lhs, tail: Deref @ metamodelica::List::Nil }, _) => {
-            crefs_lhs = ComponentReference::expandCref(lhs.clone(), true);
+            crefs_lhs = unwrap_break_err!(ComponentReference::expandCref(lhs.clone(), true), '__try2);
             (extAliasVars, repl) = unwrap_break_err!(addExternalObjectReplacementRules(crefs_lhs.clone(), crefs_rhs.clone(), extVars.clone(), extAliasVars.clone(), repl.clone()), '__try2);
             (extAliasVars.clone(), repl.clone())
         },
         (_, Deref @ metamodelica::List::Cons { head: rhs, tail: Deref @ metamodelica::List::Nil }) => {
-            crefs_rhs = ComponentReference::expandCref(rhs.clone(), true);
+            crefs_rhs = unwrap_break_err!(ComponentReference::expandCref(rhs.clone(), true), '__try2);
             (extAliasVars, repl) = unwrap_break_err!(addExternalObjectReplacementRules(crefs_lhs.clone(), crefs_rhs.clone(), extVars.clone(), extAliasVars.clone(), repl.clone()), '__try2);
             (extAliasVars.clone(), repl.clone())
         },
@@ -979,7 +979,7 @@ pub(crate) fn lowerVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>
             } };
             cr = __pa1.clone();
             arr_ty = __pa2.clone();
-            crefs = ComponentReference::expandCref(cr.clone(), false);
+            crefs = unwrap_break_err!(ComponentReference::expandCref(cr.clone(), false), '__try0);
             el = unwrap_break_err!(DAEUtil::replaceTypeInVar(arr_ty.clone(), el.clone()), '__try0);
             new_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -1415,29 +1415,18 @@ fn inlineExpOpt1(mut iExp: Arc<DAE::Exp>, mut fnstpl: Functiontuple, mut iSource
 
 fn setMinMaxFromEnumeration(mut inType: Arc<DAE::Type>, mut inVarAttr: Option<Arc<DAE::VariableAttributes>>) -> Option<Arc<DAE::VariableAttributes>> {
     let mut outVarAttr: Option<Arc<DAE::VariableAttributes>>;
-    outVarAttr = 'mc: {
-        let __mc_input = inType;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ENUMERATION { path, names, .. } => {
-                    let mut min: Option<Arc<DAE::Exp>>;
-                    let mut max: Option<Arc<DAE::Exp>>;
-                    (min, max) = DAEUtil::getMinMaxValues(inVarAttr.clone());
-                    Ok(setMinMaxFromEnumeration1(min.clone(), max.clone(), inVarAttr.clone(), path.clone(), names.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(inVarAttr.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outVarAttr = (::match_deref::match_deref! { match &(inType) {
+        Deref @ DAE::Type::T_ENUMERATION { path, names, .. } => {
+            let mut min: Option<Arc<DAE::Exp>>;
+            let mut max: Option<Arc<DAE::Exp>>;
+            (min, max) = DAEUtil::getMinMaxValues(inVarAttr.clone());
+            setMinMaxFromEnumeration1(min.clone(), max.clone(), inVarAttr, path.clone(), names.clone())
+        },
+        _ => {
+            inVarAttr
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outVarAttr
 }
 
@@ -1569,99 +1558,23 @@ fn lowerKnownVarkind(mut varKind: DAE::VarKind, mut componentRef: Arc<DAE::Compo
 
 fn lowerType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
-    outType = 'mc: {
-        let __mc_input = inType.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_REAL { .. } => {
-                    Ok(DAE::T_REAL_DEFAULT().clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_INTEGER { .. } => {
-                    Ok(DAE::T_INTEGER_DEFAULT().clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_BOOL { .. } => {
-                    Ok(DAE::T_BOOL_DEFAULT().clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_STRING { .. } => {
-                    Ok(DAE::T_STRING_DEFAULT().clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_CLOCK { .. } => {
-                    Ok(DAE::T_CLOCK_DEFAULT().clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ENUMERATION { .. } => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { .. }, .. } => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. } => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { .. } => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_FUNCTION { .. } => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lowerType: ")); __mm_s.push_str(&*TypesDump::printTypeStr(inType.clone())); __mm_s.push_str(&*literal!(" failed\n")); ArcStr::from(__mm_s) }).clone());
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outType = (::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_REAL { .. } => DAE::T_REAL_DEFAULT().clone(),
+        Deref @ DAE::Type::T_INTEGER { .. } => DAE::T_INTEGER_DEFAULT().clone(),
+        Deref @ DAE::Type::T_BOOL { .. } => DAE::T_BOOL_DEFAULT().clone(),
+        Deref @ DAE::Type::T_STRING { .. } => DAE::T_STRING_DEFAULT().clone(),
+        Deref @ DAE::Type::T_CLOCK { .. } => DAE::T_CLOCK_DEFAULT().clone(),
+        Deref @ DAE::Type::T_ENUMERATION { .. } => inType,
+        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { .. }, .. } => inType,
+        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. } => inType,
+        Deref @ DAE::Type::T_ARRAY { .. } => inType,
+        Deref @ DAE::Type::T_FUNCTION { .. } => inType,
+        _ => {
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lowerType: ")); __mm_s.push_str(&*TypesDump::printTypeStr(inType)); __mm_s.push_str(&*literal!(" failed\n")); ArcStr::from(__mm_s) }).clone());
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outType)
 }
 
@@ -3975,7 +3888,7 @@ fn detectImplicitDiscreteFold(mut inEquation: Arc<BackendDAE::Equation>, mut inG
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
                     crefs = Expression::getAllCrefs(e.clone())?;
-                    crefs = List::flatten(List::map1(crefs.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
+                    crefs = List::flatten(List::map1(crefs.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
                     (vars, _) = BackendVariable::getVarLst(crefs.clone(), inVariables.clone());
                     vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DISCRETE)?;
                     Ok(BackendVariable::addVars(vars.clone(), inVariables.clone())?)

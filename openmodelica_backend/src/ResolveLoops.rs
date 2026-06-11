@@ -1290,44 +1290,33 @@ fn crefUnitCoeffInExp(mut exp: Arc<DAE::Exp>, mut cref: Arc<DAE::ComponentRef>) 
 }
 
 pub(crate) fn sortLoop(mut loopIn: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sortLoopIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut sortLoopOut: Arc<metamodelica::List<i32>>;
-    sortLoopOut = 'mc: {
-        let __mc_input = (loopIn.clone(), sortLoopIn.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, _) => {
-                    Ok(sortLoopIn.clone().reverse())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Cons { head: start, tail: _ }) => {
-                    let mut next: i32;
-                    let mut rest: Arc<metamodelica::List<i32>>;
-                    let mut vars: Arc<metamodelica::List<i32>>;
-                    let mut eqs: Arc<metamodelica::List<i32>>;
-                    let mut varEqs: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
-                    vars = metamodelica::arrayGet(m.clone(), start.clone())?;
-                    varEqs = List::map1(vars.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), mT.clone())?;
-                    eqs = List::flatten(varEqs.clone())?;
-                    eqs = List::unique(eqs.clone());
-                    eqs = List::intersectionOnTrue(eqs.clone(), loopIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-                    if eqs.clone().is_empty() {
-                        next = listHead(loopIn.clone())?;
-                    } else {
-                        next = listHead(eqs.clone())?;
-                    }
-                    (rest, _) = List::deleteMemberOnTrue(next.clone(), loopIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-                    Ok(sortLoop(rest.clone(), m.clone(), mT.clone(), metamodelica::cons(next.clone(), sortLoopIn.clone()))?)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
-    Ok(sortLoopOut)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((loopIn.clone(), sortLoopIn.clone())) {
+        (Deref @ metamodelica::List::Nil, _) => {
+            return Ok(sortLoopIn.reverse())
+        },
+        (_, Deref @ metamodelica::List::Cons { head: start, tail: _ }) => {
+            let mut next: i32;
+            let mut rest: Arc<metamodelica::List<i32>>;
+            let mut vars: Arc<metamodelica::List<i32>>;
+            let mut eqs: Arc<metamodelica::List<i32>>;
+            let mut varEqs: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
+            vars = metamodelica::arrayGet(m.clone(), start.clone())?;
+            varEqs = List::map1(vars.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), mT.clone())?;
+            eqs = List::flatten(varEqs.clone())?;
+            eqs = List::unique(eqs.clone());
+            eqs = List::intersectionOnTrue(eqs.clone(), loopIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            if eqs.clone().is_empty() {
+                next = listHead(loopIn.clone())?;
+            } else {
+                next = listHead(eqs.clone())?;
+            }
+            (rest, _) = List::deleteMemberOnTrue(next.clone(), loopIn, (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            { (loopIn, m, mT, sortLoopIn) = (rest.clone(), m.clone(), mT.clone(), metamodelica::cons(next.clone(), sortLoopIn)); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn closePathDirectly(mut pathIn: Arc<metamodelica::List<i32>>, mut pathLstIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<i32>>> {

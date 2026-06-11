@@ -913,28 +913,16 @@ fn addConstExpReplacement(mut inExp: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRe
 fn traverseExpVisitorWrapper(mut inExp: Arc<DAE::Exp>, mut inRepl: BackendVarTransform::VariableReplacements) -> (Arc<DAE::Exp>, BackendVarTransform::VariableReplacements) {
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-    (exp, repl) = 'mc: {
-        let __mc_input = (inExp.clone(), inRepl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (exp @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, repl) => {
-                    let mut exp = (*exp).clone();
-                    (exp, _) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), None);
-                    Ok((exp.clone(), repl.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok((inExp.clone(), inRepl.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    (exp, repl) = (::match_deref::match_deref! { match &((inExp.clone(), inRepl.clone())) {
+        (__esc_exp @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, __esc_repl) => {
+            exp = (*__esc_exp).clone();
+            repl = (*__esc_repl).clone();
+            (exp, _) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), None);
+            (exp.clone(), repl.clone())
+        },
+        _ => (inExp, inRepl),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     (exp, repl)
 }
 

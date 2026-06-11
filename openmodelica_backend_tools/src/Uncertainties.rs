@@ -1643,48 +1643,27 @@ fn equationsToMathematicaGrid(mut equIndices: Arc<metamodelica::List<i32>>, mut 
 
 fn unknowsMatchingToMathematicaGrid2(mut vars: Arc<metamodelica::List<ArcStr>>, mut eqns: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut out: Arc<metamodelica::List<ArcStr>>;
-    out = 'mc: {
-        let __mc_input = (vars, eqns);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, _) => {
-                    metamodelica::print((literal!("Warning: The system is ill-posed. When computing the unknowns, there are more equations than variables.\n")).clone());
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Nil) => {
-                    metamodelica::print((literal!("Warning: The system is ill-posed. When computing the unknowns, there are more variables than equations.\n")).clone());
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: var, tail: var_t }, Deref @ metamodelica::List::Cons { head: eqn, tail: eqn_t }) => {
-                    let mut s: ArcStr;
-                    let mut r: Arc<metamodelica::List<ArcStr>>;
-                    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*var.clone()); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*eqn.clone()); ArcStr::from(__mm_s) }).clone();
-                    r = unknowsMatchingToMathematicaGrid2(var_t.clone(), eqn_t.clone())?;
-                    Ok(metamodelica::cons((s.clone()).clone(), r.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    out = (::match_deref::match_deref! { match &((vars, eqns)) {
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
+            metamodelica::nil()
+        },
+        (Deref @ metamodelica::List::Nil, _) => {
+            metamodelica::print((literal!("Warning: The system is ill-posed. When computing the unknowns, there are more equations than variables.\n")).clone());
+            metamodelica::nil()
+        },
+        (_, Deref @ metamodelica::List::Nil) => {
+            metamodelica::print((literal!("Warning: The system is ill-posed. When computing the unknowns, there are more variables than equations.\n")).clone());
+            metamodelica::nil()
+        },
+        (Deref @ metamodelica::List::Cons { head: var, tail: var_t }, Deref @ metamodelica::List::Cons { head: eqn, tail: eqn_t }) => {
+            let mut s: ArcStr;
+            let mut r: Arc<metamodelica::List<ArcStr>>;
+            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*var.clone()); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*eqn.clone()); ArcStr::from(__mm_s) }).clone();
+            r = unknowsMatchingToMathematicaGrid2(var_t.clone(), eqn_t.clone())?;
+            metamodelica::cons((s.clone()).clone(), r.clone())
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(out)
 }
 
@@ -1993,48 +1972,37 @@ fn getMathematicaEqStr(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation
 fn getEquationsForUnknownsSystem(mut m: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List<i32>>, mut unknowns: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut eqnsOut: Arc<metamodelica::List<i32>>;
     let mut varsOut: Arc<metamodelica::List<i32>>;
-    (eqnsOut, varsOut) = 'mc: {
-        let __mc_input = unknowns.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok((metamodelica::nil(), metamodelica::nil()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let mut unknownsSystem: ExtAdjacencyMatrix;
-                    let mut yEqMap: Arc<metamodelica::List<i32>>;
-                    let mut yVarMap: Arc<metamodelica::List<i32>>;
-                    let mut setS: Arc<metamodelica::List<i32>>;
-                    let mut nv: i32;
-                    let mut ne: i32;
-                    let mut my: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut ass1: metamodelica::Array<i32>;
-                    let mut ass2: metamodelica::Array<i32>;
-                    let mut vars: Arc<metamodelica::List<i32>>;
-                    unknownsSystem = getSystemForUnknowns(m.clone(), knowns.clone(), unknowns.clone())?;
-                    (yEqMap, yVarMap, my) = prepareForMatching(unknownsSystem.clone())?;
-                    ne = (yEqMap.clone().len() as i32);
-                    nv = (yVarMap.clone().len() as i32);
-                    ass1 = arrayCreate(ne.clone(), -1);
-                    ass2 = arrayCreate(nv.clone(), -1);
-                    let true = (BackendDAEEXT::setAssignment(ne.clone(), nv.clone(), ass1.clone(), ass2.clone())) else { bail!("pattern mismatch") };
-                    Matching::matchingExternalsetAdjacencyMatrix(nv.clone(), ne.clone(), my.clone());
-                    BackendDAEEXT::matching(nv.clone(), ne.clone(), 1, -1, metamodelica::OrderedFloat(0.0_f64), 0);
-                    BackendDAEEXT::getAssignment(ass1.clone(), ass2.clone())?;
-                    vars = yVarMap.clone();
-                    setS = restoreIndicesEquivalence(List::filter1OnTrue(Arc::new(ass2.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), -1)?, yEqMap.clone())?;
-                    Ok((setS.clone(), vars.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    (eqnsOut, varsOut) = (::match_deref::match_deref! { match &(unknowns.clone()) {
+        Deref @ metamodelica::List::Nil => {
+            (metamodelica::nil(), metamodelica::nil())
+        },
+        _ => {
+            let mut unknownsSystem: ExtAdjacencyMatrix;
+            let mut yEqMap: Arc<metamodelica::List<i32>>;
+            let mut yVarMap: Arc<metamodelica::List<i32>>;
+            let mut setS: Arc<metamodelica::List<i32>>;
+            let mut nv: i32;
+            let mut ne: i32;
+            let mut my: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut ass1: metamodelica::Array<i32>;
+            let mut ass2: metamodelica::Array<i32>;
+            let mut vars: Arc<metamodelica::List<i32>>;
+            unknownsSystem = getSystemForUnknowns(m, knowns, unknowns)?;
+            (yEqMap, yVarMap, my) = prepareForMatching(unknownsSystem.clone())?;
+            ne = (yEqMap.clone().len() as i32);
+            nv = (yVarMap.clone().len() as i32);
+            ass1 = arrayCreate(ne.clone(), -1);
+            ass2 = arrayCreate(nv.clone(), -1);
+            let true = (BackendDAEEXT::setAssignment(ne.clone(), nv.clone(), ass1.clone(), ass2.clone())) else { bail!("pattern mismatch") };
+            Matching::matchingExternalsetAdjacencyMatrix(nv.clone(), ne.clone(), my.clone());
+            BackendDAEEXT::matching(nv.clone(), ne.clone(), 1, -1, metamodelica::OrderedFloat(0.0_f64), 0);
+            BackendDAEEXT::getAssignment(ass1.clone(), ass2.clone())?;
+            vars = yVarMap.clone();
+            setS = restoreIndicesEquivalence(List::filter1OnTrue(Arc::new(ass2.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), -1)?, yEqMap.clone())?;
+            (setS.clone(), vars.clone())
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok((eqnsOut, varsOut))
 }
 

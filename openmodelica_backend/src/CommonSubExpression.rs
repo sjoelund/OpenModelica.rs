@@ -668,7 +668,7 @@ fn addConstantCseVarsToGlobalKnownVarHT(mut cse_crExp: Arc<DAE::Exp>, mut global
         Deref @ DAE::Exp::CREF { componentRef: cr, ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. } } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             globalKnownVarHT = BaseHashSet::add(cr.clone(), globalKnownVarHT)?;
-            crefs = ComponentReference::expandCref(cr.clone(), true);
+            crefs = ComponentReference::expandCref(cr.clone(), true)?;
             for mut cr_ in &*crefs.clone() {
                 let mut cr_ = cr_.clone();
                 globalKnownVarHT = BaseHashSet::add(cr_.clone(), globalKnownVarHT.clone())?;
@@ -678,7 +678,7 @@ fn addConstantCseVarsToGlobalKnownVarHT(mut cse_crExp: Arc<DAE::Exp>, mut global
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } if (Expression::isArrayType(Expression::r#typeof(cse_crExp.clone())?)) => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             globalKnownVarHT = BaseHashSet::add(cr.clone(), globalKnownVarHT)?;
-            crefs = ComponentReference::expandCref(cr.clone(), true);
+            crefs = ComponentReference::expandCref(cr.clone(), true)?;
             for mut cr_ in &*crefs.clone() {
                 let mut cr_ = cr_.clone();
                 globalKnownVarHT = BaseHashSet::add(cr_.clone(), globalKnownVarHT.clone())?;
@@ -1603,7 +1603,7 @@ fn createVarsForExp_onlyCSECrefs(mut inExp: Arc<DAE::Exp>, mut inAccumVarLst: Ar
             let mut cr_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut arrayDim: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
-            crefs = ComponentReference::expandCref(cr.clone(), true);
+            crefs = ComponentReference::expandCref(cr.clone(), true)?;
             outVarLst = inAccumVarLst;
             for mut cr_ in &*crefs.clone() {
                 let mut cr_ = cr_.clone();
@@ -1617,7 +1617,7 @@ fn createVarsForExp_onlyCSECrefs(mut inExp: Arc<DAE::Exp>, mut inAccumVarLst: Ar
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut ty: Arc<DAE::Type>;
             let mut arrayDim: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
-            crefs = ComponentReference::expandCref(cr.clone(), true);
+            crefs = ComponentReference::expandCref(cr.clone(), true)?;
             outVarLst = inAccumVarLst;
             ty = DAEUtil::expTypeElementType(Expression::r#typeof(inExp.clone())?);
             for mut cr_ in &*crefs.clone() {
@@ -1663,7 +1663,7 @@ fn createVarsForExp(mut inExp: Arc<DAE::Exp>, mut inAccumVarLst: Arc<metamodelic
             let mut cr_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut arrayDim: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
-            crefs = ComponentReference::expandCref(cr.clone(), true);
+            crefs = ComponentReference::expandCref(cr.clone(), true)?;
             outVarLst = inAccumVarLst;
             for mut cr_ in &*crefs.clone() {
                 let mut cr_ = cr_.clone();
@@ -1677,7 +1677,7 @@ fn createVarsForExp(mut inExp: Arc<DAE::Exp>, mut inAccumVarLst: Arc<metamodelic
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut ty: Arc<DAE::Type>;
             let mut arrayDim: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
-            crefs = ComponentReference::expandCref(cr.clone(), true);
+            crefs = ComponentReference::expandCref(cr.clone(), true)?;
             outVarLst = inAccumVarLst;
             ty = DAEUtil::expTypeElementType(Expression::r#typeof(inExp.clone())?);
             for mut cr_ in &*crefs.clone() {
@@ -2638,47 +2638,25 @@ fn cancelExpressions(mut e1In: Arc<DAE::Exp>, mut e2In: Arc<DAE::Exp>) -> Result
 }
 
 fn getTopLevelFactors(mut exp: Arc<DAE::Exp>, mut lstIn: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
-    let mut lstOut: Arc<metamodelica::List<Arc<DAE::Exp>>>;
-    lstOut = 'mc: {
-        let __mc_input = exp;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { ty: _ }, exp2: e2 } => {
-                    let mut eLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
-                    eLst = getTopLevelFactors(e1.clone(), lstIn.clone());
-                    eLst = getTopLevelFactors(e2.clone(), eLst.clone());
-                    Ok(eLst.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::UNARY { operator: _, exp: e1 @ Deref @ DAE::Exp::CREF { .. } } => {
-                    Ok(metamodelica::cons(e1.clone(), lstIn.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                e1 @ Deref @ DAE::Exp::CREF { .. } => {
-                    Ok(metamodelica::cons(e1.clone(), lstIn.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(lstIn.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    lstOut
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(exp) {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { ty: _ }, exp2: e2 } => {
+            let mut eLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            eLst = getTopLevelFactors(e1.clone(), lstIn);
+            { (exp, lstIn) = (e2.clone(), eLst.clone()); continue '__tco; }
+        },
+        Deref @ DAE::Exp::UNARY { operator: _, exp: e1 @ Deref @ DAE::Exp::CREF { .. } } => {
+            return metamodelica::cons(e1.clone(), lstIn)
+        },
+        e1 @ Deref @ DAE::Exp::CREF { .. } => {
+            return metamodelica::cons(e1.clone(), lstIn)
+        },
+        _ => {
+            return lstIn
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn printCSE(mut cse: CommonSubExp) -> Result<ArcStr> {

@@ -737,27 +737,14 @@ fn dumpComponentsWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Backe
 }
 
 fn dumpComponents1(mut l: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut voffset: i32, mut eoffset: i32) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = l.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    dumpComponents2(l.clone(), 1 + voffset, eoffset)?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(l.clone()) {
+        Deref @ metamodelica::List::Nil => (),
+        _ => {
+            dumpComponents2(l, 1 + voffset, eoffset)?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -838,29 +825,16 @@ fn dumpCrefIdxLst2(mut crefIdxLst: Arc<metamodelica::List<BackendDAE::CrefIndex>
 }
 
 fn dumpDAEInstDims(mut arry_Dim: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut Content: ArcStr) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = arry_Dim.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    dumpStrOpenTag((Content.clone()).clone())?;
-                    dumpDAEInstDims2(arry_Dim.clone())?;
-                    dumpStrCloseTag((Content.clone()).clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(arry_Dim.clone()) {
+        Deref @ metamodelica::List::Nil => (),
+        _ => {
+            dumpStrOpenTag((Content.clone()).clone())?;
+            dumpDAEInstDims2(arry_Dim)?;
+            dumpStrCloseTag((Content).clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -2199,29 +2173,16 @@ fn dumpFlowStr(mut inVarFlow: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
 }
 
 fn dumpFunctions(mut funcelems: Arc<metamodelica::List<DAE::Function>>) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = funcelems.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    dumpStrOpenTag((arcstr::literal!(FUNCTIONS)).clone())?;
-                    dumpFunctions2(funcelems.clone());
-                    dumpStrCloseTag((arcstr::literal!(FUNCTIONS)).clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(funcelems.clone()) {
+        Deref @ metamodelica::List::Nil => (),
+        _ => {
+            dumpStrOpenTag((arcstr::literal!(FUNCTIONS)).clone())?;
+            dumpFunctions2(funcelems);
+            dumpStrCloseTag((arcstr::literal!(FUNCTIONS)).clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -2484,29 +2445,18 @@ fn dumpLstInt(mut inLstStr: Arc<metamodelica::List<i32>>, mut inElementName: Arc
 }
 
 fn dumpLstIntAttr(mut lst: Arc<metamodelica::List<i32>>, mut inContent: ArcStr, mut inElementContent: ArcStr) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = (lst, inContent, inElementContent);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, _, _) => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (l, inLst, inEl) => {
-                    dumpStrOpenTag((inLst.clone()).clone())?;
-                    dumpLstInt(l.clone(), (inEl.clone()).clone())?;
-                    dumpStrCloseTag((inLst.clone()).clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &((lst, inContent, inElementContent)) {
+        (Deref @ metamodelica::List::Nil, _, _) => {
+            ()
+        },
+        (l, inLst, inEl) => {
+            dumpStrOpenTag((inLst.clone()).clone())?;
+            dumpLstInt(l.clone(), (inEl.clone()).clone())?;
+            dumpStrCloseTag((inLst.clone()).clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -2685,29 +2635,18 @@ fn transformModelicaIdentifierToXMLElementTag(mut modelicaIdentifier: ArcStr) ->
 }
 
 fn dumpStrCloseTag(mut inContent: ArcStr) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = inContent;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ "" => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                inString => {
-                    Print::printBuf((literal!("\n</")).clone())?;
-                    Print::printBuf((transformModelicaIdentifierToXMLElementTag((inString.clone()).clone())?).clone())?;
-                    Print::printBuf((literal!(">")).clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(inContent) {
+        Deref @ "" => {
+            ()
+        },
+        inString => {
+            Print::printBuf((literal!("\n</")).clone())?;
+            Print::printBuf((transformModelicaIdentifierToXMLElementTag((inString.clone()).clone())?).clone())?;
+            Print::printBuf((literal!(">")).clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -2909,65 +2848,38 @@ fn dumpStrTagAttrNoChild(mut inContent: ArcStr, mut Attribute: ArcStr, mut Attri
 }
 
 fn dumpStrTagContent(mut inElementName: ArcStr, mut inContent: ArcStr) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = (inElementName, inContent);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ "", _) => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ "") => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (inTagString, inTagContent) => {
-                    dumpStrOpenTag((inTagString.clone()).clone())?;
-                    Print::printBuf((literal!("\n")).clone())?;
-                    Print::printBuf((inTagContent.clone()).clone())?;
-                    dumpStrCloseTag((inTagString.clone()).clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &((inElementName, inContent)) {
+        (Deref @ "", _) => {
+            ()
+        },
+        (_, Deref @ "") => {
+            ()
+        },
+        (inTagString, inTagContent) => {
+            dumpStrOpenTag((inTagString.clone()).clone())?;
+            Print::printBuf((literal!("\n")).clone())?;
+            Print::printBuf((inTagContent.clone()).clone())?;
+            dumpStrCloseTag((inTagString.clone()).clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
 fn dumpStrVoidTag(mut inElementName: ArcStr) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = inElementName;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ "" => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                ElementName => {
-                    Print::printBuf((literal!("\n<")).clone())?;
-                    Print::printBuf((transformModelicaIdentifierToXMLElementTag((ElementName.clone()).clone())?).clone())?;
-                    Print::printBuf((literal!("/>")).clone())?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(inElementName) {
+        Deref @ "" => {
+            ()
+        },
+        ElementName => {
+            Print::printBuf((literal!("\n<")).clone())?;
+            Print::printBuf((transformModelicaIdentifierToXMLElementTag((ElementName.clone()).clone())?).clone())?;
+            Print::printBuf((literal!("/>")).clone())?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -3271,7 +3183,7 @@ fn dumpVars2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inInteg
             let mut scalarVar: BackendDAE::Var;
             let mut scalar_crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut varno = (*varno).clone();
-            scalar_crefs = ComponentReference::expandCref(v.varName.clone(), false);
+            scalar_crefs = ComponentReference::expandCref(v.varName.clone(), false)?;
             for mut cref in &*scalar_crefs.clone() {
                 let mut cref = cref.clone();
                 scalarVar = BackendVariable::copyVarNewName(cref.clone(), v.clone());
@@ -3850,28 +3762,17 @@ fn unaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 
 fn unparseCommentOptionNoAnnotation(mut inAbsynCommentOption: Option<Arc<SCode::Comment>>) -> ArcStr {
     let mut outString: ArcStr;
-    outString = ('mc: {
-        let __mc_input = inAbsynCommentOption;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ SCode::Comment { annotation_: _, comment: Some(cmt) }) => {
-                    let mut r#str: ArcStr;
-                    r#str = (cmt.clone()).clone();
-                    Ok(r#str.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
+    outString = ((::match_deref::match_deref! { match &(inAbsynCommentOption) {
+        Some(Deref @ SCode::Comment { annotation_: _, comment: Some(cmt) }) => {
+            let mut r#str: ArcStr;
+            r#str = (cmt.clone()).clone();
+            r#str.clone()
+        },
+        _ => {
+            literal!("")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     outString
 }
 

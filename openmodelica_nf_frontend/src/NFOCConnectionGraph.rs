@@ -1478,58 +1478,36 @@ fn getConnections(mut inGraph: NFOCConnectionGraph) -> Result<FlatEdges> {
 
 fn merge(mut inGraph1: NFOCConnectionGraph, mut inGraph2: NFOCConnectionGraph) -> Result<NFOCConnectionGraph> {
     let mut outGraph: NFOCConnectionGraph;
-    outGraph = 'mc: {
-        let __mc_input = (inGraph1.clone(), inGraph2.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, NFOCConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. }) => {
-                    Ok(inGraph1.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (NFOCConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. }, _) => {
-                    Ok(inGraph2.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, _) => {
-                    if !((inGraph1.clone() == inGraph2.clone())) { bail!("guard") }
-                    Ok(inGraph1.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (NFOCConnectionGraph { updateGraph: updateGraph1, definiteRoots: definiteRoots1, potentialRoots: potentialRoots1, uniqueRoots: uniqueRoots1, branches: branches1, connections: connections1 }, NFOCConnectionGraph { updateGraph: updateGraph2, definiteRoots: definiteRoots2, potentialRoots: potentialRoots2, uniqueRoots: uniqueRoots2, branches: branches2, connections: connections2 }) => {
-                    let mut updateGraph: bool;
-                    let mut definiteRoots: DefiniteRoots;
-                    let mut uniqueRoots: UniqueRoots;
-                    let mut potentialRoots: PotentialRoots;
-                    let mut branches: Edges;
-                    let mut connections: FlatEdges;
-                    if Flags::isSet(Flags::CGRAPH.clone())? {
-                        Debug::trace((literal!("- NFOCConnectionGraph.merge()\n")).clone())?;
-                    }
-                    updateGraph = boolOr(updateGraph1.clone(), updateGraph2.clone());
-                    definiteRoots = List::union(definiteRoots1.clone(), definiteRoots2.clone());
-                    potentialRoots = List::union(potentialRoots1.clone(), potentialRoots2.clone());
-                    uniqueRoots = List::union(uniqueRoots1.clone(), uniqueRoots2.clone());
-                    branches = List::union(branches1.clone(), branches2.clone());
-                    connections = List::union(connections1.clone(), connections2.clone());
-                    Ok(NFOCConnectionGraph { updateGraph: updateGraph.clone(), definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: uniqueRoots.clone(), branches: branches.clone(), connections: connections.clone() })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outGraph = (::match_deref::match_deref! { match &((inGraph1.clone(), inGraph2.clone())) {
+        (_, NFOCConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. }) => {
+            inGraph1.clone()
+        },
+        (NFOCConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. }, _) => {
+            inGraph2.clone()
+        },
+        (_, _) if (inGraph1.clone() == inGraph2.clone()) => {
+            inGraph1.clone()
+        },
+        (NFOCConnectionGraph { updateGraph: updateGraph1, definiteRoots: definiteRoots1, potentialRoots: potentialRoots1, uniqueRoots: uniqueRoots1, branches: branches1, connections: connections1 }, NFOCConnectionGraph { updateGraph: updateGraph2, definiteRoots: definiteRoots2, potentialRoots: potentialRoots2, uniqueRoots: uniqueRoots2, branches: branches2, connections: connections2 }) => {
+            let mut updateGraph: bool;
+            let mut definiteRoots: DefiniteRoots;
+            let mut uniqueRoots: UniqueRoots;
+            let mut potentialRoots: PotentialRoots;
+            let mut branches: Edges;
+            let mut connections: FlatEdges;
+            if Flags::isSet(Flags::CGRAPH.clone())? {
+                Debug::trace((literal!("- NFOCConnectionGraph.merge()\n")).clone())?;
+            }
+            updateGraph = boolOr(updateGraph1.clone(), updateGraph2.clone());
+            definiteRoots = List::union(definiteRoots1.clone(), definiteRoots2.clone());
+            potentialRoots = List::union(potentialRoots1.clone(), potentialRoots2.clone());
+            uniqueRoots = List::union(uniqueRoots1.clone(), uniqueRoots2.clone());
+            branches = List::union(branches1.clone(), branches2.clone());
+            connections = List::union(connections1.clone(), connections2.clone());
+            NFOCConnectionGraph { updateGraph: updateGraph.clone(), definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: uniqueRoots.clone(), branches: branches.clone(), connections: connections.clone() }
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outGraph)
 }
 

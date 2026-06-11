@@ -420,7 +420,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     globalDAEData = traverserArgs.globalDAEData.clone();
                     cref = Expression::expCref(exp.clone())?;
                     (newAuxVars, _) = BackendVariable::getVar(cref.clone(), traverserArgs.systemVars.clone())?;
-                    crlst = ComponentReference::expandCref(cref.clone(), true);
+                    crlst = ComponentReference::expandCref(cref.clone(), true)?;
                     newAuxVars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         let __thr_src0 = crlst.clone();

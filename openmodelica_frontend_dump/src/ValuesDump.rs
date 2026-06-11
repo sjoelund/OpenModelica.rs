@@ -657,40 +657,29 @@ fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, m
 
 fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
     let mut outString: ArcStr;
-    outString = ('mc: {
-        let __mc_input = inValueLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                lst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: _ } => {
-                    let mut i1: i32;
-                    let mut s1: ArcStr;
-                    let mut s2: ArcStr;
-                    let mut s3: ArcStr;
-                    let mut res: ArcStr;
-                    i1 = (lst.clone().len() as i32);
-                    s1 = (intString(i1.clone())).clone();
-                    s2 = (stringAppend((s1.clone()).clone(), (literal!(" ")).clone())).clone();
-                    s3 = (unparseDimSizes(vals.clone())).clone();
-                    res = (stringAppend((s2.clone()).clone(), (s3.clone()).clone())).clone();
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                lst => {
-                    let mut len: i32;
-                    let mut res: ArcStr;
-                    len = (lst.clone().len() as i32);
-                    res = (intString(len.clone())).clone();
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
+    outString = ((::match_deref::match_deref! { match &(inValueLst) {
+        lst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: _ } => {
+            let mut i1: i32;
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut s3: ArcStr;
+            let mut res: ArcStr;
+            i1 = (lst.clone().len() as i32);
+            s1 = (intString(i1.clone())).clone();
+            s2 = (stringAppend((s1.clone()).clone(), (literal!(" ")).clone())).clone();
+            s3 = (unparseDimSizes(vals.clone())).clone();
+            res = (stringAppend((s2.clone()).clone(), (s3.clone()).clone())).clone();
+            res.clone()
+        },
+        lst => {
+            let mut len: i32;
+            let mut res: ArcStr;
+            len = (lst.clone().len() as i32);
+            res = (intString(len.clone())).clone();
+            res.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     outString
 }
 

@@ -1717,7 +1717,7 @@ pub(crate) fn generateArrayVar(mut name: Arc<DAE::ComponentRef>, mut varKind: Ba
         Deref @ DAE::Type::T_ARRAY { ty: tp, dims } => {
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
-            crlst = ComponentReference::expandCref(name, false);
+            crlst = ComponentReference::expandCref(name, false)?;
             vars = List::map4(crlst.clone(), (std::sync::Arc::new(fnptr!(generateVar, Arc<DAE::ComponentRef>, BackendDAE::VarKind, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>, Option<Arc<DAE::VariableAttributes>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::VarKind, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>, Option<Arc<DAE::VariableAttributes>>) -> Result<BackendDAE::Var> + 'static>), varKind, tp.clone(), dims.clone(), None)?;
             vars.clone()
         },
@@ -2875,7 +2875,7 @@ pub fn getVar(mut cr: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Varia
             let mut indxs: Arc<metamodelica::List<i32>>;
             let mut vLst: Arc<metamodelica::List<BackendDAE::Var>>;
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crlst = ComponentReference::expandCref(cr.clone(), true);
+            crlst = ComponentReference::expandCref(cr.clone(), true)?;
             if true /* isPresent not implemented in Rust */ {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getVarLst(crlst.clone(), inVariables.clone())) {
                     (__pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -2904,7 +2904,7 @@ pub fn getVar(mut cr: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Varia
                 _ => bail!("pattern mismatch"),
             } };
             cr1 = __pa0.clone();
-            crlst = ComponentReference::expandCref(cr1.clone(), true);
+            crlst = ComponentReference::expandCref(cr1.clone(), true)?;
             if true /* isPresent not implemented in Rust */ {
                 let (__pa1, __pa2) = ::match_deref::match_deref! { match &(getVarLst(crlst.clone(), inVariables.clone())) {
                     (__pa1 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, __pa2) => (__pa1.clone(), __pa2.clone()),
@@ -2944,7 +2944,7 @@ pub(crate) fn getVarSingle(mut cr: Arc<DAE::ComponentRef>, mut inVariables: Back
             let mut v: BackendDAE::Var;
             let mut indx: i32;
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crlst = ComponentReference::expandCref(cr.clone(), true);
+            crlst = ComponentReference::expandCref(cr.clone(), true)?;
             if true /* isPresent not implemented in Rust */ {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getVarLst(crlst.clone(), inVariables.clone())) {
                     (Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }) => (__pa0.clone(), __pa1.clone()),
@@ -2973,7 +2973,7 @@ pub(crate) fn getVarSingle(mut cr: Arc<DAE::ComponentRef>, mut inVariables: Back
                 _ => bail!("pattern mismatch"),
             } };
             cr1 = __pa0.clone();
-            crlst = ComponentReference::expandCref(cr1.clone(), true);
+            crlst = ComponentReference::expandCref(cr1.clone(), true)?;
             if true /* isPresent not implemented in Rust */ {
                 let (__pa1, __pa2) = ::match_deref::match_deref! { match &(getVarLst(crlst.clone(), inVariables.clone())) {
                     (Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil }) => (__pa1.clone(), __pa2.clone()),
@@ -4251,7 +4251,7 @@ pub(crate) fn scalarizeVar(mut var: BackendDAE::Var, mut scalar_vars: Arc<metamo
     let mut scalar_crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut scalar_var: BackendDAE::Var;
     if Types::isArray(var.varType.clone()) {
-        scalar_crefs = ComponentReference::expandCref(var.varName.clone(), false);
+        scalar_crefs = ComponentReference::expandCref(var.varName.clone(), false)?;
         for mut cref in &*scalar_crefs {
             let mut cref = cref.clone();
             scalar_var = copyVarNewName(cref.clone(), var.clone());

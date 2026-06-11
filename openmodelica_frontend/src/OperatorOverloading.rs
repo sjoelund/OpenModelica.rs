@@ -3719,90 +3719,39 @@ fn elementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
 
 fn replaceOperatorWithFcall(mut AbExp: Arc<Absyn::Exp>, mut inExp1: Arc<DAE::Exp>, mut inOper: DAE::Operator, mut inExp2: Option<Arc<DAE::Exp>>, mut inConst: DAE::Const) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
-    outExp = 'mc: {
-        let __mc_input = (AbExp, inExp1, inOper.clone(), inExp2);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::BINARY { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
-                    Ok(Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone(), e2.clone()], attr: DAE::callAttrOther().clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::BINARY { exp1: _, op: _, exp2: _ }, e1, _, Some(e2)) => {
-                    Ok(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: inOper.clone(), exp2: e2.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::UNARY { op: _, exp: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, None) => {
-                    Ok(Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone()], attr: DAE::callAttrOther().clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::UNARY { op: _, exp: _ }, e1, _, None) => {
-                    Ok(Arc::new(DAE::Exp::UNARY { operator: inOper.clone(), exp: e1.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::LBINARY { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
-                    Ok(Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone(), e2.clone()], attr: DAE::callAttrOther().clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::LBINARY { exp1: _, op: _, exp2: _ }, e1, _, Some(e2)) => {
-                    Ok(Arc::new(DAE::Exp::LBINARY { exp1: e1.clone(), operator: inOper.clone(), exp2: e2.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::LUNARY { op: _, exp: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, None) => {
-                    Ok(Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone()], attr: DAE::callAttrOther().clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::LUNARY { op: _, exp: _ }, e1, _, None) => {
-                    Ok(Arc::new(DAE::Exp::LUNARY { operator: inOper.clone(), exp: e1.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::RELATION { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
-                    Ok(Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone(), e2.clone()], attr: DAE::callAttrOther().clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::RELATION { exp1: _, op: _, exp2: _ }, e1, _, Some(e2)) => {
-                    Ok(Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: inOper.clone(), exp2: e2.clone(), index: -1, optionExpisASUB: None }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outExp = (::match_deref::match_deref! { match &((AbExp, inExp1, inOper.clone(), inExp2)) {
+        (Deref @ Absyn::Exp::BINARY { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
+            Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone(), e2.clone()], attr: DAE::callAttrOther().clone() })
+        },
+        (Deref @ Absyn::Exp::BINARY { exp1: _, op: _, exp2: _ }, e1, _, Some(e2)) => {
+            Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: inOper, exp2: e2.clone() })
+        },
+        (Deref @ Absyn::Exp::UNARY { op: _, exp: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, None) => {
+            Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone()], attr: DAE::callAttrOther().clone() })
+        },
+        (Deref @ Absyn::Exp::UNARY { op: _, exp: _ }, e1, _, None) => {
+            Arc::new(DAE::Exp::UNARY { operator: inOper, exp: e1.clone() })
+        },
+        (Deref @ Absyn::Exp::LBINARY { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
+            Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone(), e2.clone()], attr: DAE::callAttrOther().clone() })
+        },
+        (Deref @ Absyn::Exp::LBINARY { exp1: _, op: _, exp2: _ }, e1, _, Some(e2)) => {
+            Arc::new(DAE::Exp::LBINARY { exp1: e1.clone(), operator: inOper, exp2: e2.clone() })
+        },
+        (Deref @ Absyn::Exp::LUNARY { op: _, exp: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, None) => {
+            Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone()], attr: DAE::callAttrOther().clone() })
+        },
+        (Deref @ Absyn::Exp::LUNARY { op: _, exp: _ }, e1, _, None) => {
+            Arc::new(DAE::Exp::LUNARY { operator: inOper, exp: e1.clone() })
+        },
+        (Deref @ Absyn::Exp::RELATION { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
+            Arc::new(DAE::Exp::CALL { path: funcname.clone(), expLst: list![e1.clone(), e2.clone()], attr: DAE::callAttrOther().clone() })
+        },
+        (Deref @ Absyn::Exp::RELATION { exp1: _, op: _, exp2: _ }, e1, _, Some(e2)) => {
+            Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: inOper, exp2: e2.clone(), index: -1, optionExpisASUB: None })
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outExp)
 }
 

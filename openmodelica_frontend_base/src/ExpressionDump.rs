@@ -2044,24 +2044,20 @@ pub fn dumpExpStr(mut inExp: Arc<DAE::Exp>, mut inInteger: i32) -> Result<ArcStr
 
 fn genStringNTime(mut inString: ArcStr, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ('mc: {
-        let __mc_input = (inString, inInteger);
-        if let Ok(__v) = (|| -> Result<_> {
-            let (_, 0) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(literal!(""))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (mut r#str, mut level) = __mc_input.clone() else { bail!("nomatch") };
+    outString = ((match (inString, inInteger) {
+        (_, 0) => {
+            literal!("")
+        },
+        (mut r#str, mut level) => {
             let mut new_str: ArcStr;
             let mut res_str: ArcStr;
             let mut new_level: i32;
             new_level = level.clone() + -1;
             new_str = (genStringNTime((r#str.clone()).clone(), new_level.clone())?).clone();
             res_str = (stringAppend((r#str.clone()).clone(), (new_str.clone()).clone())).clone();
-            Ok(res_str.clone())
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
+            res_str.clone()
+        },
+    })).clone();
     Ok(outString)
 }
 
@@ -2080,43 +2076,25 @@ fn printExpIfDiff(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<ArcStr
 }
 
 pub(crate) fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> ArcStr {
-    let mut out: ArcStr;
-    out = ('mc: {
-        let __mc_input = inLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Some(x), tail: lst } => {
-                    let mut s: ArcStr;
-                    let mut s2: ArcStr;
-                    s = (printArraySizes(lst.clone())).clone();
-                    s2 = (intString(x.clone())).clone();
-                    s = stringAppendList(list![(s2.clone()).clone(), (s.clone()).clone()]);
-                    Ok(s.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: lst } => {
-                    let mut s: ArcStr;
-                    s = (printArraySizes(lst.clone())).clone();
-                    Ok(s.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
-    out
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inLst) {
+        Deref @ metamodelica::List::Nil => {
+            return literal!("")
+        },
+        Deref @ metamodelica::List::Cons { head: Some(x), tail: lst } => {
+            let mut s: ArcStr;
+            let mut s2: ArcStr;
+            s = (printArraySizes(lst.clone())).clone();
+            s2 = (intString(x.clone())).clone();
+            return stringAppendList(list![(s2.clone()).clone(), (s.clone()).clone()])
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: lst } => {
+            let mut s: ArcStr;
+            { inLst = lst.clone(); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub(crate) fn typeOfString(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {

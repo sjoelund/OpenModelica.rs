@@ -358,69 +358,32 @@ fn evaluateAnnotations_dispatch(mut absynProgram: Absyn::Program, mut classPath:
     let mut cmt: Option<Arc<Absyn::Comment>> = None;
     for mut i in &*inElements {
         let mut i = i.clone();
-        elArgs = 'mc: {
-        let __mc_input = i.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: items, .. }, constrainClass: cc, .. } => {
-                    let mut el: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>>> = el.clone();
-                    el = AbsynUtil::getAnnotationsFromItems(items.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone()));
-                    Ok((listAppend(el.clone(), elArgs.clone()), el.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { el = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } => {
-                    Ok(metamodelica::cons(metamodelica::nil(), elArgs.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: cmt, .. }, .. }, .. }, constrainClass: cc, .. } => {
-                    let mut anns: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = anns.clone();
-                    anns = (::match_deref::match_deref! { match &(cmt.clone()) {
+        elArgs = (::match_deref::match_deref! { match &(i.clone()) {
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: __esc_items, .. }, constrainClass: __esc_cc, .. } => {
+            items = (*__esc_items).clone();
+            cc = (*__esc_cc).clone();
+            el = AbsynUtil::getAnnotationsFromItems(items.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone()));
+            listAppend(el.clone(), elArgs.clone())
+        },
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } => metamodelica::cons(metamodelica::nil(), elArgs.clone()),
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: __esc_cmt, .. }, .. }, .. }, constrainClass: __esc_cc, .. } => {
+            cmt = (*__esc_cmt).clone();
+            cc = (*__esc_cc).clone();
+            anns = (::match_deref::match_deref! { match &(cmt.clone()) {
         Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: __esc_anns }), .. }) => {
-                    anns = (*__esc_anns).clone();
-                    anns.clone()
+            anns = (*__esc_anns).clone();
+            anns.clone()
         },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                    Ok((metamodelica::cons(listAppend(anns.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone())), elArgs.clone()), anns.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { anns = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } => {
-                    Ok(metamodelica::cons(metamodelica::nil(), elArgs.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { .. }, .. }, .. }, .. } => {
-                    Ok(metamodelica::cons(metamodelica::nil(), elArgs.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(elArgs.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+            metamodelica::cons(listAppend(anns.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone())), elArgs.clone())
+        },
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } => metamodelica::cons(metamodelica::nil(), elArgs.clone()),
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { .. }, .. }, .. }, .. } => metamodelica::cons(metamodelica::nil(), elArgs.clone()),
+        _ => elArgs.clone(),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
     for mut l in &*elArgs.clone() {
         let mut l = l.clone();
@@ -725,26 +688,11 @@ pub(crate) fn getNthInheritedClass(mut classPath: Arc<Path>, mut index: i32, mut
         return Ok(result.clone());
     }
     cls = InstNode::getClass(cls_node)?;
-    exts = 'mc: {
-        let __mc_input = cls.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Class::EXPANDED_DERIVED { .. } => {
-                    Ok(metamodelica::arrayFromVec(list![var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone()].into_iter().cloned().collect()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(ClassTree::getExtends(Class::classTree(cls.clone())?))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    exts = (::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ Class::EXPANDED_DERIVED { .. } => metamodelica::arrayFromVec(list![var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone()].into_iter().cloned().collect()),
+        _ => ClassTree::getExtends(Class::classTree(cls)?),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     if index < 1 || index > metamodelica::arrayLength(exts.clone()) {
         result = ValuesMake::makeBoolean(false);
         return Ok(result.clone());

@@ -469,32 +469,21 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
 
 pub(crate) fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ('mc: {
-        let __mc_input = inAbsynSubscriptLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                l => {
-                    let mut s: ArcStr;
-                    let mut s_1: ArcStr;
-                    let mut s_2: ArcStr;
-                    s = (printListStr(l.clone(), (std::sync::Arc::new(printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?).clone();
-                    s_1 = (stringAppend((literal!("[")).clone(), (s.clone()).clone())).clone();
-                    s_2 = (stringAppend((s_1.clone()).clone(), (literal!("]")).clone())).clone();
-                    Ok(s_2.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
+    outString = ((::match_deref::match_deref! { match &(inAbsynSubscriptLst) {
+        Deref @ metamodelica::List::Nil => {
+            literal!("")
+        },
+        l => {
+            let mut s: ArcStr;
+            let mut s_1: ArcStr;
+            let mut s_2: ArcStr;
+            s = (printListStr(l.clone(), (std::sync::Arc::new(printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?).clone();
+            s_1 = (stringAppend((literal!("[")).clone(), (s.clone()).clone())).clone();
+            s_2 = (stringAppend((s_1.clone()).clone(), (literal!("]")).clone())).clone();
+            s_2.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     Ok(outString)
 }
 

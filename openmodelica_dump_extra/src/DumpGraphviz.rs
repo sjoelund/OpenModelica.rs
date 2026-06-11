@@ -432,53 +432,27 @@ fn printAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn
 
 fn printAlgorithmitem(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
-    outNode = 'mc: {
-        let __mc_input = inAlgorithmItem;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, .. } => {
-                    let mut node: Arc<Graphviz::Node>;
-                    node = printAlgorithm(alg.clone());
-                    Ok(node.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("ALG_ERROR")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outNode = (::match_deref::match_deref! { match &(inAlgorithmItem) {
+        Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, .. } => {
+            let mut node: Arc<Graphviz::Node>;
+            node = printAlgorithm(alg.clone());
+            node.clone()
+        },
+        _ => {
+            Arc::new(Graphviz::Node::NODE { type_: (literal!("ALG_ERROR")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() })
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outNode
 }
 
 fn printAlgorithm(mut inAlgorithm: Arc<Absyn::Algorithm>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
-    outNode = 'mc: {
-        let __mc_input = inAlgorithm;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Algorithm::ALG_ASSIGN { .. } => {
-                    Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("ALG_ASSIGN")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!(" DumpGraphviz.printAlgorithm ALG_ERROR")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outNode = (::match_deref::match_deref! { match &(inAlgorithm) {
+        Deref @ Absyn::Algorithm::ALG_ASSIGN { .. } => Arc::new(Graphviz::Node::NODE { type_: (literal!("ALG_ASSIGN")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() }),
+        _ => Arc::new(Graphviz::Node::NODE { type_: (literal!(" DumpGraphviz.printAlgorithm ALG_ERROR")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() }),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outNode
 }
 

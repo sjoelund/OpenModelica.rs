@@ -1014,22 +1014,18 @@ pub(crate) fn wasFatalError(mut inLineInfo: LineInfo) -> bool {
 
 pub(crate) fn mergeErrors(mut inLineInfo: LineInfo, mut inLineInfoToAddErrorsFrom: LineInfo) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
-    outLineInfo = 'mc: {
-        let __mc_input = (inLineInfo, inLineInfoToAddErrorsFrom);
-        if let Ok(__v) = (|| -> Result<_> {
-            let (LineInfo { parseInfo: ParseInfo { fileName: mut fname, errors: ref errLst, wasFatalError: mut wasFatalError }, lineNumber: mut lnum, lineLength: mut llen, startOfLineChars: ref solchars }, LineInfo { parseInfo: ParseInfo { errors: ref errLstToAdd, .. }, .. }) = __mc_input.clone() else { bail!("nomatch") };
+    outLineInfo = (match (inLineInfo, inLineInfoToAddErrorsFrom) {
+        (LineInfo { parseInfo: ParseInfo { fileName: mut fname, errors: ref errLst, wasFatalError: mut wasFatalError }, lineNumber: mut lnum, lineLength: mut llen, startOfLineChars: ref solchars }, LineInfo { parseInfo: ParseInfo { errors: ref errLstToAdd, .. }, .. }) => {
             let mut errLst = errLst.clone();
             errLst = listAppend(errLstToAdd.clone(), errLst.clone());
-            Ok(LineInfo { parseInfo: ParseInfo { fileName: (fname.clone()).clone(), errors: errLst.clone(), wasFatalError: wasFatalError.clone() }, lineNumber: lnum.clone(), lineLength: llen.clone(), startOfLineChars: solchars.clone() })
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
+            LineInfo { parseInfo: ParseInfo { fileName: (fname.clone()).clone(), errors: errLst.clone(), wasFatalError: wasFatalError.clone() }, lineNumber: lnum.clone(), lineLength: llen.clone(), startOfLineChars: solchars.clone() }
+        },
+        _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("- !!! TplParser.mergeErrors failed.\n")).clone())?;
-            Ok(bail!("fail"))
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+            bail!("fail")
+        },
+    });
     Ok(outLineInfo)
 }
 
@@ -5458,64 +5454,33 @@ pub(crate) fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
 
 pub(crate) fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Tpl::StringToken>> {
     let mut outStringToken: Arc<Tpl::StringToken>;
-    outStringToken = 'mc: {
-        let __mc_input = inRevStrList;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } => {
-                    Ok(Arc::new(Tpl::StringToken::ST_STRING { value: (r#str.clone()).clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: Deref @ metamodelica::List::Nil } } => {
-                    Ok(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } } => {
-                    Ok(Arc::new(Tpl::StringToken::ST_LINE { line: (r#str.clone()).clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ "", tail: strList } => {
-                    let mut strList = (*strList).clone();
-                    strList = strList.clone().reverse();
-                    Ok(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: strList.clone(), lastHasNewLine: true }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                strList @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
-                    let mut strList = (*strList).clone();
-                    strList = strList.clone().reverse();
-                    Ok(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: strList.clone(), lastHasNewLine: false }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::trace((literal!("Parse invalid operation error - TplParser.makeStrTokFromRevStrList failed (an empty string list passed?) .\n")).clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outStringToken = (::match_deref::match_deref! { match &(inRevStrList) {
+        Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } => {
+            Arc::new(Tpl::StringToken::ST_STRING { value: (r#str.clone()).clone() })
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: Deref @ metamodelica::List::Nil } } => {
+            openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } } => {
+            Arc::new(Tpl::StringToken::ST_LINE { line: (r#str.clone()).clone() })
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ "", tail: strList } => {
+            let mut strList = (*strList).clone();
+            strList = strList.clone().reverse();
+            Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: strList.clone(), lastHasNewLine: true })
+        },
+        strList @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
+            let mut strList = (*strList).clone();
+            strList = strList.clone().reverse();
+            Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: strList.clone(), lastHasNewLine: false })
+        },
+        _ => {
+            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+            Debug::trace((literal!("Parse invalid operation error - TplParser.makeStrTokFromRevStrList failed (an empty string list passed?) .\n")).clone())?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outStringToken)
 }
 
@@ -5997,36 +5962,20 @@ pub(crate) fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcSt
 
 pub(crate) fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inLeftQuote: ArcStr, mut inRightQuote: ArcStr) -> Arc<TplAbsyn::ExpressionBase> {
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
-    outExpressionBase = 'mc: {
-        let __mc_input = (inExpressionList, inLeftQuote, inRightQuote);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, _, _) => {
-                    Ok(Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: (expB, _), tail: Deref @ metamodelica::List::Nil }, _, _) => {
-                    Ok(expB.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (expLst, lquote, rquote) => {
-                    let mut expLst = (*expLst).clone();
-                    expLst = expLst.clone().reverse();
-                    Ok(Arc::new(TplAbsyn::ExpressionBase::TEMPLATE { items: expLst.clone(), lquote: (lquote.clone()).clone(), rquote: (rquote.clone()).clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outExpressionBase = (::match_deref::match_deref! { match &((inExpressionList, inLeftQuote, inRightQuote)) {
+        (Deref @ metamodelica::List::Nil, _, _) => {
+            Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) })
+        },
+        (Deref @ metamodelica::List::Cons { head: (expB, _), tail: Deref @ metamodelica::List::Nil }, _, _) => {
+            expB.clone()
+        },
+        (expLst, lquote, rquote) => {
+            let mut expLst = (*expLst).clone();
+            expLst = expLst.clone().reverse();
+            Arc::new(TplAbsyn::ExpressionBase::TEMPLATE { items: expLst.clone(), lquote: (lquote.clone()).clone(), rquote: (rquote.clone()).clone() })
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outExpressionBase
 }
 

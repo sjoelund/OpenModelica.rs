@@ -1054,78 +1054,25 @@ fn expEqual(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<bool> {
 
 fn operatorMatches(mut op1: DAE::Operator, mut op2: DAE::Operator) -> Result<bool> {
     let mut b: bool;
-    b = 'mc: {
-        let __mc_input = (op1.clone(), op2.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::UMINUS_ARR { .. }, DAE::Operator::UMINUS { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::ADD_ARR { .. }, DAE::Operator::ADD { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::SUB_ARR { .. }, DAE::Operator::SUB { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::MUL_ARR { .. }, DAE::Operator::MUL { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::DIV_ARR { .. }, DAE::Operator::DIV { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::MUL_ARRAY_SCALAR { .. }, DAE::Operator::MUL { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::ADD_ARRAY_SCALAR { .. }, DAE::Operator::ADD { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::SUB_SCALAR_ARRAY { .. }, DAE::Operator::SUB { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::MUL_SCALAR_PRODUCT { .. }, DAE::Operator::MUL { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::MUL_MATRIX_PRODUCT { .. }, DAE::Operator::MUL { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::DIV_SCALAR_ARRAY { .. }, DAE::Operator::DIV { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::DIV_ARRAY_SCALAR { .. }, DAE::Operator::DIV { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::POW_SCALAR_ARRAY { .. }, DAE::Operator::POW { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::POW_ARRAY_SCALAR { .. }, DAE::Operator::POW { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::POW_ARR { .. }, DAE::Operator::POW { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (DAE::Operator::POW_ARR2 { .. }, DAE::Operator::POW { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(Expression::operatorEqual(op1.clone(), op2.clone())?)
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    b = (match (op1.clone(), op2.clone()) {
+        (DAE::Operator::UMINUS_ARR { .. }, DAE::Operator::UMINUS { .. }) => true,
+        (DAE::Operator::ADD_ARR { .. }, DAE::Operator::ADD { .. }) => true,
+        (DAE::Operator::SUB_ARR { .. }, DAE::Operator::SUB { .. }) => true,
+        (DAE::Operator::MUL_ARR { .. }, DAE::Operator::MUL { .. }) => true,
+        (DAE::Operator::DIV_ARR { .. }, DAE::Operator::DIV { .. }) => true,
+        (DAE::Operator::MUL_ARRAY_SCALAR { .. }, DAE::Operator::MUL { .. }) => true,
+        (DAE::Operator::ADD_ARRAY_SCALAR { .. }, DAE::Operator::ADD { .. }) => true,
+        (DAE::Operator::SUB_SCALAR_ARRAY { .. }, DAE::Operator::SUB { .. }) => true,
+        (DAE::Operator::MUL_SCALAR_PRODUCT { .. }, DAE::Operator::MUL { .. }) => true,
+        (DAE::Operator::MUL_MATRIX_PRODUCT { .. }, DAE::Operator::MUL { .. }) => true,
+        (DAE::Operator::DIV_SCALAR_ARRAY { .. }, DAE::Operator::DIV { .. }) => true,
+        (DAE::Operator::DIV_ARRAY_SCALAR { .. }, DAE::Operator::DIV { .. }) => true,
+        (DAE::Operator::POW_SCALAR_ARRAY { .. }, DAE::Operator::POW { .. }) => true,
+        (DAE::Operator::POW_ARRAY_SCALAR { .. }, DAE::Operator::POW { .. }) => true,
+        (DAE::Operator::POW_ARR { .. }, DAE::Operator::POW { .. }) => true,
+        (DAE::Operator::POW_ARR2 { .. }, DAE::Operator::POW { .. }) => true,
+        _ => Expression::operatorEqual(op1, op2)?,
+    });
     Ok(b)
 }
 

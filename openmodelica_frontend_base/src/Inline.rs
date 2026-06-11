@@ -690,31 +690,19 @@ fn inlineDAEElement(mut inElement: Arc<DAE::Element>, mut inFunctions: Functiont
 pub(crate) fn inlineAlgorithm(mut inAlgorithm: Arc<DAE::Algorithm>, mut inElementList: Functiontuple) -> Result<(Arc<DAE::Algorithm>, bool)> {
     let mut outAlgorithm: Arc<DAE::Algorithm>;
     let mut inlined: bool = false;
-    (outAlgorithm, inlined) = 'mc: {
-        let __mc_input = (inAlgorithm, inElementList);
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Algorithm { statementLst: stmts }, fns) => {
-                    let mut stmts_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
-                    let mut inlined: bool = inlined.clone();
-                    (stmts_1, inlined) = inlineStatements(stmts.clone(), fns.clone(), metamodelica::nil(), false);
-                    Ok(((Arc::new(DAE::Algorithm { statementLst: stmts_1.clone() }), inlined), inlined.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { inlined = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::trace((literal!("Inline.inlineAlgorithm failed\n")).clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    (outAlgorithm, inlined) = (::match_deref::match_deref! { match &((inAlgorithm, inElementList)) {
+        (Deref @ DAE::Algorithm { statementLst: stmts }, fns) => {
+            let mut stmts_1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+            (stmts_1, inlined) = inlineStatements(stmts.clone(), fns.clone(), metamodelica::nil(), false);
+            (Arc::new(DAE::Algorithm { statementLst: stmts_1.clone() }), inlined)
+        },
+        _ => {
+            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+            Debug::trace((literal!("Inline.inlineAlgorithm failed\n")).clone())?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok((outAlgorithm, inlined))
 }
 
@@ -1651,28 +1639,17 @@ fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut 
 
 pub fn checkInlineType(mut inIT: DAE::InlineType, mut fns: Functiontuple) -> bool {
     let mut outb: bool;
-    outb = 'mc: {
-        let __mc_input = (inIT, fns);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (it, (_, itlst)) => {
-                    let mut b: bool;
-                    b = listMember(it.clone(), itlst.clone());
-                    Ok(b.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(false)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outb = (::match_deref::match_deref! { match &((inIT, fns)) {
+        (it, (_, itlst)) => {
+            let mut b: bool;
+            b = listMember(it.clone(), itlst.clone());
+            b.clone()
+        },
+        _ => {
+            false
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outb
 }
 

@@ -225,50 +225,27 @@ pub fn derivativeOrder(mut e1: (i32, DAE::derivativeCond), mut e2: (i32, DAE::de
 
 pub fn getDerivativePaths(mut inFuncDefs: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    paths = 'mc: {
-        let __mc_input = inFuncDefs;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: p1, defaultDerivative: Some(p2), lowerOrderDerivatives: pLst1, .. }, tail: funcDefs } => {
-                    let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>>;
-                    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
-                    pLst2 = getDerivativePaths(funcDefs.clone());
-                    paths = List::union(metamodelica::cons(p1.clone(), metamodelica::cons(p2.clone(), pLst1.clone())), pLst2.clone());
-                    Ok((paths.clone(), paths.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { paths = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: p1, defaultDerivative: None, lowerOrderDerivatives: pLst1, .. }, tail: funcDefs } => {
-                    let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>>;
-                    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
-                    pLst2 = getDerivativePaths(funcDefs.clone());
-                    paths = List::union(metamodelica::cons(p1.clone(), pLst1.clone()), pLst2.clone());
-                    Ok((paths.clone(), paths.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { paths = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: funcDefs } => {
-                    Ok(getDerivativePaths(funcDefs.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    paths = (::match_deref::match_deref! { match &(inFuncDefs) {
+        Deref @ metamodelica::List::Nil => {
+            metamodelica::nil()
+        },
+        Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: p1, defaultDerivative: Some(p2), lowerOrderDerivatives: pLst1, .. }, tail: funcDefs } => {
+            let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+            pLst2 = getDerivativePaths(funcDefs.clone());
+            paths = List::union(metamodelica::cons(p1.clone(), metamodelica::cons(p2.clone(), pLst1.clone())), pLst2.clone());
+            paths
+        },
+        Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: p1, defaultDerivative: None, lowerOrderDerivatives: pLst1, .. }, tail: funcDefs } => {
+            let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+            pLst2 = getDerivativePaths(funcDefs.clone());
+            paths = List::union(metamodelica::cons(p1.clone(), pLst1.clone()), pLst2.clone());
+            paths
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: funcDefs } => {
+            getDerivativePaths(funcDefs.clone())
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     paths
 }
 
@@ -2945,28 +2922,17 @@ pub fn getFunctionAlgorithmStmts(mut r#fn: DAE::Function) -> Result<Arc<metamode
 
 pub fn getStatement(mut inElement: Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
-    outStatements = 'mc: {
-        let __mc_input = inElement;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ALGORITHM { algorithm_: Deref @ DAE::Algorithm { statementLst: stmts }, .. } => {
-                    Ok(stmts.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::trace((literal!("- Differentiatte.getStatement failed\n")).clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outStatements = (::match_deref::match_deref! { match &(inElement) {
+        Deref @ DAE::Element::ALGORITHM { algorithm_: Deref @ DAE::Algorithm { statementLst: stmts }, .. } => {
+            stmts.clone()
+        },
+        _ => {
+            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+            Debug::trace((literal!("- Differentiatte.getStatement failed\n")).clone())?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outStatements)
 }
 
@@ -4962,30 +4928,19 @@ pub fn joinDaes(mut dae1: DAE::DAElist, mut dae2: DAE::DAElist) -> Result<DAE::D
 
 pub fn joinDaeLst(mut idaeLst: Arc<metamodelica::List<DAE::DAElist>>) -> Result<DAE::DAElist> {
     let mut outDae: DAE::DAElist;
-    outDae = 'mc: {
-        let __mc_input = idaeLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: dae, tail: Deref @ metamodelica::List::Nil } => {
-                    Ok(dae.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: dae, tail: daeLst } => {
-                    let mut dae1: DAE::DAElist;
-                    let mut dae = (*dae).clone();
-                    dae1 = joinDaeLst(daeLst.clone())?;
-                    dae = joinDaes(dae.clone(), dae1.clone())?;
-                    Ok(dae.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outDae = (::match_deref::match_deref! { match &(idaeLst) {
+        Deref @ metamodelica::List::Cons { head: dae, tail: Deref @ metamodelica::List::Nil } => {
+            dae.clone()
+        },
+        Deref @ metamodelica::List::Cons { head: dae, tail: daeLst } => {
+            let mut dae1: DAE::DAElist;
+            let mut dae = (*dae).clone();
+            dae1 = joinDaeLst(daeLst.clone())?;
+            dae = joinDaes(dae.clone(), dae1.clone())?;
+            dae.clone()
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outDae)
 }
 
@@ -6845,42 +6800,26 @@ fn optMRFACheckCrefRead(mut crefExp: Arc<DAE::Exp>, mut baseExp: Arc<DAE::Exp>, 
         _ => bail!("pattern mismatch"),
     } };
     baseCref = __pa1.clone();
-    safe = 'mc: {
-        let __mc_input = (cref, baseCref);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_IDENT { ident: headIdent, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: baseIdent, .. }) => {
-                    Ok(!(stringEq((headIdent.clone()).clone(), (baseIdent.clone()).clone()) && !(writtenFields.clone().is_empty())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_QUAL { ident: headIdent, componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: fname, .. }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: baseIdent, .. }) => {
-                    Ok(!(stringEq((headIdent.clone()).clone(), (baseIdent.clone()).clone()) && listMember((fname.clone()).clone(), writtenFields.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_QUAL { ident: headIdent, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: baseIdent, .. }) => {
-                    Ok(!(stringEq((headIdent.clone()).clone(), (baseIdent.clone()).clone()) && !(writtenFields.clone().is_empty())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(true)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    safe = (::match_deref::match_deref! { match &((cref, baseCref)) {
+        (Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_headIdent, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_baseIdent, .. }) => {
+            headIdent = (*__esc_headIdent).clone();
+            baseIdent = (*__esc_baseIdent).clone();
+            !(stringEq((headIdent.clone()).clone(), (baseIdent.clone()).clone()) && !(writtenFields.is_empty()))
+        },
+        (Deref @ DAE::ComponentRef::CREF_QUAL { ident: __esc_headIdent, componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_fname, .. }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_baseIdent, .. }) => {
+            headIdent = (*__esc_headIdent).clone();
+            fname = (*__esc_fname).clone();
+            baseIdent = (*__esc_baseIdent).clone();
+            !(stringEq((headIdent.clone()).clone(), (baseIdent.clone()).clone()) && listMember((fname.clone()).clone(), writtenFields))
+        },
+        (Deref @ DAE::ComponentRef::CREF_QUAL { ident: __esc_headIdent, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_baseIdent, .. }) => {
+            headIdent = (*__esc_headIdent).clone();
+            baseIdent = (*__esc_baseIdent).clone();
+            !(stringEq((headIdent.clone()).clone(), (baseIdent.clone()).clone()) && !(writtenFields.is_empty()))
+        },
+        _ => true,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(safe)
 }
 

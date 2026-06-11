@@ -1293,7 +1293,7 @@ pub(crate) fn getCrefsForRecord(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica
         Deref @ DAE::Exp::CREF { componentRef: cref, .. } => {
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crefs = ComponentReference::expandCref(cref.clone(), true);
+            crefs = ComponentReference::expandCref(cref.clone(), true)?;
             expLst = List::map(crefs.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             expLst.clone()
         },
@@ -2162,7 +2162,7 @@ fn evaluateFunctions_updateAlgElements(mut element: Arc<DAE::Element>, mut funcT
             (exp, _) = ExpressionSimplify::simplify(exp.clone())?;
             if Expression::isConst(exp.clone())? {
                 repl = BackendVarTransform::addReplacement(repl, cref.clone(), exp.clone(), None)?;
-                scalars = ComponentReference::expandCref(cref.clone(), false);
+                scalars = ComponentReference::expandCref(cref.clone(), false)?;
                 scalarExps = Expression::getComplexContents(exp.clone());
                 if (scalars.clone().len() as i32) == (scalarExps.clone().len() as i32) {
                     repl = BackendVarTransform::addReplacements(repl, scalars.clone(), scalarExps.clone(), None)?;
@@ -3048,27 +3048,16 @@ fn equationToStmt(mut eqIn: Arc<BackendDAE::Equation>) -> Result<Arc<DAE::Statem
 
 fn expType(mut eIn: Arc<DAE::Exp>) -> Result<Arc<DAE::Type>> {
     let mut tOut: Arc<DAE::Type>;
-    tOut = 'mc: {
-        let __mc_input = eIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CREF { ty: t, .. } => {
-                    Ok(t.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("expType failed for: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eIn.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    tOut = (::match_deref::match_deref! { match &(eIn.clone()) {
+        Deref @ DAE::Exp::CREF { ty: t, .. } => {
+            t.clone()
+        },
+        _ => {
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("expType failed for: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eIn)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(tOut)
 }
 
@@ -3087,7 +3076,7 @@ fn getScalarsForComplexVar(mut inElem: Arc<DAE::Element>) -> Arc<metamodelica::L
                     types = List::map(varLst.clone(), (std::sync::Arc::new(DAEUtil::varType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?;
                     crefs = List::map1(names.clone(), (std::sync::Arc::new(ComponentReference::appendStringCref) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cref.clone())?;
                     crefs = setTypesForScalarCrefs(crefs.clone(), types.clone())?;
-                    crefLst = List::map1(crefs.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::expandCref, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?;
+                    crefLst = List::map1(crefs.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?;
                     crefs = List::flatten(crefLst.clone())?;
                     Ok(crefs.clone())
                 }
@@ -3311,7 +3300,7 @@ fn setTypesForScalarCrefs(mut allCrefs: Arc<metamodelica::List<Arc<DAE::Componen
 pub(crate) fn getRecordScalars(mut crefIn: Arc<DAE::ComponentRef>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut crefsOut: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     match '__try0: {
-        crefsOut = ComponentReference::expandCref(crefIn.clone(), true);
+        crefsOut = unwrap_break_err!(ComponentReference::expandCref(crefIn.clone(), true), '__try0);
         Ok::<_, anyhow::Error>((crefsOut.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -3359,7 +3348,7 @@ fn getScalarExpSize(mut inExp: Arc<DAE::Exp>) -> Result<i32> {
     })
         },
         Deref @ DAE::Exp::CREF { componentRef: cref, .. } => {
-            size = if (ComponentReference::isArrayElement(cref.clone())) {(ComponentReference::expandCref(cref.clone(), true).len() as i32)} else {1};
+            size = if (ComponentReference::isArrayElement(cref.clone())) {(ComponentReference::expandCref(cref.clone(), true)?.len() as i32)} else {1};
             size
         },
         Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_COMPLEX { varLst: vl @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }, .. }, .. } => {

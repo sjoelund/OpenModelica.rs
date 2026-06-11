@@ -737,101 +737,63 @@ pub fn makeFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: 
 
 pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inLoopPrlVars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
     let mut outStatement: Arc<DAE::Statement>;
-    outStatement = 'mc: {
-        let __mc_input = (inIdent, inExp, inProperties, inStatementLst);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
-                    let mut isArray: bool;
-                    isArray = Types::isNonscalarArray(t.clone(), dims.clone());
-                    Ok(Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars.clone(), source: source.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, e, DAE::Properties::PROP { type_: t, .. }, _) => {
-                    let mut e_str: ArcStr;
-                    let mut t_str: ArcStr;
-                    e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
-                    t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
-                    Error::addSourceMessage(Error::FOR_EXPRESSION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outStatement = (::match_deref::match_deref! { match &((inIdent, inExp, inProperties, inStatementLst)) {
+        (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
+            let mut isArray: bool;
+            isArray = Types::isNonscalarArray(t.clone(), dims.clone());
+            Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars, source: source })
+        },
+        (_, e, DAE::Properties::PROP { type_: t, .. }, _) => {
+            let mut e_str: ArcStr;
+            let mut t_str: ArcStr;
+            e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
+            t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
+            Error::addSourceMessage(Error::FOR_EXPRESSION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source))?;
+            bail!("fail")
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outStatement)
 }
 
 pub fn makeWhile(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
     let mut outStatement: Arc<DAE::Statement>;
-    outStatement = 'mc: {
-        let __mc_input = (inExp, inProperties, inStatementLst);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, stmts) => {
-                    Ok(Arc::new(DAE::Statement::STMT_WHILE { exp: e.clone(), statementLst: stmts.clone(), source: source.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP { type_: t, .. }, _) => {
-                    let mut e_str: ArcStr;
-                    let mut t_str: ArcStr;
-                    e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
-                    t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
-                    Error::addSourceMessage(Error::WHILE_CONDITION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outStatement = (::match_deref::match_deref! { match &((inExp, inProperties, inStatementLst)) {
+        (e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, stmts) => {
+            Arc::new(DAE::Statement::STMT_WHILE { exp: e.clone(), statementLst: stmts.clone(), source: source })
+        },
+        (e, DAE::Properties::PROP { type_: t, .. }, _) => {
+            let mut e_str: ArcStr;
+            let mut t_str: ArcStr;
+            e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
+            t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
+            Error::addSourceMessage(Error::WHILE_CONDITION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source))?;
+            bail!("fail")
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outStatement)
 }
 
 pub fn makeWhenA(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut elseWhenStmt: Option<Arc<DAE::Statement>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
     let mut outStatement: Arc<DAE::Statement>;
-    outStatement = 'mc: {
-        let __mc_input = (inExp, inProperties, inStatementLst, elseWhenStmt);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, stmts, elsew) => {
-                    Ok(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: metamodelica::nil(), initialCall: false, statementLst: stmts.clone(), elseWhen: elsew.clone(), source: source.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_BOOL { .. }, .. }, .. }, stmts, elsew) => {
-                    Ok(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: metamodelica::nil(), initialCall: false, statementLst: stmts.clone(), elseWhen: elsew.clone(), source: source.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP { type_: t, .. }, _, _) => {
-                    let mut e_str: ArcStr;
-                    let mut t_str: ArcStr;
-                    e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
-                    t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
-                    Error::addSourceMessage(Error::WHEN_CONDITION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outStatement = (::match_deref::match_deref! { match &((inExp, inProperties, inStatementLst, elseWhenStmt)) {
+        (e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, stmts, elsew) => {
+            Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: metamodelica::nil(), initialCall: false, statementLst: stmts.clone(), elseWhen: elsew.clone(), source: source })
+        },
+        (e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_BOOL { .. }, .. }, .. }, stmts, elsew) => {
+            Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: metamodelica::nil(), initialCall: false, statementLst: stmts.clone(), elseWhen: elsew.clone(), source: source })
+        },
+        (e, DAE::Properties::PROP { type_: t, .. }, _, _) => {
+            let mut e_str: ArcStr;
+            let mut t_str: ArcStr;
+            e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
+            t_str = (TypesDump::unparseTypeNoAttr(t.clone())?).clone();
+            Error::addSourceMessage(Error::WHEN_CONDITION_TYPE_ERROR.clone(), list![(e_str.clone()).clone(), (t_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source))?;
+            bail!("fail")
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outStatement)
 }
 
@@ -867,54 +829,38 @@ pub fn makeReinit(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inPr
 
 pub fn makeAssert(mut cond: Arc<DAE::Exp>, mut msg: Arc<DAE::Exp>, mut level: Arc<DAE::Exp>, mut inProperties3: DAE::Properties, mut inProperties4: DAE::Properties, mut inProperties5: DAE::Properties, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     let mut outStatement: Arc<metamodelica::List<Arc<DAE::Statement>>>;
-    outStatement = 'mc: {
-        let __mc_input = (cond.clone(), inProperties3, inProperties4, inProperties5);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::BCONST { bool: true }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_STRING { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" } }, .. }, .. }) => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_STRING { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" } }, .. }, .. }) => {
-                    Ok(list![Arc::new(DAE::Statement::STMT_ASSERT { cond: cond.clone(), msg: msg.clone(), level: level.clone(), source: source.clone() })])
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, DAE::Properties::PROP { type_: t1, .. }, DAE::Properties::PROP { type_: t2, .. }, DAE::Properties::PROP { type_: t3, .. }) => {
-                    let mut info: SourceInfo;
-                    let mut strTy: ArcStr;
-                    let mut strExp: ArcStr;
-                    info = ElementSource::getElementSourceFileInfo(source.clone());
-                    strExp = (ExpressionBasics::printExpStr(cond.clone())?).clone();
-                    strTy = (TypesDump::unparseType(t1.clone())?).clone();
-                    Error::assertionOrAddSourceMessage(Types::isBooleanOrSubTypeBoolean(t1.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("Boolean")).clone(), (strTy.clone()).clone()], info.clone())?;
-                    strExp = (ExpressionBasics::printExpStr(msg.clone())?).clone();
-                    strTy = (TypesDump::unparseType(t2.clone())?).clone();
-                    Error::assertionOrAddSourceMessage(Types::isString(t2.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("String")).clone(), (strTy.clone()).clone()], info.clone())?;
-                    if '__try0: {
-                        ::match_deref::match_deref! { match &(t3.clone()) {
-                            Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" }, .. } => (),
-                            _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
-                        } };
-                        Ok::<(), anyhow::Error>(())
-                    }.is_ok() { bail!("failure(): body succeeded") }
-                    strExp = (ExpressionBasics::printExpStr(level.clone())?).clone();
-                    strTy = (TypesDump::unparseType(t3.clone())?).clone();
-                    Error::assertionOrAddSourceMessage(Types::isString(t3.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("AssertionLevel")).clone(), (strTy.clone()).clone()], info.clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outStatement = (::match_deref::match_deref! { match &((cond.clone(), inProperties3, inProperties4, inProperties5)) {
+        (Deref @ DAE::Exp::BCONST { bool: true }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_STRING { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" } }, .. }, .. }) => {
+            metamodelica::nil()
+        },
+        (_, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_BOOL { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_STRING { .. }, .. }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" } }, .. }, .. }) => {
+            list![Arc::new(DAE::Statement::STMT_ASSERT { cond: cond, msg: msg, level: level, source: source })]
+        },
+        (_, DAE::Properties::PROP { type_: t1, .. }, DAE::Properties::PROP { type_: t2, .. }, DAE::Properties::PROP { type_: t3, .. }) => {
+            let mut info: SourceInfo;
+            let mut strTy: ArcStr;
+            let mut strExp: ArcStr;
+            info = ElementSource::getElementSourceFileInfo(source);
+            strExp = (ExpressionBasics::printExpStr(cond)?).clone();
+            strTy = (TypesDump::unparseType(t1.clone())?).clone();
+            Error::assertionOrAddSourceMessage(Types::isBooleanOrSubTypeBoolean(t1.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("Boolean")).clone(), (strTy.clone()).clone()], info.clone())?;
+            strExp = (ExpressionBasics::printExpStr(msg)?).clone();
+            strTy = (TypesDump::unparseType(t2.clone())?).clone();
+            Error::assertionOrAddSourceMessage(Types::isString(t2.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("String")).clone(), (strTy.clone()).clone()], info.clone())?;
+            if '__try0: {
+                ::match_deref::match_deref! { match &(t3.clone()) {
+                    Deref @ DAE::Type::T_ENUMERATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AssertionLevel" }, .. } => (),
+                    _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+                } };
+                Ok::<(), anyhow::Error>(())
+            }.is_ok() { bail!("failure(): body succeeded") }
+            strExp = (ExpressionBasics::printExpStr(level)?).clone();
+            strTy = (TypesDump::unparseType(t3.clone())?).clone();
+            Error::assertionOrAddSourceMessage(Types::isString(t3.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("AssertionLevel")).clone(), (strTy.clone()).clone()], info.clone())?;
+            bail!("fail")
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outStatement)
 }
 

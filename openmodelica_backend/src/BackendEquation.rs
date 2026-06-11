@@ -1275,7 +1275,7 @@ pub(crate) fn equationToScalarResidualForm(mut inEquation: Arc<BackendDAE::Equat
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut explst = (*explst).clone();
-            crlst = ComponentReference::expandCref(Expression::expCref(e2.clone())?, true);
+            crlst = ComponentReference::expandCref(Expression::expCref(e2.clone())?, true)?;
             explst2 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut c in (crlst.clone()).into_iter().cloned() {
@@ -1293,7 +1293,7 @@ pub(crate) fn equationToScalarResidualForm(mut inEquation: Arc<BackendDAE::Equat
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut explst = (*explst).clone();
-            crlst = ComponentReference::expandCref(Expression::expCref(e2.clone())?, true);
+            crlst = ComponentReference::expandCref(Expression::expCref(e2.clone())?, true)?;
             explst2 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut c in (crlst.clone()).into_iter().cloned() {
@@ -1312,8 +1312,8 @@ pub(crate) fn equationToScalarResidualForm(mut inEquation: Arc<BackendDAE::Equat
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut crlst2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crlst = ComponentReference::expandCref(Expression::expCref(e1.clone())?, true);
-            crlst2 = ComponentReference::expandCref(Expression::expCref(e2.clone())?, true);
+            crlst = ComponentReference::expandCref(Expression::expCref(e1.clone())?, true)?;
+            crlst2 = ComponentReference::expandCref(Expression::expCref(e2.clone())?, true)?;
             explst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut c in (crlst.clone()).into_iter().cloned() {

@@ -441,7 +441,7 @@ fn statementOutputs(mut inStatement: Arc<DAE::Statement>, mut inCrefExpansion: D
                         subs = List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), (subs.clone().len() as i32));
                         cr = ComponentReference::crefSetLastSubs(cr.clone(), subs.clone())?;
                     }
-                    crlst = ComponentReference::expandCref(cr.clone(), true);
+                    crlst = ComponentReference::expandCref(cr.clone(), true)?;
                     ht = List::fold(crlst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), iht.clone())?;
                     Ok(ht.clone())
                 }
@@ -666,7 +666,7 @@ fn statementOutputsCrefFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (DAE::Expand,
                     let mut cr = (*cr).clone();
                     let mut ht = (*ht).clone();
                     cr = ComponentReference::crefStripSubs(cr.clone())?;
-                    crlst = ComponentReference::expandCref(cr.clone(), true);
+                    crlst = ComponentReference::expandCref(cr.clone(), true)?;
                     ht = List::fold(crlst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
                     Ok((e.clone(), false, (expand.clone(), ht.clone())))
                 }
@@ -693,7 +693,7 @@ fn statementOutputsCrefFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (DAE::Expand,
                     cr = ComponentReference::crefStripSubsExceptModelSubs(cr.clone());
                     first_cref = ComponentReference::crefArrayGetFirstCref(cr.clone())?;
                     if !(BaseHashSet::has(first_cref.clone(), ht.clone())?) {
-                        crlst = ComponentReference::expandCref(cr.clone(), true);
+                        crlst = ComponentReference::expandCref(cr.clone(), true)?;
                         ht = List::fold(crlst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
                     }
                     Ok((e.clone(), false, (expand.clone(), ht.clone())))
@@ -1239,7 +1239,7 @@ fn traversingComponentRefFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: ((metamodel
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, (hs, crefs)) => {
                     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut crefs = (*crefs).clone();
-                    crlst = ComponentReference::expandCref(cr.clone(), true);
+                    crlst = ComponentReference::expandCref(cr.clone(), true)?;
                     crefs = getcr(crlst.clone(), hs.clone(), crefs.clone())?;
                     Ok((e.clone(), (hs.clone(), crefs.clone())))
                 }

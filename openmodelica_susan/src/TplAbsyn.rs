@@ -5046,112 +5046,69 @@ pub(crate) fn checkResolvedType(mut inPath: Arc<PathIdent>, mut inType: Arc<Type
 
 pub(crate) fn checkTextType(mut inType: Arc<TypeSignature>, mut inIdent: Ident, mut inUnresolvedMsg: ArcStr, mut inInfo: SourceInfo) -> Result<Arc<TypeSignature>> {
     let mut outType: Arc<TypeSignature>;
-    outType = 'mc: {
-        let __mc_input = (inType.clone(), inUnresolvedMsg);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ TypeSignature::TEXT_TYPE { .. }, _) => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ TypeSignature::UNRESOLVED_TYPE { .. }, _) => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (ts, msg) => {
-                    let mut msg = (*msg).clone();
-                    msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!(") identifier '")); __mm_s.push_str(&*inIdent.clone()); __mm_s.push_str(&*literal!("' was expected to have Text& type but resolved to ")); __mm_s.push_str(&*typeSignatureString(ts.clone())?); __mm_s.push_str(&*literal!(".\n Only Text& typed variables can be appended to.")); ArcStr::from(__mm_s) }).clone();
-                    addSusanError((msg.clone()).clone(), inInfo.clone())?;
-                    Ok(Arc::new(TypeSignature::UNRESOLVED_TYPE { reason: (msg.clone()).clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outType = (::match_deref::match_deref! { match &((inType.clone(), inUnresolvedMsg)) {
+        (Deref @ TypeSignature::TEXT_TYPE { .. }, _) => {
+            inType
+        },
+        (Deref @ TypeSignature::UNRESOLVED_TYPE { .. }, _) => {
+            inType
+        },
+        (ts, msg) => {
+            let mut msg = (*msg).clone();
+            msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!(") identifier '")); __mm_s.push_str(&*inIdent); __mm_s.push_str(&*literal!("' was expected to have Text& type but resolved to ")); __mm_s.push_str(&*typeSignatureString(ts.clone())?); __mm_s.push_str(&*literal!(".\n Only Text& typed variables can be appended to.")); ArcStr::from(__mm_s) }).clone();
+            addSusanError((msg.clone()).clone(), inInfo)?;
+            Arc::new(TypeSignature::UNRESOLVED_TYPE { reason: (msg.clone()).clone() })
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outType)
 }
 
 pub(crate) fn makeMMExpFromTemplateConstant(mut inTplDef: TemplateDef, mut inTemplIdent: Ident) -> Result<(Arc<MMExp>, Arc<TypeSignature>)> {
     let mut outMMExp: Arc<MMExp>;
     let mut outConstType: Arc<TypeSignature>;
-    (outMMExp, outConstType) = 'mc: {
-        let __mc_input = (inTplDef, inTemplIdent);
-        if let Ok(__v) = (|| -> Result<_> {
-            let (TemplateDef::STR_TOKEN_DEF { .. }, mut ident) = __mc_input.clone() else { bail!("nomatch") };
+    (outMMExp, outConstType) = (match (inTplDef, inTemplIdent) {
+        (TemplateDef::STR_TOKEN_DEF { .. }, mut ident) => {
             ident = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(constantNamePrefix)); __mm_s.push_str(&*ident.clone()); ArcStr::from(__mm_s) }).clone();
-            Ok((Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (TemplateDef::LITERAL_DEF { value: mut litstr, litType: ref lt }, _) = __mc_input.clone() else { bail!("nomatch") };
-            Ok((Arc::new(MMExp::MM_LITERAL { value: (litstr.clone()).clone() }), lt.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let (TemplateDef::TEMPLATE_DEF { .. }, mut ident) = __mc_input.clone() else { bail!("nomatch") };
+            (Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())
+        },
+        (TemplateDef::LITERAL_DEF { value: mut litstr, litType: ref lt }, _) => {
+            (Arc::new(MMExp::MM_LITERAL { value: (litstr.clone()).clone() }), lt.clone())
+        },
+        (TemplateDef::TEMPLATE_DEF { .. }, mut ident) => {
             let mut idtype: Arc<TypeSignature>;
             let mut reason: ArcStr;
             reason = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unresolved identifier - the template '")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*literal!("'in a value context found (missing parenthesis ?) .")); ArcStr::from(__mm_s) }).clone();
             idtype = Arc::new(TypeSignature::UNRESOLVED_TYPE { reason: (reason.clone()).clone() });
-            Ok((Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), idtype.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
+            (Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), idtype.clone())
+        },
+        _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("-!!!makeMMExpFromTemplateConstant failed\n")).clone())?;
-            Ok(bail!("fail"))
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+            bail!("fail")
+        },
+    });
     Ok((outMMExp, outConstType))
 }
 
 pub(crate) fn prepareMatchArgument(mut inMExp: Arc<MatchingExp>, mut inMatchArgName: Ident) -> (Ident, Arc<MatchingExp>) {
     let mut outIdent: Ident;
     let mut outMExp: Arc<MatchingExp>;
-    (outIdent, outMExp) = 'mc: {
-        let __mc_input = inMExp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                mexp @ Deref @ MatchingExp::BIND_MATCH { bindIdent: ident } => {
-                    Ok((ident.clone(), mexp.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                mexp @ Deref @ MatchingExp::BIND_AS_MATCH { bindIdent: ident, .. } => {
-                    Ok((ident.clone(), mexp.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ MatchingExp::REST_MATCH { .. } => {
-                    Ok((inMatchArgName.clone(), Arc::new(MatchingExp::BIND_MATCH { bindIdent: (inMatchArgName.clone()).clone() })))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok((inMatchArgName.clone(), Arc::new(MatchingExp::BIND_AS_MATCH { bindIdent: (inMatchArgName.clone()).clone(), matchingExp: inMExp.clone() })))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    (outIdent, outMExp) = (::match_deref::match_deref! { match &(inMExp.clone()) {
+        mexp @ Deref @ MatchingExp::BIND_MATCH { bindIdent: ident } => {
+            (ident.clone(), mexp.clone())
+        },
+        mexp @ Deref @ MatchingExp::BIND_AS_MATCH { bindIdent: ident, .. } => {
+            (ident.clone(), mexp.clone())
+        },
+        Deref @ MatchingExp::REST_MATCH { .. } => {
+            (inMatchArgName.clone(), Arc::new(MatchingExp::BIND_MATCH { bindIdent: (inMatchArgName).clone() }))
+        },
+        _ => {
+            (inMatchArgName.clone(), Arc::new(MatchingExp::BIND_AS_MATCH { bindIdent: (inMatchArgName).clone(), matchingExp: inMExp }))
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     (outIdent, outMExp)
 }
 

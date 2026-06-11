@@ -10265,7 +10265,7 @@ fn elabCref1(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponent
                     let mut cache = (*cache).clone();
                     let mut c = (*c).clone();
                     path = AbsynUtil::crefToPath(c.clone())?;
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookupFunctionsInEnvNoError(cache.clone(), env.clone(), path.clone(), info.clone())) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookupFunctionsInEnvNoError(cache.clone(), env.clone(), path.clone(), info.clone())?) {
                         (__pa0, Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -10394,28 +10394,22 @@ fn isValidTimeScope(mut inEnv: FCore::Graph, mut inInfo: SourceInfo) -> Result<b
     Ok(outIsValid)
 }
 
-fn lookupFunctionsInEnvNoError(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<metamodelica::List<Arc<DAE::Type>>>) {
+fn lookupFunctionsInEnvNoError(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outTypesTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-    (outCache, outTypesTypeLst) = 'mc: {
-        let __mc_input = inInfo.clone();
-        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut outCache: FCore::Cache = outCache.clone();
-            let mut outTypesTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>> = outTypesTypeLst.clone();
+    (outCache, outTypesTypeLst) = (match inInfo.clone() {
+        _ => {
             ErrorExt::setCheckpoint((literal!("Static.lookupFunctionsInEnvNoError")).clone());
-            (outCache, outTypesTypeLst) = Lookup::lookupFunctionsInEnv(inCache.clone(), inEnv.clone(), inPath.clone(), inInfo.clone());
+            (outCache, outTypesTypeLst) = Lookup::lookupFunctionsInEnv(inCache, inEnv, inPath, inInfo);
             ErrorExt::rollBack((literal!("Static.lookupFunctionsInEnvNoError")).clone());
-            Ok(((outCache.clone(), outTypesTypeLst.clone()), outCache.clone(), outTypesTypeLst.clone()))
-        })() { outCache = __wb0; outTypesTypeLst = __wb1; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
+            (outCache, outTypesTypeLst)
+        },
+        _ => {
             ErrorExt::rollBack((literal!("Static.lookupFunctionsInEnvNoError")).clone());
-            Ok(bail!("fail"))
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    (outCache, outTypesTypeLst)
+            bail!("fail")
+        },
+    });
+    Ok((outCache, outTypesTypeLst))
 }
 
 fn evaluateEmptyVariable(mut hasZeroSizeDim: bool, mut inExp: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>, mut c: DAE::Const) -> (Arc<DAE::Exp>, DAE::Const) {
@@ -10507,26 +10501,15 @@ fn evaluateEmptyVariable(mut hasZeroSizeDim: bool, mut inExp: Arc<DAE::Exp>, mut
 
 pub(crate) fn fixEnumerationType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut outType: Arc<DAE::Type>;
-    outType = 'mc: {
-        let __mc_input = inType.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ENUMERATION { index: Some(_), path: p, names: n, literalVarLst: v, attributeLst: al } => {
-                    Ok(Arc::new(DAE::Type::T_ENUMERATION { index: None, path: p.clone(), names: n.clone(), literalVarLst: v.clone(), attributeLst: al.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(inType.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outType = (::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_ENUMERATION { index: Some(_), path: p, names: n, literalVarLst: v, attributeLst: al } => {
+            Arc::new(DAE::Type::T_ENUMERATION { index: None, path: p.clone(), names: n.clone(), literalVarLst: v.clone(), attributeLst: al.clone() })
+        },
+        _ => {
+            inType
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outType
 }
 
@@ -10557,42 +10540,26 @@ pub(crate) fn makeEnumerationArray(mut enumTypeName: Arc<Absyn::Path>, mut enumL
 
 fn fillCrefSubscripts(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = 'mc: {
-        let __mc_input = (inComponentRef, inType);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, .. }, _) => {
-                    Ok(e.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty2, subscriptLst: subs }, t) => {
-                    let mut subs_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
-                    subs_1 = fillSubscripts(subs.clone(), t.clone());
-                    Ok(ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), ty2.clone(), subs_1.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, subscriptLst: subs, componentRef: cref, identType: ty2 }, t) => {
-                    let mut cref_1: Arc<DAE::ComponentRef>;
-                    let mut subs = (*subs).clone();
-                    let mut t = (*t).clone();
-                    subs = fillSubscripts(subs.clone(), ty2.clone());
-                    t = stripPrefixType(t.clone(), ty2.clone());
-                    cref_1 = fillCrefSubscripts(cref.clone(), t.clone())?;
-                    Ok(ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty2.clone(), subs.clone(), cref_1.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef, inType)) {
+        (e @ Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, .. }, _) => {
+            e.clone()
+        },
+        (Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty2, subscriptLst: subs }, t) => {
+            let mut subs_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            subs_1 = fillSubscripts(subs.clone(), t.clone());
+            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), ty2.clone(), subs_1.clone())
+        },
+        (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, subscriptLst: subs, componentRef: cref, identType: ty2 }, t) => {
+            let mut cref_1: Arc<DAE::ComponentRef>;
+            let mut subs = (*subs).clone();
+            let mut t = (*t).clone();
+            subs = fillSubscripts(subs.clone(), ty2.clone());
+            t = stripPrefixType(t.clone(), ty2.clone());
+            cref_1 = fillCrefSubscripts(cref.clone(), t.clone())?;
+            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty2.clone(), subs.clone(), cref_1.clone())
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outComponentRef)
 }
 

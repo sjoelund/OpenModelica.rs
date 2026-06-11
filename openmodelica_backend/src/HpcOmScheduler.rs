@@ -4983,26 +4983,15 @@ fn setSimEqIdcsInTask(mut taskIn: Arc<HpcOmSimCode::Task>, mut SccSimEqMappingIn
 
 fn setThreadIdxInTask(mut taskIn: Arc<HpcOmSimCode::Task>, mut threadIdx: i32) -> Arc<HpcOmSimCode::Task> {
     let mut taskOut: Arc<HpcOmSimCode::Task>;
-    taskOut = 'mc: {
-        let __mc_input = taskIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ HpcOmSimCode::Task::CALCTASK { weighting, index, calcTime, timeFinished, eqIdc, .. } => {
-                    Ok(Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: timeFinished.clone(), threadIdx: threadIdx, eqIdc: eqIdc.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(taskIn.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    taskOut = (::match_deref::match_deref! { match &(taskIn.clone()) {
+        Deref @ HpcOmSimCode::Task::CALCTASK { weighting, index, calcTime, timeFinished, eqIdc, .. } => {
+            Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: timeFinished.clone(), threadIdx: threadIdx, eqIdc: eqIdc.clone() })
+        },
+        _ => {
+            taskIn
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     taskOut
 }
 

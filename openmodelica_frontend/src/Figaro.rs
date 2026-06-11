@@ -859,88 +859,48 @@ fn scan(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamod
 }
 
 fn scanDeclaration(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outStringList: Arc<metamodelica::List<ArcStr>>;
-    outStringList = 'mc: {
-        let __mc_input = inStringList;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ "?", tail: Deref @ metamodelica::List::Cons { head: Deref @ ">", tail: rest } } => {
-                    Ok(rest.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(scanDeclaration(rest.clone())?)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
-    Ok(outStringList)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStringList) {
+        Deref @ metamodelica::List::Cons { head: Deref @ "?", tail: Deref @ metamodelica::List::Cons { head: Deref @ ">", tail: rest } } => {
+            return Ok(rest.clone())
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
+            { inStringList = rest.clone(); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn scanTagName(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inTagName: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
-    let mut outStringList: Arc<metamodelica::List<ArcStr>>;
-    let mut outTagName: ArcStr;
-    (outStringList, outTagName) = 'mc: {
-        let __mc_input = inStringList;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ ">", tail: rest } => {
-                    Ok((rest.clone(), inTagName.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
-                    Ok(scanTagName(rest.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inTagName.clone()); __mm_s.push_str(&*first.clone()); ArcStr::from(__mm_s) }).clone())?)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
-    Ok((outStringList, outTagName))
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStringList) {
+        Deref @ metamodelica::List::Cons { head: Deref @ ">", tail: rest } => {
+            return Ok((rest.clone(), inTagName))
+        },
+        Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
+            { (inStringList, inTagName) = (rest.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inTagName); __mm_s.push_str(&*first.clone()); ArcStr::from(__mm_s) }).clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn scanText(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inText: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
-    let mut outStringList: Arc<metamodelica::List<ArcStr>>;
-    let mut outText: ArcStr;
-    (outStringList, outText) = 'mc: {
-        let __mc_input = inStringList.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok((metamodelica::nil(), literal!("")))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ "<", tail: _ } => {
-                    Ok((inStringList.clone(), inText.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
-                    Ok(scanText(rest.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inText.clone()); __mm_s.push_str(&*first.clone()); ArcStr::from(__mm_s) }).clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    (outStringList, outText)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStringList.clone()) {
+        Deref @ metamodelica::List::Nil => {
+            return (metamodelica::nil(), literal!(""))
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ "<", tail: _ } => {
+            return (inStringList, inText)
+        },
+        Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
+            { (inStringList, inText) = (rest.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inText); __mm_s.push_str(&*first.clone()); ArcStr::from(__mm_s) }).clone()); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 /* These functions walk over the token sequence from the lexer and throw away tokens that will not

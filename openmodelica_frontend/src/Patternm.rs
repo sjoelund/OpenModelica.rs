@@ -2273,36 +2273,25 @@ fn elabResultExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inBody:
     let mut resExp: Option<Arc<DAE::Exp>>;
     let mut resultInfo: SourceInfo;
     let mut resType: Option<Arc<DAE::Type>>;
-    (outCache, outBody, resExp, resultInfo, resType) = 'mc: {
-        let __mc_input = (inCache, inEnv, inBody, AbsynUtil::stripCommentExpressions(exp.clone(), false)?);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, body, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "fail", subscripts: Deref @ metamodelica::List::Nil }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Nil, argNames: Deref @ metamodelica::List::Nil }, .. }) => {
-                    Ok((cache.clone(), body.clone(), None, inInfo.clone(), None))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, body, _) => {
-                    let mut elabExp: Arc<DAE::Exp>;
-                    let mut prop: DAE::Properties;
-                    let mut ty: Arc<DAE::Type>;
-                    let mut info: SourceInfo;
-                    let mut cache = (*cache).clone();
-                    let mut body = (*body).clone();
-                    (cache, elabExp, prop) = Static::elabExp(cache.clone(), env.clone(), exp.clone(), r#impl, performVectorization, pre.clone(), inInfo.clone())?;
-                    ty = Types::getPropType(prop.clone())?;
-                    (elabExp, ty) = makeTupleFromMetaTuple(elabExp.clone(), ty.clone())?;
-                    (body, elabExp, info) = elabResultExp2(!(Flags::isSet(Flags::PATTERNM_MOVE_LAST_EXP.clone())?), body.clone(), elabExp.clone(), inInfo.clone());
-                    Ok((cache.clone(), body.clone(), Some(elabExp.clone()), info.clone(), Some(ty.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    (outCache, outBody, resExp, resultInfo, resType) = (::match_deref::match_deref! { match &((inCache, inEnv, inBody, AbsynUtil::stripCommentExpressions(exp.clone(), false)?)) {
+        (cache, _, body, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "fail", subscripts: Deref @ metamodelica::List::Nil }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Nil, argNames: Deref @ metamodelica::List::Nil }, .. }) => {
+            (cache.clone(), body.clone(), None, inInfo, None)
+        },
+        (cache, env, body, _) => {
+            let mut elabExp: Arc<DAE::Exp>;
+            let mut prop: DAE::Properties;
+            let mut ty: Arc<DAE::Type>;
+            let mut info: SourceInfo;
+            let mut cache = (*cache).clone();
+            let mut body = (*body).clone();
+            (cache, elabExp, prop) = Static::elabExp(cache.clone(), env.clone(), exp, r#impl, performVectorization, pre, inInfo.clone())?;
+            ty = Types::getPropType(prop.clone())?;
+            (elabExp, ty) = makeTupleFromMetaTuple(elabExp.clone(), ty.clone())?;
+            (body, elabExp, info) = elabResultExp2(!(Flags::isSet(Flags::PATTERNM_MOVE_LAST_EXP.clone())?), body.clone(), elabExp.clone(), inInfo);
+            (cache.clone(), body.clone(), Some(elabExp.clone()), info.clone(), Some(ty.clone()))
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok((outCache, outBody, resExp, resultInfo, resType))
 }
 

@@ -118,102 +118,57 @@ impl metamodelica::gc::MMTrace for Visibility {
 
 pub(crate) fn getExtendsElementspecInClass(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> {
     let mut outAbsynElementSpecLst: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-    outAbsynElementSpecLst = 'mc: {
-        let __mc_input = inClass;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
-                    let mut ext: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    ext = getExtendsElementspecInClassparts(parts.clone());
-                    Ok(ext.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, .. } => {
-                    let mut ext: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    ext = getExtendsElementspecInClassparts(parts.clone());
-                    Ok(ext.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: tp, arrayDim: _ }, arguments: eltArg, .. }, .. } => {
-                    Ok(list![Arc::new(Absyn::ElementSpec::EXTENDS { path: tp.clone(), elementArg: eltArg.clone(), annotationOpt: None })])
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outAbsynElementSpecLst = (::match_deref::match_deref! { match &(inClass) {
+        Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
+            let mut ext: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            ext = getExtendsElementspecInClassparts(parts.clone());
+            ext.clone()
+        },
+        Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, .. } => {
+            let mut ext: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            ext = getExtendsElementspecInClassparts(parts.clone());
+            ext.clone()
+        },
+        Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: tp, arrayDim: _ }, arguments: eltArg, .. }, .. } => {
+            list![Arc::new(Absyn::ElementSpec::EXTENDS { path: tp.clone(), elementArg: eltArg.clone(), annotationOpt: None })]
+        },
+        _ => {
+            metamodelica::nil()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outAbsynElementSpecLst
 }
 
 fn getExtendsElementspecInClassparts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> {
-    let mut outAbsynElementSpecLst: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-    outAbsynElementSpecLst = 'mc: {
-        let __mc_input = inAbsynClassPartLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: elts }, tail: rest } => {
-                    let mut lst1: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    let mut lst2: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    lst1 = getExtendsElementspecInClassparts(rest.clone());
-                    lst2 = getExtendsElementspecInElementitems(elts.clone());
-                    res = listAppend(lst1.clone(), lst2.clone());
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: elts }, tail: rest } => {
-                    let mut lst1: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    let mut lst2: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    lst1 = getExtendsElementspecInClassparts(rest.clone());
-                    lst2 = getExtendsElementspecInElementitems(elts.clone());
-                    res = listAppend(lst1.clone(), lst2.clone());
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
-                    res = getExtendsElementspecInClassparts(rest.clone());
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    outAbsynElementSpecLst
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst) {
+        Deref @ metamodelica::List::Nil => {
+            return metamodelica::nil()
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: elts }, tail: rest } => {
+            let mut lst1: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            let mut lst2: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            lst1 = getExtendsElementspecInClassparts(rest.clone());
+            lst2 = getExtendsElementspecInElementitems(elts.clone());
+            return listAppend(lst1.clone(), lst2.clone())
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: elts }, tail: rest } => {
+            let mut lst1: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            let mut lst2: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            lst1 = getExtendsElementspecInClassparts(rest.clone());
+            lst2 = getExtendsElementspecInElementitems(elts.clone());
+            return listAppend(lst1.clone(), lst2.clone())
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
+            let mut res: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn getExtendsElementspecInElementitems(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> {

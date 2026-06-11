@@ -1190,50 +1190,24 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> ArcStr {
 
 fn getStartAttribute(mut inVariableAttributesOption: Option<Arc<DAE::VariableAttributes>>) -> Option<Arc<DAE::Exp>> {
     let mut out: Option<Arc<DAE::Exp>>;
-    out = 'mc: {
-        let __mc_input = inVariableAttributesOption;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { start: e, .. }) => {
-                    Ok(e.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { start: e, .. }) => {
-                    Ok(e.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { start: e, .. }) => {
-                    Ok(e.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { start: e, .. }) => {
-                    Ok(e.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(None)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    out = (::match_deref::match_deref! { match &(inVariableAttributesOption) {
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { start: e, .. }) => {
+            e.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { start: e, .. }) => {
+            e.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { start: e, .. }) => {
+            e.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { start: e, .. }) => {
+            e.clone()
+        },
+        _ => {
+            None
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     out
 }
 

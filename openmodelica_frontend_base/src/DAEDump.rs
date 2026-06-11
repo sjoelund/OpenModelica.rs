@@ -129,20 +129,13 @@ fn sortFunctions(mut funcs: Arc<metamodelica::List<DAE::Function>>) -> Result<Ar
 
 fn funcGreaterThan(mut func1: DAE::Function, mut func2: DAE::Function) -> bool {
     let mut res: bool = false;
-    res = 'mc: {
-        let __mc_input = func2.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut res: bool = res.clone();
-            res = stringCompare((functionNameStr(func1.clone())).clone(), (functionNameStr(func2.clone())).clone()) > 0;
-            Ok((res, res.clone()))
-        })() { res = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(true)
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    res = (match func2.clone() {
+        _ => {
+            res = stringCompare((functionNameStr(func1)).clone(), (functionNameStr(func2)).clone()) > 0;
+            res
+        },
+        _ => true,
+    });
     res
 }
 
@@ -2304,45 +2297,37 @@ fn ppElseStr(mut inElse: Arc<DAE::Else>, mut inInteger: i32) -> Result<ArcStr> {
 }
 
 fn indent(mut inInteger: i32) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = inInteger;
-        if let Ok(__v) = (|| -> Result<_> {
-            let 0 = __mc_input.clone() else { bail!("nomatch") };
-            Ok(())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let mut i = __mc_input.clone() else { bail!("nomatch") };
+    let () = (match inInteger {
+        0 => {
+            ()
+        },
+        mut i => {
             let mut i_1: i32;
             Print::printBuf((literal!(" ")).clone())?;
             i_1 = i.clone() - 1;
             indent(i_1.clone())?;
-            Ok(())
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+            ()
+        },
+    });
     Ok(())
 }
 
 fn indentStr(mut inInteger: i32) -> ArcStr {
     let mut outString: ArcStr;
-    outString = ('mc: {
-        let __mc_input = inInteger;
-        if let Ok(__v) = (|| -> Result<_> {
-            let 0 = __mc_input.clone() else { bail!("nomatch") };
-            Ok(literal!(""))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            let mut i = __mc_input.clone() else { bail!("nomatch") };
+    outString = ((match inInteger {
+        0 => {
+            literal!("")
+        },
+        mut i => {
             let mut i_1: i32;
             let mut s1: ArcStr;
             let mut r#str: ArcStr;
             i_1 = i.clone() - 1;
             s1 = (indentStr(i_1.clone())).clone();
             r#str = (stringAppend((literal!(" ")).clone(), (s1.clone()).clone())).clone();
-            Ok(r#str.clone())
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
+            r#str.clone()
+        },
+    })).clone();
     outString
 }
 
@@ -2791,28 +2776,17 @@ fn buildGrList(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> 
 
 fn buildGrVars(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<Graphviz::Node>>>> {
     let mut outGraphvizNodeLst: Arc<metamodelica::List<Arc<Graphviz::Node>>>;
-    outGraphvizNodeLst = 'mc: {
-        let __mc_input = inElementLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                vars => {
-                    let mut strlist: Arc<metamodelica::List<ArcStr>>;
-                    (strlist, _) = buildGrStrlist(vars.clone(), (std::sync::Arc::new(buildGrVarStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<ArcStr> + 'static>), 10)?;
-                    Ok(list![Arc::new(Graphviz::Node::LNODE { type_: (literal!("VARS")).clone(), labelLst: strlist.clone(), attributes: list![Graphviz::r#box.clone()], children: metamodelica::nil() })])
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outGraphvizNodeLst = (::match_deref::match_deref! { match &(inElementLst) {
+        Deref @ metamodelica::List::Nil => {
+            metamodelica::nil()
+        },
+        vars => {
+            let mut strlist: Arc<metamodelica::List<ArcStr>>;
+            (strlist, _) = buildGrStrlist(vars.clone(), (std::sync::Arc::new(buildGrVarStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<ArcStr> + 'static>), 10)?;
+            list![Arc::new(Graphviz::Node::LNODE { type_: (literal!("VARS")).clone(), labelLst: strlist.clone(), attributes: list![Graphviz::r#box.clone()], children: metamodelica::nil() })]
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outGraphvizNodeLst)
 }
 
@@ -2869,32 +2843,21 @@ fn buildGrVarStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
 
 fn printExpStrSpecial(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ('mc: {
-        let __mc_input = inExp;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::SCONST { string: s } => {
-                    let mut s_1: ArcStr;
-                    let mut s_2: ArcStr;
-                    s_1 = (stringAppend((literal!("\\\"")).clone(), (s.clone()).clone())).clone();
-                    s_2 = (stringAppend((s_1.clone()).clone(), (literal!("\\\"")).clone())).clone();
-                    Ok(s_2.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                exp => {
-                    let mut r#str: ArcStr;
-                    r#str = (ExpressionBasics::printExpStr(exp.clone())?).clone();
-                    Ok(r#str.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
+    outString = ((::match_deref::match_deref! { match &(inExp) {
+        Deref @ DAE::Exp::SCONST { string: s } => {
+            let mut s_1: ArcStr;
+            let mut s_2: ArcStr;
+            s_1 = (stringAppend((literal!("\\\"")).clone(), (s.clone()).clone())).clone();
+            s_2 = (stringAppend((s_1.clone()).clone(), (literal!("\\\"")).clone())).clone();
+            s_2.clone()
+        },
+        exp => {
+            let mut r#str: ArcStr;
+            r#str = (ExpressionBasics::printExpStr(exp.clone())?).clone();
+            r#str.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     Ok(outString)
 }
 
@@ -3039,36 +3002,20 @@ fn unparseType(mut tp: Arc<DAE::Type>) -> Result<ArcStr> {
 
 pub(crate) fn unparseDimensions(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut printTypeDimension: bool) -> Result<ArcStr> {
     let mut dimsStr: ArcStr;
-    dimsStr = ('mc: {
-        let __mc_input = (dims.clone(), printTypeDimension);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, false) => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, true) => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (_, true) => {
-                    let mut r#str: ArcStr;
-                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(List::map(dims.clone(), (std::sync::Arc::new(ExpressionBasics::dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
-                    Ok(r#str.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
+    dimsStr = ((::match_deref::match_deref! { match &((dims.clone(), printTypeDimension)) {
+        (_, false) => {
+            literal!("")
+        },
+        (Deref @ metamodelica::List::Nil, true) => {
+            literal!("")
+        },
+        (_, true) => {
+            let mut r#str: ArcStr;
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(List::map(dims, (std::sync::Arc::new(ExpressionBasics::dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+            r#str.clone()
+        },
+        _ => bail!("match: no arm matched"),
+    } })).clone();
     Ok(dimsStr)
 }
 
@@ -4311,47 +4258,26 @@ fn withinString(mut w: Absyn::Within) -> Result<ArcStr> {
 
 pub(crate) fn cmtListToString(mut inCmtLst: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> ArcStr {
     let mut outStr: ArcStr;
-    outStr = ('mc: {
-        let __mc_input = inCmtLst;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: c, tail: Deref @ metamodelica::List::Nil } => {
-                    let mut r#str: ArcStr;
-                    r#str = (dumpCommentAnnotationStr(Some(c.clone()))).clone();
-                    Ok(r#str.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
-                    let mut r#str: ArcStr;
-                    r#str = (dumpCommentAnnotationStr(Some(c.clone()))).clone();
-                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*cmtListToString(rest.clone())); ArcStr::from(__mm_s) }).clone();
-                    Ok(r#str.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    }).clone();
+    outStr = ((::match_deref::match_deref! { match &(inCmtLst) {
+        Deref @ metamodelica::List::Nil => {
+            literal!("")
+        },
+        Deref @ metamodelica::List::Cons { head: c, tail: Deref @ metamodelica::List::Nil } => {
+            let mut r#str: ArcStr;
+            r#str = (dumpCommentAnnotationStr(Some(c.clone()))).clone();
+            r#str.clone()
+        },
+        Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
+            let mut r#str: ArcStr;
+            r#str = (dumpCommentAnnotationStr(Some(c.clone()))).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*cmtListToString(rest.clone())); ArcStr::from(__mm_s) }).clone();
+            r#str.clone()
+        },
+        _ => {
+            literal!("")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     outStr
 }
 

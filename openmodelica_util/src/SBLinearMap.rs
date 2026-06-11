@@ -198,7 +198,7 @@ pub(crate) fn inverse(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
 pub(crate) fn apply(mut domain: Arc<SBSet::SBSet>, mut map: Arc<SBLinearMap>) -> Result<Arc<SBSet::SBSet>> {
     let mut target: Arc<SBSet::SBSet> = SBSet::copy(domain.clone());
     if !(isIdentity(map.clone())?) {
-        UnorderedSet::apply(target.asets.clone(), (std::sync::Arc::new({ let __pe_b1 = map; move |__pe_a0| Ok(applyAtomicSet(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> + 'static>))?;
+        assign_field!(target.asets = UnorderedSet::selfMap(target.asets.clone(), (std::sync::Arc::new({ let __pe_b1 = map; move |__pe_a0| Ok(applyAtomicSet(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> + 'static>))?);
     }
     Ok(target)
 }

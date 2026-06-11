@@ -1053,52 +1053,30 @@ pub fn valueBool(mut inValue: Arc<Values::Value>) -> Result<bool> {
 }
 
 pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<metamodelica::List<metamodelica::Real>> {
-    let mut outReal: Arc<metamodelica::List<metamodelica::Real>>;
-    outReal = 'mc: {
-        let __mc_input = inValue;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r }, tail: rest } => {
-                    let mut res: Arc<metamodelica::List<metamodelica::Real>>;
-                    res = valueReals(rest.clone());
-                    Ok(metamodelica::cons(r.clone(), res.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: rest } => {
-                    let mut r: metamodelica::Real;
-                    let mut res: Arc<metamodelica::List<metamodelica::Real>>;
-                    r = intReal(i.clone());
-                    res = valueReals(rest.clone());
-                    Ok(metamodelica::cons(r.clone(), res.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut res: Arc<metamodelica::List<metamodelica::Real>>;
-                    res = valueReals(rest.clone());
-                    Ok(res.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    outReal
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inValue) {
+        Deref @ metamodelica::List::Nil => {
+            return metamodelica::nil()
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r }, tail: rest } => {
+            let mut res: Arc<metamodelica::List<metamodelica::Real>>;
+            res = valueReals(rest.clone());
+            return metamodelica::cons(r.clone(), res.clone())
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: rest } => {
+            let mut r: metamodelica::Real;
+            let mut res: Arc<metamodelica::List<metamodelica::Real>>;
+            r = intReal(i.clone());
+            res = valueReals(rest.clone());
+            return metamodelica::cons(r.clone(), res.clone())
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
+            let mut res: Arc<metamodelica::List<metamodelica::Real>>;
+            { inValue = rest.clone(); continue '__tco; }
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub(crate) fn valueString(mut value: Arc<Values::Value>) -> Result<ArcStr> {

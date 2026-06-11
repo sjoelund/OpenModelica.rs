@@ -110,34 +110,23 @@ pub fn isDiscreteType(mut inType: Arc<DAE::Type>) -> bool {
 
 pub fn propsAnd(mut inProps: Arc<metamodelica::List<DAE::Properties>>) -> Result<DAE::Properties> {
     let mut outProp: DAE::Properties;
-    outProp = 'mc: {
-        let __mc_input = inProps;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: prop, tail: Deref @ metamodelica::List::Nil } => {
-                    Ok(prop.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: DAE::Properties::PROP { type_: ty, constFlag: c }, tail: props } => {
-                    let mut c2: Const;
-                    let mut ty2: Type;
-                    let mut c = (*c).clone();
-                    let DAE::PROP { type_: __pa0, constFlag: __pa1 } = (propsAnd(props.clone())?) else { bail!("pattern mismatch") };
-                    ty2 = __pa0.clone();
-                    c2 = __pa1.clone();
-                    c = constAnd(c.clone(), c2.clone());
-                    let true = (equivtypes(ty.clone(), ty2.clone())) else { bail!("pattern mismatch") };
-                    Ok(DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outProp = (::match_deref::match_deref! { match &(inProps) {
+        Deref @ metamodelica::List::Cons { head: prop, tail: Deref @ metamodelica::List::Nil } => {
+            prop.clone()
+        },
+        Deref @ metamodelica::List::Cons { head: DAE::Properties::PROP { type_: ty, constFlag: c }, tail: props } => {
+            let mut c2: Const;
+            let mut ty2: Type;
+            let mut c = (*c).clone();
+            let DAE::PROP { type_: __pa0, constFlag: __pa1 } = (propsAnd(props.clone())?) else { bail!("pattern mismatch") };
+            ty2 = __pa0.clone();
+            c2 = __pa1.clone();
+            c = constAnd(c.clone(), c2.clone());
+            let true = (equivtypes(ty.clone(), ty2.clone())) else { bail!("pattern mismatch") };
+            DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() }
+        },
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outProp)
 }
 
@@ -943,41 +932,23 @@ pub(crate) fn isArrayOrString(mut inType: Arc<DAE::Type>) -> bool {
 }
 
 pub fn numberOfDimensions(mut inType: Arc<DAE::Type>) -> i32 {
-    let mut outInteger: i32;
-    outInteger = 'mc: {
-        let __mc_input = inType;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: t, dims } => {
-                    let mut n: i32;
-                    n = numberOfDimensions(t.clone());
-                    n = n.clone() + (dims.clone().len() as i32);
-                    Ok(n.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
-                    let mut n: i32;
-                    n = numberOfDimensions(t.clone());
-                    Ok(n.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(0)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    outInteger
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType) {
+        Deref @ DAE::Type::T_ARRAY { ty: t, dims } => {
+            let mut n: i32;
+            n = numberOfDimensions(t.clone());
+            return n.clone() + (dims.clone().len() as i32)
+        },
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
+            let mut n: i32;
+            { inType = t.clone(); continue '__tco; }
+        },
+        _ => {
+            return 0
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn dimensionsKnown(mut inType: Arc<DAE::Type>) -> bool {
@@ -2233,28 +2204,17 @@ fn lookupComponent2(mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut in
 
 pub(crate) fn makeArray(mut inType: Arc<DAE::Type>, mut inArrayDim: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Arc<DAE::Type> {
     let mut outType: Arc<DAE::Type>;
-    outType = 'mc: {
-        let __mc_input = (inType, inArrayDim);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (t, Deref @ metamodelica::List::Nil) => {
-                    Ok(t.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (t, l) => {
-                    let mut len: i32;
-                    len = (l.clone().len() as i32);
-                    Ok(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: len.clone() })] }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    outType = (::match_deref::match_deref! { match &((inType, inArrayDim)) {
+        (t, Deref @ metamodelica::List::Nil) => {
+            t.clone()
+        },
+        (t, l) => {
+            let mut len: i32;
+            len = (l.clone().len() as i32);
+            Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: len.clone() })] })
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     outType
 }
 
@@ -4831,28 +4791,17 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
 
 fn liftExpType(mut ie: Arc<DAE::Exp>, mut dim: Arc<DAE::Dimension>) -> Arc<DAE::Exp> {
     let mut res: Arc<DAE::Exp>;
-    res = 'mc: {
-        let __mc_input = ie;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CAST { ty, exp: e } => {
-                    let mut ty1: Arc<DAE::Type>;
-                    ty1 = Expression::liftArrayR(ty.clone(), dim.clone());
-                    Ok(Arc::new(DAE::Exp::CAST { ty: ty1.clone(), exp: e.clone() }))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                e => {
-                    Ok(e.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    res = (::match_deref::match_deref! { match &(ie) {
+        Deref @ DAE::Exp::CAST { ty, exp: e } => {
+            let mut ty1: Arc<DAE::Type>;
+            ty1 = Expression::liftArrayR(ty.clone(), dim);
+            Arc::new(DAE::Exp::CAST { ty: ty1.clone(), exp: e.clone() })
+        },
+        e => {
+            e.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     res
 }
 

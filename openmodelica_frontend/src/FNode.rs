@@ -1147,34 +1147,23 @@ pub(crate) fn contextual(mut inParents: Parents) -> Result<Ref> {
 
 pub(crate) fn lookupRef(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
     let mut outRef: Ref;
-    outRef = 'mc: {
-        let __mc_input = inScope;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } => {
-                    Ok(inRef.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                s => {
-                    let mut r: Ref;
-                    let mut s = (*s).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(s.clone().reverse()) {
-                        Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
-                        _ => bail!("pattern mismatch"),
-                    } };
-                    s = __pa0.clone();
-                    r = lookupRef_dispatch(inRef.clone(), s.clone())?;
-                    Ok(r.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outRef = (::match_deref::match_deref! { match &(inScope) {
+        Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } => {
+            inRef.clone()
+        },
+        s => {
+            let mut r: Ref;
+            let mut s = (*s).clone();
+            let __pa0 = ::match_deref::match_deref! { match &(s.clone().reverse()) {
+                Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
+                _ => bail!("pattern mismatch"),
+            } };
+            s = __pa0.clone();
+            r = lookupRef_dispatch(inRef.clone(), s.clone())?;
+            r.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(outRef)
 }
 

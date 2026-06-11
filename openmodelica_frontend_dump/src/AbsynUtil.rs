@@ -5245,36 +5245,20 @@ fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>
 }
 
 fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> bool {
-    let mut res: bool;
-    res = 'mc: {
-        let __mc_input = inElts;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { .. }, .. } }, tail: _ } => {
-                    Ok(true)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: _, tail: elts } => {
-                    Ok(eltsHasLocalClass(elts.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(false)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
-    res
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inElts) {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { .. }, .. } }, tail: _ } => {
+            return true
+        },
+        Deref @ metamodelica::List::Cons { head: _, tail: elts } => {
+            { inElts = elts.clone(); continue '__tco; }
+        },
+        _ => {
+            return false
+        },
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn traverseInnerClass<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inClass: Arc<Absyn::Class>, mut path: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut arg: Arg, mut visitProtected: bool) -> (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg) {

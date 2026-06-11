@@ -3121,34 +3121,19 @@ fn hasEqnNonDiffParts(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::Li
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool;
     let mut outTpl: (Arc<metamodelica::List<Arc<DAE::Exp>>>, bool, bool);
-    (outExp, cont, outTpl) = 'mc: {
-        let __mc_input = (inExp.clone(), inTpl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, .. }, (expLst, _, insideCall)) => {
-                    Ok((inExp.clone(), false, (metamodelica::cons(inExp.clone(), expLst.clone()), false, insideCall.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: false, .. }, .. }, (expLst, _, insideCall)) => {
-                    Ok((inExp.clone(), false, (metamodelica::cons(inExp.clone(), expLst.clone()), false, insideCall.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (outExp, (_, b, _)) => {
-                    Ok((outExp.clone(), b.clone(), inTpl.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    (outExp, cont, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, .. }, (expLst, _, insideCall)) => {
+            (inExp.clone(), false, (metamodelica::cons(inExp, expLst.clone()), false, insideCall.clone()))
+        },
+        (Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: false, .. }, .. }, (expLst, _, insideCall)) => {
+            (inExp.clone(), false, (metamodelica::cons(inExp, expLst.clone()), false, insideCall.clone()))
+        },
+        (__esc_outExp, (_, b, _)) => {
+            outExp = (*__esc_outExp).clone();
+            (outExp.clone(), b.clone(), inTpl)
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok((outExp, cont, outTpl))
 }
 

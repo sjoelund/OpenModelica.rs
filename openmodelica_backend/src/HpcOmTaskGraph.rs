@@ -1045,26 +1045,11 @@ fn getArrayTuple31(mut list1: Arc<metamodelica::List<i32>>, mut assign: metamode
 
 fn isWhenEquation(mut inComp: Arc<BackendDAE::StrongComponent>) -> bool {
     let mut isWhenEq: bool;
-    isWhenEq = 'mc: {
-        let __mc_input = inComp;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { .. } => {
-                    Ok(true)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(false)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    isWhenEq = (::match_deref::match_deref! { match &(inComp) {
+        Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { .. } => true,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     isWhenEq
 }
 
@@ -3541,31 +3526,21 @@ pub(crate) fn dumpCriticalPathInfo(mut iCriticalPaths: (Arc<metamodelica::List<A
     let mut critPathWoC: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut costPath: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut costPathWoC: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    oString = ('mc: {
-        let __mc_input = (iCriticalPaths, iCriticalPathsWoC);
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                ((Deref @ metamodelica::List::Nil, _), _) => {
-                    Ok(literal!(""))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                ((critPath, costPath), (critPathWoC, costPathWoC)) => {
-                    let mut tmpString: ArcStr = tmpString.clone();
-                    tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("critical path with costs of ")); __mm_s.push_str(&*realString(costPath.clone())); __mm_s.push_str(&*literal!(" cycles -- ")); ArcStr::from(__mm_s) }).clone();
-                    tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpString.clone()); __mm_s.push_str(&*dumpCriticalPathInfo1(critPath.clone(), 1)?); ArcStr::from(__mm_s) }).clone();
-                    tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ;; ")); __mm_s.push_str(&*tmpString.clone()); __mm_s.push_str(&*literal!("critical path' with costs of ")); __mm_s.push_str(&*realString(costPathWoC.clone())); __mm_s.push_str(&*literal!(" cycles -- ")); ArcStr::from(__mm_s) }).clone();
-                    tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpString.clone()); __mm_s.push_str(&*dumpCriticalPathInfo1(critPathWoC.clone(), 1)?); ArcStr::from(__mm_s) }).clone();
-                    Ok((tmpString.clone(), tmpString.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { tmpString = __wb0; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
+    oString = ((::match_deref::match_deref! { match &((iCriticalPaths, iCriticalPathsWoC)) {
+        ((Deref @ metamodelica::List::Nil, _), _) => literal!(""),
+        ((__esc_critPath, __esc_costPath), (__esc_critPathWoC, __esc_costPathWoC)) => {
+            critPath = (*__esc_critPath).clone();
+            costPath = (*__esc_costPath).clone();
+            critPathWoC = (*__esc_critPathWoC).clone();
+            costPathWoC = (*__esc_costPathWoC).clone();
+            tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("critical path with costs of ")); __mm_s.push_str(&*realString(costPath.clone())); __mm_s.push_str(&*literal!(" cycles -- ")); ArcStr::from(__mm_s) }).clone();
+            tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpString); __mm_s.push_str(&*dumpCriticalPathInfo1(critPath.clone(), 1)?); ArcStr::from(__mm_s) }).clone();
+            tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ;; ")); __mm_s.push_str(&*tmpString); __mm_s.push_str(&*literal!("critical path' with costs of ")); __mm_s.push_str(&*realString(costPathWoC.clone())); __mm_s.push_str(&*literal!(" cycles -- ")); ArcStr::from(__mm_s) }).clone();
+            tmpString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpString); __mm_s.push_str(&*dumpCriticalPathInfo1(critPathWoC.clone(), 1)?); ArcStr::from(__mm_s) }).clone();
+            tmpString
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })).clone();
     Ok(oString)
 }
 
@@ -3576,31 +3551,18 @@ fn dumpCriticalPathInfo1(mut criticalPathsIn: Arc<metamodelica::List<Arc<metamod
 }
 
 fn printCriticalPathInfo(mut criticalPathsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut cpCosts: metamodelica::Real) -> Result<()> {
-    let () = 'mc: {
-        let __mc_input = criticalPathsIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Nil => {
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print((literal!("--------------------------------\n")).clone());
-                    metamodelica::print((literal!(" CRITICAL PATH INFO\n")).clone());
-                    metamodelica::print((literal!("--------------------------------\n")).clone());
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("found ")); __mm_s.push_str(&*intString((criticalPathsIn.clone().len() as i32))); __mm_s.push_str(&*literal!(" critical paths with costs of ")); __mm_s.push_str(&*realString(cpCosts)); __mm_s.push_str(&*literal!(" sec\n")); ArcStr::from(__mm_s) }).clone());
-                    printCriticalPathInfo1(criticalPathsIn.clone(), 1)?;
-                    Ok(())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    let () = (::match_deref::match_deref! { match &(criticalPathsIn.clone()) {
+        Deref @ metamodelica::List::Nil => (),
+        _ => {
+            metamodelica::print((literal!("--------------------------------\n")).clone());
+            metamodelica::print((literal!(" CRITICAL PATH INFO\n")).clone());
+            metamodelica::print((literal!("--------------------------------\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("found ")); __mm_s.push_str(&*intString((criticalPathsIn.clone().len() as i32))); __mm_s.push_str(&*literal!(" critical paths with costs of ")); __mm_s.push_str(&*realString(cpCosts)); __mm_s.push_str(&*literal!(" sec\n")); ArcStr::from(__mm_s) }).clone());
+            printCriticalPathInfo1(criticalPathsIn, 1)?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     Ok(())
 }
 
@@ -4853,81 +4815,55 @@ fn estimateCosts0(mut systIdx: i32, mut compsLstIn: Arc<metamodelica::List<Arc<m
 
 pub(crate) fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> (i32, metamodelica::Real) {
     let mut exeCost: (i32, metamodelica::Real);
-    exeCost = 'mc: {
-        let __mc_input = compInfo;
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::CompInfo::COUNTER { comp, numAdds, numMul, numDiv, numTrig, numRelations: numRel, numLog, numOth, funcCalls: numFuncs } => {
-                    let mut costs: i32;
-                    let mut ops: i32;
-                    let mut offset: i32;
-                    ops = numAdds.clone() + numMul.clone() + numOth.clone() + numTrig.clone() + numRel.clone() + numLog.clone();
-                    if BackendDAEUtil::isSingleEquationComp(comp.clone()) {
-                        offset = 35;
-                    } else if BackendDAEUtil::isWhenComp(comp.clone()) {
-                        offset = 113;
-                    } else if BackendDAEUtil::isArrayComp(comp.clone()) {
-                        offset = 100;
-                    } else {
-                        offset = 0;
-                    }
-                    costs = offset.clone() + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
-                    Ok((ops.clone(), intReal(costs.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::CompInfo::SYSTEM { size, density: dens, .. } => {
-                    let mut allOpCosts: metamodelica::Real;
-                    allOpCosts = (metamodelica::OrderedFloat(0.049_f64)) * (realPow((intReal(size.clone())) * ((metamodelica::OrderedFloat(1.0_f64)) + ((dens.clone()) * (metamodelica::OrderedFloat(19.0_f64)))), metamodelica::OrderedFloat(3.0_f64)));
-                    Ok((1, allOpCosts.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::CompInfo::TORN_ANALYSE { tornEqs: torn, otherEqs: other, tornSize: size, .. } => {
-                    let mut ops: i32;
-                    let mut ops1: i32;
-                    let mut allOpCosts: metamodelica::Real;
-                    let mut tornCosts: metamodelica::Real;
-                    let mut otherCosts: metamodelica::Real;
-                    (ops, tornCosts) = calculateCosts(torn.clone());
-                    (ops1, otherCosts) = calculateCosts(other.clone());
-                    allOpCosts = ((metamodelica::OrderedFloat(3000.0_f64)) + ((metamodelica::OrderedFloat(7.62_f64)) * (realPow(intReal(size.clone()), metamodelica::OrderedFloat(3.0_f64))))) + (((metamodelica::OrderedFloat(2.0_f64)) * (tornCosts.clone())) + ((metamodelica::OrderedFloat(1.4_f64)) * (otherCosts.clone())));
-                    Ok((ops.clone() + ops1.clone(), allOpCosts.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::CompInfo::NO_COMP { numAdds, numMul, numDiv, numTrig, numRelations: numRel, numLog, numOth, funcCalls: numFuncs } => {
-                    let mut costs: i32;
-                    let mut ops: i32;
-                    let mut offset: i32;
-                    ops = numAdds.clone() + numMul.clone() + numOth.clone() + numTrig.clone() + numRel.clone() + numLog.clone();
-                    offset = 50;
-                    costs = offset.clone() + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
-                    Ok((ops.clone(), intReal(costs.clone())))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    metamodelica::print((literal!("calculate costs failed!\n")).clone());
-                    Ok((-1, metamodelica::OrderedFloat(-1.0_f64)))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
-    };
+    exeCost = (::match_deref::match_deref! { match &(compInfo) {
+        Deref @ BackendDAE::CompInfo::COUNTER { comp, numAdds, numMul, numDiv, numTrig, numRelations: numRel, numLog, numOth, funcCalls: numFuncs } => {
+            let mut costs: i32;
+            let mut ops: i32;
+            let mut offset: i32;
+            ops = numAdds.clone() + numMul.clone() + numOth.clone() + numTrig.clone() + numRel.clone() + numLog.clone();
+            if BackendDAEUtil::isSingleEquationComp(comp.clone()) {
+                offset = 35;
+            } else if BackendDAEUtil::isWhenComp(comp.clone()) {
+                offset = 113;
+            } else if BackendDAEUtil::isArrayComp(comp.clone()) {
+                offset = 100;
+            } else {
+                offset = 0;
+            }
+            costs = offset.clone() + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
+            (ops.clone(), intReal(costs.clone()))
+        },
+        Deref @ BackendDAE::CompInfo::SYSTEM { size, density: dens, .. } => {
+            let mut allOpCosts: metamodelica::Real;
+            allOpCosts = (metamodelica::OrderedFloat(0.049_f64)) * (realPow((intReal(size.clone())) * ((metamodelica::OrderedFloat(1.0_f64)) + ((dens.clone()) * (metamodelica::OrderedFloat(19.0_f64)))), metamodelica::OrderedFloat(3.0_f64)));
+            (1, allOpCosts.clone())
+        },
+        Deref @ BackendDAE::CompInfo::TORN_ANALYSE { tornEqs: torn, otherEqs: other, tornSize: size, .. } => {
+            let mut ops: i32;
+            let mut ops1: i32;
+            let mut allOpCosts: metamodelica::Real;
+            let mut tornCosts: metamodelica::Real;
+            let mut otherCosts: metamodelica::Real;
+            (ops, tornCosts) = calculateCosts(torn.clone());
+            (ops1, otherCosts) = calculateCosts(other.clone());
+            allOpCosts = ((metamodelica::OrderedFloat(3000.0_f64)) + ((metamodelica::OrderedFloat(7.62_f64)) * (realPow(intReal(size.clone()), metamodelica::OrderedFloat(3.0_f64))))) + (((metamodelica::OrderedFloat(2.0_f64)) * (tornCosts.clone())) + ((metamodelica::OrderedFloat(1.4_f64)) * (otherCosts.clone())));
+            (ops.clone() + ops1.clone(), allOpCosts.clone())
+        },
+        Deref @ BackendDAE::CompInfo::NO_COMP { numAdds, numMul, numDiv, numTrig, numRelations: numRel, numLog, numOth, funcCalls: numFuncs } => {
+            let mut costs: i32;
+            let mut ops: i32;
+            let mut offset: i32;
+            ops = numAdds.clone() + numMul.clone() + numOth.clone() + numTrig.clone() + numRel.clone() + numLog.clone();
+            offset = 50;
+            costs = offset.clone() + 12 * numAdds.clone() + 32 * numMul.clone() + 37 * numDiv.clone() + 236 * numTrig.clone() + 2 * numRel.clone() + 4 * numLog.clone() + 110 * numOth.clone() + 375 * numFuncs.clone();
+            (ops.clone(), intReal(costs.clone()))
+        },
+        _ => {
+            metamodelica::print((literal!("calculate costs failed!\n")).clone());
+            (-1, metamodelica::OrderedFloat(-1.0_f64))
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     exeCost
 }
 
