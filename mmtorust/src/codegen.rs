@@ -22532,6 +22532,14 @@ fn ty_default_init_with_hier<'a>(ty: &Ty, ctx: &mut GenCtx, top_level: &'a BTree
                 .collect();
             parts.map(|p| format!("({})", p.join(", ")))
         }
+        // An ExternalObject is an opaque handle owned by the runtime; it has no
+        // meaningful zero value, so it must NEVER receive a synthesised default
+        // (constructing one out of thin air would fabricate a bogus handle).
+        // The catch-all below would already return None, but make the invariant
+        // explicit so a future struct-shaped arm can't accidentally capture it —
+        // a MetaModelica body declaring an ExternalObject output/local is
+        // responsible for assigning it via its constructor before any use.
+        Ty::ExternalObject(_) => None,
         _ => None,
     }
 }
