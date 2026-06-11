@@ -299,7 +299,7 @@ pub(crate) fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<
             let mut super_nodes: metamodelica::Array<Arc<SuperNode::SuperNode>>;
             let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>;
             if unwrap_break_err!(Flags::isSet(Flags::DUMP_SORTING.clone()), '__try0) {
-                metamodelica::print((StringUtil::headline_1((literal!("Sorting")).clone())).clone());
+                metamodelica::print((unwrap_break_err!(StringUtil::headline_1((literal!("Sorting")).clone()), '__try0)).clone());
             }
             buckets = unwrap_break_err!(PseudoBucket::create(matching.eqn_to_var.clone(), eqns.clone(), var_field!((*adj).mapping, Adjacency::Matrix::Matrix::FINAL).clone(), var_field!((*adj).modes, Adjacency::Matrix::Matrix::FINAL).clone()), '__try0);
             comps_indices = unwrap_break_err!(tarjanScalar(var_field!((*adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), matching.clone()), '__try0);
@@ -350,7 +350,7 @@ pub(crate) fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSorting.tarjan")); __mm_s.push_str(&*literal!(" failed to sort system:\n")); __mm_s.push_str(&*BVariable::VariablePointers::toString(vars.clone(), (literal!("System")).clone(), var_AtS.clone(), true)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EquationPointers::toString(eqns.clone(), (literal!("System")).clone(), eqn_AtS.clone(), true, None)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Matching::toString(matching.clone(), (literal!("")).clone())); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSorting.tarjan")); __mm_s.push_str(&*literal!(" failed to sort system:\n")); __mm_s.push_str(&*BVariable::VariablePointers::toString(vars.clone(), (literal!("System")).clone(), var_AtS.clone(), true)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EquationPointers::toString(eqns.clone(), (literal!("System")).clone(), eqn_AtS.clone(), true, None)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Matching::toString(matching.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             return Err(__try0_err);
         }
     }

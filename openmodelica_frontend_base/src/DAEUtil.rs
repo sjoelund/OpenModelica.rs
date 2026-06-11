@@ -361,7 +361,7 @@ pub fn splitDAEIntoVarsAndEquations(mut inDae: DAE::DAElist) -> Result<(DAE::DAE
         let mut elt = elt.clone();
         let () = (::match_deref::match_deref! { match &(elt.clone()) {
         Deref @ DAE::Element::VAR { .. } => {
-            DoubleEnded::push_back(vars.clone(), elt.clone());
+            DoubleEnded::push_back(vars.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::COMP { ident: id, dAElist: elts1, source, comment: cmt } => {
@@ -370,104 +370,104 @@ pub fn splitDAEIntoVarsAndEquations(mut inDae: DAE::DAElist) -> Result<(DAE::DAE
             let (DAE::DAE { elementLst: __pa0 }, DAE::DAE { elementLst: __pa1 }) = (splitDAEIntoVarsAndEquations(DAE::DAElist { elementLst: elts1.clone() })?) else { bail!("pattern mismatch") };
             elts11 = __pa0.clone();
             elts3 = __pa1.clone();
-            DoubleEnded::push_back(vars.clone(), Arc::new(DAE::Element::COMP { ident: (id.clone()).clone(), dAElist: elts11.clone(), source: source.clone(), comment: cmt.clone() }));
+            DoubleEnded::push_back(vars.clone(), Arc::new(DAE::Element::COMP { ident: (id.clone()).clone(), dAElist: elts11.clone(), source: source.clone(), comment: cmt.clone() }))?;
             DoubleEnded::push_list_back(eqs.clone(), elts3.clone())?;
             ()
         },
         Deref @ DAE::Element::EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::EQUEQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIALEQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::ARRAY_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::COMPLEX_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIALDEFINE { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::DEFINE { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::WHEN_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::FOR_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_FOR_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::IF_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_IF_EQUATION { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::ALGORITHM { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIALALGORITHM { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::EXTOBJECTCLASS { .. } => {
-            DoubleEnded::push_back(vars.clone(), elt.clone());
+            DoubleEnded::push_back(vars.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::ASSERT { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_ASSERT { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::TERMINATE { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_TERMINATE { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::REINIT { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::NORETCALL { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         Deref @ DAE::Element::INITIAL_NORETCALL { .. } => {
-            DoubleEnded::push_back(eqs.clone(), elt.clone());
+            DoubleEnded::push_back(eqs.clone(), elt.clone())?;
             ()
         },
         _ => {
@@ -477,8 +477,8 @@ pub fn splitDAEIntoVarsAndEquations(mut inDae: DAE::DAElist) -> Result<(DAE::DAE
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    allVars = DAE::DAElist { elementLst: DoubleEnded::toListAndClear(vars, metamodelica::nil()) };
-    allEqs = DAE::DAElist { elementLst: DoubleEnded::toListAndClear(eqs, metamodelica::nil()) };
+    allVars = DAE::DAElist { elementLst: DoubleEnded::toListAndClear(vars, metamodelica::nil())? };
+    allEqs = DAE::DAElist { elementLst: DoubleEnded::toListAndClear(eqs, metamodelica::nil())? };
     Ok((allVars, allEqs))
 }
 

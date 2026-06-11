@@ -128,14 +128,14 @@ pub(crate) fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut
             EquationPointers::map(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = parameters.clone(); let __pe_b2 = min_parameters.clone(); let __pe_b3 = optimal_values.clone(); let __pe_b4 = c2pi.clone(); let __pe_b5 = c2pe.clone(); move |__pe_a0| findOptimalResizableValues(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
             UnorderedSet::apply(parameters.clone(), (std::sync::Arc::new({ let __pe_b1 = min_parameters; let __pe_b2 = optimal_values.clone(); move |__pe_a0| setInitialValues(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>))?;
             if debug.clone() {
-                metamodelica::print((optimalValuesToString(optimal_values.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[debug] Initial Resizable Parameter Values:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
-                metamodelica::print((StringUtil::headline_2((literal!("[debug] Final Inequality Constraints:")).clone())).clone());
+                metamodelica::print((optimalValuesToString(optimal_values.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[debug] Initial Resizable Parameter Values:")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
+                metamodelica::print((StringUtil::headline_2((literal!("[debug] Final Inequality Constraints:")).clone())?).clone());
                 if UnorderedMap::isEmpty(c2pi.clone()) {
                     metamodelica::print((literal!("  <No Constraints>\n\n")).clone());
                 } else {
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(c2pi.clone()), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  0 >= ")).clone(), (literal!("\n  0 >= ")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
-                metamodelica::print((StringUtil::headline_2((literal!("[debug] Final Equality Constraints:")).clone())).clone());
+                metamodelica::print((StringUtil::headline_2((literal!("[debug] Final Equality Constraints:")).clone())?).clone());
                 if UnorderedMap::isEmpty(c2pe.clone()) {
                     metamodelica::print((literal!("  <No Constraints>\n\n")).clone());
                 } else {
@@ -153,13 +153,13 @@ pub(crate) fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut
             equations = EquationPointers::mapExp(equations, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static> = func.clone(); move |__pe_a0| Expression::applyToType(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             EquationPointers::mapRes(equations.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static> = func.clone(); move |__pe_a0| BVariable::applyToType(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
             if Flags::isSet(Flags::DUMP_RESIZABLE.clone())? || debug.clone() {
-                metamodelica::print((optimalValuesToString(optimal_values, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[dumpResizable] Evaluated Optimal Resizable Parameter Values:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
+                metamodelica::print((optimalValuesToString(optimal_values, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[dumpResizable] Evaluated Optimal Resizable Parameter Values:")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
             }
             varData.clone()
         },
         _ => {
             if Flags::isSet(Flags::DUMP_RESIZABLE.clone())? || debug.clone() {
-                metamodelica::print((StringUtil::headline_2((literal!("[dumpResizable] No resizable parameters were detected in the model.")).clone())).clone());
+                metamodelica::print((StringUtil::headline_2((literal!("[dumpResizable] No resizable parameters were detected in the model.")).clone())?).clone());
             }
             varData.clone()
         },
@@ -984,7 +984,7 @@ fn optimalValuesToString(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<
         } };
         old = __pa4.clone();
         old_vals = __pa5.clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), names_len + 5 - ((name.clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" OPTIMAL: ")); __mm_s.push_str(&*new.clone()); __mm_s.push_str(&*literal!(" (ORIGINAL: ")); __mm_s.push_str(&*old.clone()); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), names_len + 5 - ((name.clone()).clone().len() as i32))?); __mm_s.push_str(&*literal!(" OPTIMAL: ")); __mm_s.push_str(&*new.clone()); __mm_s.push_str(&*literal!(" (ORIGINAL: ")); __mm_s.push_str(&*old.clone()); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone();
     }
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)

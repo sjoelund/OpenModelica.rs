@@ -73,15 +73,15 @@ use openmodelica_util::Settings;
 use openmodelica_util::Util;
 
 pub fn simulationInitFile(mut simCode: SIMCODE, mut guid: ArcStr) -> Result<()> {
-    let true = (simulationInitFileReturnBool(simCode, (guid).clone())) else { bail!("pattern mismatch") };
+    let true = (simulationInitFileReturnBool(simCode, (guid).clone())?) else { bail!("pattern mismatch") };
     Ok(())
 }
 
-pub fn simulationInitFileReturnBool(mut simCode: SIMCODE, mut guid: ArcStr) -> bool {
+pub fn simulationInitFileReturnBool(mut simCode: SIMCODE, mut guid: ArcStr) -> Result<bool> {
     let mut success: bool = false;
     let mut vi: VarInfo;
     let mut s: SimulationSettings;
-    let mut file: File::File = File::File(File::noReference()).unwrap();
+    let mut file: File::File = File::File(File::noReference())?;
     let mut fileName: ArcStr;
     let mut FMUType: ArcStr;
     if '__try0: {
@@ -218,7 +218,7 @@ pub fn simulationInitFileReturnBool(mut simCode: SIMCODE, mut guid: ArcStr) -> b
         Ok::<(), anyhow::Error>(())
     }.is_err() {
     }
-    success
+    Ok(success)
 }
 
 fn modelVariables(mut file: File::File, mut vars: SimCodeVar::SimVars) -> Result<()> {

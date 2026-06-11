@@ -183,7 +183,7 @@ pub mod Association {
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*BJacobian::toString(Util::getOption(var_field!((*association).R0_jacobian, Association::CONTINUOUS).clone())?, (Partition::kindToString(var_field!((*association).kind, Association::CONTINUOUS).clone())?).clone())?); ArcStr::from(__mm_s) }).clone();
                 }
             } else {
-                r#str = (StringUtil::headline_1((literal!("No Jacobian")).clone())).clone();
+                r#str = (StringUtil::headline_1((literal!("No Jacobian")).clone())?).clone();
             }
             if isSome(var_field!((*association).jacobianAdjoint, Association::CONTINUOUS).clone()) {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BJacobian::toString(Util::getOption(var_field!((*association).jacobianAdjoint, Association::CONTINUOUS).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Partition::kindToString(var_field!((*association).kind, Association::CONTINUOUS).clone())?); __mm_s.push_str(&*literal!(" Adjoint")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -193,9 +193,9 @@ pub mod Association {
         Deref @ CLOCKED { .. } => {
             r#str = (BClock::toString(var_field!((*association).clock, Association::CLOCKED).clone())?).clone();
             if isSome(var_field!((*association).baseClock, Association::CLOCKED).clone()) {
-                r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Sub clock: ")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" of base clock ")); __mm_s.push_str(&*BClock::toString(Util::getOption(var_field!((*association).baseClock, Association::CLOCKED).clone())?)?); ArcStr::from(__mm_s) }).clone())).clone();
+                r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Sub clock: ")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" of base clock ")); __mm_s.push_str(&*BClock::toString(Util::getOption(var_field!((*association).baseClock, Association::CLOCKED).clone())?)?); ArcStr::from(__mm_s) }).clone())?).clone();
             } else {
-                r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Base clock: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())).clone();
+                r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Base clock: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?).clone();
             }
             r#str
         },
@@ -443,7 +443,7 @@ pub mod Partition {
 
     pub(crate) fn toString(mut partition: Arc<Partition>, mut level: i32) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(partition.index.clone())); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Association::toStringShort(partition.association.clone())?); __mm_s.push_str(&*literal!(" Partition")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(partition.index.clone())); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Association::toStringShort(partition.association.clone())?); __mm_s.push_str(&*literal!(" Partition")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         r#str = ((match partition.strongComponents.clone() {
         Some(mut comps) => {
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
@@ -461,7 +461,7 @@ pub mod Partition {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*Adjacency::Matrix::toString(Util::getOption(partition.adjacencyMatrix.clone())?, (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             if isSome(partition.matching.clone()) {
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*Matching::toString(Util::getOption(partition.matching.clone())?, (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*Matching::toString(Util::getOption(partition.matching.clone())?, (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
         }
         if level == 2 {
@@ -474,7 +474,7 @@ pub mod Partition {
         let mut r#str: ArcStr = literal!("");
         if !(partitions.clone().is_empty()) {
             if header.clone() != literal!("") {
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((header).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((header).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             for mut part in &*partitions {
                 let mut part = part.clone();
@@ -525,10 +525,10 @@ pub mod Partition {
     }
 
     pub(crate) fn categorize(mut partition: Arc<Partition>, mut ode: DoubleEnded::MutableList<Arc<Partition>>, mut alg: DoubleEnded::MutableList<Arc<Partition>>, mut ode_evt: DoubleEnded::MutableList<Arc<Partition>>, mut alg_evt: DoubleEnded::MutableList<Arc<Partition>>, mut clocked: DoubleEnded::MutableList<Arc<Partition>>) -> Result<()> {
-        fn isAlgebraicContinuous(mut part: Arc<Partition>) -> (bool, bool) {
+        fn isAlgebraicContinuous(mut part: Arc<Partition>) -> Result<(bool, bool)> {
             let mut alg: bool = true;
             let mut con: bool = true;
-            for mut var in &*BVariable::VariablePointers::toList(part.unknowns.clone()).unwrap() {
+            for mut var in &*BVariable::VariablePointers::toList(part.unknowns.clone())? {
                 let mut var = var.clone();
                 alg = if (alg) {!(BVariable::isStateDerivative(var.clone()))} else {false};
                 con = if (con) {!(BVariable::isDiscrete(var.clone()))} else {false};
@@ -536,14 +536,14 @@ pub mod Partition {
                     break;
                 }
             }
-            (alg, con)
+            Ok((alg, con))
         }
 
         let mut algebraic: bool;
         let mut continuous: bool;
         let mut kind: Kind;
         let mut association: Arc<Association::Association> = Arc::new(<Association::Association as ::std::default::Default>::default());
-        (algebraic, continuous) = isAlgebraicContinuous(partition.clone());
+        (algebraic, continuous) = isAlgebraicContinuous(partition.clone())?;
         kind = (match (algebraic.clone(), continuous.clone()) {
         (true, true) => Kind::ALG.clone(),
         (false, true) => Kind::ODE.clone(),
@@ -553,35 +553,35 @@ pub mod Partition {
     });
         assign_field!(partition.association = (::match_deref::match_deref! { match &((kind.clone(), partition.association.clone())) {
         (_, Deref @ Association::CLOCKED { .. }) => {
-            DoubleEnded::push_back(clocked.clone(), partition.clone());
+            DoubleEnded::push_back(clocked.clone(), partition.clone())?;
             partition.association.clone()
         },
         (Kind::ALG, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
             association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
-            DoubleEnded::push_back(alg, partition.clone());
+            DoubleEnded::push_back(alg, partition.clone())?;
             association.clone()
         },
         (Kind::ODE, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
             association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
-            DoubleEnded::push_back(ode.clone(), partition.clone());
+            DoubleEnded::push_back(ode.clone(), partition.clone())?;
             association.clone()
         },
         (Kind::ALG_EVT, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
             association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
-            DoubleEnded::push_back(alg_evt.clone(), partition.clone());
+            DoubleEnded::push_back(alg_evt.clone(), partition.clone())?;
             association.clone()
         },
         (Kind::ODE_EVT, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
             association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
-            DoubleEnded::push_back(ode_evt.clone(), partition.clone());
+            DoubleEnded::push_back(ode_evt.clone(), partition.clone())?;
             association.clone()
         },
         _ => bail!("fail"),

@@ -2184,18 +2184,18 @@ pub mod InstNode {
         Ok(outComponent)
     }
 
-    pub(crate) fn getComments(mut node: Arc<InstNode>, mut accumCmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
+    pub(crate) fn getComments(mut node: Arc<InstNode>, mut accumCmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Comment>>>> {
         let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
         cmts = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { definition: Deref @ SCode::Element::CLASS { cmt, .. }, .. } => {
-            metamodelica::cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts))
+            metamodelica::cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts)?)
         },
         _ => {
             accumCmts
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        cmts
+        Ok(cmts)
     }
 
     pub(crate) fn copyInstancePtr(mut srcNode: Arc<InstNode>, mut dstNode: Arc<InstNode>) -> Result<Arc<InstNode>> {

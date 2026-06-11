@@ -1571,7 +1571,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zc: BackendDAE::ZeroCrossing;
             eres = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: None });
             zc = createZeroCrossing(eres.clone(), list![alg_indx.clone()], None);
-            DoubleEnded::push_back(relations.clone(), zc.clone());
+            DoubleEnded::push_back(relations.clone(), zc.clone())?;
             ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1778,15 +1778,15 @@ fn zcIndexRelation(mut relation: Arc<DAE::Exp>, mut zeroCrossings: DoubleEnded::
     duplicate = List::select1(DoubleEnded::toListNoCopyNoClear(zeroCrossings.clone()), (std::sync::Arc::new(ZeroCrossings::equals) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::ZeroCrossing, BackendDAE::ZeroCrossing) -> Result<bool> + 'static>), zc.clone())?;
     (relation, index) = (::match_deref::match_deref! { match &((relation.clone(), duplicate)) {
         (Deref @ DAE::Exp::RELATION { .. }, Deref @ metamodelica::List::Nil) => {
-            DoubleEnded::push_back(zeroCrossings.clone(), zc);
+            DoubleEnded::push_back(zeroCrossings.clone(), zc)?;
             (relation, index + 1)
         },
         (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, .. }, Deref @ metamodelica::List::Nil) => {
-            DoubleEnded::push_back(zeroCrossings.clone(), zc);
+            DoubleEnded::push_back(zeroCrossings.clone(), zc)?;
             (relation, index + 1)
         },
         (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, .. }, Deref @ metamodelica::List::Nil) => {
-            DoubleEnded::push_back(zeroCrossings.clone(), zc);
+            DoubleEnded::push_back(zeroCrossings.clone(), zc)?;
             (relation, index + 2)
         },
         (_, Deref @ metamodelica::List::Cons { head: BackendDAE::ZeroCrossing { relation_: rel, .. }, tail: _ }) => {

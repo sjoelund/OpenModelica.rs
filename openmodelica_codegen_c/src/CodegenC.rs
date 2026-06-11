@@ -8461,7 +8461,7 @@ fn lm_361(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt_1 = Tpl::writeStr(txt_1.clone(), (a_partName.clone()).clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_part")).clone() }))?;
-            ret_2 = (SimCodeUtil::addFunctionIndex((Tpl::textString(txt_1.clone())?).clone(), (literal!(".c")).clone())).clone();
+            ret_2 = (SimCodeUtil::addFunctionIndex((Tpl::textString(txt_1.clone())?).clone(), (literal!(".c")).clone())?).clone();
             l_fileName = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_2.clone()).clone())?;
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_fullPathPrefix.clone()).clone())?;
             txt_3 = Tpl::writeText(txt_3.clone(), l_fileName.clone())?;
@@ -11224,7 +11224,7 @@ fn fun_443(mut in_txt: Tpl::Text, mut in_a_multiFile: Tpl::Text, mut in_a_fullPa
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt_1 = Tpl::writeStr(txt_1.clone(), (a_partName.clone()).clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_part")).clone() }))?;
-            ret_2 = (SimCodeUtil::addFunctionIndex((Tpl::textString(txt_1.clone())?).clone(), (literal!(".c")).clone())).clone();
+            ret_2 = (SimCodeUtil::addFunctionIndex((Tpl::textString(txt_1.clone())?).clone(), (literal!(".c")).clone())?).clone();
             l_fileName = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_2.clone()).clone())?;
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_fullPathPrefix.clone()).clone())?;
             txt_3 = Tpl::writeText(txt_3.clone(), l_fileName.clone())?;
@@ -13804,7 +13804,7 @@ fn fun_550(mut in_txt: Tpl::Text, mut in_a_multiFile: Tpl::Text, mut in_a_fullPa
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt_1 = Tpl::writeStr(txt_1.clone(), (a_partName.clone()).clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_part")).clone() }))?;
-            ret_2 = (SimCodeUtil::addFunctionIndex((Tpl::textString(txt_1.clone())?).clone(), (literal!(".c")).clone())).clone();
+            ret_2 = (SimCodeUtil::addFunctionIndex((Tpl::textString(txt_1.clone())?).clone(), (literal!(".c")).clone())?).clone();
             l_fileName = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_2.clone()).clone())?;
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_fullPathPrefix.clone()).clone())?;
             txt_3 = Tpl::writeText(txt_3.clone(), l_fileName.clone())?;

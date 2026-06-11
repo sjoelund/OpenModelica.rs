@@ -3917,7 +3917,7 @@ fn createTornSystemInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendD
         (simequations, _, ouniqueEqIndex, otempvars) = createEquationsWork(genDiscrete, false, genDiscrete, skipDiscInAlgorithm, isyst.clone(), ishared.clone(), comp.clone(), ouniqueEqIndex, otempvars.clone(), cons.clone())?;
         DoubleEnded::push_list_back(equations.clone(), simequations.clone())?;
     }
-    equations_ = DoubleEnded::toListAndClear(equations, metamodelica::nil());
+    equations_ = DoubleEnded::toListAndClear(equations, metamodelica::nil())?;
     Ok((equations_, ouniqueEqIndex, otempvars, nVars, homotopySupport))
 }
 
@@ -4308,7 +4308,7 @@ fn generateInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendDAE::Inne
         DoubleEnded::push_list_back(dblLstEqns.clone(), omsiFuncEquations.equations.clone())?;
     }
     outputVars = Dangerous::listReverseInPlace(outputVars);
-    equations = DoubleEnded::toListAndClear(dblLstEqns, metamodelica::nil());
+    equations = DoubleEnded::toListAndClear(dblLstEqns, metamodelica::nil())?;
     Ok((equations, outputVars, uniqueEqIndex))
 }
 
@@ -5210,7 +5210,7 @@ fn makeTmpRealSimCodeVar(mut inName: Arc<DAE::ComponentRef>, mut inVarKind: Back
     Ok(outSimVar)
 }
 
-fn sortInitialUnknowsSimVars(mut inSimVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>> {
+fn sortInitialUnknowsSimVars(mut inSimVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>>> {
     let mut sortedCrefs: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>> = metamodelica::nil();
     let mut cref: Arc<DAE::ComponentRef>;
     let mut unsortedCrefs: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>> = metamodelica::nil();
@@ -5222,14 +5222,14 @@ fn sortInitialUnknowsSimVars(mut inSimVars: Arc<metamodelica::List<SimCodeVar::S
         }
     }
     index = 0;
-    for mut i in &*List::sort(unsortedCrefs, std::sync::Arc::new(fnptr!(Util::compareTupleIntGt, _, _))).unwrap() {
+    for mut i in &*List::sort(unsortedCrefs, std::sync::Arc::new(fnptr!(Util::compareTupleIntGt, _, _)))? {
         let mut i = i.clone();
         (_, cref) = i.clone();
         sortedCrefs = metamodelica::cons((index, cref.clone()), sortedCrefs.clone());
         index = index + 1;
     }
     sortedCrefs = sortedCrefs.reverse();
-    sortedCrefs
+    Ok(sortedCrefs)
 }
 
 fn dumpSortedInitialUnknownCrefs(mut sortedCrefs: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>>) -> Result<()> {
@@ -14230,8 +14230,8 @@ fn getFmiInitialUnknowns(mut inInitDAE: Arc<BackendDAE::BackendDAE>, mut inSimDA
             BackendDump::dumpVarList(fmiDerInitIndepVars.clone(), (literal!("fmiDerInit_knownVars")).clone())?;
         }
         fmiDerInit = SymbolicJacobian::createFMIModelDerivativesForInitialization(inInitDAE, inSimDAE, fmiDerInitDepVars, fmiDerInitIndepVars, currentSystem.orderedVars.clone(), sparsePattern, sparseColoring)?;
-        sortedknownCrefs = sortInitialUnknowsSimVars(getSimVars2Crefs(indepCrefs, crefSimVarHT.clone()));
-        sortedUnknownCrefs = sortInitialUnknowsSimVars(getSimVars2Crefs(depCrefs, crefSimVarHT));
+        sortedknownCrefs = sortInitialUnknowsSimVars(getSimVars2Crefs(indepCrefs, crefSimVarHT.clone()))?;
+        sortedUnknownCrefs = sortInitialUnknowsSimVars(getSimVars2Crefs(depCrefs, crefSimVarHT))?;
     }
     sparseInts = sortSparsePattern(vars2, rowspt, true)?;
     outFmiUnknownlist = translateSparsePatterInts2FMIUnknown(sparseInts, metamodelica::nil());
@@ -14960,21 +14960,21 @@ pub fn resetFunctionIndex() -> Result<()> {
     Ok(())
 }
 
-pub fn addFunctionIndex(mut prefix: ArcStr, mut suffix: ArcStr) -> ArcStr {
+pub fn addFunctionIndex(mut prefix: ArcStr, mut suffix: ArcStr) -> Result<ArcStr> {
     let mut newName: ArcStr;
     let mut delst: DoubleEnded::MutableList<ArcStr>;
     delst = openmodelica_util::Globals::codegenFunctionList.with(|__root| __root.borrow().clone());
     newName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", DoubleEnded::length(delst.clone())))); __mm_s.push_str(&*suffix); ArcStr::from(__mm_s) }).clone();
-    DoubleEnded::push_back(delst, (newName.clone()).clone());
-    newName
+    DoubleEnded::push_back(delst, (newName.clone()).clone())?;
+    Ok(newName)
 }
 
-pub fn getFunctionIndex() -> Arc<metamodelica::List<ArcStr>> {
+pub fn getFunctionIndex() -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut files: Arc<metamodelica::List<ArcStr>>;
     let mut delst: DoubleEnded::MutableList<ArcStr>;
     delst = openmodelica_util::Globals::codegenFunctionList.with(|__root| __root.borrow().clone());
-    files = DoubleEnded::toListAndClear(delst, metamodelica::nil());
-    files
+    files = DoubleEnded::toListAndClear(delst, metamodelica::nil())?;
+    Ok(files)
 }
 
 pub fn nVariablesReal(mut varInfo: SimCode::VarInfo) -> i32 {

@@ -202,7 +202,7 @@ pub fn push_list_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst
     Ok(())
 }
 
-pub fn push_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut elt: T) -> () {
+pub fn push_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut elt: T) -> Result<()> {
     let mut length: i32 = Mutable::access(delst.length.clone());
     let mut lst: Arc<metamodelica::List<T>>;
     Mutable::update(delst.length.clone(), length + 1);
@@ -210,12 +210,12 @@ pub fn push_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: Muta
         lst = list![elt];
         Mutable::update(delst.front.clone(), lst.clone());
         Mutable::update(delst.back.clone(), lst);
-        return ();
+        return Ok(());
     }
     lst = list![elt];
-    Dangerous::listSetRest(Mutable::access(delst.back.clone()), lst.clone()).unwrap();
+    Dangerous::listSetRest(Mutable::access(delst.back.clone()), lst.clone())?;
     Mutable::update(delst.back.clone(), lst);
-    ()
+    Ok(())
 }
 
 pub fn push_list_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut lst: Arc<metamodelica::List<T>>) -> Result<()> {
@@ -247,20 +247,20 @@ pub fn push_list_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst:
     Ok(())
 }
 
-pub fn toListAndClear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut prependToList: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<T>> {
+pub fn toListAndClear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut prependToList: Arc<metamodelica::List<T>>) -> Result<Arc<metamodelica::List<T>>> {
     let mut res: Arc<metamodelica::List<T>>;
     if Mutable::access(delst.length.clone()) == 0 {
         res = prependToList;
-        return res.clone();
+        return Ok(res.clone());
     }
     res = Mutable::access(delst.front.clone());
     if !(prependToList.clone().is_empty()) {
-        Dangerous::listSetRest(Mutable::access(delst.back.clone()), prependToList).unwrap();
+        Dangerous::listSetRest(Mutable::access(delst.back.clone()), prependToList)?;
     }
     Mutable::update(delst.back.clone(), metamodelica::nil());
     Mutable::update(delst.front.clone(), metamodelica::nil());
     Mutable::update(delst.length.clone(), 0);
-    res
+    Ok(res)
 }
 
 pub fn toListNoCopyNoClear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>) -> Arc<metamodelica::List<T>> {

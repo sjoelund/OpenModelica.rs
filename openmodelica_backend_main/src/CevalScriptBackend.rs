@@ -1283,7 +1283,7 @@ pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: F
                     if true {
                         s3 = (Dump::unparseStr(Parser::parsestring((s2.clone()).clone(), (literal!("<interactive>")).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Flags::getConfigBool(Flags::STRICT.clone())?)?, false, Dump::defaultDumpOptions.clone())?).clone();
                         ExecStat::execStat((literal!("sanity parsestring(s2)")).clone())?;
-                        s5 = (printActual(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>))).clone();
+                        s5 = (printActual(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>))?).clone();
                         match '__try0: {
                             s4 = (unwrap_break_err!(Dump::unparseStr(unwrap_break_err!(Parser::parsestring((s5.clone()).clone(), (literal!("<interactive>")).clone(), unwrap_break_err!(Config::acceptedGrammar(), '__try0), unwrap_break_err!(Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone()), '__try0), unwrap_break_err!(Flags::getConfigBool(Flags::STRICT.clone()), '__try0)), '__try0), false, Dump::defaultDumpOptions.clone()), '__try0)).clone();
                             unwrap_break_err!(ExecStat::execStat((literal!("sanity parsestring(s5)")).clone()), '__try0);
@@ -1315,7 +1315,7 @@ pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: F
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         Deref @ "plain" => {
-                            Ok(printActual(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>)))
+                            Ok(printActual(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>))?)
                         }
                         _ => bail!("nomatch"),
                     }}
@@ -1323,7 +1323,7 @@ pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: F
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         Deref @ "color" => {
-                            Ok(printDiffTerminalColor(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>)))
+                            Ok(printDiffTerminalColor(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>))?)
                         }
                         _ => bail!("nomatch"),
                     }}
@@ -1331,7 +1331,7 @@ pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: F
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         Deref @ "xml" => {
-                            Ok(printDiffXml(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>)))
+                            Ok(printDiffXml(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>))?)
                         }
                         _ => bail!("nomatch"),
                     }}

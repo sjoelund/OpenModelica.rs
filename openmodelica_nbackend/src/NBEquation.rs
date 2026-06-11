@@ -2239,10 +2239,10 @@ pub mod Equation {
     pub(crate) fn simplify(mut eq: Arc<Equation>, mut name: ArcStr, mut indent: ArcStr, mut acc_discrete_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut simplifyExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Equation>> {
         pub type SimplifyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
-        fn apply(mut e: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<Expression::NFExpression> {
+        fn apply(mut e: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> {
             let mut e: Arc<Expression::NFExpression> = e;
-            e = func(e).unwrap();
-            e
+            e = func(e)?;
+            Ok(e)
         }
 
         let mut eq: Arc<Equation> = eq;
@@ -2250,7 +2250,7 @@ pub mod Equation {
         if Flags::isSet(Flags::DUMP_SIMPLIFY.clone())? && !(stringEqual((indent.clone()).clone(), (literal!("")).clone())) {
             metamodelica::print((literal!("\n")).clone());
         }
-        eq = map(eq.clone(), simplifyExp.clone(), None, (std::sync::Arc::new(fnptr!(apply, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        eq = map(eq.clone(), simplifyExp.clone(), None, (std::sync::Arc::new(apply) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         old_eq = eq.clone();
         eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
@@ -3095,7 +3095,7 @@ pub mod Equation {
         let mut rest1_right: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
         let mut rest2_left: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
         let mut rest2_right: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
-        let mut shift: ArcStr = StringUtil::repeat((literal!("  ")).clone(), nesting_level);
+        let mut shift: ArcStr = StringUtil::repeat((literal!("  ")).clone(), nesting_level)?;
         if Flags::isSet(Flags::DUMP_SLICE.clone())? {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level)); __mm_s.push_str(&*literal!("] ### Entwining following equations:\n")); __mm_s.push_str(&*List::toString(eqn_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
         }
@@ -4878,7 +4878,7 @@ pub mod EquationPointers {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Filtered ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone();
         }
         if printEmpty || luI > 0 {
-            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" Equations (")); __mm_s.push_str(&*intString(size(equations.clone()))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(equations.clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
+            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" Equations (")); __mm_s.push_str(&*intString(size(equations.clone()))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(equations.clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?).clone();
             for mut i in 1..=luI {
                 if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                     eqn = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
@@ -4889,7 +4889,7 @@ pub mod EquationPointers {
                         } else {
                             index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(current_index)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                         }
-                        index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*index.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length - ((index.clone()).clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
+                        index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*index.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length - ((index.clone()).clone().len() as i32))?); ArcStr::from(__mm_s) }).clone();
                         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Equation::toString(Pointer::access(eqn.clone()), (index.clone()).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     }
                     current_index = current_index + 1;
@@ -5452,7 +5452,7 @@ pub mod EqData {
         Deref @ EQ_DATA_SIM { .. } => {
             let mut tmp: ArcStr;
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equation Data Simulation (scalar simulation equations: ")); __mm_s.push_str(&*intString(EquationPointers::scalarSize(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((tmp.clone()).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((tmp.clone()).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             if level == 0 {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone(), (literal!("Simulation")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
             } else {
@@ -5474,7 +5474,7 @@ pub mod EqData {
             if level == 0 {
                 tmp = (EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_HES).clone(), (literal!("Hessian")).clone(), None, false, filter_opt)?).clone();
             } else {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Result Equation")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Equation::toString(Pointer::access(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).temporary, EqData::EQ_DATA_HES).clone(), (literal!("Temporary Inner")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Result Equation")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Equation::toString(Pointer::access(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).temporary, EqData::EQ_DATA_HES).clone(), (literal!("Temporary Inner")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
             }
             tmp.clone()
         },

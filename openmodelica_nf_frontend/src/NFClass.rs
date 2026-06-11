@@ -885,21 +885,21 @@ pub(crate) fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<Ins
     Ok(node)
 }
 
-pub(crate) fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
+pub(crate) fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Comment>>>> {
     let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = cmts;
     cmts = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ EXPANDED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), cmts),
-        Deref @ TYPED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), cmts),
+        Deref @ EXPANDED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), cmts)?,
+        Deref @ TYPED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), cmts)?,
         _ => {
-            let __range0 = ClassTree::getExtends(classTree(cls).unwrap()).borrow().iter().cloned().collect::<Vec<_>>();
+            let __range0 = ClassTree::getExtends(classTree(cls)?).borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range0 {
-                cmts = InstNode::getComments(ext.clone(), cmts.clone());
+                cmts = InstNode::getComments(ext.clone(), cmts.clone())?;
             }
             cmts
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    cmts
+    Ok(cmts)
 }
 
 pub fn constrainingClassPath(mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Absyn::Path>> {

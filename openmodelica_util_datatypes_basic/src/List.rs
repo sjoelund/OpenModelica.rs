@@ -1394,10 +1394,10 @@ pub fn mapCheckReferenceEq<TI: Clone + 'static + metamodelica::gc::MMTrace + met
                 } else {
                     e1 = if (n == 0) {savedElt.clone()} else {elt.clone()};
                 }
-                DoubleEnded::push_back(delst.clone(), e1.clone());
+                DoubleEnded::push_back(delst.clone(), e1.clone())?;
                 n = n - 1;
             }
-            outList = DoubleEnded::toListAndClear(delst.clone(), metamodelica::nil());
+            outList = DoubleEnded::toListAndClear(delst.clone(), metamodelica::nil())?;
             return Ok(outList.clone());
         }
         n = n + 1;
@@ -2184,10 +2184,10 @@ pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static + metamodelica::gc::MMTrace
                 } else {
                     res = if (n == 0) {savedElt.clone()} else {elt.clone()};
                 }
-                DoubleEnded::push_back(delst.clone(), res.clone());
+                DoubleEnded::push_back(delst.clone(), res.clone())?;
                 n = n - 1;
             }
-            outList = DoubleEnded::toListAndClear(delst.clone(), metamodelica::nil());
+            outList = DoubleEnded::toListAndClear(delst.clone(), metamodelica::nil())?;
             return Ok((outList.clone(), outArg.clone()));
         }
         n = n + 1;
@@ -3173,14 +3173,14 @@ pub fn findAndRemove<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList:
                 } };
                 t = __pa0.clone();
                 rest = __pa1.clone();
-                DoubleEnded::push_back(delst.clone(), t.clone());
+                DoubleEnded::push_back(delst.clone(), t.clone())?;
             }
             let __pa2 = ::match_deref::match_deref! { match &(rest.clone()) {
                 Deref @ metamodelica::List::Cons { head: _, tail: __pa2 } => __pa2.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             rest = __pa2.clone();
-            rest = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
+            rest = DoubleEnded::toListAndClear(delst.clone(), rest.clone())?;
             return Ok((outElement.clone(), rest.clone()));
         }
         i = i + 1;
@@ -3210,14 +3210,14 @@ pub fn findAndRemove1<T: Clone + 'static + metamodelica::gc::MMTrace, ArgT1: Clo
                 } };
                 t = __pa0.clone();
                 rest = __pa1.clone();
-                DoubleEnded::push_back(delst.clone(), t.clone());
+                DoubleEnded::push_back(delst.clone(), t.clone())?;
             }
             let __pa2 = ::match_deref::match_deref! { match &(rest.clone()) {
                 Deref @ metamodelica::List::Cons { head: _, tail: __pa2 } => __pa2.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             rest = __pa2.clone();
-            rest = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
+            rest = DoubleEnded::toListAndClear(delst.clone(), rest.clone())?;
             return Ok((outElement.clone(), rest.clone()));
         }
         i = i + 1;
@@ -3360,14 +3360,14 @@ pub fn replaceAt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inElement: 
         } };
         e = __pa0.clone();
         rest = __pa1.clone();
-        DoubleEnded::push_back(delst.clone(), e.clone());
+        DoubleEnded::push_back(delst.clone(), e.clone())?;
     }
     let __pa2 = ::match_deref::match_deref! { match &(rest) {
         Deref @ metamodelica::List::Cons { head: _, tail: __pa2 } => __pa2.clone(),
         _ => bail!("pattern mismatch"),
     } };
     rest = __pa2.clone();
-    outList = DoubleEnded::toListAndClear(delst, metamodelica::cons(inElement, rest));
+    outList = DoubleEnded::toListAndClear(delst, metamodelica::cons(inElement, rest))?;
     Ok(outList)
 }
 

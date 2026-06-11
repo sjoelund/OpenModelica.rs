@@ -101,7 +101,7 @@ fn test_negative_offset_panics() {
 #[test]
 fn test_string_util_repeat() {
     // StringUtil.repeat is the simplest real user of the allocator.
-    assert_eq!(StringUtil::repeat(literal!("ab"), 3), literal!("ababab"));
-    assert_eq!(StringUtil::repeat(literal!("x"), 1), literal!("x"));
-    assert_eq!(StringUtil::repeat(literal!("ab"), 0), literal!(""));
+    assert_eq!(StringUtil::repeat(literal!("ab"), 3).unwrap(), literal!("ababab"));
+    assert_eq!(StringUtil::repeat(literal!("x"), 1).unwrap(), literal!("x"));
+    assert_eq!(StringUtil::repeat(literal!("ab"), 0).unwrap(), literal!(""));
 }

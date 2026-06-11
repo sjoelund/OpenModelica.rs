@@ -170,7 +170,7 @@ pub(crate) fn size(mut set: Arc<NBTearing>, mut resize: bool) -> Result<i32> {
 
 pub(crate) fn toString(mut set: Arc<NBTearing>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
-    r#str = (StringUtil::headline_4((r#str).clone())).clone();
+    r#str = (StringUtil::headline_4((r#str).clone())?).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("### Iteration Variables:\n")); __mm_s.push_str(&*Slice::lstToString(set.iteration_vars.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); ArcStr::from(__mm_s) }).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n### Residual Equations:\n")); __mm_s.push_str(&*Slice::lstToString(set.residual_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), 10)?); ArcStr::from(__mm_s) }).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n### Inner Equations:\n")); __mm_s.push_str(&*Array::toString(set.innerEquations.clone(), (std::sync::Arc::new({ let __pe_b1 = -1; move |__pe_a0| StrongComponent::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
@@ -184,7 +184,7 @@ pub(crate) fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Ki
     let mut bdae: Arc<Jacobian::NBackendDAE> = bdae;
     let funcs: Arc<metamodelica::List<Module::tearingInterface>> = getModule()?;
     if Flags::isSet(Flags::TEARING_DUMP.clone())? {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind)?); __mm_s.push_str(&*literal!("] Tearing")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind)?); __mm_s.push_str(&*literal!("] Tearing")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     bdae = (::match_deref::match_deref! { match &((kind, bdae.clone())) {
         (Partition::Kind::ODE, Deref @ Jacobian::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, .. }) => {
@@ -460,7 +460,7 @@ fn finalize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adj
     }));
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; strict = strict.clone());
             if Flags::isSet(Flags::TEARING_DUMP.clone())? {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind)?); __mm_s.push_str(&*literal!("] Tearing Result ")); __mm_s.push_str(&*intString(var_field!((*comp).idx, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone())); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind)?); __mm_s.push_str(&*literal!("] Tearing Result ")); __mm_s.push_str(&*intString(var_field!((*comp).idx, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone())); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             comp
         },

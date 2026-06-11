@@ -455,23 +455,11 @@ struct GenCtx {
     /// — a context whose Rust type is the raw `T`, never `Result<T>`, so a
     /// fallible call inside it *must* be lowered with `.unwrap()` (there is no
     /// `?` target). This is the one legitimate reason for the
-    /// `QMode::Function if !current_fn_fallible` `.unwrap()` branch in [`q`];
-    /// the const-init sites set this so [`q`] does NOT record a diagnostic for
-    /// them. Inside a real function body this stays `false`, so an `.unwrap()`
-    /// there is reported as a probable fallibility-analysis gap.
+    /// `QMode::Function if !current_fn_fallible` `.unwrap()` branch in [`q`].
+    /// Inside a real function body this stays `false`, so reaching that branch
+    /// is a fallibility-analysis gap and [`q`] panics rather than emitting a
+    /// latent `.unwrap()`.
     in_infallible_const_init: bool,
-    /// Diagnostic sink: fully-qualified names of functions whose *body* forced
-    /// [`q`] down the `.unwrap()` branch — i.e. codegen had to wrap a fallible
-    /// call in a function the [`crate::fallibility`] analysis classified
-    /// infallible. With a sound analysis this should be empty for ordinary
-    /// functions; a non-empty entry means either an analysis gap (like the
-    /// historical output-default-binding miss that made `StringUtil.rest`
-    /// unwrap a fallible `substring`) or a known imprecision (a call through a
-    /// `Result`-typed function pointer the analysis cannot follow). Aggregated
-    /// across files and reported at the end of [`generate_all`]. `RefCell`
-    /// because [`q`] takes `&self`; a `GenCtx` is single-threaded (one per file
-    /// in the parallel driver), so no locking is needed here.
-    infallible_unwrap_sites: std::cell::RefCell<BTreeSet<String>>,
     /// The (already type-variable-instantiated) formal type of the call
     /// argument currently being emitted, when that formal is a function type
     /// (`Arc<dyn Fn(...)>`). Set by [`emit_call_arg_with_formal`] around the
@@ -692,7 +680,6 @@ impl GenCtx {
             current_fn_qname: String::new(),
             source_file: String::new(),
             in_infallible_const_init: false,
-            infallible_unwrap_sites: std::cell::RefCell::new(BTreeSet::new()),
             expected_arg_fn_formal: None,
             nested_partial_aliases: BTreeSet::new(),
             hoisted_nested_fns: HashMap::new(),
@@ -847,28 +834,35 @@ impl GenCtx {
     /// an expression of type `T` in the surrounding context.
     fn q(&self, expr: &str) -> String {
         match &self.qmode {
-            // `?` only works in a function body that returns `Result`. When the
-            // surrounding function is infallible we still call into builtins
-            // whose Rust signature returns `Result<T>` (the builtin layer has
-            // not yet been switched away from `Result`); `.unwrap()` bridges the
-            // gap and surfaces as a panic if the call ever does fail.
-            //
-            // Reaching this branch is only *expected* for a global
-            // const/static/thread_local initializer (`in_infallible_const_init`),
-            // whose Rust type is the raw `T` with no `?` target. Reaching it from
-            // inside an ordinary function body means codegen had to wrap a
-            // fallible call in a function the fallibility analysis called
-            // infallible — a contradiction that points at an analysis gap (the
-            // way an unscanned output-default binding once let `StringUtil.rest`
-            // unwrap a fallible `substring`). Record those so [`generate_all`]
-            // can report them instead of silently emitting a latent panic.
-            QMode::Function if !self.current_fn_fallible => {
-                if !self.in_infallible_const_init && !self.current_fn_qname.is_empty() {
-                    self.infallible_unwrap_sites
-                        .borrow_mut()
-                        .insert(self.current_fn_qname.clone());
-                }
+            // `?` only works in a function body that returns `Result`. A global
+            // const/static/thread_local initializer (`in_infallible_const_init`)
+            // has the raw `T` as its type with no `?` target, so a fallible call
+            // there must fall back to `.unwrap()` — there is genuinely nowhere to
+            // propagate to.
+            QMode::Function if !self.current_fn_fallible && self.in_infallible_const_init => {
                 format!("{expr}.unwrap()")
+            }
+            // Reaching this branch from inside an ordinary function body means
+            // codegen had to wrap a fallible call in a function the fallibility
+            // analysis classified *infallible* — a contradiction. Historically
+            // we emitted a latent `.unwrap()` (a runtime panic waiting to
+            // happen, the way an unscanned output-default binding once let
+            // `StringUtil.rest` unwrap a fallible `substring`). That hid a real
+            // bug: either the analysis missed a failure source for this function
+            // (it should return `Result`), or a callee's emitted signature
+            // disagrees with how the analysis classified it. Stop code
+            // generation so the mismatch is fixed at its source rather than
+            // shipped as a panic. See `crate::fallibility` for the analysis and
+            // the (now empty) set of known gaps.
+            QMode::Function if !self.current_fn_fallible => {
+                panic!(
+                    "fallibility analysis gap: codegen must wrap a fallible call with `.unwrap()` \
+                     in `{}`, which the analysis classified infallible. Either the function is \
+                     actually fallible (fix `crate::fallibility` so it returns `Result`), or a \
+                     callee's emitted signature disagrees with its classification. \
+                     Offending expression: `{expr}`",
+                    self.current_fn_qname,
+                );
             }
             QMode::Function => format!("{expr}?"),
             // `Iterator::filter` requires a plain `bool` predicate; we cannot
@@ -1529,10 +1523,6 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
     use std::sync::atomic::{AtomicU64, Ordering};
     let file_micros_total = AtomicU64::new(0);
     let per_file: std::sync::Mutex<Vec<(String, f64)>> = std::sync::Mutex::new(Vec::new());
-    // Aggregate the per-file infallible-unwrap diagnostics (see
-    // [`GenCtx::infallible_unwrap_sites`]). Locked once per file on a cold path
-    // — never inside the per-call `q()` hot path.
-    let infallible_unwraps: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
     // Aggregate the per-file strict-import diagnostics (top-level packages used
     // without an explicit `import`). Locked once per file on a cold path.
     let missing_imports: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
@@ -1548,10 +1538,7 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
-        if !file_unwraps.is_empty() {
-            infallible_unwraps.lock().unwrap().extend(file_unwraps);
-        }
+        let (content, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
         if !file_missing.is_empty() {
             missing_imports.lock().unwrap().extend(file_missing);
         }
@@ -1585,26 +1572,6 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
     let all_file_elapsed = all_file_t0.elapsed();
     if trace_codegen {
         eprintln!("[mmtorust] codegen done all files ({:.2}s)", all_file_elapsed.as_secs_f64());
-    }
-
-    // ── Infallible-unwrap diagnostic ───────────────────────────────────────
-    // Functions whose body forced a fallible call to be lowered with
-    // `.unwrap()` because the fallibility analysis classified them infallible.
-    // Each is either an analysis gap (the function is actually fallible and
-    // should return `Result`) or a known imprecision (a call through a
-    // `Result`-typed function pointer the analysis cannot follow). Either way
-    // it is a latent runtime panic, so report it rather than let it pass
-    // silently — this is the signal that caught `StringUtil.rest`.
-    let infallible_unwraps = infallible_unwraps.into_inner().unwrap();
-    if !infallible_unwraps.is_empty() {
-        eprintln!(
-            "[mmtorust] WARNING: {} function(s) emit `.unwrap()` on a fallible call despite \
-             being classified infallible (probable fallibility-analysis gap or fn-pointer imprecision):",
-            infallible_unwraps.len(),
-        );
-        for qname in &infallible_unwraps {
-            eprintln!("    {qname}");
-        }
     }
 
     // ── Strict-import diagnostic ───────────────────────────────────────────
@@ -1954,7 +1921,7 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>) {
     let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), reference_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
     ctx.keep_public = keep_public.clone();
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
@@ -2102,7 +2069,7 @@ use arcstr::{{ArcStr, literal, format}};
         .filter(|m| !m.starts_with("MetaModelica"))
         .map(|m| format!("{top_name}: {m}"))
         .collect();
-    (out, ctx.infallible_unwrap_sites.into_inner(), missing_imports)
+    (out, missing_imports)
 }
 
 // ── Node emission ─────────────────────────────────────────────────────────────
@@ -2677,6 +2644,11 @@ fn emit_external_object<'a>(
             .map(|(n, t)| format!("{}: {}", escape_ident(n), fmt_ty(t, ctx)))
             .collect();
         let arg_names: Vec<String> = ins.iter().map(|(n, _)| escape_ident(n)).collect();
+        // The constructor is an unimplemented `todo!()` stub returning
+        // `Result<Foo>`: the runtime `external "C"` symbol is not yet wired up.
+        // The fallibility analysis mirrors this by treating *every* call to an
+        // ExternalObject class as fallible (see the external-object branch in
+        // `fallibility::resolve_walk`), so call sites and this signature agree.
         writeln!(out, "{indent}impl {ename} {{").unwrap();
         writeln!(out, "{indent}    pub fn new({}) -> Result<{ename}> {{", params.join(", ")).unwrap();
         writeln!(out, "{indent}        // TODO: implement runtime constructor for external object `{name}`.").unwrap();

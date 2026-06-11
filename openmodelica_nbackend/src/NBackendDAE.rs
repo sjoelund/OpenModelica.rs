@@ -230,7 +230,7 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => {
             if !(Flags::isSet(Flags::BLT_DUMP.clone())?) || var_field!((*bdae).ode, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).algebraic, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).ode_event, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).alg_event, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).clocked, NBackendDAE::MAIN).clone().is_empty() && var_field!((*bdae).init, NBackendDAE::MAIN).clone().is_empty() && isNone(var_field!((*bdae).dae, NBackendDAE::MAIN).clone()) {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAE: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAE: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::MAIN).clone(), 2)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), 1, None)?); ArcStr::from(__mm_s) }).clone();
             } else {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*NBPartition::Partition::toStringList(var_field!((*bdae).ode, NBackendDAE::MAIN).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[ODE] Differential-Algebraic: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
@@ -251,7 +251,7 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
             tmp.clone()
         },
         Deref @ JACOBIAN { .. } => {
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*bdae).jacType, NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(" Jacobian ")); __mm_s.push_str(&*var_field!((*bdae).name, NBackendDAE::JACOBIAN).clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*bdae).jacType, NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(" Jacobian ")); __mm_s.push_str(&*var_field!((*bdae).name, NBackendDAE::JACOBIAN).clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::JACOBIAN).clone(), 1)?); ArcStr::from(__mm_s) }).clone();
             for mut i in 1..=metamodelica::arrayLength(var_field!((*bdae).comps, NBackendDAE::JACOBIAN).clone()) {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*StrongComponent::toString(({let __elt = var_field!((*bdae).comps, NBackendDAE::JACOBIAN).borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -260,7 +260,7 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
             tmp.clone()
         },
         Deref @ HESSIAN { .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hessian: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::HESSIAN).clone(), 1)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::HESSIAN).clone(), 1, None)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hessian: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::HESSIAN).clone(), 1)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::HESSIAN).clone(), 1, None)?); ArcStr::from(__mm_s) }
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.toString")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -396,7 +396,7 @@ pub fn main(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     (bdae, postOptClocks) = applyModules(bdae, postOptModules, eq_filter_opt, ClockIndexes::RT_CLOCK_NEW_BACKEND_MODULE.clone())?;
     if Flags::isSet(Flags::DUMP_BACKEND_CLOCKS.clone())? {
         if !(preOptClocks.clone().is_empty()) {
-            metamodelica::print((StringUtil::headline_4((literal!("Pre-Opt Backend Clocks:")).clone())).clone());
+            metamodelica::print((StringUtil::headline_4((literal!("Pre-Opt Backend Clocks:")).clone())?).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut clck in (preOptClocks).into_iter().cloned() {
@@ -407,7 +407,7 @@ pub fn main(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if !(mainClocks.clone().is_empty()) {
-            metamodelica::print((StringUtil::headline_4((literal!("Main Backend Clocks:")).clone())).clone());
+            metamodelica::print((StringUtil::headline_4((literal!("Main Backend Clocks:")).clone())?).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut clck in (mainClocks).into_iter().cloned() {
@@ -418,7 +418,7 @@ pub fn main(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if !(postOptClocks.clone().is_empty()) {
-            metamodelica::print((StringUtil::headline_4((literal!("Post-Opt Backend Clocks:")).clone())).clone());
+            metamodelica::print((StringUtil::headline_4((literal!("Post-Opt Backend Clocks:")).clone())?).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut clck in (postOptClocks).into_iter().cloned() {
@@ -447,7 +447,7 @@ pub(crate) fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamode
         (func, name) = module.clone();
         if Flags::isSet(Flags::FAILTRACE.clone())? {
             debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[failtrace] ........ [")); __mm_s.push_str(&*ClockIndexes::toString(clock_idx)); __mm_s.push_str(&*literal!("] ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
-            debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), intMax(60 - ((debugStr.clone()).clone().len() as i32), 0))); ArcStr::from(__mm_s) }).clone();
+            debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), intMax(60 - ((debugStr.clone()).clone().len() as i32), 0))?); ArcStr::from(__mm_s) }).clone();
         }
         if clock_idx != -1 {
             System::realtimeClear(clock_idx)?;
@@ -471,7 +471,7 @@ pub(crate) fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamode
                 if Util::tuple21(varSizes.clone()) != Util::tuple21(eqnSizes.clone()) {
                     debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!("XX ")); ArcStr::from(__mm_s) }).clone();
                 }
-                debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), intMax(100 - ((debugStr.clone()).clone().len() as i32), 0))); ArcStr::from(__mm_s) }).clone();
+                debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), intMax(100 - ((debugStr.clone()).clone().len() as i32), 0))?); ArcStr::from(__mm_s) }).clone();
                 debugStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*debugStr.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*realString(clock_time)); __mm_s.push_str(&*literal!("s\n")); ArcStr::from(__mm_s) }).clone();
                 metamodelica::print((debugStr.clone()).clone());
                 debugLowering(bdae.clone())?;
@@ -805,7 +805,7 @@ fn lowerVariableData(mut varList: Arc<metamodelica::List<Arc<Variable::NFVariabl
     records = BVariable::VariablePointers::mapPtr(records, (std::sync::Arc::new({ let __pe_b1 = variables.clone(); move |__pe_a0| lowerRecordChildren(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
     variableData = Arc::new(VarData::VarData::VAR_DATA_SIM { uniqueIndex: Pointer::create(0), variables: variables, unknowns: unknowns, knowns: knowns, initials: initials, auxiliaries: auxiliaries, aliasVars: aliasVars, nonTrivialAlias: nonTrivialAlias, derivatives: derivatives, algebraics: algebraics, discretes: discretes, discrete_states: discrete_states, clocked_states: clocked_states, previous: previous, clocks: clocks, states: states, top_level_inputs: inputs, resizables: resizables, parameters: parameters, constants: constants, records: records, external_objects: external_objects, artificials: artificials, state_order: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1) });
     if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
-        metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((forced_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Forced states by StateSelect.ALWAYS:")); ArcStr::from(__mm_s) }).clone())).clone());
+        metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((forced_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Forced states by StateSelect.ALWAYS:")); ArcStr::from(__mm_s) }).clone())?).clone());
         if forced_states.clone().is_empty() {
             metamodelica::print((literal!("\t<no states>\n\n")).clone());
         } else {
@@ -1804,7 +1804,7 @@ pub(crate) fn debugFollowEquations(mut bdae: Arc<NBackendDAE>, mut eq_filter_opt
         let mut tmp: ArcStr = literal!("");
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => {
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations]: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations]: ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BEquation::EqData::toString(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), 1, eq_filter_opt)?); ArcStr::from(__mm_s) }).clone();
             metamodelica::print((tmp.clone()).clone());
             ()

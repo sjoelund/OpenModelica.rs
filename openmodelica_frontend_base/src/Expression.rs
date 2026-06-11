@@ -5895,17 +5895,17 @@ pub fn traverseExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace + metam
                 if nEq < 1 {
                     break;
                 }
-                DoubleEnded::push_back(delst.clone(), elt.clone());
+                DoubleEnded::push_back(delst.clone(), elt.clone())?;
                 nEq = nEq - 1;
             }
         }
         if allEq {
             nEq = nEq + 1;
         } else {
-            DoubleEnded::push_back(delst.clone(), e1.clone());
+            DoubleEnded::push_back(delst.clone(), e1.clone())?;
         }
     }
-    expl = if (allEq) {inExpl} else {DoubleEnded::toListAndClear(delst, metamodelica::nil())};
+    expl = if (allEq) {inExpl} else {DoubleEnded::toListAndClear(delst, metamodelica::nil())?};
     Ok((expl, ext_arg))
 }
 
@@ -7184,17 +7184,17 @@ pub(crate) fn traverseExpListBidir<ArgT: Clone + 'static + metamodelica::gc::MMT
                 if nEq < 1 {
                     break;
                 }
-                DoubleEnded::push_back(delst.clone(), elt.clone());
+                DoubleEnded::push_back(delst.clone(), elt.clone())?;
                 nEq = nEq - 1;
             }
         }
         if allEq {
             nEq = nEq + 1;
         } else {
-            DoubleEnded::push_back(delst.clone(), e1.clone());
+            DoubleEnded::push_back(delst.clone(), e1.clone())?;
         }
     }
-    outExpl = if (allEq) {inExpl} else {DoubleEnded::toListAndClear(delst, metamodelica::nil())};
+    outExpl = if (allEq) {inExpl} else {DoubleEnded::toListAndClear(delst, metamodelica::nil())?};
     Ok((outExpl, outArg))
 }
 
@@ -7697,17 +7697,17 @@ pub fn traverseExpTopDownSubs<Argument: Clone + 'static + metamodelica::gc::MMTr
                 if nEq < 1 {
                     break;
                 }
-                DoubleEnded::push_back(delst.clone(), elt.clone());
+                DoubleEnded::push_back(delst.clone(), elt.clone())?;
                 nEq = nEq - 1;
             }
         }
         if allEq {
             nEq = nEq + 1;
         } else {
-            DoubleEnded::push_back(delst.clone(), nsub.clone());
+            DoubleEnded::push_back(delst.clone(), nsub.clone())?;
         }
     }
-    outSubscript = if (allEq) {inSubscript} else {DoubleEnded::toListAndClear(delst, metamodelica::nil())};
+    outSubscript = if (allEq) {inSubscript} else {DoubleEnded::toListAndClear(delst, metamodelica::nil())?};
     Ok((outSubscript, arg))
 }
 

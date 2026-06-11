@@ -96,7 +96,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc
             let mut eqData: Arc<EqData::EqData>;
             let mut varData: Arc<VarData::VarData>;
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
-                metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dumpBackendInline] Inlining operatations for: ")); __mm_s.push_str(&*List::toString(inline_types.clone(), (std::sync::Arc::new(fnptr!(DAEDump::dumpInlineTypeBackendStr, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone())).clone());
+                metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dumpBackendInline] Inlining operatations for: ")); __mm_s.push_str(&*List::toString(inline_types.clone(), (std::sync::Arc::new(fnptr!(DAEDump::dumpInlineTypeBackendStr, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone())?).clone());
             }
             (eqData, varData) = inline(var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), inline_types, init)?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
@@ -237,7 +237,7 @@ fn inline(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::VarData>, m
         }
     }
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? && List::contains(inline_types.clone(), openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE, (std::sync::Arc::new(fnptr!(DAEUtil::inlineTypeEqual, DAE::InlineType, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType, DAE::InlineType) -> Result<bool> + 'static>))? && !(init) {
-        metamodelica::print((StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Heuristic results for Inline=default functions. Threshold = ")); __mm_s.push_str(&*intString(HEURISTIC_THRESHOLD.clone())); ArcStr::from(__mm_s) }).clone())).clone());
+        metamodelica::print((StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Heuristic results for Inline=default functions. Threshold = ")); __mm_s.push_str(&*intString(HEURISTIC_THRESHOLD.clone())); ArcStr::from(__mm_s) }).clone())?).clone());
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*UnorderedMap::toString(func_map, (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Function::signatureString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(InlineRating::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InlineRating::InlineRating>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     eqData = Replacements::replaceFunctions(eqData, variables.clone(), replacements)?;

@@ -302,10 +302,10 @@ pub mod Call_Aux {
 
 }
 
-fn functionAliasTplString(mut tpl: (ArcStr, ArcStr), mut max_length: i32) -> ArcStr {
+fn functionAliasTplString(mut tpl: (ArcStr, ArcStr), mut max_length: i32) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(tpl.clone())); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), max_length - ((Util::tuple21(tpl.clone())).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Util::tuple22(tpl)); ArcStr::from(__mm_s) }).clone();
-    r#str
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(tpl.clone())); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), max_length - ((Util::tuple21(tpl.clone())).clone().len() as i32))?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Util::tuple22(tpl)); ArcStr::from(__mm_s) }).clone();
+    Ok(r#str)
 }
 
 fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
@@ -387,7 +387,7 @@ fn aliasListToString<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone 
     let mut r#str: ArcStr;
     let mut str_lst: Arc<metamodelica::List<(ArcStr, ArcStr)>>;
     let mut max_length: i32;
-    r#str = (StringUtil::headline_3(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" Alias")); ArcStr::from(__mm_s) }).clone())).clone();
+    r#str = (StringUtil::headline_3(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" Alias")); ArcStr::from(__mm_s) }).clone())?).clone();
     if aux_lst.clone().is_empty() {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("  <no alias>\n\n")); ArcStr::from(__mm_s) }).clone();
     } else {
@@ -407,7 +407,7 @@ fn aliasListToString<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone 
         }
         __acc.unwrap_or((-i32::MAX))
     }) + 3;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*List::toString(str_lst, (std::sync::Arc::new({ let __pe_b1 = max_length; move |__pe_a0| Ok(functionAliasTplString(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*List::toString(str_lst, (std::sync::Arc::new({ let __pe_b1 = max_length; move |__pe_a0| functionAliasTplString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
     }
     Ok(r#str)
 }

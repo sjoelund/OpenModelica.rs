@@ -281,9 +281,9 @@ pub(crate) fn simpleToString(mut replacements: Arc<UnorderedMap::UnorderedMap<Ar
             aliasStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*aliasStr.clone()); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*ComponentRef::toString(key.clone())?); __mm_s.push_str(&*literal!("\t ==> \t")); __mm_s.push_str(&*Expression::toString(value.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
     }
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4((literal!("[dumprepl] Constant Replacements:")).clone())); __mm_s.push_str(&*constStr); ArcStr::from(__mm_s) }).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4((literal!("[dumprepl] Trivial Alias Replacements:")).clone())); __mm_s.push_str(&*aliasStr); ArcStr::from(__mm_s) }).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4((literal!("[dumprepl] Nontrivial Alias Replacements:")).clone())); __mm_s.push_str(&*nonTrivialStr); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4((literal!("[dumprepl] Constant Replacements:")).clone())?); __mm_s.push_str(&*constStr); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4((literal!("[dumprepl] Trivial Alias Replacements:")).clone())?); __mm_s.push_str(&*aliasStr); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4((literal!("[dumprepl] Nontrivial Alias Replacements:")).clone())?); __mm_s.push_str(&*nonTrivialStr); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 

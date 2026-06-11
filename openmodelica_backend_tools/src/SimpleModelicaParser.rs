@@ -1725,7 +1725,7 @@ fn moveCommentsAfterDiff(mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica
                 if found {
                     acc = metamodelica::cons((Diff::Delete.clone(), listAppend(acc2.clone().reverse(), before.clone())), acc.clone());
                     res = listAppend(acc.clone().reverse(), metamodelica::cons((Diff::Equal.clone(), list![foundTree.clone()]), metamodelica::cons((Diff::Delete.clone(), listAppend(after.clone(), trees.clone())), lst.clone())));
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     res = removeAddedCommentFromDiff(res.clone(), (foundComment.clone()).clone())?;
                     res = moveCommentsAfterDiff(res.clone())?;
                     return Ok(res.clone());
@@ -1950,9 +1950,9 @@ fn addCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut 
         _ => (n.clone(), false),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        DoubleEnded::push_back(delst.clone(), n2.clone());
+        DoubleEnded::push_back(delst.clone(), n2.clone())?;
         if b {
-            tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
+            tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone())?;
             success = true;
             return Ok((tree.clone(), success.clone()));
         }
@@ -2013,9 +2013,9 @@ fn removeCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
         _ => (n.clone(), false),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        DoubleEnded::push_back(delst.clone(), n2.clone());
+        DoubleEnded::push_back(delst.clone(), n2.clone())?;
         if b {
-            tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
+            tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone())?;
             success = true;
             return Ok((tree.clone(), success.clone()));
         }
@@ -2041,15 +2041,15 @@ fn removeCommentAtThisLabel(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
         let () = (::match_deref::match_deref! { match &(n.clone()) {
         Deref @ ParseTree::LEAF { .. } if (modelicaDiffTokenEq(var_field!((*n).token, ParseTree::LEAF).clone(), tok.clone())?) => {
             success = true;
-            tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
+            tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone())?;
             return Ok((tree.clone(), success.clone()));
             bail!("fail")
         },
         Deref @ ParseTree::NODE { label: Deref @ ParseTree::EMPTY { .. }, .. } => {
             (nodes, success) = removeCommentAtThisLabel(var_field!((*n).nodes, ParseTree::NODE).clone(), tok.clone())?;
             if success {
-                DoubleEnded::push_back(delst.clone(), Arc::new(ParseTree::NODE { label: crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), nodes: nodes.clone() }));
-                tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
+                DoubleEnded::push_back(delst.clone(), Arc::new(ParseTree::NODE { label: crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), nodes: nodes.clone() }))?;
+                tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone())?;
                 return Ok((tree.clone(), success.clone()));
             }
             ()
@@ -2057,7 +2057,7 @@ fn removeCommentAtThisLabel(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        DoubleEnded::push_back(delst.clone(), n.clone());
+        DoubleEnded::push_back(delst.clone(), n.clone())?;
     }
     Ok((tree, success))
 }
@@ -2224,7 +2224,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
     res = filterDiffWhitespace(res)?;
     if debug.clone() {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("nadd: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", nadd))); __mm_s.push_str(&*literal!(" ndel: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ndel))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         if nadd != ndel {
             for mut r in &*res.clone() {
                 let mut r = r.clone();
@@ -2276,7 +2276,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
         if !(joinTrees) {
             res = res;
             if debug.clone() {
-                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("not joining trees")); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("not joining trees")); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
         } else if middle.clone().is_empty() {
             if debug.clone() {
@@ -2304,7 +2304,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
             }
         }
         if debug.clone() {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", depth))); __mm_s.push_str(&*literal!(" merged tree size: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ((DiffAlgorithm::printActual(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))).clone().len() as i32)))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", depth))); __mm_s.push_str(&*literal!(" merged tree size: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ((DiffAlgorithm::printActual(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?).clone().len() as i32)))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", depth))); __mm_s.push_str(&*literal!(" before top=")); __mm_s.push_str(&*firstTokenDebugStr(before.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" before all=")); __mm_s.push_str(&*parseTreeStr(before)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" middle all=")); __mm_s.push_str(&*parseTreeStr(middle.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -2336,7 +2336,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
     });
         if debug.clone() {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of labeled nodes. add=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (addedTrees.clone().len() as i32)))); __mm_s.push_str(&*literal!(" del=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (deletedTrees.clone().len() as i32)))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         for mut x in &*res.clone() {
             let mut x = x.clone();
@@ -2378,11 +2378,11 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
             }
             (resLocal, _) = treeDiffWork(getNodes(deleted.clone()), getNodes(added.clone()), depth + 1, compare.clone())?;
             if debug.clone() {
-                debugString1 = (DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))).clone();
+                debugString1 = (DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?).clone();
             }
             res = replaceLabeledDiff(res.clone(), resLocal.clone(), nodeLabel(added.clone()), nodeLabel(deleted.clone()), compare.clone(), labelOrderDidNotChange(addList.clone(), delList.clone())?)?;
             if debug.clone() {
-                debugString2 = (DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))).clone();
+                debugString2 = (DiffAlgorithm::printDiffTerminalColor(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?).clone();
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("replaceLabeledDiff change for label:")); __mm_s.push_str(&*parseTreeNodeStr(nodeLabel(added.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("before replaceLabeledDiff: ")); __mm_s.push_str(&*debugString1.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after replaceLabeledDiff: ")); __mm_s.push_str(&*debugString2.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -2391,12 +2391,12 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
     }
     if debug.clone() {
         metamodelica::print((literal!("Before filter WS\n")).clone());
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffXml(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffXml(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     res = filterDiffWhitespace(res)?;
     if debug.clone() {
         metamodelica::print((literal!("After filter WS\n")).clone());
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffXml(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*DiffAlgorithm::printDiffXml(res.clone(), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     if depth == 1 {
     }
@@ -2833,7 +2833,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
         }
         __acc.unwrap_or(i32::MAX)
     });
-    indentationStr = (StringUtil::repeat((literal!(" ")).clone(), level)).clone();
+    indentationStr = (StringUtil::repeat((literal!(" ")).clone(), level)?).clone();
     diffLocal = metamodelica::nil();
     for mut d in &*diff {
         let mut d = d.clone();

@@ -90,14 +90,14 @@ pub fn diff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq1: Arc<metamo
 
 pub type partialPrintDiff<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, fn(T) -> Result<ArcStr>) -> Result<ArcStr> + 'static>;
 
-pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
+pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut open: ArcStr;
     let mut close: ArcStr;
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut b: bool;
     let mut i: i32;
-    i = Print::saveAndClearBuf().unwrap();
+    i = Print::saveAndClearBuf()?;
     for mut d in &*seq {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
@@ -113,30 +113,30 @@ pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mu
             ts = (*__esc_ts).clone();
             (literal!("\u{1b}[9;31m"), literal!("\u{1b}[0m"), ts.clone(), true)
         },
-        _ => panic!("match: no arm matched"),
+        _ => bail!("match: no arm matched"),
     } });
         if !(ts.clone().is_empty()) && (b || true && true && true) {
-            Print::printBuf((open.clone()).clone()).unwrap();
+            Print::printBuf((open.clone()).clone())?;
             for mut t in &*ts.clone() {
                 let mut t = t.clone();
-                Print::printBuf((toString(t.clone()).unwrap()).clone()).unwrap();
+                Print::printBuf((toString(t.clone())?).clone())?;
             }
-            Print::printBuf((close.clone()).clone()).unwrap();
+            Print::printBuf((close.clone()).clone())?;
         }
     }
-    res = (Print::getString().unwrap()).clone();
-    Print::restoreBuf(i).unwrap();
-    res
+    res = (Print::getString()?).clone();
+    Print::restoreBuf(i)?;
+    Ok(res)
 }
 
-pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
+pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut open: ArcStr;
     let mut close: ArcStr;
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut b: bool;
     let mut i: i32;
-    i = Print::saveAndClearBuf().unwrap();
+    i = Print::saveAndClearBuf()?;
     for mut d in &*seq {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
@@ -152,30 +152,30 @@ pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc
             ts = (*__esc_ts).clone();
             (literal!("<del>"), literal!("</del>"), ts.clone(), true)
         },
-        _ => panic!("match: no arm matched"),
+        _ => bail!("match: no arm matched"),
     } });
         if !(ts.clone().is_empty()) && (b || true && true && true) {
-            Print::printBuf((open.clone()).clone()).unwrap();
+            Print::printBuf((open.clone()).clone())?;
             for mut t in &*ts.clone() {
                 let mut t = t.clone();
-                Print::printBuf((toString(t.clone()).unwrap()).clone()).unwrap();
+                Print::printBuf((toString(t.clone())?).clone())?;
             }
-            Print::printBuf((close.clone()).clone()).unwrap();
+            Print::printBuf((close.clone()).clone())?;
         }
     }
-    res = (Print::getString().unwrap()).clone();
-    Print::restoreBuf(i).unwrap();
-    res
+    res = (Print::getString()?).clone();
+    Print::restoreBuf(i)?;
+    Ok(res)
 }
 
-pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
+pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut open: ArcStr;
     let mut close: ArcStr;
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut b: bool;
     let mut i: i32;
-    i = Print::saveAndClearBuf().unwrap();
+    i = Print::saveAndClearBuf()?;
     for mut d in &*seq {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
@@ -191,20 +191,20 @@ pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<
             ts = (*__esc_ts).clone();
             (literal!(""), literal!(""), ts.clone(), false)
         },
-        _ => panic!("match: no arm matched"),
+        _ => bail!("match: no arm matched"),
     } });
         if !(ts.clone().is_empty()) && (b || true && true && false) {
-            Print::printBuf((open.clone()).clone()).unwrap();
+            Print::printBuf((open.clone()).clone())?;
             for mut t in &*ts.clone() {
                 let mut t = t.clone();
-                Print::printBuf((toString(t.clone()).unwrap()).clone()).unwrap();
+                Print::printBuf((toString(t.clone())?).clone())?;
             }
-            Print::printBuf((close.clone()).clone()).unwrap();
+            Print::printBuf((close.clone()).clone())?;
         }
     }
-    res = (Print::getString().unwrap()).clone();
-    Print::restoreBuf(i).unwrap();
-    res
+    res = (Print::getString()?).clone();
+    Print::restoreBuf(i)?;
+    Ok(res)
 }
 
 fn diffSeq<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut inStart1: i32, mut inEnd1: i32, mut inStart2: i32, mut inEnd2: i32, mut inPrefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut inSuffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {

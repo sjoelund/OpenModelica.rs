@@ -3105,13 +3105,13 @@ fn traverseSingleEqnsforAssignable(mut inAss: metamodelica::Array<i32>, mut m: m
         eqnSize = (({let __elt = mapEqnIncRow.borrow()[(eqnColl-1) as usize].clone(); __elt}).len() as i32);
         if (({let __elt = m.borrow()[(e.clone()-1) as usize].clone(); __elt}).len() as i32) == eqnSize + 1 {
             if eqnSize == 1 {
-                DoubleEnded::push_back(delst.clone(), e.clone());
+                DoubleEnded::push_back(delst.clone(), e.clone())?;
             } else {
                 DoubleEnded::push_front(delst.clone(), e.clone());
             }
         }
     }
-    selectedrows = DoubleEnded::toListAndClear(delst, metamodelica::nil());
+    selectedrows = DoubleEnded::toListAndClear(delst, metamodelica::nil())?;
     Ok(selectedrows)
 }
 
@@ -3132,13 +3132,13 @@ fn traverseCollectiveEqnsforAssignable(mut inAss: metamodelica::Array<i32>, mut 
         eqnSize = (eqnLst.clone().len() as i32);
         if (({let __elt = m.borrow()[(e-1) as usize].clone(); __elt}).len() as i32) == eqnSize {
             if eqnSize == 1 {
-                DoubleEnded::push_back(delst.clone(), eqnColl);
+                DoubleEnded::push_back(delst.clone(), eqnColl)?;
             } else {
                 DoubleEnded::push_front(delst.clone(), eqnColl);
             }
         }
     }
-    selectedrows = DoubleEnded::toListAndClear(delst, metamodelica::nil());
+    selectedrows = DoubleEnded::toListAndClear(delst, metamodelica::nil())?;
     Ok(selectedrows)
 }
 

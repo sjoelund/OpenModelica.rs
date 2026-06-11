@@ -305,14 +305,14 @@ fn sample_seq() -> Arc<metamodelica::List<(Diff, Arc<metamodelica::List<ArcStr>>
 /// printActual prints equal + added tokens but suppresses deletions.
 #[test]
 fn print_actual_suppresses_deletions() {
-    let s = DiffAlgorithm::printActual::<ArcStr>(sample_seq(), Arc::new(to_str));
+    let s = DiffAlgorithm::printActual::<ArcStr>(sample_seq(), Arc::new(to_str)).unwrap();
     assert_eq!(s.as_str(), "ab");
 }
 
 /// printDiffXml wraps each chunk in its tag, including deletions.
 #[test]
 fn print_diff_xml_wraps_in_tags() {
-    let s = DiffAlgorithm::printDiffXml::<ArcStr>(sample_seq(), Arc::new(to_str));
+    let s = DiffAlgorithm::printDiffXml::<ArcStr>(sample_seq(), Arc::new(to_str)).unwrap();
     assert_eq!(s.as_str(), "<equal>a</equal><add>b</add><del>c</del>");
 }
 
@@ -320,14 +320,14 @@ fn print_diff_xml_wraps_in_tags() {
 /// terminal control sequences supplied by its `DiffStrings` override.
 #[test]
 fn print_diff_terminal_color_brackets_changes() {
-    let s = DiffAlgorithm::printDiffTerminalColor::<ArcStr>(sample_seq(), Arc::new(to_str));
+    let s = DiffAlgorithm::printDiffTerminalColor::<ArcStr>(sample_seq(), Arc::new(to_str)).unwrap();
     assert_eq!(s.as_str(), "a\u{1b}[4;32mb\u{1b}[0m\u{1b}[9;31mc\u{1b}[0m");
 }
 
 /// All three printers return the empty string for an empty diff.
 #[test]
 fn print_functions_empty_input() {
-    assert_eq!(DiffAlgorithm::printActual::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).as_str(), "");
-    assert_eq!(DiffAlgorithm::printDiffXml::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).as_str(), "");
-    assert_eq!(DiffAlgorithm::printDiffTerminalColor::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).as_str(), "");
+    assert_eq!(DiffAlgorithm::printActual::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).unwrap().as_str(), "");
+    assert_eq!(DiffAlgorithm::printDiffXml::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).unwrap().as_str(), "");
+    assert_eq!(DiffAlgorithm::printDiffTerminalColor::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).unwrap().as_str(), "");
 }

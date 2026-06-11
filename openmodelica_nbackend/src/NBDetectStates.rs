@@ -173,7 +173,7 @@ fn detectStatesDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDat
             newEqData = BEquation::EqData::addTypedList(eqData, aux_eqns, EqData::EqType::CONTINUOUS.clone(), false)?;
             BEquation::EquationPointers::map(BEquation::EqData::getEquations(newEqData.clone())?, (std::sync::Arc::new({ let __pe_b1 = var_field!((*varData).state_order, VarData::VarData::VAR_DATA_SIM).clone(); move |__pe_a0| stateOrder(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
             if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? && !(UnorderedMap::isEmpty(var_field!((*varData).state_order, VarData::VarData::VAR_DATA_SIM).clone())) {
-                metamodelica::print((StringUtil::headline_4((literal!("[stateselection] State Order:")).clone())).clone());
+                metamodelica::print((StringUtil::headline_4((literal!("[stateselection] State Order:")).clone())?).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*UnorderedMap::toString(var_field!((*varData).state_order, VarData::VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("\n\t")).clone(), (literal!(" --d/dt--> ")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             (varData, newEqData)
@@ -203,7 +203,7 @@ fn detectContinuousStatesDefault(mut variables: Arc<VariablePointers::VariablePo
     (variables, unknowns, knowns, initials, states, derivatives, algebraics) = updateStatesAndDerivatives(variables, unknowns, knowns, initials, states, derivatives, algebraics, Pointer::access(acc_states), Pointer::access(acc_derivatives))?;
     aux_eqns = Pointer::access(acc_aux_equations);
     if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? && !(aux_eqns.clone().is_empty()) {
-        metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((aux_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!(") Created auxiliary equations:")); ArcStr::from(__mm_s) }).clone())).clone());
+        metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((aux_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!(") Created auxiliary equations:")); ArcStr::from(__mm_s) }).clone())?).clone());
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(aux_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((variables, unknowns, knowns, initials, states, derivatives, algebraics, aux_eqns))
@@ -328,7 +328,7 @@ fn updateStatesAndDerivatives(mut variables: Arc<VariablePointers::VariablePoint
     unknowns = BVariable::VariablePointers::removeList(acc_states.clone(), unknowns)?;
     algebraics = BVariable::VariablePointers::removeList(acc_states.clone(), algebraics)?;
     if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
-        metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((acc_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Natural states before index reduction:")); ArcStr::from(__mm_s) }).clone())).clone());
+        metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((acc_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Natural states before index reduction:")); ArcStr::from(__mm_s) }).clone())?).clone());
         if acc_states.clone().is_empty() {
             metamodelica::print((literal!("\t<no states>\n\n")).clone());
         } else {
@@ -446,17 +446,17 @@ fn updateDiscreteStatesAndPrevious(mut variables: Arc<VariablePointers::Variable
     discrete_states = BVariable::VariablePointers::removeList(acc_clocked_states.clone(), discrete_states)?;
     if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
         if !(acc_discrete_states.clone().is_empty()) {
-            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] Natural discrete states from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())).clone());
+            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] Natural discrete states from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())?).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_discrete_states, (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if !(acc_clocked_states.clone().is_empty()) {
-            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] Natural clocked states from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())).clone());
+            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] Natural clocked states from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())?).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_clocked_states, (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     if Flags::isSet(Flags::DUMP_DISCRETEVARS_INFO.clone())? {
         if !(acc_previous.clone().is_empty()) {
-            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[discreteinfo] pre() and previous() variables from ")); __mm_s.push_str(&*context); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())).clone());
+            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[discreteinfo] pre() and previous() variables from ")); __mm_s.push_str(&*context); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())?).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_previous, (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }

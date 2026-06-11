@@ -176,11 +176,11 @@ pub(crate) fn getClassnamesInElts(mut inAbsynElementItemLst: Arc<metamodelica::L
         let mut elt = elt.clone();
         let () = (::match_deref::match_deref! { match &(elt.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { baseClassName: id, .. }, .. }, .. }, .. } } => {
-            DoubleEnded::push_back(delst.clone(), (id.clone()).clone());
+            DoubleEnded::push_back(delst.clone(), (id.clone()).clone())?;
             ()
         },
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { name: id, .. }, .. }, .. } } => {
-            DoubleEnded::push_back(delst.clone(), (id.clone()).clone());
+            DoubleEnded::push_back(delst.clone(), (id.clone()).clone())?;
             ()
         },
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { variability: Absyn::Variability::CONST { .. }, .. }, components: lst, .. }, .. } } if (includeConstants) => {
@@ -193,7 +193,7 @@ pub(crate) fn getClassnamesInElts(mut inAbsynElementItemLst: Arc<metamodelica::L
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    outStringLst = DoubleEnded::toListAndClear(delst, metamodelica::nil());
+    outStringLst = DoubleEnded::toListAndClear(delst, metamodelica::nil())?;
     Ok(outStringLst)
 }
 

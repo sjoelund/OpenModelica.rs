@@ -244,7 +244,7 @@ pub mod IncidenceList {
         let mut r#str: ArcStr;
         let mut vertToString: VertexStr<VertexT> = il.vertToString.clone();
         let mut edgeToString: EdgeStr<EdgeT> = il.edgeToString.clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Set-Based Graph")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Set-Based Graph")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (Vector::toList(il.vertices.clone())).into_iter().cloned() {
@@ -494,21 +494,21 @@ pub mod BipartiteIncidenceList {
         } };
         vertToString = __pa0.clone();
         edgeToString = __pa1.clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Set-Based Graph")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("F-Vertices")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Set-Based Graph")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("F-Vertices")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (Vector::toList(il.F_vertices.clone())).into_iter().cloned() {
             let __x = vertToString(v.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("U-Vertices")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
+    }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("U-Vertices")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (Vector::toList(il.U_vertices.clone())).into_iter().cloned() {
             let __x = vertToString(v.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("Edges")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
+    }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("Edges")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (Vector::toList(il.edges.clone())).into_iter().cloned() {
             let __x = edgeToString(e.clone())?;

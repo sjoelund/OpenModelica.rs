@@ -183,7 +183,7 @@ pub(crate) fn getClock(mut part: Arc<NSimPartition>) -> Result<Arc<BClock::BCloc
 pub(crate) fn listToString(mut parts: Arc<metamodelica::List<Arc<NSimPartition>>>, mut r#str: ArcStr, mut header: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     let mut indent: ArcStr = r#str.clone();
-    r#str = (if (header.clone() != literal!("")) {StringUtil::headline_3((header).clone())} else {literal!("")}).clone();
+    r#str = (if (header.clone() != literal!("")) {StringUtil::headline_3((header).clone())?} else {literal!("")}).clone();
     for mut part in &*parts {
         let mut part = part.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(part.clone(), (indent.clone()).clone())?); ArcStr::from(__mm_s) }).clone();

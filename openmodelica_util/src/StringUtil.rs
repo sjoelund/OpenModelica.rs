@@ -55,28 +55,28 @@ pub(crate) const CHAR_DASH: i32 = 45;
 
 pub(crate) const CHAR_DOT: i32 = 46;
 
-pub fn headline_1(mut title: ArcStr) -> ArcStr {
+pub fn headline_1(mut title: ArcStr) -> Result<ArcStr> {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n\n    ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    header
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)?); __mm_s.push_str(&*literal!("\n\n    ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title).clone().len() as i32) + 8)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    Ok(header)
 }
 
-pub fn headline_2(mut title: ArcStr) -> ArcStr {
+pub fn headline_2(mut title: ArcStr) -> Result<ArcStr> {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    header
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)?); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title).clone().len() as i32) + 4)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    Ok(header)
 }
 
-pub fn headline_3(mut title: ArcStr) -> ArcStr {
+pub fn headline_3(mut title: ArcStr) -> Result<ArcStr> {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("-")).clone(), ((title).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    header
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("-")).clone(), ((title).clone().len() as i32) + 2)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    Ok(header)
 }
 
-pub fn headline_4(mut title: ArcStr) -> ArcStr {
+pub fn headline_4(mut title: ArcStr) -> Result<ArcStr> {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("*")).clone(), ((title).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    header
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("*")).clone(), ((title).clone().len() as i32) + 2)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    Ok(header)
 }
 
 pub fn findChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
@@ -210,15 +210,15 @@ pub(crate) fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimi
     Ok(outStrings)
 }
 
-pub fn repeat(mut r#str: ArcStr, mut n: i32) -> ArcStr {
+pub fn repeat(mut r#str: ArcStr, mut n: i32) -> Result<ArcStr> {
     let mut res: ArcStr = literal!("");
     let mut len: i32 = ((r#str.clone()).clone().len() as i32);
-    let mut ext: System::StringAllocator = System::StringAllocator(len * n).unwrap();
+    let mut ext: System::StringAllocator = System::StringAllocator(len * n)?;
     for mut i in 0..=n - 1 {
         System::stringAllocatorStringCopy(ext.clone(), (r#str.clone()).clone(), len * i.clone());
     }
     res = (System::stringAllocatorResult(ext, (res).clone())).clone();
-    res
+    Ok(res)
 }
 
 pub fn quote(mut inString: ArcStr) -> ArcStr {

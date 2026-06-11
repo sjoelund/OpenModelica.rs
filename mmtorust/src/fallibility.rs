@@ -371,8 +371,12 @@ struct McCheck {
 }
 
 impl Walk {
-    fn scan_class(c: &MM::Class) -> Self {
+    /// `inherited_scope` carries component names merged in from an `extends`
+    /// base (see [`node_component_names`]); they join `outer_scope` so calls
+    /// through an inherited function-typed input register as `calls_fn_value`.
+    fn scan_class(c: &MM::Class, inherited_scope: &BTreeSet<String>) -> Self {
         let mut w = Walk::default();
+        w.outer_scope.extend(inherited_scope.iter().cloned());
         let (algorithms, members) = match &c.body {
             MM::ClassDef::Parts { algorithms, external, members, .. } => {
                 if let Some(ext) = external {
@@ -473,8 +477,17 @@ impl Walk {
                 }
                 for it in &**elseBranch { self.scan_algorithm_item(it); }
             }
-            Absyn::Algorithm::ALG_FOR { forBody, .. }
-            | Absyn::Algorithm::ALG_PARFOR { parforBody: forBody, .. } => {
+            Absyn::Algorithm::ALG_FOR { iterators, forBody }
+            | Absyn::Algorithm::ALG_PARFOR { iterators, parforBody: forBody } => {
+                // The iterator range (`for x in <range> loop`) and any guard are
+                // evaluated before/around the loop body, so a fallible call in
+                // them (`for v in getVariables(c) loop …`) escapes the function
+                // just like a body call. Scanning only `forBody` missed these.
+                for it in &**iterators {
+                    let Absyn::ForIterator { range, guardExp, .. } = &**it;
+                    if let Some(r) = range.as_deref() { self.scan_exp(r); }
+                    if let Some(g) = guardExp.as_deref() { self.scan_exp(g); }
+                }
                 for it in &**forBody { self.scan_algorithm_item(it); }
             }
             Absyn::Algorithm::ALG_WHILE { boolExpr, whileBody } => {
@@ -1014,6 +1027,16 @@ fn cref_to_dotted(cref: &Absyn::ComponentRef) -> String {
     }
 }
 
+/// Dotted form of an `Absyn::Path` (e.g. `List.map`), for resolving `extends`
+/// base-class paths.
+fn path_to_dotted(path: &Absyn::Path) -> String {
+    match path {
+        Absyn::Path::IDENT { name } => name.to_string(),
+        Absyn::Path::QUALIFIED { name, path } => format!("{name}.{}", path_to_dotted(path)),
+        Absyn::Path::FULLYQUALIFIED { path } => path_to_dotted(path),
+    }
+}
+
 /// Pick the external C symbol used by an `external "C" ...` declaration.
 ///
 /// Modelica allows omitting the explicit funcName, in which case the enclosing
@@ -1030,26 +1053,50 @@ fn external_symbol_name(decl: &Absyn::ExternalDecl, fallback_fn_name: &str) -> S
 /// fully-qualified MM name. Mirrors the convention used throughout codegen
 /// (dot-separated, top-level package first).
 ///
-/// Also records the resolved [`Ty::FunctionAlias`] base name (if any), so the
-/// fallibility analysis can propagate fallibility through `function Foo = Bar`
-/// aliases without re-resolving them later.
+/// Collects the [`NameNode`] of every R_FUNCTION class so the analysis can see
+/// not just the raw AST body but the *resolved* picture: inherited components
+/// (merged into `node.children` by `flatten_extends`) and the `extends` links to
+/// any partial base function whose algorithm is inlined at codegen time.
 fn collect_functions<'a>(
-    nodes: &BTreeMap<String, NameNode<'a>>,
+    nodes: &'a BTreeMap<String, NameNode<'a>>,
     prefix: &str,
-    out: &mut Vec<(String, &'a MM::Class, Option<String>)>,
+    out: &mut Vec<(String, &'a NameNode<'a>)>,
 ) {
     for (name, node) in nodes {
         let qname = if prefix.is_empty() { name.clone() } else { format!("{prefix}.{name}") };
         if let NodeKind::Class(c) = &node.kind
             && matches!(c.restriction, Absyn::Restriction::R_FUNCTION { .. }) {
-                let alias_base = match &node.ty {
-                    Ty::FunctionAlias { base, .. } => Some(base.clone()),
-                    _ => None,
-                };
-                out.push((qname.clone(), *c, alias_base));
+                out.push((qname.clone(), node));
             }
         collect_functions(&node.children, &qname, out);
     }
+}
+
+/// Does a function class carry an algorithm section of its own? A function that
+/// `extends` a partial base but has no body inlines the base's algorithm at
+/// codegen time (see `emit_function`'s `inherited_alg_base`), so its
+/// fallibility must include the base's — see the `base_fn` edges in [`analyze`].
+fn class_has_own_algorithm(c: &MM::Class) -> bool {
+    match &c.body {
+        MM::ClassDef::Parts { algorithms, .. } | MM::ClassDef::ClassExtends { algorithms, .. } =>
+            !algorithms.is_empty(),
+        _ => false,
+    }
+}
+
+/// Names of every component (input/output/protected) visible on a function
+/// node, *including those merged in from a base via `extends`*. The raw AST
+/// `MM::Class` body only lists the function's own components, so inherited
+/// function-typed inputs (the `toString`/`func` callbacks of a partial base)
+/// would be invisible to [`Walk::record_call`] — and a call through one would
+/// not register as `calls_fn_value`. `flatten_extends` records the merged set in
+/// `node.children`, so read the component children from there.
+fn node_component_names(node: &NameNode<'_>) -> BTreeSet<String> {
+    node.children
+        .iter()
+        .filter(|(_, c)| matches!(c.kind, NodeKind::Component(_)))
+        .map(|(n, _)| n.clone())
+        .collect()
 }
 
 /// Resolve a raw callee name to its fully-qualified MM name relative to the
@@ -1079,8 +1126,43 @@ fn resolve_called_qname<'a>(
 /// the fixed point of "is fallible".  Panics if it encounters an unlisted
 /// external "C" symbol — see [`crate::external_c_calls::lookup_or_panic`].
 pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
-    let mut functions: Vec<(String, &MM::Class, Option<String>)> = Vec::new();
+    let mut functions: Vec<(String, &NameNode<'_>)> = Vec::new();
     collect_functions(&hier.top_level, "", &mut functions);
+
+    // Map each function node's underlying `MM::Class` pointer to its FQN, so a
+    // `base_fn` link (a bare `&MM::Class` with no name attached) can be turned
+    // back into the qname of the in-`walks` base function. Also index every
+    // function node by FQN to look up a resolved `extends` base's components.
+    let mut ptr_to_qname: std::collections::HashMap<*const MM::Class, String> = std::collections::HashMap::new();
+    let mut node_by_qname: std::collections::HashMap<&str, &NameNode<'_>> = std::collections::HashMap::new();
+    for (q, n) in &functions {
+        if let NodeKind::Class(c) = &n.kind {
+            ptr_to_qname.insert(*c as *const MM::Class, q.clone());
+        }
+        node_by_qname.insert(q.as_str(), n);
+    }
+
+    // Resolve the base function(s) a derived function `extends`. A function
+    // `extends`ing a partial base inherits that base both for codegen (the
+    // base's algorithm is inlined, or at minimum its inputs/outputs are merged
+    // into the signature) and for fallibility. Sources, both kept:
+    //   * `node.extends` — `function F extends G(...);` paths, resolved by name
+    //     (the common sibling-partial-function case).
+    //   * `node.base_fn` — the precomputed link for header-form / package
+    //     `extends`, where by-name resolution may miss the base package.
+    let resolve_bases = |qname: &str, node: &NameNode<'_>| -> Vec<String> {
+        let mut bases: Vec<String> = Vec::new();
+        for ext in &node.extends {
+            let dotted = path_to_dotted(&ext.path);
+            if let Some(b) = resolve_called_qname(&dotted, qname, &hier.top_level) {
+                bases.push(b);
+            }
+        }
+        if let Some(b) = node.base_fn.and_then(|bf| ptr_to_qname.get(&(bf as *const MM::Class)).cloned()) {
+            bases.push(b);
+        }
+        bases
+    };
 
     // Per-function scan results, keyed by FQN. Storing the Walk separately
     // from the fallibility set keeps the propagation loop allocation-free.
@@ -1091,14 +1173,45 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
     // the rest of the call edges so the alias inherits its target's
     // fallibility classification.
     let mut alias_bases: BTreeMap<String, String> = BTreeMap::new();
-    for (qname, class, alias_base) in &functions {
-        let w = Walk::scan_class(class);
+    // Inherited-algorithm edges, keyed by derived-function FQN → base-function
+    // FQN(s). A body-less function that `extends` a partial base inlines the
+    // base's algorithm at codegen time, so it inherits the base's fallibility
+    // (e.g. `DiffAlgorithm.printActual extends partialPrintDiff`, whose inlined
+    // body calls the `toString` callback and the fallible `Print.*` builtins).
+    let mut base_fn_edges: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for (qname, node) in &functions {
+        let NodeKind::Class(class) = &node.kind else { continue };
+        let bases = resolve_bases(qname, node);
+        // Scope visible to the body = this function's own + inherited
+        // components, PLUS the components of any `extends` base. When the base's
+        // algorithm is inlined into this AST body (as happens for some nested
+        // functions, e.g. `NBEquation.Equation.simplify.apply extends
+        // MapFuncExpWrapper`), the base's function-typed inputs (`func`) are not
+        // copied into this node's children, yet the inlined body calls them —
+        // so a call through one only registers as `calls_fn_value` if the
+        // base's input names are in scope here.
+        let mut inherited_scope = node_component_names(node);
+        for base_q in &bases {
+            if let Some(base_node) = node_by_qname.get(base_q.as_str()) {
+                inherited_scope.extend(node_component_names(base_node));
+            }
+        }
+        let w = Walk::scan_class(class, &inherited_scope);
         if w.external.is_some() {
             external_count += 1;
         }
         walks.insert(qname.clone(), w);
-        if let Some(base) = alias_base {
+        if let Ty::FunctionAlias { base, .. } = &node.ty {
             alias_bases.insert(qname.clone(), base.clone());
+        }
+        // Only when the derived function has no algorithm of its own does
+        // codegen inline the base's body (matching `inherited_alg_base`); a
+        // function that extends a base purely for its signature but supplies
+        // its own body does not inherit the base's calls. (When the base's
+        // body was already inlined into this AST, it is scanned directly above,
+        // and the base-component scope handles its callbacks.)
+        if !class_has_own_algorithm(class) && !bases.is_empty() {
+            base_fn_edges.insert(qname.clone(), bases);
         }
     }
 
@@ -1148,6 +1261,16 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
                 && matches!(b, Fallibility::Fallible) {
                     rs.always = true;
                 }
+        }
+        // A body-less function that `extends` a partial base inlines that
+        // base's algorithm, so it inherits the base's fallibility. Only edges
+        // to user-defined functions present in `walks` matter.
+        if let Some(bases) = base_fn_edges.get(qname) {
+            for base_q in bases {
+                if walks.contains_key(base_q) {
+                    rs.edges.insert(base_q.clone());
+                }
+            }
         }
         resolved.insert(qname.clone(), rs);
     }
@@ -1252,17 +1375,42 @@ fn resolve_walk(
         // If the name resolves to a node in the hierarchy, record the
         // edge for fixed-point propagation. Otherwise fall through to
         // the builtin table.
-        if let Some(target) = resolve_called_qname(raw, caller_qname, top_level) {
+        if let Some((target, node)) = resolve_call_node(raw, top_level, caller_qname) {
             if walks.contains_key(&target) {
+                // A user function shadows any same-named builtin (e.g. `exp`
+                // inside `Template.TplMain` refers to the AST-printer, not the
+                // math `exp` builtin), so record the edge and stop here.
                 rs.edges.insert(target);
+                continue;
             }
-            // Else: target resolves to a non-function node (record/type
-            // constructor, partial-application reference, etc.) — drop
-            // the edge, constructors never fail in our lowering.
-            continue;
+            if crate::hierarchy::is_external_object_class(node) {
+                // A call to an ExternalObject class constructs it via its inner
+                // `constructor`. Codegen emits every such constructor as an
+                // unimplemented `todo!()` stub returning `Result<Foo>` (the
+                // runtime `external "C"` symbol is not yet wired up — see
+                // `emit_external_object`), so calling one is unconditionally
+                // fallible regardless of the underlying C symbol's own
+                // classification. Mark the caller fallible to match.
+                rs.always = true;
+                continue;
+            }
+            // Resolved to some other non-function node (record/type
+            // constructor, package, partial-application reference, …). Those
+            // never fail in our lowering — except when the name actually
+            // denotes a builtin reached through an import alias, which the
+            // builtin fallback below recognises by its trailing segment.
         }
-        // Unresolved as a user function: consult the builtin table.
-        if let Some(b) = builtin_fallibility(raw) {
+        // Consult the builtin table, trying the full dotted name first and
+        // then the trailing segment. The trailing-segment form catches
+        // builtins referenced through an import alias — `import
+        // MetaModelica.Dangerous;` then `Dangerous.listSetRest(...)` records
+        // the qualified name, but the table is keyed by the bare builtin name
+        // (`listSetRest`), so the qualified form would otherwise be dropped
+        // and its (genuine) fallibility lost. A user function of the same bare
+        // name was already handled above (it resolves into `walks`), so this
+        // cannot mis-shadow one.
+        let bare = raw.rsplit('.').next().unwrap_or(raw);
+        if let Some(b) = builtin_fallibility(raw).or_else(|| builtin_fallibility(bare)) {
             if matches!(b, Fallibility::Fallible) {
                 rs.always = true;
             }

@@ -697,7 +697,7 @@ pub mod Function {
             Error::addSourceMessage(Error::UNKNOWN_ERROR_INST_FUNCTION.clone(), list![(SCodeDump::unparseElementStr(def.clone(), SCodeDump::defaultOptions.clone())?).clone()], SCodeUtil::elementInfo(def.clone()))?;
             bail!("fail");
         }
-        cmts = InstNode::getComments(fnNode.clone(), metamodelica::nil());
+        cmts = InstNode::getComments(fnNode.clone(), metamodelica::nil())?;
         InstNode::cacheInitFunc(fnNode.clone())?;
         Inst::instExpressions(fnNode.clone(), fnNode.clone(), crate::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), context, Inst::InstSettings::create()?)?;
         Ok((fnNode, cmts))

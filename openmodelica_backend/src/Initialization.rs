@@ -642,13 +642,13 @@ fn warnAboutVars2(mut vars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<
         }
         __acc
     }) + len * 10;
-    outString = (warnAboutVars2Work(strs, (literal!("         ")).clone(), (literal!("\n")).clone(), size)).clone();
+    outString = (warnAboutVars2Work(strs, (literal!("         ")).clone(), (literal!("\n")).clone(), size)?).clone();
     Ok(outString)
 }
 
-fn warnAboutVars2Work(mut strs: Arc<metamodelica::List<ArcStr>>, mut prefix: ArcStr, mut suffix: ArcStr, mut size: i32) -> ArcStr {
+fn warnAboutVars2Work(mut strs: Arc<metamodelica::List<ArcStr>>, mut prefix: ArcStr, mut suffix: ArcStr, mut size: i32) -> Result<ArcStr> {
     let mut s: ArcStr = literal!("");
-    let mut sb: System::StringAllocator = System::StringAllocator(size).unwrap();
+    let mut sb: System::StringAllocator = System::StringAllocator(size)?;
     let mut i: i32 = 0;
     for mut r#str in &*strs {
         let mut r#str = r#str.clone();
@@ -660,7 +660,7 @@ fn warnAboutVars2Work(mut strs: Arc<metamodelica::List<ArcStr>>, mut prefix: Arc
         i = i + ((suffix.clone()).clone().len() as i32);
     }
     s = (System::stringAllocatorResult(sb, (s).clone())).clone();
-    s
+    Ok(s)
 }
 
 fn warnAboutEqns2(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<ArcStr> {
@@ -1095,8 +1095,8 @@ fn analyzeInitialSystem(mut inInitDAE: Arc<BackendDAE::BackendDAE>, mut inInitVa
     }
     dae = Arc::new(BackendDAE::BackendDAE { eqs: eqs, shared: inInitDAE.shared.clone() });
     (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(dae, (std::sync::Arc::new({ let __pe_b3 = inInitVars; let __pe_b4 = dumpVars.clone(); let __pe_b5 = removedEqns.clone(); move |__pe_a0, __pe_a1, __pe_a2| func(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32)> + 'static>), 0)?;
-    outRemovedEqns = DoubleEnded::toListAndClear(removedEqns, metamodelica::nil());
-    outDumpVars = DoubleEnded::toListAndClear(dumpVars, metamodelica::nil());
+    outRemovedEqns = DoubleEnded::toListAndClear(removedEqns, metamodelica::nil())?;
+    outDumpVars = DoubleEnded::toListAndClear(dumpVars, metamodelica::nil())?;
     Ok((outDAE, outDumpVars, outRemovedEqns))
 }
 

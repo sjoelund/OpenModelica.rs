@@ -104,12 +104,12 @@ pub type MATCHING = NBMatching;
 thread_local! { static __EMPTY_MATCHING_TLS: Arc<NBMatching> = Arc::new(NBMatching { var_to_eqn: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), eqn_to_var: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }); }
 pub(crate) fn EMPTY_MATCHING() -> Arc<NBMatching> { __EMPTY_MATCHING_TLS.with(|__t| __t.clone()) }
 
-pub(crate) fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> ArcStr {
+pub(crate) fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("Scalar Matching")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toStringSingle(matching.var_to_eqn.clone(), false)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toStringSingle(matching.eqn_to_var.clone(), true)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    r#str
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("Scalar Matching")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toStringSingle(matching.var_to_eqn.clone(), false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toStringSingle(matching.eqn_to_var.clone(), true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    Ok(r#str)
 }
 
 pub(crate) fn trivial(mut n: i32) -> Arc<NBMatching> {
@@ -305,16 +305,16 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
     Ok((matched_vars, unmatched_vars, matched_eqns, unmatched_eqns))
 }
 
-fn toStringSingle(mut mapping: metamodelica::Array<i32>, mut inverse: bool) -> ArcStr {
+fn toStringSingle(mut mapping: metamodelica::Array<i32>, mut inverse: bool) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut head: ArcStr = if (inverse) {literal!("equation to variable")} else {literal!("variable to equation")};
     let mut from: ArcStr = if (inverse) {literal!("eqn")} else {literal!("var")};
     let mut to: ArcStr = if (inverse) {literal!("var")} else {literal!("eqn")};
-    r#str = (StringUtil::headline_4((head).clone())).clone();
+    r#str = (StringUtil::headline_4((head).clone())?).clone();
     for mut i in 1..=metamodelica::arrayLength(mapping.clone()) {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*from.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(" --> ")); __mm_s.push_str(&*to.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(({let __elt = mapping.borrow()[(i.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     }
-    r#str
+    Ok(r#str)
 }
 
 fn scalarMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut transposed: bool, mut partially: bool) -> Result<(Arc<NBMatching>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {

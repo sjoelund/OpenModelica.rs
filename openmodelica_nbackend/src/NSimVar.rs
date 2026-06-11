@@ -213,7 +213,7 @@ pub mod SimVar {
     pub(crate) fn listToString(mut var_lst: Arc<metamodelica::List<Arc<SimVar>>>, mut r#str: ArcStr, mut printAlias: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         if !(var_lst.clone().is_empty()) {
-            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((var_lst.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
+            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((var_lst.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?).clone();
             for mut var in &*var_lst {
                 let mut var = var.clone();
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(var.clone(), (literal!("  ")).clone())?); ArcStr::from(__mm_s) }).clone();
@@ -960,7 +960,7 @@ pub mod SimVars {
 
     pub(crate) fn toString(mut vars: Arc<SimVars>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        r#str = (StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimVars ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())).clone();
+        r#str = (StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimVars ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())?).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.stateVars.clone(), (literal!("States")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.derivativeVars.clone(), (literal!("Derivatives")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.algVars.clone(), (literal!("Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();

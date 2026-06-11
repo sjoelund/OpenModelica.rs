@@ -5640,7 +5640,7 @@ pub(crate) fn reorderConnectEquationsExpandable(mut cache: FCore::Cache, mut env
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    DoubleEnded::push_back(delst.clone(), eq.clone());
+                    DoubleEnded::push_back(delst.clone(), eq.clone())?;
                     Ok(false)
                 }
                 _ => bail!("nomatch"),
@@ -5669,7 +5669,7 @@ pub(crate) fn reorderConnectEquationsExpandable(mut cache: FCore::Cache, mut env
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outEquations = DoubleEnded::toListAndClear(delst, metamodelica::nil());
+    outEquations = DoubleEnded::toListAndClear(delst, metamodelica::nil())?;
     Ok((cache, outEquations))
 }
 

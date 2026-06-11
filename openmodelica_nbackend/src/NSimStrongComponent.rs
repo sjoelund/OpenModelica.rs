@@ -586,7 +586,7 @@ pub mod Block {
     pub(crate) fn listToString(mut blcks: Arc<metamodelica::List<Arc<Block>>>, mut r#str: ArcStr, mut header: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         let mut indent: ArcStr = r#str.clone();
-        r#str = (if (header.clone() != literal!("")) {StringUtil::headline_3((header).clone())} else {literal!("")}).clone();
+        r#str = (if (header.clone() != literal!("")) {StringUtil::headline_3((header).clone())?} else {literal!("")}).clone();
         for mut blck in &*blcks {
             let mut blck = blck.clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(blck.clone(), (indent.clone()).clone())?); ArcStr::from(__mm_s) }).clone();

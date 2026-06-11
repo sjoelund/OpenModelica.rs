@@ -814,7 +814,7 @@ pub(crate) fn zeroCrossingSize(mut zc: ZeroCrossing) -> Result<i32> {
 pub fn add(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<()> {
     let mut addedCell: Arc<metamodelica::List<ZeroCrossing>>;
     if !(contains(zc_set.clone(), zc.clone())?) {
-        DoubleEnded::push_back(zc_set.zc.clone(), zc.clone());
+        DoubleEnded::push_back(zc_set.zc.clone(), zc.clone())?;
         addedCell = DoubleEnded::currentBackCell(zc_set.zc.clone());
         metamodelica::arrayUpdate(zc_set.tree.clone(), 1, ZeroCrossingTree::add(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc, addedCell, (std::sync::Arc::new(ZeroCrossingTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
     }
