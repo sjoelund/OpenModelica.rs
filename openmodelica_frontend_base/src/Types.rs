@@ -9217,7 +9217,7 @@ pub fn getMetaRecordFields(mut ty: Arc<DAE::Type>) -> Result<Arc<metamodelica::L
     Ok(fields)
 }
 
-pub fn getMetaRecordIfSingleton(mut ty: Arc<DAE::Type>) -> Arc<DAE::Type> {
+pub fn getMetaRecordIfSingleton(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     let mut oty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     oty = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_METAUNIONTYPE { knownSingleton: false, .. } => {
@@ -9228,7 +9228,7 @@ pub fn getMetaRecordIfSingleton(mut ty: Arc<DAE::Type>) -> Arc<DAE::Type> {
             setTypeVariables(oty.clone(), var_field!((*ty).typeVars, DAE::Type::T_METAUNIONTYPE).clone())
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun }, .. } => {
-            oty = fun().unwrap();
+            oty = fun()?;
             setTypeVariables(oty.clone(), var_field!((*ty).typeVars, DAE::Type::T_METAUNIONTYPE).clone())
         },
         _ => {
@@ -9236,7 +9236,7 @@ pub fn getMetaRecordIfSingleton(mut ty: Arc<DAE::Type>) -> Arc<DAE::Type> {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    oty
+    Ok(oty)
 }
 
 pub fn setTypeVariables(mut ty: Arc<DAE::Type>, mut typeVars: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Arc<DAE::Type> {

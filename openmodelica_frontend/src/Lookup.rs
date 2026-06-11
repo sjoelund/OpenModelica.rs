@@ -3408,7 +3408,7 @@ fn lookupVarFMetaModelica(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         _ => bail!("match: no arm matched"),
     } });
             }
-            ty = Types::getMetaRecordIfSingleton(ty);
+            ty = Types::getMetaRecordIfSingleton(ty)?;
             (attr, ty, binding, cnstForRange, name)
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
@@ -3430,7 +3430,7 @@ fn lookupVarFMetaModelica(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         _ => bail!("match: no arm matched"),
     } });
             }
-            ty = Types::getMetaRecordIfSingleton(ty);
+            ty = Types::getMetaRecordIfSingleton(ty)?;
             (cache, attr, ty, binding, cnstForRange, name) = lookupVarFMetaModelica(cache, inEnv, var_field!((*cr).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), ty)?;
             (attr, ty, binding, cnstForRange, name)
         },

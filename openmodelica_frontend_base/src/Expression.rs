@@ -7107,7 +7107,7 @@ pub fn traverseCrefsFromExp<Type_a: Clone + 'static + metamodelica::gc::MMTrace 
     outArg = (match inArg.clone() {
         _ => {
             let mut arg: Type_a;
-            let (_, (_, __pa0)) = traverseExpBottomUp(inExp, std::sync::Arc::new(fnptr!(traversingCrefFinder, Arc<DAE::Exp>, _)), (inFunc.clone(), inArg))?;
+            let (_, (_, __pa0)) = traverseExpBottomUp(inExp, (std::sync::Arc::new(traversingCrefFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (inFunc.clone(), inArg))?;
             arg = __pa0.clone();
             arg.clone()
         },
@@ -7115,7 +7115,7 @@ pub fn traverseCrefsFromExp<Type_a: Clone + 'static + metamodelica::gc::MMTrace 
     Ok(outArg)
 }
 
-fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) -> (Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) {
+fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a))> {
     pub type FuncCrefTypeA<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -7123,7 +7123,7 @@ fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::gc::MMTrace + me
     (outExp, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
         (Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, (func, arg)) => {
             let mut arg1: Type_a;
-            arg1 = func(cr.clone(), arg.clone()).unwrap();
+            arg1 = func(cr.clone(), arg.clone())?;
             (inExp, if (metamodelica::ReferenceEq::reference_eq(&(arg.clone()), &(arg1.clone()))) {inTpl} else {(func.clone(), arg1.clone())})
         },
         _ => {
@@ -7131,7 +7131,7 @@ fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::gc::MMTrace + me
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (outExp, outTpl)
+    Ok((outExp, outTpl))
 }
 
 pub(crate) fn extractDivExpFromExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {

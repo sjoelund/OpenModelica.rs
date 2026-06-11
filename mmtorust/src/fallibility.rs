@@ -584,22 +584,43 @@ impl Walk {
                     // A failure inside a `match` arm (guard, body, or result)
                     // escapes the match — there is no fall-through to the
                     // next arm — so arm contents are scanned into `self`.
+                    //
+                    // Scanning into `self` means `record_call` consults
+                    // `self.outer_scope` to recognise calls through a
+                    // function-typed local (see [`Walk::calls_fn_value`]). The
+                    // names a pattern binds — and any `local`-declared helpers —
+                    // are in scope inside the arm but are NOT function-level
+                    // components, so they must be layered onto `outer_scope` for
+                    // the duration of the arm. Without this, a callback bound by
+                    // a pattern (`case SOME(cond) ... cond(e)`, the
+                    // `FuncTypeExp_ExpToBoolean` pattern in
+                    // `BackendVarTransform.replaceExpCond`) is missed, the
+                    // function is mis-classified infallible, and codegen emits a
+                    // latent `.unwrap()` on the callback's `Result` instead of
+                    // propagating the failure. The enclosing scope is saved and
+                    // restored so a match nested in another arm sees the correct
+                    // lexical scope. Mirrors the per-arm scope construction in
+                    // the `matchcontinue` branch below.
+                    let saved_scope = std::mem::take(&mut self.outer_scope);
+                    let mut match_scope = saved_scope.clone();
+                    collect_local_decl_names(localDecls, &mut match_scope);
                     for case in &**cases {
-                        match &**case {
-                            Absyn::Case::CASE { pattern, patternGuard, localDecls: case_decls, classPart, result, .. } => {
-                                self.scan_exp(pattern);
-                                if let Some(g) = patternGuard.as_deref() { self.scan_exp(g); }
-                                self.scan_local_decl_defaults(case_decls);
-                                self.scan_class_part(classPart);
-                                self.scan_exp(result);
-                            }
-                            Absyn::Case::ELSE { localDecls: case_decls, classPart, result, .. } => {
-                                self.scan_local_decl_defaults(case_decls);
-                                self.scan_class_part(classPart);
-                                self.scan_exp(result);
-                            }
-                        }
+                        let (case_decls, guard, pattern, class_part, result) = match &**case {
+                            Absyn::Case::CASE { pattern, patternGuard, localDecls: case_decls, classPart, result, .. } =>
+                                (case_decls, patternGuard.as_deref(), Some(&**pattern), classPart, result),
+                            Absyn::Case::ELSE { localDecls: case_decls, classPart, result, .. } =>
+                                (case_decls, None, None, classPart, result),
+                        };
+                        let mut scope = match_scope.clone();
+                        collect_local_decl_names(case_decls, &mut scope);
+                        self.outer_scope = scope;
+                        if let Some(p) = pattern { self.scan_exp(p); }
+                        if let Some(g) = guard { self.scan_exp(g); }
+                        self.scan_local_decl_defaults(case_decls);
+                        self.scan_class_part(class_part);
+                        self.scan_exp(result);
                     }
+                    self.outer_scope = saved_scope;
                 } else {
                     // `matchcontinue`: a failing arm falls through to the
                     // next arm, so nothing inside an arm escapes directly.

@@ -698,7 +698,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: t }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1: Arc<DAE::Exp>;
                     let mut e2: Arc<DAE::Exp>;
                     let mut cr = (*cr).clone();
@@ -713,7 +713,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: t }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e2: Arc<DAE::Exp>;
                     let mut e3: Arc<DAE::Exp>;
                     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
@@ -743,7 +743,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: t }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut cr = (*cr).clone();
                     let __pa0 = ::match_deref::match_deref! { match &(replaceCrefSubs(cr.clone(), repl.clone(), cond.clone())?) {
                         (__pa0, true) => __pa0.clone(),
@@ -758,7 +758,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut e2_1: Arc<DAE::Exp>;
                     let mut c1: bool;
@@ -774,7 +774,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut e2_1: Arc<DAE::Exp>;
                     let mut c1: bool;
@@ -790,7 +790,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::UNARY { operator: op, exp: e1 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e1.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -805,7 +805,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::LUNARY { operator: op, exp: e1 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e1.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -835,7 +835,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::IFEXP { expCond: e1, expThen: e2, expElse: e3 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut e2_1: Arc<DAE::Exp>;
                     let mut e3_1: Arc<DAE::Exp>;
@@ -869,7 +869,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path, expLst: expl, attr }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut cr: Arc<DAE::ComponentRef>;
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -974,7 +974,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::PARTEVALFUNCTION { path, expList: expl, ty: tp, origType: t }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExpList(expl.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -989,7 +989,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { ty: tp, scalar: c, array: expl }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExpList(expl.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -1004,7 +1004,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::MATRIX { ty: t, integer: b, matrix: bexpl }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut bexpl_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExpMatrix(bexpl.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -1019,7 +1019,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::RANGE { ty: tp, start: e1, step: None, stop: e2 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut e2_1: Arc<DAE::Exp>;
                     let mut c1: bool;
@@ -1035,7 +1035,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::RANGE { ty: tp, start: e1, step: Some(e3), stop: e2 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut e2_1: Arc<DAE::Exp>;
                     let mut e3_1: Arc<DAE::Exp>;
@@ -1054,7 +1054,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::TUPLE { PR: expl }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExpList(expl.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -1069,7 +1069,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CAST { ty: tp, exp: e1 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e1.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -1084,7 +1084,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ASUB { exp: e1, sub: subs }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut c1: bool;
@@ -1102,7 +1102,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::TSUB { exp: e1, ix: i, ty: tp }, repl, cond) => {
                     let mut e1_1: Arc<DAE::Exp>;
-                    let true = (replaceExpCond(cond.clone(), e1.clone())) else { bail!("pattern mismatch") };
+                    let true = (replaceExpCond(cond.clone(), e1.clone())?) else { bail!("pattern mismatch") };
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e1.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -1116,7 +1116,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::SIZE { exp: e1, sz: Some(e2) }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut e2_1: Arc<DAE::Exp>;
                     let mut c1: bool;
@@ -1141,7 +1141,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::REDUCTION { reductionInfo, expr: e1, iterators: iters }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let mut iters = (*iters).clone();
                     (e1_1, _) = replaceExp(e1.clone(), repl.clone(), cond.clone());
@@ -1158,7 +1158,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BOX { exp: e1 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e1.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -1173,7 +1173,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::UNBOX { ty: tp, exp: e1 }, repl, cond) => {
-                    if !((replaceExpCond(cond.clone(), e.clone()))) { bail!("guard") }
+                    if !((replaceExpCond(cond.clone(), e.clone())?)) { bail!("guard") }
                     let mut e1_1: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e1.clone(), repl.clone(), cond.clone())) {
                         (__pa0, true) => __pa0.clone(),
@@ -1426,12 +1426,12 @@ fn replaceExpIters(mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterato
     (outIter, replacementPerformed)
 }
 
-fn replaceExpCond(mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inExp: Arc<DAE::Exp>) -> bool {
+fn replaceExpCond(mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &((inFuncTypeExpExpToBooleanOption, inExp)) {
         (Some(cond), e) => {
             let mut res: bool;
-            res = cond(e.clone()).unwrap();
+            res = cond(e.clone())?;
             res.clone()
         },
         _ => {
@@ -1439,7 +1439,7 @@ fn replaceExpCond(mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outBoolean
+    Ok(outBoolean)
 }
 
 fn replaceExpMatrix(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, bool) {

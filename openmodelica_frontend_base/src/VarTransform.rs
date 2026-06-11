@@ -1249,7 +1249,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
     let mut outExp: Arc<DAE::Exp>;
     let mut replacementPerformed: bool;
     outExp = inExp.clone();
-    if replaceExpCond(inCondition.clone(), inExp.clone()) {
+    if replaceExpCond(inCondition.clone(), inExp.clone())? {
         (outExp, _) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new({ let __pe_b1 = inVarReplacements; let __pe_b2 = inCondition; move |__pe_a0, __pe_a3| replaceExpCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), true)?;
     }
     replacementPerformed = !(referenceEq(&*(outExp.clone()),&*(inExp)));
@@ -1261,7 +1261,7 @@ fn replaceExpCref(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
 
     let mut outExp: Arc<DAE::Exp>;
     let mut replacementPerformed: bool;
-    if !(replaceExpCond(inCondition, inExp.clone())) {
+    if !(replaceExpCond(inCondition, inExp.clone())?) {
         Error::addInternalError((literal!("Got exp to replace when condition is not allowing replacements. Check traversal.")).clone(), metamodelica::sourceInfo!("Util/VarTransform.mo"))?;
     }
     replacementPerformed = false;
@@ -1304,14 +1304,14 @@ pub(crate) fn replaceExpList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
     Ok((outExpl, replacementPerformed))
 }
 
-fn replaceExpCond(mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inExp: Arc<DAE::Exp>) -> bool {
+fn replaceExpCond(mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     pub type FuncTypeExp_ExpToBoolean = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>;
 
     let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &((inFuncTypeExpExpToBooleanOption, inExp)) {
         (Some(cond), e) => {
             let mut res: bool;
-            res = cond(e.clone()).unwrap();
+            res = cond(e.clone())?;
             res.clone()
         },
         _ => {
@@ -1319,7 +1319,7 @@ fn replaceExpCond(mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outBoolean
+    Ok(outBoolean)
 }
 
 fn replaceExpMatrix(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, bool)> {
