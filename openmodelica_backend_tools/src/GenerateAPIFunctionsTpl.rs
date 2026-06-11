@@ -9,15 +9,15 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::CodegenUtil;
 use openmodelica_ast::Absyn;
+use openmodelica_backend::CodegenUtil;
 use openmodelica_frontend_base::Types;
 use openmodelica_frontend_base::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::Values;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
@@ -30,7 +30,7 @@ fn lm_43(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>)
             let mut ret_0: ArcStr;
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
             txt = getCevalScriptInterfaceFunc(txt.clone(), (ret_0.clone()).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         _ => {
@@ -217,14 +217,14 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.Value ")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_arr;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_postMatch = Tpl::writeText(a_postMatch.clone(), a_name.clone())?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" := ")).clone() }))?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_arr")).clone() }))?;
             (a_postMatch, txt_0) = getOutValueArray(a_postMatch.clone(), txt_0.clone(), i_aty.clone())?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-            a_postMatch = Tpl::writeTok(a_postMatch.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_postMatch = Tpl::writeTok(a_postMatch.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_arr")).clone() }))?;
             (txt.clone(), a_varDecl.clone(), a_postMatch.clone())
@@ -236,12 +236,12 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Absyn.Path ")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_path;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_postMatch = Tpl::writeText(a_postMatch.clone(), a_name.clone())?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" := AbsynUtil.pathString(")).clone() }))?;
             a_postMatch = Tpl::writeText(a_postMatch.clone(), a_name.clone())?;
             a_postMatch = Tpl::writeTok(a_postMatch.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_path);")).clone() }))?;
-            a_postMatch = Tpl::writeTok(a_postMatch.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_postMatch = Tpl::writeTok(a_postMatch.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.CODE(Absyn.C_TYPENAME(path=")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_path))")).clone() }))?;
@@ -407,7 +407,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postMatc
             let mut a_postMatch = (*a_postMatch).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.TUPLE({")).clone() }))?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_postMatch, a_varDecl) = lm_53(txt.clone(), i_types.clone(), a_postMatch.clone(), a_varDecl.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("})")).clone() }))?;
@@ -480,7 +480,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Te
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone())) {
         (txt, Deref @ DAE::Type::T_TUPLE { types: i_types, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_56(txt.clone(), i_types.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt.clone()
@@ -527,7 +527,7 @@ pub(crate) fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr
     let mut l_varDecl: Tpl::Text;
     l_varDecl = Tpl::emptyTxt.clone();
     l_postMatch = Tpl::emptyTxt.clone();
-    l_inVals = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    l_inVals = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_inVals = lm_52(l_inVals.clone(), a_args.clone())?;
     l_inVals = Tpl::popIter(l_inVals.clone())?;
     (l_outVals, l_postMatch, l_varDecl) = fun_54(Tpl::emptyTxt.clone(), a_res.clone(), l_postMatch.clone(), l_varDecl.clone())?;
@@ -535,7 +535,7 @@ pub(crate) fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr
     out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
     out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_55(out_txt.clone(), a_args.clone())?;
     out_txt = Tpl::popIter(out_txt.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
@@ -559,7 +559,7 @@ pub(crate) fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end ")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
@@ -572,7 +572,7 @@ fn lm_60(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>,
             let mut ret_0: ArcStr;
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
             txt = getQtInterfaceFunc(txt.clone(), (ret_0.clone()).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_classNameWithColons.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         _ => {
@@ -594,7 +594,7 @@ pub fn getQtInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("(threadData_t *td)\n")).clone(), (literal!("  : threadData(td)\n")).clone(), (literal!("{\n")).clone(), (literal!("}\n")).clone()], lastHasNewLine: true }))?;
     out_txt = Tpl::writeText(out_txt.clone(), l_funcs.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
@@ -608,7 +608,7 @@ fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>,
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
             txt = getQtInterfaceHeader(txt.clone(), (ret_0.clone()).clone(), (literal!("")).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_className.clone()).clone(), true)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         _ => {
@@ -911,17 +911,17 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DA
             txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_res {\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_70(txt.clone(), a_types.clone(), a_res.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("QString toString() {\n")).clone(), (literal!("  QString resultBuffer = \"(\";\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resultBuffer.append(\",\");")).clone() }))?;
-            txt_0 = Tpl::writeTok(txt_0.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt_0 = Tpl::writeTok(txt_0.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             ret_1 = Tpl::textStrTok(txt_0.clone())?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(ret_1.clone()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(ret_1.clone()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_71(txt.clone(), a_types.clone(), a_res.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -968,7 +968,7 @@ pub(crate) fn getQtInterfaceHeader(mut txt: Tpl::Text, mut a_name: ArcStr, mut a
     let mut out_txt: Tpl::Text;
     let mut l_outType: Tpl::Text;
     let mut l_inTypes: Tpl::Text;
-    l_inTypes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    l_inTypes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_inTypes = lm_69(l_inTypes.clone(), a_args.clone())?;
     l_inTypes = Tpl::popIter(l_inTypes.clone())?;
     l_outType = fun_73(Tpl::emptyTxt.clone(), a_res.clone(), (a_name.clone()).clone(), (a_prefix.clone()).clone(), a_addStructs.clone())?;
@@ -994,7 +994,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_utf8 = ")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".toUtf8();")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("mmc_mk_scon(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_utf8.constData())")).clone() }))?;
@@ -1008,7 +1008,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_utf8 = ")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_name.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".toUtf8();")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("mmc_mk_scon(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_utf8.constData())")).clone() }))?;
@@ -1074,7 +1074,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_lst);\n")).clone() }))?;
             a_varDecl = Tpl::popBlock(a_varDecl.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_lst")).clone() }))?;
             (txt.clone(), a_varDecl.clone())
@@ -1175,7 +1175,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_commandLog.clone())
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name, a_commandLog) => {
@@ -1184,7 +1184,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(\"\\\"\" + ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" + \"\\\"\");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_commandLog.clone())
         },
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name, a_commandLog) => {
@@ -1193,7 +1193,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(QString::number(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("));")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_commandLog.clone())
         },
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }, a_name, a_commandLog) => {
@@ -1202,7 +1202,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(QString::number(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("));")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_commandLog.clone())
         },
         (txt, Deref @ DAE::Type::T_BOOL { varLst: _ }, a_name, a_commandLog) => {
@@ -1211,7 +1211,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ? \"true\" : \"false\");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_commandLog.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_commandLog) => {
@@ -1290,12 +1290,12 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void *")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_shortName.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm = NULL;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_postCall = Tpl::writeText(a_postCall.clone(), a_name.clone())?;
             a_postCall = Tpl::writeTok(a_postCall.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = QString::fromUtf8((char*)MMC_STRINGDATA(")).clone() }))?;
             a_postCall = Tpl::writeText(a_postCall.clone(), a_shortName.clone())?;
             a_postCall = Tpl::writeTok(a_postCall.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm));")).clone() }))?;
-            a_postCall = Tpl::writeTok(a_postCall.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_postCall = Tpl::writeTok(a_postCall.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), a_shortName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm")).clone() }))?;
             (txt.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())
@@ -1307,12 +1307,12 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void *")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_shortName.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm = NULL;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_postCall = Tpl::writeText(a_postCall.clone(), a_name.clone())?;
             a_postCall = Tpl::writeTok(a_postCall.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = QString::fromUtf8((char*)MMC_STRINGDATA(")).clone() }))?;
             a_postCall = Tpl::writeText(a_postCall.clone(), a_shortName.clone())?;
             a_postCall = Tpl::writeTok(a_postCall.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm));")).clone() }))?;
-            a_postCall = Tpl::writeTok(a_postCall.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_postCall = Tpl::writeTok(a_postCall.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), a_shortName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm")).clone() }))?;
             (txt.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())
@@ -1342,7 +1342,7 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void *")).clone() }))?;
             a_varDecl = Tpl::writeText(a_varDecl.clone(), a_shortName.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm = NULL;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_shortName.clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_mm")).clone() }))?;
             (a_postCall, a_name, a_shortName, txt_0) = getQtOutArgArray(a_postCall.clone(), a_name.clone(), a_shortName.clone(), txt_0.clone(), i_aty.clone())?;
@@ -1384,7 +1384,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = MMC_STRINGDATA(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name, _, a_mm) => {
@@ -1393,7 +1393,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = MMC_STRINGDATA(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name, _, a_mm) => {
@@ -1402,7 +1402,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = mmc_unbox_integer(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_BOOL { varLst: _ }, a_name, _, a_mm) => {
@@ -1411,7 +1411,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = mmc_unbox_boolean(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }, a_name, _, a_mm) => {
@@ -1420,7 +1420,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = mmc_unbox_real(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_mm.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_shortName, a_mm) => {
@@ -1453,7 +1453,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         (txt, i_ty, _, _, _) => {
@@ -1493,7 +1493,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name, a_responseLog) => {
@@ -1502,7 +1502,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(\"\\\"\" + ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" + \"\\\"\");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name, a_responseLog) => {
@@ -1511,7 +1511,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(QString::number(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("));")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }, a_name, a_responseLog) => {
@@ -1520,7 +1520,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(QString::number(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("));")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_BOOL { varLst: _ }, a_name, a_responseLog) => {
@@ -1529,7 +1529,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ? \"true\" : \"false\");")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_TUPLE { types: _, .. }, a_name, a_responseLog) => {
@@ -1538,7 +1538,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".toString());")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_responseLog) => {
@@ -1688,13 +1688,13 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
             let mut a_varDecl = (*a_varDecl).clone();
             a_varDecl = Tpl::writeStr(a_varDecl.clone(), (a_name.clone()).clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_res result;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (a_responseLog, _, _) = getQtResponseLogText(a_responseLog.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result")).clone() })), i_t.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("responseLog")).clone() })))?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result.")).clone() }))?;
             txt_0 = getQtTupleTypeOutputName(txt_0.clone(), i_t.clone(), 1)?;
             (a_outArg, txt_0, _, a_varDecl, a_postCall) = getQtOutArg(a_outArg.clone(), txt_0.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("out1")).clone() })), i_type1.clone(), a_varDecl.clone(), a_postCall.clone())?;
             a_outArg = Tpl::writeTok(a_outArg.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 2, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 2, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_postCall, a_varDecl) = lm_89(txt.clone(), i_types2.clone(), a_postCall.clone(), a_varDecl.clone(), i_t.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             (txt.clone(), a_postCall.clone(), a_outArg.clone(), a_responseLog.clone(), a_varDecl.clone())
@@ -1706,7 +1706,7 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
             let mut a_varDecl = (*a_varDecl).clone();
             a_varDecl = getQtType(a_varDecl.clone(), i_res.clone())?;
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" result;")).clone() }))?;
-            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_varDecl = Tpl::writeTok(a_varDecl.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (a_responseLog, _, _) = getQtResponseLogText(a_responseLog.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result")).clone() })), i_res.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("responseLog")).clone() })))?;
             (a_outArg, _, _, a_varDecl, a_postCall) = getQtOutArg(a_outArg.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result")).clone() })), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result")).clone() })), i_res.clone(), a_varDecl.clone(), a_postCall.clone())?;
             a_outArg = Tpl::writeTok(a_outArg.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
@@ -1795,9 +1795,9 @@ pub(crate) fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_a
     (l_inArgs, l_varDecl) = lm_87(Tpl::emptyTxt.clone(), a_args.clone(), l_varDecl.clone())?;
     l_commandLog = Tpl::emptyTxt.clone();
     txt_5 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("commandLog.append(\",\");")).clone() }))?;
-    txt_5 = Tpl::writeTok(txt_5.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    txt_5 = Tpl::writeTok(txt_5.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     ret_6 = Tpl::textStrTok(txt_5.clone())?;
-    l_commandLog = Tpl::pushIter(l_commandLog.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(ret_6.clone()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    l_commandLog = Tpl::pushIter(l_commandLog.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(ret_6.clone()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_commandLog = lm_88(l_commandLog.clone(), a_args.clone())?;
     l_commandLog = Tpl::popIter(l_commandLog.clone())?;
     l_outArg = Tpl::emptyTxt.clone();
@@ -1810,7 +1810,7 @@ pub(crate) fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_a
     ret_10 = intGt(ret_9.clone(), 0);
     out_txt = fun_91(out_txt.clone(), ret_10.clone(), l_commandLog.clone(), (a_name.clone()).clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     out_txt = Tpl::writeText(out_txt.clone(), l_varDecl.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("try {\n")).clone(), (literal!("  MMC_TRY_TOP_INTERNAL()\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
@@ -1840,7 +1840,7 @@ pub(crate) fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_a
     ret_12 = intGt(ret_11.clone(), 0);
     out_txt = fun_92(out_txt.clone(), ret_12.clone(), (a_name.clone()).clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     out_txt = fun_93(out_txt.clone(), l_outArg.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
     out_txt = Tpl::popBlock(out_txt.clone())?;

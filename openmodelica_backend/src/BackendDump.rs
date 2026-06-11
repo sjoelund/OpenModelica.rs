@@ -54,6 +54,7 @@ use crate::Matching;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_types::ZeroCrossings;
+use openmodelica_codegen_graphml::GraphML;
 use openmodelica_frontend::HashSet;
 use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_base::DAEDump;
@@ -68,8 +69,7 @@ use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_types::DAE;
-use openmodelica_susan::GraphML;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::BaseHashSet;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Config;
@@ -633,7 +633,7 @@ pub(crate) fn dumpSubPartitions(mut subPartitions: metamodelica::Array<BackendDA
     Ok(())
 }
 
-pub(crate) fn dumpVariables(mut inVars: BackendDAE::Variables, mut heading: ArcStr) -> Result<()> {
+pub fn dumpVariables(mut inVars: BackendDAE::Variables, mut heading: ArcStr) -> Result<()> {
     if BackendVariable::varsSize(inVars.clone()) > 0 {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BackendVariable::varsSize(inVars.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printVariables(inVars.clone())?;
@@ -642,14 +642,14 @@ pub(crate) fn dumpVariables(mut inVars: BackendDAE::Variables, mut heading: ArcS
     Ok(())
 }
 
-pub(crate) fn dumpVarList(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<()> {
+pub fn dumpVarList(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inVars.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     printVarList(inVars.clone())?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub(crate) fn dumpEquationArray(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
+pub fn dumpEquationArray(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
     if BackendEquation::getNumberOfEquations(inEqns.clone()) + BackendEquation::equationArraySize(inEqns.clone())? > 0 {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BackendEquation::getNumberOfEquations(inEqns.clone()))); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*intString(BackendEquation::equationArraySize(inEqns.clone())?)); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printEquationArray(inEqns.clone())?;
@@ -658,7 +658,7 @@ pub(crate) fn dumpEquationArray(mut inEqns: Arc<ExpandableArray::ExpandableArray
     Ok(())
 }
 
-pub(crate) fn dumpEquationList(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
+pub fn dumpEquationList(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
     if !(inEqns.clone().is_empty()) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inEqns.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printEquationList(inEqns.clone())?;
@@ -1649,7 +1649,7 @@ pub(crate) fn strongComponentString(mut inComp: Arc<BackendDAE::StrongComponent>
     Ok(outS)
 }
 
-pub(crate) fn whenEquationString(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inStart: bool) -> Result<ArcStr> {
+pub fn whenEquationString(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inStart: bool) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut conditionStr: ArcStr;
     let mut whenStmtStr: ArcStr;
@@ -3038,7 +3038,7 @@ pub(crate) fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut inSys
     Ok(())
 }
 
-pub(crate) fn dumpMatching(mut v: metamodelica::Array<i32>) -> Result<()> {
+pub fn dumpMatching(mut v: metamodelica::Array<i32>) -> Result<()> {
     let mut len: i32;
     let mut len_str: ArcStr;
     metamodelica::print((literal!("Matching\n")).clone());
@@ -4166,13 +4166,13 @@ pub(crate) fn dumpBipartiteGraphStrongComponent2(mut varsIn: BackendDAE::Variabl
     let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("EqSystemGraph")).clone(), true, graphInfo.clone())?;
     graphInfo = __pa0.clone();
     graphIdx = __pa1.clone();
-    let (__pa2, (_, __pa3)) = GraphML::addAttribute((literal!("")).clone(), (literal!("type")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa2, (_, __pa3)) = GraphML::addAttribute((literal!("")).clone(), (literal!("type")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa2.clone();
     typeAttIdx = __pa3.clone();
-    let (__pa4, (_, __pa5)) = GraphML::addAttribute((literal!("")).clone(), (literal!("name")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa4, (_, __pa5)) = GraphML::addAttribute((literal!("")).clone(), (literal!("name")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa4.clone();
     nameAttIdx = __pa5.clone();
-    let (__pa6, (_, __pa7)) = GraphML::addAttribute((literal!("")).clone(), (literal!("systIdx")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa6, (_, __pa7)) = GraphML::addAttribute((literal!("")).clone(), (literal!("systIdx")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa6.clone();
     idxAttIdx = __pa7.clone();
     (graphInfo, graphIdx) = addEqNodesToGraph(eqsIn.clone(), eqAtts.clone(), list![nameAttIdx.clone(), typeAttIdx.clone(), idxAttIdx.clone()], (graphInfo.clone(), graphIdx.clone()))?;
@@ -4229,8 +4229,8 @@ fn addEqNodesToGraph(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDA
             eqString = (equationString(eq.clone())?).clone();
             eqNodeId = (getEqNodeIdx(eAbs.clone())).clone();
             idxString = (intString(eAbs.clone())).clone();
-            nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (idxString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
-            (graphInfo, _) = GraphML::addNode((eqNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, Some((eqString.clone()).clone()), list![(nameAttrIdx.clone(), eqString.clone()), (typeAttrIdx.clone(), typeStr.clone()), (idxAttrIdx.clone(), daeIdxStr.clone())], graphIdx.clone(), graphInfo.clone())?;
+            nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (idxString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (graphInfo, _) = GraphML::addNode((eqNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE, Some((eqString.clone()).clone()), list![(nameAttrIdx.clone(), eqString.clone()), (typeAttrIdx.clone(), typeStr.clone()), (idxAttrIdx.clone(), daeIdxStr.clone())], graphIdx.clone(), graphInfo.clone())?;
             eAbs = eAbs.clone() + 1;
             size = size.clone() - 1;
         }
@@ -4248,7 +4248,7 @@ pub(crate) fn dumpDAGStrongComponent(mut graphIn: metamodelica::Array<Arc<metamo
     let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("TornSystemGraph")).clone(), true, graphInfo.clone())?;
     graphInfo = __pa0.clone();
     graphIdx = __pa1.clone();
-    let (__pa2, (_, __pa3)) = GraphML::addAttribute((literal!("")).clone(), (literal!("Name")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa2, (_, __pa3)) = GraphML::addAttribute((literal!("")).clone(), (literal!("Name")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa2.clone();
     nameAttIdx = __pa3.clone();
     graphInfo = buildGraphInfoDAG(graphIn.clone(), metaIn.clone(), graphInfo.clone(), graphIdx.clone(), list![nameAttIdx.clone()])?;
@@ -4287,8 +4287,8 @@ fn addNodeToDAG(mut nodeIdx: i32, mut graphIn: metamodelica::Array<Arc<metamodel
     nodeString = (intString(nodeIdx.clone())).clone();
     compName = stringDelimitList(List::map(metamodelica::arrayGet(inComps.clone(), nodeIdx.clone())?, (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     nameAttIdx = (atts.clone()).get(1)?;
-    nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (nodeString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
-    (tmpGraph, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(nodeIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, Some((nodeDesc.clone()).clone()), list![(nameAttIdx.clone(), compName.clone())], graphIdx.clone(), graphInfoIn.clone())?;
+    nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (nodeString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+    (tmpGraph, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(nodeIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE, Some((nodeDesc.clone()).clone()), list![(nameAttIdx.clone(), compName.clone())], graphIdx.clone(), graphInfoIn.clone())?;
     childNodes = metamodelica::arrayGet(graphIn.clone(), nodeIdx.clone())?;
     graphInfoOut = List::fold1(childNodes.clone(), (std::sync::Arc::new(addDirectedEdge) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), nodeIdx.clone(), tmpGraph.clone())?;
     Ok(graphInfoOut)
@@ -4296,7 +4296,7 @@ fn addNodeToDAG(mut nodeIdx: i32, mut graphIn: metamodelica::Array<Arc<metamodel
 
 fn addDirectedEdge(mut child: i32, mut parent: i32, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
     let mut graphInfoOut: GraphML::GraphInfo;
-    (graphInfoOut, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge")); __mm_s.push_str(&*intString(parent.clone())); __mm_s.push_str(&*intString(child.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(child.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(parent.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_susan::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), graphInfoIn.clone())?;
+    (graphInfoOut, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge")); __mm_s.push_str(&*intString(parent.clone())); __mm_s.push_str(&*intString(child.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(child.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(parent.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_codegen_graphml::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), graphInfoIn.clone())?;
     Ok(graphInfoOut)
 }
 
@@ -4326,8 +4326,8 @@ fn addVarNodeToGraph(mut indx: i32, mut vars: BackendDAE::Variables, mut attsIn:
     varString = (self::varString(var.clone())?).clone();
     varNodeId = (getVarNodeIdx(indx.clone())).clone();
     idxString = (intString(indx.clone())).clone();
-    nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (idxString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
-    (graphInfo, _) = GraphML::addNode((varNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::ELLIPSE, Some((varString.clone()).clone()), list![(nameAttrIdx.clone(), varString.clone()), (typeAttIdx.clone(), typeStr.clone()), (idxAttrIdx.clone(), daeIdxStr.clone())], graphIdx.clone(), graphInfo.clone())?;
+    nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (idxString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+    (graphInfo, _) = GraphML::addNode((varNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::ELLIPSE, Some((varString.clone()).clone()), list![(nameAttrIdx.clone(), varString.clone()), (typeAttIdx.clone(), typeStr.clone()), (idxAttrIdx.clone(), daeIdxStr.clone())], graphIdx.clone(), graphInfo.clone())?;
     graphInfoOut = (graphInfo.clone(), graphIdx.clone());
     Ok(graphInfoOut)
 }
@@ -4362,8 +4362,8 @@ fn addEqNodeToGraph(mut indx: i32, mut eqs: Arc<ExpandableArray::ExpandableArray
     eqString = (equationString(eq.clone())?).clone();
     eqNodeId = (getEqNodeIdx(indx.clone())).clone();
     idxString = (intString(indx.clone())).clone();
-    nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (idxString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
-    (graphInfo, _) = GraphML::addNode((eqNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, Some((eqString.clone()).clone()), list![(nameAttrIdx.clone(), eqString.clone()), (typeAttrIdx.clone(), typeStr.clone()), (idxAttrIdx.clone(), daeIdxStr.clone())], graphIdx.clone(), graphInfo.clone())?;
+    nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (idxString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+    (graphInfo, _) = GraphML::addNode((eqNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE, Some((eqString.clone()).clone()), list![(nameAttrIdx.clone(), eqString.clone()), (typeAttrIdx.clone(), typeStr.clone()), (idxAttrIdx.clone(), daeIdxStr.clone())], graphIdx.clone(), graphInfo.clone())?;
     graphInfoOut = (graphInfo.clone(), graphIdx.clone());
     Ok(graphInfoOut)
 }
@@ -4383,14 +4383,14 @@ fn addEdgeToGraph2(mut varIdxIn: i32, mut eqIdx: i32, mut graphInfoIn: GraphML::
     let mut varNodeId: ArcStr;
     let mut lt: GraphML::LineType;
     if varIdxIn.clone() <= 0 {
-        lt = openmodelica_susan::GraphML::LineType::DASHED;
+        lt = openmodelica_codegen_graphml::GraphML::LineType::DASHED;
     } else {
-        lt = openmodelica_susan::GraphML::LineType::LINE;
+        lt = openmodelica_codegen_graphml::GraphML::LineType::LINE;
     }
     varIdx = intAbs(varIdxIn.clone());
     eqNodeId = (getEqNodeIdx(eqIdx.clone())).clone();
     varNodeId = (getVarNodeIdx(varIdx.clone())).clone();
-    (graphInfoOut, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge_")); __mm_s.push_str(&*intString(varIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (varNodeId.clone()).clone(), (eqNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), lt.clone(), GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), graphInfoIn.clone())?;
+    (graphInfoOut, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge_")); __mm_s.push_str(&*intString(varIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (varNodeId.clone()).clone(), (eqNodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), lt.clone(), GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), graphInfoIn.clone())?;
     Ok(graphInfoOut)
 }
 
@@ -4442,25 +4442,25 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
     let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("TaskGraph")).clone(), true, graphInfo.clone())?;
     graphInfo = __pa0.clone();
     graphIdx = __pa1.clone();
-    let (__pa2, (_, __pa3)) = GraphML::addAttribute((literal!("")).clone(), (literal!("Name")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa2, (_, __pa3)) = GraphML::addAttribute((literal!("")).clone(), (literal!("Name")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa2.clone();
     nameAttIdx = __pa3.clone();
-    let (__pa4, (_, __pa5)) = GraphML::addAttribute((literal!("")).clone(), (literal!("VarIdx")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa4, (_, __pa5)) = GraphML::addAttribute((literal!("")).clone(), (literal!("VarIdx")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa4.clone();
     varAttIdx = __pa5.clone();
-    let (__pa6, (_, __pa7)) = GraphML::addAttribute((literal!("")).clone(), (literal!("EqIdx")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa6, (_, __pa7)) = GraphML::addAttribute((literal!("")).clone(), (literal!("EqIdx")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa6.clone();
     eqAttIdx = __pa7.clone();
-    let (__pa8, (_, __pa9)) = GraphML::addAttribute((literal!("")).clone(), (literal!("SysIdx")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa8, (_, __pa9)) = GraphML::addAttribute((literal!("")).clone(), (literal!("SysIdx")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa8.clone();
     sysAttIdx = __pa9.clone();
-    let (__pa10, (_, __pa11)) = GraphML::addAttribute((literal!("")).clone(), (literal!("Tearing")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa10, (_, __pa11)) = GraphML::addAttribute((literal!("")).clone(), (literal!("Tearing")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa10.clone();
     tearAttIdx = __pa11.clone();
-    let (__pa12, (_, __pa13)) = GraphML::addAttribute((literal!("")).clone(), (literal!("SCC")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa12, (_, __pa13)) = GraphML::addAttribute((literal!("")).clone(), (literal!("SCC")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa12.clone();
     compAttIdx = __pa13.clone();
-    let (__pa14, (_, __pa15)) = GraphML::addAttribute((literal!("")).clone(), (literal!("executionOrder")).clone(), openmodelica_susan::GraphML::AttributeType::TYPE_STRING, openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
+    let (__pa14, (_, __pa15)) = GraphML::addAttribute((literal!("")).clone(), (literal!("executionOrder")).clone(), openmodelica_codegen_graphml::GraphML::AttributeType::TYPE_STRING, openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?;
     graphInfo = __pa14.clone();
     orderAttIdx = __pa15.clone();
     let (__pa16, __pa17) = ::match_deref::match_deref! { match &(dae.clone()) {
@@ -4490,27 +4490,27 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
                 nodeColor = (if (isAlgLoop(comp.clone())) {arcstr::literal!(GraphML::COLOR_RED2)} else {arcstr::literal!(GraphML::COLOR_GREEN2)}).clone();
                 borderWidth = if (BackendVariable::isStateVar(BackendVariable::getVarAt(vars.clone(), varIdx.clone())?)) {GraphML::BORDERWIDTH_BOLD.clone()} else {GraphML::BORDERWIDTH_STANDARD.clone()};
                 if isTearingVar(varIdx.clone(), comp.clone())? {
-                    shapeType = openmodelica_susan::GraphML::ShapeType::ELLIPSE;
+                    shapeType = openmodelica_codegen_graphml::GraphML::ShapeType::ELLIPSE;
                     tearInfo = (literal!("TearingVar")).clone();
                     nodeColor = (arcstr::literal!(GraphML::COLOR_RED)).clone();
                 } else {
-                    shapeType = openmodelica_susan::GraphML::ShapeType::ELLIPSE;
+                    shapeType = openmodelica_codegen_graphml::GraphML::ShapeType::ELLIPSE;
                     tearInfo = (literal!("AlgebraicVar")).clone();
                 }
-                (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), (nodeColor.clone()).clone(), borderWidth.clone(), list![GraphML::NodeLabel::NODELABEL_INTERNAL { text: (intString(varIdx.clone())).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN }], shapeType.clone(), Some((varString(BackendVariable::getVarAt(vars.clone(), varIdx.clone())?)?).clone()), list![(nameAttIdx.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }), (varAttIdx.clone(), intString(varIdx.clone())), (eqAttIdx.clone(), literal!("-")), (compAttIdx.clone(), printComponent(comp.clone(), None)?), (sysAttIdx.clone(), intString(sysIdx.clone())), (tearAttIdx.clone(), tearInfo.clone()), (orderAttIdx.clone(), intString(order.clone()))], graphIdx.clone(), graphInfo.clone())?;
+                (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), (nodeColor.clone()).clone(), borderWidth.clone(), list![GraphML::NodeLabel::NODELABEL_INTERNAL { text: (intString(varIdx.clone())).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN }], shapeType.clone(), Some((varString(BackendVariable::getVarAt(vars.clone(), varIdx.clone())?)?).clone()), list![(nameAttIdx.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }), (varAttIdx.clone(), intString(varIdx.clone())), (eqAttIdx.clone(), literal!("-")), (compAttIdx.clone(), printComponent(comp.clone(), None)?), (sysAttIdx.clone(), intString(sysIdx.clone())), (tearAttIdx.clone(), tearInfo.clone()), (orderAttIdx.clone(), intString(order.clone()))], graphIdx.clone(), graphInfo.clone())?;
             }
             for mut eqIdx in &*eqIdxs.clone() {
                 let mut eqIdx = eqIdx.clone();
                 nodeColor = (if (isAlgLoop(comp.clone())) {arcstr::literal!(GraphML::COLOR_RED2)} else {arcstr::literal!(GraphML::COLOR_GREEN2)}).clone();
                 if isResidualEq(eqIdx.clone(), comp.clone())? {
-                    shapeType = openmodelica_susan::GraphML::ShapeType::RECTANGLE;
+                    shapeType = openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE;
                     tearInfo = (literal!("ResidualEq")).clone();
                     nodeColor = (arcstr::literal!(GraphML::COLOR_RED)).clone();
                 } else {
-                    shapeType = openmodelica_susan::GraphML::ShapeType::RECTANGLE;
+                    shapeType = openmodelica_codegen_graphml::GraphML::ShapeType::RECTANGLE;
                     tearInfo = (literal!("AlgebraicEq")).clone();
                 }
-                (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (nodeColor.clone()).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![GraphML::NodeLabel::NODELABEL_INTERNAL { text: (intString(eqIdx.clone())).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN }], shapeType.clone(), Some((equationString(BackendEquation::get(eqs.clone(), eqIdx.clone())?)?).clone()), list![(nameAttIdx.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }), (varAttIdx.clone(), literal!("-")), (compAttIdx.clone(), printComponent(comp.clone(), None)?), (eqAttIdx.clone(), intString(eqIdx.clone())), (sysAttIdx.clone(), intString(sysIdx.clone())), (tearAttIdx.clone(), tearInfo.clone()), (orderAttIdx.clone(), intString(order.clone()))], graphIdx.clone(), graphInfo.clone())?;
+                (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (nodeColor.clone()).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![GraphML::NodeLabel::NODELABEL_INTERNAL { text: (intString(eqIdx.clone())).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN }], shapeType.clone(), Some((equationString(BackendEquation::get(eqs.clone(), eqIdx.clone())?)?).clone()), list![(nameAttIdx.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }), (varAttIdx.clone(), literal!("-")), (compAttIdx.clone(), printComponent(comp.clone(), None)?), (eqAttIdx.clone(), intString(eqIdx.clone())), (sysAttIdx.clone(), intString(sysIdx.clone())), (tearAttIdx.clone(), tearInfo.clone()), (orderAttIdx.clone(), intString(order.clone()))], graphIdx.clone(), graphInfo.clone())?;
             }
             order = order.clone() + 1;
         }
@@ -4518,13 +4518,13 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
             for mut varIdx in &*metamodelica::arrayGet(m.clone(), eqIdx.clone())? {
                 let mut varIdx = varIdx.clone();
                 if intLe(varIdx.clone(), 0) {
-                    lineType = openmodelica_susan::GraphML::LineType::DASHED;
+                    lineType = openmodelica_codegen_graphml::GraphML::LineType::DASHED;
                 } else {
-                    lineType = openmodelica_susan::GraphML::LineType::LINE;
+                    lineType = openmodelica_codegen_graphml::GraphML::LineType::LINE;
                 }
                 varIdx = intAbs(varIdx.clone());
                 lineWidth = if (intEq(varIdx.clone(), ({let __elt = ass2.borrow()[(eqIdx.clone()-1) as usize].clone(); __elt}))) {GraphML::LINEWIDTH_BOLD.clone()} else {GraphML::LINEWIDTH_STANDARD.clone()};
-                (graphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), lineType.clone(), lineWidth.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), graphInfo.clone())?;
+                (graphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), lineType.clone(), lineWidth.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), graphInfo.clone())?;
             }
         }
         sysIdx = sysIdx.clone() + 1;

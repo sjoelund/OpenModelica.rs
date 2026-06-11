@@ -198,6 +198,7 @@ fn extract_crate_name(body: &ClassDef) -> Option<String> {
 fn interface_to_crate(interface: &str) -> Option<String> {
     match interface {
         "backend" => Some("openmodelica_backend".to_owned()),
+        "backend_tools" => Some("openmodelica_backend_tools".to_owned()),
         "backend_types" => Some("openmodelica_backend_types".to_owned()),
         "simcode_types" => Some("openmodelica_simcode_types".to_owned()),
         "simcode_util" => Some("openmodelica_simcode_util".to_owned()),
@@ -209,6 +210,8 @@ fn interface_to_crate(interface: &str) -> Option<String> {
         "parser" => Some("openmodelica_ast".to_owned()),
         "error" => Some("openmodelica_error".to_owned()),
         "susan" => Some("openmodelica_susan".to_owned()),
+        "tpl" => Some("openmodelica_tpl".to_owned()),
+        "codegen_graphml" => Some("openmodelica_codegen_graphml".to_owned()),
         "util" => Some("openmodelica_util".to_owned()),
         "util_datatypes_basic" => Some("openmodelica_util_datatypes_basic".to_owned()),
         "frontend_types" => Some("openmodelica_frontend_types".to_owned()),

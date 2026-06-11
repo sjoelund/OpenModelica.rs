@@ -15,7 +15,7 @@ use openmodelica_backend::CodegenUtil;
 use openmodelica_codegen::CodegenUtilSimulation;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Error;
 use openmodelica_util::FMI;
 use openmodelica_util::Flags;

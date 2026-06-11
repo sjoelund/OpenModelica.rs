@@ -80,7 +80,7 @@ use openmodelica_util_datatypes_basic::List;
 // - RegularMatching
 //
 // =============================================================================
-pub(crate) fn PerfectMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> {
+pub fn PerfectMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> {
     let mut ass1: metamodelica::Array<i32>;
     let mut ass2: metamodelica::Array<i32>;
     let mut N: i32 = metamodelica::arrayLength(m.clone());
@@ -5351,7 +5351,7 @@ fn countadjacencyMatrixEntries(mut n: i32, mut m: metamodelica::Array<Arc<metamo
     outCount
 }
 
-pub(crate) fn matchingExternalsetAdjacencyMatrix(mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> () {
+pub fn matchingExternalsetAdjacencyMatrix(mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> () {
     let mut nz: i32;
     nz = countadjacencyMatrixEntries(ne.clone(), m.clone());
     BackendDAEEXT::setAdjacencyMatrix(nv.clone(), ne.clone(), nz.clone(), m.clone());

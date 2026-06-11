@@ -56,7 +56,7 @@ use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_dump::Graphviz;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::DAE;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Config;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;

@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::GraphMLDumpTpl;
-use crate::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 

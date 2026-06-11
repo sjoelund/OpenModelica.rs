@@ -10,7 +10,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::GraphML;
-use crate::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 
 pub(crate) fn dumpGraphInfo(mut txt: Tpl::Text, mut a_graphInfo: GraphML::GraphInfo, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
@@ -63,10 +63,10 @@ pub(crate) fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: G
             let mut ret_1: Arc<metamodelica::List<GraphML::Attribute>>;
             let mut l_attDefDump: Tpl::Text;
             ret_1 = Arc::new(i_attributes.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-            l_attDefDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_attDefDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_attDefDump = lm_5(l_attDefDump.clone(), ret_1.clone())?;
             l_attDefDump = Tpl::popIter(l_attDefDump.clone())?;
-            l_edgeDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_edgeDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_edgeDump = lm_6(l_edgeDump.clone(), i_edges.clone(), i_attributes.clone(), (i_graphInfo_graphEdgeKey.clone()).clone())?;
             l_edgeDump = Tpl::popIter(l_edgeDump.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n")).clone(), (literal!("<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:y=\"http://www.yworks.com/xml/graphml\" xmlns:yed=\"http://www.yworks.com/xml/yed/3\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd\">\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
@@ -141,10 +141,10 @@ pub(crate) fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, m
         (mut txt, GraphML::Graph { nodeIdc: ref i_nodeIdc, attValues: ref i_attValues, directed: mut i_directed, id: mut i_id }, mut a_allGraphs, mut a_allNodes, mut a_edgeDesc, mut a_graphNodeKey, mut a_graphAttributes) => {
             let mut l_attKeys: Tpl::Text;
             let mut l_graphNodes: Tpl::Text;
-            l_graphNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_graphNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_graphNodes = lm_8(l_graphNodes.clone(), i_nodeIdc.clone(), a_graphAttributes.clone(), (a_graphNodeKey.clone()).clone(), a_allGraphs.clone(), a_allNodes.clone())?;
             l_graphNodes = Tpl::popIter(l_graphNodes.clone())?;
-            l_attKeys = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_attKeys = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_attKeys = lm_9(l_attKeys.clone(), i_attValues.clone(), a_graphAttributes.clone())?;
             l_attKeys = Tpl::popIter(l_attKeys.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<graph edgedefault=\"")).clone() }))?;
@@ -157,7 +157,7 @@ pub(crate) fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, m
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeText(txt.clone(), l_graphNodes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeTok(txt.clone(), crate::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeStr(txt.clone(), (a_edgeDesc.clone()).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -251,10 +251,10 @@ pub(crate) fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut 
         (mut txt, GraphML::Node::NODE { nodeLabels: ref i_nodeLabels, attValues: ref i_attValues, id: mut i_id, optDesc: mut i_optDesc, color: mut i_color, border: mut i_border, shapeType: mut i_shapeType }, _, _, mut a_graphNodeKey, mut a_graphAttributes) => {
             let mut l_attKeys: Tpl::Text;
             let mut l_nodeLabelDump: Tpl::Text;
-            l_nodeLabelDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_nodeLabelDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_nodeLabelDump = lm_11(l_nodeLabelDump.clone(), i_nodeLabels.clone())?;
             l_nodeLabelDump = Tpl::popIter(l_nodeLabelDump.clone())?;
-            l_attKeys = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_attKeys = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_attKeys = lm_12(l_attKeys.clone(), i_attValues.clone(), a_graphAttributes.clone())?;
             l_attKeys = Tpl::popIter(l_attKeys.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<node id=\"")).clone() }))?;
@@ -384,10 +384,10 @@ pub(crate) fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut 
             let mut ret_2: GraphML::ArrowType;
             let mut l_attKeys: Tpl::Text;
             let mut l_edgeLabelDump: Tpl::Text;
-            l_edgeLabelDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_edgeLabelDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_edgeLabelDump = lm_17(l_edgeLabelDump.clone(), i_edgeLabels.clone())?;
             l_edgeLabelDump = Tpl::popIter(l_edgeLabelDump.clone())?;
-            l_attKeys = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_attKeys = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_attKeys = lm_18(l_attKeys.clone(), i_attValues.clone(), a_graphAttributes.clone())?;
             l_attKeys = Tpl::popIter(l_attKeys.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<edge id=\"")).clone() }))?;

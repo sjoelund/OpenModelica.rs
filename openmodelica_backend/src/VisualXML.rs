@@ -60,7 +60,7 @@ use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_types::DAE;
 use openmodelica_program_util::ProgramUtil;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Error;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::System;

@@ -48,7 +48,7 @@ use crate::Dump;
 use crate::SCodeDumpTpl;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_types::SCode;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util_datatypes_basic::List;
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]

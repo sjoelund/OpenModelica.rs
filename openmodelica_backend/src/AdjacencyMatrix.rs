@@ -204,7 +204,7 @@ fn isAssigned(mut ass: metamodelica::Array<i32>, mut i: i32) -> bool {
     b
 }
 
-pub(crate) fn transposeAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut nRowsMt: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
+pub fn transposeAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut nRowsMt: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
     let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut i: i32 = 1;
     mt = arrayCreate(nRowsMt.clone(), metamodelica::nil());

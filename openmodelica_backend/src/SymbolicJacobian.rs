@@ -3175,7 +3175,7 @@ fn isRecordInvoled(mut inType: Arc<DAE::Type>) -> Result<bool> {
     }
 }
 
-pub(crate) fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inResVars: BackendDAE::Variables, mut inotherEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inotherVars: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>, mut inAllVars: BackendDAE::Variables, mut inName: ArcStr, mut inOnlySparsePattern: bool) -> Result<(Arc<BackendDAE::Jacobian>, Arc<BackendDAE::Shared>)> {
+pub fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inResVars: BackendDAE::Variables, mut inotherEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inotherVars: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>, mut inAllVars: BackendDAE::Variables, mut inName: ArcStr, mut inOnlySparsePattern: bool) -> Result<(Arc<BackendDAE::Jacobian>, Arc<BackendDAE::Shared>)> {
     let mut outJacobian: Arc<BackendDAE::Jacobian>;
     let mut outShared: Arc<BackendDAE::Shared>;
     let mut backendDAE: Arc<BackendDAE::BackendDAE>;

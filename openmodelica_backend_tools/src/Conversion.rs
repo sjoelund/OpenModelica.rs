@@ -43,10 +43,10 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::GlobalScriptDump;
 use openmodelica_ast::Absyn::Path;
 use openmodelica_ast::Absyn;
 use openmodelica_ast::GlobalScript;
+use openmodelica_backend::GlobalScriptDump;
 use openmodelica_frontend::Parser;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;

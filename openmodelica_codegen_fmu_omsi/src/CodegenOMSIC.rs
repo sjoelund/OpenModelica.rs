@@ -18,7 +18,7 @@ use openmodelica_codegen_fmu_c::CodegenFMU;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Config;
 use openmodelica_util::FMI;
 use openmodelica_util::Flags;
@@ -34,7 +34,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_varInfo_numZeroCrossings: i32) -> Resu
         },
         (mut txt, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#include <omsi_event_helper.h>")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
     });
@@ -55,19 +55,19 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_in
             let mut l_modelNamePrefixStr: Tpl::Text;
             l_modelNamePrefixStr = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void initialize_start_function (omsi_template_callback_functions_t* callback);")).clone() }))?;
-            a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void ")).clone() }))?;
             a_functionPrototypes = Tpl::writeText(a_functionPrototypes.clone(), l_modelNamePrefixStr.clone())?;
             a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_instantiate_samples(omsi_sample* sample_events);")).clone() }))?;
-            a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_functionPrototypes = Tpl::writeTok(a_functionPrototypes.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#include \"")).clone() }))?;
             a_includes = Tpl::writeStr(a_includes.clone(), (i_fileNamePrefix.clone()).clone())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_sim_eqns.h\"")).clone() }))?;
-            a_includes = Tpl::writeTok(a_includes.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_includes = Tpl::writeTok(a_includes.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#include \"")).clone() }))?;
             a_includes = Tpl::writeStr(a_includes.clone(), (i_fileNamePrefix.clone()).clone())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_init_eqns.h\"")).clone() }))?;
-            a_includes = Tpl::writeTok(a_includes.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            a_includes = Tpl::writeTok(a_includes.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_includes = fun_51(a_includes.clone(), i_varInfo_numZeroCrossings.clone())?;
             l_headerFileName = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             l_headerFileName = Tpl::writeTok(l_headerFileName.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_omsic")).clone() }))?;
@@ -102,7 +102,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_in
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::writeText(txt.clone(), l_functionInitSampleCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_includes.clone(), a_functionPrototypes.clone())
         },
         (mut txt, _, mut a_includes, mut a_functionPrototypes) => {
@@ -645,7 +645,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp/binaries/")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("cp -a modelDescription.xml ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
@@ -1118,7 +1118,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             let mut l_libsStr: Tpl::Text;
             let mut l_dirExtra: Tpl::Text;
             l_dirExtra = fun_79(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
-            l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_libsStr = lm_80(l_libsStr.clone(), i_makefileParams_libs.clone())?;
             l_libsStr = Tpl::popIter(l_libsStr.clone())?;
             l_libsPos1 = fun_81(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
@@ -1155,7 +1155,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" f2c.lib initialization.lib libexpat.lib math-support.lib meta.lib results.lib simulation.lib solver.lib sundials_kinsol.lib sundials_nvecserial.lib util.lib lapack_win32_MT.lib lis.lib  omcgc.lib user32.lib pthreadVC2.lib wsock32.lib cminpack.lib umfpack.lib amd.lib\n")).clone(), (literal!("\n")).clone(), (literal!("# /MDd link with MSVCRTD.LIB debug lib\n")).clone(), (literal!("# lib names should not be appended with a d just switch to lib/omc/msvc/debug\n")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::writeText(txt.clone(), a_common.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("$(FMUEXT): ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
@@ -1263,7 +1263,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".fmu *\n")).clone(), (literal!("cd ..\n")).clone(), (literal!("rm -rf ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_fmudirname.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("$(DLLEXT): $(MAINOBJ) $(CFILES)\n")).clone() }))?;
@@ -1442,7 +1442,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             let mut l_libsStr: Tpl::Text;
             let mut l_dirExtra: Tpl::Text;
             l_dirExtra = fun_89(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
-            l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_libsStr = lm_90(l_libsStr.clone(), i_makefileParams_libs.clone())?;
             l_libsStr = Tpl::popIter(l_libsStr.clone())?;
             l_libsPos1 = fun_91(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
@@ -1470,7 +1470,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             ret_8 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone())?;
             txt = fun_95(txt.clone(), ret_8.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -I. ")).clone() }))?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_96(txt.clone(), i_makefileParams_includes.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1489,7 +1489,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -DOMC_NVAR_STRING=")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_varInfo_numStringAlgVars.clone())).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), a_common.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("PHONY: ")).clone()], lastHasNewLine: false }))?;

@@ -43,7 +43,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::MidCode;
+use openmodelica_backend::MidCode;
 use openmodelica_util_datatypes_basic::List;
 
 /*

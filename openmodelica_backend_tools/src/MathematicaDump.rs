@@ -43,9 +43,9 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDump;
-use crate::BackendVariable;
 use openmodelica_ast::Absyn;
+use openmodelica_backend::BackendDump;
+use openmodelica_backend::BackendVariable;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_base::DAEDump;

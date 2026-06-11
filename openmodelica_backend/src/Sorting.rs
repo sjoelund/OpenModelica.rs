@@ -48,7 +48,7 @@ use crate::Matching;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_util_datatypes_basic::GCExt;
 
-pub(crate) fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut N: i32) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
+pub fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut N: i32) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -116,7 +116,7 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
     Ok((outStack, outIndex, outComponents))
 }
 
-pub(crate) fn TarjanTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass2: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
+pub fn TarjanTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass2: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();

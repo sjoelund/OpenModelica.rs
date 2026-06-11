@@ -52,6 +52,7 @@ use crate::HpcOmTaskGraph;
 use crate::SimCodeUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_codegen_graphml::GraphML;
 use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_base::Expression;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
@@ -62,7 +63,6 @@ use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_simcode_util::SimCodeUtilShared;
-use openmodelica_susan::GraphML;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Config;
 use openmodelica_util::Error;
@@ -616,7 +616,7 @@ pub(crate) fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArra
             graphIdx = __pa21.clone();
             annotInfo = arrayCreate(metamodelica::arrayLength(iTaskGraph.clone()), (literal!("nothing")).clone());
             graphInfo = HpcOmTaskGraph::convertToGraphMLSccLevelSubgraph(iTaskGraph.clone(), iTaskGraphMeta.clone(), (iCriticalPathInfo.clone()).clone(), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(iCriticalPaths.clone())?), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(iCriticalPathsWoC.clone())?), iSccSimEqMapping.clone(), iSchedulerInfo.clone(), annotInfo.clone(), graphIdx.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true }, graphInfo.clone())?;
-            let __pa22 = ::match_deref::match_deref! { match &(GraphML::getAttributeByNameAndTarget((literal!("ThreadId")).clone(), openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?) {
+            let __pa22 = ::match_deref::match_deref! { match &(GraphML::getAttributeByNameAndTarget((literal!("ThreadId")).clone(), openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?) {
                 Some((_, __pa22)) => __pa22.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -637,7 +637,7 @@ pub(crate) fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArra
             graphIdx = __pa24.clone();
             annotInfo = arrayCreate(metamodelica::arrayLength(iTaskGraph.clone()), (literal!("nothing")).clone());
             graphInfo = HpcOmTaskGraph::convertToGraphMLSccLevelSubgraph(iTaskGraph.clone(), iTaskGraphMeta.clone(), (iCriticalPathInfo.clone()).clone(), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(iCriticalPaths.clone())?), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(iCriticalPathsWoC.clone())?), iSccSimEqMapping.clone(), iSchedulerInfo.clone(), annotInfo.clone(), graphIdx.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true }, graphInfo.clone())?;
-            let __pa25 = ::match_deref::match_deref! { match &(GraphML::getAttributeByNameAndTarget((literal!("ThreadId")).clone(), openmodelica_susan::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?) {
+            let __pa25 = ::match_deref::match_deref! { match &(GraphML::getAttributeByNameAndTarget((literal!("ThreadId")).clone(), openmodelica_codegen_graphml::GraphML::AttributeTarget::TARGET_NODE, graphInfo.clone())?) {
                 Some((_, __pa25)) => __pa25.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -2912,8 +2912,8 @@ fn appendVariablesToGraph(mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<me
             }
         }
         if isValidVar.clone() {
-            nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (intString(varIdx.clone())).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
-            (tmpGraphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::ELLIPSE, Some((description.clone()).clone()), list![(iThreadIdAttributeIdx.clone(), threadText.clone())], iGraphIdx.clone(), tmpGraphInfo.clone())?;
+            nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (intString(varIdx.clone())).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (tmpGraphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::ELLIPSE, Some((description.clone()).clone()), list![(iThreadIdAttributeIdx.clone(), threadText.clone())], iGraphIdx.clone(), tmpGraphInfo.clone())?;
         }
     }
     tmpGraphInfo = appendTaskVarEdgesToGraph(iTaskSolvedVarsMapping.clone(), iTaskUnsolvedVarsMapping.clone(), tmpGraphInfo.clone())?;
@@ -2931,14 +2931,14 @@ fn appendTaskVarEdgesToGraph(mut iTaskSolvedVarsMapping: metamodelica::Array<Arc
         taskVarList = metamodelica::arrayGet(iTaskSolvedVarsMapping.clone(), taskIdx.clone())?;
         for mut varIdx in &*taskVarList.clone() {
             let mut varIdx = varIdx.clone();
-            (tmpGraphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("varEdge_")); __mm_s.push_str(&*intString(taskIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(taskIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_susan::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), tmpGraphInfo.clone())?;
+            (tmpGraphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("varEdge_")); __mm_s.push_str(&*intString(taskIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(taskIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_codegen_graphml::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), tmpGraphInfo.clone())?;
         }
     }
     for mut taskIdx in 1..=metamodelica::arrayLength(iTaskUnsolvedVarsMapping.clone()) {
         taskVarList = metamodelica::arrayGet(iTaskUnsolvedVarsMapping.clone(), taskIdx.clone())?;
         for mut varIdx in &*taskVarList.clone() {
             let mut varIdx = varIdx.clone();
-            (tmpGraphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("varEdge_")); __mm_s.push_str(&*intString(taskIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(taskIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_susan::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), tmpGraphInfo.clone())?;
+            (tmpGraphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("varEdge_")); __mm_s.push_str(&*intString(taskIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(taskIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_codegen_graphml::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_codegen_graphml::GraphML::ArrowType::ARROWNONE, openmodelica_codegen_graphml::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), tmpGraphInfo.clone())?;
         }
     }
     oGraphInfo = tmpGraphInfo.clone();
@@ -3030,8 +3030,8 @@ fn appendCacheLineEntryToGraph(mut iCacheLineEntry: CacheLineEntry, mut iCacheVa
             metamodelica::arrayUpdate(iAddedVariables.clone(), realScVarIdx.clone(), true)?;
             threadText = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Th ")); __mm_s.push_str(&*intString(threadOwner.clone())); ArcStr::from(__mm_s) }).clone();
             nodeLabelText = (intString(realScVarIdx.clone())).clone();
-            nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (nodeLabelText.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
-            (oGraphInfo, _) = GraphML::addNode((nodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::ELLIPSE, Some((varString.clone()).clone()), list![(iAttThreadIdIdx.clone(), threadText.clone())], iTopGraphIdx.clone(), iGraphInfo.clone())?;
+            nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (nodeLabelText.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_codegen_graphml::GraphML::FontStyle::FONTPLAIN };
+            (oGraphInfo, _) = GraphML::addNode((nodeId.clone()).clone(), (arcstr::literal!(GraphML::COLOR_GREEN2)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_codegen_graphml::GraphML::ShapeType::ELLIPSE, Some((varString.clone()).clone()), list![(iAttThreadIdIdx.clone(), threadText.clone())], iTopGraphIdx.clone(), iGraphInfo.clone())?;
         } else {
             oGraphInfo = iGraphInfo.clone();
         }

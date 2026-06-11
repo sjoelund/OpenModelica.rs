@@ -431,7 +431,7 @@ dependencies = [
  "openmodelica_ast_collections",
  "openmodelica_backend_types",
  "openmodelica_backend_util",
- "openmodelica_dump_extra",
+ "openmodelica_codegen_graphml",
  "openmodelica_error",
  "openmodelica_frontend",
  "openmodelica_frontend_base",
@@ -440,10 +440,9 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_nf_frontend",
  "openmodelica_program_util",
- "openmodelica_script_util",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
  "roxmltree",
@@ -462,6 +461,7 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_backend",
+ "openmodelica_backend_tools",
  "openmodelica_backend_types",
  "openmodelica_codegen",
  "openmodelica_codegen_c",
@@ -486,6 +486,32 @@ dependencies = [
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
  "openmodelica_susan",
+ "openmodelica_tpl",
+ "openmodelica_util",
+ "openmodelica_util_datatypes_basic",
+]
+
+[[package]]
+name = "openmodelica_backend_tools"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arcstr",
+ "const-str",
+ "loop_unwrap",
+ "match_deref",
+ "metamodelica",
+ "openmodelica_ast",
+ "openmodelica_backend",
+ "openmodelica_backend_types",
+ "openmodelica_backend_util",
+ "openmodelica_frontend",
+ "openmodelica_frontend_base",
+ "openmodelica_frontend_dump",
+ "openmodelica_frontend_types",
+ "openmodelica_program_util",
+ "openmodelica_simcode_types",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -541,7 +567,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -567,7 +593,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -591,7 +617,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -617,7 +643,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -643,7 +669,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -672,7 +698,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -698,7 +724,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -727,7 +753,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -751,7 +777,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -776,7 +802,7 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -801,7 +827,22 @@ dependencies = [
  "openmodelica_frontend_base",
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
- "openmodelica_susan",
+ "openmodelica_tpl",
+ "openmodelica_util",
+ "openmodelica_util_datatypes_basic",
+]
+
+[[package]]
+name = "openmodelica_codegen_graphml"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arcstr",
+ "const-str",
+ "loop_unwrap",
+ "match_deref",
+ "metamodelica",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -824,7 +865,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_simcode_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -841,7 +882,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_frontend_dump",
- "openmodelica_susan",
  "openmodelica_util",
 ]
 
@@ -868,13 +908,14 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_ast_collections",
+ "openmodelica_codegen_graphml",
  "openmodelica_error",
  "openmodelica_frontend_base",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_inst",
  "openmodelica_frontend_types",
  "openmodelica_script_util",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -895,7 +936,7 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_frontend_inst",
  "openmodelica_frontend_types",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -912,7 +953,7 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_frontend_types",
- "openmodelica_susan",
+ "openmodelica_tpl",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]
@@ -1082,6 +1123,23 @@ dependencies = [
  "loop_unwrap",
  "match_deref",
  "metamodelica",
+ "openmodelica_error",
+ "openmodelica_tpl",
+ "openmodelica_util",
+ "openmodelica_util_datatypes_basic",
+]
+
+[[package]]
+name = "openmodelica_tpl"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arcstr",
+ "const-str",
+ "loop_unwrap",
+ "match_deref",
+ "metamodelica",
+ "openmodelica_error",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
 ]

@@ -20,7 +20,7 @@ use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Config;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
@@ -35,7 +35,7 @@ pub fn symbolName(mut txt: Tpl::Text, mut a_modelNamePrefix: ArcStr, mut a_symbo
     Ok(out_txt)
 }
 
-pub(crate) fn replaceDotAndUnderscore(mut txt: Tpl::Text, mut a_str: ArcStr) -> Result<Tpl::Text> {
+pub fn replaceDotAndUnderscore(mut txt: Tpl::Text, mut a_str: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_4: ArcStr;
     let mut ret_3: ArcStr;
@@ -215,7 +215,7 @@ pub(crate) fn subscriptsStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<meta
         (txt, i_subscripts) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[")).clone() }))?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_49(txt.clone(), i_subscripts.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -285,7 +285,7 @@ pub(crate) fn subscriptsStrMatlabSafe(mut in_txt: Tpl::Text, mut in_a_subscripts
         (txt, i_subscripts) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_52(txt.clone(), i_subscripts.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
@@ -616,7 +616,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
         },
         (txt, Deref @ DAE::Exp::ARRAY { array: i_array, .. }, a_stringQuotes) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_64(txt.clone(), i_array.clone(), (a_stringQuotes.clone()).clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt.clone()
@@ -876,7 +876,7 @@ pub fn error(mut txt: Tpl::Text, mut a_srcInfo: SourceInfo, mut a_errMessage: Ar
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_errMessage.clone()).clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
@@ -886,7 +886,7 @@ pub(crate) fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<T
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("#error \"")).clone()], lastHasNewLine: false }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_errMessage.clone()).clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 

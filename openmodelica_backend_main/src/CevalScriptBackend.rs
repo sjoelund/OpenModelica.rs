@@ -53,28 +53,28 @@ use crate::SimCodeMain;
 use crate::StaticScript;
 use openmodelica_ast::Absyn;
 use openmodelica_ast::GlobalScript;
-use openmodelica_backend::AbsynToJulia;
 use openmodelica_backend::BackendDAECreate;
 use openmodelica_backend::BackendDAEOptimize;
 use openmodelica_backend::BackendDAEUtil;
 use openmodelica_backend::BackendDump;
 use openmodelica_backend::BackendEquation;
 use openmodelica_backend::BackendVariable;
-use openmodelica_backend::Binding;
-use openmodelica_backend::Conversion;
-use openmodelica_backend::DAEQuery;
 use openmodelica_backend::FindZeroCrossings;
-use openmodelica_backend::LexerModelicaDiff;
-use openmodelica_backend::Obfuscate;
-use openmodelica_backend::ReverseLookup;
 use openmodelica_backend::RewriteRules;
 use openmodelica_backend::SimCodeUtil;
-use openmodelica_backend::SimpleModelicaParser;
 use openmodelica_backend::SymbolTable;
 use openmodelica_backend::SymbolicJacobian;
-use openmodelica_backend::TotalModelDebug;
-use openmodelica_backend::Uncertainties;
 use openmodelica_backend::XMLDump;
+use openmodelica_backend_tools::AbsynToJulia;
+use openmodelica_backend_tools::Binding;
+use openmodelica_backend_tools::Conversion;
+use openmodelica_backend_tools::DAEQuery;
+use openmodelica_backend_tools::LexerModelicaDiff;
+use openmodelica_backend_tools::Obfuscate;
+use openmodelica_backend_tools::ReverseLookup;
+use openmodelica_backend_tools::SimpleModelicaParser;
+use openmodelica_backend_tools::TotalModelDebug;
+use openmodelica_backend_tools::Uncertainties;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen_fmu_c::CodegenFMU;
 use openmodelica_dump_extra::BlockCallRewrite;
@@ -132,7 +132,7 @@ use openmodelica_script_util::UnitParserExt;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_util::SimCodeFunctionUtil;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::ClockIndexes;
 use openmodelica_util::Config;
@@ -594,13 +594,13 @@ fn simOptionsAsString(mut vals: Arc<metamodelica::List<Arc<Values::Value>>>) -> 
 }
 
 fn diffSanityCheckEqual(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
-    use openmodelica_backend::LexerModelicaDiff::Token;
-    use openmodelica_backend::LexerModelicaDiff::blockCommentCanonical;
-    use openmodelica_backend::LexerModelicaDiff::isBlockComment;
-    use openmodelica_backend::LexerModelicaDiff::isLineComment;
-    use openmodelica_backend::LexerModelicaDiff::modelicaDiffTokenWhitespace;
-    use openmodelica_backend::LexerModelicaDiff::scanString;
-    use openmodelica_backend::LexerModelicaDiff::tokenContent;
+    use openmodelica_backend_tools::LexerModelicaDiff::Token;
+    use openmodelica_backend_tools::LexerModelicaDiff::blockCommentCanonical;
+    use openmodelica_backend_tools::LexerModelicaDiff::isBlockComment;
+    use openmodelica_backend_tools::LexerModelicaDiff::isLineComment;
+    use openmodelica_backend_tools::LexerModelicaDiff::modelicaDiffTokenWhitespace;
+    use openmodelica_backend_tools::LexerModelicaDiff::scanString;
+    use openmodelica_backend_tools::LexerModelicaDiff::tokenContent;
     let mut b: bool;
     let mut ts1: Arc<metamodelica::List<Token>>;
     let mut ts2: Arc<metamodelica::List<Token>>;
@@ -651,9 +651,9 @@ fn diffSanityCheckEqual(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
 }
 
 fn diffSanityCheckCommentStr(mut t: LexerModelicaDiff::Token) -> Result<ArcStr> {
-    use openmodelica_backend::LexerModelicaDiff::blockCommentCanonical;
-    use openmodelica_backend::LexerModelicaDiff::isBlockComment;
-    use openmodelica_backend::LexerModelicaDiff::tokenContent;
+    use openmodelica_backend_tools::LexerModelicaDiff::blockCommentCanonical;
+    use openmodelica_backend_tools::LexerModelicaDiff::isBlockComment;
+    use openmodelica_backend_tools::LexerModelicaDiff::tokenContent;
     let mut s: ArcStr;
     s = (if (isBlockComment(t.clone())) {stringDelimitList(blockCommentCanonical(t.clone())?, (literal!("\n")).clone())} else {tokenContent(t.clone())?}).clone();
     Ok(s)
@@ -665,14 +665,14 @@ pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: F
     use openmodelica_util::DiffAlgorithm::printActual;
     use openmodelica_util::DiffAlgorithm::printDiffTerminalColor;
     use openmodelica_util::DiffAlgorithm::printDiffXml;
-    use openmodelica_backend::LexerModelicaDiff::Token;
-    use openmodelica_backend::LexerModelicaDiff::TokenId;
-    use openmodelica_backend::LexerModelicaDiff::filterModelicaDiff;
-    use openmodelica_backend::LexerModelicaDiff::modelicaDiffTokenEq;
-    use openmodelica_backend::LexerModelicaDiff::modelicaDiffTokenWhitespace;
-    use openmodelica_backend::LexerModelicaDiff::reportErrors;
-    use openmodelica_backend::LexerModelicaDiff::scanString;
-    use openmodelica_backend::LexerModelicaDiff::tokenContent;
+    use openmodelica_backend_tools::LexerModelicaDiff::Token;
+    use openmodelica_backend_tools::LexerModelicaDiff::TokenId;
+    use openmodelica_backend_tools::LexerModelicaDiff::filterModelicaDiff;
+    use openmodelica_backend_tools::LexerModelicaDiff::modelicaDiffTokenEq;
+    use openmodelica_backend_tools::LexerModelicaDiff::modelicaDiffTokenWhitespace;
+    use openmodelica_backend_tools::LexerModelicaDiff::reportErrors;
+    use openmodelica_backend_tools::LexerModelicaDiff::scanString;
+    use openmodelica_backend_tools::LexerModelicaDiff::tokenContent;
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
@@ -2459,14 +2459,14 @@ pub(crate) fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: F
     use openmodelica_util::DiffAlgorithm::printActual;
     use openmodelica_util::DiffAlgorithm::printDiffTerminalColor;
     use openmodelica_util::DiffAlgorithm::printDiffXml;
-    use openmodelica_backend::LexerModelicaDiff::Token;
-    use openmodelica_backend::LexerModelicaDiff::TokenId;
-    use openmodelica_backend::LexerModelicaDiff::filterModelicaDiff;
-    use openmodelica_backend::LexerModelicaDiff::modelicaDiffTokenEq;
-    use openmodelica_backend::LexerModelicaDiff::modelicaDiffTokenWhitespace;
-    use openmodelica_backend::LexerModelicaDiff::reportErrors;
-    use openmodelica_backend::LexerModelicaDiff::scanString;
-    use openmodelica_backend::LexerModelicaDiff::tokenContent;
+    use openmodelica_backend_tools::LexerModelicaDiff::Token;
+    use openmodelica_backend_tools::LexerModelicaDiff::TokenId;
+    use openmodelica_backend_tools::LexerModelicaDiff::filterModelicaDiff;
+    use openmodelica_backend_tools::LexerModelicaDiff::modelicaDiffTokenEq;
+    use openmodelica_backend_tools::LexerModelicaDiff::modelicaDiffTokenWhitespace;
+    use openmodelica_backend_tools::LexerModelicaDiff::reportErrors;
+    use openmodelica_backend_tools::LexerModelicaDiff::scanString;
+    use openmodelica_backend_tools::LexerModelicaDiff::tokenContent;
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {

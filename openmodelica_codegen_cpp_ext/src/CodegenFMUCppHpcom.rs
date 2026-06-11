@@ -20,7 +20,7 @@ use openmodelica_frontend_dump::HashTableCrIListArray;
 use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Config;
 use openmodelica_util::Flags;
 use openmodelica_util::System;

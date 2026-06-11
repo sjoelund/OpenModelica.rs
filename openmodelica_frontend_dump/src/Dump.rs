@@ -45,7 +45,7 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::AbsynDumpTpl;
 use openmodelica_ast::Absyn;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Config;
 use openmodelica_util::Error;
 use openmodelica_util::File::Escape;

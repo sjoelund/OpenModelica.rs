@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::NFInstDumpTpl;
 use crate::NFInstTypes;
 use openmodelica_frontend_inst::NFInstPrefix;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util_datatypes_basic::Array;
 
 //public import NFConnect2;

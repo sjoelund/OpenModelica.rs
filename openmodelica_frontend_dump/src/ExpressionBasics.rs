@@ -48,7 +48,7 @@ use crate::ComponentReferenceBasics;
 use crate::ExpressionDumpTpl;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_types::DAE;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Error;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;

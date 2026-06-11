@@ -65,7 +65,7 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     "StackOverflow", "BackendDAEEXT",
     // Its `external "C"` bodies (`serializeJ`/`serializeC`) exist only as
     // inline C snippets in the .mo's Include annotation; hand-written in
-    // `openmodelica_backend/src/SerializeSparsityPattern.rs`.
+    // `openmodelica_backend_tools/src/SerializeSparsityPattern.rs`.
     "SerializeSparsityPattern",
     // All bodies are `external "C"` wrappers over the result-file reader /
     // comparison runtime (`runtime/SimulationResults*.c`); hand-written in

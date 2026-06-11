@@ -43,8 +43,8 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::Tpl;
 use crate::TplAbsyn;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::BaseAvlSet;
 use openmodelica_util::BaseAvlTree;
 use openmodelica_util::Debug;
@@ -5471,7 +5471,7 @@ pub(crate) fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: Deref @ metamodelica::List::Nil } } => {
-                    Ok(crate::Tpl::StringToken::interned_ST_NEW_LINE())
+                    Ok(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6559,7 +6559,7 @@ pub(crate) fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::Li
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (Deref @ TplAbsyn::ExpressionBase::STR_TOKEN { value: Deref @ Tpl::StringToken::ST_STRING_LIST { strList: Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: Deref @ metamodelica::List::Nil } }, lastHasNewLine: false } }, _), tail: expLst } => {
                     let mut expLst = (*expLst).clone();
-                    expLst = metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), dummySourceInfo.clone()), expLst.clone());
+                    expLst = metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }), dummySourceInfo.clone()), expLst.clone());
                     Ok(expLst.clone())
                 }
                 _ => bail!("nomatch"),

@@ -105,7 +105,7 @@ use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_simcode_util::SimCodeFunctionUtil;
 use openmodelica_simcode_util::SimCodeUtilShared;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::AvlSetString;
 use openmodelica_util::BaseHashSet;
@@ -144,7 +144,7 @@ fn compareEqSystems(mut eq1: Arc<SimCode::SimEqSystem>, mut eq2: Arc<SimCode::Si
     Ok(b)
 }
 
-pub(crate) fn sortEqSystems(mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>> {
+pub fn sortEqSystems(mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>> {
     let mut outEqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
     outEqs = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>> = metamodelica::nil();
@@ -1909,7 +1909,7 @@ fn createEquationsWork(mut includeWhen: bool, mut skipDiscInZc: bool, mut genDis
     Ok((equations, noDiscEquations, ouniqueEqIndex, otempvars))
 }
 
-pub(crate) fn getSimCodeDAEModeDataEqns(mut inOptDaeMode: Option<SimCode::DaeModeData>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>> {
+pub fn getSimCodeDAEModeDataEqns(mut inOptDaeMode: Option<SimCode::DaeModeData>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>> {
     let mut daeEquations: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>;
     let mut daeModeData: SimCode::DaeModeData;
     if isSome(inOptDaeMode.clone()) {
@@ -8694,7 +8694,7 @@ fn derVarFromStateVar(mut state: SimCodeVar::SimVar, mut timeInterval: Option<Ar
     Ok(deriv)
 }
 
-pub(crate) fn simVarString(mut inVar: SimCodeVar::SimVar) -> Result<ArcStr> {
+pub fn simVarString(mut inVar: SimCodeVar::SimVar) -> Result<ArcStr> {
     let mut s: ArcStr;
     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("index:")); __mm_s.push_str(&*intString(inVar.index.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inVar.name.clone())?); ArcStr::from(__mm_s) }).clone();
     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*(match inVar.aliasvar.clone() {
@@ -10697,7 +10697,7 @@ pub(crate) fn functionInfo(mut r#fn: Arc<SimCodeFunction::Function::Function>) -
     Ok(info)
 }
 
-pub(crate) fn functionPath(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Result<Arc<Absyn::Path>> {
+pub fn functionPath(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Result<Arc<Absyn::Path>> {
     let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     name = (::match_deref::match_deref! { match &(r#fn.clone()) {
         Deref @ SimCodeFunction::Function::FUNCTION { name: __esc_name, .. } => {
@@ -10777,7 +10777,7 @@ pub fn eqInfo(mut eq: Arc<SimCode::SimEqSystem>) -> Result<SourceInfo> {
     Ok(info)
 }
 
-pub(crate) fn simEqSystemIndex(mut eq: Arc<SimCode::SimEqSystem>) -> Result<i32> {
+pub fn simEqSystemIndex(mut eq: Arc<SimCode::SimEqSystem>) -> Result<i32> {
     let mut index: i32 = 0;
     index = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SimCode::SimEqSystem::SES_RESIDUAL { index: __esc_index, .. } => {
@@ -14941,7 +14941,7 @@ pub fn getSimEqSystemsByIndexLst(mut idcs: Arc<metamodelica::List<i32>>, mut all
     Ok(sesOut)
 }
 
-pub(crate) fn getInputIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
+pub fn getInputIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
     let mut inputIndex: i32;
     let mut v: metamodelica::Array<i32> = Default::default();
     inputIndex = (match var.clone() {

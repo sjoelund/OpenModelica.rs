@@ -2579,7 +2579,7 @@ pub(crate) fn adjacencyMatrixMasked(mut inEqSystem: Arc<BackendDAE::EqSystem>, m
     Ok((outAdjacencyMatrix, outAdjacencyMatrixT))
 }
 
-pub(crate) fn adjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndexType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
+pub fn adjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndexType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
     let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -4670,7 +4670,7 @@ fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i
     Ok(outAdjacencyMatrixT)
 }
 
-pub(crate) fn getAdjacencyMatrixfromOptionForMapEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut shared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
+pub fn getAdjacencyMatrixfromOptionForMapEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut shared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
     let mut osyst: Arc<BackendDAE::EqSystem>;
     let mut oshared: Arc<BackendDAE::Shared>;
     let mut funcs: Arc<AvlTreePathFunction::Tree>;
@@ -9356,7 +9356,7 @@ pub(crate) fn isInitOptModuleActivated(mut initOptModule: ArcStr, mut activatedI
 /* ************************************************
  * traverse BackendDAE equation systems
  ************************************************/
-pub(crate) fn mapEqSystem1<A: Clone + 'static + metamodelica::gc::MMTrace>(mut dae: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, A, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>, mut a: A) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub fn mapEqSystem1<A: Clone + 'static + metamodelica::gc::MMTrace>(mut dae: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, A, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>, mut a: A) -> Result<Arc<BackendDAE::BackendDAE>> {
     pub type Function<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, A, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>;
 
     let mut odae: Arc<BackendDAE::BackendDAE>;
@@ -9812,7 +9812,7 @@ pub(crate) fn getGlobalKnownVarsFromDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) 
     Ok(globalKnownVars)
 }
 
-pub(crate) fn setVars(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub fn setVars(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut syst: Arc<BackendDAE::EqSystem>;
@@ -9861,7 +9861,7 @@ pub(crate) fn setAliasVars(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inAliasVa
     Ok(outDAE)
 }
 
-pub(crate) fn setDAEGlobalKnownVars(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inGlobalKnownVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub fn setDAEGlobalKnownVars(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inGlobalKnownVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut shared: Arc<BackendDAE::Shared>;
@@ -9891,13 +9891,13 @@ pub fn setFunctionTree(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inFunctionTre
     Ok(outDAE)
 }
 
-pub(crate) fn setEqSystEqs(mut inSyst: Arc<BackendDAE::EqSystem>, mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Arc<BackendDAE::EqSystem> {
+pub fn setEqSystEqs(mut inSyst: Arc<BackendDAE::EqSystem>, mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Arc<BackendDAE::EqSystem> {
     let mut syst: Arc<BackendDAE::EqSystem> = inSyst.clone();
     assign_field!(syst.orderedEqs = inEqs.clone());
     syst
 }
 
-pub(crate) fn setEqSystVars(mut inSyst: Arc<BackendDAE::EqSystem>, mut inVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::EqSystem>> {
+pub fn setEqSystVars(mut inSyst: Arc<BackendDAE::EqSystem>, mut inVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outSyst: Arc<BackendDAE::EqSystem>;
     outSyst = (::match_deref::match_deref! { match &(inSyst.clone()) {
         syst @ Deref @ BackendDAE::EqSystem { .. } => {
@@ -9992,7 +9992,7 @@ pub(crate) fn setSharedRemovedEqns(mut inShared: Arc<BackendDAE::Shared>, mut in
     Ok(outShared)
 }
 
-pub(crate) fn setSharedInitialEqns(mut inShared: Arc<BackendDAE::Shared>, mut initialEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<BackendDAE::Shared>> {
+pub fn setSharedInitialEqns(mut inShared: Arc<BackendDAE::Shared>, mut initialEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<BackendDAE::Shared>> {
     let mut outShared: Arc<BackendDAE::Shared>;
     outShared = (::match_deref::match_deref! { match &(inShared.clone()) {
         shared @ Deref @ BackendDAE::Shared { .. } => {
@@ -10048,7 +10048,7 @@ pub(crate) fn setSharedEventInfo(mut inShared: Arc<BackendDAE::Shared>, mut even
     outShared
 }
 
-pub(crate) fn setSharedGlobalKnownVars(mut inShared: Arc<BackendDAE::Shared>, mut globalKnownVars: BackendDAE::Variables) -> Arc<BackendDAE::Shared> {
+pub fn setSharedGlobalKnownVars(mut inShared: Arc<BackendDAE::Shared>, mut globalKnownVars: BackendDAE::Variables) -> Arc<BackendDAE::Shared> {
     let mut outShared: Arc<BackendDAE::Shared> = inShared.clone();
     assign_field!(outShared.globalKnownVars = globalKnownVars.clone());
     outShared

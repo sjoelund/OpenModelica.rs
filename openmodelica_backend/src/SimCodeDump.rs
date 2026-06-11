@@ -16,7 +16,7 @@ use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 
 fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
@@ -48,12 +48,12 @@ fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVa
 pub(crate) fn dumpVarsShort(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_varsString: Tpl::Text;
-    l_varsString = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    l_varsString = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_varsString = lm_46(l_varsString.clone(), a_vars.clone())?;
     l_varsString = Tpl::popIter(l_varsString.clone())?;
     out_txt = Tpl::writeText(txt.clone(), l_varsString.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 

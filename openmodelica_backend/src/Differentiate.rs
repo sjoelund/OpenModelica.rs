@@ -72,7 +72,7 @@ use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::ClassInf;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Debug;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;

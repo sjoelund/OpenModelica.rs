@@ -14,7 +14,7 @@ use openmodelica_backend::CodegenUtil;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 use openmodelica_util::Settings;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;

@@ -17,7 +17,7 @@ use openmodelica_frontend_dump::AbsynDumpTpl;
 use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_inst::NFInstPrefix;
 use openmodelica_frontend_types::DAE;
-use openmodelica_susan::Tpl;
+use openmodelica_tpl::Tpl;
 
 pub(crate) fn dumpModel(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_cls: Arc<NFInstTypes::Class>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
@@ -126,7 +126,7 @@ fn fun_11(mut in_txt: Tpl::Text, mut in_a_cls__str: Tpl::Text) -> Result<Tpl::Te
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
+            txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -307,13 +307,13 @@ pub(crate) fn dumpClass(mut in_txt: Tpl::Text, mut in_a_cls: Arc<NFInstTypes::Cl
             let mut l_ieq__str: Tpl::Text;
             let mut l_comp__str: Tpl::Text;
             let mut txt = (*txt).clone();
-            l_comp__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_comp__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_comp__str = lm_13(l_comp__str.clone(), i_components.clone())?;
             l_comp__str = Tpl::popIter(l_comp__str.clone())?;
-            l_ieq__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_ieq__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_ieq__str = lm_14(l_ieq__str.clone(), i_initialEquations.clone())?;
             l_ieq__str = Tpl::popIter(l_ieq__str.clone())?;
-            l_eq__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_eq__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_eq__str = lm_15(l_eq__str.clone(), i_equations.clone())?;
             l_eq__str = Tpl::popIter(l_eq__str.clone())?;
             l_comp__seq__str = fun_16(Tpl::emptyTxt.clone(), l_comp__str.clone())?;
@@ -407,7 +407,7 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<NFInstT
             let mut txt = (*txt).clone();
             l_ty__str = ExpressionDumpTpl::dumpType(Tpl::emptyTxt.clone(), i_indexType.clone())?;
             l_range__str = fun_22(Tpl::emptyTxt.clone(), i_range.clone())?;
-            l_eql__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+            l_eql__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_eql__str = lm_23(l_eql__str.clone(), i_body.clone())?;
             l_eql__str = Tpl::popIter(l_eql__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("for {")).clone() }))?;

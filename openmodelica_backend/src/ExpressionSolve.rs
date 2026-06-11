@@ -188,7 +188,7 @@ fn printTryToSolve(mut instanceName: ArcStr, mut inExp1: Arc<DAE::Exp>, mut inEx
     Ok(())
 }
 
-pub(crate) fn solve(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
+pub fn solve(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outAsserts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut dummy1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;

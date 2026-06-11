@@ -162,7 +162,7 @@ pub(crate) fn newCrefSetSized(mut size: i32) -> CrefSet {
     set
 }
 
-pub(crate) fn emptyReplacements() -> VariableReplacements {
+pub fn emptyReplacements() -> VariableReplacements {
     let mut outVariableReplacements: VariableReplacements = VariableReplacements { hashTable: newCrefExpTable(), invHashTable: newCrefCrefListTable(), extendhashTable: newCrefSet(), iterationVars: metamodelica::nil(), derConst: None };
     outVariableReplacements
 }
@@ -212,7 +212,7 @@ pub(crate) fn addReplacements(mut iRepl: VariableReplacements, mut inSrcs: Arc<m
     }
 }
 
-pub(crate) fn addReplacement(mut repl: VariableReplacements, mut inSrc: Arc<DAE::ComponentRef>, mut inDst: Arc<DAE::Exp>, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<VariableReplacements> {
+pub fn addReplacement(mut repl: VariableReplacements, mut inSrc: Arc<DAE::ComponentRef>, mut inDst: Arc<DAE::Exp>, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<VariableReplacements> {
     let mut outRepl: VariableReplacements;
     outRepl = 'mc: {
         let __mc_input = (inSrc.clone(), inDst.clone());
@@ -681,7 +681,7 @@ pub(crate) fn isReplacementEmpty(mut repl: VariableReplacements) -> Result<bool>
 /* ********************************************************/
 /* replace Expression with condition function */
 /* ********************************************************/
-pub(crate) fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<DAE::Exp>, bool) {
+pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<DAE::Exp>, bool) {
     let mut outExp: Arc<DAE::Exp>;
     let mut replacementPerformed: bool;
     (outExp, replacementPerformed) = 'mc: {
@@ -1520,7 +1520,7 @@ fn selfGeneratedVar(mut inCref: Arc<DAE::ComponentRef>) -> bool {
 /* ********************************************************/
 /* replace Equations  */
 /* ********************************************************/
-pub(crate) fn replaceEquationsArr(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut repl: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, bool) {
+pub fn replaceEquationsArr(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut repl: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, bool) {
     let mut outEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut replacementPerformed: bool = false;
     (outEqns, replacementPerformed) = 'mc: {
@@ -1558,7 +1558,7 @@ fn replaceEquationTraverser(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (Var
     (e, outTpl)
 }
 
-pub(crate) fn replaceEquations(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut repl: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
+pub fn replaceEquations(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut repl: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
     let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut replacementPerformed: bool;
     if isReplacementEmpty(repl.clone())? {

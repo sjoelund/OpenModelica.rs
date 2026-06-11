@@ -504,7 +504,7 @@ fn isAtStartOfLineTok(mut inTok: Arc<StringToken>) -> bool {
     }
 }
 
-pub(crate) fn newLine(mut inText: Text) -> Result<Text> {
+pub fn newLine(mut inText: Text) -> Result<Text> {
     let mut outText: Text;
     outText = (match inText.clone() {
         Text::MEM_TEXT { tokens: ref toks, blocksStack: ref blstack } => {
@@ -1573,7 +1573,7 @@ pub fn stringText(mut inString: ArcStr) -> Text {
     outText
 }
 
-pub(crate) fn strTokString(mut inStringToken: Arc<StringToken>) -> Result<ArcStr> {
+pub fn strTokString(mut inStringToken: Arc<StringToken>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (textString(Text::MEM_TEXT { tokens: list![inStringToken.clone()], blocksStack: metamodelica::nil() })?).clone();
     Ok(outString)
@@ -1954,7 +1954,7 @@ fn handleTok(mut txt: Text) -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn debugSusan() -> Result<bool> {
+pub fn debugSusan() -> Result<bool> {
     let mut b: bool;
     b = Flags::isSet(Flags::SUSAN_MATCHCONTINUE_DEBUG.clone())?;
     Ok(b)
