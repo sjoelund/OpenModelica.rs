@@ -271,10 +271,12 @@ pub struct FallibilityInfo {
     pub total_functions: usize,
     /// Number of distinct `external "C"` declarations encountered.
     pub external_functions: usize,
-    /// One human-readable diagnostic per `matchcontinue` whose every arm is
-    /// provably infallible — it can (and for clarity/efficiency should) be
-    /// rewritten as a plain `match` in the MetaModelica source. Ordered by
-    /// enclosing function FQN then source position. Printed by the caller.
+    /// One human-readable diagnostic per `matchcontinue` whose every arm
+    /// *except the last* is provably infallible — it can (and for
+    /// clarity/efficiency should) be rewritten as a plain `match` in the
+    /// MetaModelica source (a failing last arm has nothing to fall through to,
+    /// so it behaves identically under `match`). Ordered by enclosing function
+    /// FQN then source position. Printed by the caller.
     pub matchcontinue_as_match: Vec<String>,
     /// Source location (the first arm's `Info`) of each safe-to-rewrite
     /// `matchcontinue`, parallel to [`Self::matchcontinue_as_match`]. Consumed
@@ -333,11 +335,13 @@ struct Walk {
     mc_checks: Vec<McCheck>,
     /// Deferred "this `matchcontinue` could be a plain `match`" diagnostics,
     /// one per `matchcontinue` expression in the body. A `matchcontinue` and a
-    /// `match` over the same arms differ *only* when an arm's pattern+guard
-    /// succeed but the arm's guard/body/result then fails: `matchcontinue`
-    /// falls through to the next arm, whereas `match` propagates the failure.
-    /// So when *every* arm is infallible that distinction never materialises
-    /// and the construct is exactly a `match` — which is cheaper and clearer.
+    /// `match` over the same arms differ *only* when a *non-last* arm's
+    /// pattern+guard succeed but its guard/body/result then fails:
+    /// `matchcontinue` falls through to the next arm, whereas `match` propagates
+    /// the failure. A failing *last* arm has no next arm to fall through to, so
+    /// `matchcontinue` fails there too — identical to `match`. So when every arm
+    /// before the last is infallible that distinction never materialises and
+    /// the construct is exactly a `match` — which is cheaper and clearer.
     /// Whether each arm is infallible depends on the call-graph fixed point, so
     /// (like [`McCheck`]) the verdict is recorded here and evaluated in
     /// [`analyze`].
@@ -345,15 +349,23 @@ struct Walk {
 }
 
 /// Deferred "rewrite `matchcontinue` as `match`" diagnostic for one
-/// `matchcontinue` expression: it is reportable iff *every* arm is infallible
-/// (see [`Walk::mc_lints`]). Unlike [`McCheck`], this records a sub-[`Walk`]
-/// for *all* arms — guarded and [`CoverKey::Other`]-patterned ones included —
-/// because the equivalence with `match` hinges on no arm being able to fail,
-/// regardless of whether the arm can contribute pattern coverage. `info` is the
-/// source location of the first arm, used to point the developer at the source.
+/// `matchcontinue` expression: it is reportable iff every arm *except the last*
+/// is infallible (see [`Walk::mc_lints`] and the check in [`analyze`]). The
+/// fall-through-on-failure that distinguishes `matchcontinue` from `match` only
+/// fires when a failing arm has a *next* arm to fall back to, so the last arm's
+/// fallibility is irrelevant — a failing last arm leaves `matchcontinue` with
+/// nothing left to try, exactly like `match` propagating. Unlike [`McCheck`],
+/// this records a sub-[`Walk`] for *all* arms — guarded and
+/// [`CoverKey::Other`]-patterned ones included — in source order, because the
+/// equivalence hinges on which arm is last and on no *earlier* arm being able to
+/// fail, regardless of whether the arm contributes pattern coverage. `info` is
+/// the source location of the first arm, used to point the developer at the
+/// source.
 #[derive(Debug)]
 struct McLint {
     info: Absyn::Info,
+    /// All arms, in source order; the last element is the matchcontinue's last
+    /// arm (whose fallibility the lint deliberately ignores).
     arms: Vec<Walk>,
 }
 
@@ -1300,18 +1312,23 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
         if !changed { break; }
     }
 
-    // With the fixed point reached, flag every `matchcontinue` whose arms are
-    // all infallible: the fall-through-on-failure that distinguishes it from a
-    // `match` can never fire, so it is exactly a `match` (see [`McLint`]).
+    // With the fixed point reached, flag every `matchcontinue` whose arms —
+    // *except the last* — are all infallible: the fall-through-on-failure that
+    // distinguishes it from a `match` only fires when there is a *next* arm to
+    // fall back to, so the last arm's fallibility is irrelevant (if it fails,
+    // `matchcontinue` has nothing left to try and fails too — exactly what
+    // `match` does). It is then exactly a `match` (see [`McLint`]).
     // `resolved` is a BTreeMap and each function's lints are in source order, so
     // the result is already deterministically ordered by FQN then position.
     let mut matchcontinue_as_match: Vec<String> = Vec::new();
     let mut matchcontinue_as_match_locs: Vec<Absyn::Info> = Vec::new();
     for (qname, rs) in &resolved {
         for lint in &rs.mc_lints {
-            if lint.arms.iter().all(|arm| !sources_fallible(arm, &fallible)) {
+            // Skip the final arm: a failure there can't fall through to anything.
+            let non_last = lint.arms.len().saturating_sub(1);
+            if lint.arms[..non_last].iter().all(|arm| !sources_fallible(arm, &fallible)) {
                 matchcontinue_as_match.push(format!(
-                    "warning: matchcontinue in `{qname}` ({}:{}:{}) has only infallible arms — rewrite it as `match`",
+                    "warning: matchcontinue in `{qname}` ({}:{}:{}) has no fallible arm before its last — rewrite it as `match`",
                     lint.info.fileName, lint.info.lineNumberStart, lint.info.columnNumberStart,
                 ));
                 matchcontinue_as_match_locs.push(lint.info.clone());
