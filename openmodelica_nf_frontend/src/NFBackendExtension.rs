@@ -134,7 +134,7 @@ pub mod BackendInfo {
     pub fn toString(mut backendInfo: Arc<BackendInfo>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (VariableAttributes::toString(backendInfo.attributes.clone())?).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*VariableKind::toString(backendInfo.varKind.clone())); __mm_s.push_str(&*if (r#str.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }}); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*VariableKind::toString(backendInfo.varKind.clone())); __mm_s.push_str(&*if (r#str.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }}); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -153,19 +153,19 @@ pub mod BackendInfo {
 
     pub fn setVarKind(mut binfo: Arc<BackendInfo>, mut varKind: Arc<VariableKind::VariableKind>) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        assign_field!(binfo.varKind = varKind.clone());
+        assign_field!(binfo.varKind = varKind);
         binfo
     }
 
     pub fn setStateSelect(mut info: Arc<BackendInfo>, mut stateSelect_val: StateSelect, mut overwrite: bool) -> Arc<BackendInfo> {
         let mut info: Arc<BackendInfo> = info;
-        assign_field!(info.attributes = VariableAttributes::setStateSelect(info.attributes.clone(), stateSelect_val.clone(), overwrite.clone()));
+        assign_field!(info.attributes = VariableAttributes::setStateSelect(info.attributes.clone(), stateSelect_val, overwrite));
         info
     }
 
     pub fn setParent(mut binfo: Arc<BackendInfo>, mut parent: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        assign_field!(binfo.parent = Some(parent.clone()));
+        assign_field!(binfo.parent = Some(parent));
         binfo
     }
 
@@ -173,37 +173,37 @@ pub mod BackendInfo {
 
     pub fn setVarPre(mut binfo: Arc<BackendInfo>, mut var_ptr: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        assign_field!(binfo.var_pre = var_ptr.clone());
+        assign_field!(binfo.var_pre = var_ptr);
         binfo
     }
 
     pub fn setVarSeed(mut binfo: Arc<BackendInfo>, mut var_ptr: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        assign_field!(binfo.var_seed = var_ptr.clone());
+        assign_field!(binfo.var_seed = var_ptr);
         binfo
     }
 
     pub fn setVarPDer(mut binfo: Arc<BackendInfo>, mut var_ptr: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, mut isTmp: bool) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        if isTmp.clone() {
-            assign_field!(binfo.var_pder_tmp = var_ptr.clone());
+        if isTmp {
+            assign_field!(binfo.var_pder_tmp = var_ptr);
         } else {
-            assign_field!(binfo.var_pder_res = var_ptr.clone());
+            assign_field!(binfo.var_pder_res = var_ptr);
         }
         binfo
     }
 
     pub fn setVarStart(mut binfo: Arc<BackendInfo>, mut var_ptr: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        assign_field!(binfo.var_start = var_ptr.clone());
+        assign_field!(binfo.var_start = var_ptr);
         binfo
     }
 
     pub fn setAttributes(mut binfo: Arc<BackendInfo>, mut attributes: Arc<VariableAttributes::VariableAttributes>, mut annotations: Arc<Annotations::Annotations>) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
         assign_field!(
-            binfo.attributes = attributes.clone(),
-            binfo.annotations = annotations.clone()
+            binfo.attributes = attributes,
+            binfo.annotations = annotations
         );
         binfo
     }
@@ -213,12 +213,12 @@ pub mod BackendInfo {
         binfo = (::match_deref::match_deref! { match &(binfo.clone()) {
         Deref @ BackendInfo { annotations: anno @ Deref @ Annotations::ANNOTATIONS { .. }, .. } => {
             let mut anno = (*anno).clone();
-            assign_field!(anno.hideResult = hideResult.clone());
+            assign_field!(anno.hideResult = hideResult);
             assign_field!(binfo.annotations = anno.clone());
-            binfo.clone()
+            binfo
         },
         _ => {
-            binfo.clone()
+            binfo
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -229,11 +229,11 @@ pub mod BackendInfo {
         let mut binfo_list: Arc<metamodelica::List<Arc<BackendInfo>>>;
         binfo_list = (::match_deref::match_deref! { match &(binfo.varKind.clone()) {
         Deref @ VariableKind::FRONTEND_DUMMY => {
-            List::fill(binfo.clone(), length.clone())
+            List::fill(binfo, length)
         },
         _ => {
             let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes::VariableAttributes>>>;
-            scalar_attributes = VariableAttributes::scalarize(binfo.attributes.clone(), length.clone())?;
+            scalar_attributes = VariableAttributes::scalarize(binfo.attributes.clone(), length)?;
             ({
         let mut __acc: Arc<metamodelica::List<Arc<BackendInfo>>> = metamodelica::nil();
         for mut attr in (scalar_attributes.clone()).into_iter().cloned() {
@@ -576,7 +576,7 @@ pub mod VariableKind {
     pub use self::VariableKind::{TIME,ALGEBRAIC,STATE,STATE_DER,DUMMY_DER,DUMMY_STATE,DISCRETE,DISCRETE_STATE,PREVIOUS,CLOCK,CLOCKED,PARAMETER,CONSTANT,ITERATOR,RECORD,START,EXTOBJ,JAC_VAR,JAC_TMP_VAR,SEED_VAR,OPT_CONSTR,OPT_FCONSTR,OPT_INPUT_WITH_DER,OPT_INPUT_DER,OPT_TGRID,OPT_LOOP_INPUT,ALG_STATE,ALG_STATE_OLD,RESIDUAL_VAR,DAE_AUX_VAR,LOOP_ITERATION,LOOP_SOLVED,FRONTEND_DUMMY};
     pub fn toString(mut varKind: Arc<VariableKind>) -> ArcStr {
         let mut r#str: ArcStr;
-        r#str = ((::match_deref::match_deref! { match &(varKind.clone()) {
+        r#str = ((::match_deref::match_deref! { match &(varKind) {
         Deref @ TIME { .. } => literal!("[TIME]"),
         Deref @ ALGEBRAIC { .. } => literal!("[ALGB]"),
         Deref @ STATE { .. } => literal!("[STAT]"),
@@ -617,7 +617,7 @@ pub mod VariableKind {
 
     pub fn isTimeDependent(mut varKind: Arc<VariableKind>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(varKind.clone()) {
+        b = (::match_deref::match_deref! { match &(varKind) {
         Deref @ PARAMETER { .. } => false,
         Deref @ CONSTANT { .. } => false,
         Deref @ ITERATOR { .. } => false,
@@ -632,11 +632,11 @@ pub mod VariableKind {
         let mut varKind: Arc<VariableKind>;
         let mut variability: Variability;
         if Type::isRecord(Type::arrayElementType(ty.clone())) {
-            variability = if (makeParam.clone()) {Variability::PARAMETER.clone()} else {Variability::CONTINUOUS.clone()};
-            varKind = Arc::new(VariableKind::RECORD { children: metamodelica::nil(), min_var: variability.clone(), max_var: variability.clone() });
-        } else if makeParam.clone() {
+            variability = if (makeParam) {Variability::PARAMETER.clone()} else {Variability::CONTINUOUS.clone()};
+            varKind = Arc::new(VariableKind::RECORD { children: metamodelica::nil(), min_var: variability, max_var: variability });
+        } else if makeParam {
             varKind = Arc::new(VariableKind::PARAMETER { resize_value: None });
-        } else if Type::isDiscrete(ty.clone())? {
+        } else if Type::isDiscrete(ty)? {
             varKind = crate::NFBackendExtension::VariableKind::interned_DISCRETE();
         } else {
             varKind = crate::NFBackendExtension::VariableKind::interned_ALGEBRAIC();
@@ -892,7 +892,7 @@ pub mod VariableAttributes {
         _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.toString")); __mm_s.push_str(&*literal!(" failed. Attribute string could not be created.")); ArcStr::from(__mm_s) },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-        r#str = (if (literal!("") == r#str.clone()) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }}).clone();
+        r#str = (if (literal!("") == r#str.clone()) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }}).clone();
         Ok(r#str)
     }
 
@@ -900,8 +900,8 @@ pub mod VariableAttributes {
         let mut r#str: ArcStr;
         let mut name: ArcStr;
         let mut index: i32;
-        (name, index) = attr_tpl.clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*toString(({let __elt = childrenAttr.borrow()[(index.clone()-1) as usize].clone(); __elt}))?); ArcStr::from(__mm_s) }).clone();
+        (name, index) = attr_tpl;
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*toString(({let __elt = childrenAttr.borrow()[(index-1) as usize].clone(); __elt}))?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -910,18 +910,18 @@ pub mod VariableAttributes {
         let mut is_final: bool;
         let mut complexTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
         is_final = compAttrs.isFinal.clone() || compAttrs.variability.clone() == Variability::STRUCTURAL_PARAMETER.clone();
-        attributes = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
-        Deref @ Type::REAL => createReal(attrs.clone(), is_final.clone(), comment.clone())?,
-        Deref @ Type::INTEGER => createInt(attrs.clone(), is_final.clone())?,
-        Deref @ Type::BOOLEAN => createBool(attrs.clone(), is_final.clone())?,
-        Deref @ Type::STRING => createString(attrs.clone(), is_final.clone())?,
-        Deref @ Type::ENUMERATION { .. } => createEnum(attrs.clone(), is_final.clone())?,
-        Deref @ Type::CLOCK => createClock(is_final.clone()),
+        attributes = (::match_deref::match_deref! { match &(Type::arrayElementType(ty)) {
+        Deref @ Type::REAL => createReal(attrs, is_final, comment)?,
+        Deref @ Type::INTEGER => createInt(attrs, is_final)?,
+        Deref @ Type::BOOLEAN => createBool(attrs, is_final)?,
+        Deref @ Type::STRING => createString(attrs, is_final)?,
+        Deref @ Type::ENUMERATION { .. } => createEnum(attrs, is_final)?,
+        Deref @ Type::CLOCK => createClock(is_final),
         Deref @ Type::COMPLEX { complexTy: __esc_complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => {
             complexTy = (*__esc_complexTy).clone();
-            createRecord(attrs.clone(), var_field!((*complexTy).indexMap, ComplexType::NFComplexType::RECORD).clone(), children.clone(), is_final.clone())?
+            createRecord(attrs, var_field!((*complexTy).indexMap, ComplexType::NFComplexType::RECORD).clone(), children, is_final)?
         },
-        _ => createReal(attrs.clone(), is_final.clone(), comment.clone())?,
+        _ => createReal(attrs, is_final, comment)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(attributes)
@@ -945,7 +945,7 @@ pub mod VariableAttributes {
                 binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            attributes.clone()
+            attributes
         },
         Deref @ VAR_ATTR_INT { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT;
@@ -957,7 +957,7 @@ pub mod VariableAttributes {
                 binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            attributes.clone()
+            attributes
         },
         Deref @ VAR_ATTR_BOOL { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_BOOL;
@@ -967,7 +967,7 @@ pub mod VariableAttributes {
                 binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            attributes.clone()
+            attributes
         },
         Deref @ VAR_ATTR_STRING { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_STRING;
@@ -977,7 +977,7 @@ pub mod VariableAttributes {
                 binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            attributes.clone()
+            attributes
         },
         Deref @ VAR_ATTR_ENUMERATION { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION;
@@ -989,7 +989,7 @@ pub mod VariableAttributes {
                 binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            attributes.clone()
+            attributes
         },
         Deref @ VAR_ATTR_RECORD { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_RECORD; childrenAttr = metamodelica::arrayFromVec(({
@@ -1000,9 +1000,9 @@ pub mod VariableAttributes {
         }
         __acc.reverse()
     }).into_iter().cloned().collect()));
-            attributes.clone()
+            attributes
         },
-        _ => attributes.clone(),
+        _ => attributes,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(attributes)
@@ -1013,7 +1013,7 @@ pub mod VariableAttributes {
         let mut sizes: Arc<metamodelica::List<i32>>;
         let mut start: Arc<Expression::NFExpression>;
         let mut iter_range: Arc<Expression::NFExpression>;
-        let mut binding: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::BOOLEAN { value: b.clone() });
+        let mut binding: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::BOOLEAN { value: b });
         let mut step: Option<Arc<Expression::NFExpression>>;
         let mut iter_name: Arc<InstNode::InstNode>;
         let mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
@@ -1028,33 +1028,33 @@ pub mod VariableAttributes {
     });
             start = Arc::new(Expression::NFExpression::INTEGER { value: 1 });
             step = None;
-            for mut stop in &*sizes.clone() {
+            for mut stop in &*sizes {
                 let mut stop = stop.clone();
                 iter_name = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), crate::NFType::interned_INTEGER());
                 iter_range = Arc::new(Expression::NFExpression::RANGE { ty: crate::NFType::interned_INTEGER(), start: start.clone(), step: step.clone(), stop: Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }) });
                 iterators = metamodelica::cons((iter_name.clone(), iter_range.clone()), iterators.clone());
             }
-            binding = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: Expression::variability(binding.clone())?, purity: NFPrefixes::Purity::PURE.clone(), exp: binding.clone(), iters: iterators.clone().reverse() }) });
+            binding = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty, var: Expression::variability(binding.clone())?, purity: NFPrefixes::Purity::PURE.clone(), exp: binding, iters: iterators.reverse() }) });
         }
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_REAL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; fixed = Some(binding.clone()));
+        Deref @ VAR_ATTR_REAL { .. } if (overwrite || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_REAL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; fixed = Some(binding));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_INT { .. } if (overwrite.clone() || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_INT).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; fixed = Some(binding.clone()));
+        Deref @ VAR_ATTR_INT { .. } if (overwrite || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_INT).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; fixed = Some(binding));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_BOOL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_BOOL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_BOOL; fixed = Some(binding.clone()));
+        Deref @ VAR_ATTR_BOOL { .. } if (overwrite || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_BOOL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_BOOL; fixed = Some(binding));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_STRING { .. } if (overwrite.clone() || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_STRING).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_STRING; fixed = Some(binding.clone()));
+        Deref @ VAR_ATTR_STRING { .. } if (overwrite || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_STRING).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_STRING; fixed = Some(binding));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite.clone() || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; fixed = Some(binding.clone()));
+        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite || isNone(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; fixed = Some(binding));
             attributes.clone()
         },
         _ => attributes.clone(),
@@ -1065,7 +1065,7 @@ pub mod VariableAttributes {
 
     pub(crate) fn isFixed(mut attributes: Arc<VariableAttributes>) -> bool {
         let mut fixed: bool;
-        fixed = (::match_deref::match_deref! { match &(attributes.clone()) {
+        fixed = (::match_deref::match_deref! { match &(attributes) {
         Deref @ VAR_ATTR_REAL { fixed: Some(Deref @ Expression::BOOLEAN { value: true }), .. } => true,
         Deref @ VAR_ATTR_INT { fixed: Some(Deref @ Expression::BOOLEAN { value: true }), .. } => true,
         Deref @ VAR_ATTR_BOOL { fixed: Some(Deref @ Expression::BOOLEAN { value: true }), .. } => true,
@@ -1080,24 +1080,24 @@ pub mod VariableAttributes {
     pub fn setStartAttribute(mut attributes: Arc<VariableAttributes>, mut start: Arc<Expression::NFExpression>, mut overwrite: bool) -> Arc<VariableAttributes> {
         let mut attributes: Arc<VariableAttributes> = attributes;
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; start = Some(start.clone()));
+        Deref @ VAR_ATTR_REAL { .. } if (overwrite || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; start = Some(start));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_INT { .. } if (overwrite.clone() || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; start = Some(start.clone()));
+        Deref @ VAR_ATTR_INT { .. } if (overwrite || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; start = Some(start));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_BOOL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_BOOL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_BOOL; start = Some(start.clone()));
+        Deref @ VAR_ATTR_BOOL { .. } if (overwrite || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_BOOL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_BOOL; start = Some(start));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_STRING { .. } if (overwrite.clone() || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_STRING).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_STRING; start = Some(start.clone()));
+        Deref @ VAR_ATTR_STRING { .. } if (overwrite || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_STRING).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_STRING; start = Some(start));
             attributes.clone()
         },
-        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite.clone() || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; start = Some(start.clone()));
+        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite || isNone(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; start = Some(start));
             attributes.clone()
         },
         _ => attributes.clone(),
@@ -1123,16 +1123,16 @@ pub mod VariableAttributes {
     pub fn setMin(mut attributes: Arc<VariableAttributes>, mut min_val: Option<Arc<Expression::NFExpression>>, mut overwrite: bool) -> Arc<VariableAttributes> {
         let mut attributes: Arc<VariableAttributes> = attributes;
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_REAL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; min = min_val.clone());
+        Deref @ VAR_ATTR_REAL { .. } if (overwrite || isNone(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_REAL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; min = min_val);
             attributes.clone()
         },
-        Deref @ VAR_ATTR_INT { .. } if (overwrite.clone() || isNone(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_INT).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; min = min_val.clone());
+        Deref @ VAR_ATTR_INT { .. } if (overwrite || isNone(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_INT).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; min = min_val);
             attributes.clone()
         },
-        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite.clone() || isNone(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; min = min_val.clone());
+        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite || isNone(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; min = min_val);
             attributes.clone()
         },
         _ => attributes.clone(),
@@ -1144,16 +1144,16 @@ pub mod VariableAttributes {
     pub fn setMax(mut attributes: Arc<VariableAttributes>, mut max_val: Option<Arc<Expression::NFExpression>>, mut overwrite: bool) -> Arc<VariableAttributes> {
         let mut attributes: Arc<VariableAttributes> = attributes;
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_REAL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; max = max_val.clone());
+        Deref @ VAR_ATTR_REAL { .. } if (overwrite || isNone(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_REAL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; max = max_val);
             attributes.clone()
         },
-        Deref @ VAR_ATTR_INT { .. } if (overwrite.clone() || isNone(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_INT).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; max = max_val.clone());
+        Deref @ VAR_ATTR_INT { .. } if (overwrite || isNone(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_INT).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT; max = max_val);
             attributes.clone()
         },
-        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite.clone() || isNone(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; max = max_val.clone());
+        Deref @ VAR_ATTR_ENUMERATION { .. } if (overwrite || isNone(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION; max = max_val);
             attributes.clone()
         },
         _ => attributes.clone(),
@@ -1165,8 +1165,8 @@ pub mod VariableAttributes {
     pub fn setStateSelect(mut attributes: Arc<VariableAttributes>, mut stateSelect_val: StateSelect, mut overwrite: bool) -> Arc<VariableAttributes> {
         let mut attributes: Arc<VariableAttributes> = attributes;
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).stateSelect, VariableAttributes::VAR_ATTR_REAL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; stateSelect = Some(stateSelect_val.clone()));
+        Deref @ VAR_ATTR_REAL { .. } if (overwrite || isNone(var_field!((*attributes).stateSelect, VariableAttributes::VAR_ATTR_REAL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; stateSelect = Some(stateSelect_val));
             attributes.clone()
         },
         _ => attributes.clone(),
@@ -1177,7 +1177,7 @@ pub mod VariableAttributes {
 
     pub fn getStateSelect(mut attributes: Arc<VariableAttributes>) -> StateSelect {
         let mut stateSelect: StateSelect = StateSelect::NEVER;
-        stateSelect = (::match_deref::match_deref! { match &(attributes.clone()) {
+        stateSelect = (::match_deref::match_deref! { match &(attributes) {
         Deref @ VAR_ATTR_REAL { stateSelect: Some(__esc_stateSelect), .. } => {
             stateSelect = (*__esc_stateSelect).clone();
             stateSelect.clone()
@@ -1191,8 +1191,8 @@ pub mod VariableAttributes {
     pub fn setTearingSelect(mut attributes: Arc<VariableAttributes>, mut tearingSelect_val: TearingSelect, mut overwrite: bool) -> Arc<VariableAttributes> {
         let mut attributes: Arc<VariableAttributes> = attributes;
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } if (overwrite.clone() || isNone(var_field!((*attributes).tearingSelect, VariableAttributes::VAR_ATTR_REAL).clone())) => {
-            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; tearingSelect = Some(tearingSelect_val.clone()));
+        Deref @ VAR_ATTR_REAL { .. } if (overwrite || isNone(var_field!((*attributes).tearingSelect, VariableAttributes::VAR_ATTR_REAL).clone())) => {
+            assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL; tearingSelect = Some(tearingSelect_val));
             attributes.clone()
         },
         _ => attributes.clone(),
@@ -1203,7 +1203,7 @@ pub mod VariableAttributes {
 
     pub fn getTearingSelect(mut attributes: Arc<VariableAttributes>) -> TearingSelect {
         let mut tearingSelect: TearingSelect = TearingSelect::NEVER;
-        tearingSelect = (::match_deref::match_deref! { match &(attributes.clone()) {
+        tearingSelect = (::match_deref::match_deref! { match &(attributes) {
         Deref @ VAR_ATTR_REAL { tearingSelect: Some(__esc_tearingSelect), .. } => {
             tearingSelect = (*__esc_tearingSelect).clone();
             tearingSelect.clone()
@@ -1246,7 +1246,7 @@ pub mod VariableAttributes {
         let mut nominal_loc: Arc<ExpressionIterator::NFExpressionIterator> = nominal_iter.clone();
         let mut binding_loc: Arc<ExpressionIterator::NFExpressionIterator> = binding_iter.clone();
         let mut startOrigin_loc: Arc<ExpressionIterator::NFExpressionIterator> = startOrigin_iter.clone();
-        for mut i in 1..=length.clone() {
+        for mut i in 1..=length {
             (quantity_loc, quantity) = ExpressionIterator::nextOpt(quantity_loc.clone())?;
             (unit_loc, unit) = ExpressionIterator::nextOpt(unit_loc.clone())?;
             (displayUnit_loc, displayUnit) = ExpressionIterator::nextOpt(displayUnit_loc.clone())?;
@@ -1259,7 +1259,7 @@ pub mod VariableAttributes {
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
             scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_REAL { quantity: quantity.clone(), unit: unit.clone(), displayUnit: displayUnit.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), nominal: nominal.clone(), stateSelect: stateSelect.clone(), tearingSelect: tearingSelect.clone(), uncertainty: uncertainty.clone(), distribution: distribution.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
-        scalar_attributes = scalar_attributes.clone().reverse();
+        scalar_attributes = scalar_attributes.reverse();
         Ok(scalar_attributes)
     }
 
@@ -1279,7 +1279,7 @@ pub mod VariableAttributes {
         let mut fixed_loc: Arc<ExpressionIterator::NFExpressionIterator> = fixed_iter.clone();
         let mut binding_loc: Arc<ExpressionIterator::NFExpressionIterator> = binding_iter.clone();
         let mut startOrigin_loc: Arc<ExpressionIterator::NFExpressionIterator> = startOrigin_iter.clone();
-        for mut i in 1..=length.clone() {
+        for mut i in 1..=length {
             (quantity_loc, quantity) = ExpressionIterator::nextOpt(quantity_loc.clone())?;
             (min_loc, min) = ExpressionIterator::nextOpt(min_loc.clone())?;
             (max_loc, max) = ExpressionIterator::nextOpt(max_loc.clone())?;
@@ -1289,7 +1289,7 @@ pub mod VariableAttributes {
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
             scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_INT { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), uncertainty: uncertainty.clone(), distribution: distribution.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
-        scalar_attributes = scalar_attributes.clone().reverse();
+        scalar_attributes = scalar_attributes.reverse();
         Ok(scalar_attributes)
     }
 
@@ -1305,7 +1305,7 @@ pub mod VariableAttributes {
         let mut fixed_loc: Arc<ExpressionIterator::NFExpressionIterator> = fixed_iter.clone();
         let mut binding_loc: Arc<ExpressionIterator::NFExpressionIterator> = binding_iter.clone();
         let mut startOrigin_loc: Arc<ExpressionIterator::NFExpressionIterator> = startOrigin_iter.clone();
-        for mut i in 1..=length.clone() {
+        for mut i in 1..=length {
             (quantity_loc, quantity) = ExpressionIterator::nextOpt(quantity_loc.clone())?;
             (start_loc, start) = ExpressionIterator::nextOpt(start_loc.clone())?;
             (fixed_loc, fixed) = ExpressionIterator::nextOpt(fixed_loc.clone())?;
@@ -1313,12 +1313,12 @@ pub mod VariableAttributes {
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
             scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_BOOL { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
-        scalar_attributes = scalar_attributes.clone().reverse();
+        scalar_attributes = scalar_attributes.reverse();
         Ok(scalar_attributes)
     }
 
     pub(crate) fn scalarizeClock(mut isProtected: Option<bool>, mut finalPrefix: Option<bool>, mut length: i32) -> Arc<metamodelica::List<Arc<VariableAttributes>>> {
-        let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = List::fill(Arc::new(VariableAttributes::VAR_ATTR_CLOCK { isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone() }), length.clone());
+        let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = List::fill(Arc::new(VariableAttributes::VAR_ATTR_CLOCK { isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone() }), length);
         scalar_attributes
     }
 
@@ -1334,7 +1334,7 @@ pub mod VariableAttributes {
         let mut fixed_loc: Arc<ExpressionIterator::NFExpressionIterator> = fixed_iter.clone();
         let mut binding_loc: Arc<ExpressionIterator::NFExpressionIterator> = binding_iter.clone();
         let mut startOrigin_loc: Arc<ExpressionIterator::NFExpressionIterator> = startOrigin_iter.clone();
-        for mut i in 1..=length.clone() {
+        for mut i in 1..=length {
             (quantity_loc, quantity) = ExpressionIterator::nextOpt(quantity_loc.clone())?;
             (start_loc, start) = ExpressionIterator::nextOpt(start_loc.clone())?;
             (fixed_loc, fixed) = ExpressionIterator::nextOpt(fixed_loc.clone())?;
@@ -1342,7 +1342,7 @@ pub mod VariableAttributes {
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
             scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_STRING { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
-        scalar_attributes = scalar_attributes.clone().reverse();
+        scalar_attributes = scalar_attributes.reverse();
         Ok(scalar_attributes)
     }
 
@@ -1362,7 +1362,7 @@ pub mod VariableAttributes {
         let mut fixed_loc: Arc<ExpressionIterator::NFExpressionIterator> = fixed_iter.clone();
         let mut binding_loc: Arc<ExpressionIterator::NFExpressionIterator> = binding_iter.clone();
         let mut startOrigin_loc: Arc<ExpressionIterator::NFExpressionIterator> = startOrigin_iter.clone();
-        for mut i in 1..=length.clone() {
+        for mut i in 1..=length {
             (quantity_loc, quantity) = ExpressionIterator::nextOpt(quantity_loc.clone())?;
             (min_loc, min) = ExpressionIterator::nextOpt(min_loc.clone())?;
             (max_loc, max) = ExpressionIterator::nextOpt(max_loc.clone())?;
@@ -1372,22 +1372,22 @@ pub mod VariableAttributes {
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
             scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
-        scalar_attributes = scalar_attributes.clone().reverse();
+        scalar_attributes = scalar_attributes.reverse();
         Ok(scalar_attributes)
     }
 
     pub(crate) fn scalarize(mut attributes: Arc<VariableAttributes>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<VariableAttributes>>>> {
         let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = metamodelica::nil();
         scalar_attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } => scalarizeReal(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).unit, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).displayUnit, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).nominal, VariableAttributes::VAR_ATTR_REAL).clone())?, var_field!((*attributes).stateSelect, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).tearingSelect, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).uncertainty, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).distribution, VariableAttributes::VAR_ATTR_REAL).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_REAL).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_REAL).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_REAL).clone())?, length.clone())?,
-        Deref @ VAR_ATTR_INT { .. } => scalarizeInt(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_INT).clone())?, var_field!((*attributes).uncertainty, VariableAttributes::VAR_ATTR_INT).clone(), var_field!((*attributes).distribution, VariableAttributes::VAR_ATTR_INT).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_INT).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_INT).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_INT).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_INT).clone())?, length.clone())?,
-        Deref @ VAR_ATTR_BOOL { .. } => scalarizeBool(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_BOOL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_BOOL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_BOOL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_BOOL).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_BOOL).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_BOOL).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_BOOL).clone())?, length.clone())?,
-        Deref @ VAR_ATTR_CLOCK { .. } => scalarizeClock(var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_CLOCK).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_CLOCK).clone(), length.clone()),
-        Deref @ VAR_ATTR_STRING { .. } => scalarizeString(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_STRING).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_STRING).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_STRING).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_STRING).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_STRING).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_STRING).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_STRING).clone())?, length.clone())?,
-        Deref @ VAR_ATTR_ENUMERATION { .. } => scalarizeEnumeration(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, length.clone())?,
-        Deref @ VAR_ATTR_RECORD { .. } => list![attributes.clone()],
+        Deref @ VAR_ATTR_REAL { .. } => scalarizeReal(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).unit, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).displayUnit, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_REAL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).nominal, VariableAttributes::VAR_ATTR_REAL).clone())?, var_field!((*attributes).stateSelect, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).tearingSelect, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).uncertainty, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).distribution, VariableAttributes::VAR_ATTR_REAL).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_REAL).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_REAL).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_REAL).clone())?, length)?,
+        Deref @ VAR_ATTR_INT { .. } => scalarizeInt(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_INT).clone())?, var_field!((*attributes).uncertainty, VariableAttributes::VAR_ATTR_INT).clone(), var_field!((*attributes).distribution, VariableAttributes::VAR_ATTR_INT).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_INT).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_INT).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_INT).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_INT).clone())?, length)?,
+        Deref @ VAR_ATTR_BOOL { .. } => scalarizeBool(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_BOOL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_BOOL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_BOOL).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_BOOL).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_BOOL).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_BOOL).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_BOOL).clone())?, length)?,
+        Deref @ VAR_ATTR_CLOCK { .. } => scalarizeClock(var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_CLOCK).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_CLOCK).clone(), length),
+        Deref @ VAR_ATTR_STRING { .. } => scalarizeString(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_STRING).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_STRING).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_STRING).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_STRING).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_STRING).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_STRING).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_STRING).clone())?, length)?,
+        Deref @ VAR_ATTR_ENUMERATION { .. } => scalarizeEnumeration(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, length)?,
+        Deref @ VAR_ATTR_RECORD { .. } => list![attributes],
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.scalarize")); __mm_s.push_str(&*literal!("failed. Not yet handled: ")); __mm_s.push_str(&*toString(attributes.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.scalarize")); __mm_s.push_str(&*literal!("failed. Not yet handled: ")); __mm_s.push_str(&*toString(attributes)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1404,7 +1404,7 @@ pub mod VariableAttributes {
         Deref @ VAR_ATTR_CLOCK { .. } => crate::NFType::interned_CLOCK(),
         Deref @ VAR_ATTR_STRING { .. } => crate::NFType::interned_STRING(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.elemType")); __mm_s.push_str(&*literal!(" cannot create type from attributes: ")); __mm_s.push_str(&*toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.elemType")); __mm_s.push_str(&*literal!(" cannot create type from attributes: ")); __mm_s.push_str(&*toString(attr)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1416,22 +1416,22 @@ pub mod VariableAttributes {
         let mut r#str: ArcStr = literal!("");
         let mut buffer: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         let mut name: ArcStr;
-        for mut tpl in &*tpl_list.clone() {
+        for mut tpl in &*tpl_list {
             let mut tpl = tpl.clone();
             buffer = attributeToString(tpl.clone(), buffer.clone())?;
         }
-        buffer = stateSelectStringBuffer(stateSelect.clone(), buffer.clone())?;
-        buffer = tearingSelectStringBuffer(tearingSelect.clone(), buffer.clone())?;
-        buffer = buffer.clone().reverse();
+        buffer = stateSelectStringBuffer(stateSelect, buffer)?;
+        buffer = tearingSelectStringBuffer(tearingSelect, buffer)?;
+        buffer = buffer.reverse();
         if !(buffer.clone().is_empty()) {
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(buffer.clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(buffer) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             name = __pa0.clone();
             buffer = __pa1.clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
-            for mut name in &*buffer.clone() {
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone();
+            for mut name in &*buffer {
                 let mut name = name.clone();
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
             }
@@ -1444,21 +1444,21 @@ pub mod VariableAttributes {
         let mut name: ArcStr;
         let mut optAttr: Option<Arc<Expression::NFExpression>>;
         let mut attr: Arc<Expression::NFExpression>;
-        (name, optAttr) = tpl.clone();
+        (name, optAttr) = tpl;
         if isSome(optAttr.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(optAttr.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(optAttr) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             attr = __pa0.clone();
-            buffer = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), buffer.clone());
+            buffer = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(attr)?); ArcStr::from(__mm_s) }).clone(), buffer);
         }
         Ok(buffer)
     }
 
     pub fn stateSelectString(mut stateSelect: StateSelect) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = ((match stateSelect.clone() {
+        r#str = ((match stateSelect {
         StateSelect::NEVER => literal!("StateSelect = never"),
         StateSelect::AVOID => literal!("StateSelect = avoid"),
         StateSelect::DEFAULT => literal!("StateSelect = default"),
@@ -1470,7 +1470,7 @@ pub mod VariableAttributes {
 
     pub fn tearingSelectString(mut tearingSelect: TearingSelect) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = ((match tearingSelect.clone() {
+        r#str = ((match tearingSelect {
         TearingSelect::NEVER => literal!("TearingSelect = never"),
         TearingSelect::AVOID => literal!("TearingSelect = avoid"),
         TearingSelect::DEFAULT => literal!("TearingSelect = default"),
@@ -1484,12 +1484,12 @@ pub mod VariableAttributes {
         let mut buffer: Arc<metamodelica::List<ArcStr>> = buffer;
         let mut stateSelect: StateSelect;
         if isSome(optStateSelect.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(optStateSelect.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(optStateSelect) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             stateSelect = __pa0.clone();
-            buffer = metamodelica::cons((stateSelectString(stateSelect.clone())?).clone(), buffer.clone());
+            buffer = metamodelica::cons((stateSelectString(stateSelect)?).clone(), buffer);
         }
         Ok(buffer)
     }
@@ -1498,12 +1498,12 @@ pub mod VariableAttributes {
         let mut buffer: Arc<metamodelica::List<ArcStr>> = buffer;
         let mut tearingSelect: TearingSelect;
         if isSome(optTearingSelect.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(optTearingSelect.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(optTearingSelect) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             tearingSelect = __pa0.clone();
-            buffer = metamodelica::cons((tearingSelectString(tearingSelect.clone())?).clone(), buffer.clone());
+            buffer = metamodelica::cons((tearingSelectString(tearingSelect)?).clone(), buffer);
         }
         Ok(buffer)
     }
@@ -1522,7 +1522,7 @@ pub mod VariableAttributes {
         let mut nominal: Option<Arc<Expression::NFExpression>> = None;
         let mut state_select: Option<StateSelect> = None;
         let mut tearing_select: Option<TearingSelect> = None;
-        for mut attr in &*attrs.clone() {
+        for mut attr in &*attrs {
             let mut attr = attr.clone();
             (name, b) = attr.clone();
             let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -1570,8 +1570,8 @@ pub mod VariableAttributes {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         }
-        tearing_select = createTearingSelect(comment.clone())?;
-        attributes = Arc::new(VariableAttributes::VAR_ATTR_REAL { quantity: quantity.clone(), unit: unit.clone(), displayUnit: displayUnit.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), nominal: nominal.clone(), stateSelect: state_select.clone(), tearingSelect: tearing_select.clone(), uncertainty: None, distribution: None, binding: None, isProtected: None, finalPrefix: Some(isFinal.clone()), startOrigin: None });
+        tearing_select = createTearingSelect(comment)?;
+        attributes = Arc::new(VariableAttributes::VAR_ATTR_REAL { quantity: quantity, unit: unit, displayUnit: displayUnit, min: min, max: max, start: start, fixed: fixed, nominal: nominal, stateSelect: state_select, tearingSelect: tearing_select, uncertainty: None, distribution: None, binding: None, isProtected: None, finalPrefix: Some(isFinal), startOrigin: None });
         Ok(attributes)
     }
 
@@ -1584,10 +1584,10 @@ pub mod VariableAttributes {
         let mut max: Option<Arc<Expression::NFExpression>> = None;
         let mut start: Option<Arc<Expression::NFExpression>> = None;
         let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        if attrs.clone().is_empty() && !(isFinal.clone()) {
+        if attrs.clone().is_empty() && !(isFinal) {
             attributes = EMPTY_VAR_ATTR_INT().clone();
         } else {
-            for mut attr in &*attrs.clone() {
+            for mut attr in &*attrs {
                 let mut attr = attr.clone();
                 (name, b) = attr.clone();
                 let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -1618,7 +1618,7 @@ pub mod VariableAttributes {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            attributes = Arc::new(VariableAttributes::VAR_ATTR_INT { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), uncertainty: None, distribution: None, binding: None, isProtected: None, finalPrefix: Some(isFinal.clone()), startOrigin: None });
+            attributes = Arc::new(VariableAttributes::VAR_ATTR_INT { quantity: quantity, min: min, max: max, start: start, fixed: fixed, uncertainty: None, distribution: None, binding: None, isProtected: None, finalPrefix: Some(isFinal), startOrigin: None });
         }
         Ok(attributes)
     }
@@ -1630,10 +1630,10 @@ pub mod VariableAttributes {
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut start: Option<Arc<Expression::NFExpression>> = None;
         let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        if attrs.clone().is_empty() && !(isFinal.clone()) {
+        if attrs.clone().is_empty() && !(isFinal) {
             attributes = EMPTY_VAR_ATTR_BOOL().clone();
         } else {
-            for mut attr in &*attrs.clone() {
+            for mut attr in &*attrs {
                 let mut attr = attr.clone();
                 (name, b) = attr.clone();
                 let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -1656,7 +1656,7 @@ pub mod VariableAttributes {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            attributes = Arc::new(VariableAttributes::VAR_ATTR_BOOL { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: None, isProtected: None, finalPrefix: Some(isFinal.clone()), startOrigin: None });
+            attributes = Arc::new(VariableAttributes::VAR_ATTR_BOOL { quantity: quantity, start: start, fixed: fixed, binding: None, isProtected: None, finalPrefix: Some(isFinal), startOrigin: None });
         }
         Ok(attributes)
     }
@@ -1668,10 +1668,10 @@ pub mod VariableAttributes {
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut start: Option<Arc<Expression::NFExpression>> = None;
         let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        if attrs.clone().is_empty() && !(isFinal.clone()) {
+        if attrs.clone().is_empty() && !(isFinal) {
             attributes = EMPTY_VAR_ATTR_STRING().clone();
         } else {
-            for mut attr in &*attrs.clone() {
+            for mut attr in &*attrs {
                 let mut attr = attr.clone();
                 (name, b) = attr.clone();
                 let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -1694,7 +1694,7 @@ pub mod VariableAttributes {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            attributes = Arc::new(VariableAttributes::VAR_ATTR_STRING { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: None, isProtected: None, finalPrefix: Some(isFinal.clone()), startOrigin: None });
+            attributes = Arc::new(VariableAttributes::VAR_ATTR_STRING { quantity: quantity, start: start, fixed: fixed, binding: None, isProtected: None, finalPrefix: Some(isFinal), startOrigin: None });
         }
         Ok(attributes)
     }
@@ -1708,10 +1708,10 @@ pub mod VariableAttributes {
         let mut max: Option<Arc<Expression::NFExpression>> = None;
         let mut start: Option<Arc<Expression::NFExpression>> = None;
         let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        if attrs.clone().is_empty() && !(isFinal.clone()) {
+        if attrs.clone().is_empty() && !(isFinal) {
             attributes = EMPTY_VAR_ATTR_REAL().clone();
         } else {
-            for mut attr in &*attrs.clone() {
+            for mut attr in &*attrs {
                 let mut attr = attr.clone();
                 (name, b) = attr.clone();
                 let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -1742,13 +1742,13 @@ pub mod VariableAttributes {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            attributes = Arc::new(VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), binding: None, isProtected: None, finalPrefix: Some(isFinal.clone()), startOrigin: None });
+            attributes = Arc::new(VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity, min: min, max: max, start: start, fixed: fixed, binding: None, isProtected: None, finalPrefix: Some(isFinal), startOrigin: None });
         }
         Ok(attributes)
     }
 
     fn createClock(mut isFinal: bool) -> Arc<VariableAttributes> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(VariableAttributes::VAR_ATTR_CLOCK { isProtected: None, finalPrefix: Some(isFinal.clone()) });
+        let mut attributes: Arc<VariableAttributes> = Arc::new(VariableAttributes::VAR_ATTR_CLOCK { isProtected: None, finalPrefix: Some(isFinal) });
         attributes
     }
 
@@ -1756,14 +1756,14 @@ pub mod VariableAttributes {
         let mut attributes: Arc<VariableAttributes>;
         let mut childrenAttr: metamodelica::Array<Arc<VariableAttributes>> = arrayCreate((children.clone().len() as i32), EMPTY_VAR_ATTR_REAL().clone());
         let mut index: i32 = 0;
-        for mut var in &*children.clone() {
+        for mut var in &*children {
             let mut var = var.clone();
             let () = (match UnorderedMap::get((ComponentRef::firstName(var.name.clone(), false)?).clone(), indexMap.clone())? {
         Some(mut __esc_index) => {
             index = __esc_index.clone();
             {
                 let __cell0 = create(var.typeAttributes.clone(), var.ty.clone(), var.attributes.clone(), var.children.clone(), var.comment.clone())?;
-                let __idx0 = index.clone();
+                let __idx0 = index;
                 childrenAttr.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             ()
@@ -1771,7 +1771,7 @@ pub mod VariableAttributes {
         _ => (),
     });
         }
-        attributes = Arc::new(VariableAttributes::VAR_ATTR_RECORD { indexMap: indexMap.clone(), childrenAttr: childrenAttr.clone() });
+        attributes = Arc::new(VariableAttributes::VAR_ATTR_RECORD { indexMap: indexMap, childrenAttr: childrenAttr.clone() });
         Ok(attributes)
     }
 
@@ -1784,8 +1784,8 @@ pub mod VariableAttributes {
         let mut stateSelect: Option<StateSelect>;
         let mut exp: Arc<Expression::NFExpression> = Binding::getTypedExp(binding.clone())?;
         let mut name: ArcStr;
-        name = (getStateSelectName(exp.clone())?).clone();
-        stateSelect = Some(lookupStateSelectMember((name.clone()).clone())?);
+        name = (getStateSelectName(exp)?).clone();
+        stateSelect = Some(lookupStateSelectMember((name).clone())?);
         Ok(stateSelect)
     }
 
@@ -1816,14 +1816,14 @@ pub mod VariableAttributes {
             } };
             arg = __pa0.clone();
             rest = __pa1.clone();
-            if !(rest.clone().is_empty() || List::all(rest.clone(), (std::sync::Arc::new({ let __pe_b1 = arg.clone(); move |__pe_a0| Expression::isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" cannot handle array StateSelect with different values yet:")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
+            if !(rest.clone().is_empty() || List::all(rest, (std::sync::Arc::new({ let __pe_b1 = arg.clone(); move |__pe_a0| Expression::isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" cannot handle array StateSelect with different values yet:")); __mm_s.push_str(&*Expression::toString(exp)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
                 bail!("fail");
             }
             { exp = arg.clone(); continue '__tco; }
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1840,7 +1840,7 @@ pub mod VariableAttributes {
         Deref @ "prefer" => StateSelect::PREFER.clone(),
         Deref @ "always" => StateSelect::ALWAYS.clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1857,18 +1857,18 @@ pub mod VariableAttributes {
         let mut val: Arc<Absyn::Exp>;
         let mut name: ArcStr;
         let mut info: SourceInfo;
-        opt_anno = SCodeUtil::commentAnnotation(cmt.clone());
+        opt_anno = SCodeUtil::commentAnnotation(cmt);
         if isNone(opt_anno.clone()) {
             return Ok(tearingSelect.clone());
         }
-        let __pa0 = ::match_deref::match_deref! { match &(opt_anno.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(opt_anno) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         anno = __pa0.clone();
         r#mod = SCodeUtil::lookupAnnotation(anno.clone(), (literal!("__OpenModelica_tearingSelect")).clone())?;
         if SCodeUtil::isEmptyMod(r#mod.clone()) {
-            r#mod = SCodeUtil::lookupAnnotation(anno.clone(), (literal!("tearingSelect")).clone())?;
+            r#mod = SCodeUtil::lookupAnnotation(anno, (literal!("tearingSelect")).clone())?;
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
                 Error::addSourceMessage(Error::DEPRECATED_EXPRESSION.clone(), list![(literal!("tearingSelect")).clone(), (literal!("__OpenModelica_tearingSelect")).clone()], SCodeUtil::getModifierInfo(r#mod.clone()))?;
             }
@@ -1877,30 +1877,30 @@ pub mod VariableAttributes {
         if isNone(opt_val.clone()) {
             return Ok(tearingSelect.clone());
         }
-        let __pa1 = ::match_deref::match_deref! { match &(opt_val.clone()) {
+        let __pa1 = ::match_deref::match_deref! { match &(opt_val) {
             Some(__pa1) => __pa1.clone(),
             _ => bail!("pattern mismatch"),
         } };
         val = __pa1.clone();
-        info = SCodeUtil::getModifierInfo(r#mod.clone());
+        info = SCodeUtil::getModifierInfo(r#mod);
         name = (getTearingSelectName(val.clone(), info.clone())?).clone();
-        tearingSelect = lookupTearingSelectMember((name.clone()).clone());
+        tearingSelect = lookupTearingSelectMember((name).clone());
         if isNone(tearingSelect.clone()) {
-            Error::addSourceMessage(Error::UNKNOWN_ANNOTATION_VALUE.clone(), list![(Dump::printExpStr(val.clone())?).clone(), (literal!("__OpenModelica_tearingSelect")).clone()], info.clone())?;
+            Error::addSourceMessage(Error::UNKNOWN_ANNOTATION_VALUE.clone(), list![(Dump::printExpStr(val)?).clone(), (literal!("__OpenModelica_tearingSelect")).clone()], info)?;
         }
         Ok(tearingSelect)
     }
 
     fn getTearingSelectName(mut exp: Arc<Absyn::Exp>, mut info: SourceInfo) -> Result<ArcStr> {
         let mut name: ArcStr = arcstr::literal!("");
-        name = ((::match_deref::match_deref! { match &(exp.clone()) {
+        name = ((::match_deref::match_deref! { match &(exp) {
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { name: Deref @ "TearingSelect", subscripts: Deref @ metamodelica::List::Nil, componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_name, subscripts: Deref @ metamodelica::List::Nil } } } => {
             name = (*__esc_name).clone();
             name.clone()
         },
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_name, subscripts: Deref @ metamodelica::List::Nil } } => {
             name = (*__esc_name).clone();
-            Error::addSourceMessage(Error::DEPRECATED_EXPRESSION.clone(), list![(name.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearingSelect.")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
+            Error::addSourceMessage(Error::DEPRECATED_EXPRESSION.clone(), list![(name.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearingSelect.")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone()], info)?;
             literal!("")
         },
         _ => literal!(""),
@@ -1911,7 +1911,7 @@ pub mod VariableAttributes {
 
     fn lookupTearingSelectMember(mut name: ArcStr) -> Option<TearingSelect> {
         let mut tearingSelect: Option<TearingSelect>;
-        tearingSelect = (::match_deref::match_deref! { match &(name.clone()) {
+        tearingSelect = (::match_deref::match_deref! { match &(name) {
         Deref @ "never" => Some(TearingSelect::NEVER.clone()),
         Deref @ "avoid" => Some(TearingSelect::AVOID.clone()),
         Deref @ "default" => Some(TearingSelect::DEFAULT.clone()),
@@ -2064,7 +2064,7 @@ pub mod Annotations {
         if attributes.isResizable.clone() {
             assign_field!(annotations.resizable = true);
         }
-        let () = (::match_deref::match_deref! { match &(comment.clone()) {
+        let () = (::match_deref::match_deref! { match &(comment) {
         Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod @ Deref @ SCode::Mod::MOD { .. } }), .. } => {
             r#mod = (*__esc_mod).clone();
             for mut submod in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {

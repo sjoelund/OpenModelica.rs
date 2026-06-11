@@ -127,8 +127,8 @@ pub(crate) fn walk<Extra: Clone + 'static + metamodelica::gc::MMTrace>(mut inGra
 
     let mut outGraph: Graph;
     let mut outExtra: Extra;
-    (outGraph, outExtra) = (match inOptions.clone() {
-        _ => (inGraph.clone(), inExtra.clone()),
+    (outGraph, outExtra) = (match inOptions {
+        _ => (inGraph, inExtra),
     });
     (outGraph, outExtra)
 }

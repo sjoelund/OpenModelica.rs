@@ -115,12 +115,12 @@ pub(crate) fn createSubPartition(mut subClock: Arc<BClock::BClock>, mut equation
     let mut part: Arc<NSimPartition>;
     part = Arc::new(NSimPartition::SUB_PARTITION { variables: ({
         let mut __acc: Arc<metamodelica::List<(Arc<SimVar::SimVar>, bool)>> = metamodelica::nil();
-        for mut v in (variables.clone()).into_iter().cloned() {
+        for mut v in (variables).into_iter().cloned() {
             let __x = (v.clone(), true);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), equations: equations.clone(), removedEquations: metamodelica::nil(), subClock: subClock.clone(), holdEvents: holdEvents.clone() });
+    }), equations: equations, removedEquations: metamodelica::nil(), subClock: subClock, holdEvents: holdEvents });
     part
 }
 
@@ -131,7 +131,7 @@ pub(crate) fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::Unorde
     let mut baseClock: Arc<BClock::BClock>;
     let mut subClocks: Arc<metamodelica::List<Arc<NSimPartition>>>;
     let mut clock_idx: i32 = 1;
-    for mut tpl in &*UnorderedMap::toList(clock_collector.clone()) {
+    for mut tpl in &*UnorderedMap::toList(clock_collector) {
         let mut tpl = tpl.clone();
         (baseClock, subClocks) = tpl.clone();
         if !(BClock::isInferredClock(baseClock.clone())) {
@@ -148,7 +148,7 @@ pub(crate) fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::Unorde
             let mut attr: Arc<EquationAttributes::EquationAttributes>;
             let mut blck: Arc<Block::Block>;
             source = DAE::emptyElementSource().clone();
-            fire = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(BuiltinFuncs::CLOCK_FIRE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: clock_idx.clone() })], Prefixes::Variability::CONSTANT.clone(), Prefixes::Purity::PURE.clone(), BuiltinFuncs::CLOCK_FIRE().returnType.clone()) });
+            fire = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(BuiltinFuncs::CLOCK_FIRE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: clock_idx })], Prefixes::Variability::CONSTANT.clone(), Prefixes::Purity::PURE.clone(), BuiltinFuncs::CLOCK_FIRE().returnType.clone()) });
             stmt = Arc::new(WhenStatement::WhenStatement::NORETCALL { exp: fire.clone(), source: source.clone() });
             attr = NBEquation::default(EquationKind::EMPTY.clone(), false, None, None);
             blck = Arc::new(Block::Block::WHEN { index: simCodeIndices.equationIndex.clone(), initialCall: false, conditions: list![cond.clone()], when_stmts: list![stmt.clone()], else_when: None, source: source.clone(), attr: attr.clone() });
@@ -161,7 +161,7 @@ pub(crate) fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::Unorde
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        clock_idx = clock_idx.clone() + 1;
+        clock_idx = clock_idx + 1;
     }
     (baseParts, eventClocks, simCodeIndices)
 }
@@ -172,7 +172,7 @@ pub(crate) fn getClock(mut part: Arc<NSimPartition>) -> Result<Arc<BClock::BCloc
         Deref @ BASE_PARTITION { .. } => var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone(),
         Deref @ SUB_PARTITION { .. } => var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone(),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.getClock")); __mm_s.push_str(&*literal!(" failed for unknown partition:\n")); __mm_s.push_str(&*toString(part.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.getClock")); __mm_s.push_str(&*literal!(" failed for unknown partition:\n")); __mm_s.push_str(&*toString(part, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -183,8 +183,8 @@ pub(crate) fn getClock(mut part: Arc<NSimPartition>) -> Result<Arc<BClock::BCloc
 pub(crate) fn listToString(mut parts: Arc<metamodelica::List<Arc<NSimPartition>>>, mut r#str: ArcStr, mut header: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     let mut indent: ArcStr = r#str.clone();
-    r#str = (if (header.clone() != literal!("")) {StringUtil::headline_3((header.clone()).clone())} else {literal!("")}).clone();
-    for mut part in &*parts.clone() {
+    r#str = (if (header.clone() != literal!("")) {StringUtil::headline_3((header).clone())} else {literal!("")}).clone();
+    for mut part in &*parts {
         let mut part = part.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(part.clone(), (indent.clone()).clone())?); ArcStr::from(__mm_s) }).clone();
     }
@@ -194,8 +194,8 @@ pub(crate) fn listToString(mut parts: Arc<metamodelica::List<Arc<NSimPartition>>
 pub(crate) fn toString(mut part: Arc<NSimPartition>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     r#str = ((::match_deref::match_deref! { match &(part.clone()) {
-        Deref @ BASE_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[BASE] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).subPartitions, NSimPartition::BASE_PARTITION).clone(), (std::sync::Arc::new({ let __pe_b1 = (r#str.clone()).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NSimPartition>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) },
-        Deref @ SUB_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[SUB-] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).equations, NSimPartition::SUB_PARTITION).clone(), (std::sync::Arc::new({ let __pe_b1 = (r#str.clone()).clone(); move |__pe_a0| Block::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block::Block>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) },
+        Deref @ BASE_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[BASE] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).subPartitions, NSimPartition::BASE_PARTITION).clone(), (std::sync::Arc::new({ let __pe_b1 = (r#str).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NSimPartition>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) },
+        Deref @ SUB_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[SUB-] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).equations, NSimPartition::SUB_PARTITION).clone(), (std::sync::Arc::new({ let __pe_b1 = (r#str).clone(); move |__pe_a0| Block::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block::Block>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) },
         _ => literal!("[ERR-]"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -225,7 +225,7 @@ pub(crate) fn convertBase(mut part: Arc<NSimPartition>) -> Result<OldSimCode::Cl
         __acc.reverse()
     }) },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.convertBase")); __mm_s.push_str(&*literal!(" failed for non-base partition:\n")); __mm_s.push_str(&*toString(part.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.convertBase")); __mm_s.push_str(&*literal!(" failed for non-base partition:\n")); __mm_s.push_str(&*toString(part, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -259,7 +259,7 @@ pub(crate) fn convertSub(mut part: Arc<NSimPartition>) -> Result<OldSimCode::Sub
         __acc.reverse()
     }), subClock: BClock::convertSub(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?, holdEvents: var_field!((*part).holdEvents, NSimPartition::SUB_PARTITION).clone() },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.convertSub")); __mm_s.push_str(&*literal!(" failed for non-base partition:\n")); __mm_s.push_str(&*toString(part.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.convertSub")); __mm_s.push_str(&*literal!(" failed for non-base partition:\n")); __mm_s.push_str(&*toString(part, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

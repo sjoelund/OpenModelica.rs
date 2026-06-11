@@ -102,35 +102,35 @@ pub fn parse(mut s: ArcStr, mut nonsemverAsZeroZeroZero: bool) -> Result<Version
     let mut split: Arc<metamodelica::List<ArcStr>>;
     let mut versionsLst: Arc<metamodelica::List<ArcStr>>;
     let semverRegex: ArcStr = literal!("^([0-9][0-9]*\\.?[0-9]*\\.?[0-9]*)([+-][0-9A-Za-z.-]*)?$");
-    (n, matches) = System::regex((s.clone()).clone(), (semverRegex.clone()).clone(), 5, true, false);
-    if n.clone() < 2 {
+    (n, matches) = System::regex((s.clone()).clone(), (semverRegex).clone(), 5, true, false);
+    if n < 2 {
         if ((s.clone()).clone().len() as i32) == 0 {
             v = Version::NONSEMVER { version: (literal!("")).clone() };
             return Ok(v.clone());
         }
-        if nonsemverAsZeroZeroZero.clone() {
-            (prereleaseLst, metaLst) = splitPrereleaseAndMeta((s.clone()).clone())?;
-            v = Version::SEMVER { major: 0, minor: 0, patch: 0, prerelease: prereleaseLst.clone(), meta: metaLst.clone() };
+        if nonsemverAsZeroZeroZero {
+            (prereleaseLst, metaLst) = splitPrereleaseAndMeta((s).clone())?;
+            v = Version::SEMVER { major: 0, minor: 0, patch: 0, prerelease: prereleaseLst, meta: metaLst };
         } else {
-            v = Version::NONSEMVER { version: (s.clone()).clone() };
+            v = Version::NONSEMVER { version: (s).clone() };
         }
         return Ok(v.clone());
     }
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(matches.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(matches) {
         Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     versions = __pa0.clone();
     split = __pa1.clone();
-    versionsLst = Util::stringSplitAtChar((versions.clone()).clone(), (literal!(".")).clone())?;
-    let (__pa3, __pa4) = ::match_deref::match_deref! { match &(versionsLst.clone()) {
+    versionsLst = Util::stringSplitAtChar((versions).clone(), (literal!(".")).clone())?;
+    let (__pa3, __pa4) = ::match_deref::match_deref! { match &(versionsLst) {
         Deref @ metamodelica::List::Cons { head: __pa3, tail: __pa4 } => (__pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
     major = __pa3.clone();
     versionsLst = __pa4.clone();
     if !(versionsLst.clone().is_empty()) {
-        let (__pa5, __pa6) = ::match_deref::match_deref! { match &(versionsLst.clone()) {
+        let (__pa5, __pa6) = ::match_deref::match_deref! { match &(versionsLst) {
             Deref @ metamodelica::List::Cons { head: __pa5, tail: __pa6 } => (__pa5.clone(), __pa6.clone()),
             _ => bail!("pattern mismatch"),
         } };
@@ -140,7 +140,7 @@ pub fn parse(mut s: ArcStr, mut nonsemverAsZeroZeroZero: bool) -> Result<Version
         minor = (literal!("0")).clone();
     }
     if !(versionsLst.clone().is_empty()) {
-        let (__pa7, __pa8) = ::match_deref::match_deref! { match &(versionsLst.clone()) {
+        let (__pa7, __pa8) = ::match_deref::match_deref! { match &(versionsLst) {
             Deref @ metamodelica::List::Cons { head: __pa7, tail: __pa8 } => (__pa7.clone(), __pa8.clone()),
             _ => bail!("pattern mismatch"),
         } };
@@ -149,8 +149,8 @@ pub fn parse(mut s: ArcStr, mut nonsemverAsZeroZeroZero: bool) -> Result<Version
     } else {
         patch = (literal!("0")).clone();
     }
-    (prereleaseLst, metaLst) = splitPrereleaseAndMeta((if (split.clone().is_empty()) {literal!("")} else {(split.clone()).get(1)?}).clone())?;
-    v = Version::SEMVER { major: stringInt((major.clone()).clone())?, minor: stringInt((minor.clone()).clone())?, patch: stringInt((patch.clone()).clone())?, prerelease: prereleaseLst.clone(), meta: metaLst.clone() };
+    (prereleaseLst, metaLst) = splitPrereleaseAndMeta((if (split.clone().is_empty()) {literal!("")} else {(split).get(1)?}).clone())?;
+    v = Version::SEMVER { major: stringInt((major).clone())?, minor: stringInt((minor).clone())?, patch: stringInt((patch).clone())?, prerelease: prereleaseLst, meta: metaLst };
     Ok(v)
 }
 
@@ -165,25 +165,25 @@ pub fn compare(mut v1: Version, mut v2: Version, mut comparePrerelease: bool, mu
                 c = 0;
             } else {
                 c = Util::intCompare(var_field!(v1.major, Version::SEMVER).clone(), var_field!(v2.major, Version::SEMVER).clone());
-                if c.clone() != 0 {
+                if c != 0 {
                     return Ok(c.clone());
                 }
                 c = Util::intCompare(var_field!(v1.minor, Version::SEMVER).clone(), var_field!(v2.minor, Version::SEMVER).clone());
-                if c.clone() != 0 {
+                if c != 0 {
                     return Ok(c.clone());
                 }
                 c = Util::intCompare(var_field!(v1.patch, Version::SEMVER).clone(), var_field!(v2.patch, Version::SEMVER).clone());
-                if c.clone() != 0 {
+                if c != 0 {
                     return Ok(c.clone());
                 }
             }
-            if comparePrerelease.clone() {
+            if comparePrerelease {
                 c = compareIdentifierList(var_field!(v1.prerelease, Version::SEMVER).clone(), var_field!(v2.prerelease, Version::SEMVER).clone())?;
             }
-            if c.clone() == 0 && compareBuildInformation.clone() {
+            if c == 0 && compareBuildInformation {
                 c = compareIdentifierList(var_field!(v1.meta, Version::SEMVER).clone(), var_field!(v2.meta, Version::SEMVER).clone())?;
             }
-            c.clone()
+            c
         },
         _ => bail!("match: no arm matched"),
     });
@@ -196,12 +196,12 @@ pub fn toString(mut v: Version) -> Result<ArcStr> {
         Version::SEMVER { .. } => {
             out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!(v.major, Version::SEMVER).clone()))); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!(v.minor, Version::SEMVER).clone()))); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!(v.patch, Version::SEMVER).clone()))); ArcStr::from(__mm_s) }).clone();
             if !(var_field!(v.prerelease, Version::SEMVER).clone().is_empty()) {
-                out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*out.clone()); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*stringDelimitList(var_field!(v.prerelease, Version::SEMVER).clone(), (literal!(".")).clone())); ArcStr::from(__mm_s) }).clone();
+                out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*out); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*stringDelimitList(var_field!(v.prerelease, Version::SEMVER).clone(), (literal!(".")).clone())); ArcStr::from(__mm_s) }).clone();
             }
             if !(var_field!(v.meta, Version::SEMVER).clone().is_empty()) {
-                out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*out.clone()); __mm_s.push_str(&*literal!("+")); __mm_s.push_str(&*stringDelimitList(var_field!(v.meta, Version::SEMVER).clone(), (literal!(".")).clone())); ArcStr::from(__mm_s) }).clone();
+                out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*out); __mm_s.push_str(&*literal!("+")); __mm_s.push_str(&*stringDelimitList(var_field!(v.meta, Version::SEMVER).clone(), (literal!(".")).clone())); ArcStr::from(__mm_s) }).clone();
             }
-            out.clone()
+            out
         },
         Version::NONSEMVER { .. } => var_field!(v.version, Version::NONSEMVER).clone(),
     })).clone();
@@ -210,7 +210,7 @@ pub fn toString(mut v: Version) -> Result<ArcStr> {
 
 pub fn isPrerelease(mut v: Version) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(v.clone()) {
+    b = (::match_deref::match_deref! { match &(v) {
         Version::SEMVER { prerelease: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -220,7 +220,7 @@ pub fn isPrerelease(mut v: Version) -> bool {
 
 pub fn hasMetaInformation(mut v: Version) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(v.clone()) {
+    b = (::match_deref::match_deref! { match &(v) {
         Version::SEMVER { meta: Deref @ metamodelica::List::Nil, .. } => false,
         Version::NONSEMVER { .. } => false,
         _ => true,
@@ -231,7 +231,7 @@ pub fn hasMetaInformation(mut v: Version) -> bool {
 
 pub fn isSemVer(mut v: Version) -> bool {
     let mut b: bool;
-    b = (match v.clone() {
+    b = (match v {
         Version::SEMVER { .. } => true,
         _ => false,
     });
@@ -250,22 +250,22 @@ fn splitPrereleaseAndMeta(mut s: ArcStr) -> Result<(Arc<metamodelica::List<ArcSt
         return Ok((prereleaseLst.clone(), metaLst.clone()));
     }
     if stringGetStringChar((s.clone()).clone(), 1)? == literal!("+") {
-        metaLst = if (((s.clone()).clone().len() as i32) > 1) {Util::stringSplitAtChar((StringUtil::rest((s.clone()).clone())?).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
+        metaLst = if (((s.clone()).clone().len() as i32) > 1) {Util::stringSplitAtChar((StringUtil::rest((s).clone())?).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
         return Ok((prereleaseLst.clone(), metaLst.clone()));
     }
-    split = Util::stringSplitAtChar((s.clone()).clone(), (literal!("+")).clone())?;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(split.clone()) {
+    split = Util::stringSplitAtChar((s).clone(), (literal!("+")).clone())?;
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(split) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     prerelease = __pa0.clone();
     split = __pa1.clone();
-    meta = (if (split.clone().is_empty()) {literal!("")} else {(split.clone()).get(1)?}).clone();
+    meta = (if (split.clone().is_empty()) {literal!("")} else {(split).get(1)?}).clone();
     if stringGetStringChar((prerelease.clone()).clone(), 1)? == literal!("-") {
-        prerelease = (StringUtil::rest((prerelease.clone()).clone())?).clone();
+        prerelease = (StringUtil::rest((prerelease).clone())?).clone();
     }
-    prereleaseLst = if (((prerelease.clone()).clone().len() as i32) > 0) {Util::stringSplitAtChar((prerelease.clone()).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
-    metaLst = if (((meta.clone()).clone().len() as i32) > 0) {Util::stringSplitAtChar((meta.clone()).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
+    prereleaseLst = if (((prerelease.clone()).clone().len() as i32) > 0) {Util::stringSplitAtChar((prerelease).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
+    metaLst = if (((meta.clone()).clone().len() as i32) > 0) {Util::stringSplitAtChar((meta).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
     Ok((prereleaseLst, metaLst))
 }
 
@@ -275,8 +275,8 @@ fn compareIdentifierList(mut w1: Arc<metamodelica::List<ArcStr>>, mut w2: Arc<me
     let mut l2: Arc<metamodelica::List<ArcStr>>;
     let mut s1: ArcStr = arcstr::literal!("");
     let mut s2: ArcStr = arcstr::literal!("");
-    l1 = w1.clone();
-    l2 = w2.clone();
+    l1 = w1;
+    l2 = w2;
     if l1.clone().is_empty() && !(l2.clone().is_empty()) {
         c = 1;
     }
@@ -296,7 +296,7 @@ fn compareIdentifierList(mut w1: Arc<metamodelica::List<ArcStr>>, mut w2: Arc<me
         },
         _ => bail!("match: no arm matched"),
     } });
-        if c.clone() != 0 {
+        if c != 0 {
             return Ok(c.clone());
         }
     }
@@ -307,13 +307,13 @@ fn compareIdentifierList(mut w1: Arc<metamodelica::List<ArcStr>>, mut w2: Arc<me
 fn compareIdentifier(mut s1: ArcStr, mut s2: ArcStr) -> Result<i32> {
     let mut c: i32;
     if Util::isIntegerString((s1.clone()).clone()) {
-        c = if (Util::isIntegerString((s2.clone()).clone())) {Util::intCompare(stringInt((s1.clone()).clone())?, stringInt((s2.clone()).clone())?)} else {-1};
+        c = if (Util::isIntegerString((s2.clone()).clone())) {Util::intCompare(stringInt((s1).clone())?, stringInt((s2).clone())?)} else {-1};
         return Ok(c.clone());
     }
     if Util::isIntegerString((s2.clone()).clone()) {
         c = 1;
     }
-    c = stringCompare((s1.clone()).clone(), (s2.clone()).clone());
+    c = stringCompare((s1).clone(), (s2).clone());
     Ok(c)
 }
 

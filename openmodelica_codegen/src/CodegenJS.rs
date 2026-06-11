@@ -21,7 +21,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
+    out_txt = (match (in_txt, in_a_simCode) {
         (mut txt, ref i_simCode @ SimCode::SimCode { fileNamePrefix: ref i_fileNamePrefix, .. }) => {
             let mut txt_3: Tpl::Text;
             let mut txt_2: Tpl::Text;
@@ -46,7 +46,7 @@ pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
 
 pub(crate) fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
+    out_txt = (match (in_txt, in_a_simCode) {
         (mut txt, SimCode::SimCode { simulationSettingsOpt: Some(SimCode::SimulationSettings { outputFormat: mut i_s_outputFormat, .. }), fileNamePrefix: mut i_fileNamePrefix, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#!/usr/bin/nodejs --max-old-space-size=8192\n")).clone(), (literal!("var fs = require('fs');\n")).clone(), (literal!("\n")).clone(), (literal!("var initXML = fs.readFileSync('./")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
@@ -74,7 +74,7 @@ pub(crate) fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
 
 pub(crate) fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
+    out_txt = (match (in_txt, in_a_simCode) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: _, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { stopTime: mut i_s_stopTime, numberOfIntervals: mut i_s_numberOfIntervals, tolerance: mut i_s_tolerance, .. }), makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, fileNamePrefix: mut i_fileNamePrefix, .. }) => {
             let mut ret_1: ArcStr;
             let mut txt_0: Tpl::Text;

@@ -197,15 +197,15 @@ pub mod ClassTree {
         let mut info: SourceInfo;
         ltree = LookupTree::new();
         (clsc, compc, extc) = countElements(elements.clone());
-        if isClassExtends.clone() {
-            extc = extc.clone() + 1;
+        if isClassExtends {
+            extc = extc + 1;
         }
-        clss = metamodelica::arrayCreate(clsc.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
-        comps = metamodelica::arrayCreate(compc.clone() + extc.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
-        exts = metamodelica::arrayCreate(extc.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
+        clss = metamodelica::arrayCreate(clsc, crate::NFInstNode::InstNode::interned_EMPTY_NODE());
+        comps = metamodelica::arrayCreate(compc + extc, crate::NFInstNode::InstNode::interned_EMPTY_NODE());
+        exts = metamodelica::arrayCreate(extc, crate::NFInstNode::InstNode::interned_EMPTY_NODE());
         dups = DuplicateTree::new();
         tree = Arc::new(ClassTree::PARTIAL_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), exts: exts.clone(), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: dups.clone() });
-        if isClassExtends.clone() {
+        if isClassExtends {
             {
                 let __cell0 = crate::NFInstNode::InstNode::interned_EMPTY_NODE();
                 let __idx0 = 1;
@@ -216,16 +216,16 @@ pub mod ClassTree {
                 let __idx1 = 1;
                 unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), __idx1, __cell1); }
             }
-            ext_idx = ext_idx.clone() + 1;
-            comp_idx = comp_idx.clone() + 1;
+            ext_idx = ext_idx + 1;
+            comp_idx = comp_idx + 1;
         }
-        for mut e in &*elements.clone() {
+        for mut e in &*elements {
             let mut e = e.clone();
             let () = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
-            cls_idx = cls_idx.clone() + 1;
-            unsafe { metamodelica::Dangerous::arrayInitSlot(clss.clone(), cls_idx.clone(), InstNode::newClass(e.clone(), parent.clone(), crate::NFInstNode::InstNodeType::interned_NORMAL_CLASS())?) };
-            lentry = Arc::new(LookupTree::Entry::Entry::CLASS { index: cls_idx.clone() });
+            cls_idx = cls_idx + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(clss.clone(), cls_idx, InstNode::newClass(e.clone(), parent.clone(), crate::NFInstNode::InstNodeType::interned_NORMAL_CLASS())?) };
+            lentry = Arc::new(LookupTree::Entry::Entry::CLASS { index: cls_idx });
             ltree = addLocalElement((var_field!((*e).name, SCode::Element::CLASS).clone()).clone(), lentry.clone(), tree.clone(), ltree.clone())?;
             if SCodeUtil::isElementRedeclare(e.clone())? || SCodeUtil::isClassExtends(e.clone()) {
                 dups = DuplicateTree::add(dups.clone(), (var_field!((*e).name, SCode::Element::CLASS).clone()).clone(), DuplicateTree::newRedeclare(lentry.clone()), (std::sync::Arc::new(DuplicateTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
@@ -233,15 +233,15 @@ pub mod ClassTree {
             ()
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
-            comp_idx = comp_idx.clone() + 1;
-            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), comp_idx.clone(), InstNode::newComponent(e.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?) };
+            comp_idx = comp_idx + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), comp_idx, InstNode::newComponent(e.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?) };
             ()
         },
         Deref @ SCode::Element::EXTENDS { .. } => {
-            ext_idx = ext_idx.clone() + 1;
-            unsafe { metamodelica::Dangerous::arrayInitSlot(exts.clone(), ext_idx.clone(), InstNode::newExtends(e.clone(), parent.clone())?) };
-            comp_idx = comp_idx.clone() + 1;
-            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), comp_idx.clone(), Arc::new(InstNode::InstNode::REF_NODE { index: ext_idx.clone() })) };
+            ext_idx = ext_idx + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(exts.clone(), ext_idx, InstNode::newExtends(e.clone(), parent.clone())?) };
+            comp_idx = comp_idx + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), comp_idx, Arc::new(InstNode::InstNode::REF_NODE { index: ext_idx })) };
             ()
         },
         Deref @ SCode::Element::IMPORT { .. } => {
@@ -251,7 +251,7 @@ pub mod ClassTree {
         _ => bail!("match: no arm matched"),
     } });
         }
-        tree = Arc::new(ClassTree::PARTIAL_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), exts: exts.clone(), imports: metamodelica::arrayFromVec(imps.clone().into_iter().cloned().collect()), duplicates: dups.clone() });
+        tree = Arc::new(ClassTree::PARTIAL_TREE { tree: ltree, classes: clss.clone(), components: comps.clone(), exts: exts.clone(), imports: metamodelica::arrayFromVec(imps.into_iter().cloned().collect()), duplicates: dups });
         Ok(tree)
     }
 
@@ -274,7 +274,7 @@ pub mod ClassTree {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            imports = metamodelica::arrayFromVec(init_imports.clone().into_iter().cloned().collect());
+            imports = metamodelica::arrayFromVec(init_imports.into_iter().cloned().collect());
             for mut i in ({let __s=metamodelica::arrayLength(imports.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 ltree = addImport(({let __elt = imports.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), ltree.clone(), imports.clone())?;
             }
@@ -298,22 +298,22 @@ pub mod ClassTree {
         let mut comp: Arc<InstNode::InstNode>;
         let mut ltree: Arc<LookupTree::Tree>;
         let mut name: ArcStr;
-        comps = metamodelica::arrayCreate((literals.clone().len() as i32) + attr_count.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
+        comps = metamodelica::arrayCreate((literals.clone().len() as i32) + attr_count, crate::NFInstNode::InstNode::interned_EMPTY_NODE());
         ltree = NFBuiltin::ENUM_LOOKUP_TREE.clone();
         unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), 1, InstNode::fromComponent((literal!("quantity")).clone(), Arc::new(Component::NFComponent::TYPE_ATTRIBUTE { ty: crate::NFType::interned_STRING(), modifier: crate::NFModifier::Modifier::interned_NOMOD() }), enumClass.clone())) };
         unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), 2, InstNode::fromComponent((literal!("min")).clone(), Arc::new(Component::NFComponent::TYPE_ATTRIBUTE { ty: enumType.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD() }), enumClass.clone())) };
         unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), 3, InstNode::fromComponent((literal!("max")).clone(), Arc::new(Component::NFComponent::TYPE_ATTRIBUTE { ty: enumType.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD() }), enumClass.clone())) };
         unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), 4, InstNode::fromComponent((literal!("start")).clone(), Arc::new(Component::NFComponent::TYPE_ATTRIBUTE { ty: enumType.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD() }), enumClass.clone())) };
         unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), 5, InstNode::fromComponent((literal!("fixed")).clone(), Arc::new(Component::NFComponent::TYPE_ATTRIBUTE { ty: crate::NFType::interned_BOOLEAN(), modifier: crate::NFModifier::Modifier::interned_NOMOD() }), enumClass.clone())) };
-        for mut l in &*literals.clone() {
+        for mut l in &*literals {
             let mut l = l.clone();
             name = (l.literal.clone()).clone();
-            i = i.clone() + 1;
-            comp = InstNode::fromComponent((name.clone()).clone(), Component::newEnum(enumType.clone(), (name.clone()).clone(), l.comment.clone(), i.clone()), enumClass.clone());
-            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), i.clone() + attr_count.clone(), comp.clone()) };
-            ltree = LookupTree::add(ltree.clone(), (name.clone()).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i.clone() + attr_count.clone() }), (std::sync::Arc::new({ let __pe_b3 = comp.clone(); move |__pe_a0, __pe_a1, __pe_a2| addEnumConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
+            i = i + 1;
+            comp = InstNode::fromComponent((name.clone()).clone(), Component::newEnum(enumType.clone(), (name.clone()).clone(), l.comment.clone(), i), enumClass.clone());
+            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), i + attr_count, comp.clone()) };
+            ltree = LookupTree::add(ltree.clone(), (name.clone()).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i + attr_count }), (std::sync::Arc::new({ let __pe_b3 = comp.clone(); move |__pe_a0, __pe_a1, __pe_a2| addEnumConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
         }
-        tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree.clone(), classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: comps.clone(), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: crate::NFDuplicateTree::Tree::interned_EMPTY() });
+        tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree, classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: comps.clone(), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: crate::NFDuplicateTree::Tree::interned_EMPTY() });
         Ok(tree)
     }
 
@@ -340,22 +340,22 @@ pub mod ClassTree {
         duplicates = __pa4.clone();
         cls_idx = metamodelica::arrayLength(cls_arr.clone());
         comp_idx = metamodelica::arrayLength(comp_arr.clone());
-        for mut e in &*elements.clone() {
+        for mut e in &*elements {
             let mut e = e.clone();
             if InstNode::isComponent(e.clone())? {
-                comp_idx = comp_idx.clone() + 1;
-                lentry = Arc::new(LookupTree::Entry::Entry::COMPONENT { index: comp_idx.clone() });
+                comp_idx = comp_idx + 1;
+                lentry = Arc::new(LookupTree::Entry::Entry::COMPONENT { index: comp_idx });
                 comp_lst = metamodelica::cons(e.clone(), comp_lst.clone());
             } else {
-                cls_idx = cls_idx.clone() + 1;
-                lentry = Arc::new(LookupTree::Entry::Entry::CLASS { index: cls_idx.clone() });
+                cls_idx = cls_idx + 1;
+                lentry = Arc::new(LookupTree::Entry::Entry::CLASS { index: cls_idx });
                 cls_lst = metamodelica::cons(e.clone(), cls_lst.clone());
             }
             ltree = addLocalElement((InstNode::name(e.clone())?).clone(), lentry.clone(), tree.clone(), ltree.clone())?;
         }
-        cls_arr = Array::appendList(cls_arr.clone(), metamodelica::Dangerous::listReverseInPlace(cls_lst.clone()))?;
-        comp_arr = Array::appendList(comp_arr.clone(), metamodelica::Dangerous::listReverseInPlace(comp_lst.clone()))?;
-        tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree.clone(), classes: cls_arr.clone(), components: comp_arr.clone(), imports: imports.clone(), duplicates: duplicates.clone() });
+        cls_arr = Array::appendList(cls_arr.clone(), metamodelica::Dangerous::listReverseInPlace(cls_lst))?;
+        comp_arr = Array::appendList(comp_arr.clone(), metamodelica::Dangerous::listReverseInPlace(comp_lst))?;
+        tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree, classes: cls_arr.clone(), components: comp_arr.clone(), imports: imports.clone(), duplicates: duplicates });
         Ok(tree)
     }
 
@@ -387,17 +387,17 @@ pub mod ClassTree {
         for mut c in __range6 {
             let () = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ InstNode::COMPONENT_NODE { .. } => {
-            lentry = Arc::new(LookupTree::Entry::Entry::COMPONENT { index: comp_idx.clone() });
+            lentry = Arc::new(LookupTree::Entry::Entry::COMPONENT { index: comp_idx });
             ltree = addLocalElement((InstNode::name(c.clone())?).clone(), lentry.clone(), tree.clone(), ltree.clone())?;
             if InstNode::isRedeclare(c.clone())? {
                 dups = DuplicateTree::add(dups.clone(), (var_field!((*c).name, InstNode::InstNode::COMPONENT_NODE).clone()).clone(), DuplicateTree::newRedeclare(lentry.clone()), (std::sync::Arc::new(DuplicateTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
             }
-            comp_idx = comp_idx.clone() + 1;
+            comp_idx = comp_idx + 1;
             ()
         },
         Deref @ InstNode::REF_NODE { .. } => {
-            ext_idxs = metamodelica::cons((cls_idx.clone() - 1, comp_idx.clone() - 1), ext_idxs.clone());
-            (cls_idx, comp_idx) = countInheritedElements(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), cls_idx.clone(), comp_idx.clone())?;
+            ext_idxs = metamodelica::cons((cls_idx - 1, comp_idx - 1), ext_idxs.clone());
+            (cls_idx, comp_idx) = countInheritedElements(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), cls_idx, comp_idx)?;
             ()
         },
         _ => {
@@ -407,9 +407,9 @@ pub mod ClassTree {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         }
-        dups_ptr = Mutable::create(dups.clone());
+        dups_ptr = Mutable::create(dups);
         if !(ext_idxs.clone().is_empty()) {
-            ext_idxs = metamodelica::Dangerous::listReverseInPlace(ext_idxs.clone());
+            ext_idxs = metamodelica::Dangerous::listReverseInPlace(ext_idxs);
             let __range7 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range7 {
                 let (__pa8, __pa9, __pa10) = ::match_deref::match_deref! { match &(ext_idxs.clone()) {
@@ -419,10 +419,10 @@ pub mod ClassTree {
                 cls_idx = __pa8.clone();
                 comp_idx = __pa9.clone();
                 ext_idxs = __pa10.clone();
-                ltree = expandExtends(ext.clone(), ltree.clone(), cls_idx.clone(), comp_idx.clone(), dups_ptr.clone())?;
+                ltree = expandExtends(ext.clone(), ltree.clone(), cls_idx, comp_idx, dups_ptr.clone())?;
             }
         }
-        tree = Arc::new(ClassTree::EXPANDED_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), exts: exts.clone(), imports: imps.clone(), duplicates: Mutable::access(dups_ptr.clone()) });
+        tree = Arc::new(ClassTree::EXPANDED_TREE { tree: ltree, classes: clss.clone(), components: comps.clone(), exts: exts.clone(), imports: imps.clone(), duplicates: Mutable::access(dups_ptr) });
         Ok(tree)
     }
 
@@ -454,7 +454,7 @@ pub mod ClassTree {
         let mut is_typish: bool = false;
         let mut inst_ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
         cls = InstNode::getClass(clsNode.clone())?;
-        clsNode = InstNode::replaceClass(cls.clone(), clsNode.clone())?;
+        clsNode = InstNode::replaceClass(cls.clone(), clsNode)?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::EXPANDED_CLASS { elements: Deref @ INSTANTIATED_TREE { .. }, .. } => (),
         Deref @ Class::EXPANDED_CLASS { .. } => {
@@ -465,7 +465,7 @@ pub mod ClassTree {
                 parent_scope = instance.clone();
                 inst_scope = scope.clone();
             }
-            inst_scope = if (InstNode::isEmpty(scope.clone())) {instance.clone()} else {scope.clone()};
+            inst_scope = if (InstNode::isEmpty(scope.clone())) {instance.clone()} else {scope};
             let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(var_field!((*cls).elements, Class::NFClass::EXPANDED_CLASS).clone()) {
                 Deref @ EXPANDED_TREE { tree: __pa0, classes: __pa1, components: __pa2, exts: __pa3, imports: __pa4, duplicates: __pa5 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
                 _ => bail!("pattern mismatch"),
@@ -494,15 +494,15 @@ pub mod ClassTree {
                     let __idx8 = i.clone();
                     exts.clone().borrow_mut()[(__idx8-1) as usize] = __cell8;
                 }
-                classCount = cls_count.clone() + classCount.clone();
-                compCount = comp_count.clone() + compCount.clone();
+                classCount = cls_count + classCount;
+                compCount = comp_count + compCount;
             }
-            comps = metamodelica::arrayCreate(compCount.clone(), Mutable::create(crate::NFInstNode::InstNode::interned_EMPTY_NODE()));
-            clss = metamodelica::arrayCreate(classCount.clone(), Mutable::create(crate::NFInstNode::InstNode::interned_EMPTY_NODE()));
+            comps = metamodelica::arrayCreate(compCount, Mutable::create(crate::NFInstNode::InstNode::interned_EMPTY_NODE()));
+            clss = metamodelica::arrayCreate(classCount, Mutable::create(crate::NFInstNode::InstNode::interned_EMPTY_NODE()));
             is_typish = Restriction::isType(var_field!((*cls).restriction, Class::NFClass::EXPANDED_CLASS).clone()) || Restriction::isOperatorRecord(var_field!((*cls).restriction, Class::NFClass::EXPANDED_CLASS).clone()) || Restriction::isOperator(var_field!((*cls).restriction, Class::NFClass::EXPANDED_CLASS).clone());
             let __range9 = old_clss.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range9 {
-                if is_typish.clone() {
+                if is_typish {
                     c = InstNode::setParent(clsNode.clone(), c.clone())?;
                 } else {
                     c = InstNode::clone(c.clone())?;
@@ -512,8 +512,8 @@ pub mod ClassTree {
                     checkOuterClass(c.clone())?;
                     c = linkInnerOuter(c.clone(), parent_scope.clone())?;
                 }
-                unsafe { metamodelica::Dangerous::arrayInitSlot(clss.clone(), cls_idx.clone(), Mutable::create(c.clone())) };
-                cls_idx = cls_idx.clone() + 1;
+                unsafe { metamodelica::Dangerous::arrayInitSlot(clss.clone(), cls_idx, Mutable::create(c.clone())) };
+                cls_idx = cls_idx + 1;
             }
             let __range10 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range10 {
@@ -521,9 +521,9 @@ pub mod ClassTree {
         Deref @ INSTANTIATED_TREE { classes: __esc_ext_clss, .. } => {
             ext_clss = (*__esc_ext_clss).clone();
             cls_count = metamodelica::arrayLength(ext_clss.clone());
-            if cls_count.clone() > 0 {
-                Array::copyRange(ext_clss.clone(), clss.clone(), 1, cls_count.clone(), cls_idx.clone())?;
-                cls_idx = cls_idx.clone() + cls_count.clone();
+            if cls_count > 0 {
+                Array::copyRange(ext_clss.clone(), clss.clone(), 1, cls_count, cls_idx)?;
+                cls_idx = cls_idx + cls_count;
             }
             ()
         },
@@ -546,40 +546,40 @@ pub mod ClassTree {
                     }
                 }
             }
-            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), comp_idx.clone(), Mutable::create(node.clone())) };
-            local_comps = metamodelica::cons(comp_idx.clone(), local_comps.clone());
-            comp_idx = comp_idx.clone() + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone(), comp_idx, Mutable::create(node.clone())) };
+            local_comps = metamodelica::cons(comp_idx, local_comps.clone());
+            comp_idx = comp_idx + 1;
             ()
         },
         Deref @ InstNode::REF_NODE { .. } => {
-            comp_idx = instExtendsComps(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), comps.clone(), comp_idx.clone())?;
+            comp_idx = instExtendsComps(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), comps.clone(), comp_idx)?;
             ()
         },
         _ => bail!("match: no arm matched"),
     } });
             }
             breakComponents(instance.clone(), comps.clone(), ltree.clone(), dups.clone())?;
-            if comp_idx.clone() != compCount.clone() + 1 {
+            if comp_idx != compCount + 1 {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted components in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             }
-            if cls_idx.clone() != classCount.clone() + 1 {
+            if cls_idx != classCount + 1 {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted classes in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             }
-            local_comps = metamodelica::Dangerous::listReverseInPlace(local_comps.clone());
-            assign_variant_field!(cls => Class::NFClass::EXPANDED_CLASS; elements = Arc::new(ClassTree::INSTANTIATED_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), localComponents: local_comps.clone(), exts: exts.clone(), imports: imps.clone(), duplicates: dups.clone() }));
+            local_comps = metamodelica::Dangerous::listReverseInPlace(local_comps);
+            assign_variant_field!(cls => Class::NFClass::EXPANDED_CLASS; elements = Arc::new(ClassTree::INSTANTIATED_TREE { tree: ltree, classes: clss.clone(), components: comps.clone(), localComponents: local_comps, exts: exts.clone(), imports: imps.clone(), duplicates: dups }));
             ()
         },
         Deref @ Class::EXPANDED_DERIVED { baseClass: __esc_node, .. } => {
             node = (*__esc_node).clone();
             node = InstNode::setNodeType(Arc::new(InstNodeType::BASE_CLASS { parent: clsNode.clone(), definition: InstNode::definition(node.clone())?, ty: InstNode::nodeType(node.clone())? }), node.clone());
-            (node, instance, classCount, compCount) = instantiate(node.clone(), instance.clone(), scope.clone())?;
+            (node, instance, classCount, compCount) = instantiate(node.clone(), instance, scope)?;
             assign_variant_field!(cls => Class::NFClass::EXPANDED_DERIVED; baseClass = node.clone());
             ()
         },
         Deref @ Class::PARTIAL_BUILTIN { elements: __esc_tree @ Deref @ FLAT_TREE { components: __esc_old_comps, .. }, .. } => {
             tree = (*__esc_tree).clone();
             old_comps = (*__esc_old_comps).clone();
-            instance = if (InstNode::isEmpty(instance.clone())) {clsNode.clone()} else {instance.clone()};
+            instance = if (InstNode::isEmpty(instance.clone())) {clsNode.clone()} else {instance};
             assign_variant_field!(tree => ClassTree::FLAT_TREE; components = Array::map(old_comps.clone(), (std::sync::Arc::new({ let __pe_b1 = instance.clone(); move |__pe_a0| InstNode::cloneComponent(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>))?);
             assign_variant_field!(cls => Class::NFClass::PARTIAL_BUILTIN; elements = tree.clone());
             compCount = metamodelica::arrayLength(old_comps.clone());
@@ -597,7 +597,7 @@ pub mod ClassTree {
                 _ => bail!("pattern mismatch"),
             } };
             ext_def = __pa0.clone();
-            Error::addSourceMessage(Error::EXTENDS_LOOP.clone(), list![(SCodeUtil::getElementName(ext_def.clone())?).clone()], InstNode::info(clsNode.clone()))?;
+            Error::addSourceMessage(Error::EXTENDS_LOOP.clone(), list![(SCodeUtil::getElementName(ext_def)?).clone()], InstNode::info(clsNode.clone()))?;
             bail!("fail")
         },
         _ => {
@@ -606,7 +606,7 @@ pub mod ClassTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        InstNode::updateClass(cls.clone(), clsNode.clone())?;
+        InstNode::updateClass(cls, clsNode.clone())?;
         Ok((clsNode, instance, classCount, compCount))
     }
 
@@ -616,23 +616,23 @@ pub mod ClassTree {
         let mut i: i32 = 1;
         let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
         comps = metamodelica::arrayCreate((fields.clone().len() as i32) + 1, crate::NFInstNode::InstNode::interned_EMPTY_NODE());
-        for mut ci in &*fields.clone() {
+        for mut ci in &*fields {
             let mut ci = ci.clone();
             {
                 let __cell0 = ci.clone();
-                let __idx0 = i.clone();
+                let __idx0 = i;
                 unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), __idx0, __cell0); }
             }
-            ltree = addLocalElement((InstNode::name(ci.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i.clone() }), tree.clone(), ltree.clone())?;
-            i = i.clone() + 1;
+            ltree = addLocalElement((InstNode::name(ci.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i }), tree.clone(), ltree.clone())?;
+            i = i + 1;
         }
         {
             let __cell1 = out.clone();
-            let __idx1 = i.clone();
+            let __idx1 = i;
             unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), __idx1, __cell1); }
         }
-        ltree = addLocalElement((InstNode::name(out.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i.clone() }), tree.clone(), ltree.clone())?;
-        tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree.clone(), classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: comps.clone(), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: DuplicateTree::new() });
+        ltree = addLocalElement((InstNode::name(out)?).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i }), tree, ltree)?;
+        tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree, classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: comps.clone(), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: DuplicateTree::new() });
         Ok(tree)
     }
 
@@ -646,7 +646,7 @@ pub mod ClassTree {
             Arc::new(ClassTree::EXPANDED_TREE { tree: var_field!((*tree).tree, ClassTree::EXPANDED_TREE).clone(), classes: clss.clone(), components: var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone(), exts: var_field!((*tree).exts, ClassTree::EXPANDED_TREE).clone(), imports: var_field!((*tree).imports, ClassTree::EXPANDED_TREE).clone(), duplicates: var_field!((*tree).duplicates, ClassTree::EXPANDED_TREE).clone() })
         },
         _ => {
-            tree.clone()
+            tree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -672,8 +672,8 @@ pub mod ClassTree {
         let mut duplicates: Arc<DuplicateTree::Tree> = Arc::new(DuplicateTree::Tree::EMPTY);
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ INSTANTIATED_TREE { .. } if (!(DuplicateTree::isEmpty(var_field!((*tree).duplicates, ClassTree::INSTANTIATED_TREE).clone()))) => {
-            (duplicates, tree) = DuplicateTree::mapFold(var_field!((*tree).duplicates, ClassTree::INSTANTIATED_TREE).clone(), (std::sync::Arc::new(replaceDuplicates2) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DuplicateTree::Entry>, Arc<ClassTree>) -> Result<(Arc<DuplicateTree::Entry>, Arc<ClassTree>)> + 'static>), tree.clone())?;
-            assign_variant_field!(tree => ClassTree::INSTANTIATED_TREE; duplicates = duplicates.clone());
+            (duplicates, tree) = DuplicateTree::mapFold(var_field!((*tree).duplicates, ClassTree::INSTANTIATED_TREE).clone(), (std::sync::Arc::new(replaceDuplicates2) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DuplicateTree::Entry>, Arc<ClassTree>) -> Result<(Arc<DuplicateTree::Entry>, Arc<ClassTree>)> + 'static>), tree)?;
+            assign_variant_field!(tree => ClassTree::INSTANTIATED_TREE; duplicates = duplicates);
             ()
         },
         _ => (),
@@ -694,7 +694,7 @@ pub mod ClassTree {
             comp_idx = metamodelica::arrayLength(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone());
             assign_variant_field!(tree => ClassTree::INSTANTIATED_TREE; components = Array::appendList(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), components.clone())?);
             local_comps = var_field!((*tree).localComponents, ClassTree::INSTANTIATED_TREE).clone();
-            for mut i in comp_idx.clone() + 1..=comp_idx.clone() + (components.clone().len() as i32) {
+            for mut i in comp_idx.clone() + 1..=comp_idx.clone() + (components.len() as i32) {
                 local_comps = metamodelica::cons(i.clone(), local_comps.clone());
             }
             assign_variant_field!(tree => ClassTree::INSTANTIATED_TREE; localComponents = local_comps.clone());
@@ -717,7 +717,7 @@ pub mod ClassTree {
         } else {
             let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ FLAT_TREE { .. } => {
-            assign_variant_field!(tree => ClassTree::FLAT_TREE; components = Array::appendList(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), components.clone())?);
+            assign_variant_field!(tree => ClassTree::FLAT_TREE; components = Array::appendList(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), components)?);
             ()
         },
         _ => {
@@ -758,7 +758,7 @@ pub mod ClassTree {
             Arc::new(ClassTree::FLAT_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), imports: var_field!((*tree).imports, ClassTree::INSTANTIATED_TREE).clone(), duplicates: var_field!((*tree).duplicates, ClassTree::INSTANTIATED_TREE).clone() })
         },
         _ => {
-            tree.clone()
+            tree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -776,8 +776,8 @@ pub mod ClassTree {
         let mut offset: i32;
         for mut i in 1..=metamodelica::arrayLength(elements.clone()) {
             offset = metamodelica::Dangerous::arrayGetNoBoundsChecking(offsets.clone(), i.clone());
-            if offset.clone() >= 0 {
-                metamodelica::Dangerous::arrayUpdateNoBoundsChecking(flatElements.clone(), i.clone() - offset.clone(), Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(elements.clone(), i.clone())));
+            if offset >= 0 {
+                metamodelica::Dangerous::arrayUpdateNoBoundsChecking(flatElements.clone(), i.clone() - offset, Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(elements.clone(), i.clone())));
             }
         }
         ()
@@ -788,15 +788,15 @@ pub mod ClassTree {
         let mut offset: i32 = 0;
         let mut dup: i32;
         let mut rest_dups: Arc<metamodelica::List<i32>>;
-        offsets = metamodelica::arrayCreate(elementCount.clone(), 0);
-        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(duplicates.clone()) {
+        offsets = metamodelica::arrayCreate(elementCount, 0);
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(duplicates) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
         dup = __pa0.clone();
         rest_dups = __pa1.clone();
-        for mut i in 1..=elementCount.clone() {
-            if i.clone() == dup.clone() {
+        for mut i in 1..=elementCount {
+            if i.clone() == dup {
                 if rest_dups.clone().is_empty() {
                     dup = 0;
                 } else {
@@ -807,10 +807,10 @@ pub mod ClassTree {
                     dup = __pa2.clone();
                     rest_dups = __pa3.clone();
                 }
-                offset = offset.clone() + 1;
+                offset = offset + 1;
                 unsafe { metamodelica::Dangerous::arrayInitSlot(offsets.clone(), i.clone(), -1) };
             } else {
-                unsafe { metamodelica::Dangerous::arrayInitSlot(offsets.clone(), i.clone(), offset.clone()) };
+                unsafe { metamodelica::Dangerous::arrayInitSlot(offsets.clone(), i.clone(), offset) };
             }
         }
         Ok(offsets)
@@ -818,7 +818,7 @@ pub mod ClassTree {
 
     pub(crate) fn flattenLookupTree(mut tree: Arc<LookupTree::Tree>, mut offsets: metamodelica::Array<i32>) -> Result<Arc<LookupTree::Tree>> {
         let mut tree: Arc<LookupTree::Tree> = tree;
-        tree = LookupTree::map(tree.clone(), (std::sync::Arc::new({ let __pe_b2 = offsets.clone(); move |__pe_a0, __pe_a1| Ok(flattenLookupTree2(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
+        tree = LookupTree::map(tree, (std::sync::Arc::new({ let __pe_b2 = offsets.clone(); move |__pe_a0, __pe_a1| Ok(flattenLookupTree2(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
         Ok(tree)
     }
 
@@ -826,7 +826,7 @@ pub mod ClassTree {
         let mut outEntry: Arc<LookupTree::Entry::Entry>;
         outEntry = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::COMPONENT { .. } => Arc::new(LookupTree::Entry::Entry::COMPONENT { index: var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() - metamodelica::Dangerous::arrayGetNoBoundsChecking(offsets.clone(), var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()) }),
-        _ => entry.clone(),
+        _ => entry,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         outEntry
@@ -836,16 +836,16 @@ pub mod ClassTree {
         let mut element: Arc<InstNode::InstNode>;
         let mut isImport: bool;
         let mut entry: Arc<LookupTree::Entry::Entry>;
-        entry = LookupTree::get(lookupTree(tree.clone())?, (name.clone()).clone())?;
-        (element, isImport) = resolveEntry(entry.clone(), tree.clone())?;
+        entry = LookupTree::get(lookupTree(tree.clone())?, (name).clone())?;
+        (element, isImport) = resolveEntry(entry, tree)?;
         Ok((element, isImport))
     }
 
     pub(crate) fn lookupElementPtr(mut name: ArcStr, mut tree: Arc<ClassTree>) -> Result<Mutable::Mutable<Arc<InstNode::InstNode>>> {
         let mut element: Mutable::Mutable<Arc<InstNode::InstNode>>;
         let mut entry: Arc<LookupTree::Entry::Entry>;
-        entry = LookupTree::get(lookupTree(tree.clone())?, (name.clone()).clone())?;
-        element = resolveEntryPtr(entry.clone(), tree.clone())?;
+        entry = LookupTree::get(lookupTree(tree.clone())?, (name).clone())?;
+        element = resolveEntryPtr(entry, tree)?;
         Ok(element)
     }
 
@@ -869,7 +869,7 @@ pub mod ClassTree {
 
     pub(crate) fn lookupComponentIndex(mut name: ArcStr, mut tree: Arc<ClassTree>) -> Result<i32> {
         let mut index: i32;
-        let __pa0 = ::match_deref::match_deref! { match &(LookupTree::get(lookupTree(tree.clone())?, (name.clone()).clone())?) {
+        let __pa0 = ::match_deref::match_deref! { match &(LookupTree::get(lookupTree(tree)?, (name).clone())?) {
             Deref @ LookupTree::Entry::COMPONENT { index: __pa0 } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -880,10 +880,10 @@ pub mod ClassTree {
     pub(crate) fn nthComponent(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut component: Arc<InstNode::InstNode>;
         component = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone(), index.clone())?,
-        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone(), index.clone())?,
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), index.clone())?),
-        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), index.clone())?,
+        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone(), index)?,
+        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone(), index)?,
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), index)?),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), index)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(component)
@@ -1149,9 +1149,9 @@ pub mod ClassTree {
     pub(crate) fn recursiveElementCount(mut tree: Arc<ClassTree>) -> Result<i32> {
         let mut count: i32;
         count = classCount(tree.clone()) + componentCount(tree.clone());
-        let __range0 = getExtends(tree.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        let __range0 = getExtends(tree).borrow().iter().cloned().collect::<Vec<_>>();
         for mut ext in __range0 {
-            count = count.clone() + recursiveElementCount(Class::classTree(InstNode::getClass(ext.clone())?)?)?;
+            count = count + recursiveElementCount(Class::classTree(InstNode::getClass(ext.clone())?)?)?;
         }
         Ok(count)
     }
@@ -1230,7 +1230,7 @@ pub mod ClassTree {
 
     pub(crate) fn setClassExtends(mut extNode: Arc<InstNode::InstNode>, mut tree: Arc<ClassTree>) -> Result<Arc<ClassTree>> {
         let mut tree: Arc<ClassTree> = tree;
-        metamodelica::arrayUpdate(getExtends(tree.clone()), 1, extNode.clone())?;
+        metamodelica::arrayUpdate(getExtends(tree.clone()), 1, extNode)?;
         Ok(tree)
     }
 
@@ -1238,13 +1238,13 @@ pub mod ClassTree {
         let mut components: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
         let mut ltree: Arc<LookupTree::Tree>;
         let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
-        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tree.clone()) {
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tree) {
             Deref @ FLAT_TREE { tree: __pa0, components: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
         ltree = __pa0.clone();
         comps = __pa1.clone();
-        components = LookupTree::fold(ltree.clone(), (std::sync::Arc::new({ let __pe_b2 = comps.clone(); move |__pe_a0, __pe_a1, __pe_a3| Ok(enumerateComponents2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), metamodelica::nil())?;
+        components = LookupTree::fold(ltree, (std::sync::Arc::new({ let __pe_b2 = comps.clone(); move |__pe_a0, __pe_a1, __pe_a3| Ok(enumerateComponents2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), metamodelica::nil())?;
         Ok(components)
     }
 
@@ -1252,7 +1252,7 @@ pub mod ClassTree {
         let mut components: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = components;
         let () = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
-            components = metamodelica::cons(({let __elt = comps.borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone(); __elt}), components.clone());
+            components = metamodelica::cons(({let __elt = comps.borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone(); __elt}), components);
             ()
         },
         _ => (),
@@ -1309,7 +1309,7 @@ pub mod ClassTree {
 
     pub(crate) fn isEmptyTree(mut tree: Arc<ClassTree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ EMPTY_TREE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1323,25 +1323,25 @@ pub mod ClassTree {
         let mut ltree: Arc<LookupTree::Tree> = Arc::new(LookupTree::Tree::EMPTY);
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ PARTIAL_TREE { .. } => {
-            (ltree, classes) = appendClasses2(clsNodes.clone(), var_field!((*tree).tree, ClassTree::PARTIAL_TREE).clone(), var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone())?;
+            (ltree, classes) = appendClasses2(clsNodes, var_field!((*tree).tree, ClassTree::PARTIAL_TREE).clone(), var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone())?;
             assign_variant_field!(tree => ClassTree::PARTIAL_TREE;
-                tree = ltree.clone(),
+                tree = ltree,
                 classes = classes.clone()
             );
             ()
         },
         Deref @ EXPANDED_TREE { .. } => {
-            (ltree, classes) = appendClasses2(clsNodes.clone(), var_field!((*tree).tree, ClassTree::EXPANDED_TREE).clone(), var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone())?;
+            (ltree, classes) = appendClasses2(clsNodes, var_field!((*tree).tree, ClassTree::EXPANDED_TREE).clone(), var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone())?;
             assign_variant_field!(tree => ClassTree::EXPANDED_TREE;
-                tree = ltree.clone(),
+                tree = ltree,
                 classes = classes.clone()
             );
             ()
         },
         Deref @ FLAT_TREE { .. } => {
-            (ltree, classes) = appendClasses2(clsNodes.clone(), var_field!((*tree).tree, ClassTree::FLAT_TREE).clone(), var_field!((*tree).classes, ClassTree::FLAT_TREE).clone())?;
+            (ltree, classes) = appendClasses2(clsNodes, var_field!((*tree).tree, ClassTree::FLAT_TREE).clone(), var_field!((*tree).classes, ClassTree::FLAT_TREE).clone())?;
             assign_variant_field!(tree => ClassTree::FLAT_TREE;
-                tree = ltree.clone(),
+                tree = ltree,
                 classes = classes.clone()
             );
             ()
@@ -1357,10 +1357,10 @@ pub mod ClassTree {
         let mut index: i32;
         index = metamodelica::arrayLength(classes.clone());
         classes = Array::appendList(classes.clone(), clsNodes.clone())?;
-        for mut c in &*clsNodes.clone() {
+        for mut c in &*clsNodes {
             let mut c = c.clone();
-            index = index.clone() + 1;
-            tree = LookupTree::add(tree.clone(), (InstNode::name(c.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::CLASS { index: index.clone() }), (std::sync::Arc::new(LookupTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
+            index = index + 1;
+            tree = LookupTree::add(tree.clone(), (InstNode::name(c.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::CLASS { index: index }), (std::sync::Arc::new(LookupTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
         }
         Ok((tree, classes))
     }
@@ -1373,7 +1373,7 @@ pub mod ClassTree {
             _ => bail!("pattern mismatch"),
         } };
         index = __pa0.clone();
-        metamodelica::arrayUpdate(getClasses(tree.clone())?, index.clone(), node.clone())?;
+        metamodelica::arrayUpdate(getClasses(tree.clone())?, index, node)?;
         Ok(tree)
     }
 
@@ -1382,24 +1382,24 @@ pub mod ClassTree {
         let mut ext_comps_ptrs: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>> = Default::default();
         let mut ext_comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let mut comp_count: i32 = 0;
-        let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extNode.clone())?)?) {
+        let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extNode)?)?) {
         Deref @ INSTANTIATED_TREE { components: __esc_ext_comps_ptrs, .. } => {
             ext_comps_ptrs = (*__esc_ext_comps_ptrs).clone();
             comp_count = metamodelica::arrayLength(ext_comps_ptrs.clone());
-            if comp_count.clone() > 0 {
-                Array::copyRange(ext_comps_ptrs.clone(), comps.clone(), 1, comp_count.clone(), index.clone())?;
-                index = index.clone() + comp_count.clone();
+            if comp_count > 0 {
+                Array::copyRange(ext_comps_ptrs.clone(), comps.clone(), 1, comp_count, index)?;
+                index = index + comp_count;
             }
             ()
         },
         Deref @ FLAT_TREE { components: __esc_ext_comps, .. } => {
             ext_comps = (*__esc_ext_comps).clone();
             comp_count = metamodelica::arrayLength(ext_comps.clone());
-            if comp_count.clone() > 0 {
-                for mut i in index.clone()..=index.clone() + comp_count.clone() - 1 {
+            if comp_count > 0 {
+                for mut i in index..=index + comp_count - 1 {
                     metamodelica::arrayUpdate(comps.clone(), i.clone(), Mutable::create(({let __elt = ext_comps.borrow()[(i.clone()-1) as usize].clone(); __elt})))?;
                 }
-                index = index.clone() + comp_count.clone();
+                index = index + comp_count;
             }
             ()
         },
@@ -1437,19 +1437,19 @@ pub mod ClassTree {
         let mut ctree: Arc<ClassTree> = ctree;
         let () = (::match_deref::match_deref! { match &(ctree.clone()) {
         Deref @ PARTIAL_TREE { .. } => {
-            assign_variant_field!(ctree => ClassTree::PARTIAL_TREE; tree = ltree.clone());
+            assign_variant_field!(ctree => ClassTree::PARTIAL_TREE; tree = ltree);
             ()
         },
         Deref @ EXPANDED_TREE { .. } => {
-            assign_variant_field!(ctree => ClassTree::EXPANDED_TREE; tree = ltree.clone());
+            assign_variant_field!(ctree => ClassTree::EXPANDED_TREE; tree = ltree);
             ()
         },
         Deref @ INSTANTIATED_TREE { .. } => {
-            assign_variant_field!(ctree => ClassTree::INSTANTIATED_TREE; tree = ltree.clone());
+            assign_variant_field!(ctree => ClassTree::INSTANTIATED_TREE; tree = ltree);
             ()
         },
         Deref @ FLAT_TREE { .. } => {
-            assign_variant_field!(ctree => ClassTree::FLAT_TREE; tree = ltree.clone());
+            assign_variant_field!(ctree => ClassTree::FLAT_TREE; tree = ltree);
             ()
         },
         _ => (),
@@ -1460,7 +1460,7 @@ pub mod ClassTree {
 
     fn addLocalElement(mut name: ArcStr, mut entry: Arc<LookupTree::Entry::Entry>, mut classTree: Arc<ClassTree>, mut tree: Arc<LookupTree::Tree>) -> Result<Arc<LookupTree::Tree>> {
         let mut tree: Arc<LookupTree::Tree> = tree;
-        tree = LookupTree::add(tree.clone(), (name.clone()).clone(), entry.clone(), (std::sync::Arc::new({ let __pe_b3 = classTree.clone(); move |__pe_a0, __pe_a1, __pe_a2| addLocalElementConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
+        tree = LookupTree::add(tree, (name).clone(), entry, (std::sync::Arc::new({ let __pe_b3 = classTree; move |__pe_a0, __pe_a1, __pe_a2| addLocalElementConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
         Ok(tree)
     }
 
@@ -1469,11 +1469,11 @@ pub mod ClassTree {
         let mut n1: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut n2: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         entry = (::match_deref::match_deref! { match &(oldEntry.clone()) {
-        Deref @ LookupTree::Entry::IMPORT { .. } => newEntry.clone(),
+        Deref @ LookupTree::Entry::IMPORT { .. } => newEntry,
         _ => {
-            n1 = findLocalConflictElement(newEntry.clone(), classTree.clone())?;
-            n2 = findLocalConflictElement(oldEntry.clone(), classTree.clone())?;
-            Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(name.clone()).clone()], list![InstNode::info(n2.clone()), InstNode::info(n1.clone())])?;
+            n1 = findLocalConflictElement(newEntry, classTree.clone())?;
+            n2 = findLocalConflictElement(oldEntry, classTree)?;
+            Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(name).clone()], list![InstNode::info(n2), InstNode::info(n1)])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1485,14 +1485,14 @@ pub mod ClassTree {
         let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         node = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::CLASS { .. } => {
-            resolveClass(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone(), classTree.clone())?
+            resolveClass(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone(), classTree)?
         },
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
             let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
             let mut exts: metamodelica::Array<Arc<InstNode::InstNode>>;
             let mut i: i32;
             i = 0;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(classTree.clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(classTree) {
                 Deref @ PARTIAL_TREE { components: __pa0, exts: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1514,7 +1514,7 @@ pub mod ClassTree {
                 }
             }
             Error::assertion(i.clone() == var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.findLocalConflictElement")); __mm_s.push_str(&*literal!(" got invalid entry index")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
-            node.clone()
+            node
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.findLocalConflictElement")); __mm_s.push_str(&*literal!(" got invalid entry")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
@@ -1527,14 +1527,14 @@ pub mod ClassTree {
 
     fn addEnumConflict(mut newEntry: Arc<LookupTree::Entry::Entry>, mut oldEntry: Arc<LookupTree::Entry::Entry>, mut name: ArcStr, mut literal: Arc<InstNode::InstNode>) -> Result<Arc<LookupTree::Entry::Entry>> {
         let mut entry: Arc<LookupTree::Entry::Entry>;
-        Error::addSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(InstNode::name(literal.clone())?).clone()], InstNode::info(literal.clone()))?;
+        Error::addSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(InstNode::name(literal.clone())?).clone()], InstNode::info(literal))?;
         bail!("fail");
         Ok(entry)
     }
 
     fn addImport(mut imp: Arc<Import::NFImport>, mut index: i32, mut tree: Arc<LookupTree::Tree>, mut imports: metamodelica::Array<Arc<Import::NFImport>>) -> Result<Arc<LookupTree::Tree>> {
         let mut tree: Arc<LookupTree::Tree> = tree;
-        tree = LookupTree::add(tree.clone(), (Import::name(imp.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::IMPORT { index: index.clone() }), (std::sync::Arc::new({ let __pe_b3 = imports.clone(); move |__pe_a0, __pe_a1, __pe_a2| addImportConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
+        tree = LookupTree::add(tree, (Import::name(imp)?).clone(), Arc::new(LookupTree::Entry::Entry::IMPORT { index: index }), (std::sync::Arc::new({ let __pe_b3 = imports.clone(); move |__pe_a0, __pe_a1, __pe_a2| addImportConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>))?;
         Ok(tree)
     }
 
@@ -1549,20 +1549,20 @@ pub mod ClassTree {
             entry = (::match_deref::match_deref! { match &((imp1.clone(), imp2.clone())) {
         (Deref @ Import::UNRESOLVED_IMPORT { .. }, Deref @ Import::UNRESOLVED_IMPORT { .. }) => {
             metamodelica::arrayUpdate(imports.clone(), var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone(), Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }))?;
-            oldEntry.clone()
+            oldEntry
         },
         (Deref @ Import::RESOLVED_IMPORT { .. }, Deref @ Import::RESOLVED_IMPORT { .. }) => {
             metamodelica::arrayUpdate(imports.clone(), var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone(), Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }))?;
-            oldEntry.clone()
+            oldEntry
         },
-        (Deref @ Import::UNRESOLVED_IMPORT { .. }, _) => newEntry.clone(),
-        _ => oldEntry.clone(),
+        (Deref @ Import::UNRESOLVED_IMPORT { .. }, _) => newEntry,
+        _ => oldEntry,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            entry.clone()
+            entry
         },
         _ => {
-            oldEntry.clone()
+            oldEntry
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1571,7 +1571,7 @@ pub mod ClassTree {
 
     fn addDuplicate(mut name: ArcStr, mut duplicateEntry: Arc<LookupTree::Entry::Entry>, mut keptEntry: Arc<LookupTree::Entry::Entry>, mut duplicates: Mutable::Mutable<Arc<DuplicateTree::Tree>>) -> Result<Mutable::Mutable<Arc<DuplicateTree::Tree>>> {
         let mut duplicates: Mutable::Mutable<Arc<DuplicateTree::Tree>> = duplicates;
-        Mutable::update(duplicates.clone(), DuplicateTree::add(Mutable::access(duplicates.clone()), (name.clone()).clone(), DuplicateTree::newDuplicate(keptEntry.clone(), duplicateEntry.clone()), (std::sync::Arc::new(addDuplicateConflict) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DuplicateTree::Entry>, Arc<DuplicateTree::Entry>, ArcStr) -> Result<Arc<DuplicateTree::Entry>> + 'static>))?);
+        Mutable::update(duplicates.clone(), DuplicateTree::add(Mutable::access(duplicates.clone()), (name).clone(), DuplicateTree::newDuplicate(keptEntry, duplicateEntry), (std::sync::Arc::new(addDuplicateConflict) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DuplicateTree::Entry>, Arc<DuplicateTree::Entry>, ArcStr) -> Result<Arc<DuplicateTree::Entry>> + 'static>))?);
         Ok(duplicates)
     }
 
@@ -1585,9 +1585,9 @@ pub mod ClassTree {
         let mut element: Arc<InstNode::InstNode>;
         let mut isImport: bool;
         (element, isImport) = (::match_deref::match_deref! { match &(entry.clone()) {
-        Deref @ LookupTree::Entry::CLASS { .. } => (resolveClass(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone(), tree.clone())?, false),
-        Deref @ LookupTree::Entry::COMPONENT { .. } => (resolveComponent(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), tree.clone())?, false),
-        Deref @ LookupTree::Entry::IMPORT { .. } => (resolveImport(var_field!((*entry).index, LookupTree::Entry::Entry::IMPORT).clone(), tree.clone())?, true),
+        Deref @ LookupTree::Entry::CLASS { .. } => (resolveClass(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone(), tree)?, false),
+        Deref @ LookupTree::Entry::COMPONENT { .. } => (resolveComponent(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), tree)?, false),
+        Deref @ LookupTree::Entry::IMPORT { .. } => (resolveImport(var_field!((*entry).index, LookupTree::Entry::Entry::IMPORT).clone(), tree)?, true),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok((element, isImport))
@@ -1598,7 +1598,7 @@ pub mod ClassTree {
         let mut elems: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>> = Default::default();
         element = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::CLASS { .. } => {
-            let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(tree) {
                 Deref @ INSTANTIATED_TREE { classes: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1606,7 +1606,7 @@ pub mod ClassTree {
             metamodelica::arrayGet(elems.clone(), var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone())?
         },
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
-            let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(tree) {
                 Deref @ INSTANTIATED_TREE { components: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1622,7 +1622,7 @@ pub mod ClassTree {
         let mut elements: Arc<metamodelica::List<Mutable::Mutable<Arc<InstNode::InstNode>>>> = elements;
         let mut node_ptr: Mutable::Mutable<Arc<InstNode::InstNode>>;
         node_ptr = resolveEntryPtr(entry.entry.clone(), tree.clone())?;
-        elements = metamodelica::cons(node_ptr.clone(), elements.clone());
+        elements = metamodelica::cons(node_ptr, elements);
         for mut child in &*entry.children.clone() {
             let mut child = child.clone();
             elements = resolveDuplicateEntriesPtr(child.clone(), tree.clone(), elements.clone())?;
@@ -1633,10 +1633,10 @@ pub mod ClassTree {
     fn resolveClass(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode>;
         element = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone(), index.clone())?,
-        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone(), index.clone())?,
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone(), index.clone())?),
-        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::FLAT_TREE).clone(), index.clone())?,
+        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone(), index)?,
+        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone(), index)?,
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone(), index)?),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::FLAT_TREE).clone(), index)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(element)
@@ -1645,8 +1645,8 @@ pub mod ClassTree {
     fn resolveComponent(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode>;
         element = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), index.clone())?),
-        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), index.clone())?,
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), index)?),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), index)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(element)
@@ -1664,9 +1664,9 @@ pub mod ClassTree {
         Deref @ FLAT_TREE { .. } => var_field!((*tree).imports, ClassTree::FLAT_TREE).clone(),
         _ => bail!("match: no arm matched"),
     } });
-        (element, changed, imp) = Import::resolve(({let __elt = imports.borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
-        if changed.clone() {
-            metamodelica::arrayUpdate(imports.clone(), index.clone(), imp.clone())?;
+        (element, changed, imp) = Import::resolve(({let __elt = imports.borrow()[(index-1) as usize].clone(); __elt}))?;
+        if changed {
+            metamodelica::arrayUpdate(imports.clone(), index, imp)?;
         }
         Ok(element)
     }
@@ -1675,19 +1675,19 @@ pub mod ClassTree {
         let mut classCount: i32 = 0;
         let mut compCount: i32 = 0;
         let mut extCount: i32 = 0;
-        for mut e in &*elements.clone() {
+        for mut e in &*elements {
             let mut e = e.clone();
             let () = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
-            classCount = classCount.clone() + 1;
+            classCount = classCount + 1;
             ()
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
-            compCount = compCount.clone() + 1;
+            compCount = compCount + 1;
             ()
         },
         Deref @ SCode::Element::EXTENDS { .. } => {
-            extCount = extCount.clone() + 1;
+            extCount = extCount + 1;
             ()
         },
         _ => (),
@@ -1703,24 +1703,24 @@ pub mod ClassTree {
         let mut clss: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let mut exts: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
-        let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extendsNode.clone())?)?) {
+        let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extendsNode)?)?) {
         Deref @ EXPANDED_TREE { classes: __esc_clss, components: __esc_comps, exts: __esc_exts, .. } => {
             clss = (*__esc_clss).clone();
             comps = (*__esc_comps).clone();
             exts = (*__esc_exts).clone();
-            componentCount = componentCount.clone() + metamodelica::arrayLength(comps.clone()) - metamodelica::arrayLength(exts.clone());
-            classCount = classCount.clone() + metamodelica::arrayLength(clss.clone());
+            componentCount = componentCount + metamodelica::arrayLength(comps.clone()) - metamodelica::arrayLength(exts.clone());
+            classCount = classCount + metamodelica::arrayLength(clss.clone());
             let __range0 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range0 {
-                (classCount, componentCount) = countInheritedElements(ext.clone(), classCount.clone(), componentCount.clone())?;
+                (classCount, componentCount) = countInheritedElements(ext.clone(), classCount, componentCount)?;
             }
             ()
         },
         Deref @ FLAT_TREE { classes: __esc_clss, components: __esc_comps, .. } => {
             clss = (*__esc_clss).clone();
             comps = (*__esc_comps).clone();
-            componentCount = componentCount.clone() + metamodelica::arrayLength(comps.clone());
-            classCount = classCount.clone() + metamodelica::arrayLength(clss.clone());
+            componentCount = componentCount + metamodelica::arrayLength(comps.clone());
+            classCount = classCount + metamodelica::arrayLength(clss.clone());
             ()
         },
         _ => (),
@@ -1736,7 +1736,7 @@ pub mod ClassTree {
         let mut ext_dups: Arc<DuplicateTree::Tree>;
         let mut dups: Arc<DuplicateTree::Tree>;
         let mut conf_func: LookupTree::ConflictFunc;
-        cls_tree = Class::classTree(InstNode::getClass(extendsNode.clone())?)?;
+        cls_tree = Class::classTree(InstNode::getClass(extendsNode)?)?;
         (ext_tree, ext_dups) = (::match_deref::match_deref! { match &(cls_tree.clone()) {
         Deref @ EXPANDED_TREE { .. } => (var_field!((*cls_tree).tree, ClassTree::EXPANDED_TREE).clone(), var_field!((*cls_tree).duplicates, ClassTree::EXPANDED_TREE).clone()),
         Deref @ FLAT_TREE { .. } => (var_field!((*cls_tree).tree, ClassTree::FLAT_TREE).clone(), var_field!((*cls_tree).duplicates, ClassTree::FLAT_TREE).clone()),
@@ -1747,12 +1747,12 @@ pub mod ClassTree {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if !(DuplicateTree::isEmpty(ext_dups.clone())) {
-            dups = DuplicateTree::map(ext_dups.clone(), (std::sync::Arc::new({ let __pe_b2 = classOffset.clone(); let __pe_b3 = componentOffset.clone(); move |__pe_a0, __pe_a1| offsetDuplicates(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DuplicateTree::Entry>) -> Result<Arc<DuplicateTree::Entry>> + 'static>))?;
-            dups = DuplicateTree::join(Mutable::access(duplicates.clone()), dups.clone(), (std::sync::Arc::new(fnptr!(joinDuplicates, Arc<DuplicateTree::Entry>, Arc<DuplicateTree::Entry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DuplicateTree::Entry>, Arc<DuplicateTree::Entry>, ArcStr) -> Result<Arc<DuplicateTree::Entry>> + 'static>))?;
-            Mutable::update(duplicates.clone(), dups.clone());
+            dups = DuplicateTree::map(ext_dups.clone(), (std::sync::Arc::new({ let __pe_b2 = classOffset; let __pe_b3 = componentOffset; move |__pe_a0, __pe_a1| offsetDuplicates(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DuplicateTree::Entry>) -> Result<Arc<DuplicateTree::Entry>> + 'static>))?;
+            dups = DuplicateTree::join(Mutable::access(duplicates.clone()), dups, (std::sync::Arc::new(fnptr!(joinDuplicates, Arc<DuplicateTree::Entry>, Arc<DuplicateTree::Entry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DuplicateTree::Entry>, Arc<DuplicateTree::Entry>, ArcStr) -> Result<Arc<DuplicateTree::Entry>> + 'static>))?;
+            Mutable::update(duplicates.clone(), dups);
         }
-        conf_func = (std::sync::Arc::new({ let __pe_b3 = duplicates.clone(); let __pe_b4 = ext_dups.clone(); move |__pe_a0, __pe_a1, __pe_a2| addInheritedElementConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>);
-        tree = LookupTree::fold(ext_tree.clone(), (std::sync::Arc::new({ let __pe_b2 = classOffset.clone(); let __pe_b3 = componentOffset.clone(); let __pe_b4 = conf_func.clone(); move |__pe_a0, __pe_a1, __pe_a5| addInheritedElement(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Tree>) -> Result<Arc<LookupTree::Tree>> + 'static>), tree.clone())?;
+        conf_func = (std::sync::Arc::new({ let __pe_b3 = duplicates; let __pe_b4 = ext_dups; move |__pe_a0, __pe_a1, __pe_a2| addInheritedElementConflict(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Entry::Entry>, ArcStr) -> Result<Arc<LookupTree::Entry::Entry>> + 'static>);
+        tree = LookupTree::fold(ext_tree, (std::sync::Arc::new({ let __pe_b2 = classOffset; let __pe_b3 = componentOffset; let __pe_b4 = conf_func.clone(); move |__pe_a0, __pe_a1, __pe_a5| addInheritedElement(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>, Arc<LookupTree::Tree>) -> Result<Arc<LookupTree::Tree>> + 'static>), tree)?;
         Ok(tree)
     }
 
@@ -1760,13 +1760,13 @@ pub mod ClassTree {
         let mut tree: Arc<LookupTree::Tree> = tree;
         let () = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::CLASS { .. } => {
-            assign_variant_field!(entry => LookupTree::Entry::Entry::CLASS; index = var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone() + classOffset.clone());
-            tree = LookupTree::add(tree.clone(), (name.clone()).clone(), entry.clone(), conflictFunc.clone())?;
+            assign_variant_field!(entry => LookupTree::Entry::Entry::CLASS; index = var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone() + classOffset);
+            tree = LookupTree::add(tree, (name).clone(), entry, conflictFunc.clone())?;
             ()
         },
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
-            assign_variant_field!(entry => LookupTree::Entry::Entry::COMPONENT; index = var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() + componentOffset.clone());
-            tree = LookupTree::add(tree.clone(), (name.clone()).clone(), entry.clone(), conflictFunc.clone())?;
+            assign_variant_field!(entry => LookupTree::Entry::Entry::COMPONENT; index = var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() + componentOffset);
+            tree = LookupTree::add(tree, (name).clone(), entry, conflictFunc.clone())?;
             ()
         },
         _ => (),
@@ -1784,55 +1784,55 @@ pub mod ClassTree {
         let mut old_id: i32 = LookupTree::Entry::index(oldEntry.clone())?;
         let mut ty: DuplicateTree::EntryType;
         if LookupTree::Entry::isImport(oldEntry.clone()) {
-            entry = newEntry.clone();
+            entry = newEntry;
             return Ok(entry.clone());
         }
         dups = Mutable::access(duplicates.clone());
         opt_dup_entry = DuplicateTree::getOpt(dups.clone(), (name.clone()).clone());
         if isNone(opt_dup_entry.clone()) {
-            if new_id.clone() < old_id.clone() {
+            if new_id < old_id {
                 entry = newEntry.clone();
-                dup_entry = DuplicateTree::newDuplicate(newEntry.clone(), oldEntry.clone());
+                dup_entry = DuplicateTree::newDuplicate(newEntry, oldEntry);
             } else {
                 entry = oldEntry.clone();
-                dup_entry = DuplicateTree::newDuplicate(oldEntry.clone(), newEntry.clone());
+                dup_entry = DuplicateTree::newDuplicate(oldEntry, newEntry);
             }
-            dups = DuplicateTree::add(dups.clone(), (name.clone()).clone(), dup_entry.clone(), (std::sync::Arc::new(DuplicateTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
-            Mutable::update(duplicates.clone(), dups.clone());
+            dups = DuplicateTree::add(dups, (name).clone(), dup_entry, (std::sync::Arc::new(DuplicateTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
+            Mutable::update(duplicates, dups);
         } else {
-            let __pa0 = ::match_deref::match_deref! { match &(opt_dup_entry.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(opt_dup_entry) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             dup_entry = __pa0.clone();
             ty = dup_entry.ty.clone();
             if !(DuplicateTree::idExistsInEntry(newEntry.clone(), dup_entry.clone())?) {
-                if ty.clone() == DuplicateTree::EntryType::REDECLARE.clone() {
+                if ty == DuplicateTree::EntryType::REDECLARE.clone() {
                     entry = newEntry.clone();
-                    assign_field!(dup_entry.children = metamodelica::cons(DuplicateTree::newEntry(newEntry.clone()), dup_entry.children.clone()));
+                    assign_field!(dup_entry.children = metamodelica::cons(DuplicateTree::newEntry(newEntry), dup_entry.children.clone()));
                 } else {
-                    if new_id.clone() < old_id.clone() {
+                    if new_id < old_id {
                         entry = newEntry.clone();
-                        dup_entry = Arc::new(DuplicateTree::Entry { entry: newEntry.clone(), node: None, children: metamodelica::cons(DuplicateTree::newEntry(oldEntry.clone()), dup_entry.children.clone()), ty: dup_entry.ty.clone() });
+                        dup_entry = Arc::new(DuplicateTree::Entry { entry: newEntry, node: None, children: metamodelica::cons(DuplicateTree::newEntry(oldEntry), dup_entry.children.clone()), ty: dup_entry.ty.clone() });
                     } else {
-                        entry = oldEntry.clone();
-                        assign_field!(dup_entry.children = metamodelica::cons(DuplicateTree::newEntry(newEntry.clone()), dup_entry.children.clone()));
+                        entry = oldEntry;
+                        assign_field!(dup_entry.children = metamodelica::cons(DuplicateTree::newEntry(newEntry), dup_entry.children.clone()));
                     }
                 }
-                dups = DuplicateTree::update(dups.clone(), (name.clone()).clone(), dup_entry.clone())?;
-                Mutable::update(duplicates.clone(), dups.clone());
+                dups = DuplicateTree::update(dups, (name).clone(), dup_entry)?;
+                Mutable::update(duplicates, dups);
             } else if !(DuplicateTree::idExistsInEntry(oldEntry.clone(), dup_entry.clone())?) {
-                if ty.clone() == DuplicateTree::EntryType::REDECLARE.clone() || new_id.clone() < old_id.clone() {
-                    entry = newEntry.clone();
-                    assign_field!(dup_entry.children = metamodelica::cons(DuplicateTree::newEntry(oldEntry.clone()), dup_entry.children.clone()));
+                if ty == DuplicateTree::EntryType::REDECLARE.clone() || new_id < old_id {
+                    entry = newEntry;
+                    assign_field!(dup_entry.children = metamodelica::cons(DuplicateTree::newEntry(oldEntry), dup_entry.children.clone()));
                 } else {
                     entry = newEntry.clone();
-                    dup_entry = Arc::new(DuplicateTree::Entry { entry: newEntry.clone(), node: None, children: metamodelica::cons(DuplicateTree::newEntry(oldEntry.clone()), dup_entry.children.clone()), ty: dup_entry.ty.clone() });
+                    dup_entry = Arc::new(DuplicateTree::Entry { entry: newEntry, node: None, children: metamodelica::cons(DuplicateTree::newEntry(oldEntry), dup_entry.children.clone()), ty: dup_entry.ty.clone() });
                 }
-                dups = DuplicateTree::update(dups.clone(), (name.clone()).clone(), dup_entry.clone())?;
-                Mutable::update(duplicates.clone(), dups.clone());
+                dups = DuplicateTree::update(dups, (name).clone(), dup_entry)?;
+                Mutable::update(duplicates, dups);
             } else {
-                entry = if (new_id.clone() < old_id.clone()) {newEntry.clone()} else {oldEntry.clone()};
+                entry = if (new_id < old_id) {newEntry} else {oldEntry};
             }
         }
         Ok(entry)
@@ -1842,24 +1842,24 @@ pub mod ClassTree {
         let mut offsetEntry: Arc<DuplicateTree::Entry>;
         let mut parent: Arc<LookupTree::Entry::Entry>;
         let mut children: Arc<metamodelica::List<Arc<DuplicateTree::Entry>>>;
-        parent = offsetDuplicate(entry.entry.clone(), classOffset.clone(), componentOffset.clone())?;
+        parent = offsetDuplicate(entry.entry.clone(), classOffset, componentOffset)?;
         children = ({
         let mut __acc: Arc<metamodelica::List<Arc<DuplicateTree::Entry>>> = metamodelica::nil();
         for mut c in (entry.children.clone()).into_iter().cloned() {
-            let __x = offsetDuplicates((name.clone()).clone(), c.clone(), classOffset.clone(), componentOffset.clone())?;
+            let __x = offsetDuplicates((name.clone()).clone(), c.clone(), classOffset, componentOffset)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-        offsetEntry = Arc::new(DuplicateTree::Entry { entry: parent.clone(), node: None, children: children.clone(), ty: entry.ty.clone() });
+        offsetEntry = Arc::new(DuplicateTree::Entry { entry: parent, node: None, children: children, ty: entry.ty.clone() });
         Ok(offsetEntry)
     }
 
     fn offsetDuplicate(mut entry: Arc<LookupTree::Entry::Entry>, mut classOffset: i32, mut componentOffset: i32) -> Result<Arc<LookupTree::Entry::Entry>> {
         let mut offsetEntry: Arc<LookupTree::Entry::Entry>;
         offsetEntry = (::match_deref::match_deref! { match &(entry.clone()) {
-        Deref @ LookupTree::Entry::CLASS { .. } => Arc::new(LookupTree::Entry::Entry::CLASS { index: var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone() + classOffset.clone() }),
-        Deref @ LookupTree::Entry::COMPONENT { .. } => Arc::new(LookupTree::Entry::Entry::COMPONENT { index: var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() + componentOffset.clone() }),
+        Deref @ LookupTree::Entry::CLASS { .. } => Arc::new(LookupTree::Entry::Entry::CLASS { index: var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone() + classOffset }),
+        Deref @ LookupTree::Entry::COMPONENT { .. } => Arc::new(LookupTree::Entry::Entry::COMPONENT { index: var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() + componentOffset }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(offsetEntry)
@@ -1867,7 +1867,7 @@ pub mod ClassTree {
 
     fn joinDuplicates(mut newEntry: Arc<DuplicateTree::Entry>, mut oldEntry: Arc<DuplicateTree::Entry>, mut name: ArcStr) -> Arc<DuplicateTree::Entry> {
         let mut entry: Arc<DuplicateTree::Entry> = oldEntry.clone();
-        assign_field!(entry.children = metamodelica::cons(newEntry.clone(), entry.children.clone()));
+        assign_field!(entry.children = metamodelica::cons(newEntry, entry.children.clone()));
         entry
     }
 
@@ -1878,9 +1878,9 @@ pub mod ClassTree {
             classes = metamodelica::nil();
             components = metamodelica::nil();
         } else {
-            (classes, components) = DuplicateTree::fold_2(duplicates.clone(), (std::sync::Arc::new(enumerateDuplicates2) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DuplicateTree::Entry>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> + 'static>), metamodelica::nil(), metamodelica::nil())?;
-            classes = List::sort(classes.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-            components = List::sort(components.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            (classes, components) = DuplicateTree::fold_2(duplicates, (std::sync::Arc::new(enumerateDuplicates2) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DuplicateTree::Entry>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> + 'static>), metamodelica::nil(), metamodelica::nil())?;
+            classes = List::sort(classes, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            components = List::sort(components, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
         }
         Ok((classes, components))
     }
@@ -1898,7 +1898,7 @@ pub mod ClassTree {
     fn enumerateDuplicates3(mut entry: Arc<DuplicateTree::Entry>, mut classes: Arc<metamodelica::List<i32>>, mut components: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
         let mut classes: Arc<metamodelica::List<i32>> = classes;
         let mut components: Arc<metamodelica::List<i32>> = components;
-        (classes, components) = enumerateDuplicates4(entry.entry.clone(), classes.clone(), components.clone())?;
+        (classes, components) = enumerateDuplicates4(entry.entry.clone(), classes, components)?;
         for mut c in &*entry.children.clone() {
             let mut c = c.clone();
             (classes, components) = enumerateDuplicates3(c.clone(), classes.clone(), components.clone())?;
@@ -1912,7 +1912,7 @@ pub mod ClassTree {
         let () = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::CLASS { .. } => (),
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
-            components = metamodelica::cons(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), components.clone());
+            components = metamodelica::cons(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), components);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1925,9 +1925,9 @@ pub mod ClassTree {
 
         let mut entry: Arc<DuplicateTree::Entry> = entry;
         let mut chain: Arc<metamodelica::List<Mutable::Mutable<Arc<InstNode::InstNode>>>>;
-        chain = getRedeclareChain(entry.clone(), tree.clone(), metamodelica::nil())?;
+        chain = getRedeclareChain(entry.clone(), tree, metamodelica::nil())?;
         if !(chain.clone().is_empty()) {
-            func(chain.clone())?;
+            func(chain)?;
         }
         Ok(entry)
     }
@@ -1948,15 +1948,15 @@ pub mod ClassTree {
                 }
                 bail!("fail");
             }
-            getRedeclareChain(listHead(entry.children.clone())?, tree.clone(), metamodelica::cons(node_ptr.clone(), chain.clone()))?
+            getRedeclareChain(listHead(entry.children.clone())?, tree, metamodelica::cons(node_ptr.clone(), chain))?
         },
         DuplicateTree::EntryType::ENTRY => {
             let mut node_ptr: Mutable::Mutable<Arc<InstNode::InstNode>>;
-            node_ptr = resolveEntryPtr(entry.entry.clone(), tree.clone())?;
-            metamodelica::cons(node_ptr.clone(), chain.clone())
+            node_ptr = resolveEntryPtr(entry.entry.clone(), tree)?;
+            metamodelica::cons(node_ptr.clone(), chain)
         },
         _ => {
-            chain.clone()
+            chain
         },
     });
         Ok(chain)
@@ -1973,7 +1973,7 @@ pub mod ClassTree {
         let () = (match entry.ty.clone() {
         DuplicateTree::EntryType::REDECLARE => {
             kept = Mutable::access(resolveEntryPtr(entry.entry.clone(), tree.clone())?);
-            entry = replaceDuplicates3(entry.clone(), kept.clone());
+            entry = replaceDuplicates3(entry, kept);
             ()
         },
         DuplicateTree::EntryType::DUPLICATE => {
@@ -2009,9 +2009,9 @@ pub mod ClassTree {
                 );
                 return Ok((entry.clone(), tree.clone()));
             } else {
-                entries = metamodelica::Dangerous::listReverseInPlace(entries.clone());
+                entries = metamodelica::Dangerous::listReverseInPlace(entries);
                 entry = listHead(entries.clone())?;
-                assign_field!(entry.children = listAppend(listRest(entries.clone())?, broken_entries.clone()));
+                assign_field!(entry.children = listAppend(listRest(entries)?, broken_entries));
             }
             ()
         },
@@ -2039,12 +2039,12 @@ pub mod ClassTree {
     fn linkInnerOuter(mut outerNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> {
         let mut innerOuterNode: Arc<InstNode::InstNode>;
         let mut inner_node: Arc<InstNode::InstNode>;
-        inner_node = Lookup::lookupInner(outerNode.clone(), scope.clone())?;
+        inner_node = Lookup::lookupInner(outerNode.clone(), scope)?;
         if metamodelica::valueConstructor((&*outerNode.clone()))? != metamodelica::valueConstructor((&*inner_node.clone()))? {
             Error::addMultiSourceMessage(Error::FOUND_WRONG_INNER_ELEMENT.clone(), list![(InstNode::typeName(inner_node.clone())?).clone(), (InstNode::name(outerNode.clone())?).clone(), (InstNode::typeName(outerNode.clone())?).clone()], list![InstNode::info(outerNode.clone()), InstNode::info(inner_node.clone())])?;
             bail!("fail");
         }
-        innerOuterNode = Arc::new(InstNode::InstNode::INNER_OUTER_NODE { innerNode: inner_node.clone(), outerNode: outerNode.clone() });
+        innerOuterNode = Arc::new(InstNode::InstNode::INNER_OUTER_NODE { innerNode: inner_node, outerNode: outerNode });
         Ok(innerOuterNode)
     }
 
@@ -2055,11 +2055,11 @@ pub mod ClassTree {
             let () = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::ClassDef::DERIVED { modifications: Deref @ SCode::Mod::NOMOD { .. }, .. } => (),
         Deref @ SCode::ClassDef::DERIVED { .. } => {
-            Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(SCodeDump::printModStr(var_field!((*def).modifications, SCode::ClassDef::DERIVED).clone(), SCodeDump::defaultOptions.clone())?).clone(), (InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls.clone()))?;
+            Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(SCodeDump::printModStr(var_field!((*def).modifications, SCode::ClassDef::DERIVED).clone(), SCodeDump::defaultOptions.clone())?).clone(), (InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls))?;
             bail!("fail")
         },
         _ => {
-            Error::addSourceMessage(Error::OUTER_LONG_CLASS.clone(), list![(InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls.clone()))?;
+            Error::addSourceMessage(Error::OUTER_LONG_CLASS.clone(), list![(InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2072,8 +2072,8 @@ pub mod ClassTree {
         let mut breaks: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
         let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         let mut opt_def: Option<Arc<SCode::Element>>;
-        opt_def = InstNode::extendsDefinition(extendsNode.clone())?;
-        breaks = (::match_deref::match_deref! { match &(opt_def.clone()) {
+        opt_def = InstNode::extendsDefinition(extendsNode)?;
+        breaks = (::match_deref::match_deref! { match &(opt_def) {
         Some(Deref @ SCode::Element::EXTENDS { modifications: __esc_mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => {
             r#mod = (*__esc_mod).clone();
             ({
@@ -2103,7 +2103,7 @@ pub mod ClassTree {
         if break_mods.clone().is_empty() {
             return Ok(());
         }
-        for mut bm in &*break_mods.clone() {
+        for mut bm in &*break_mods {
             let mut bm = bm.clone();
             info = SCodeUtil::getModifierInfo(bm.r#mod.clone());
             opt_dentry = DuplicateTree::getOpt(duplicates.clone(), (bm.ident.clone()).clone());
@@ -2127,8 +2127,8 @@ pub mod ClassTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                checkIsBreakable(Mutable::access(({let __elt = components.borrow()[(index.clone()-1) as usize].clone(); __elt})), node.clone(), info.clone())?;
-                Mutable::update(({let __elt = components.borrow()[(index.clone()-1) as usize].clone(); __elt}), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
+                checkIsBreakable(Mutable::access(({let __elt = components.borrow()[(index-1) as usize].clone(); __elt})), node.clone(), info.clone())?;
+                Mutable::update(({let __elt = components.borrow()[(index-1) as usize].clone(); __elt}), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
             }
         }
         Ok(())
@@ -2151,12 +2151,12 @@ pub mod ClassTree {
                 restriction = openmodelica_frontend_types::SCode::Restriction::R_CLASS;
             }
         }
-        let () = (match restriction.clone() {
+        let () = (match restriction {
         SCode::Restriction::R_MODEL { .. } => (),
         SCode::Restriction::R_BLOCK { .. } => (),
         SCode::Restriction::R_CONNECTOR { .. } => (),
         _ => {
-            Error::addMultiSourceMessage(Error::NON_BREAKABLE_COMPONENT.clone(), list![(InstNode::name(node.clone())?).clone()], list![info.clone(), InstNode::info(node.clone())])?;
+            Error::addMultiSourceMessage(Error::NON_BREAKABLE_COMPONENT.clone(), list![(InstNode::name(node.clone())?).clone()], list![info, InstNode::info(node)])?;
             bail!("fail")
         },
     });

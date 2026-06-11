@@ -65,18 +65,18 @@ pub(crate) const matlabStringDelim: &'static str = "'";
 
 pub fn writeAdjacencyMatrix(mut dlow: Arc<BackendDAE::BackendDAE>, mut fileNamePrefix: ArcStr, mut flatModelicaStr: ArcStr) -> Result<ArcStr> {
     let mut fileName: ArcStr;
-    fileName = ((match flatModelicaStr.clone() {
+    fileName = ((match flatModelicaStr {
         mut flatStr => {
             let mut file: ArcStr;
             let mut strIMatrix: ArcStr;
             let mut strVariables: ArcStr;
             let mut strEquations: ArcStr;
             let mut m: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
-            file = (stringAppend((fileNamePrefix.clone()).clone(), (literal!("_imatrix.m")).clone())).clone();
+            file = (stringAppend((fileNamePrefix).clone(), (literal!("_imatrix.m")).clone())).clone();
             m = adjacencyMatrix(dlow.clone())?;
             strIMatrix = (getAdjacencyMatrix(m.clone())).clone();
             strVariables = (getVariables(dlow.clone())?).clone();
-            strEquations = (getEquations(dlow.clone())?).clone();
+            strEquations = (getEquations(dlow)?).clone();
             strIMatrix = stringAppendList(list![(strIMatrix.clone()).clone(), (literal!("\n")).clone(), (strVariables.clone()).clone(), (literal!("\n\n\n")).clone(), (strEquations.clone()).clone(), (literal!("\n\n\n")).clone(), (flatStr.clone()).clone()]);
             System::writeFile((file.clone()).clone(), (strIMatrix.clone()).clone())?;
             file.clone()
@@ -89,19 +89,19 @@ pub(crate) fn getEquations(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Res
     let mut strEqs: ArcStr;
     let mut syst: Arc<BackendDAE::EqSystem>;
     let mut ls1: Arc<metamodelica::List<ArcStr>>;
-    let __pa0 = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inBackendDAE) {
         Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, shared: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     syst = __pa0.clone();
     ls1 = List::map(BackendEquation::equationList(syst.orderedEqs.clone())?, (std::sync::Arc::new(equationStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?;
-    strEqs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("EqStr = {")); __mm_s.push_str(&*stringDelimitList(ls1.clone(), (literal!(",")).clone())); __mm_s.push_str(&*literal!("};")); ArcStr::from(__mm_s) }).clone();
+    strEqs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("EqStr = {")); __mm_s.push_str(&*stringDelimitList(ls1, (literal!(",")).clone())); __mm_s.push_str(&*literal!("};")); ArcStr::from(__mm_s) }).clone();
     Ok(strEqs)
 }
 
 pub(crate) fn equationStr(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inEquation.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inEquation) {
         Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
             let mut s1: ArcStr;
             let mut s2: ArcStr;
@@ -173,16 +173,16 @@ fn getAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<ArcStr>>
     let mut m_1: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut mstr: ArcStr;
     mlen = metamodelica::arrayLength(m.clone());
-    mlen_str = (intString(mlen.clone())).clone();
+    mlen_str = (intString(mlen)).clone();
     m_1 = Arc::new(m.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-    mstr = (getAdjacencyMatrix2(m_1.clone(), 1)).clone();
-    strIMatrix = stringAppendList(list![(literal!("% Adjacency Matrix\n")).clone(), (literal!("% ====================================\n")).clone(), (literal!("% number of rows: ")).clone(), (mlen_str.clone()).clone(), (literal!("\n")).clone(), (literal!("IM={")).clone(), (mstr.clone()).clone(), (literal!("};")).clone()]);
+    mstr = (getAdjacencyMatrix2(m_1, 1)).clone();
+    strIMatrix = stringAppendList(list![(literal!("% Adjacency Matrix\n")).clone(), (literal!("% ====================================\n")).clone(), (literal!("% number of rows: ")).clone(), (mlen_str).clone(), (literal!("\n")).clone(), (literal!("IM={")).clone(), (mstr).clone(), (literal!("};")).clone()]);
     strIMatrix
 }
 
 fn getAdjacencyMatrix2(mut inStringLstLst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut rowIndex: i32) -> ArcStr {
     let mut strIMatrix: ArcStr;
-    strIMatrix = ((::match_deref::match_deref! { match &(inStringLstLst.clone()) {
+    strIMatrix = ((::match_deref::match_deref! { match &(inStringLstLst) {
         Deref @ metamodelica::List::Nil => {
             literal!("")
         },
@@ -198,7 +198,7 @@ fn getAdjacencyMatrix2(mut inStringLstLst: Arc<metamodelica::List<Arc<metamodeli
             let mut str1: ArcStr;
             let mut str2: ArcStr;
             str1 = (getAdjacencyRow(row.clone())).clone();
-            str2 = (getAdjacencyMatrix2(rows.clone(), rowIndex.clone() + 1)).clone();
+            str2 = (getAdjacencyMatrix2(rows.clone(), rowIndex + 1)).clone();
             r#str = stringAppendList(list![(literal!("{")).clone(), (str1.clone()).clone(), (literal!("},")).clone(), (str2.clone()).clone()]);
             r#str.clone()
         },
@@ -209,7 +209,7 @@ fn getAdjacencyMatrix2(mut inStringLstLst: Arc<metamodelica::List<Arc<metamodeli
 
 fn getAdjacencyRow(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
     let mut strRow: ArcStr;
-    strRow = ((::match_deref::match_deref! { match &(inStringLst.clone()) {
+    strRow = ((::match_deref::match_deref! { match &(inStringLst) {
         Deref @ metamodelica::List::Nil => {
             literal!("")
         },
@@ -230,7 +230,7 @@ fn getAdjacencyRow(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
 
 pub(crate) fn getVariables(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<ArcStr> {
     let mut strVars: ArcStr;
-    strVars = ((::match_deref::match_deref! { match &(inBackendDAE.clone()) {
+    strVars = ((::match_deref::match_deref! { match &(inBackendDAE) {
         Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: vars1, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
             let mut s: ArcStr;
@@ -246,14 +246,14 @@ pub(crate) fn getVariables(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Res
 
 pub(crate) fn dumpVars(mut vars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
     let mut strVars: ArcStr;
-    strVars = (dumpVars2(vars.clone(), 1)?).clone();
+    strVars = (dumpVars2(vars, 1)?).clone();
     Ok(strVars)
 }
 
 fn dumpVars2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut strVars: ArcStr;
     strVars = ('mc: {
-        let __mc_input = (inVarLst.clone(), inInteger.clone());
+        let __mc_input = (inVarLst, inInteger);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _) => {
@@ -298,7 +298,7 @@ fn dumpVars2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inInteg
 pub(crate) fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<metamodelica::Array<Arc<metamodelica::List<ArcStr>>>> {
     let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
     outAdjacencyMatrix = 'mc: {
-        let __mc_input = inBackendDAE.clone();
+        let __mc_input = inBackendDAE;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
@@ -330,7 +330,7 @@ pub(crate) fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> 
 fn adjacencyMatrix2(mut inVariables: BackendDAE::Variables, mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut outStringLstLst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     outStringLstLst = 'mc: {
-        let __mc_input = (inVariables.clone(), inEquationLst.clone());
+        let __mc_input = (inVariables, inEquationLst);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil) => {
@@ -368,7 +368,7 @@ fn adjacencyMatrix2(mut inVariables: BackendDAE::Variables, mut inEquationLst: A
 fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<BackendDAE::Equation>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outIntegerLst: Arc<metamodelica::List<ArcStr>>;
     outIntegerLst = 'mc: {
-        let __mc_input = (inVariables.clone(), inEquation.clone());
+        let __mc_input = (inVariables, inEquation);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }) => {
@@ -585,7 +585,7 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
 fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = 'mc: {
-        let __mc_input = (inExp.clone(), inVariables.clone());
+        let __mc_input = (inExp, inVariables);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, vars) => {
@@ -979,16 +979,16 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
 
 fn adjacencyRowIter(mut iter: Arc<DAE::ReductionIterator>, mut vars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut strs: Arc<metamodelica::List<ArcStr>>;
-    strs = (::match_deref::match_deref! { match &(iter.clone()) {
+    strs = (::match_deref::match_deref! { match &(iter) {
         Deref @ DAE::ReductionIterator { guardExp: Some(e1), exp: e2, .. } => {
             let mut s1: Arc<metamodelica::List<ArcStr>>;
             let mut s2: Arc<metamodelica::List<ArcStr>>;
             s1 = adjacencyRowExp(e1.clone(), vars.clone());
-            s2 = adjacencyRowExp(e2.clone(), vars.clone());
+            s2 = adjacencyRowExp(e2.clone(), vars);
             listAppend(s1.clone(), s2.clone())
         },
         Deref @ DAE::ReductionIterator { exp: e1, .. } => {
-            adjacencyRowExp(e1.clone(), vars.clone())
+            adjacencyRowExp(e1.clone(), vars)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -997,7 +997,7 @@ fn adjacencyRowIter(mut iter: Arc<DAE::ReductionIterator>, mut vars: BackendDAE:
 
 fn adjacencyRowMatrixExp(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
-    outStringLst = (::match_deref::match_deref! { match &((inTplExpExpBooleanLstLst.clone(), inVariables.clone())) {
+    outStringLst = (::match_deref::match_deref! { match &((inTplExpExpBooleanLstLst, inVariables)) {
         (Deref @ metamodelica::List::Nil, _) => {
             metamodelica::nil()
         },
@@ -1019,7 +1019,7 @@ fn adjacencyRowMatrixExp(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Ar
 
 fn printExpStr(mut e: Arc<DAE::Exp>) -> ArcStr {
     let mut s: ArcStr;
-    s = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("'")).clone(), None, None)).clone();
+    s = (ExpressionDump::printExp2Str::<()>(e, (literal!("'")).clone(), None, None)).clone();
     s
 }
 

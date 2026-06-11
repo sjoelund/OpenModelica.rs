@@ -62,18 +62,18 @@ pub(crate) fn isStructuralComponent(mut component: Arc<Component::NFComponent>, 
     let mut binding: Arc<Binding::NFBinding>;
     if compAttrs.variability.clone() != Variability::PARAMETER.clone() {
         isStructural = false;
-    } else if compEval.clone() || parentEval.clone() {
-        binding = if (Binding::isBound(compBinding.clone())) {compBinding.clone()} else {Component::getTypeAttributeBinding(component.clone(), (literal!("start")).clone())};
+    } else if compEval || parentEval {
+        binding = if (Binding::isBound(compBinding.clone())) {compBinding} else {Component::getTypeAttributeBinding(component.clone(), (literal!("start")).clone())};
         if !(Component::isFixed(component.clone())?) {
             isStructural = false;
-        } else if Component::isExternalObject(component.clone())? {
+        } else if Component::isExternalObject(component)? {
             isStructural = false;
         } else if !(Binding::isBound(binding.clone()) || InstNode::hasBinding(compNode.clone())?) {
-            if !(parentEval.clone()) && !(InstContext::inRelaxed(context.clone())) {
-                Error::addSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![(InstNode::name(compNode.clone())?).clone()], InstNode::info(compNode.clone()))?;
+            if !(parentEval) && !(InstContext::inRelaxed(context)) {
+                Error::addSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![(InstNode::name(compNode.clone())?).clone()], InstNode::info(compNode))?;
             }
             isStructural = false;
-        } else if isBindingNotFixed(binding.clone(), false, 4)? {
+        } else if isBindingNotFixed(binding, false, 4)? {
             isStructural = false;
         } else {
             isStructural = true;
@@ -86,12 +86,12 @@ pub(crate) fn isStructuralComponent(mut component: Arc<Component::NFComponent>, 
 
 pub(crate) fn isBindingNotFixed(mut binding: Arc<Binding::NFBinding>, mut requireFinal: bool, mut maxDepth: i32) -> Result<bool> {
     let mut isNotFixed: bool;
-    if maxDepth.clone() == 0 {
+    if maxDepth == 0 {
         isNotFixed = true;
         return Ok(isNotFixed.clone());
     }
     if Binding::hasExp(binding.clone()) {
-        isNotFixed = isExpressionNotFixed(Binding::getExp(binding.clone())?, requireFinal.clone(), maxDepth.clone())?;
+        isNotFixed = isExpressionNotFixed(Binding::getExp(binding)?, requireFinal, maxDepth)?;
     } else {
         isNotFixed = true;
     }
@@ -104,19 +104,19 @@ pub(crate) fn isComponentBindingNotFixed(mut component: Arc<Component::NFCompone
         let mut parent: Arc<InstNode::InstNode>;
         binding = Component::getBinding(component.clone());
         if Binding::isUnbound(binding.clone()) {
-            if isRecord.clone() || InstNode::isRecord(node.clone()) {
+            if isRecord || InstNode::isRecord(node.clone()) {
                 return Ok(false)
             } else {
-                parent = InstNode::parent(node.clone());
+                parent = InstNode::parent(node);
                 if InstNode::isComponent(parent.clone())? && InstNode::isRecord(parent.clone()) {
-                    { (component, node, requireFinal, maxDepth, isRecord) = (InstNode::component(parent.clone())?, parent.clone(), requireFinal.clone(), maxDepth.clone(), true); continue '__tco; }
+                    { (component, node, requireFinal, maxDepth, isRecord) = (InstNode::component(parent.clone())?, parent, requireFinal, maxDepth, true); continue '__tco; }
                 } else {
-                    binding = Component::getTypeAttributeBinding(component.clone(), (literal!("start")).clone());
-                    return Ok(isBindingNotFixed(binding.clone(), requireFinal.clone(), maxDepth.clone())?)
+                    binding = Component::getTypeAttributeBinding(component, (literal!("start")).clone());
+                    return Ok(isBindingNotFixed(binding, requireFinal, maxDepth)?)
                 }
             }
         } else {
-            return Ok(isBindingNotFixed(binding.clone(), requireFinal.clone(), maxDepth.clone())?)
+            return Ok(isBindingNotFixed(binding, requireFinal, maxDepth)?)
         }
     }
 }
@@ -134,34 +134,34 @@ pub(crate) fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut r
                 var = Component::variability(c.clone())?;
                 if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() {
                     isNotFixed = false;
-                } else if var.clone() == Variability::PARAMETER.clone() && (!(requireFinal.clone()) || Component::isFinal(c.clone())?) && !(Component::isExternalObject(c.clone())?) && Component::isFixed(c.clone())? {
-                    isNotFixed = isComponentBindingNotFixed(c.clone(), node.clone(), requireFinal.clone(), maxDepth.clone() - 1, false)?;
+                } else if var.clone() == Variability::PARAMETER.clone() && (!(requireFinal) || Component::isFinal(c.clone())?) && !(Component::isExternalObject(c.clone())?) && Component::isFixed(c.clone())? {
+                    isNotFixed = isComponentBindingNotFixed(c.clone(), node.clone(), requireFinal, maxDepth - 1, false)?;
                 } else {
                     isNotFixed = true;
                 }
             } else {
                 isNotFixed = true;
             }
-            isNotFixed.clone() || Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?
+            isNotFixed || Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal; let __pe_b2 = maxDepth; move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?
         },
         Deref @ Expression::SIZE { .. } => {
             if isSome(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone()) {
-                isNotFixed = isExpressionNotFixed(Util::getOption(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone())?, requireFinal.clone(), maxDepth.clone())?;
+                isNotFixed = isExpressionNotFixed(Util::getOption(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone())?, requireFinal, maxDepth)?;
             } else {
                 isNotFixed = false;
             }
-            isNotFixed.clone()
+            isNotFixed
         },
         Deref @ Expression::CALL { .. } => {
             if Call::isImpure(var_field!((*exp).call, Expression::NFExpression::CALL).clone())? || Call::isExternal(var_field!((*exp).call, Expression::NFExpression::CALL).clone())? {
                 isNotFixed = true;
             } else {
-                isNotFixed = Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
+                isNotFixed = Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal; let __pe_b2 = maxDepth; move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
             }
-            isNotFixed.clone()
+            isNotFixed
         },
         _ => {
-            Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?
+            Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal; let __pe_b2 = maxDepth; move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -195,7 +195,7 @@ pub(crate) fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
                     markComponent(comp.clone(), node.clone())?;
                 }
             }
-            Expression::applyShallow(exp.clone(), (std::sync::Arc::new(markExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+            Expression::applyShallow(exp, (std::sync::Arc::new(markExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ Expression::SIZE { .. } => {
@@ -212,7 +212,7 @@ pub(crate) fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
             ()
         },
         _ => {
-            Expression::applyShallow(exp.clone(), (std::sync::Arc::new(markExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+            Expression::applyShallow(exp, (std::sync::Arc::new(markExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -227,7 +227,7 @@ pub(crate) fn markSubscriptsInExp(mut exp: Arc<Expression::NFExpression>) -> Res
             ()
         },
         _ => {
-            Expression::applyShallow(exp.clone(), (std::sync::Arc::new(markSubscriptsInExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+            Expression::applyShallow(exp, (std::sync::Arc::new(markSubscriptsInExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -238,23 +238,23 @@ pub(crate) fn markSubscriptsInExp(mut exp: Arc<Expression::NFExpression>) -> Res
 pub(crate) fn markComponent(mut component: Arc<Component::NFComponent>, mut node: Arc<InstNode::InstNode>) -> Result<()> {
     let mut comp: Arc<Component::NFComponent>;
     let mut binding: Option<Arc<Expression::NFExpression>>;
-    comp = Component::setVariability(Variability::STRUCTURAL_PARAMETER.clone(), component.clone());
-    comp = Component::setFinal(comp.clone(), true);
-    InstNode::updateComponent(comp.clone(), node.clone())?;
-    binding = Binding::getExpOpt(Component::getBinding(comp.clone()));
+    comp = Component::setVariability(Variability::STRUCTURAL_PARAMETER.clone(), component);
+    comp = Component::setFinal(comp, true);
+    InstNode::updateComponent(comp.clone(), node)?;
+    binding = Binding::getExpOpt(Component::getBinding(comp));
     if isSome(binding.clone()) {
-        markExp(Util::getOption(binding.clone())?)?;
+        markExp(Util::getOption(binding)?)?;
     }
     Ok(())
 }
 
 pub(crate) fn markExpSize(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
-    Expression::apply(exp.clone(), (std::sync::Arc::new(markExpSize_traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+    Expression::apply(exp, (std::sync::Arc::new(markExpSize_traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
 pub(crate) fn markExpSize_traverser(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(exp.clone()) {
+    let () = (::match_deref::match_deref! { match &(exp) {
         Deref @ Expression::CALL { call: Deref @ Call::UNTYPED_ARRAY_CONSTRUCTOR { iters, .. } } => {
             for mut iter in &*iters.clone() {
                 let mut iter = iter.clone();

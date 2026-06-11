@@ -106,8 +106,8 @@ pub mod AttributeIterator {
         let mut iter: Arc<AttributeIterator>;
         let mut name: ArcStr;
         let mut binding: Arc<Binding::NFBinding>;
-        (name, binding) = attribute.clone();
-        iter = Arc::new(AttributeIterator { name: (name.clone()).clone(), confidence: Binding::confidence(binding.clone()), iterator: Mutable::create(ExpressionIterator::fromBinding(binding.clone())?) });
+        (name, binding) = attribute;
+        iter = Arc::new(AttributeIterator { name: (name).clone(), confidence: Binding::confidence(binding.clone()), iterator: Mutable::create(ExpressionIterator::fromBinding(binding)?) });
         Ok(iter)
     }
 
@@ -116,8 +116,8 @@ pub mod AttributeIterator {
         let mut it: Arc<ExpressionIterator::NFExpressionIterator>;
         let mut exp: Arc<Expression::NFExpression>;
         (it, exp) = ExpressionIterator::next(Mutable::access(iter.iterator.clone()))?;
-        Mutable::update(iter.iterator.clone(), it.clone());
-        binding = (iter.name.clone(), Binding::makeFlat(exp.clone(), Variability::PARAMETER.clone(), Binding::Source::BINDING.clone(), iter.confidence.clone()));
+        Mutable::update(iter.iterator.clone(), it);
+        binding = (iter.name.clone(), Binding::makeFlat(exp, Variability::PARAMETER.clone(), Binding::Source::BINDING.clone(), iter.confidence.clone()));
         Ok(binding)
     }
 
@@ -158,11 +158,11 @@ pub fn scalarize(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatM
 
 pub(crate) fn scalarizeVariables(mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut forceScalarize: bool) -> Result<Arc<metamodelica::List<Arc<Variable::NFVariable>>>> {
     let mut outVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    for mut v in &*vars.clone() {
+    for mut v in &*vars {
         let mut v = v.clone();
-        outVars = scalarizeVariable(v.clone(), outVars.clone(), forceScalarize.clone())?;
+        outVars = scalarizeVariable(v.clone(), outVars.clone(), forceScalarize)?;
     }
-    outVars = metamodelica::Dangerous::listReverseInPlace(outVars.clone());
+    outVars = metamodelica::Dangerous::listReverseInPlace(outVars);
     Ok(outVars)
 }
 
@@ -210,10 +210,10 @@ pub(crate) fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
             has_binding = Binding::isBound(binding.clone());
             bind_src = Binding::source(binding.clone());
             confidence = Binding::confidence(binding.clone());
-            if has_binding.clone() {
+            if has_binding {
                 binding_iter = unwrap_break_err!(ExpressionIterator::fromExp(unwrap_break_err!(Binding::getTypedExp(binding.clone()), '__try0), false, false), '__try0);
                 bind_var = unwrap_break_err!(Binding::variability(binding.clone()), '__try0);
-                if !(forceScalarize.clone()) && unwrap_break_err!(ExpressionIterator::isSubscriptedArrayCall(binding_iter.clone(), true), '__try0) && !(unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) && !(variableHasForcedScalarAttribute(var.clone())) {
+                if !(forceScalarize) && unwrap_break_err!(ExpressionIterator::isSubscriptedArrayCall(binding_iter.clone(), true), '__try0) && !(unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) && !(variableHasForcedScalarAttribute(var.clone())) {
                     vars = metamodelica::cons(var.clone(), vars.clone());
                     return Ok(vars.clone());
                 }
@@ -232,9 +232,9 @@ pub(crate) fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
             backend_attributes = unwrap_break_err!(BackendInfo::scalarize(binfo.clone(), (crefs.clone().len() as i32)), '__try0);
             for mut cr in &*crefs.clone() {
                 let mut cr = cr.clone();
-                if has_binding.clone() {
+                if has_binding {
                     (binding_iter, exp) = unwrap_break_err!(ExpressionIterator::next(binding_iter.clone()), '__try0);
-                    binding = Binding::makeFlat(exp.clone(), bind_var.clone(), bind_src.clone(), confidence.clone());
+                    binding = Binding::makeFlat(exp.clone(), bind_var, bind_src, confidence);
                 }
                 ty_attr = ({
         let mut __acc: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
@@ -250,14 +250,14 @@ pub(crate) fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
                 } };
                 binfo = __pa10.clone();
                 backend_attributes = __pa11.clone();
-                vars = metamodelica::cons(Arc::new(Variable::NFVariable { name: cr.clone(), ty: elem_ty.clone(), binding: binding.clone(), visibility: vis.clone(), attributes: attr.clone(), typeAttributes: ty_attr.clone(), children: metamodelica::nil(), comment: cmt.clone(), info: info.clone(), backendinfo: binfo.clone() }), vars.clone());
+                vars = metamodelica::cons(Arc::new(Variable::NFVariable { name: cr.clone(), ty: elem_ty.clone(), binding: binding.clone(), visibility: vis, attributes: attr.clone(), typeAttributes: ty_attr.clone(), children: metamodelica::nil(), comment: cmt.clone(), info: info.clone(), backendinfo: binfo.clone() }), vars.clone());
             }
             Ok::<(), anyhow::Error>(())
         }.is_err() {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFScalarize.scalarizeVariable")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), true)?); ArcStr::from(__mm_s) }).clone(), var.info.clone())?;
         }
     } else {
-        vars = metamodelica::cons(var.clone(), vars.clone());
+        vars = metamodelica::cons(var, vars);
     }
     Ok(vars)
 }
@@ -289,7 +289,7 @@ pub fn scalarizeBackendVariable(mut var: Arc<Variable::NFVariable>, mut indices:
             let __x = (::match_deref::match_deref! { match &(cr.clone()) {
         _ => {
             (binding_iter, exp) = unwrap_break_err!(ExpressionIterator::next(binding_iter.clone()), '__try0);
-            binding = Binding::makeFlat(exp.clone(), bind_var.clone(), bind_src.clone(), confidence.clone());
+            binding = Binding::makeFlat(exp.clone(), bind_var, bind_src, confidence);
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(backend_attributes.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -354,10 +354,10 @@ pub fn scalarizeComplexVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
                 assign_field!(elem_var.name = ComponentRef::setNodeType(elem_var.ty.clone(), elem_var.name.clone()));
                 vars = metamodelica::cons(elem_var.clone(), vars.clone());
             }
-            vars.clone().reverse()
+            vars.reverse()
         },
         _ => {
-            list![var.clone()]
+            list![var]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -366,7 +366,7 @@ pub fn scalarizeComplexVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
 
 pub(crate) fn expandComplexCref(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    exp = Expression::map(exp.clone(), (std::sync::Arc::new(expandComplexCref_traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    exp = Expression::map(exp, (std::sync::Arc::new(expandComplexCref_traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(exp)
 }
 
@@ -375,7 +375,7 @@ pub(crate) fn expandComplexCref_traverser(mut exp: Arc<Expression::NFExpression>
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { ty: Deref @ Type::ARRAY { .. }, .. } => {
             if ComponentRef::isComplexArray(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? {
-                (exp, _) = ExpandExp::expand(exp.clone(), false, false)?;
+                (exp, _) = ExpandExp::expand(exp, false, false)?;
             }
             ()
         },
@@ -387,11 +387,11 @@ pub(crate) fn expandComplexCref_traverser(mut exp: Arc<Expression::NFExpression>
 
 pub(crate) fn scalarizeEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut forceScalarize: bool) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    for mut eq in &*eql.clone() {
+    for mut eq in &*eql {
         let mut eq = eq.clone();
-        equations = scalarizeEquation(eq.clone(), equations.clone(), forceScalarize.clone())?;
+        equations = scalarizeEquation(eq.clone(), equations.clone(), forceScalarize)?;
     }
-    equations = metamodelica::Dangerous::listReverseInPlace(equations.clone());
+    equations = metamodelica::Dangerous::listReverseInPlace(equations);
     Ok(equations)
 }
 
@@ -405,7 +405,7 @@ pub(crate) fn scalarizeEquation(mut eq: Arc<Equation::NFEquation>, mut equations
             let mut lhs = (*lhs).clone();
             let mut rhs = (*rhs).clone();
             let mut ty = (*ty).clone();
-            if forceScalarize.clone() || var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() == Equation::ScalarizeMode::SCALARIZE.clone() {
+            if forceScalarize || var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() == Equation::ScalarizeMode::SCALARIZE.clone() {
                 scalarize = true;
             } else if var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() == Equation::ScalarizeMode::DONT_SCALARIZE.clone() {
                 scalarize = false;
@@ -427,21 +427,21 @@ pub(crate) fn scalarizeEquation(mut eq: Arc<Equation::NFEquation>, mut equations
                     equations = metamodelica::cons(Equation::makeEquality(lhs.clone(), rhs.clone(), ty.clone(), src.clone(), var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
                 }
             } else {
-                equations = metamodelica::cons(eq.clone(), equations.clone());
+                equations = metamodelica::cons(eq, equations);
             }
-            equations.clone()
+            equations
         },
         Deref @ Equation::CONNECT { .. } => {
-            equations.clone()
+            equations
         },
         Deref @ Equation::IF { .. } => {
-            scalarizeIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).scope, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), equations.clone())?
+            scalarizeIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).scope, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), equations)?
         },
         Deref @ Equation::WHEN { .. } => {
-            scalarizeWhenEquation(var_field!((*eq).branches, Equation::NFEquation::WHEN).clone(), var_field!((*eq).scope, Equation::NFEquation::WHEN).clone(), var_field!((*eq).source, Equation::NFEquation::WHEN).clone(), equations.clone())?
+            scalarizeWhenEquation(var_field!((*eq).branches, Equation::NFEquation::WHEN).clone(), var_field!((*eq).scope, Equation::NFEquation::WHEN).clone(), var_field!((*eq).source, Equation::NFEquation::WHEN).clone(), equations)?
         },
         _ => {
-            metamodelica::cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq, equations)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -454,7 +454,7 @@ pub(crate) fn scalarizeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equat
     let mut cond: Arc<Expression::NFExpression>;
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut var: Variability;
-    for mut b in &*branches.clone() {
+    for mut b in &*branches {
         let mut b = b.clone();
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(b.clone()) {
             Deref @ Equation::Branch::BRANCH { condition: __pa0, conditionVar: __pa1, body: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -465,11 +465,11 @@ pub(crate) fn scalarizeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equat
         body = __pa2.clone();
         body = scalarizeEquations(body.clone(), false)?;
         if !(body.clone().is_empty()) {
-            bl = metamodelica::cons(Equation::makeBranch(cond.clone(), body.clone(), var.clone()), bl.clone());
+            bl = metamodelica::cons(Equation::makeBranch(cond.clone(), body.clone(), var), bl.clone());
         }
     }
     if !(bl.clone().is_empty()) {
-        equations = metamodelica::cons(Arc::new(Equation::NFEquation::IF { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), scope: scope.clone(), source: source.clone() }), equations.clone());
+        equations = metamodelica::cons(Arc::new(Equation::NFEquation::IF { branches: metamodelica::Dangerous::listReverseInPlace(bl), scope: scope, source: source }), equations);
     }
     Ok(equations)
 }
@@ -480,7 +480,7 @@ pub(crate) fn scalarizeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equ
     let mut cond: Arc<Expression::NFExpression>;
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut var: Variability;
-    for mut b in &*branches.clone() {
+    for mut b in &*branches {
         let mut b = b.clone();
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(b.clone()) {
             Deref @ Equation::Branch::BRANCH { condition: __pa0, conditionVar: __pa1, body: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -493,9 +493,9 @@ pub(crate) fn scalarizeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equ
         if Type::isArray(Expression::typeOf(cond.clone())) {
             (cond, _) = ExpandExp::expand(cond.clone(), false, false)?;
         }
-        bl = metamodelica::cons(Equation::makeBranch(cond.clone(), body.clone(), var.clone()), bl.clone());
+        bl = metamodelica::cons(Equation::makeBranch(cond.clone(), body.clone(), var), bl.clone());
     }
-    equations = metamodelica::cons(Arc::new(Equation::NFEquation::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), scope: scope.clone(), source: source.clone() }), equations.clone());
+    equations = metamodelica::cons(Arc::new(Equation::NFEquation::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(bl), scope: scope, source: source }), equations);
     Ok(equations)
 }
 
@@ -507,22 +507,22 @@ pub(crate) fn scalarizeAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result
 
 pub(crate) fn scalarizeStatements(mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
-    for mut s in &*stmts.clone() {
+    for mut s in &*stmts {
         let mut s = s.clone();
         statements = scalarizeStatement(s.clone(), statements.clone())?;
     }
-    statements = metamodelica::Dangerous::listReverseInPlace(statements.clone());
+    statements = metamodelica::Dangerous::listReverseInPlace(statements);
     Ok(statements)
 }
 
 pub(crate) fn scalarizeStatement(mut stmt: Arc<Statement::NFStatement>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = statements;
     statements = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::FOR { .. } => metamodelica::cons(Arc::new(Statement::NFStatement::FOR { iterator: var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), range: var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), body: scalarizeStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?, forType: var_field!((*stmt).forType, Statement::NFStatement::FOR).clone(), source: var_field!((*stmt).source, Statement::NFStatement::FOR).clone() }), statements.clone()),
-        Deref @ Statement::IF { .. } => scalarizeIfStatement(var_field!((*stmt).branches, Statement::NFStatement::IF).clone(), var_field!((*stmt).source, Statement::NFStatement::IF).clone(), statements.clone())?,
-        Deref @ Statement::WHEN { .. } => scalarizeWhenStatement(var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone(), var_field!((*stmt).source, Statement::NFStatement::WHEN).clone(), statements.clone())?,
-        Deref @ Statement::WHILE { .. } => metamodelica::cons(Arc::new(Statement::NFStatement::WHILE { condition: var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), body: scalarizeStatements(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())?, source: var_field!((*stmt).source, Statement::NFStatement::WHILE).clone() }), statements.clone()),
-        _ => metamodelica::cons(stmt.clone(), statements.clone()),
+        Deref @ Statement::FOR { .. } => metamodelica::cons(Arc::new(Statement::NFStatement::FOR { iterator: var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), range: var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), body: scalarizeStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?, forType: var_field!((*stmt).forType, Statement::NFStatement::FOR).clone(), source: var_field!((*stmt).source, Statement::NFStatement::FOR).clone() }), statements),
+        Deref @ Statement::IF { .. } => scalarizeIfStatement(var_field!((*stmt).branches, Statement::NFStatement::IF).clone(), var_field!((*stmt).source, Statement::NFStatement::IF).clone(), statements)?,
+        Deref @ Statement::WHEN { .. } => scalarizeWhenStatement(var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone(), var_field!((*stmt).source, Statement::NFStatement::WHEN).clone(), statements)?,
+        Deref @ Statement::WHILE { .. } => metamodelica::cons(Arc::new(Statement::NFStatement::WHILE { condition: var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), body: scalarizeStatements(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())?, source: var_field!((*stmt).source, Statement::NFStatement::WHILE).clone() }), statements),
+        _ => metamodelica::cons(stmt, statements),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(statements)
@@ -533,7 +533,7 @@ pub(crate) fn scalarizeIfStatement(mut branches: Arc<metamodelica::List<(Arc<Exp
     let mut bl: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
     let mut cond: Arc<Expression::NFExpression>;
     let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
-    for mut b in &*branches.clone() {
+    for mut b in &*branches {
         let mut b = b.clone();
         (cond, body) = b.clone();
         body = scalarizeStatements(body.clone())?;
@@ -542,7 +542,7 @@ pub(crate) fn scalarizeIfStatement(mut branches: Arc<metamodelica::List<(Arc<Exp
         }
     }
     if !(bl.clone().is_empty()) {
-        statements = metamodelica::cons(Arc::new(Statement::NFStatement::IF { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), source: source.clone() }), statements.clone());
+        statements = metamodelica::cons(Arc::new(Statement::NFStatement::IF { branches: metamodelica::Dangerous::listReverseInPlace(bl), source: source }), statements);
     }
     Ok(statements)
 }
@@ -552,7 +552,7 @@ pub(crate) fn scalarizeWhenStatement(mut branches: Arc<metamodelica::List<(Arc<E
     let mut bl: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
     let mut cond: Arc<Expression::NFExpression>;
     let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
-    for mut b in &*branches.clone() {
+    for mut b in &*branches {
         let mut b = b.clone();
         (cond, body) = b.clone();
         body = scalarizeStatements(body.clone())?;
@@ -561,7 +561,7 @@ pub(crate) fn scalarizeWhenStatement(mut branches: Arc<metamodelica::List<(Arc<E
         }
         bl = metamodelica::cons((cond.clone(), body.clone()), bl.clone());
     }
-    statements = metamodelica::cons(Arc::new(Statement::NFStatement::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), source: source.clone() }), statements.clone());
+    statements = metamodelica::cons(Arc::new(Statement::NFStatement::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(bl), source: source }), statements);
     Ok(statements)
 }
 

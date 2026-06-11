@@ -69,19 +69,19 @@ pub mod AvailableLibraries {
 
     pub(crate) fn keyStr(mut inKey: Key) -> ArcStr {
         let mut outString: ArcStr;
-        outString = (inKey.clone()).clone();
+        outString = (inKey).clone();
         outString
     }
 
     pub(crate) fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr;
-        outString = (VersionMap::printTreeStr(inValue.clone())?).clone();
+        outString = (VersionMap::printTreeStr(inValue)?).clone();
         Ok(outString)
     }
 
     pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
         let mut outResult: i32;
-        outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
+        outResult = stringCompare((inKey1).clone(), (inKey2).clone());
         outResult
     }
 
@@ -146,23 +146,23 @@ pub mod AvailableLibraries {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
-            Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() })
+            Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue })
         },
         Deref @ Tree::NODE { key, .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
             if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::NODE).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
@@ -170,15 +170,15 @@ pub mod AvailableLibraries {
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY() });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }), right: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }) });
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
-                outTree = tree.clone();
+                outTree = tree;
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
@@ -209,7 +209,7 @@ pub mod AvailableLibraries {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), (key.clone()).clone(), value.clone(), conflictFunc.clone())?;
@@ -224,29 +224,29 @@ pub mod AvailableLibraries {
         let mut key_comp: i32 = 0;
         let mut new_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }),
+        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }),
         Deref @ Tree::NODE { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::NODE).clone()).clone());
-            if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone(), r#fn.clone())?);
-            } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone(), r#fn.clone())?);
+            if key_comp == -1 {
+                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), (key).clone(), r#fn.clone())?);
+            } else if key_comp == 1 {
+                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), (key).clone(), r#fn.clone())?);
             } else {
                 assign_variant_field!(tree => Tree::NODE; value = r#fn(Some(var_field!((*tree).value, Tree::NODE).clone()))?);
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
-            if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+            if key_comp == -1 {
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }), right: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY() });
+            } else if key_comp == 1 {
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
-                new_tree = tree.clone();
+                new_tree = tree;
             }
-            if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
+            if (key_comp == 0) {new_tree} else {balance(new_tree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -257,7 +257,7 @@ pub mod AvailableLibraries {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::LEAF { .. } => {
-            inTree.clone()
+            inTree
         },
         Deref @ Tree::NODE { .. } => {
             let mut lh: i32;
@@ -268,14 +268,14 @@ pub mod AvailableLibraries {
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
             if diff.clone() < -1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
             } else if diff.clone() > 1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
             } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
                 assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             } else {
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             }
             balanced_tree.clone()
         },
@@ -301,17 +301,17 @@ pub mod AvailableLibraries {
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult
         },
         Deref @ Tree::LEAF { key, value } => {
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            outResult
         },
         _ => {
-            outResult.clone()
+            outResult
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -325,20 +325,20 @@ pub mod AvailableLibraries {
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
-            value.clone()
+            value
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
-            value.clone()
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value)?;
+            value
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -352,13 +352,13 @@ pub mod AvailableLibraries {
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1, foldArg2)?;
             ()
         },
         _ => (),
@@ -391,7 +391,7 @@ pub mod AvailableLibraries {
         let mut tree: Arc<Tree> = crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), (key.clone()).clone(), value.clone(), conflictFunc.clone())?;
@@ -407,11 +407,11 @@ pub mod AvailableLibraries {
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => bail!("match: no arm matched"),
     } })).clone();
-        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k).clone()), tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => var_field!((*tree).value, Tree::LEAF).clone(),
         (0, Deref @ Tree::NODE { .. }) => var_field!((*tree).value, Tree::NODE).clone(),
-        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone())?,
-        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone())?,
+        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), (key).clone())?,
+        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), (key).clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(value)
@@ -426,11 +426,11 @@ pub mod AvailableLibraries {
         _ => key.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } })).clone();
-            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k).clone()), tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => return Some(var_field!((*tree).value, Tree::LEAF).clone()),
         (0, Deref @ Tree::NODE { .. }) => return Some(var_field!((*tree).value, Tree::NODE).clone()),
-        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
-        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key).clone()); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key).clone()); continue '__tco; },
         _ => return None,
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -451,16 +451,16 @@ pub mod AvailableLibraries {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-        key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
-        comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
+        key_comp = keyCompare((inKey.clone()).clone(), (key).clone());
+        comp = (::match_deref::match_deref! { match &((key_comp, inTree)) {
         (0, _) => true,
         (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), (inKey.clone()).clone())?
+            hasKey(tree.clone(), (inKey).clone())?
         },
         ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), (inKey.clone()).clone())?
+            hasKey(tree.clone(), (inKey).clone())?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -486,7 +486,7 @@ pub mod AvailableLibraries {
 
     pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -497,14 +497,14 @@ pub mod AvailableLibraries {
     pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<VersionMap::Tree>, Arc<VersionMap::Tree>, ArcStr) -> Result<Arc<VersionMap::Tree>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
-        Deref @ Tree::EMPTY { .. } => tree.clone(),
+        Deref @ Tree::EMPTY { .. } => tree,
         Deref @ Tree::NODE { .. } => {
-            tree = add(tree.clone(), (var_field!((*treeToJoin).key, Tree::NODE).clone()).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree.clone()
+            tree = add(tree, (var_field!((*treeToJoin).key, Tree::NODE).clone()).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree
         },
-        Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
+        Deref @ Tree::LEAF { .. } => add(tree, (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
@@ -514,16 +514,16 @@ pub mod AvailableLibraries {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
-            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
-            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone()).clone(), lst);
+            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, .. } => {
-            metamodelica::cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -533,14 +533,14 @@ pub mod AvailableLibraries {
     pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst),
         Deref @ Tree::NODE { .. } => {
-            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
-            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst);
+            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst
         },
-        _ => lst.clone(),
+        _ => lst,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         lst
@@ -550,16 +550,16 @@ pub mod AvailableLibraries {
         let mut lst: Arc<metamodelica::List<Arc<VersionMap::Tree>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
-            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(value.clone(), lst.clone());
-            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(value.clone(), lst);
+            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { value, .. } => {
-            metamodelica::cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -581,7 +581,7 @@ pub mod AvailableLibraries {
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
@@ -589,10 +589,10 @@ pub mod AvailableLibraries {
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -609,24 +609,24 @@ pub mod AvailableLibraries {
             let mut new_value: Value;
             let mut new_left: Arc<Tree>;
             let mut new_right: Arc<Tree>;
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -654,11 +654,11 @@ pub mod AvailableLibraries {
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
-        Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
+        Deref @ Tree::LEAF { .. } => printNodeStr(inTree)?,
         Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
             left = (*__esc_left).clone();
             right = (*__esc_right).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -670,8 +670,8 @@ pub mod AvailableLibraries {
         let mut left: Option<Arc<Tree>>;
         let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -682,7 +682,7 @@ pub mod AvailableLibraries {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
+        _ => referenceEq(&*(t1),&*(t2)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -702,7 +702,7 @@ pub mod AvailableLibraries {
             setTreeLeftRight(child.clone(), node.clone(), crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -723,7 +723,7 @@ pub mod AvailableLibraries {
             setTreeLeftRight(child.clone(), crate::PackageManagement::AvailableLibraries::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -734,9 +734,9 @@ pub mod AvailableLibraries {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
-        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
-        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig.clone()} else {Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() })},
-        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::LEAF).clone()).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() }),
+        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig,
+        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig} else {Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right })},
+        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::LEAF).clone()).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(res)
@@ -757,16 +757,16 @@ pub mod AvailableLibraries {
         let mut lst: Arc<metamodelica::List<(ArcStr, Arc<VersionMap::Tree>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
-            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone(), value.clone()), lst);
+            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, value } => {
-            metamodelica::cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -788,19 +788,19 @@ pub mod VersionMap {
 
     pub(crate) fn keyStr(mut inKey: Key) -> Result<ArcStr> {
         let mut outString: ArcStr;
-        outString = (SemanticVersion::toString(inKey.clone())?).clone();
+        outString = (SemanticVersion::toString(inKey)?).clone();
         Ok(outString)
     }
 
     pub(crate) fn valueStr(mut inValue: Value) -> ArcStr {
         let mut outString: ArcStr;
-        outString = (inValue.clone()).clone();
+        outString = (inValue).clone();
         outString
     }
 
     pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
         let mut outResult: i32;
-        outResult = SemanticVersion::compare(inKey1.clone(), inKey2.clone(), true, true)?;
+        outResult = SemanticVersion::compare(inKey1, inKey2, true, true)?;
         Ok(outResult)
     }
 
@@ -865,23 +865,23 @@ pub mod VersionMap {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
-            Arc::new(Tree::LEAF { key: inKey.clone(), value: (inValue.clone()).clone() })
+            Arc::new(Tree::LEAF { key: inKey, value: (inValue).clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey.clone(), (inValue.clone()).clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey, (inValue).clone(), conflictFunc.clone())?);
             } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), inKey.clone(), (inValue.clone()).clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), inKey, (inValue).clone(), conflictFunc.clone())?);
             } else {
-                value = (conflictFunc((inValue.clone()).clone(), (var_field!((*tree).value, Tree::NODE).clone()).clone(), key.clone())?).clone();
+                value = (conflictFunc((inValue).clone(), (var_field!((*tree).value, Tree::NODE).clone()).clone(), key.clone())?).clone();
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::NODE).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
@@ -889,15 +889,15 @@ pub mod VersionMap {
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: (inValue.clone()).clone() }), right: crate::PackageManagement::VersionMap::Tree::interned_EMPTY() });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey, value: (inValue).clone() }), right: crate::PackageManagement::VersionMap::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: crate::PackageManagement::VersionMap::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: (inValue.clone()).clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: crate::PackageManagement::VersionMap::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey, value: (inValue).clone() }) });
             } else {
-                value = (conflictFunc((inValue.clone()).clone(), (var_field!((*tree).value, Tree::LEAF).clone()).clone(), var_field!((*tree).key, Tree::LEAF).clone())?).clone();
+                value = (conflictFunc((inValue).clone(), (var_field!((*tree).value, Tree::LEAF).clone()).clone(), var_field!((*tree).key, Tree::LEAF).clone())?).clone();
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
-                outTree = tree.clone();
+                outTree = tree;
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
@@ -928,7 +928,7 @@ pub mod VersionMap {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), key.clone(), (value.clone()).clone(), conflictFunc.clone())?;
@@ -943,29 +943,29 @@ pub mod VersionMap {
         let mut key_comp: i32 = 0;
         let mut new_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: key.clone(), value: (r#fn(None)?).clone() }),
+        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: key, value: (r#fn(None)?).clone() }),
         Deref @ Tree::NODE { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::NODE).clone())?;
-            if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), key.clone(), r#fn.clone())?);
-            } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), key.clone(), r#fn.clone())?);
+            if key_comp == -1 {
+                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), key, r#fn.clone())?);
+            } else if key_comp == 1 {
+                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), key, r#fn.clone())?);
             } else {
                 assign_variant_field!(tree => Tree::NODE; value = r#fn(Some((var_field!((*tree).value, Tree::NODE).clone()).clone()))?);
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
-            if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: (r#fn(None)?).clone() }), right: crate::PackageManagement::VersionMap::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: crate::PackageManagement::VersionMap::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key.clone(), value: (r#fn(None)?).clone() }) });
+            if key_comp == -1 {
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key, value: (r#fn(None)?).clone() }), right: crate::PackageManagement::VersionMap::Tree::interned_EMPTY() });
+            } else if key_comp == 1 {
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: (var_field!((*tree).value, Tree::LEAF).clone()).clone(), height: 2, left: crate::PackageManagement::VersionMap::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key, value: (r#fn(None)?).clone() }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some((var_field!((*tree).value, Tree::LEAF).clone()).clone()))?);
-                new_tree = tree.clone();
+                new_tree = tree;
             }
-            if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
+            if (key_comp == 0) {new_tree} else {balance(new_tree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -976,7 +976,7 @@ pub mod VersionMap {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::LEAF { .. } => {
-            inTree.clone()
+            inTree
         },
         Deref @ Tree::NODE { .. } => {
             let mut lh: i32;
@@ -987,14 +987,14 @@ pub mod VersionMap {
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
             if diff.clone() < -1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
             } else if diff.clone() > 1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
             } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
                 assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             } else {
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             }
             balanced_tree.clone()
         },
@@ -1020,17 +1020,17 @@ pub mod VersionMap {
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult = inFunc(key.clone(), (value.clone()).clone(), outResult.clone())?;
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult = inFunc(key.clone(), (value.clone()).clone(), outResult)?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult
         },
         Deref @ Tree::LEAF { key, value } => {
-            outResult = inFunc(key.clone(), (value.clone()).clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = inFunc(key.clone(), (value.clone()).clone(), outResult)?;
+            outResult
         },
         _ => {
-            outResult.clone()
+            outResult
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1044,20 +1044,20 @@ pub mod VersionMap {
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), (var_field!((*tree).value, Tree::NODE).clone()).clone(), value.clone())?;
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), (var_field!((*tree).value, Tree::NODE).clone()).clone(), value)?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
-            value.clone()
+            value
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), (var_field!((*tree).value, Tree::LEAF).clone()).clone(), value.clone())?;
-            value.clone()
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), (var_field!((*tree).value, Tree::LEAF).clone()).clone(), value)?;
+            value
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1071,13 +1071,13 @@ pub mod VersionMap {
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), (var_field!((*tree).value, Tree::NODE).clone()).clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), (var_field!((*tree).value, Tree::NODE).clone()).clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), (var_field!((*tree).value, Tree::LEAF).clone()).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), (var_field!((*tree).value, Tree::LEAF).clone()).clone(), foldArg1, foldArg2)?;
             ()
         },
         _ => (),
@@ -1110,7 +1110,7 @@ pub mod VersionMap {
         let mut tree: Arc<Tree> = crate::PackageManagement::VersionMap::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), key.clone(), (value.clone()).clone(), conflictFunc.clone())?;
@@ -1126,11 +1126,11 @@ pub mod VersionMap {
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => bail!("match: no arm matched"),
     } });
-        value = ((::match_deref::match_deref! { match &((keyCompare(key.clone(), k.clone())?, tree.clone())) {
+        value = ((::match_deref::match_deref! { match &((keyCompare(key.clone(), k)?, tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => var_field!((*tree).value, Tree::LEAF).clone(),
         (0, Deref @ Tree::NODE { .. }) => var_field!((*tree).value, Tree::NODE).clone(),
-        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), key.clone())?,
-        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), key.clone())?,
+        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), key)?,
+        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), key)?,
         _ => bail!("match: no arm matched"),
     } })).clone();
         Ok(value)
@@ -1145,11 +1145,11 @@ pub mod VersionMap {
         _ => key.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } });
-            ::match_deref::match_deref! { match &((keyCompare(key.clone(), k.clone())?, tree.clone())) {
+            ::match_deref::match_deref! { match &((keyCompare(key.clone(), k)?, tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => return Ok(Some((var_field!((*tree).value, Tree::LEAF).clone()).clone())),
         (0, Deref @ Tree::NODE { .. }) => return Ok(Some((var_field!((*tree).value, Tree::NODE).clone()).clone())),
-        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), key.clone()); continue '__tco; },
-        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), key.clone()); continue '__tco; },
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), key); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), key); continue '__tco; },
         _ => return Ok(None),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1170,16 +1170,16 @@ pub mod VersionMap {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        key_comp = keyCompare(inKey.clone(), key.clone())?;
-        comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
+        key_comp = keyCompare(inKey.clone(), key)?;
+        comp = (::match_deref::match_deref! { match &((key_comp, inTree)) {
         (0, _) => true,
         (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), inKey.clone())?
+            hasKey(tree.clone(), inKey)?
         },
         ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), inKey.clone())?
+            hasKey(tree.clone(), inKey)?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1205,7 +1205,7 @@ pub mod VersionMap {
 
     pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1216,14 +1216,14 @@ pub mod VersionMap {
     pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(ArcStr, ArcStr, SemanticVersion::Version) -> Result<ArcStr> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
-        Deref @ Tree::EMPTY { .. } => tree.clone(),
+        Deref @ Tree::EMPTY { .. } => tree,
         Deref @ Tree::NODE { .. } => {
-            tree = add(tree.clone(), var_field!((*treeToJoin).key, Tree::NODE).clone(), (var_field!((*treeToJoin).value, Tree::NODE).clone()).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree.clone()
+            tree = add(tree, var_field!((*treeToJoin).key, Tree::NODE).clone(), (var_field!((*treeToJoin).value, Tree::NODE).clone()).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree
         },
-        Deref @ Tree::LEAF { .. } => add(tree.clone(), var_field!((*treeToJoin).key, Tree::LEAF).clone(), (var_field!((*treeToJoin).value, Tree::LEAF).clone()).clone(), conflictFunc.clone())?,
+        Deref @ Tree::LEAF { .. } => add(tree, var_field!((*treeToJoin).key, Tree::LEAF).clone(), (var_field!((*treeToJoin).value, Tree::LEAF).clone()).clone(), conflictFunc.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
@@ -1233,16 +1233,16 @@ pub mod VersionMap {
         let mut lst: Arc<metamodelica::List<SemanticVersion::Version>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
-            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(key.clone(), lst.clone());
-            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(key.clone(), lst);
+            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, .. } => {
-            metamodelica::cons(key.clone(), lst.clone())
+            metamodelica::cons(key.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1252,14 +1252,14 @@ pub mod VersionMap {
     pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<SemanticVersion::Version>>) -> Arc<metamodelica::List<SemanticVersion::Version>> {
         let mut lst: Arc<metamodelica::List<SemanticVersion::Version>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst),
         Deref @ Tree::NODE { .. } => {
-            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
-            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst);
+            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst
         },
-        _ => lst.clone(),
+        _ => lst,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         lst
@@ -1269,16 +1269,16 @@ pub mod VersionMap {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
-            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((value.clone()).clone(), lst.clone());
-            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((value.clone()).clone(), lst);
+            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { value, .. } => {
-            metamodelica::cons((value.clone()).clone(), lst.clone())
+            metamodelica::cons((value.clone()).clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1300,7 +1300,7 @@ pub mod VersionMap {
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: (new_value.clone()).clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
@@ -1308,10 +1308,10 @@ pub mod VersionMap {
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1328,24 +1328,24 @@ pub mod VersionMap {
             let mut new_value: Value;
             let mut new_left: Arc<Tree>;
             let mut new_right: Arc<Tree>;
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            (new_value, outResult) = inFunc(key.clone(), (value.clone()).clone(), outResult.clone())?;
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            (new_value, outResult) = inFunc(key.clone(), (value.clone()).clone(), outResult)?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: (new_value.clone()).clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc(key.clone(), (value.clone()).clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), (value.clone()).clone(), outResult)?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1373,11 +1373,11 @@ pub mod VersionMap {
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
-        Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
+        Deref @ Tree::LEAF { .. } => printNodeStr(inTree)?,
         Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
             left = (*__esc_left).clone();
             right = (*__esc_right).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1389,8 +1389,8 @@ pub mod VersionMap {
         let mut left: Option<Arc<Tree>>;
         let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1401,7 +1401,7 @@ pub mod VersionMap {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
+        _ => referenceEq(&*(t1),&*(t2)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -1421,7 +1421,7 @@ pub mod VersionMap {
             setTreeLeftRight(child.clone(), node.clone(), crate::PackageManagement::VersionMap::Tree::interned_EMPTY())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1442,7 +1442,7 @@ pub mod VersionMap {
             setTreeLeftRight(child.clone(), crate::PackageManagement::VersionMap::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1453,9 +1453,9 @@ pub mod VersionMap {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone(), value: (var_field!((*orig).value, Tree::NODE).clone()).clone() }),
-        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
-        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig.clone()} else {Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::NODE).clone(), value: (var_field!((*orig).value, Tree::NODE).clone()).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() })},
-        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::LEAF).clone(), value: (var_field!((*orig).value, Tree::LEAF).clone()).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() }),
+        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig,
+        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig} else {Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::NODE).clone(), value: (var_field!((*orig).value, Tree::NODE).clone()).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right })},
+        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::LEAF).clone(), value: (var_field!((*orig).value, Tree::LEAF).clone()).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(res)
@@ -1476,16 +1476,16 @@ pub mod VersionMap {
         let mut lst: Arc<metamodelica::List<(SemanticVersion::Version, ArcStr)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
-            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone(), value.clone()), lst);
+            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, value } => {
-            metamodelica::cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1515,11 +1515,11 @@ pub fn getInstalledLibraries() -> Result<Arc<AvailableLibraries::Tree>> {
     let mut versions: Arc<VersionMap::Tree>;
     mp = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
     gd = (arcstr::literal!(Autoconf::groupDelimiter)).clone();
-    mps = System::strtok((mp.clone()).clone(), (gd.clone()).clone());
+    mps = System::strtok((mp).clone(), (gd).clone());
     tree = AvailableLibraries::new();
     files = metamodelica::nil();
     dirs = metamodelica::nil();
-    for mut mp in &*mps.clone() {
+    for mut mp in &*mps {
         let mut mp = mp.clone();
         files = listAppend(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1538,7 +1538,7 @@ pub fn getInstalledLibraries() -> Result<Arc<AvailableLibraries::Tree>> {
         __acc.reverse()
     }), dirs.clone());
     }
-    for mut path in &*listAppend(files.clone(), dirs.clone()) {
+    for mut path in &*listAppend(files, dirs) {
         let mut path = path.clone();
         lib = (System::basename((path.clone()).clone())).clone();
         if StringUtil::endsWith((lib.clone()).clone(), (literal!(".mo")).clone()) {
@@ -1565,9 +1565,9 @@ pub fn getInstalledLibraryVersions(mut libraryName: ArcStr) -> Result<Arc<metamo
     let mut versions: Arc<metamodelica::List<SemanticVersion::Version>> = metamodelica::nil();
     let mut versionStr: ArcStr;
     tree = getInstalledLibraries()?;
-    versionTree = AvailableLibraries::get(tree.clone(), (libraryName.clone()).clone())?;
-    versions = VersionMap::listKeys(versionTree.clone(), metamodelica::nil());
-    for mut version in &*versions.clone() {
+    versionTree = AvailableLibraries::get(tree, (libraryName).clone())?;
+    versions = VersionMap::listKeys(versionTree, metamodelica::nil());
+    for mut version in &*versions {
         let mut version = version.clone();
         versionStr = (VersionMap::keyStr(version.clone())?).clone();
         if stringCompare((versionStr.clone()).clone(), (literal!("")).clone()) > 0 {
@@ -1581,7 +1581,7 @@ pub(crate) fn getLibrarySubdirectories(mut inPath: ArcStr) -> Arc<metamodelica::
     let mut outSubdirectories: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut allSubdirectories: Arc<metamodelica::List<ArcStr>> = System::subDirectories((inPath.clone()).clone());
     let mut pd: ArcStr = arcstr::literal!(Autoconf::pathDelimiter);
-    for mut dir in &*allSubdirectories.clone() {
+    for mut dir in &*allSubdirectories {
         let mut dir = dir.clone();
         if System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*inPath.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*literal!("package.mo")); ArcStr::from(__mm_s) }).clone()) {
             outSubdirectories = metamodelica::cons((dir.clone()).clone(), outSubdirectories.clone());
@@ -1609,9 +1609,9 @@ pub(crate) fn providesExpectedVersion(mut version: ArcStr, mut provides: Arc<JSO
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    providedVersions = JSON::getStringList(provides.clone())?;
+    providedVersions = JSON::getStringList(provides)?;
     matches = false;
-    for mut v in &*metamodelica::cons((version.clone()).clone(), providedVersions.clone()) {
+    for mut v in &*metamodelica::cons((version).clone(), providedVersions) {
         let mut v = v.clone();
         thisVersion = SemanticVersion::parse((v.clone()).clone(), true)?;
         if SemanticVersion::compare(thisVersion.clone(), wantedVersion.clone(), SemanticVersion::isPrerelease(wantedVersion.clone()) && SemanticVersion::isPrerelease(wantedVersion.clone()), false)? == 0 {
@@ -1654,7 +1654,7 @@ pub(crate) fn getSupportLevel(mut obj: Arc<JSON::JSON>) -> Result<SupportLevel> 
         Deref @ JSON::STRING { r#str: Deref @ "unknown" } => SupportLevel::unknown.clone(),
         Deref @ JSON::STRING { r#str: Deref @ "noSupport" } => SupportLevel::noSupport.clone(),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown support level ")); __mm_s.push_str(&*JSON::toString(obj.clone(), false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/PackageManagement.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown support level ")); __mm_s.push_str(&*JSON::toString(obj, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/PackageManagement.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1668,20 +1668,20 @@ pub(crate) fn compareVersionsAndSupportLevel(mut x1: (ArcStr, SemanticVersion::V
     let mut s2: SupportLevel;
     let mut v1: SemanticVersion::Version;
     let mut v2: SemanticVersion::Version;
-    (_, v1, s1) = x1.clone();
-    (_, v2, s2) = x2.clone();
-    if s1.clone() < s2.clone() {
+    (_, v1, s1) = x1;
+    (_, v2, s2) = x2;
+    if s1 < s2 {
         c = true;
         return Ok(c.clone());
-    } else if s1.clone() > s2.clone() {
+    } else if s1 > s2 {
         c = false;
         return Ok(c.clone());
     }
     if SemanticVersion::isPrerelease(v1.clone()) != SemanticVersion::isPrerelease(v2.clone()) {
-        c = SemanticVersion::isPrerelease(v2.clone());
+        c = SemanticVersion::isPrerelease(v2);
         return Ok(c.clone());
     }
-    c = SemanticVersion::compare(v1.clone(), v2.clone(), true, true)? < 0;
+    c = SemanticVersion::compare(v1, v2, true, true)? < 0;
     Ok(c)
 }
 
@@ -1692,12 +1692,12 @@ pub fn updateIndex() -> Result<bool> {
     let url: ArcStr = literal!("https://libraries.openmodelica.org/index/v1/index.json");
     userLibraries = (getUserLibraryPath()?).clone();
     Util::createDirectoryTree((userLibraries.clone()).clone());
-    packageIndex = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*userLibraries.clone()); __mm_s.push_str(&*literal!("index.json")); ArcStr::from(__mm_s) }).clone();
+    packageIndex = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*userLibraries); __mm_s.push_str(&*literal!("index.json")); ArcStr::from(__mm_s) }).clone();
     if !(Curl::multiDownload(list![(list![(url.clone()).clone()], packageIndex.clone())], Config::noProc()?)?) {
-        Error::addMessage(Error::ERROR_PKG_INDEX_FAILED_DOWNLOAD.clone(), list![(url.clone()).clone(), (packageIndex.clone()).clone()])?;
+        Error::addMessage(Error::ERROR_PKG_INDEX_FAILED_DOWNLOAD.clone(), list![(url).clone(), (packageIndex).clone()])?;
         success = false;
     } else {
-        Error::addSourceMessage(Error::NOTIFY_PKG_INDEX_DOWNLOAD.clone(), list![(url.clone()).clone()], makeSourceInfo((getIndexPath()?).clone()))?;
+        Error::addSourceMessage(Error::NOTIFY_PKG_INDEX_DOWNLOAD.clone(), list![(url).clone()], makeSourceInfo((getIndexPath()?).clone()))?;
         success = true;
     }
     { let __v = None; openmodelica_util::Globals::packageIndexCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
@@ -1715,10 +1715,10 @@ pub fn upgradeInstalledPackages(mut installNewestVersions: bool) -> Result<bool>
         versions = AvailableLibraries::get(installedLibraries.clone(), (pkg.clone()).clone())?;
         for mut version in &*VersionMap::listKeys(versions.clone(), metamodelica::nil()) {
             let mut version = version.clone();
-            success = success.clone() && installPackage((pkg.clone()).clone(), (SemanticVersion::toString(version.clone())?).clone(), true, false)?;
+            success = success && installPackage((pkg.clone()).clone(), (SemanticVersion::toString(version.clone())?).clone(), true, false)?;
         }
-        if installNewestVersions.clone() {
-            success = success.clone() && installPackage((pkg.clone()).clone(), (literal!("")).clone(), false, false)?;
+        if installNewestVersions {
+            success = success && installPackage((pkg.clone()).clone(), (literal!("")).clone(), false, false)?;
         }
     }
     Ok(success)
@@ -1739,13 +1739,13 @@ pub(crate) fn getPackageIndex(mut printError: bool) -> Result<Arc<JSON::JSON>> {
     }
     mp = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
     gd = (arcstr::literal!(Autoconf::groupDelimiter)).clone();
-    mps = System::strtok((mp.clone()).clone(), (gd.clone()).clone());
+    mps = System::strtok((mp.clone()).clone(), (gd).clone());
     userLibraries = (getUserLibraryPath()?).clone();
     packageIndex = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*userLibraries.clone()); __mm_s.push_str(&*literal!("index.json")); ArcStr::from(__mm_s) }).clone();
     obj = JSON::emptyObject();
-    if !(listMember((userLibraries.clone()).clone(), mps.clone())) && !(listMember((Util::removeLastNChar((userLibraries.clone()).clone(), 1)?).clone(), mps.clone())) {
-        if printError.clone() {
-            Error::addMessage(Error::ERROR_PKG_INDEX_NOT_ON_PATH.clone(), list![(mp.clone()).clone(), (userLibraries.clone()).clone()])?;
+    if !(listMember((userLibraries.clone()).clone(), mps.clone())) && !(listMember((Util::removeLastNChar((userLibraries.clone()).clone(), 1)?).clone(), mps)) {
+        if printError {
+            Error::addMessage(Error::ERROR_PKG_INDEX_NOT_ON_PATH.clone(), list![(mp).clone(), (userLibraries).clone()])?;
         }
         return Ok(obj.clone());
     }
@@ -1774,7 +1774,7 @@ pub(crate) fn getAllProvidedVersionsForLibrary(mut lib: ArcStr, mut printError: 
     result = metamodelica::nil();
     tree = AvlSetString::new();
     match '__try0: {
-        obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
+        obj = unwrap_break_err!(getPackageIndex(printError), '__try0);
         libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (lib.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         for mut version in &*unwrap_break_err!(JSON::getKeys(vers.clone()), '__try0) {
@@ -1809,7 +1809,7 @@ pub fn versionsThatProvideTheWanted(mut id: ArcStr, mut version: ArcStr, mut pri
     let mut wantedVersion: SemanticVersion::Version;
     result = metamodelica::nil();
     match '__try0: {
-        obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
+        obj = unwrap_break_err!(getPackageIndex(printError), '__try0);
         libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (id.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         wantedVersion = unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0);
@@ -1849,7 +1849,7 @@ pub fn versionsThatConvertFromTheWanted(mut id: ArcStr, mut version: ArcStr, mut
     let mut versionStr: ArcStr;
     result = metamodelica::nil();
     match '__try0: {
-        obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
+        obj = unwrap_break_err!(getPackageIndex(printError), '__try0);
         libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (id.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         wantedVersion = unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0);
@@ -1893,7 +1893,7 @@ pub fn versionsThatConvertToTheWanted(mut id: ArcStr, mut version: ArcStr, mut p
     let mut libVersion: SemanticVersion::Version;
     result = metamodelica::nil();
     match '__try0: {
-        obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
+        obj = unwrap_break_err!(getPackageIndex(printError), '__try0);
         libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (id.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         wantedVersion = unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0);
@@ -1937,7 +1937,7 @@ pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
     let mut installCachePath: ArcStr = getInstallationCachePath()?;
     let mut curCachePath: ArcStr;
     let mut mirrors: Arc<metamodelica::List<ArcStr>>;
-    (success, packageList) = installPackageWork((pkg.clone()).clone(), (version.clone()).clone(), exactMatch.clone(), false, metamodelica::nil())?;
+    (success, packageList) = installPackageWork((pkg.clone()).clone(), (version.clone()).clone(), exactMatch, false, metamodelica::nil())?;
     for mut p in &*packageList.clone() {
         let mut p = p.clone();
         if p.pkg.clone() == pkg.clone() && !(p.needsInstall.clone()) {
@@ -1950,7 +1950,7 @@ pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
     }
     packagesToInstall = ({
         let mut __acc: Arc<metamodelica::List<PackageInstallInfo>> = metamodelica::nil();
-        for mut p in (packageList.clone()).into_iter().cloned() {
+        for mut p in (packageList).into_iter().cloned() {
             if !(p.needsInstall.clone()) { continue; }
             let __x = p.clone();
             __acc = cons(__x, __acc);
@@ -1961,7 +1961,7 @@ pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
         let mut pack = pack.clone();
         Util::createDirectoryTree((cachePath.clone()).clone());
     }
-    if !(skipDownload.clone()) {
+    if !(skipDownload) {
         mirrors = getMirrors()?;
         urlPathList = List::sort(({
         let mut __acc: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, ArcStr)>> = metamodelica::nil();
@@ -1971,21 +1971,21 @@ pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
         }
         __acc.reverse()
     }), (std::sync::Arc::new(compareUrlBool) as std::sync::Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<ArcStr>>, ArcStr), (Arc<metamodelica::List<ArcStr>>, ArcStr)) -> Result<bool> + 'static>))?;
-        urlPathList = List::unique(urlPathList.clone());
+        urlPathList = List::unique(urlPathList);
         urlPathListToDownload = ({
         let mut __acc: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, ArcStr)>> = metamodelica::nil();
-        for mut tpl in (urlPathList.clone()).into_iter().cloned() {
+        for mut tpl in (urlPathList).into_iter().cloned() {
             if !(!(System::regularFileExists((Util::tuple22(tpl.clone())).clone()))) { continue; }
             let __x = tpl.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-        if !(Curl::multiDownload(urlPathListToDownload.clone(), Config::noProc()?)?) {
+        if !(Curl::multiDownload(urlPathListToDownload, Config::noProc()?)?) {
             bail!("fail");
         }
     }
-    for mut pack in &*packagesToInstall.clone() {
+    for mut pack in &*packagesToInstall {
         let mut pack = pack.clone();
         destPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*getUserLibraryPath()?); __mm_s.push_str(&*pack.pkg.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*SemanticVersion::toString(pack.version.clone())?); ArcStr::from(__mm_s) }).clone();
         System::removeDirectory((destPath.clone()).clone());
@@ -2041,7 +2041,7 @@ pub fn installCachedPackages() -> Result<()> {
     let mut versions_obj: Arc<JSON::JSON>;
     let mut libs: Arc<metamodelica::List<ArcStr>>;
     homeDir = (Settings::getHomeDir(Testsuite::isRunning()?)).clone();
-    if !(System::subDirectories((getUserLibraryPath()?).clone()).is_empty()) || homeDir.clone() == literal!("") || homeDir.clone() == literal!("/") {
+    if !(System::subDirectories((getUserLibraryPath()?).clone()).is_empty()) || homeDir.clone() == literal!("") || homeDir == literal!("/") {
         return Ok(());
     }
     packageIndex = (getInstallationIndexPath()?).clone();
@@ -2073,9 +2073,9 @@ pub fn installCachedPackages() -> Result<()> {
     }
     if !(System::regularFileExists((getIndexPath()?).clone())) {
         Util::createDirectoryTree((getUserLibraryPath()?).clone());
-        System::copyFile((packageIndex.clone()).clone(), (getIndexPath()?).clone());
+        System::copyFile((packageIndex).clone(), (getIndexPath()?).clone());
     }
-    for mut lib in &*libs.clone() {
+    for mut lib in &*libs {
         let mut lib = lib.clone();
         lib_obj = JSON::get(libs_obj.clone(), (lib.clone()).clone())?;
         versions_obj = JSON::getOrDefault(lib_obj.clone(), (literal!("versions")).clone(), JSON::emptyObject())?;
@@ -2092,17 +2092,17 @@ fn compareUrlBool(mut tpl1: (Arc<metamodelica::List<ArcStr>>, ArcStr), mut tpl2:
     let mut b: bool;
     let mut s1: ArcStr;
     let mut s2: ArcStr;
-    let __pa0 = ::match_deref::match_deref! { match &(tpl1.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(tpl1) {
         (Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, _) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     s1 = __pa0.clone();
-    let __pa1 = ::match_deref::match_deref! { match &(tpl2.clone()) {
+    let __pa1 = ::match_deref::match_deref! { match &(tpl2) {
         (Deref @ metamodelica::List::Cons { head: __pa1, tail: _ }, _) => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
     s2 = __pa1.clone();
-    b = stringCompare((s1.clone()).clone(), (s2.clone()).clone()) > 0;
+    b = stringCompare((s1).clone(), (s2).clone()) > 0;
     Ok(b)
 }
 
@@ -2214,8 +2214,8 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
     if candidates.clone().is_empty() {
         versionToInstall = (version.clone()).clone();
         semverToInstall = semver.clone();
-    } else if exactMatch.clone() && !(exactMatches.clone().is_empty()) {
-        semverToInstall = listHead(exactMatches.clone())?;
+    } else if exactMatch && !(exactMatches.clone().is_empty()) {
+        semverToInstall = listHead(exactMatches)?;
         versionToInstall = (SemanticVersion::toString(semverToInstall.clone())?).clone();
     } else {
         versionToInstall = (listHead(candidates.clone())?).clone();
@@ -2225,13 +2225,13 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
     indexHasPkg = true;
     sha = (literal!("")).clone();
     if AvailableLibraries::hasKey(installedLibraries.clone(), (pkg.clone()).clone())? {
-        installedVersions = AvailableLibraries::get(installedLibraries.clone(), (pkg.clone()).clone())?;
-        if VersionMap::hasKey(installedVersions.clone(), semverToInstall.clone())? || version.clone() == literal!("") && !(indexHasPkg.clone()) {
+        installedVersions = AvailableLibraries::get(installedLibraries, (pkg.clone()).clone())?;
+        if VersionMap::hasKey(installedVersions.clone(), semverToInstall.clone())? || version.clone() == literal!("") && !(indexHasPkg) {
             success = true;
-            path = (if (VersionMap::hasKey(installedVersions.clone(), semverToInstall.clone())?) {VersionMap::get(installedVersions.clone(), semverToInstall.clone())?} else {literal!("#DUMMY#")}).clone();
+            path = (if (VersionMap::hasKey(installedVersions.clone(), semverToInstall.clone())?) {VersionMap::get(installedVersions, semverToInstall.clone())?} else {literal!("#DUMMY#")}).clone();
             jsonPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*arcstr::literal!(metaDataFileName)); ArcStr::from(__mm_s) }).clone();
             if System::regularFileExists((jsonPath.clone()).clone()) {
-                versionObj = JSON::parseFile((jsonPath.clone()).clone())?;
+                versionObj = JSON::parseFile((jsonPath).clone())?;
                 zip = (JSON::getString(JSON::get(versionObj.clone(), (literal!("zipfile")).clone())?)?).clone();
                 if '__try0: {
                     sha = (unwrap_break_err!(JSON::getString(unwrap_break_err!(JSON::get(versionObj.clone(), (literal!("sha")).clone()), '__try0)), '__try0)).clone();
@@ -2241,16 +2241,16 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
             } else {
                 zip = (literal!("")).clone();
             }
-            packageToInstall = PackageInstallInfo { needsInstall: false, pkg: (pkg.clone()).clone(), version: semverToInstall.clone(), urlToZipFile: (zip.clone()).clone(), path: (path.clone()).clone(), sha: (sha.clone()).clone(), singleFileStructureCopyAllFiles: false, json: JSON::emptyObject() };
+            packageToInstall = PackageInstallInfo { needsInstall: false, pkg: (pkg.clone()).clone(), version: semverToInstall.clone(), urlToZipFile: (zip).clone(), path: (path).clone(), sha: (sha.clone()).clone(), singleFileStructureCopyAllFiles: false, json: JSON::emptyObject() };
             indexHasPkg = JSON::hasKey(JSON::get(index.clone(), (literal!("libs")).clone())?, (pkg.clone()).clone())?;
         }
     }
-    if !(success.clone()) {
+    if !(success) {
         if candidates.clone().is_empty() {
-            Error::addSourceMessage(Error::ERROR_PKG_NOT_FOUND_VERSION.clone(), list![(pkg.clone()).clone(), (version.clone()).clone(), stringDelimitList(getAllProvidedVersionsForLibrary((pkg.clone()).clone(), true), (literal!("\n")).clone())], makeSourceInfo((getIndexPath()?).clone()))?;
+            Error::addSourceMessage(Error::ERROR_PKG_NOT_FOUND_VERSION.clone(), list![(pkg.clone()).clone(), (version).clone(), stringDelimitList(getAllProvidedVersionsForLibrary((pkg).clone(), true), (literal!("\n")).clone())], makeSourceInfo((getIndexPath()?).clone()))?;
             return Ok((success.clone(), packagesToInstall.clone()));
         }
-        if exactMatch.clone() && !(({
+        if exactMatch && !(({
         let mut __acc: Option<bool> = None;
         for mut candidate in (candidatesSemver.clone()).into_iter().cloned() {
             let __x = 0 == SemanticVersion::compare(semver.clone(), candidate.clone(), true, false)?;
@@ -2258,30 +2258,30 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
         }
         __acc.unwrap_or(false)
     })) {
-            if !(fallbackOnNonExactMatch.clone()) {
-                Error::addSourceMessage(Error::ERROR_PKG_NOT_EXACT_MATCH.clone(), list![(pkg.clone()).clone(), (version.clone()).clone(), stringDelimitList(candidates.clone(), (literal!(", ")).clone())], makeSourceInfo((getIndexPath()?).clone()))?;
+            if !(fallbackOnNonExactMatch) {
+                Error::addSourceMessage(Error::ERROR_PKG_NOT_EXACT_MATCH.clone(), list![(pkg).clone(), (version).clone(), stringDelimitList(candidates, (literal!(", ")).clone())], makeSourceInfo((getIndexPath()?).clone()))?;
                 return Ok((success.clone(), packagesToInstall.clone()));
             }
-            versionToInstall = (listHead(candidates.clone())?).clone();
-            semverToInstall = listHead(candidatesSemver.clone())?;
+            versionToInstall = (listHead(candidates)?).clone();
+            semverToInstall = listHead(candidatesSemver)?;
         }
     }
-    if !(indexHasPkg.clone()) {
-        packagesToInstall = metamodelica::cons(packageToInstall.clone(), packagesToInstall.clone());
+    if !(indexHasPkg) {
+        packagesToInstall = metamodelica::cons(packageToInstall, packagesToInstall);
         return Ok((success.clone(), packagesToInstall.clone()));
     }
-    versionsObj = JSON::get(JSON::get(JSON::get(index.clone(), (literal!("libs")).clone())?, (pkg.clone()).clone())?, (literal!("versions")).clone())?;
-    if success.clone() && !(JSON::hasKey(versionsObj.clone(), (versionToInstall.clone()).clone())?) {
-        packagesToInstall = metamodelica::cons(packageToInstall.clone(), packagesToInstall.clone());
+    versionsObj = JSON::get(JSON::get(JSON::get(index, (literal!("libs")).clone())?, (pkg.clone()).clone())?, (literal!("versions")).clone())?;
+    if success && !(JSON::hasKey(versionsObj.clone(), (versionToInstall.clone()).clone())?) {
+        packagesToInstall = metamodelica::cons(packageToInstall, packagesToInstall);
         return Ok((success.clone(), packagesToInstall.clone()));
     }
-    versionObj = JSON::get(versionsObj.clone(), (versionToInstall.clone()).clone())?;
-    if !(success.clone()) || sha.clone() != literal!("") && sha.clone() != getShaOrZipfile(versionObj.clone())? {
+    versionObj = JSON::get(versionsObj, (versionToInstall).clone())?;
+    if !(success) || sha.clone() != literal!("") && sha != getShaOrZipfile(versionObj.clone())? {
         success = true;
-        packageToInstall = PackageInstallInfo { needsInstall: true, pkg: (pkg.clone()).clone(), version: semverToInstall.clone(), urlToZipFile: (JSON::getString(JSON::get(versionObj.clone(), (literal!("zipfile")).clone())?)?).clone(), path: (JSON::getString(JSON::get(versionObj.clone(), (literal!("path")).clone())?)?).clone(), sha: (getShaOrZipfile(versionObj.clone())?).clone(), singleFileStructureCopyAllFiles: JSON::getBoolean(JSON::getOrDefault(versionObj.clone(), (literal!("singleFileStructureCopyAllFiles")).clone(), openmodelica_util::JSON::interned_FALSE())?)?, json: versionObj.clone() };
+        packageToInstall = PackageInstallInfo { needsInstall: true, pkg: (pkg).clone(), version: semverToInstall, urlToZipFile: (JSON::getString(JSON::get(versionObj.clone(), (literal!("zipfile")).clone())?)?).clone(), path: (JSON::getString(JSON::get(versionObj.clone(), (literal!("path")).clone())?)?).clone(), sha: (getShaOrZipfile(versionObj.clone())?).clone(), singleFileStructureCopyAllFiles: JSON::getBoolean(JSON::getOrDefault(versionObj.clone(), (literal!("singleFileStructureCopyAllFiles")).clone(), openmodelica_util::JSON::interned_FALSE())?)?, json: versionObj.clone() };
     }
-    usesObj = JSON::getOrDefault(versionObj.clone(), (literal!("uses")).clone(), JSON::emptyObject())?;
-    packagesToInstall = metamodelica::cons(packageToInstall.clone(), packagesToInstall.clone());
+    usesObj = JSON::getOrDefault(versionObj, (literal!("uses")).clone(), JSON::emptyObject())?;
+    packagesToInstall = metamodelica::cons(packageToInstall, packagesToInstall);
     for mut usesPackage in &*JSON::getKeys(usesObj.clone())? {
         let mut usesPackage = usesPackage.clone();
         let __pa1 = ::match_deref::match_deref! { match &(JSON::get(usesObj.clone(), (usesPackage.clone()).clone())?) {
@@ -2289,8 +2289,8 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
             _ => bail!("pattern mismatch"),
         } };
         usedVersion = __pa1.clone();
-        (success, packagesToInstall) = installPackageWork((usesPackage.clone()).clone(), (usedVersion.clone()).clone(), exactMatch.clone(), true, packagesToInstall.clone())?;
-        if !(success.clone()) {
+        (success, packagesToInstall) = installPackageWork((usesPackage.clone()).clone(), (usedVersion.clone()).clone(), exactMatch, true, packagesToInstall.clone())?;
+        if !(success) {
             return Ok((success.clone(), packagesToInstall.clone()));
         }
     }
@@ -2299,7 +2299,7 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
 
 fn getShaOrZipfile(mut obj: Arc<JSON::JSON>) -> Result<ArcStr> {
     let mut res: ArcStr;
-    res = (if (JSON::hasKey(obj.clone(), (literal!("sha")).clone())?) {JSON::getString(JSON::get(obj.clone(), (literal!("sha")).clone())?)?} else {System::basename((JSON::getString(JSON::get(obj.clone(), (literal!("zipfile")).clone())?)?).clone())}).clone();
+    res = (if (JSON::hasKey(obj.clone(), (literal!("sha")).clone())?) {JSON::getString(JSON::get(obj, (literal!("sha")).clone())?)?} else {System::basename((JSON::getString(JSON::get(obj, (literal!("zipfile")).clone())?)?).clone())}).clone();
     Ok(res)
 }
 
@@ -2311,8 +2311,8 @@ fn getAllUrls(mut url: ArcStr, mut mirrors: Arc<metamodelica::List<ArcStr>>) -> 
     if !(StringUtil::startsWith((url.clone()).clone(), (literal!("https://")).clone())) {
         return Ok(urls.clone());
     }
-    urlWithoutProtocol = substring((url.clone()).clone(), 9, ((url.clone()).clone().len() as i32))?;
-    for mut mirror in &*mirrors.clone() {
+    urlWithoutProtocol = substring((url.clone()).clone(), 9, ((url).clone().len() as i32))?;
+    for mut mirror in &*mirrors {
         let mut mirror = mirror.clone();
         newUrl = (if (StringUtil::endsWith((mirror.clone()).clone(), (literal!("/")).clone())) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*mirror.clone()); __mm_s.push_str(&*urlWithoutProtocol.clone()); ArcStr::from(__mm_s) }} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*mirror.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*urlWithoutProtocol.clone()); ArcStr::from(__mm_s) }}).clone();
         urls = metamodelica::cons((newUrl.clone()).clone(), urls.clone());
@@ -2328,8 +2328,8 @@ fn getMirrors() -> Result<Arc<metamodelica::List<ArcStr>>> {
         mirrors = metamodelica::nil();
         return Ok(mirrors.clone());
     }
-    obj = JSON::get(obj.clone(), (literal!("mirrors")).clone())?;
-    mirrors = JSON::getStringList(obj.clone())?;
+    obj = JSON::get(obj, (literal!("mirrors")).clone())?;
+    mirrors = JSON::getStringList(obj)?;
     Ok(mirrors)
 }
 
@@ -2365,7 +2365,7 @@ fn getInstallationCachePath() -> Result<ArcStr> {
 
 fn makeSourceInfo(mut fileName: ArcStr) -> SourceInfo {
     let mut info: SourceInfo;
-    info = SourceInfo { fileName: (fileName.clone()).clone(), isReadOnly: true, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
+    info = SourceInfo { fileName: (fileName).clone(), isReadOnly: true, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
     info
 }
 

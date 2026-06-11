@@ -89,47 +89,47 @@ pub fn getEqSystemDAEmode(mut inDAE: Arc<BackendDAE::BackendDAE>, mut fileNamePr
     let mut oldSize: i32;
     numCheckpoints = ErrorExt::getNumCheckpoints();
     StackOverflow::clearStacktraceMessages();
-    preOptModules = BackendDAEUtil::getPreOptModules(strPreOptModules.clone())?;
+    preOptModules = BackendDAEUtil::getPreOptModules(strPreOptModules)?;
     postOptModules = BackendDAEUtil::getPostOptModules((::match_deref::match_deref! { match &(strPostOptModules.clone()) {
         None => Some(getPostOptModulesDAEString()?),
-        _ => strPostOptModules.clone(),
+        _ => strPostOptModules,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }))?;
-    matchingAlgorithm = BackendDAEUtil::getMatchingAlgorithm(strmatchingAlgorithm.clone())?;
+    matchingAlgorithm = BackendDAEUtil::getMatchingAlgorithm(strmatchingAlgorithm)?;
     FlagsUtil::setConfigString(Flags::INDEX_REDUCTION_METHOD.clone(), (literal!("dummyDerivatives")).clone())?;
-    daeHandler = BackendDAEUtil::getIndexReductionMethod(strdaeHandler.clone())?;
+    daeHandler = BackendDAEUtil::getIndexReductionMethod(strdaeHandler)?;
     if Flags::isSet(Flags::DUMP_DAE_LOW.clone())? {
         BackendDump::dumpBackendDAE(inDAE.clone(), (literal!("dumpdaelow")).clone())?;
         if Flags::isSet(Flags::ADDITIONAL_GRAPHVIZ_DUMP.clone())? {
             BackendDump::graphvizAdjacencyMatrix(inDAE.clone(), (literal!("dumpdaelow")).clone())?;
         }
     }
-    dae = BackendDAEUtil::preOptimizeDAE(inDAE.clone(), preOptModules.clone())?;
+    dae = BackendDAEUtil::preOptimizeDAE(inDAE, preOptModules)?;
     execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pre-optimization done (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(dae.clone())?))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
-    dae = BackendDAEUtil::causalizeDAE(dae.clone(), None, matchingAlgorithm.clone(), daeHandler.clone(), true)?;
+    dae = BackendDAEUtil::causalizeDAE(dae, None, matchingAlgorithm.clone(), daeHandler.clone(), true)?;
     execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matching and sorting (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(dae.clone())?))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     if Flags::isSet(Flags::GRAPHML.clone())? {
-        BackendDump::dumpBipartiteGraphDAE(dae.clone(), (fileNamePrefix.clone()).clone())?;
+        BackendDump::dumpBipartiteGraphDAE(dae.clone(), (fileNamePrefix).clone())?;
     }
     if Flags::isSet(Flags::EVAL_OUTPUT_ONLY.clone())? {
         oldSize = BackendDAEUtil::daeSize(dae.clone())?;
-        dae = BackendDAEOptimize::evaluateOutputsOnly(dae.clone())?;
-        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evaluateOutputsOnly (n=")); __mm_s.push_str(&*intString(oldSize.clone())); __mm_s.push_str(&*literal!(" -> n=")); __mm_s.push_str(&*intString(BackendDAEUtil::daeSize(dae.clone())?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+        dae = BackendDAEOptimize::evaluateOutputsOnly(dae)?;
+        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evaluateOutputsOnly (n=")); __mm_s.push_str(&*intString(oldSize)); __mm_s.push_str(&*literal!(" -> n=")); __mm_s.push_str(&*intString(BackendDAEUtil::daeSize(dae.clone())?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     }
     if Flags::isSet(Flags::BLT_DUMP.clone())? {
         BackendDump::bltdump((literal!("bltdump")).clone(), dae.clone())?;
     }
-    (outInitDAE, outInitDAE_lambda0_option, outRemovedInitialEquationLst, globalKnownVars, dae) = Initialization::solveInitialSystem(dae.clone())?;
-    simDAE = BackendDAEUtil::setFunctionTree(dae.clone(), BackendDAEUtil::getFunctions(outInitDAE.shared.clone())?)?;
-    simDAE = BackendDAEUtil::setDAEGlobalKnownVars(simDAE.clone(), globalKnownVars.clone())?;
-    simDAE = BackendDAEOptimize::addInitialStmtsToAlgorithms(simDAE.clone(), false)?;
-    simDAE = Initialization::removeInitializationStuff(simDAE.clone())?;
-    simDAE = BackendDAEUtil::postOptimizeDAE(simDAE.clone(), postOptModules.clone(), matchingAlgorithm.clone(), daeHandler.clone())?;
-    simDAE = BackendDAEUtil::sortGlobalKnownVarsInDAE(simDAE.clone())?;
+    (outInitDAE, outInitDAE_lambda0_option, outRemovedInitialEquationLst, globalKnownVars, dae) = Initialization::solveInitialSystem(dae)?;
+    simDAE = BackendDAEUtil::setFunctionTree(dae, BackendDAEUtil::getFunctions(outInitDAE.shared.clone())?)?;
+    simDAE = BackendDAEUtil::setDAEGlobalKnownVars(simDAE, globalKnownVars)?;
+    simDAE = BackendDAEOptimize::addInitialStmtsToAlgorithms(simDAE, false)?;
+    simDAE = Initialization::removeInitializationStuff(simDAE)?;
+    simDAE = BackendDAEUtil::postOptimizeDAE(simDAE, postOptModules, matchingAlgorithm, daeHandler)?;
+    simDAE = BackendDAEUtil::sortGlobalKnownVarsInDAE(simDAE)?;
     if Flags::isSet(Flags::DUMP_INDX_DAE.clone())? {
         BackendDump::dumpBackendDAE(simDAE.clone(), (literal!("dumpindxdae")).clone())?;
     }
-    outDAEmode = simDAE.clone();
+    outDAEmode = simDAE;
     return Ok((outDAEmode.clone(), outInitDAE.clone(), outInitDAE_lambda0_option.clone(), outRemovedInitialEquationLst.clone()));
     bail!("fail");
     Ok((outDAEmode, outInitDAE, outInitDAE_lambda0_option, outRemovedInitialEquationLst))
@@ -150,7 +150,7 @@ fn getPostOptModulesDAEString() -> Result<Arc<metamodelica::List<ArcStr>>> {
 // =============================================================================
 pub(crate) fn createDAEmodeBDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
-    outDAE = BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new(createDAEmodeEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
+    outDAE = BackendDAEUtil::mapEqSystem(inDAE, (std::sync::Arc::new(createDAEmodeEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     Ok(outDAE)
 }
 
@@ -212,13 +212,13 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     globalDAEData = shared.daeModeData.clone();
     systemSize = BackendDAEUtil::systemSize(syst.clone())?;
     newDAEVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
-    newDAEEquations = BackendEquation::emptyEqnsSized(systemSize.clone());
-    travArgs = TraverseEqnAryFold { globalDAEData: globalDAEData.clone(), newDAEVars: newDAEVars.clone(), newDAEEquations: newDAEEquations.clone(), systemVars: syst.orderedVars.clone(), functionTree: shared.functionTree.clone(), recursiveStrongComponentRun: false, shared: shared.clone() };
-    if debug.clone() {
+    newDAEEquations = BackendEquation::emptyEqnsSized(systemSize);
+    travArgs = TraverseEqnAryFold { globalDAEData: globalDAEData, newDAEVars: newDAEVars, newDAEEquations: newDAEEquations, systemVars: syst.orderedVars.clone(), functionTree: shared.functionTree.clone(), recursiveStrongComponentRun: false, shared: shared.clone() };
+    if debug {
         BackendDump::printEqSystem(syst.clone())?;
     }
-    travArgs = BackendDAEUtil::traverseEqSystemStrongComponents(syst.clone(), (std::sync::Arc::new(traverserStrongComponents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, TraverseEqnAryFold) -> Result<TraverseEqnAryFold> + 'static>), travArgs.clone())?;
-    if exec.clone() {
+    travArgs = BackendDAEUtil::traverseEqSystemStrongComponents(syst.clone(), (std::sync::Arc::new(traverserStrongComponents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, TraverseEqnAryFold) -> Result<TraverseEqnAryFold> + 'static>), travArgs)?;
+    if exec {
         execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: created residual equations for system size :  ")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(syst.clone())?)); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
     globalDAEData = travArgs.globalDAEData.clone();
@@ -227,23 +227,23 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     } else {
         globalDAEData.modelVars = Some(travArgs.systemVars.clone());
     }
-    if exec.clone() {
+    if exec {
         execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: adding residual variables:  ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(Util::getOption(globalDAEData.modelVars.clone())?))); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
     retSystem = BackendDAEUtil::createEqSystem(travArgs.newDAEVars.clone(), BackendEquation::emptyEqns(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-    retSystem = BackendDAEUtil::setEqSystEqs(retSystem.clone(), travArgs.newDAEEquations.clone());
-    retSystem = BackendDAEUtil::setEqSystRemovedEqns(retSystem.clone(), syst.removedEqs.clone());
-    retSystem = BackendEquation::requationsAddDAE(ExpandableArray::toList(shared.removedEqs.clone())?, retSystem.clone())?;
-    if exec.clone() {
+    retSystem = BackendDAEUtil::setEqSystEqs(retSystem, travArgs.newDAEEquations.clone());
+    retSystem = BackendDAEUtil::setEqSystRemovedEqns(retSystem, syst.removedEqs.clone());
+    retSystem = BackendEquation::requationsAddDAE(ExpandableArray::toList(shared.removedEqs.clone())?, retSystem)?;
+    if exec {
         execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: created system:  ")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(retSystem.clone())?)); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
-    syst = retSystem.clone();
+    syst = retSystem;
     assign_field!(shared.daeModeData = globalDAEData.clone());
-    if debug.clone() {
+    if debug {
         BackendDump::printEqSystem(syst.clone())?;
     }
-    if debug.clone() {
-        BackendDump::dumpBackendDAEModeData(globalDAEData.clone())?;
+    if debug {
+        BackendDump::dumpBackendDAEModeData(globalDAEData)?;
     }
     Ok((syst, shared))
 }
@@ -268,7 +268,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
     traverserArgs = ({
         let mut debug: bool = false;
         'mc: {
-        let __mc_input = (inEqns.clone(), traverserArgs.recursiveStrongComponentRun.clone(), isStateVarInvolved.clone(), isDiscrete.clone());
+        let __mc_input = (inEqns.clone(), traverserArgs.recursiveStrongComponentRun.clone(), isStateVarInvolved, isDiscrete);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: eq, tail: Deref @ metamodelica::List::Nil }, false, false, _) => {
@@ -647,26 +647,26 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
     let debug: bool = false;
     match '__try0: {
         syst = BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar1(inAllVars.clone()), '__try0), unwrap_break_err!(BackendEquation::listEquation(inAllEqns.clone()), '__try0), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-        if debug.clone() {
+        if debug {
             unwrap_break_err!(BackendDump::printEqSystem(syst.clone()), '__try0);
         }
-        (adjMatrix, _, _, mapEqnScalarArray) = unwrap_break_err!(BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(functionTree.clone()), isInitial.clone()), '__try0);
-        if debug.clone() {
+        (adjMatrix, _, _, mapEqnScalarArray) = unwrap_break_err!(BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(functionTree.clone()), isInitial), '__try0);
+        if debug {
             unwrap_break_err!(BackendDump::dumpAdjacencyMatrix(adjMatrix.clone()), '__try0);
         }
         let (__pa1, __pa2, true, _, _) = (unwrap_break_err!(Matching::RegularMatching(adjMatrix.clone(), unwrap_break_err!(BackendDAEUtil::systemSize(syst.clone()), '__try0), unwrap_break_err!(BackendDAEUtil::systemSize(syst.clone()), '__try0)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         assignVarEqn = __pa1.clone();
         assignEqnVar = __pa2.clone();
-        if debug.clone() {
+        if debug {
             unwrap_break_err!(BackendDump::dumpMatching(assignVarEqn.clone()), '__try0);
         }
         varsIndex = BackendVariable::getVarIndexFromVars(inDiscVars.clone(), syst.orderedVars.clone());
-        if debug.clone() {
+        if debug {
             metamodelica::print((literal!("discVarsIndex: ")).clone());
             unwrap_break_err!(BackendDump::dumpAdjacencyRow(varsIndex.clone()), '__try0);
         }
         eqnIndex = unwrap_break_err!(List::map1(varsIndex.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), assignVarEqn.clone()), '__try0);
-        if debug.clone() {
+        if debug {
             metamodelica::print((literal!("discEqnIndex: ")).clone());
             unwrap_break_err!(BackendDump::dumpAdjacencyRow(eqnIndex.clone()), '__try0);
         }
@@ -679,7 +679,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         __acc.reverse()
     }));
         discEqns = unwrap_break_err!(BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone()), '__try0);
-        if debug.clone() {
+        if debug {
             unwrap_break_err!(BackendDump::equationListString(discEqns.clone(), (literal!("Discrete Equations")).clone()), '__try0);
         }
         varsIndex = BackendVariable::getVarIndexFromVars(inContVars.clone(), syst.orderedVars.clone());
@@ -692,12 +692,12 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         }
         __acc.reverse()
     }));
-        if debug.clone() {
+        if debug {
             metamodelica::print((literal!("contEqnIndex: ")).clone());
             unwrap_break_err!(BackendDump::dumpAdjacencyRow(eqnIndex.clone()), '__try0);
         }
         contEqns = unwrap_break_err!(BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone()), '__try0);
-        if debug.clone() {
+        if debug {
             unwrap_break_err!(BackendDump::equationListString(contEqns.clone(), (literal!("Continuous Equations")).clone()), '__try0);
         }
         Ok::<_, anyhow::Error>((adjMatrix.clone(), assignEqnVar.clone(), assignVarEqn.clone(), contEqns.clone(), discEqns.clone(), eqnIndex.clone(), mapEqnScalarArray.clone(), syst.clone(), varsIndex.clone()))
@@ -726,14 +726,14 @@ fn addVarsGlobalData(mut globalDAEData: BackendDAE::BackendDAEModeData, mut inVa
     vars = List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isNonStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
     vars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-        for mut v in (vars.clone()).into_iter().cloned() {
+        for mut v in (vars).into_iter().cloned() {
             let __x = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    globalDAEData.algStateVars = listAppend(vars.clone(), globalDAEData.algStateVars.clone());
-    globalDAEData.stateVars = listAppend(List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, globalDAEData.stateVars.clone());
+    globalDAEData.algStateVars = listAppend(vars, globalDAEData.algStateVars.clone());
+    globalDAEData.stateVars = listAppend(List::filterOnTrue(inVars, (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, globalDAEData.stateVars.clone());
     Ok(globalDAEData)
 }
 
@@ -750,7 +750,7 @@ fn setNonStateVarAlgState(mut varList: Arc<metamodelica::List<BackendDAE::Var>>)
         _ => bail!("fail"),
     });
     }
-    varList = varList.clone().reverse();
+    varList = varList.reverse();
     Ok(varList)
 }
 

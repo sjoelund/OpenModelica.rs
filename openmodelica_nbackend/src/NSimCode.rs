@@ -403,44 +403,44 @@ pub mod SimCode {
     pub fn toString(mut simCode: Arc<SimCode>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         let mut idx: i32 = 1;
-        r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCode ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*ModelInfo::toString(simCode.modelInfo.clone())?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*ExtObjInfo::toString(simCode.extObjInfo.clone())?); ArcStr::from(__mm_s) }).clone();
+        r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCode ")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*ModelInfo::toString(simCode.modelInfo.clone())?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*ExtObjInfo::toString(simCode.extObjInfo.clone())?); ArcStr::from(__mm_s) }).clone();
         if !(simCode.init_0.clone().is_empty()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(simCode.init_0.clone(), (literal!("  ")).clone(), (literal!("Initial Partition (Lambda = 0)")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimStrongComponent::Block::listToString(simCode.init_0.clone(), (literal!("  ")).clone(), (literal!("Initial Partition (Lambda = 0)")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(simCode.init.clone(), (literal!("  ")).clone(), (literal!("Initial Partition")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimStrongComponent::Block::listToString(simCode.init.clone(), (literal!("  ")).clone(), (literal!("Initial Partition")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         for mut blck_lst in &*simCode.ode.clone() {
             let mut blck_lst = blck_lst.clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(blck_lst.clone(), (literal!("  ")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ODE Partition ")); __mm_s.push_str(&*intString(idx.clone())); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            idx = idx.clone() + 1;
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(blck_lst.clone(), (literal!("  ")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ODE Partition ")); __mm_s.push_str(&*intString(idx)); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            idx = idx + 1;
         }
         idx = 1;
         for mut blck_lst in &*simCode.algebraic.clone() {
             let mut blck_lst = blck_lst.clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(blck_lst.clone(), (literal!("  ")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Algebraic Partition ")); __mm_s.push_str(&*intString(idx.clone())); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            idx = idx.clone() + 1;
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(blck_lst.clone(), (literal!("  ")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Algebraic Partition ")); __mm_s.push_str(&*intString(idx)); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            idx = idx + 1;
         }
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(simCode.event_blocks.clone(), (literal!("  ")).clone(), (literal!("Event Partition")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimStrongComponent::Block::listToString(simCode.event_blocks.clone(), (literal!("  ")).clone(), (literal!("Event Partition")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         if !(simCode.clockedPartitions.clone().is_empty()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimPartition::listToString(simCode.clockedPartitions.clone(), (literal!("  ")).clone(), (literal!("Clocked Partitions")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimPartition::listToString(simCode.clockedPartitions.clone(), (literal!("  ")).clone(), (literal!("Clocked Partitions")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         if !(simCode.literals.clone().is_empty()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StringUtil::headline_3((literal!("Shared Literals")).clone())); ArcStr::from(__mm_s) }).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(simCode.literals.clone(), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_3((literal!("Shared Literals")).clone())); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*List::toString(simCode.literals.clone(), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
         }
         if !(simCode.generic_loop_calls.clone().is_empty()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StringUtil::headline_3((literal!("Generic Calls")).clone())); ArcStr::from(__mm_s) }).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(simCode.generic_loop_calls.clone(), (std::sync::Arc::new(SimGenericCall::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimGenericCall::NSimGenericCall>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_3((literal!("Generic Calls")).clone())); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*List::toString(simCode.generic_loop_calls.clone(), (std::sync::Arc::new(SimGenericCall::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimGenericCall::NSimGenericCall>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
         }
         if isSome(simCode.daeModeData.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*DaeModeData::toString(Util::getOption(simCode.daeModeData.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*DaeModeData::toString(Util::getOption(simCode.daeModeData.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         for mut jac in &*simCode.jacobians.clone() {
             let mut jac = jac.clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimJacobian::toString(jac.clone())?); ArcStr::from(__mm_s) }).clone();
         }
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*EventInfo::toString(simCode.eventInfo.clone())?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*EventInfo::toString(simCode.eventInfo.clone())?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -566,7 +566,7 @@ pub mod SimCode {
             oldFunctionTree = ConvertDAE::convertFunctionTree(NFFlatten::FunctionTreeImpl::fromList(UnorderedMap::toList(funcMap.clone()), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
             (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = SimCodeUtilShared::createFunctions(program.clone(), oldFunctionTree.clone())?;
             makefileParams = OldSimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), false, false)?;
-            fileName = (System::basename((AbsynUtil::classFilename(ProgramUtil::getPathedClassInProgram(name.clone(), program.clone(), false, false)?)?).clone())).clone();
+            fileName = (System::basename((AbsynUtil::classFilename(ProgramUtil::getPathedClassInProgram(name.clone(), program, false, false)?)?).clone())).clone();
             (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = collectAlgebraicLoops(init.clone(), init_0.clone(), ode.clone(), algebraic.clone(), daeModeData.clone(), simCodeIndices.clone(), simcode_map.clone())?;
             if isSome(daeModeData.clone()) {
                 (jacA, jacAdjoint, simCodeIndices) = SimJacobian::createSimulationJacobian(Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?, simCodeIndices.clone(), simcode_map.clone())?;
@@ -606,9 +606,9 @@ pub mod SimCode {
         __acc.reverse()
     });
             literals = UnorderedMap::keyList(literals_map.clone());
-            (modelInfo, simCodeIndices) = ModelInfo::create(vars.clone(), name.clone(), (fileName.clone()).clone(), (directory.clone()).clone(), functions.clone(), linearLoops.clone(), nonlinearLoops.clone(), var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices.clone())?;
-            simCode = Arc::new(SimCode { modelInfo: modelInfo.clone(), literals: literals.clone(), recordDecls: recordDecls.clone(), externalFunctionIncludes: externalFunctionIncludes.clone(), generic_loop_calls: generic_loop_calls.clone(), independent: independent.clone(), allSim: allSim.clone(), ode: ode.clone(), algebraic: algebraic.clone(), clockedPartitions: clockedPartitions.clone(), nominal: nominal.clone(), min: min.clone(), max: max.clone(), param: param.clone(), no_ret: no_ret.clone(), algorithms: algorithms.clone(), event_blocks: event_blocks.clone(), jac_blocks: jac_blocks.clone(), start: start.clone(), init: init.clone(), init_0: init_0.clone(), init_no_ret: init_no_ret.clone(), discreteVars: discreteVars.clone(), extObjInfo: extObjInfo.clone(), makefileParams: makefileParams.clone(), jacobians: jacobians.clone(), simulationSettingsOpt: simSettingsOpt.clone(), fileNamePrefix: (fileNamePrefix.clone()).clone(), simcode_map: simcode_map.clone(), equation_map: equation_map.clone(), eventInfo: var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), daeModeData: daeModeData.clone(), inlineEquations: inlineEquations.clone() });
-            simCode.clone()
+            (modelInfo, simCodeIndices) = ModelInfo::create(vars.clone(), name, (fileName.clone()).clone(), (directory.clone()).clone(), functions.clone(), linearLoops.clone(), nonlinearLoops.clone(), var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone(), simCodeIndices.clone())?;
+            simCode = Arc::new(SimCode { modelInfo: modelInfo.clone(), literals: literals.clone(), recordDecls: recordDecls.clone(), externalFunctionIncludes: externalFunctionIncludes.clone(), generic_loop_calls: generic_loop_calls.clone(), independent: independent.clone(), allSim: allSim.clone(), ode: ode.clone(), algebraic: algebraic.clone(), clockedPartitions: clockedPartitions.clone(), nominal: nominal.clone(), min: min.clone(), max: max.clone(), param: param.clone(), no_ret: no_ret.clone(), algorithms: algorithms.clone(), event_blocks: event_blocks.clone(), jac_blocks: jac_blocks.clone(), start: start.clone(), init: init.clone(), init_0: init_0.clone(), init_no_ret: init_no_ret.clone(), discreteVars: discreteVars.clone(), extObjInfo: extObjInfo.clone(), makefileParams: makefileParams.clone(), jacobians: jacobians.clone(), simulationSettingsOpt: simSettingsOpt, fileNamePrefix: (fileNamePrefix).clone(), simcode_map: simcode_map.clone(), equation_map: equation_map.clone(), eventInfo: var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), daeModeData: daeModeData.clone(), inlineEquations: inlineEquations.clone() });
+            simCode
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimCode.SimCode.create")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -642,14 +642,14 @@ pub mod SimCode {
                 _ => bail!("pattern mismatch"),
             } };
             residualVars = __pa0.clone();
-            crefToSimVarHT = List::fold(SimVar::convertList(residualVars.clone())?, (std::sync::Arc::new(HashTableCrefSimVar::addSimVarToHashTable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))> + 'static>), crefToSimVarHT.clone())?;
+            crefToSimVarHT = List::fold(SimVar::convertList(residualVars)?, (std::sync::Arc::new(HashTableCrefSimVar::addSimVarToHashTable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))> + 'static>), crefToSimVarHT)?;
         }
         crefToClockIndexHT = HashTable::emptyHashTable();
         for mut cref in &*simCode.discreteVars.clone() {
             let mut cref = cref.clone();
             discreteModelVars = metamodelica::cons(ComponentRef::toDAE(cref.clone())?, discreteModelVars.clone());
         }
-        oldSimCode = OldSimCode::SimCode { modelInfo: modelInfo.clone(), literals: ({
+        oldSimCode = OldSimCode::SimCode { modelInfo: modelInfo, literals: ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut lit in (simCode.literals.clone()).into_iter().cloned() {
             let __x = Expression::toDAE(lit.clone(), false)?;
@@ -670,21 +670,21 @@ pub mod SimCode {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), initialEquations: SimStrongComponent::Block::convertList(simCode.init.clone())?, initialEquations_lambda0: SimStrongComponent::Block::convertList(simCode.init_0.clone())?, removedInitialEquations: SimStrongComponent::Block::convertList(simCode.init_no_ret.clone())?, startValueEquations: SimStrongComponent::Block::convertList(simCode.start.clone())?, nominalValueEquations: SimStrongComponent::Block::convertList(simCode.nominal.clone())?, minValueEquations: SimStrongComponent::Block::convertList(simCode.min.clone())?, maxValueEquations: SimStrongComponent::Block::convertList(simCode.max.clone())?, parameterEquations: SimStrongComponent::Block::convertList(simCode.param.clone())?, removedEquations: SimStrongComponent::Block::convertList(simCode.no_ret.clone())?, algorithmAndEquationAsserts: SimStrongComponent::Block::convertList(simCode.algorithms.clone())?, equationsForZeroCrossings: SimStrongComponent::Block::convertList(simCode.event_blocks.clone())?, jacobianEquations: SimStrongComponent::Block::convertList(simCode.jac_blocks.clone())?, stateSets: metamodelica::nil(), constraints: metamodelica::nil(), classAttributes: metamodelica::nil(), zeroCrossings: zeroCrossings.clone(), relations: relations.clone(), timeEvents: timeEvents.clone(), discreteModelVars: discreteModelVars.clone(), extObjInfo: ExtObjInfo::convert(simCode.extObjInfo.clone())?, makefileParams: simCode.makefileParams.clone(), delayedExps: OldSimCode::DelayedExpression { delayedExps: metamodelica::nil(), maxDelayedIndex: 0 }, spatialInfo: OldSimCode::SpatialDistributionInfo { spatialDistributions: metamodelica::nil(), maxIndex: 0 }, jacobianMatrices: ({
+    }), initialEquations: SimStrongComponent::Block::convertList(simCode.init.clone())?, initialEquations_lambda0: SimStrongComponent::Block::convertList(simCode.init_0.clone())?, removedInitialEquations: SimStrongComponent::Block::convertList(simCode.init_no_ret.clone())?, startValueEquations: SimStrongComponent::Block::convertList(simCode.start.clone())?, nominalValueEquations: SimStrongComponent::Block::convertList(simCode.nominal.clone())?, minValueEquations: SimStrongComponent::Block::convertList(simCode.min.clone())?, maxValueEquations: SimStrongComponent::Block::convertList(simCode.max.clone())?, parameterEquations: SimStrongComponent::Block::convertList(simCode.param.clone())?, removedEquations: SimStrongComponent::Block::convertList(simCode.no_ret.clone())?, algorithmAndEquationAsserts: SimStrongComponent::Block::convertList(simCode.algorithms.clone())?, equationsForZeroCrossings: SimStrongComponent::Block::convertList(simCode.event_blocks.clone())?, jacobianEquations: SimStrongComponent::Block::convertList(simCode.jac_blocks.clone())?, stateSets: metamodelica::nil(), constraints: metamodelica::nil(), classAttributes: metamodelica::nil(), zeroCrossings: zeroCrossings, relations: relations, timeEvents: timeEvents, discreteModelVars: discreteModelVars, extObjInfo: ExtObjInfo::convert(simCode.extObjInfo.clone())?, makefileParams: simCode.makefileParams.clone(), delayedExps: OldSimCode::DelayedExpression { delayedExps: metamodelica::nil(), maxDelayedIndex: 0 }, spatialInfo: OldSimCode::SpatialDistributionInfo { spatialDistributions: metamodelica::nil(), maxIndex: 0 }, jacobianMatrices: ({
         let mut __acc: Arc<metamodelica::List<Arc<OldSimCode::JacobianMatrix>>> = metamodelica::nil();
         for mut jac in (simCode.jacobians.clone()).into_iter().cloned() {
             let __x = SimJacobian::convert(jac.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), simulationSettingsOpt: simCode.simulationSettingsOpt.clone(), fileNamePrefix: (simCode.fileNamePrefix.clone()).clone(), fullPathPrefix: (literal!("")).clone(), fmuTargetName: (literal!("")).clone(), hpcomData: HpcOmSimCode::emptyHpcomData().clone(), valueReferences: openmodelica_simcode_types::AvlTreeCRToInt::Tree::interned_EMPTY(), varToArrayIndexMapping: varToArrayIndexMapping.clone(), varToIndexMapping: varToIndexMapping.clone(), crefToSimVarHT: crefToSimVarHT.clone(), crefToClockIndexHT: crefToClockIndexHT.clone(), backendMapping: None, modelStructure: None, fmiSimulationFlags: None, partitionData: OldSimCode::PartitionData { numPartitions: -1, partitions: metamodelica::nil(), activatorsForPartitions: metamodelica::nil(), stateToActivators: metamodelica::nil() }, daeModeData: if (isSome(simCode.daeModeData.clone())) {Some(DaeModeData::convert(Util::getOption(simCode.daeModeData.clone())?)?)} else {None}, inlineEquations: metamodelica::nil(), omsiData: None, scalarized: Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())? };
+    }), simulationSettingsOpt: simCode.simulationSettingsOpt.clone(), fileNamePrefix: (simCode.fileNamePrefix.clone()).clone(), fullPathPrefix: (literal!("")).clone(), fmuTargetName: (literal!("")).clone(), hpcomData: HpcOmSimCode::emptyHpcomData().clone(), valueReferences: openmodelica_simcode_types::AvlTreeCRToInt::Tree::interned_EMPTY(), varToArrayIndexMapping: varToArrayIndexMapping, varToIndexMapping: varToIndexMapping, crefToSimVarHT: crefToSimVarHT, crefToClockIndexHT: crefToClockIndexHT, backendMapping: None, modelStructure: None, fmiSimulationFlags: None, partitionData: OldSimCode::PartitionData { numPartitions: -1, partitions: metamodelica::nil(), activatorsForPartitions: metamodelica::nil(), stateToActivators: metamodelica::nil() }, daeModeData: if (isSome(simCode.daeModeData.clone())) {Some(DaeModeData::convert(Util::getOption(simCode.daeModeData.clone())?)?)} else {None}, inlineEquations: metamodelica::nil(), omsiData: None, scalarized: Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())? };
         Ok(oldSimCode)
     }
 
     pub fn getDirectoryAndLibs(mut simCode: Arc<SimCode>) -> Result<(ArcStr, Arc<metamodelica::List<ArcStr>>)> {
         let mut directory: ArcStr = arcstr::literal!("");
         let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        (directory, libs) = (::match_deref::match_deref! { match &(simCode.clone()) {
+        (directory, libs) = (::match_deref::match_deref! { match &(simCode) {
         Deref @ SimCode { modelInfo: Deref @ ModelInfo::MODEL_INFO { directory: __esc_directory, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: __esc_libs, .. }, .. } => {
             directory = (*__esc_directory).clone();
             libs = (*__esc_libs).clone();
@@ -705,16 +705,16 @@ pub mod SimCode {
         let mut jacobians: Arc<metamodelica::List<Arc<SimJacobian::SimJacobian>>> = metamodelica::nil();
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut dae_mode_blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>>;
-        (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(list![init.clone(), init_0.clone()], linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
-        (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(ode.clone(), linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
-        (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(algebraic.clone(), linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+        (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(list![init, init_0], linearLoops, nonlinearLoops, jacobians, simCodeIndices, simcode_map.clone())?;
+        (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(ode, linearLoops, nonlinearLoops, jacobians, simCodeIndices, simcode_map.clone())?;
+        (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(algebraic, linearLoops, nonlinearLoops, jacobians, simCodeIndices, simcode_map.clone())?;
         if isSome(daeModeData.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(daeModeData.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(daeModeData) {
                 Some(Deref @ DaeModeData::DAE_MODE_DATA { blcks: __pa0, .. }) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             dae_mode_blcks = __pa0.clone();
-            (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(dae_mode_blcks.clone(), linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(dae_mode_blcks, linearLoops, nonlinearLoops, jacobians, simCodeIndices, simcode_map)?;
         }
         Ok((linearLoops, nonlinearLoops, jacobians, simCodeIndices))
     }
@@ -812,8 +812,8 @@ pub mod ModelInfo {
         let mut modelInfo: Arc<ModelInfo>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut info: Arc<VarInfo::VarInfo>;
-        info = VarInfo::create(vars.clone(), eventInfo.clone(), simCodeIndices.clone())?;
-        modelInfo = Arc::new(ModelInfo { name: name.clone(), description: (literal!("")).clone(), version: (literal!("")).clone(), author: (literal!("")).clone(), license: (literal!("")).clone(), copyright: (literal!("")).clone(), directory: (directory.clone()).clone(), fileName: (fileName.clone()).clone(), vars: vars.clone(), varInfo: info.clone(), functions: functions.clone(), labels: metamodelica::nil(), resourcePaths: metamodelica::nil(), sortedClasses: metamodelica::nil(), nClocks: ClockedInfo::baseClockCount(clockedInfo.clone(), false)?, nSubClocks: ClockedInfo::subClockCount(clockedInfo.clone()), nSpatialDistributions: 0, hasLargeLinearEquationSystems: true, linearLoops: linearLoops.clone(), nonlinearLoops: nonlinearLoops.clone() });
+        info = VarInfo::create(vars.clone(), eventInfo, simCodeIndices.clone())?;
+        modelInfo = Arc::new(ModelInfo { name: name, description: (literal!("")).clone(), version: (literal!("")).clone(), author: (literal!("")).clone(), license: (literal!("")).clone(), copyright: (literal!("")).clone(), directory: (directory).clone(), fileName: (fileName).clone(), vars: vars, varInfo: info, functions: functions, labels: metamodelica::nil(), resourcePaths: metamodelica::nil(), sortedClasses: metamodelica::nil(), nClocks: ClockedInfo::baseClockCount(clockedInfo.clone(), false)?, nSubClocks: ClockedInfo::subClockCount(clockedInfo), nSpatialDistributions: 0, hasLargeLinearEquationSystems: true, linearLoops: linearLoops, nonlinearLoops: nonlinearLoops });
         Ok((modelInfo, simCodeIndices))
     }
 
@@ -822,9 +822,9 @@ pub mod ModelInfo {
         modelInfo = (::match_deref::match_deref! { match &(modelInfo.clone()) {
         Deref @ ModelInfo { vars, .. } => {
             let mut vars = (*vars).clone();
-            assign_field!(vars.seedVars = seedVars.clone());
+            assign_field!(vars.seedVars = seedVars);
             assign_field!(modelInfo.vars = vars.clone());
-            modelInfo.clone()
+            modelInfo
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimCode.ModelInfo.setSeedVars")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -892,11 +892,11 @@ pub mod DaeModeData {
         let mut idx: i32 = 1;
         for mut blck_lst in &*data.blcks.clone() {
             let mut blck_lst = blck_lst.clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(blck_lst.clone(), (literal!("  ")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE Partition ")); __mm_s.push_str(&*intString(idx.clone())); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
-            idx = idx.clone() + 1;
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::listToString(blck_lst.clone(), (literal!("  ")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE Partition ")); __mm_s.push_str(&*intString(idx)); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) }).clone();
+            idx = idx + 1;
         }
         if isSome(data.sparsityPattern.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SimJacobian::toString(Util::getOption(data.sparsityPattern.clone())?)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SimJacobian::toString(Util::getOption(data.sparsityPattern.clone())?)?); ArcStr::from(__mm_s) }).clone();
         }
         Ok(r#str)
     }
@@ -906,17 +906,17 @@ pub mod DaeModeData {
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>>;
         let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
-        (blcks, residualVars, simCodeIndices) = SimStrongComponent::Block::createDAEModeBlocks(systems.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
-        data = Some(Arc::new(DaeModeData { blcks: blcks.clone(), sparsityPattern: None, residualVars: residualVars.clone(), algebraicVars: metamodelica::nil(), auxiliaryVars: metamodelica::nil(), modeCreated: DaeModeConfig::ALL.clone() }));
+        (blcks, residualVars, simCodeIndices) = SimStrongComponent::Block::createDAEModeBlocks(systems, simCodeIndices, simcode_map, equation_map)?;
+        data = Some(Arc::new(DaeModeData { blcks: blcks, sparsityPattern: None, residualVars: residualVars, algebraicVars: metamodelica::nil(), auxiliaryVars: metamodelica::nil(), modeCreated: DaeModeConfig::ALL.clone() }));
         Ok((data, simCodeIndices))
     }
 
     pub(crate) fn addJacobian(mut data: Option<Arc<DaeModeData>>, mut daeModeJac: Arc<SimJacobian::SimJacobian>) -> Option<Arc<DaeModeData>> {
         let mut data: Option<Arc<DaeModeData>> = data;
-        data = (::match_deref::match_deref! { match &(data.clone()) {
+        data = (::match_deref::match_deref! { match &(data) {
         Some(dmd) => {
             let mut dmd = (*dmd).clone();
-            assign_field!(dmd.sparsityPattern = Some(daeModeJac.clone()));
+            assign_field!(dmd.sparsityPattern = Some(daeModeJac));
             Some(dmd.clone())
         },
         _ => {
@@ -931,13 +931,13 @@ pub mod DaeModeData {
         let mut oldData: OldSimCode::DaeModeData;
         let mut simEqSystems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>> = metamodelica::nil();
         simEqSystems = SimStrongComponent::Block::convertListList(data.blcks.clone())?;
-        oldData = OldSimCode::DaeModeData { daeEquations: simEqSystems.clone(), sparsityPattern: Util::applyOption(data.sparsityPattern.clone(), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>))?, residualVars: SimVar::convertList(data.residualVars.clone())?, algebraicVars: SimVar::convertList(data.algebraicVars.clone())?, auxiliaryVars: SimVar::convertList(data.auxiliaryVars.clone())?, modeCreated: convertMode(data.modeCreated.clone())? };
+        oldData = OldSimCode::DaeModeData { daeEquations: simEqSystems, sparsityPattern: Util::applyOption(data.sparsityPattern.clone(), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>))?, residualVars: SimVar::convertList(data.residualVars.clone())?, algebraicVars: SimVar::convertList(data.algebraicVars.clone())?, auxiliaryVars: SimVar::convertList(data.auxiliaryVars.clone())?, modeCreated: convertMode(data.modeCreated.clone())? };
         Ok(oldData)
     }
 
     fn convertMode(mut mode: DaeModeConfig) -> Result<OldSimCode::DaeModeConfig> {
         let mut oldMode: OldSimCode::DaeModeConfig;
-        oldMode = (match mode.clone() {
+        oldMode = (match mode {
         DaeModeConfig::ALL => openmodelica_simcode_types::SimCode::DaeModeConfig::ALL_EQUATIONS,
         DaeModeConfig::DYNAMIC => openmodelica_simcode_types::SimCode::DaeModeConfig::DYNAMIC_EQUATIONS,
     });
@@ -950,9 +950,9 @@ pub mod DaeModeData {
         let mut jacobian: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
         let mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>> = simcode_map;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        daeModeDataOpt = (::match_deref::match_deref! { match &(daeModeDataOpt.clone()) {
+        daeModeDataOpt = (::match_deref::match_deref! { match &(daeModeDataOpt) {
         Some(daeModeData) => {
-            (jacobian, simCodeIndices) = SimJacobian::empty((literal!("A")).clone(), simCodeIndices.clone())?;
+            (jacobian, simCodeIndices) = SimJacobian::empty((literal!("A")).clone(), simCodeIndices)?;
             Some(daeModeData.clone())
         },
         _ => {
@@ -969,7 +969,7 @@ pub mod DaeModeData {
         let mut seedCref: Arc<ComponentRef::NFComponentRef>;
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         seedCref = ComponentRef::fromNode(Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BVariable::SEED_STR)); __mm_s.push_str(&*literal!("_A")); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(BVariable::DUMMY_VARIABLE().clone()) }), openmodelica_nf_frontend::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
-        for mut var in &*simulationAlgVars.clone().reverse() {
+        for mut var in &*simulationAlgVars.reverse() {
             let mut var = var.clone();
             cref = ComponentRef::append(var.name.clone(), seedCref.clone())?;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Searching for: ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -981,7 +981,7 @@ pub mod DaeModeData {
 
     fn replaceDerCrefSES(mut sys: Arc<OldSimCode::SimEqSystem>) -> Result<Arc<OldSimCode::SimEqSystem>> {
         let mut sys: Arc<OldSimCode::SimEqSystem> = sys;
-        sys = (::match_deref::match_deref! { match &(sys.clone()) {
+        sys = (::match_deref::match_deref! { match &(sys) {
         qual @ Deref @ OldSimCode::SimEqSystem::SES_RESIDUAL { .. } => {
             let mut qual = (*qual).clone();
             let (__asg0_0, _) = OldExpression::traverseExpTopDown(var_field!((*qual).exp, OldSimCode::SimEqSystem::SES_RESIDUAL).clone(), (std::sync::Arc::new(replaceDerCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, i32) -> Result<(Arc<DAE::Exp>, bool, i32)> + 'static>), 0)?;
@@ -1008,7 +1008,7 @@ pub mod DaeModeData {
             (Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("der")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: cref.clone(), ty: ComponentReference::crefTypeFull(cref.clone())? })], attr: DAE::callAttrBuiltinReal().clone() }), false)
         },
         _ => {
-            (exp.clone(), true)
+            (exp, true)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

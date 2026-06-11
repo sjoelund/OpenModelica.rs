@@ -255,7 +255,7 @@ pub(crate) fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DA
     let mut outIH: InstHierarchy;
     let mut outGraph: ConnectionGraph::ConnectionGraph;
     (odae, outIH, outGraph) = 'mc: {
-        let __mc_input = (io.clone(), inDae.clone(), inIH.clone(), inGraphNew.clone(), inGraph.clone());
+        let __mc_input = (io, inDae, inIH, inGraphNew, inGraph);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Absyn::InnerOuter::OUTER { .. }, dae, ih, _, graph) => {
@@ -352,8 +352,8 @@ pub(crate) fn retrieveOuterConnections(mut inCache: FCore::Cache, mut inEnv: FCo
     let mut oc: Arc<metamodelica::List<DAE::Connect::OuterConnect>>;
     let Connect::SETS { outerConnects: __pa0, .. } = (inSets.clone()) else { bail!("pattern mismatch") };
     oc = __pa0.clone();
-    (oc, outSets, outInnerOuterConnects, outCGraph) = retrieveOuterConnections2(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), oc.clone(), inSets.clone(), inTopCall.clone(), inCGraph.clone())?;
-    outSets.outerConnects = oc.clone();
+    (oc, outSets, outInnerOuterConnects, outCGraph) = retrieveOuterConnections2(inCache, inEnv, inIH, inPrefix, oc, inSets, inTopCall, inCGraph)?;
+    outSets.outerConnects = oc;
     Ok((outSets, outInnerOuterConnects, outCGraph))
 }
 
@@ -388,7 +388,7 @@ fn retrieveOuterConnections2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
     let mut outInnerOuterConnects: Arc<metamodelica::List<DAE::Connect::OuterConnect>>;
     let mut outCGraph: ConnectionGraph::ConnectionGraph;
     (outOuterConnects, outSets, outInnerOuterConnects, outCGraph) = 'mc: {
-        let __mc_input = (inOuterConnects.clone(), inSets.clone(), inTopCall.clone(), inCGraph.clone());
+        let __mc_input = (inOuterConnects.clone(), inSets.clone(), inTopCall, inCGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _, _, _) => {
@@ -416,7 +416,7 @@ fn retrieveOuterConnections2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
                     cr2 = removeInnerPrefixFromCref(inPrefix.clone(), cr2.clone());
                     (sets, added) = ConnectUtil::addOuterConnectToSets(cr1.clone(), cr2.clone(), io1.clone(), io2.clone(), f1.clone(), f2.clone(), sets.clone(), info.clone())?;
                     (sets, graph) = addOuterConnectIfEmpty(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), sets.clone(), added.clone(), cr1.clone(), io1.clone(), f1.clone(), cr2.clone(), io2.clone(), f2.clone(), info.clone(), graph.clone())?;
-                    (rest_oc, sets, ioc, graph) = retrieveOuterConnections2(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_oc.clone(), sets.clone(), inTopCall.clone(), graph.clone())?;
+                    (rest_oc, sets, ioc, graph) = retrieveOuterConnections2(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_oc.clone(), sets.clone(), inTopCall, graph.clone())?;
                     rest_oc = if (outer1.clone()) {metamodelica::cons(DAE::Connect::OuterConnect { scope: scope.clone(), cr1: cr1.clone(), io1: io1.clone(), f1: f1.clone(), cr2: cr2.clone(), io2: io2.clone(), f2: f2.clone(), source: source.clone() }, rest_oc.clone())} else {rest_oc.clone()};
                     Ok((rest_oc.clone(), sets.clone(), ioc.clone(), graph.clone()))
                 }
@@ -458,7 +458,7 @@ fn retrieveOuterConnections2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
                     let mut rest_oc = (*rest_oc).clone();
                     let mut sets = (*sets).clone();
                     let mut graph = (*graph).clone();
-                    (rest_oc, sets, ioc, graph) = retrieveOuterConnections2(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_oc.clone(), sets.clone(), inTopCall.clone(), graph.clone())?;
+                    (rest_oc, sets, ioc, graph) = retrieveOuterConnections2(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_oc.clone(), sets.clone(), inTopCall, graph.clone())?;
                     Ok((metamodelica::cons(oc.clone(), rest_oc.clone()), sets.clone(), ioc.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -473,7 +473,7 @@ fn convertInnerOuterInnerToOuter(mut io: Absyn::InnerOuter) -> Absyn::InnerOuter
     let mut oio: Absyn::InnerOuter;
     oio = (match io.clone() {
         Absyn::InnerOuter::INNER { .. } => openmodelica_ast::Absyn::InnerOuter::OUTER,
-        _ => io.clone(),
+        _ => io,
     });
     oio
 }
@@ -481,9 +481,9 @@ fn convertInnerOuterInnerToOuter(mut io: Absyn::InnerOuter) -> Absyn::InnerOuter
 fn addOuterConnectIfEmpty(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut pre: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut added: bool, mut cr1: Arc<DAE::ComponentRef>, mut iio1: Absyn::InnerOuter, mut f1: DAE::Connect::Face, mut cr2: Arc<DAE::ComponentRef>, mut iio2: Absyn::InnerOuter, mut f2: DAE::Connect::Face, mut info: SourceInfo, mut inCGraph: ConnectionGraph::ConnectionGraph) -> Result<(DAE::Connect::Sets, ConnectionGraph::ConnectionGraph)> {
     let mut outSets: DAE::Connect::Sets;
     let mut outCGraph: ConnectionGraph::ConnectionGraph;
-    (outSets, outCGraph) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inSets.clone(), added.clone(), iio1.clone(), iio2.clone(), inCGraph.clone())) {
+    (outSets, outCGraph) = (::match_deref::match_deref! { match &((inCache, inEnv, inIH, inSets.clone(), added, iio1, iio2, inCGraph.clone())) {
         (_, _, _, _, true, _, _, _) => {
-            (inSets.clone(), inCGraph.clone())
+            (inSets, inCGraph)
         },
         (cache, env, ih, DAE::Connect::Sets { sets, setCount: sc, connections: cl, outerConnects: oc }, false, io1, io2, graph) => {
             let mut vt1: SCode::Variability;
@@ -517,7 +517,7 @@ fn addOuterConnectIfEmpty(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             t2 = __pa6.clone();
             io1 = removeOuter(io1.clone())?;
             io2 = removeOuter(io2.clone())?;
-            let (__pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(InstSection::connectComponents(cache.clone(), env.clone(), ih.clone(), DAE::Connect::Sets { sets: sets.clone(), setCount: sc.clone(), connections: cl.clone(), outerConnects: metamodelica::nil() }, pre.clone(), cr1.clone(), f1.clone(), t1.clone(), vt1.clone(), cr2.clone(), f2.clone(), t2.clone(), vt2.clone(), ct.clone(), io1.clone(), io2.clone(), graph.clone(), info.clone())?) {
+            let (__pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(InstSection::connectComponents(cache.clone(), env.clone(), ih.clone(), DAE::Connect::Sets { sets: sets.clone(), setCount: sc.clone(), connections: cl.clone(), outerConnects: metamodelica::nil() }, pre, cr1, f1, t1.clone(), vt1.clone(), cr2, f2, t2.clone(), vt2.clone(), ct.clone(), io1.clone(), io2.clone(), graph.clone(), info)?) {
                 (__pa7, __pa8, __pa9, DAE::Connect::Sets { sets: __pa10, setCount: __pa11, connections: __pa12, .. }, _, __pa13) => (__pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -540,7 +540,7 @@ fn addOuterConnectIfEmpty(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 
 fn removeOuter(mut io: Absyn::InnerOuter) -> Result<Absyn::InnerOuter> {
     let mut outIo: Absyn::InnerOuter;
-    outIo = (match io.clone() {
+    outIo = (match io {
         Absyn::InnerOuter::OUTER { .. } => openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER,
         Absyn::InnerOuter::INNER { .. } => openmodelica_ast::Absyn::InnerOuter::INNER,
         Absyn::InnerOuter::INNER_OUTER { .. } => openmodelica_ast::Absyn::InnerOuter::INNER,
@@ -581,7 +581,7 @@ fn lookupVarInnerOuterAttr(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
                     isInner = isInner1.clone() || isInner2.clone();
                     isOuter = isOuter1.clone() || isOuter2.clone();
                     ErrorExt::rollBack((literal!("lookupVarInnerOuterAttr")).clone());
-                    Ok(((isInner.clone(), isOuter.clone()), isInner.clone(), isOuter.clone()))
+                    Ok(((isInner, isOuter), isInner.clone(), isOuter.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -599,7 +599,7 @@ fn lookupVarInnerOuterAttr(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
                     io = __pa0.clone();
                     (isInner, isOuter) = innerOuterBooleans(io.clone())?;
                     ErrorExt::rollBack((literal!("lookupVarInnerOuterAttr")).clone());
-                    Ok(((isInner.clone(), isOuter.clone()), isInner.clone(), isOuter.clone()))
+                    Ok(((isInner, isOuter), isInner.clone(), isOuter.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -617,7 +617,7 @@ fn lookupVarInnerOuterAttr(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
                     io = __pa0.clone();
                     (isInner, isOuter) = innerOuterBooleans(io.clone())?;
                     ErrorExt::rollBack((literal!("lookupVarInnerOuterAttr")).clone());
-                    Ok(((isInner.clone(), isOuter.clone()), isInner.clone(), isOuter.clone()))
+                    Ok(((isInner, isOuter), isInner.clone(), isOuter.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -639,7 +639,7 @@ fn lookupVarInnerOuterAttr(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
 fn innerOuterBooleans(mut io: Absyn::InnerOuter) -> Result<(bool, bool)> {
     let mut inner1: bool;
     let mut outer1: bool;
-    (inner1, outer1) = (match io.clone() {
+    (inner1, outer1) = (match io {
         Absyn::InnerOuter::INNER { .. } => (true, false),
         Absyn::InnerOuter::OUTER { .. } => (false, true),
         Absyn::InnerOuter::INNER_OUTER { .. } => (true, true),
@@ -650,7 +650,7 @@ fn innerOuterBooleans(mut io: Absyn::InnerOuter) -> Result<(bool, bool)> {
 
 pub(crate) fn outerConnection(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -> bool {
     let mut isOuter: bool;
-    isOuter = (match (io1.clone(), io2.clone()) {
+    isOuter = (match (io1, io2) {
         (Absyn::InnerOuter::OUTER { .. }, _) => true,
         (_, Absyn::InnerOuter::OUTER { .. }) => true,
         (Absyn::InnerOuter::INNER_OUTER { .. }, _) => true,
@@ -728,7 +728,7 @@ fn lookupInnerInIH(mut inTIH: TopInstance, mut inPrefix: DAE::Prefix, mut inComp
 pub(crate) fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: InstHierarchy, mut prefix: DAE::Prefix, mut componentName: ArcStr, mut cr: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>, mut io: Absyn::InnerOuter, mut r#impl: bool, mut inInfo: SourceInfo) -> bool {
     let mut modd: bool;
     modd = 'mc: {
-        let __mc_input = (inMod.clone(), io.clone());
+        let __mc_input = (inMod.clone(), io);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Mod::MOD { .. }, Absyn::InnerOuter::OUTER { .. }) => {
@@ -759,12 +759,12 @@ pub(crate) fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph
 
 pub(crate) fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<DAE::ComponentRef>) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph;
-    outEnv = (::match_deref::match_deref! { match &((inEnv.clone(), inCr.clone())) {
+    outEnv = (::match_deref::match_deref! { match &((inEnv.clone(), inCr)) {
         (FCore::Graph::EG { name: _ }, _) => {
-            inEnv.clone()
+            inEnv
         },
         (FCore::Graph::G { scope: Deref @ metamodelica::List::Nil, .. }, _) => {
-            inEnv.clone()
+            inEnv
         },
         (_, cr) => {
             let mut r: metamodelica::Array<FCore::Node>;
@@ -773,7 +773,7 @@ pub(crate) fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<D
             n = FNode::fromRef(r.clone())?;
             n = switchInnerToOuterInNode(n.clone(), cr.clone())?;
             r = FNode::updateRef(r.clone(), n.clone())?;
-            inEnv.clone()
+            inEnv
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -784,7 +784,7 @@ fn switchInnerToOuterInNode(mut inNode: FCore::Node, mut inCr: Arc<DAE::Componen
     let mut outNode: FCore::Node = inNode.clone();
     let () = (match outNode.clone() {
         FCore::Node { .. } => {
-            outNode.children = FCore::RefTree::map(outNode.children.clone(), (std::sync::Arc::new({ let __pe_b1 = inCr.clone(); move |__pe_a0, __pe_a2| switchInnerToOuterInChild(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>))?;
+            outNode.children = FCore::RefTree::map(outNode.children.clone(), (std::sync::Arc::new({ let __pe_b1 = inCr; move |__pe_a0, __pe_a2| switchInnerToOuterInChild(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>))?;
             ()
         },
         _ => (),
@@ -796,8 +796,8 @@ fn switchInnerToOuterInChild(mut name: ArcStr, mut cr: Arc<DAE::ComponentRef>, m
     let mut r#ref: metamodelica::Array<FCore::Node>;
     let mut n: FCore::Node;
     n = FNode::fromRef(inRef.clone())?;
-    n = switchInnerToOuterInChildrenValue(n.clone(), cr.clone())?;
-    r#ref = FNode::updateRef(inRef.clone(), n.clone())?;
+    n = switchInnerToOuterInChildrenValue(n, cr)?;
+    r#ref = FNode::updateRef(inRef.clone(), n)?;
     Ok(r#ref)
 }
 
@@ -896,14 +896,14 @@ fn switchInnerToOuterInChildrenValue(mut inNode: FCore::Node, mut inCr: Arc<DAE:
 // /////////////////////////////////////////////////
 fn emptyInstInner(mut innerPrefix: DAE::Prefix, mut name: ArcStr) -> InstInner {
     let mut outInstInner: InstInner;
-    outInstInner = InstInner { innerPrefix: innerPrefix.clone(), name: (name.clone()).clone(), io: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, fullName: (literal!("")).clone(), typePath: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), scope: (literal!("")).clone(), instResult: None, outers: metamodelica::nil(), innerElement: None };
+    outInstInner = InstInner { innerPrefix: innerPrefix, name: (name).clone(), io: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, fullName: (literal!("")).clone(), typePath: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), scope: (literal!("")).clone(), instResult: None, outers: metamodelica::nil(), innerElement: None };
     outInstInner
 }
 
 pub(crate) fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inIdent: ArcStr, mut io: Absyn::InnerOuter) -> Result<InstInner> {
     let mut outInstInner: InstInner;
     outInstInner = 'mc: {
-        let __mc_input = (inIH.clone(), inPrefix.clone(), inIdent.clone());
+        let __mc_input = (inIH, inPrefix, inIdent);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: tih, tail: _ }, pre, n) => {
@@ -931,7 +931,7 @@ pub(crate) fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut in
 
 pub(crate) fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inInnerOuter: Absyn::InnerOuter, mut inInstInner: InstInner) -> Result<InstHierarchy> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inIH.clone(), inInstInner.clone())) {
+        ::match_deref::match_deref! { match &((inIH, inInstInner.clone())) {
         (Deref @ metamodelica::List::Nil, InstInner { .. }) => {
             let mut tih: TopInstance;
             let mut ih: InstHierarchy;
@@ -940,15 +940,15 @@ pub(crate) fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Pr
             ht = emptyInstHierarchyHashTable();
             sm = HashSet::emptyHashSet();
             tih = TopInstance { path: None, ht: ht.clone(), outerPrefixes: emptyOuterPrefixes().clone(), sm: sm.clone() };
-            { (inIH, inPrefix, inInnerOuter, inInstInner) = (list![tih.clone()], inPrefix.clone(), inInnerOuter.clone(), inInstInner.clone()); continue '__tco; }
+            { (inIH, inPrefix, inInnerOuter, inInstInner) = (list![tih.clone()], inPrefix, inInnerOuter, inInstInner); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: TopInstance { path: pathOpt, ht, outerPrefixes, sm }, tail: restIH }, InstInner { name, .. }) => {
             let mut cref: Arc<DAE::ComponentRef>;
             let mut cref_: Arc<DAE::ComponentRef>;
             let mut ht = (*ht).clone();
             cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
-            (_, cref) = PrefixUtil::prefixCref(FCore::emptyCache(), FGraph::empty(), emptyInstHierarchy().clone(), inPrefix.clone(), cref_.clone())?;
-            ht = add((cref.clone(), inInstInner.clone()), ht.clone())?;
+            (_, cref) = PrefixUtil::prefixCref(FCore::emptyCache(), FGraph::empty(), emptyInstHierarchy().clone(), inPrefix, cref_.clone())?;
+            ht = add((cref.clone(), inInstInner), ht.clone())?;
             return Ok(metamodelica::cons(TopInstance { path: pathOpt.clone(), ht: ht.clone(), outerPrefixes: outerPrefixes.clone(), sm: sm.clone() }, restIH.clone()))
         },
         (_, InstInner { .. }) => {
@@ -961,7 +961,7 @@ pub(crate) fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Pr
 
 pub(crate) fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: InstHierarchy) -> Result<InstHierarchy> {
     let mut outIH: InstHierarchy;
-    outIH = (::match_deref::match_deref! { match &((smState.clone(), inIH.clone())) {
+    outIH = (::match_deref::match_deref! { match &((smState.clone(), inIH)) {
         (_, Deref @ metamodelica::List::Nil) => {
             let mut tih: TopInstance;
             let mut ih: InstHierarchy;
@@ -970,7 +970,7 @@ pub(crate) fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: I
             let mut sm2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             ht = emptyInstHierarchyHashTable();
             sm = HashSet::emptyHashSet();
-            sm2 = BaseHashSet::add(smState.clone(), sm.clone())?;
+            sm2 = BaseHashSet::add(smState, sm.clone())?;
             tih = TopInstance { path: None, ht: ht.clone(), outerPrefixes: emptyOuterPrefixes().clone(), sm: sm2.clone() };
             ih = list![tih.clone()];
             ih.clone()
@@ -1023,7 +1023,7 @@ pub(crate) fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DA
 pub(crate) fn addOuterPrefixToIH(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inInnerComponentRef: Arc<DAE::ComponentRef>) -> Result<InstHierarchy> {
     let mut outIH: InstHierarchy;
     outIH = 'mc: {
-        let __mc_input = inIH.clone();
+        let __mc_input = inIH;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -1067,7 +1067,7 @@ pub(crate) fn addOuterPrefixToIH(mut inIH: InstHierarchy, mut inOuterComponentRe
 
 pub(crate) fn prefixOuterCrefWithTheInnerPrefix(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
     let mut outInnerComponentRef: Arc<DAE::ComponentRef>;
-    outInnerComponentRef = (::match_deref::match_deref! { match &(inIH.clone()) {
+    outInnerComponentRef = (::match_deref::match_deref! { match &(inIH) {
         Deref @ metamodelica::List::Nil => {
             bail!("fail")
         },
@@ -1076,8 +1076,8 @@ pub(crate) fn prefixOuterCrefWithTheInnerPrefix(mut inIH: InstHierarchy, mut inO
             let mut fullCref: Arc<DAE::ComponentRef>;
             let mut innerCref: Arc<DAE::ComponentRef>;
             let mut innerCrefPrefix: Arc<DAE::ComponentRef>;
-            (_, fullCref) = PrefixUtil::prefixCref(FCore::emptyCache(), FGraph::empty(), emptyInstHierarchy().clone(), inPrefix.clone(), inOuterComponentRef.clone())?;
-            (outerCrefPrefix, innerCrefPrefix) = searchForInnerPrefix(fullCref.clone(), inOuterComponentRef.clone(), outerPrefixes.clone())?;
+            (_, fullCref) = PrefixUtil::prefixCref(FCore::emptyCache(), FGraph::empty(), emptyInstHierarchy().clone(), inPrefix, inOuterComponentRef.clone())?;
+            (outerCrefPrefix, innerCrefPrefix) = searchForInnerPrefix(fullCref.clone(), inOuterComponentRef, outerPrefixes.clone())?;
             innerCref = changeOuterReferenceToInnerReference(fullCref.clone(), outerCrefPrefix.clone(), innerCrefPrefix.clone())?;
             innerCref.clone()
         },
@@ -1091,7 +1091,7 @@ pub(crate) fn prefixOuterCrefWithTheInnerPrefix(mut inIH: InstHierarchy, mut inO
 
 fn changeOuterReferenceToInnerReference(mut inFullCref: Arc<DAE::ComponentRef>, mut inOuterCrefPrefix: Arc<DAE::ComponentRef>, mut inInnerCrefPrefix: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outInnerCref: Arc<DAE::ComponentRef>;
-    outInnerCref = (::match_deref::match_deref! { match &((inFullCref.clone(), inOuterCrefPrefix.clone(), inInnerCrefPrefix.clone())) {
+    outInnerCref = (::match_deref::match_deref! { match &((inFullCref, inOuterCrefPrefix, inInnerCrefPrefix)) {
         (ifull, ocp, icp) => {
             let mut ic: Arc<DAE::ComponentRef>;
             let mut eifull: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
@@ -1122,16 +1122,16 @@ fn searchForInnerPrefix(mut fullCref: Arc<DAE::ComponentRef>, mut inOuterCref: A
     let mut cr: Arc<DAE::ComponentRef>;
     let mut b1: bool = false;
     let mut b2: bool = false;
-    for mut op in &*outerPrefixes.clone() {
+    for mut op in &*outerPrefixes {
         let mut op = op.clone();
         let OuterPrefix { outerComponentRef: __pa0, .. } = (op.clone()) else { bail!("pattern mismatch") };
         outerCrefPrefix = __pa0.clone();
         b1 = ComponentReferenceBasics::crefPrefixOfIgnoreSubscripts(outerCrefPrefix.clone(), fullCref.clone());
-        if !(b1.clone()) {
+        if !(b1) {
             cr = ComponentReference::crefStripLastIdent(outerCrefPrefix.clone())?;
             b2 = ComponentReferenceBasics::crefLastIdent(outerCrefPrefix.clone())? == ComponentReferenceBasics::crefFirstIdent(inOuterCref.clone())? && ComponentReferenceBasics::crefPrefixOfIgnoreSubscripts(cr.clone(), fullCref.clone());
         }
-        if b1.clone() || b2.clone() {
+        if b1 || b2 {
             let OuterPrefix { innerComponentRef: __pa1, .. } = (op.clone()) else { bail!("pattern mismatch") };
             innerCrefPrefix = __pa1.clone();
             return Ok((outerCrefPrefix.clone(), innerCrefPrefix.clone()));
@@ -1143,7 +1143,7 @@ fn searchForInnerPrefix(mut fullCref: Arc<DAE::ComponentRef>, mut inOuterCref: A
 
 fn printInnerDefStr(mut inInstInner: InstInner) -> Result<ArcStr> {
     let mut outStr: ArcStr;
-    outStr = ((match inInstInner.clone() {
+    outStr = ((match inInstInner {
         InstInner { innerPrefix: _, name: _, io: _, fullName: mut fullName, typePath: mut typePath, scope: mut scope, instResult: _, outers: mut outers, innerElement: _ } => {
             let mut r#str: ArcStr;
             let mut strOuters: ArcStr;
@@ -1159,9 +1159,9 @@ fn printInnerDefStr(mut inInstInner: InstInner) -> Result<ArcStr> {
 
 pub(crate) fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: FCore::Graph) -> Result<ArcStr> {
     let mut innerDeclarations: ArcStr;
-    innerDeclarations = ((::match_deref::match_deref! { match &(inIH.clone()) {
+    innerDeclarations = ((::match_deref::match_deref! { match &(inIH) {
         Deref @ metamodelica::List::Nil => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("There are no 'inner' components defined in the model in any of the parent scopes of 'outer' component's scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("There are no 'inner' components defined in the model in any of the parent scopes of 'outer' component's scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv)); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }
         },
         Deref @ metamodelica::List::Cons { head: TopInstance { path: _, ht, outerPrefixes: _, sm: _ }, tail: _ } => {
             let mut inners: Arc<metamodelica::List<InstInner>>;
@@ -1177,13 +1177,13 @@ pub(crate) fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: F
 
 fn getInnersFromInstHierarchyHashTable(mut t: InstHierarchyHashTable) -> Result<Arc<metamodelica::List<InstInner>>> {
     let mut inners: Arc<metamodelica::List<InstInner>>;
-    inners = List::map(hashTableList(t.clone())?, (std::sync::Arc::new(fnptr!(getValue, (Arc<DAE::ComponentRef>, InstInner))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<InstInner> + 'static>))?;
+    inners = List::map(hashTableList(t)?, (std::sync::Arc::new(fnptr!(getValue, (Arc<DAE::ComponentRef>, InstInner))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<InstInner> + 'static>))?;
     Ok(inners)
 }
 
 fn getValue(mut tpl: (Arc<DAE::ComponentRef>, InstInner)) -> InstInner {
     let mut v: InstInner = <InstInner as ::std::default::Default>::default();
-    v = (::match_deref::match_deref! { match &(tpl.clone()) {
+    v = (::match_deref::match_deref! { match &(tpl) {
         (_, __esc_v) => {
             v = (*__esc_v).clone();
             v.clone()
@@ -1198,29 +1198,29 @@ fn getValue(mut tpl: (Arc<DAE::ComponentRef>, InstInner)) -> InstInner {
 // ///////////////////////////////////////////////////////////////
 fn hashFunc(mut k: Key) -> Result<i32> {
     let mut res: i32;
-    res = stringHashDjb2((ComponentReferenceBasics::printComponentRefStr(k.clone())?).clone());
+    res = stringHashDjb2((ComponentReferenceBasics::printComponentRefStr(k)?).clone());
     Ok(res)
 }
 
 fn keyEqual(mut key1: Key, mut key2: Key) -> Result<bool> {
     let mut res: bool;
-    res = ComponentReferenceBasics::crefEqualNoStringCompare(key1.clone(), key2.clone())?;
+    res = ComponentReferenceBasics::crefEqualNoStringCompare(key1, key2)?;
     Ok(res)
 }
 
 fn dumpInstHierarchyHashTable(mut t: InstHierarchyHashTable) -> Result<()> {
     metamodelica::print((literal!("InstHierarchyHashTable:\n")).clone());
-    metamodelica::print(stringDelimitList(List::map(hashTableList(t.clone())?, (std::sync::Arc::new(dumpTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
+    metamodelica::print(stringDelimitList(List::map(hashTableList(t)?, (std::sync::Arc::new(dumpTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
 fn dumpTuple(mut tpl: (Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ((::match_deref::match_deref! { match &(tpl.clone()) {
+    r#str = ((::match_deref::match_deref! { match &(tpl) {
         (k, _) => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentReference::crefStr(k.clone())?); __mm_s.push_str(&*literal!(" opaque InstInner for now, implement printing. ")); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1306,7 +1306,7 @@ fn emptyInstHierarchyHashTable() -> InstHierarchyHashTable {
 fn add(mut entry: (Arc<DAE::ComponentRef>, InstInner), mut hashTable: InstHierarchyHashTable) -> Result<InstHierarchyHashTable> {
     let mut outHashTable: InstHierarchyHashTable;
     outHashTable = 'mc: {
-        let __mc_input = (entry.clone(), hashTable.clone());
+        let __mc_input = (entry, hashTable.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (v @ (key, _), InstHierarchyHashTable { hashTable: hashvec, valueArr: varr, bucketSize: bsize, numberOfEntries: _ }) => {
@@ -1361,14 +1361,14 @@ fn add(mut entry: (Arc<DAE::ComponentRef>, InstInner), mut hashTable: InstHierar
 
 pub(crate) fn get(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<Value> {
     let mut value: Value;
-    (value, _) = get1(key.clone(), hashTable.clone())?;
+    (value, _) = get1(key, hashTable)?;
     Ok(value)
 }
 
 fn get1(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<(Value, i32)> {
     let mut value: Value;
     let mut indx: i32 = 0;
-    (value, indx) = (match hashTable.clone() {
+    (value, indx) = (match hashTable {
         InstHierarchyHashTable { hashTable: mut hashvec, valueArr: mut varr, bucketSize: mut bsize, numberOfEntries: _ } => {
             let mut hval: i32;
             let mut hashindx: i32;
@@ -1379,9 +1379,9 @@ fn get1(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<(Value, i
             hashindx = intMod(hval.clone(), bsize.clone());
             indexes = ({let __elt = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone(); __elt});
             indx = get2(key.clone(), indexes.clone())?;
-            (k, v) = valueArrayNth(varr.clone(), indx.clone())?;
-            let true = (keyEqual(k.clone(), key.clone())?) else { bail!("pattern mismatch") };
-            (v.clone(), indx.clone())
+            (k, v) = valueArrayNth(varr.clone(), indx)?;
+            let true = (keyEqual(k.clone(), key)?) else { bail!("pattern mismatch") };
+            (v.clone(), indx)
         },
     });
     Ok((value, indx))
@@ -1390,7 +1390,7 @@ fn get1(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<(Value, i
 fn get2(mut key: Key, mut keyIndices: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>) -> Result<i32> {
     let mut index: i32 = 0;
     index = 'mc: {
-        let __mc_input = keyIndices.clone();
+        let __mc_input = keyIndices;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (key2, index), tail: _ } => {
@@ -1405,7 +1405,7 @@ fn get2(mut key: Key, mut keyIndices: Arc<metamodelica::List<(Arc<DAE::Component
                 Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
                     let mut index: i32 = index.clone();
                     index = get2(key.clone(), xs.clone())?;
-                    Ok((index.clone(), index.clone()))
+                    Ok((index, index.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1417,10 +1417,10 @@ fn get2(mut key: Key, mut keyIndices: Arc<metamodelica::List<(Arc<DAE::Component
 
 fn hashTableList(mut hashTable: InstHierarchyHashTable) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>>> {
     let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>> = metamodelica::nil();
-    tplLst = (match hashTable.clone() {
+    tplLst = (match hashTable {
         InstHierarchyHashTable { valueArr: mut varr, .. } => {
             tplLst = valueArrayList(varr.clone())?;
-            tplLst.clone()
+            tplLst
         },
     });
     Ok(tplLst)
@@ -1429,7 +1429,7 @@ fn hashTableList(mut hashTable: InstHierarchyHashTable) -> Result<Arc<metamodeli
 fn valueArrayList(mut valueArray: ValueArray) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>>> {
     let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>>;
     tplLst = 'mc: {
-        let __mc_input = valueArray.clone();
+        let __mc_input = valueArray;
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: 0, .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok(metamodelica::nil())
@@ -1460,7 +1460,7 @@ fn valueArrayList(mut valueArray: ValueArray) -> Result<Arc<metamodelica::List<(
 fn valueArrayList2(mut inVarOptionArray1: metamodelica::Array<Option<(Arc<DAE::ComponentRef>, InstInner)>>, mut inInteger2: i32, mut inInteger3: i32) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>>> {
     let mut outVarLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>>;
     outVarLst = 'mc: {
-        let __mc_input = (inVarOptionArray1.clone(), inInteger2.clone(), inInteger3.clone());
+        let __mc_input = (inVarOptionArray1.clone(), inInteger2, inInteger3);
         if let Ok(__v) = (|| -> Result<_> {
             let (mut arr, mut pos, mut lastpos) = __mc_input.clone() else { bail!("nomatch") };
             if !((pos.clone() == lastpos.clone())) { bail!("guard") }
@@ -1505,10 +1505,10 @@ fn valueArrayList2(mut inVarOptionArray1: metamodelica::Array<Option<(Arc<DAE::C
 
 fn valueArrayLength(mut valueArray: ValueArray) -> Result<i32> {
     let mut size: i32 = 0;
-    size = (match valueArray.clone() {
+    size = (match valueArray {
         ValueArray { numberOfElements: mut __esc_size, .. } => {
             size = __esc_size.clone();
-            size.clone()
+            size
         },
     });
     Ok(size)
@@ -1517,7 +1517,7 @@ fn valueArrayLength(mut valueArray: ValueArray) -> Result<i32> {
 fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>, InstInner)) -> Result<ValueArray> {
     let mut outValueArray: ValueArray;
     outValueArray = 'mc: {
-        let __mc_input = valueArray.clone();
+        let __mc_input = valueArray;
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: mut n, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             if !((n.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
@@ -1564,8 +1564,8 @@ fn valueArraySetnth(mut valueArray: ValueArray, mut pos: i32, mut entry: (Arc<DA
         let __mc_input = valueArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: _, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
-            if !((pos.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
-            metamodelica::arrayUpdate(arr.clone(), pos.clone() + 1, Some(entry.clone()))?;
+            if !((pos < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
+            metamodelica::arrayUpdate(arr.clone(), pos + 1, Some(entry.clone()))?;
             Ok(valueArray.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1584,8 +1584,8 @@ fn valueArrayClearnth(mut valueArray: ValueArray, mut pos: i32) -> Result<ValueA
         let __mc_input = valueArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: _, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
-            if !((pos.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
-            metamodelica::arrayUpdate(arr.clone(), pos.clone() + 1, None)?;
+            if !((pos < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
+            metamodelica::arrayUpdate(arr.clone(), pos + 1, None)?;
             Ok(valueArray.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1601,12 +1601,12 @@ fn valueArrayClearnth(mut valueArray: ValueArray, mut pos: i32) -> Result<ValueA
 fn valueArrayNth(mut valueArray: ValueArray, mut pos: i32) -> Result<(Key, Value)> {
     let mut key: Key;
     let mut value: Value;
-    (key, value) = (match valueArray.clone() {
+    (key, value) = (match valueArray {
         ValueArray { numberOfElements: mut n, valueArray: mut arr } => {
             let mut k: Key;
             let mut v: Value;
-            let true = (pos.clone() < n.clone()) else { bail!("pattern mismatch") };
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
+            let true = (pos < n.clone()) else { bail!("pattern mismatch") };
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos + 1-1) as usize].clone(); __elt})) {
                 Some((__pa0, __pa1)) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };

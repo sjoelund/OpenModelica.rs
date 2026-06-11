@@ -284,10 +284,10 @@ pub mod CachedData {
         func_cache = getFuncCache(caches.clone())?;
         func_cache = (::match_deref::match_deref! { match &(func_cache.clone()) {
         Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: metamodelica::nil(), typed: false, specialBuiltin: false }),
-        Deref @ FUNCTION { .. } => func_cache.clone(),
+        Deref @ FUNCTION { .. } => func_cache,
         _ => bail!("match: no arm matched"),
     } });
-        setFuncCache(caches.clone(), func_cache.clone())?;
+        setFuncCache(caches.clone(), func_cache)?;
         Ok(())
     }
 
@@ -295,15 +295,15 @@ pub mod CachedData {
         let mut func_cache: Arc<CachedData>;
         func_cache = getFuncCache(caches.clone())?;
         func_cache = (::match_deref::match_deref! { match &(func_cache.clone()) {
-        Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: list![r#fn.clone()], typed: false, specialBuiltin: specialBuiltin.clone() }),
-        Deref @ FUNCTION { .. } => Arc::new(CachedData::FUNCTION { funcs: listAppend(var_field!((*func_cache).funcs, CachedData::FUNCTION).clone(), list![r#fn.clone()]), typed: false, specialBuiltin: var_field!((*func_cache).specialBuiltin, CachedData::FUNCTION).clone() || specialBuiltin.clone() }),
+        Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: list![r#fn], typed: false, specialBuiltin: specialBuiltin }),
+        Deref @ FUNCTION { .. } => Arc::new(CachedData::FUNCTION { funcs: listAppend(var_field!((*func_cache).funcs, CachedData::FUNCTION).clone(), list![r#fn]), typed: false, specialBuiltin: var_field!((*func_cache).specialBuiltin, CachedData::FUNCTION).clone() || specialBuiltin }),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.CachedData.addFunc")); __mm_s.push_str(&*literal!(": Invalid cache for function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        setFuncCache(caches.clone(), func_cache.clone())?;
+        setFuncCache(caches.clone(), func_cache)?;
         Ok(())
     }
 
@@ -313,7 +313,7 @@ pub mod CachedData {
     }
 
     pub(crate) fn setFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>, mut in_cache: Arc<CachedData>) -> Result<()> {
-        metamodelica::arrayUpdate(in_caches.clone(), 1, in_cache.clone())?;
+        metamodelica::arrayUpdate(in_caches.clone(), 1, in_cache)?;
         Ok(())
     }
 
@@ -452,8 +452,8 @@ pub mod InstNode {
     pub(crate) fn new(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut node: Arc<InstNode>;
         node = (::match_deref::match_deref! { match &(definition.clone()) {
-        Deref @ SCode::Element::CLASS { .. } => newClass(definition.clone(), parent.clone(), crate::NFInstNode::InstNodeType::interned_NORMAL_CLASS())?,
-        Deref @ SCode::Element::COMPONENT { .. } => newComponent(definition.clone(), parent.clone())?,
+        Deref @ SCode::Element::CLASS { .. } => newClass(definition, parent, crate::NFInstNode::InstNodeType::interned_NORMAL_CLASS())?,
+        Deref @ SCode::Element::COMPONENT { .. } => newComponent(definition, parent)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(node)
@@ -469,7 +469,7 @@ pub mod InstNode {
         } };
         name = __pa0.clone();
         vis = __pa1.clone();
-        node = Arc::new(InstNode::CLASS_NODE { name: (name.clone()).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis.clone()), cls: Pointer::create(crate::NFClass::interned_NOT_INSTANTIATED()), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: nodeType.clone() });
+        node = Arc::new(InstNode::CLASS_NODE { name: (name).clone(), definition: definition, visibility: Prefixes::visibilityFromSCode(vis), cls: Pointer::create(crate::NFClass::interned_NOT_INSTANTIATED()), caches: CachedData::empty(), parentScope: parent, nodeType: nodeType });
         Ok(node)
     }
 
@@ -483,7 +483,7 @@ pub mod InstNode {
         } };
         name = __pa0.clone();
         vis = __pa1.clone();
-        node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: Some(definition.clone()), visibility: Prefixes::visibilityFromSCode(vis.clone()), component: Pointer::create(Component::new(definition.clone())), parent: parent.clone(), nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
+        node = Arc::new(InstNode::COMPONENT_NODE { name: (name).clone(), definition: Some(definition.clone()), visibility: Prefixes::visibilityFromSCode(vis), component: Pointer::create(Component::new(definition)), parent: parent, nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
         Ok(node)
     }
 
@@ -498,32 +498,32 @@ pub mod InstNode {
         } };
         base_path = __pa0.clone();
         vis = __pa1.clone();
-        name = (AbsynUtil::pathLastIdent(base_path.clone())?).clone();
-        node = Arc::new(InstNode::CLASS_NODE { name: (name.clone()).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis.clone()), cls: Pointer::create(crate::NFClass::interned_NOT_INSTANTIATED()), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: Arc::new(InstNodeType::BASE_CLASS { parent: parent.clone(), definition: definition.clone(), ty: nodeType(parent.clone())? }) });
+        name = (AbsynUtil::pathLastIdent(base_path)?).clone();
+        node = Arc::new(InstNode::CLASS_NODE { name: (name).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis), cls: Pointer::create(crate::NFClass::interned_NOT_INSTANTIATED()), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: Arc::new(InstNodeType::BASE_CLASS { parent: parent.clone(), definition: definition, ty: nodeType(parent)? }) });
         Ok(node)
     }
 
     pub fn newIterator(mut name: ArcStr, mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Arc<InstNode> {
         let mut iterator: Arc<InstNode>;
-        iterator = fromComponent((name.clone()).clone(), Component::newIterator(ty.clone(), info.clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
+        iterator = fromComponent((name).clone(), Component::newIterator(ty, info), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
         iterator
     }
 
     pub fn newUniqueIterator(mut info: SourceInfo, mut ty: Arc<Type::NFType>) -> Arc<InstNode> {
         let mut iterator: Arc<InstNode>;
-        iterator = newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$i")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", System::tmpTickIndex(Global::iteratorIndex.clone())))); ArcStr::from(__mm_s) }).clone(), ty.clone(), info.clone());
+        iterator = newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$i")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", System::tmpTickIndex(Global::iteratorIndex.clone())))); ArcStr::from(__mm_s) }).clone(), ty, info);
         iterator
     }
 
     pub(crate) fn newIndexedIterator(mut index: i32, mut name: ArcStr, mut info: SourceInfo, mut ty: Arc<Type::NFType>) -> Arc<InstNode> {
         let mut iterator: Arc<InstNode>;
-        iterator = newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone(), ty.clone(), info.clone());
+        iterator = newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*name); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index))); ArcStr::from(__mm_s) }).clone(), ty, info);
         iterator
     }
 
     pub(crate) fn fromComponent(mut name: ArcStr, mut component: Arc<Component::NFComponent>, mut parent: Arc<InstNode>) -> Arc<InstNode> {
         let mut node: Arc<InstNode>;
-        node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: None, visibility: Visibility::PUBLIC.clone(), component: Pointer::create(component.clone()), parent: parent.clone(), nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
+        node = Arc::new(InstNode::COMPONENT_NODE { name: (name).clone(), definition: None, visibility: Visibility::PUBLIC.clone(), component: Pointer::create(component), parent: parent, nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
         node
     }
 
@@ -540,7 +540,7 @@ pub mod InstNode {
 
     pub(crate) fn isBaseClass(mut node: Arc<InstNode>) -> bool {
         let mut isBaseClass: bool;
-        isBaseClass = (::match_deref::match_deref! { match &(node.clone()) {
+        isBaseClass = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::BASE_CLASS { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -551,7 +551,7 @@ pub mod InstNode {
     pub(crate) fn isUserdefinedClass(mut node: Arc<InstNode>) -> bool {
         '__tco: loop {
             let mut ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
-            ::match_deref::match_deref! { match &(node.clone()) {
+            ::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: __esc_ty, .. } => {
             ty = (*__esc_ty).clone();
             ::match_deref::match_deref! { match &(ty.clone()) {
@@ -571,7 +571,7 @@ pub mod InstNode {
 
     pub fn isDerivedClass(mut node: Arc<InstNode>) -> bool {
         let mut isDerived: bool;
-        isDerived = (::match_deref::match_deref! { match &(node.clone()) {
+        isDerived = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::DERIVED_CLASS { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -581,13 +581,13 @@ pub mod InstNode {
 
     pub fn makeRootClass(mut node: Arc<InstNode>, mut parent: Arc<InstNode>, mut context: Option<Arc<Absyn::Path>>) -> Arc<InstNode> {
         let mut node: Arc<InstNode> = node;
-        node = setNodeType(Arc::new(InstNodeType::ROOT_CLASS { parent: parent.clone(), context: context.clone() }), node.clone());
+        node = setNodeType(Arc::new(InstNodeType::ROOT_CLASS { parent: parent, context: context }), node);
         node
     }
 
     pub fn isRootClass(mut node: Arc<InstNode>) -> bool {
         let mut res: bool;
-        res = (::match_deref::match_deref! { match &(node.clone()) {
+        res = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::ROOT_CLASS { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -597,7 +597,7 @@ pub mod InstNode {
 
     pub(crate) fn rootClassContext(mut node: Arc<InstNode>) -> Option<Arc<Absyn::Path>> {
         let mut context: Option<Arc<Absyn::Path>> = None;
-        context = (::match_deref::match_deref! { match &(node.clone()) {
+        context = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::ROOT_CLASS { context: __esc_context, .. }, .. } => {
             context = (*__esc_context).clone();
             context.clone()
@@ -612,7 +612,7 @@ pub mod InstNode {
         let mut isFunc: bool;
         isFunc = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::isFunction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
-        Deref @ COMPONENT_NODE { .. } => Class::isFunction(getClass(node.clone())?),
+        Deref @ COMPONENT_NODE { .. } => Class::isFunction(getClass(node)?),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -632,7 +632,7 @@ pub mod InstNode {
 
     pub(crate) fn isRef(mut node: Arc<InstNode>) -> bool {
         let mut isRef: bool;
-        isRef = (::match_deref::match_deref! { match &(node.clone()) {
+        isRef = (::match_deref::match_deref! { match &(node) {
         Deref @ REF_NODE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -642,7 +642,7 @@ pub mod InstNode {
 
     pub fn isEmpty(mut node: Arc<InstNode>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(node.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(node) {
         Deref @ EMPTY_NODE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -652,7 +652,7 @@ pub mod InstNode {
 
     pub(crate) fn isImplicit(mut node: Arc<InstNode>) -> bool {
         let mut isImplicit: bool;
-        isImplicit = (::match_deref::match_deref! { match &(node.clone()) {
+        isImplicit = (::match_deref::match_deref! { match &(node) {
         Deref @ IMPLICIT_SCOPE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -662,7 +662,7 @@ pub mod InstNode {
 
     pub(crate) fn isName(mut node: Arc<InstNode>) -> bool {
         let mut isName: bool;
-        isName = (::match_deref::match_deref! { match &(node.clone()) {
+        isName = (::match_deref::match_deref! { match &(node) {
         Deref @ NAME_NODE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -673,7 +673,7 @@ pub mod InstNode {
     pub(crate) fn isConnector(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isConnector: bool;
         isConnector = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isConnector(component(node.clone())?),
+        Deref @ COMPONENT_NODE { .. } => Component::isConnector(component(node)?),
         Deref @ NAME_NODE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -684,7 +684,7 @@ pub mod InstNode {
     pub(crate) fn isExpandableConnector(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isConnector: bool;
         isConnector = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isExpandableConnector(component(node.clone())?),
+        Deref @ COMPONENT_NODE { .. } => Component::isExpandableConnector(component(node)?),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -694,11 +694,11 @@ pub mod InstNode {
     pub(crate) fn hasParentExpandableConnector(mut node: Arc<InstNode>) -> Result<bool> {
         let mut b: bool = isExpandableConnector(node.clone())?;
         let mut p: Arc<InstNode>;
-        p = node.clone();
+        p = node;
         while !(isEmpty(p.clone())) {
             p = parent(p.clone());
-            b = boolOr(b.clone(), isExpandableConnector(p.clone())?);
-            if b.clone() {
+            b = boolOr(b, isExpandableConnector(p.clone())?);
+            if b {
                 break;
             }
         }
@@ -736,11 +736,11 @@ pub mod InstNode {
     pub(crate) fn isNamed(mut node: Arc<InstNode>, mut name: ArcStr) -> bool {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => return var_field!((*node).name, InstNode::CLASS_NODE).clone() == name.clone(),
-        Deref @ COMPONENT_NODE { .. } => return var_field!((*node).name, InstNode::COMPONENT_NODE).clone() == name.clone(),
-        Deref @ INNER_OUTER_NODE { .. } => { (node, name) = (var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(), (name.clone()).clone()); continue '__tco; },
-        Deref @ VAR_NODE { .. } => return var_field!((*node).name, InstNode::VAR_NODE).clone() == name.clone(),
-        Deref @ NAME_NODE { .. } => return var_field!((*node).name, InstNode::NAME_NODE).clone() == name.clone(),
+        Deref @ CLASS_NODE { .. } => return var_field!((*node).name, InstNode::CLASS_NODE).clone() == name,
+        Deref @ COMPONENT_NODE { .. } => return var_field!((*node).name, InstNode::COMPONENT_NODE).clone() == name,
+        Deref @ INNER_OUTER_NODE { .. } => { (node, name) = (var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(), (name).clone()); continue '__tco; },
+        Deref @ VAR_NODE { .. } => return var_field!((*node).name, InstNode::VAR_NODE).clone() == name,
+        Deref @ NAME_NODE { .. } => return var_field!((*node).name, InstNode::NAME_NODE).clone() == name,
         _ => return false,
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -749,7 +749,7 @@ pub mod InstNode {
 
     pub(crate) fn className(mut node: Arc<InstNode>) -> Result<ArcStr> {
         let mut name: ArcStr;
-        let __pa0 = ::match_deref::match_deref! { match &(node.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(node) {
             Deref @ CLASS_NODE { name: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -782,19 +782,19 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; name = name.clone());
+            assign_variant_field!(node => InstNode::CLASS_NODE; name = name);
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; name = name.clone());
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; name = name);
             ()
         },
         Deref @ NAME_NODE { .. } => {
-            assign_variant_field!(node => InstNode::NAME_NODE; name = name.clone());
+            assign_variant_field!(node => InstNode::NAME_NODE; name = name);
             ()
         },
         Deref @ VAR_NODE { .. } => {
-            assign_variant_field!(node => InstNode::VAR_NODE; name = name.clone());
+            assign_variant_field!(node => InstNode::VAR_NODE; name = name);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -821,7 +821,7 @@ pub mod InstNode {
 
     pub fn classParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut parent: Arc<InstNode>;
-        let __pa0 = ::match_deref::match_deref! { match &(node.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(node) {
             Deref @ CLASS_NODE { parentScope: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -832,13 +832,13 @@ pub mod InstNode {
     pub(crate) fn instanceParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         parent = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => getDerivedNode(self::parent(getDerivedNode(node.clone(), true)), true),
+        Deref @ CLASS_NODE { .. } => getDerivedNode(self::parent(getDerivedNode(node, true)), true),
         Deref @ COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent: __esc_parent }, .. } => {
             parent = (*__esc_parent).clone();
             getDerivedNode(parent.clone(), true)
         },
-        Deref @ COMPONENT_NODE { .. } => getDerivedNode(self::parent(getDerivedNode(node.clone(), true)), true),
-        Deref @ IMPLICIT_SCOPE { .. } => getDerivedNode(self::parent(getDerivedNode(node.clone(), true)), true),
+        Deref @ COMPONENT_NODE { .. } => getDerivedNode(self::parent(getDerivedNode(node, true)), true),
+        Deref @ IMPLICIT_SCOPE { .. } => getDerivedNode(self::parent(getDerivedNode(node, true)), true),
         _ => crate::NFInstNode::InstNode::interned_EMPTY_NODE(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -848,8 +848,8 @@ pub mod InstNode {
     pub(crate) fn rootParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut parent: Arc<InstNode>;
         parent = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => rootTypeParent(var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), node.clone())?,
-        _ => self::parent(node.clone()),
+        Deref @ CLASS_NODE { .. } => rootTypeParent(var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), node)?,
+        _ => self::parent(node),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(parent)
@@ -859,8 +859,8 @@ pub mod InstNode {
         '__tco: loop {
             ::match_deref::match_deref! { match &(nodeType.clone()) {
         Deref @ InstNodeType::ROOT_CLASS { .. } if (!(isEmpty(var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone()))) => return Ok(var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone()),
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (nodeType, node) = (var_field!((*nodeType).ty, InstNodeType::DERIVED_CLASS).clone(), node.clone()); continue '__tco; },
-        _ => return Ok(self::parent(node.clone())),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (nodeType, node) = (var_field!((*nodeType).ty, InstNodeType::DERIVED_CLASS).clone(), node); continue '__tco; },
+        _ => return Ok(self::parent(node)),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         }
@@ -874,11 +874,11 @@ pub mod InstNode {
             scope = Class::lastBaseClass(node.clone())?;
             if (isBuiltin(scope.clone())) {topScope(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone())?} else if (referenceEq(&*(node.clone()),&*(scope.clone()))) {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()} else {parentScope(scope.clone(), false)?}
         },
-        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { originalNode: Some(__esc_orig_node), .. }, .. } if (ignoreRedeclare.clone()) => {
+        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { originalNode: Some(__esc_orig_node), .. }, .. } if (ignoreRedeclare) => {
             orig_node = (*__esc_orig_node).clone();
             parentScope(orig_node.clone(), false)?
         },
-        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { parent: __esc_scope, .. }, .. } if (ignoreRedeclare.clone()) => {
+        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { parent: __esc_scope, .. }, .. } if (ignoreRedeclare) => {
             scope = (*__esc_scope).clone();
             scope.clone()
         },
@@ -894,7 +894,7 @@ pub mod InstNode {
         let mut path: Arc<Absyn::Path>;
         path = AbsynUtil::stringListPath(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut n in (enclosingScopeList(node.clone(), ignoreRedeclare.clone(), ignoreBaseClass.clone())?).into_iter().cloned() {
+        for mut n in (enclosingScopeList(node, ignoreRedeclare, ignoreBaseClass)?).into_iter().cloned() {
             let __x = name(n.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -908,7 +908,7 @@ pub mod InstNode {
         let mut scope: Arc<InstNode> = node.clone();
         while !(isTopScope(scope.clone())) {
             res = metamodelica::cons(scope.clone(), res.clone());
-            scope = enclosingScope(scope.clone(), ignoreRedeclare.clone(), ignoreBaseClass.clone())?;
+            scope = enclosingScope(scope.clone(), ignoreRedeclare, ignoreBaseClass)?;
             if isEmpty(scope.clone()) {
                 break;
             }
@@ -921,16 +921,16 @@ pub mod InstNode {
         let mut scope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut orig_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         scope = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { originalNode: Some(__esc_orig_node), .. }, .. } if (ignoreRedeclare.clone()) => {
+        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { originalNode: Some(__esc_orig_node), .. }, .. } if (ignoreRedeclare) => {
             orig_node = (*__esc_orig_node).clone();
-            enclosingScope(orig_node.clone(), ignoreRedeclare.clone(), ignoreBaseClass.clone())?
+            enclosingScope(orig_node.clone(), ignoreRedeclare, ignoreBaseClass)?
         },
-        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { parent: __esc_scope, .. }, .. } if (ignoreRedeclare.clone()) => {
+        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { parent: __esc_scope, .. }, .. } if (ignoreRedeclare) => {
             scope = (*__esc_scope).clone();
             scope.clone()
         },
-        Deref @ CLASS_NODE { .. } => if (ignoreBaseClass.clone()) {getDerivedNode(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(), true)} else {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()},
-        Deref @ COMPONENT_NODE { .. } => enclosingScope(classScope(node.clone()), ignoreRedeclare.clone(), ignoreBaseClass.clone())?,
+        Deref @ CLASS_NODE { .. } => if (ignoreBaseClass) {getDerivedNode(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(), true)} else {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()},
+        Deref @ COMPONENT_NODE { .. } => enclosingScope(classScope(node), ignoreRedeclare, ignoreBaseClass)?,
         Deref @ IMPLICIT_SCOPE { .. } => var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(),
         _ => bail!("match: no arm matched"),
     } });
@@ -941,7 +941,7 @@ pub mod InstNode {
         let mut scope: Arc<InstNode>;
         scope = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
-        _ => node.clone(),
+        _ => node,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         scope
@@ -950,8 +950,8 @@ pub mod InstNode {
     pub(crate) fn libraryScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { parentScope: Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. }, .. } => return Ok(node.clone()),
-        _ => { node = parentScope(node.clone(), false)?; continue '__tco; },
+        Deref @ CLASS_NODE { parentScope: Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. }, .. } => return Ok(node),
+        _ => { node = parentScope(node, false)?; continue '__tco; },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         }
@@ -960,8 +960,8 @@ pub mod InstNode {
     pub fn topScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => return Ok(node.clone()),
-        _ => { node = parent(node.clone()); continue '__tco; },
+        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => return Ok(node),
+        _ => { node = parent(node); continue '__tco; },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         }
@@ -974,7 +974,7 @@ pub mod InstNode {
             annScope = (*__esc_annScope).clone();
             annScope.clone()
         },
-        _ => annotationScope(parentScope(node.clone(), false)?)?,
+        _ => annotationScope(parentScope(node, false)?)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(annScope)
@@ -982,7 +982,7 @@ pub mod InstNode {
 
     pub(crate) fn isTopScope(mut node: Arc<InstNode>) -> bool {
         let mut res: bool;
-        res = (::match_deref::match_deref! { match &(node.clone()) {
+        res = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -993,7 +993,7 @@ pub mod InstNode {
     pub(crate) fn topComponent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => return Ok(node.clone()),
+        Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => return Ok(node),
         Deref @ COMPONENT_NODE { .. } => { node = var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(); continue '__tco; },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1004,15 +1004,15 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; parentScope = parent.clone());
+            assign_variant_field!(node => InstNode::CLASS_NODE; parentScope = parent);
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; parent = parent.clone());
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; parent = parent);
             ()
         },
         Deref @ IMPLICIT_SCOPE { .. } => {
-            assign_variant_field!(node => InstNode::IMPLICIT_SCOPE; parentScope = parent.clone());
+            assign_variant_field!(node => InstNode::IMPLICIT_SCOPE; parentScope = parent);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1024,11 +1024,11 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { parentScope: Deref @ EMPTY_NODE { .. }, .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; parentScope = parent.clone());
+            assign_variant_field!(node => InstNode::CLASS_NODE; parentScope = parent);
             ()
         },
         Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; parent = parent.clone());
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; parent = parent);
             ()
         },
         _ => (),
@@ -1050,7 +1050,7 @@ pub mod InstNode {
     pub(crate) fn getDerivedClass(mut node: Arc<InstNode>) -> Result<Arc<Class::NFClass>> {
         let mut cls: Arc<Class::NFClass>;
         cls = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => getClass(getDerivedNode(node.clone(), true))?,
+        Deref @ CLASS_NODE { .. } => getClass(getDerivedNode(node, true))?,
         Deref @ COMPONENT_NODE { .. } => getClass(getDerivedNode(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())), true))?,
         _ => bail!("match: no arm matched"),
     } });
@@ -1060,8 +1060,8 @@ pub mod InstNode {
     pub fn getDerivedNode(mut node: Arc<InstNode>, mut recursive: bool) -> Arc<InstNode> {
         let mut derived: Arc<InstNode>;
         derived = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => getDerivedNode2(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), recursive.clone()),
-        _ => node.clone(),
+        Deref @ CLASS_NODE { .. } => getDerivedNode2(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), recursive),
+        _ => node,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         derived
@@ -1070,9 +1070,9 @@ pub mod InstNode {
     pub(crate) fn getDerivedNode2(mut node: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut recursive: bool) -> Arc<InstNode> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::BASE_CLASS { .. } => if (recursive.clone()) {return getDerivedNode(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), true)} else {return var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone()},
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (node, ty, recursive) = (node.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), recursive.clone()); continue '__tco; },
-        _ => return node.clone(),
+        Deref @ InstNodeType::BASE_CLASS { .. } => if (recursive) {return getDerivedNode(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), true)} else {return var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone()},
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (node, ty, recursive) = (node, var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), recursive); continue '__tco; },
+        _ => return node,
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
         }
@@ -1082,8 +1082,8 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         node = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), cls.clone());
-            node.clone()
+            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), cls);
+            node
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1105,8 +1105,8 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         node = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => {
-            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), component.clone());
-            node.clone()
+            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), component);
+            node
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1117,7 +1117,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(component.clone()));
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(component));
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1129,7 +1129,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; cls = Pointer::create(cls.clone()));
+            assign_variant_field!(node => InstNode::CLASS_NODE; cls = Pointer::create(cls));
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1154,7 +1154,7 @@ pub mod InstNode {
             ty = (*__esc_ty).clone();
             ty.clone()
         },
-        _ => nodeType(node.clone())?,
+        _ => nodeType(node)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(ty)
@@ -1164,11 +1164,11 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; nodeType = nodeType.clone());
+            assign_variant_field!(node => InstNode::CLASS_NODE; nodeType = nodeType);
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; nodeType = nodeType.clone());
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; nodeType = nodeType);
             ()
         },
         _ => (),
@@ -1186,7 +1186,7 @@ pub mod InstNode {
             definition.clone()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.definition")); __mm_s.push_str(&*literal!(" failed for non class/component node: ")); __mm_s.push_str(&*toString(node.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.definition")); __mm_s.push_str(&*literal!(" failed for non class/component node: ")); __mm_s.push_str(&*toString(node)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1200,7 +1200,7 @@ pub mod InstNode {
         Deref @ CLASS_NODE { .. } => return Ok(var_field!((*node).definition, InstNode::CLASS_NODE).clone()),
         Deref @ COMPONENT_NODE { .. } => { node = Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())); continue '__tco; },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.classDefinition")); __mm_s.push_str(&*literal!(" failed for non class/component node: ")); __mm_s.push_str(&*toString(node.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.classDefinition")); __mm_s.push_str(&*literal!(" failed for non class/component node: ")); __mm_s.push_str(&*toString(node)?); ArcStr::from(__mm_s) }).clone()])?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1211,7 +1211,7 @@ pub mod InstNode {
     pub fn extendsDefinition(mut node: Arc<InstNode>) -> Result<Option<Arc<SCode::Element>>> {
         let mut definition: Option<Arc<SCode::Element>>;
         let mut ty: Arc<InstNodeType>;
-        ty = derivedNodeType(node.clone())?;
+        ty = derivedNodeType(node)?;
         definition = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ InstNodeType::BASE_CLASS { .. } => Some(var_field!((*ty).definition, InstNodeType::BASE_CLASS).clone()),
         _ => None,
@@ -1224,11 +1224,11 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; definition = definition.clone());
+            assign_variant_field!(node => InstNode::CLASS_NODE; definition = definition);
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; definition = Some(definition.clone()));
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; definition = Some(definition));
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1240,11 +1240,11 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         node = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => {
-            assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(Component::setDirection(direction.clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))));
-            node.clone()
+            assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(Component::setDirection(direction, Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))));
+            node
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.setComponentDirection")); __mm_s.push_str(&*literal!(" failed for non component node: ")); __mm_s.push_str(&*toString(node.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.setComponentDirection")); __mm_s.push_str(&*literal!(" failed for non component node: ")); __mm_s.push_str(&*toString(node)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1305,7 +1305,7 @@ pub mod InstNode {
         let mut ty: Arc<Type::NFType>;
         let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
         ty = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Class::getType(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node.clone())?,
+        Deref @ CLASS_NODE { .. } => Class::getType(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node)?,
         Deref @ COMPONENT_NODE { .. } => Component::getType(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         Deref @ VAR_NODE { .. } => {
             var = Pointer::access(var_field!((*node).varPointer, InstNode::VAR_NODE).clone());
@@ -1323,7 +1323,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), func(arg.clone(), Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?);
+            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), func(arg, Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1337,7 +1337,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => {
-            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), func(arg.clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?);
+            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), func(arg, Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1349,22 +1349,22 @@ pub mod InstNode {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            return Ok(scopeListClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), includeRoot.clone(), accumScopes.clone())?)
+            return Ok(scopeListClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), includeRoot, accumScopes)?)
         },
         Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => {
-            return Ok(accumScopes.clone())
+            return Ok(accumScopes)
         },
         Deref @ COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent }, .. } => {
-            { (node, includeRoot, accumScopes) = (parent.clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone())); continue '__tco; }
+            { (node, includeRoot, accumScopes) = (parent.clone(), includeRoot, metamodelica::cons(node, accumScopes)); continue '__tco; }
         },
         Deref @ COMPONENT_NODE { .. } => {
-            { (node, includeRoot, accumScopes) = (var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone())); continue '__tco; }
+            { (node, includeRoot, accumScopes) = (var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), includeRoot, metamodelica::cons(node, accumScopes)); continue '__tco; }
         },
         Deref @ IMPLICIT_SCOPE { .. } => {
-            { (node, includeRoot, accumScopes) = (var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), includeRoot.clone(), accumScopes.clone()); continue '__tco; }
+            { (node, includeRoot, accumScopes) = (var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), includeRoot, accumScopes); continue '__tco; }
         },
         _ => {
-            return Ok(accumScopes.clone())
+            return Ok(accumScopes)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1374,14 +1374,14 @@ pub mod InstNode {
     pub(crate) fn scopeListClass(mut clsNode: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut includeRoot: bool, mut accumScopes: Arc<metamodelica::List<Arc<InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode>>>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::NORMAL_CLASS => return Ok(scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?),
-        Deref @ InstNodeType::BASE_CLASS { .. } => return Ok(scopeList(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), includeRoot.clone(), accumScopes.clone())?),
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (clsNode, ty, includeRoot, accumScopes) = (clsNode.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), includeRoot.clone(), accumScopes.clone()); continue '__tco; },
-        Deref @ InstNodeType::BUILTIN_CLASS => return Ok(metamodelica::cons(clsNode.clone(), accumScopes.clone())),
-        Deref @ InstNodeType::TOP_SCOPE { .. } => return Ok(accumScopes.clone()),
-        Deref @ InstNodeType::ROOT_CLASS { .. } => if (includeRoot.clone()) {return Ok(scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?)} else {return Ok(accumScopes.clone())},
-        Deref @ InstNodeType::REDECLARED_CLASS { .. } => return Ok(scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot.clone(), metamodelica::cons(getDerivedNode(clsNode.clone(), true), accumScopes.clone()))?),
-        Deref @ InstNodeType::IMPLICIT_SCOPE => return Ok(scopeList(parent(clsNode.clone()), includeRoot.clone(), accumScopes.clone())?),
+        Deref @ InstNodeType::NORMAL_CLASS => return Ok(scopeList(parent(clsNode.clone()), includeRoot, metamodelica::cons(clsNode, accumScopes))?),
+        Deref @ InstNodeType::BASE_CLASS { .. } => return Ok(scopeList(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), includeRoot, accumScopes)?),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (clsNode, ty, includeRoot, accumScopes) = (clsNode, var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), includeRoot, accumScopes); continue '__tco; },
+        Deref @ InstNodeType::BUILTIN_CLASS => return Ok(metamodelica::cons(clsNode, accumScopes)),
+        Deref @ InstNodeType::TOP_SCOPE { .. } => return Ok(accumScopes),
+        Deref @ InstNodeType::ROOT_CLASS { .. } => if (includeRoot) {return Ok(scopeList(parent(clsNode.clone()), includeRoot, metamodelica::cons(clsNode, accumScopes))?)} else {return Ok(accumScopes)},
+        Deref @ InstNodeType::REDECLARED_CLASS { .. } => return Ok(scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot, metamodelica::cons(getDerivedNode(clsNode, true), accumScopes))?),
+        Deref @ InstNodeType::IMPLICIT_SCOPE => return Ok(scopeList(parent(clsNode), includeRoot, accumScopes)?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopeListClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             return Ok(bail!("fail"))
@@ -1431,12 +1431,12 @@ pub mod InstNode {
     }
 
     pub(crate) fn rootPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::INCLUDING_ROOT.clone(), ignoreBaseClass.clone())?;
+        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::INCLUDING_ROOT.clone(), ignoreBaseClass)?;
         Ok(path)
     }
 
     pub fn fullPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::FULL.clone(), ignoreBaseClass.clone())?;
+        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::FULL.clone(), ignoreBaseClass)?;
         Ok(path)
     }
 
@@ -1445,19 +1445,19 @@ pub mod InstNode {
             ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: it, .. } => {
             ::match_deref::match_deref! { match &(it.clone()) {
-        Deref @ InstNodeType::BASE_CLASS { .. } if (!(ignoreBaseClass.clone())) => { (node, scopeType, ignoreBaseClass) = (var_field!((**it).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), false); continue '__tco; },
-        _ => return Ok(scopePath2(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::CLASS_NODE).clone()).clone() }))?),
+        Deref @ InstNodeType::BASE_CLASS { .. } if (!(ignoreBaseClass)) => { (node, scopeType, ignoreBaseClass) = (var_field!((**it).parent, InstNodeType::BASE_CLASS).clone(), scopeType, false); continue '__tco; },
+        _ => return Ok(scopePath2(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(), scopeType, Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::CLASS_NODE).clone()).clone() }))?),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         },
         Deref @ COMPONENT_NODE { .. } => {
-            return Ok(scopePath2(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone() }))?)
+            return Ok(scopePath2(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType, Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone() }))?)
         },
         Deref @ IMPLICIT_SCOPE { .. } => {
-            { (node, scopeType, ignoreBaseClass) = (var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), scopeType.clone(), false); continue '__tco; }
+            { (node, scopeType, ignoreBaseClass) = (var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), scopeType, false); continue '__tco; }
         },
         _ => {
-            return Ok(Arc::new(Absyn::Path::IDENT { name: (name(node.clone())?).clone() }))
+            return Ok(Arc::new(Absyn::Path::IDENT { name: (name(node)?).clone() }))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1467,9 +1467,9 @@ pub mod InstNode {
     pub(crate) fn scopePath2(mut node: Arc<InstNode>, mut scopeType: ScopeType, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => return Ok(scopePathClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), scopeType.clone(), accumPath.clone())?),
-        Deref @ COMPONENT_NODE { .. } => { (node, scopeType, accumPath) = (var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), path: accumPath.clone() })); continue '__tco; },
-        _ => return Ok(accumPath.clone()),
+        Deref @ CLASS_NODE { .. } => return Ok(scopePathClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), scopeType, accumPath)?),
+        Deref @ COMPONENT_NODE { .. } => { (node, scopeType, accumPath) = (var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType, Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), path: accumPath })); continue '__tco; },
+        _ => return Ok(accumPath),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         }
@@ -1478,14 +1478,14 @@ pub mod InstNode {
     pub(crate) fn scopePathClass(mut node: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut scopeType: ScopeType, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::NORMAL_CLASS => return Ok(scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?),
-        Deref @ InstNodeType::BASE_CLASS { .. } => return Ok(scopePath2(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), accumPath.clone())?),
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (node, ty, scopeType, accumPath) = (node.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), scopeType.clone(), accumPath.clone()); continue '__tco; },
-        Deref @ InstNodeType::BUILTIN_CLASS => return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() })),
-        Deref @ InstNodeType::TOP_SCOPE { .. } => return Ok(accumPath.clone()),
-        Deref @ InstNodeType::ROOT_CLASS { .. } => if (scopeType.clone() == ScopeType::FULL.clone()) {return Ok(scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?)} else if (scopeType.clone() == ScopeType::INCLUDING_ROOT.clone()) {return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))} else {return Ok(accumPath.clone())},
-        Deref @ InstNodeType::REDECLARED_CLASS { .. } => return Ok(scopePath2(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?),
-        Deref @ InstNodeType::IMPLICIT_SCOPE => return Ok(scopePath2(classParent(node.clone())?, scopeType.clone(), accumPath.clone())?),
+        Deref @ InstNodeType::NORMAL_CLASS => return Ok(scopePath2(classParent(node.clone())?, scopeType, Arc::new(Absyn::Path::QUALIFIED { name: (className(node)?).clone(), path: accumPath }))?),
+        Deref @ InstNodeType::BASE_CLASS { .. } => return Ok(scopePath2(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), scopeType, accumPath)?),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (node, ty, scopeType, accumPath) = (node, var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), scopeType, accumPath); continue '__tco; },
+        Deref @ InstNodeType::BUILTIN_CLASS => return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (className(node)?).clone(), path: accumPath })),
+        Deref @ InstNodeType::TOP_SCOPE { .. } => return Ok(accumPath),
+        Deref @ InstNodeType::ROOT_CLASS { .. } => if (scopeType == ScopeType::FULL.clone()) {return Ok(scopePath2(classParent(node.clone())?, scopeType, Arc::new(Absyn::Path::QUALIFIED { name: (className(node)?).clone(), path: accumPath }))?)} else if (scopeType == ScopeType::INCLUDING_ROOT.clone()) {return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (className(node)?).clone(), path: accumPath }))} else {return Ok(accumPath)},
+        Deref @ InstNodeType::REDECLARED_CLASS { .. } => return Ok(scopePath2(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), scopeType, Arc::new(Absyn::Path::QUALIFIED { name: (className(node)?).clone(), path: accumPath }))?),
+        Deref @ InstNodeType::IMPLICIT_SCOPE => return Ok(scopePath2(classParent(node)?, scopeType, accumPath)?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopePathClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             return Ok(bail!("fail"))
@@ -1553,7 +1553,7 @@ pub mod InstNode {
 
     pub(crate) fn isInnerOuterNode(mut node: Arc<InstNode>) -> bool {
         let mut isIO: bool;
-        isIO = (::match_deref::match_deref! { match &(node.clone()) {
+        isIO = (::match_deref::match_deref! { match &(node) {
         Deref @ INNER_OUTER_NODE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1563,7 +1563,7 @@ pub mod InstNode {
 
     pub fn isGeneratedInner(mut node: Arc<InstNode>) -> bool {
         let mut isInner: bool;
-        isInner = (::match_deref::match_deref! { match &(node.clone()) {
+        isInner = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::GENERATED_INNER, .. } => true,
         Deref @ COMPONENT_NODE { nodeType: Deref @ InstNodeType::GENERATED_INNER, .. } => true,
         _ => false,
@@ -1576,7 +1576,7 @@ pub mod InstNode {
         let mut innerNode: Arc<InstNode>;
         innerNode = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ INNER_OUTER_NODE { .. } => var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(),
-        _ => node.clone(),
+        _ => node,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         innerNode
@@ -1586,7 +1586,7 @@ pub mod InstNode {
         let mut outerNode: Arc<InstNode>;
         outerNode = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ INNER_OUTER_NODE { .. } => var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone(),
-        _ => node.clone(),
+        _ => node,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         outerNode
@@ -1612,7 +1612,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            CachedData::addFunc(r#fn.clone(), specialBuiltin.clone(), var_field!((*node).caches, InstNode::CLASS_NODE).clone())?;
+            CachedData::addFunc(r#fn, specialBuiltin, var_field!((*node).caches, InstNode::CLASS_NODE).clone())?;
             ()
         },
         _ => {
@@ -1628,7 +1628,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            assign_variant_field!(node => InstNode::CLASS_NODE; caches = arrayCreate(1, in_func_cache.clone()));
+            assign_variant_field!(node => InstNode::CLASS_NODE; caches = arrayCreate(1, in_func_cache));
             ()
         },
         _ => {
@@ -1657,7 +1657,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            CachedData::setFuncCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone(), in_func_cache.clone())?;
+            CachedData::setFuncCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone(), in_func_cache)?;
             ()
         },
         _ => {
@@ -1686,7 +1686,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            CachedData::setPackageCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone(), Arc::new(CachedData::CachedData::PACKAGE { instance: packageNode.clone(), state: state.clone() }))?;
+            CachedData::setPackageCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone(), Arc::new(CachedData::CachedData::PACKAGE { instance: packageNode, state: state }))?;
             ()
         },
         _ => {
@@ -1717,8 +1717,8 @@ pub mod InstNode {
     pub(crate) fn openImplicitScope(mut scope: Arc<InstNode>) -> Arc<InstNode> {
         let mut scope: Arc<InstNode> = scope;
         scope = (::match_deref::match_deref! { match &(scope.clone()) {
-        Deref @ IMPLICIT_SCOPE { .. } => scope.clone(),
-        _ => Arc::new(InstNode::IMPLICIT_SCOPE { parentScope: scope.clone(), locals: metamodelica::nil() }),
+        Deref @ IMPLICIT_SCOPE { .. } => scope,
+        _ => Arc::new(InstNode::IMPLICIT_SCOPE { parentScope: scope, locals: metamodelica::nil() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         scope
@@ -1728,7 +1728,7 @@ pub mod InstNode {
         '__tco: loop {
             ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ IMPLICIT_SCOPE { .. } => { node = var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(); continue '__tco; },
-        _ => return node.clone(),
+        _ => return node,
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
         }
@@ -1737,7 +1737,7 @@ pub mod InstNode {
     pub(crate) fn addIterator(mut iterator: Arc<InstNode>, mut scope: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut scope: Arc<InstNode> = scope;
         scope = (::match_deref::match_deref! { match &(scope.clone()) {
-        Deref @ IMPLICIT_SCOPE { .. } => Arc::new(InstNode::IMPLICIT_SCOPE { parentScope: scope.clone(), locals: metamodelica::cons(iterator.clone(), var_field!((*scope).locals, InstNode::IMPLICIT_SCOPE).clone()) }),
+        Deref @ IMPLICIT_SCOPE { .. } => Arc::new(InstNode::IMPLICIT_SCOPE { parentScope: scope.clone(), locals: metamodelica::cons(iterator, var_field!((*scope).locals, InstNode::IMPLICIT_SCOPE).clone()) }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(scope)
@@ -1776,7 +1776,7 @@ pub mod InstNode {
         let mut same: bool = false;
         let mut n1: Arc<InstNode> = resolveOuter(node1.clone());
         let mut n2: Arc<InstNode> = resolveOuter(node2.clone());
-        if referenceEq(&*(n1.clone()),&*(n2.clone())) {
+        if referenceEq(&*(n1),&*(n2)) {
             same = true;
             return same.clone();
         }
@@ -1839,7 +1839,7 @@ pub mod InstNode {
         name = ((::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::toString((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         Deref @ CLASS_NODE { .. } => SCodeDump::unparseElementStr(var_field!((*node).definition, InstNode::CLASS_NODE).clone(), SCodeDump::defaultOptions.clone())?,
-        _ => self::name(node.clone())?,
+        _ => self::name(node)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(name)
@@ -1848,9 +1848,9 @@ pub mod InstNode {
     pub(crate) fn toFlatString(mut node: Arc<InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr) -> Result<ArcStr> {
         let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::toFlatString((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), format.clone(), (indent.clone()).clone())?,
-        Deref @ CLASS_NODE { .. } => Class::toFlatString(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node.clone(), format.clone(), (indent.clone()).clone())?,
-        _ => self::name(node.clone())?,
+        Deref @ COMPONENT_NODE { .. } => Component::toFlatString((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), format, (indent).clone())?,
+        Deref @ CLASS_NODE { .. } => Class::toFlatString(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node, format, (indent).clone())?,
+        _ => self::name(node)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(name)
@@ -1859,9 +1859,9 @@ pub mod InstNode {
     pub(crate) fn toFlatStream(mut node: Arc<InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
         let mut s: IOStream::IOStream = s;
         s = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::toFlatStream((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), format.clone(), (indent.clone()).clone(), s.clone())?,
-        Deref @ CLASS_NODE { .. } => Class::toFlatStream(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node.clone(), format.clone(), (indent.clone()).clone(), s.clone())?,
-        _ => IOStream::append(s.clone(), (toFlatString(node.clone(), format.clone(), (indent.clone()).clone())?).clone())?,
+        Deref @ COMPONENT_NODE { .. } => Component::toFlatStream((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), format, (indent).clone(), s)?,
+        Deref @ CLASS_NODE { .. } => Class::toFlatStream(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node, format, (indent).clone(), s)?,
+        _ => IOStream::append(s, (toFlatString(node, format, (indent).clone())?).clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(s)
@@ -1870,7 +1870,7 @@ pub mod InstNode {
     pub(crate) fn isRedeclare(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isRedeclare: bool;
         isRedeclare = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => SCodeUtil::isElementRedeclare(definition(node.clone())?)?,
+        Deref @ CLASS_NODE { .. } => SCodeUtil::isElementRedeclare(definition(node)?)?,
         Deref @ COMPONENT_NODE { .. } => Component::isRedeclare(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1880,7 +1880,7 @@ pub mod InstNode {
 
     pub(crate) fn isRedeclared(mut node: Arc<InstNode>) -> Result<bool> {
         let mut redeclared: bool;
-        redeclared = (::match_deref::match_deref! { match &(nodeType(node.clone())?) {
+        redeclared = (::match_deref::match_deref! { match &(nodeType(node)?) {
         Deref @ InstNodeType::REDECLARED_COMP { .. } => true,
         Deref @ InstNodeType::REDECLARED_CLASS { .. } => true,
         _ => false,
@@ -1896,7 +1896,7 @@ pub mod InstNode {
             outNode = (*__esc_outNode).clone();
             outNode.clone()
         },
-        _ => node.clone(),
+        _ => node,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         outNode
@@ -1919,7 +1919,7 @@ pub mod InstNode {
 
     pub(crate) fn isProtectedBaseClass(mut node: Arc<InstNode>) -> bool {
         let mut isProtected: bool;
-        isProtected = (::match_deref::match_deref! { match &(node.clone()) {
+        isProtected = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::BASE_CLASS { definition: Deref @ SCode::Element::EXTENDS { visibility: SCode::Visibility::PROTECTED { .. }, .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1940,7 +1940,7 @@ pub mod InstNode {
 
     pub fn isProtected(mut node: Arc<InstNode>) -> bool {
         let mut isProtected: bool;
-        isProtected = (::match_deref::match_deref! { match &(node.clone()) {
+        isProtected = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { visibility: Prefixes::Visibility::PROTECTED { .. }, .. } => true,
         Deref @ COMPONENT_NODE { visibility: Prefixes::Visibility::PROTECTED { .. }, .. } => true,
         _ => false,
@@ -2001,7 +2001,7 @@ pub mod InstNode {
         let mut enc: bool;
         enc = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::isEncapsulated(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?,
-        Deref @ COMPONENT_NODE { .. } => Class::isEncapsulated(getClass(node.clone())?)?,
+        Deref @ COMPONENT_NODE { .. } => Class::isEncapsulated(getClass(node)?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2023,11 +2023,11 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), Class::mergeModifier(r#mod.clone(), Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?);
+            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), Class::mergeModifier(r#mod, Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?);
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), Component::mergeModifier(r#mod.clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?);
+            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), Component::mergeModifier(r#mod, Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?);
             ()
         },
         _ => (),
@@ -2040,11 +2040,11 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), Class::setModifier(r#mod.clone(), Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?);
+            Pointer::update(var_field!((*node).cls, InstNode::CLASS_NODE).clone(), Class::setModifier(r#mod, Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?);
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), Component::mergeModifier(r#mod.clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?);
+            Pointer::update(var_field!((*node).component, InstNode::COMPONENT_NODE).clone(), Component::mergeModifier(r#mod, Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?);
             ()
         },
         _ => (),
@@ -2065,7 +2065,7 @@ pub mod InstNode {
         Deref @ Class::DAE_TYPE { .. } => stripDAETypeVars(var_field!((*cls).ty, Class::NFClass::DAE_TYPE).clone()),
         _ => {
             res = Class::restriction(cls.clone());
-            state = Restriction::toDAE(res.clone(), fullPath(clsNode.clone(), false)?);
+            state = Restriction::toDAE(res.clone(), fullPath(clsNode, false)?);
             Arc::new(DAE::Type::T_COMPLEX { complexClassType: state.clone(), varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res.clone()) })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2106,7 +2106,7 @@ pub mod InstNode {
             vars = ConvertDAE::makeTypeVars(clsNode.clone())?;
             outType = Arc::new(DAE::Type::T_COMPLEX { complexClassType: state.clone(), varLst: vars.clone(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res.clone()) });
             Pointer::update(var_field!((*clsNode).cls, InstNode::CLASS_NODE).clone(), Arc::new(Class::NFClass::DAE_TYPE { ty: outType.clone() }));
-            outType.clone()
+            outType
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -2178,7 +2178,7 @@ pub mod InstNode {
     pub(crate) fn cloneComponent(mut component: Arc<InstNode>, mut newParent: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut outComponent: Arc<InstNode>;
         outComponent = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Arc::new(InstNode::COMPONENT_NODE { name: (var_field!((*component).name, InstNode::COMPONENT_NODE).clone()).clone(), definition: var_field!((*component).definition, InstNode::COMPONENT_NODE).clone(), visibility: var_field!((*component).visibility, InstNode::COMPONENT_NODE).clone(), component: Pointer::create(Pointer::access(var_field!((*component).component, InstNode::COMPONENT_NODE).clone())), parent: newParent.clone(), nodeType: var_field!((*component).nodeType, InstNode::COMPONENT_NODE).clone() }),
+        Deref @ COMPONENT_NODE { .. } => Arc::new(InstNode::COMPONENT_NODE { name: (var_field!((*component).name, InstNode::COMPONENT_NODE).clone()).clone(), definition: var_field!((*component).definition, InstNode::COMPONENT_NODE).clone(), visibility: var_field!((*component).visibility, InstNode::COMPONENT_NODE).clone(), component: Pointer::create(Pointer::access(var_field!((*component).component, InstNode::COMPONENT_NODE).clone())), parent: newParent, nodeType: var_field!((*component).nodeType, InstNode::COMPONENT_NODE).clone() }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(outComponent)
@@ -2188,10 +2188,10 @@ pub mod InstNode {
         let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
         cmts = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { definition: Deref @ SCode::Element::CLASS { cmt, .. }, .. } => {
-            metamodelica::cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts.clone()))
+            metamodelica::cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts))
         },
         _ => {
-            accumCmts.clone()
+            accumCmts
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2244,7 +2244,7 @@ pub mod InstNode {
     pub(crate) fn hasBinding(mut node: Arc<InstNode>) -> Result<bool> {
         let mut hasBinding: bool;
         hasBinding = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE())? || self::hasBinding(instanceParent(node.clone())?)?,
+        Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE())? || self::hasBinding(instanceParent(node)?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2268,7 +2268,7 @@ pub mod InstNode {
                     binding_exp = getBindingExpOpt(scope.clone())?;
                 }
             }
-            binding_exp.clone()
+            binding_exp
         },
         Deref @ VAR_NODE { .. } => {
             let mut var: Arc<Variable::NFVariable>;
@@ -2305,7 +2305,7 @@ pub mod InstNode {
 
     pub(crate) fn hashContinue(mut node: Arc<InstNode>, mut hash: i32) -> Result<i32> {
         let mut hash: i32 = hash;
-        hash = stringHashDjb2Continue((name(node.clone())?).clone(), hash.clone());
+        hash = stringHashDjb2Continue((name(node)?).clone(), hash);
         Ok(hash)
     }
 
@@ -2322,7 +2322,7 @@ pub mod InstNode {
 
     pub(crate) fn isClockType(mut node: Arc<InstNode>) -> bool {
         let mut clock: bool;
-        clock = (::match_deref::match_deref! { match &(node.clone()) {
+        clock = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { name: Deref @ "Clock", nodeType: Deref @ InstNodeType::BUILTIN_CLASS, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2344,7 +2344,7 @@ pub mod InstNode {
 
     pub(crate) fn isExtends(mut node: Arc<InstNode>) -> bool {
         let mut res: bool;
-        res = (::match_deref::match_deref! { match &(node.clone()) {
+        res = (::match_deref::match_deref! { match &(node) {
         Deref @ CLASS_NODE { definition: Deref @ SCode::Element::EXTENDS { .. }, .. } => true,
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::BASE_CLASS { definition: Deref @ SCode::Element::EXTENDS { .. }, .. }, .. } => true,
         _ => false,
@@ -2358,14 +2358,14 @@ pub mod InstNode {
             let mut base_node: Arc<InstNode>;
             let mut cls: Arc<Class::NFClass>;
             let mut exts: metamodelica::Array<Arc<InstNode>> = Default::default();
-            base_node = Class::lastBaseClass(clsNode.clone())?;
+            base_node = Class::lastBaseClass(clsNode)?;
             cls = getClass(base_node.clone())?;
             ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::EXPANDED_CLASS { restriction: Deref @ Restriction::TYPE, .. } => {
             exts = ClassTree::getExtends(var_field!((*cls).elements, Class::NFClass::EXPANDED_CLASS).clone());
             if (metamodelica::arrayLength(exts.clone()) == 1) {{ clsNode = ({let __elt = exts.borrow()[(1-1) as usize].clone(); __elt}); continue '__tco; }} else {return Ok(false)}
         },
-        _ => return Ok(Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?)?),
+        _ => return Ok(Type::isDiscrete(Class::getType(cls, base_node)?)?),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         }
@@ -2373,12 +2373,12 @@ pub mod InstNode {
 
     pub fn clearGeneratedInners(mut node: Arc<InstNode>) -> Result<()> {
         let mut inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>>;
-        let __pa0 = ::match_deref::match_deref! { match &(nodeType(topScope(node.clone())?)?) {
+        let __pa0 = ::match_deref::match_deref! { match &(nodeType(topScope(node)?)?) {
             Deref @ InstNodeType::TOP_SCOPE { generatedInners: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         inners = __pa0.clone();
-        UnorderedMap::clear(inners.clone());
+        UnorderedMap::clear(inners);
         Ok(())
     }
 
@@ -2387,7 +2387,7 @@ pub mod InstNode {
         let mut scope: Arc<InstNode>;
         let mut access_mod: Arc<SCode::Mod>;
         let mut access_exp: Option<Arc<Absyn::Exp>>;
-        scope = classScope(parent(resolveInner(node.clone())));
+        scope = classScope(parent(resolveInner(node)));
         while isClass(scope.clone())? {
             access_mod = SCodeUtil::lookupElementAnnotation(definition(scope.clone())?, (literal!("Protection")).clone())?;
             access_mod = SCodeUtil::lookupModInMod((literal!("access")).clone(), access_mod.clone());

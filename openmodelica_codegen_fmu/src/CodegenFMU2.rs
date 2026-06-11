@@ -25,7 +25,7 @@ use openmodelica_util::Util;
 
 fn fun_50(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_sourceFiles.clone(), in_a_simCode.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_sourceFiles, in_a_simCode)) {
         (txt, false, _, _) => {
             txt.clone()
         },
@@ -41,7 +41,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<me
 
 fn fun_51(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_sourceFiles.clone(), in_a_simCode.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_sourceFiles, in_a_simCode)) {
         (txt, false, _, _) => {
             txt.clone()
         },
@@ -57,7 +57,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<me
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("<LogCategories>\n")).clone(), (literal!("  <Category name=\"logEvents\" />\n")).clone(), (literal!("  <Category name=\"logSingularLinearSystems\" />\n")).clone(), (literal!("  <Category name=\"logNonlinearSystems\" />\n")).clone(), (literal!("  <Category name=\"logDynamicStateSelection\" />\n")).clone(), (literal!("  <Category name=\"logStatusWarning\" />\n")).clone(), (literal!("  <Category name=\"logStatusDiscard\" />\n")).clone(), (literal!("  <Category name=\"logStatusError\" />\n")).clone(), (literal!("  <Category name=\"logStatusFatal\" />\n")).clone(), (literal!("  <Category name=\"logStatusPending\" />\n")).clone(), (literal!("  <Category name=\"logAll\" />\n")).clone(), (literal!("  <Category name=\"logFmi2Call\" />\n")).clone(), (literal!("</LogCategories>")).clone()], lastHasNewLine: false }))?;
             txt.clone()
@@ -72,7 +72,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr, mut in_a_FMUType: ArcStr, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_simCode, in_a_guid, in_a_FMUType, in_a_sourceFiles)) {
         (txt, i_simCode @ SimCode::SimCode { simulationSettingsOpt: i_simulationSettingsOpt, modelStructure: i_modelStructure, .. }, a_guid, a_FMUType, a_sourceFiles) => {
             let mut ret_2: bool;
             let mut ret_1: bool;
@@ -115,7 +115,7 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_author.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_author) {
         (mut txt, false, mut a_author) => {
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("author=\"")).clone() }))?;
@@ -133,7 +133,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) 
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_copyright.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_copyright) {
         (mut txt, false, mut a_copyright) => {
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("copyright=\"")).clone() }))?;
@@ -151,7 +151,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Tex
 
 fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_license.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_license) {
         (mut txt, false, mut a_license) => {
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("license=\"")).clone() }))?;
@@ -169,7 +169,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text)
 
 pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
+    out_txt = (match (in_txt, in_a_simCode, in_a_guid) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, description: ref i_modelInfo_description, author: ref i_modelInfo_author, version: ref i_modelInfo_version, copyright: ref i_modelInfo_copyright, license: ref i_modelInfo_license, .. }, .. }, mut a_guid) => {
             let mut ret_20: ArcStr;
             let mut ret_19: ArcStr;
@@ -251,7 +251,7 @@ pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: Si
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("canGetAndSetFMUstate=\"false\"")).clone() }))?;
             txt.clone()
@@ -266,7 +266,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("canSerializeFMUstate=\"false\"")).clone() }))?;
             txt.clone()
@@ -281,7 +281,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("providesDirectionalDerivative=\"false\"")).clone() }))?;
             txt.clone()
@@ -296,7 +296,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub(crate) fn CoSimulation(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_sourceFiles.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_simCode, in_a_sourceFiles)) {
         (txt, i_simCode @ SimCode::SimCode { modelInfo: _, .. }, a_sourceFiles) => {
             let mut ret_4: bool;
             let mut ret_3: bool;

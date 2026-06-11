@@ -63,7 +63,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub fn serializeParMod(mut code: SimCode::SimCode, mut withOperations: bool) -> Result<ArcStr> {
     let mut fileName: ArcStr;
-    let (true, __pa0) = (serializeParModWork(code.clone(), withOperations.clone())?) else { bail!("pattern mismatch") };
+    let (true, __pa0) = (serializeParModWork(code, withOperations)?) else { bail!("pattern mismatch") };
     fileName = __pa0.clone();
     Ok(fileName)
 }
@@ -88,7 +88,7 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
         File::write(file.clone(), (literal!("{\"eqIndex\":0,\"tag\":\"dummy\"}")).clone());
         for mut eq in &*unwrap_break_err!(SimCodeUtil::sortEqSystems(unwrap_break_err!(List::flatten(code.odeEquations.clone()), '__try0)), '__try0) {
             let mut eq = eq.clone();
-            unwrap_break_err!(serializeEquation(file.clone(), eq.clone(), (literal!("regular")).clone(), withOperations.clone(), 0, false, 0), '__try0);
+            unwrap_break_err!(serializeEquation(file.clone(), eq.clone(), (literal!("regular")).clone(), withOperations, 0, false, 0), '__try0);
         }
         File::write(file.clone(), (literal!("\n]\n}")).clone());
         success = true;
@@ -107,40 +107,40 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
 
 fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mut section: ArcStr, mut withOperations: bool, mut parent: i32, mut first: bool, mut assign_type: i32) -> Result<bool> {
     let mut success: bool;
-    if !(first.clone()) {
+    if !(first) {
         File::write(file.clone(), (literal!(",")).clone());
     }
     success = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SimCode::SimEqSystem::SES_RESIDUAL { .. } => {
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_RESIDUAL).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
+            File::write(file.clone(), (section).clone());
             File::write(file.clone(), (literal!("\",\"tag\":\"residual\",\"uses\":[")).clone());
             serializeUses(file.clone(), Expression::extractUniqueCrefsFromExpDerPreStart(var_field!((*eq).exp, SimCode::SimEqSystem::SES_RESIDUAL).clone(), true)?)?;
             File::write(file.clone(), (literal!("],\"equation\":[\"")).clone());
             File::writeEscape(file.clone(), (expStr(var_field!((*eq).exp, SimCode::SimEqSystem::SES_RESIDUAL).clone())?).clone(), JSON.clone());
             File::write(file.clone(), (literal!("\"],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_RESIDUAL).clone(), withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_RESIDUAL).clone(), withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { .. } => {
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
-            if assign_type.clone() == 1 {
+            File::write(file.clone(), (section).clone());
+            if assign_type == 1 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"torn\",\"defines\":[\"")).clone());
-            } else if assign_type.clone() == 2 {
+            } else if assign_type == 2 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"jacobian\",\"defines\":[\"")).clone());
             } else {
                 File::write(file.clone(), (literal!("\",\"tag\":\"assign\",\"defines\":[\"")).clone());
@@ -151,22 +151,22 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[\"")).clone());
             File::writeEscape(file.clone(), (expStr(var_field!((*eq).exp, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN).clone())?).clone(), JSON.clone());
             File::write(file.clone(), (literal!("\"],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN).clone(), withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN).clone(), withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { .. } => {
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
-            if assign_type.clone() == 1 {
+            File::write(file.clone(), (section).clone());
+            if assign_type == 1 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"torn\",\"defines\":[\"")).clone());
-            } else if assign_type.clone() == 2 {
+            } else if assign_type == 2 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"jacobian\",\"defines\":[\"")).clone());
             } else {
                 File::write(file.clone(), (literal!("\",\"tag\":\"assign\",\"defines\":[\"")).clone());
@@ -177,22 +177,22 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[\"")).clone());
             File::writeEscape(file.clone(), (expStr(var_field!((*eq).exp, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS).clone())?).clone(), JSON.clone());
             File::write(file.clone(), (literal!("\"],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS).clone(), withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS).clone(), withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { .. } => {
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
-            if assign_type.clone() == 1 {
+            File::write(file.clone(), (section).clone());
+            if assign_type == 1 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"torn\",\"defines\":[\"")).clone());
-            } else if assign_type.clone() == 2 {
+            } else if assign_type == 2 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"jacobian\",\"defines\":[\"")).clone());
             } else {
                 File::write(file.clone(), (literal!("\",\"tag\":\"assign\",\"defines\":[\"")).clone());
@@ -203,8 +203,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[\"")).clone());
             File::writeEscape(file.clone(), (expStr(var_field!((*eq).exp, SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN).clone())?).clone(), JSON.clone());
             File::write(file.clone(), (literal!("\"],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN).clone(), withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN).clone(), withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, alternativeTearing: None, .. } => {
@@ -227,9 +227,9 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
     } });
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), lSystem.index.clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
             File::write(file.clone(), (section.clone()).clone());
@@ -256,28 +256,28 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone()) as f64) / (metamodelica::OrderedFloat((i.clone() * i.clone()) as f64)), (literal!("%.2f")).clone());
             }
             File::write(file.clone(), (literal!(",\"A\":[")).clone());
-            serializeList1(file.clone(), lSystem.simJac.clone(), withOperations.clone(), (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>))?;
+            serializeList1(file.clone(), lSystem.simJac.clone(), withOperations, (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"b\":[")).clone());
             serializeList(file.clone(), lSystem.beqs.clone(), (std::sync::Arc::new(serializeExp) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("]}]")).clone());
             File::write(file.clone(), (literal!(",\n\"internal-equations\":[")).clone());
             if !(eqs.clone().is_empty()) {
-                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), true, if (lSystem.tornSystem.clone()) {1} else {0})?;
+                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, lSystem.index.clone(), true, if (lSystem.tornSystem.clone()) {1} else {0})?;
                 for mut e in &*listRest(eqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), false, if (lSystem.tornSystem.clone()) {1} else {0})?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, lSystem.index.clone(), false, if (lSystem.tornSystem.clone()) {1} else {0})?;
                 }
             }
             File::write(file.clone(), (literal!("\n]")).clone());
             File::write(file.clone(), (literal!(",\n\"jacobian-equations\":[")).clone());
             if !(jeqs.clone().is_empty()) {
-                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), true, 2)?;
+                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations, lSystem.index.clone(), true, 2)?;
                 for mut e in &*listRest(jeqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), false, 2)?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, lSystem.index.clone(), false, 2)?;
                 }
             }
-            File::write(file.clone(), (literal!("\n]}")).clone());
+            File::write(file, (literal!("\n]}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, alternativeTearing: Some(atL @ Deref @ SimCode::LinearSystem { .. }), .. } => {
@@ -290,10 +290,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             j = (lSystem.simJac.clone().len() as i32);
             eqs = SimCodeUtil::sortEqSystems(lSystem.residual.clone())?;
             if !(eqs.clone().is_empty()) {
-                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), true, if (lSystem.tornSystem.clone()) {1} else {0})?;
+                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, lSystem.index.clone(), true, if (lSystem.tornSystem.clone()) {1} else {0})?;
                 for mut e in &*listRest(eqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), false, if (lSystem.tornSystem.clone()) {1} else {0})?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, lSystem.index.clone(), false, if (lSystem.tornSystem.clone()) {1} else {0})?;
                 }
             }
             jeqs = (::match_deref::match_deref! { match &(lSystem.jacobianMatrix.clone()) {
@@ -307,10 +307,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
     } });
             if !(jeqs.clone().is_empty()) {
                 File::write(file.clone(), (literal!(",")).clone());
-                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), true, 2)?;
+                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations, lSystem.index.clone(), true, 2)?;
                 for mut e in &*listRest(jeqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), lSystem.index.clone(), false, 2)?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, lSystem.index.clone(), false, 2)?;
                 }
             }
             if eqs.clone().is_empty() && jeqs.clone().is_empty() {
@@ -319,9 +319,9 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 File::write(file.clone(), (literal!(",\n{\"eqIndex\":")).clone());
             }
             File::writeInt(file.clone(), lSystem.index.clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
             File::write(file.clone(), (section.clone()).clone());
@@ -348,7 +348,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone()) as f64) / (metamodelica::OrderedFloat((i.clone() * i.clone()) as f64)), (literal!("%.2f")).clone());
             }
             File::write(file.clone(), (literal!(",\"A\":[")).clone());
-            serializeList1(file.clone(), lSystem.simJac.clone(), withOperations.clone(), (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>))?;
+            serializeList1(file.clone(), lSystem.simJac.clone(), withOperations, (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"b\":[")).clone());
             serializeList(file.clone(), lSystem.beqs.clone(), (std::sync::Arc::new(serializeExp) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("]}]},")).clone());
@@ -356,10 +356,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             j = (atL.simJac.clone().len() as i32);
             eqs = SimCodeUtil::sortEqSystems(atL.residual.clone())?;
             if !(eqs.clone().is_empty()) {
-                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), atL.index.clone(), true, if (atL.tornSystem.clone()) {1} else {0})?;
+                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, atL.index.clone(), true, if (atL.tornSystem.clone()) {1} else {0})?;
                 for mut e in &*listRest(eqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), atL.index.clone(), false, if (atL.tornSystem.clone()) {1} else {0})?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, atL.index.clone(), false, if (atL.tornSystem.clone()) {1} else {0})?;
                 }
             }
             jeqs = (::match_deref::match_deref! { match &(atL.jacobianMatrix.clone()) {
@@ -373,10 +373,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
     } });
             if !(jeqs.clone().is_empty()) {
                 File::write(file.clone(), (literal!(",")).clone());
-                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations.clone(), atL.index.clone(), true, 2)?;
+                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations, atL.index.clone(), true, 2)?;
                 for mut e in &*listRest(jeqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), atL.index.clone(), false, 2)?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, atL.index.clone(), false, 2)?;
                 }
             }
             if eqs.clone().is_empty() && jeqs.clone().is_empty() {
@@ -385,12 +385,12 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 File::write(file.clone(), (literal!(",\n{\"eqIndex\":")).clone());
             }
             File::writeInt(file.clone(), atL.index.clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
+            File::write(file.clone(), (section).clone());
             if atL.tornSystem.clone() {
                 File::write(file.clone(), (literal!("\",\"tag\":\"tornsystem\"")).clone());
             } else {
@@ -414,10 +414,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone()) as f64) / (metamodelica::OrderedFloat((i.clone() * i.clone()) as f64)), (literal!("%.2f")).clone());
             }
             File::write(file.clone(), (literal!(",\"A\":[")).clone());
-            serializeList1(file.clone(), atL.simJac.clone(), withOperations.clone(), (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>))?;
+            serializeList1(file.clone(), atL.simJac.clone(), withOperations, (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"b\":[")).clone());
             serializeList(file.clone(), atL.beqs.clone(), (std::sync::Arc::new(serializeExp) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Exp>) -> Result<()> + 'static>))?;
-            File::write(file.clone(), (literal!("]}]}")).clone());
+            File::write(file, (literal!("]}]}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_ALGORITHM { statements: Deref @ metamodelica::List::Cons { head: stmt, tail: _ }, .. } => {
@@ -425,12 +425,12 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_ALGORITHM).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*section.clone()); __mm_s.push_str(&*literal!("\",\"tag\":\"algorithm\",\"defines\":[")); ArcStr::from(__mm_s) }).clone());
+            File::write(file.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*section); __mm_s.push_str(&*literal!("\",\"tag\":\"algorithm\",\"defines\":[")); ArcStr::from(__mm_s) }).clone());
             (crefs, crefs2) = Expression::extractUniqueCrefsFromStatmentS(var_field!((*eq).statements, SimCode::SimEqSystem::SES_ALGORITHM).clone())?;
             serializeUses(file.clone(), crefs.clone())?;
             File::write(file.clone(), (literal!("],\"uses\":[")).clone());
@@ -438,8 +438,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeList(file.clone(), var_field!((*eq).statements, SimCode::SimEqSystem::SES_ALGORITHM).clone(), (std::sync::Arc::new(fnptr!(serializeStatement, File::File, Arc<DAE::Statement>)) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Statement>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), Algorithm::getStatementSource(stmt.clone())?, withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), Algorithm::getStatementSource(stmt.clone())?, withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_INVERSE_ALGORITHM { statements: Deref @ metamodelica::List::Cons { head: stmt, tail: _ }, .. } => {
@@ -447,12 +447,12 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_INVERSE_ALGORITHM).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*section.clone()); __mm_s.push_str(&*literal!("\",\"tag\":\"algorithm\",\"defines\":[")); ArcStr::from(__mm_s) }).clone());
+            File::write(file.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*section); __mm_s.push_str(&*literal!("\",\"tag\":\"algorithm\",\"defines\":[")); ArcStr::from(__mm_s) }).clone());
             (crefs, crefs2) = Expression::extractUniqueCrefsFromStatmentS(var_field!((*eq).statements, SimCode::SimEqSystem::SES_INVERSE_ALGORITHM).clone())?;
             serializeUses(file.clone(), crefs.clone())?;
             File::write(file.clone(), (literal!("],\"uses\":[")).clone());
@@ -460,8 +460,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeList(file.clone(), var_field!((*eq).statements, SimCode::SimEqSystem::SES_INVERSE_ALGORITHM).clone(), (std::sync::Arc::new(fnptr!(serializeStatement, File::File, Arc<DAE::Statement>)) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Statement>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), Algorithm::getStatementSource(stmt.clone())?, withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), Algorithm::getStatementSource(stmt.clone())?, withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, alternativeTearing: None, .. } => {
@@ -480,9 +480,9 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
     } });
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), nlSystem.index.clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
             File::write(file.clone(), (section.clone()).clone());
@@ -500,22 +500,22 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("]]")).clone());
             File::write(file.clone(), (literal!(",\n\"internal-equations\":[")).clone());
             if !(eqs.clone().is_empty()) {
-                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), true, if (nlSystem.tornSystem.clone()) {1} else {0})?;
+                serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, nlSystem.index.clone(), true, if (nlSystem.tornSystem.clone()) {1} else {0})?;
                 for mut e in &*listRest(eqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), false, if (nlSystem.tornSystem.clone()) {1} else {0})?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, nlSystem.index.clone(), false, if (nlSystem.tornSystem.clone()) {1} else {0})?;
                 }
             }
             File::write(file.clone(), (literal!("\n]")).clone());
             File::write(file.clone(), (literal!(",\n\"jacobian-equations\":[")).clone());
             if !(jeqs.clone().is_empty()) {
-                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), true, 2)?;
+                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations, nlSystem.index.clone(), true, 2)?;
                 for mut e in &*listRest(jeqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), false, 2)?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, nlSystem.index.clone(), false, 2)?;
                 }
             }
-            File::write(file.clone(), (literal!("\n]}")).clone());
+            File::write(file, (literal!("\n]}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, alternativeTearing: Some(atNL @ Deref @ SimCode::NonlinearSystem { .. }), .. } => {
@@ -523,10 +523,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             eqs = SimCodeUtil::sortEqSystems(nlSystem.eqs.clone())?;
-            serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), true, if (nlSystem.tornSystem.clone()) {1} else {0})?;
+            serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, nlSystem.index.clone(), true, if (nlSystem.tornSystem.clone()) {1} else {0})?;
             for mut e in &*listRest(eqs.clone())? {
                 let mut e = e.clone();
-                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), false, if (nlSystem.tornSystem.clone()) {1} else {0})?;
+                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, nlSystem.index.clone(), false, if (nlSystem.tornSystem.clone()) {1} else {0})?;
             }
             jeqs = (::match_deref::match_deref! { match &(nlSystem.jacobianMatrix.clone()) {
         Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
@@ -539,17 +539,17 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
     } });
             if !(jeqs.clone().is_empty()) {
                 File::write(file.clone(), (literal!(",")).clone());
-                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), true, 2)?;
+                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations, nlSystem.index.clone(), true, 2)?;
                 for mut e in &*listRest(jeqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), false, 2)?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, nlSystem.index.clone(), false, 2)?;
                 }
             }
             File::write(file.clone(), (literal!(",\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), nlSystem.index.clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
             File::write(file.clone(), (section.clone()).clone());
@@ -566,10 +566,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             serializeList(file.clone(), jeqs.clone(), (std::sync::Arc::new(serializeEquationIndex) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<SimCode::SimEqSystem>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("]]},")).clone());
             eqs = SimCodeUtil::sortEqSystems(atNL.eqs.clone())?;
-            serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), atNL.index.clone(), true, if (atNL.tornSystem.clone()) {1} else {0})?;
+            serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, atNL.index.clone(), true, if (atNL.tornSystem.clone()) {1} else {0})?;
             for mut e in &*listRest(eqs.clone())? {
                 let mut e = e.clone();
-                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), atNL.index.clone(), false, if (atNL.tornSystem.clone()) {1} else {0})?;
+                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, atNL.index.clone(), false, if (atNL.tornSystem.clone()) {1} else {0})?;
             }
             jeqs = (::match_deref::match_deref! { match &(atNL.jacobianMatrix.clone()) {
         Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
@@ -582,20 +582,20 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
     } });
             if !(jeqs.clone().is_empty()) {
                 File::write(file.clone(), (literal!(",")).clone());
-                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations.clone(), atNL.index.clone(), true, 2)?;
+                serializeEquation(file.clone(), listHead(jeqs.clone())?, (section.clone()).clone(), withOperations, atNL.index.clone(), true, 2)?;
                 for mut e in &*listRest(jeqs.clone())? {
                     let mut e = e.clone();
-                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), atNL.index.clone(), false, 2)?;
+                    serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, atNL.index.clone(), false, 2)?;
                 }
             }
             File::write(file.clone(), (literal!(",\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), atNL.index.clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
+            File::write(file.clone(), (section).clone());
             if atNL.tornSystem.clone() {
                 File::write(file.clone(), (literal!("\",\"tag\":\"tornsystem\"")).clone());
             } else {
@@ -607,7 +607,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             serializeList(file.clone(), eqs.clone(), (std::sync::Arc::new(serializeEquationIndex) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<SimCode::SimEqSystem>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],[")).clone());
             serializeList(file.clone(), jeqs.clone(), (std::sync::Arc::new(serializeEquationIndex) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<SimCode::SimEqSystem>) -> Result<()> + 'static>))?;
-            File::write(file.clone(), (literal!("]]}")).clone());
+            File::write(file, (literal!("]]}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_IFEQUATION { .. } => {
@@ -620,40 +620,40 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
         }
         __acc.reverse()
     }))?, var_field!((*eq).elsebranch, SimCode::SimEqSystem::SES_IFEQUATION).clone());
-            serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), 0, true, 0)?;
+            serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations, 0, true, 0)?;
             for mut e in &*listRest(eqs.clone())? {
                 let mut e = e.clone();
-                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), 0, false, 0)?;
+                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, 0, false, 0)?;
             }
             File::write(file.clone(), (literal!(",\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_IFEQUATION).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
+            File::write(file.clone(), (section).clone());
             File::write(file.clone(), (literal!("\",\"tag\":\"if-equation\",\"display\":\"if-equation\",\"equation\":[")).clone());
             serializeList(file.clone(), var_field!((*eq).ifbranches, SimCode::SimEqSystem::SES_IFEQUATION).clone(), (std::sync::Arc::new(serializeIfBranch) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!(",")).clone());
             serializeIfBranch(file.clone(), (Arc::new(DAE::Exp::BCONST { bool: true }), var_field!((*eq).elsebranch, SimCode::SimEqSystem::SES_IFEQUATION).clone()))?;
-            File::write(file.clone(), (literal!("]}")).clone());
+            File::write(file, (literal!("]}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_MIXED { .. } => {
-            serializeEquation(file.clone(), var_field!((*eq).cont, SimCode::SimEqSystem::SES_MIXED).clone(), (section.clone()).clone(), withOperations.clone(), 0, true, 0)?;
+            serializeEquation(file.clone(), var_field!((*eq).cont, SimCode::SimEqSystem::SES_MIXED).clone(), (section.clone()).clone(), withOperations, 0, true, 0)?;
             for mut e in &*var_field!((*eq).discEqs, SimCode::SimEqSystem::SES_MIXED).clone() {
                 let mut e = e.clone();
-                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), 0, false, 0)?;
+                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations, 0, false, 0)?;
             }
             File::write(file.clone(), (literal!(",\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_MIXED).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
+            File::write(file.clone(), (section).clone());
             File::write(file.clone(), (literal!("\",\"tag\":\"container\",\"display\":\"mixed\",\"defines\":[")).clone());
             serializeUses(file.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -670,7 +670,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 File::write(file.clone(), (literal!(",")).clone());
                 serializeEquationIndex(file.clone(), e1.clone())?;
             }
-            File::write(file.clone(), (literal!("]}")).clone());
+            File::write(file, (literal!("]}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_WHEN { .. } => {
@@ -678,9 +678,9 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_WHEN).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
             File::write(file.clone(), (section.clone()).clone());
@@ -696,7 +696,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeExp(file.clone(), var_field!(whenOp.right, BackendDAE::WhenOperator::ASSIGN).clone())?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations.clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations);
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
@@ -709,7 +709,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeExp(file.clone(), var_field!(whenOp.value, BackendDAE::WhenOperator::REINIT).clone())?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations.clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations);
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
@@ -722,7 +722,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeExp(file.clone(), var_field!(whenOp.message, BackendDAE::WhenOperator::ASSERT).clone())?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations.clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations);
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
@@ -734,7 +734,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeExp(file.clone(), var_field!(whenOp.message, BackendDAE::WhenOperator::TERMINATE).clone())?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations.clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations);
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
@@ -746,7 +746,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
             serializeExp(file.clone(), var_field!(whenOp.exp, BackendDAE::WhenOperator::NORETCALL).clone())?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations.clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_WHEN).clone(), withOperations);
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
@@ -755,7 +755,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             let () = (::match_deref::match_deref! { match &(var_field!((*eq).elseWhen, SimCode::SimEqSystem::SES_WHEN).clone()) {
         Some(e) => {
             if SimCodeUtil::simEqSystemIndex(e.clone())? != 0 {
-                serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), 0, false, 0)?;
+                serializeEquation(file, e.clone(), (section).clone(), withOperations, 0, false, 0)?;
             }
             ()
         },
@@ -769,15 +769,15 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
         Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { .. } => {
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_FOR_LOOP).clone(), (literal!("%d")).clone());
-            if parent.clone() != 0 {
+            if parent != 0 {
                 File::write(file.clone(), (literal!(",\"parent\":")).clone());
-                File::writeInt(file.clone(), parent.clone(), (literal!("%d")).clone());
+                File::writeInt(file.clone(), parent, (literal!("%d")).clone());
             }
             File::write(file.clone(), (literal!(",\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
-            if assign_type.clone() == 1 {
+            File::write(file.clone(), (section).clone());
+            if assign_type == 1 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"torn\",\"defines\":[\"")).clone());
-            } else if assign_type.clone() == 2 {
+            } else if assign_type == 2 {
                 File::write(file.clone(), (literal!("\",\"tag\":\"jacobian\",\"defines\":[\"")).clone());
             } else {
                 File::write(file.clone(), (literal!("\",\"tag\":\"assign\",\"defines\":[\"")).clone());
@@ -788,8 +788,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"equation\":[\"")).clone());
             File::writeEscape(file.clone(), (expStr(var_field!((*eq).exp, SimCode::SimEqSystem::SES_FOR_LOOP).clone())?).clone(), JSON.clone());
             File::write(file.clone(), (literal!("\"],\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_FOR_LOOP).clone(), withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), var_field!((*eq).source, SimCode::SimEqSystem::SES_FOR_LOOP).clone(), withOperations);
+            File::write(file, (literal!("}")).clone());
             true
         },
         Deref @ SimCode::SimEqSystem::SES_ALIAS { .. } => {
@@ -798,12 +798,12 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!(",\"tag\":\"alias\",\"equation\":[")).clone());
             File::writeInt(file.clone(), var_field!((*eq).aliasOf, SimCode::SimEqSystem::SES_ALIAS).clone(), (literal!("%d")).clone());
             File::write(file.clone(), (literal!("],\"section\":\"")).clone());
-            File::write(file.clone(), (section.clone()).clone());
-            File::write(file.clone(), (literal!("\"}")).clone());
+            File::write(file.clone(), (section).clone());
+            File::write(file, (literal!("\"}")).clone());
             true
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeEquation failed: ")); __mm_s.push_str(&*anyString(eq.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SerializeTaskSystemInfo.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeEquation failed: ")); __mm_s.push_str(&*anyString(eq)); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SerializeTaskSystemInfo.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -812,7 +812,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
 }
 
 fn serializeLinearCell(mut file: File::File, mut cell: (i32, i32, Arc<SimCode::SimEqSystem>), mut withOperations: bool) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(cell.clone()) {
+    let () = (::match_deref::match_deref! { match &(cell) {
         (i, j, eq @ Deref @ SimCode::SimEqSystem::SES_RESIDUAL { .. }) => {
             File::write(file.clone(), (literal!("{\"row\":")).clone());
             File::write(file.clone(), (intString(i.clone())).clone());
@@ -821,8 +821,8 @@ fn serializeLinearCell(mut file: File::File, mut cell: (i32, i32, Arc<SimCode::S
             File::write(file.clone(), (literal!(",\"exp\":\"")).clone());
             File::writeEscape(file.clone(), (expStr(var_field!((**eq).exp, SimCode::SimEqSystem::SES_RESIDUAL).clone())?).clone(), JSON.clone());
             File::write(file.clone(), (literal!("\",\"source\":")).clone());
-            serializeSource(file.clone(), var_field!((**eq).source, SimCode::SimEqSystem::SES_RESIDUAL).clone(), withOperations.clone());
-            File::write(file.clone(), (literal!("}")).clone());
+            serializeSource(file.clone(), var_field!((**eq).source, SimCode::SimEqSystem::SES_RESIDUAL).clone(), withOperations);
+            File::write(file, (literal!("}")).clone());
             ()
         },
         _ => {
@@ -835,21 +835,21 @@ fn serializeLinearCell(mut file: File::File, mut cell: (i32, i32, Arc<SimCode::S
 }
 
 fn serializeUses(mut file: File::File, mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(crefs.clone()) {
+    let () = (::match_deref::match_deref! { match &(crefs) {
         Deref @ metamodelica::List::Nil => {
             ()
         },
         Deref @ metamodelica::List::Cons { head: cr, tail: Deref @ metamodelica::List::Nil } => {
             File::write(file.clone(), (literal!("\"")).clone());
             writeCref(file.clone(), cr.clone(), JSON.clone())?;
-            File::write(file.clone(), (literal!("\"")).clone());
+            File::write(file, (literal!("\"")).clone());
             ()
         },
         Deref @ metamodelica::List::Cons { head: cr, tail: rest } => {
             File::write(file.clone(), (literal!("\"")).clone());
             writeCref(file.clone(), cr.clone(), JSON.clone())?;
             File::write(file.clone(), (literal!("\",")).clone());
-            serializeUses(file.clone(), rest.clone())?;
+            serializeUses(file, rest.clone())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -859,26 +859,26 @@ fn serializeUses(mut file: File::File, mut crefs: Arc<metamodelica::List<Arc<DAE
 
 fn serializeStatement(mut file: File::File, mut stmt: Arc<DAE::Statement>) -> () {
     File::write(file.clone(), (literal!("\"")).clone());
-    File::writeEscape(file.clone(), (System::trim((DAEDump::ppStatementStr(stmt.clone())).clone(), (literal!(" \u{c}\n\r\t\u{b}")).clone())).clone(), JSON.clone());
-    File::write(file.clone(), (literal!("\"")).clone());
+    File::writeEscape(file.clone(), (System::trim((DAEDump::ppStatementStr(stmt)).clone(), (literal!(" \u{c}\n\r\t\u{b}")).clone())).clone(), JSON.clone());
+    File::write(file, (literal!("\"")).clone());
     ()
 }
 
 fn serializeList<ArgType: Clone + 'static + metamodelica::gc::MMTrace>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>;
 
-    let () = (::match_deref::match_deref! { match &(lst.clone()) {
+    let () = (::match_deref::match_deref! { match &(lst) {
         Deref @ metamodelica::List::Nil => {
             ()
         },
         Deref @ metamodelica::List::Cons { head: a, tail: Deref @ metamodelica::List::Nil } => {
-            func(file.clone(), a.clone())?;
+            func(file, a.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: a, tail: rest } => {
             func(file.clone(), a.clone())?;
             File::write(file.clone(), (literal!(",")).clone());
-            serializeList(file.clone(), rest.clone(), func.clone())?;
+            serializeList(file, rest.clone(), func.clone())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -889,18 +889,18 @@ fn serializeList<ArgType: Clone + 'static + metamodelica::gc::MMTrace>(mut file:
 fn serializeList1<ArgType: Clone + 'static + metamodelica::gc::MMTrace, Extra: Clone + 'static + metamodelica::gc::MMTrace>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut extra: Extra, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType, Extra) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncType<ArgType: Clone + 'static, Extra: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(File::File, ArgType, Extra) -> Result<()> + 'static>;
 
-    let () = (::match_deref::match_deref! { match &(lst.clone()) {
+    let () = (::match_deref::match_deref! { match &(lst) {
         Deref @ metamodelica::List::Nil => {
             ()
         },
         Deref @ metamodelica::List::Cons { head: a, tail: Deref @ metamodelica::List::Nil } => {
-            func(file.clone(), a.clone(), extra.clone())?;
+            func(file, a.clone(), extra)?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: a, tail: rest } => {
             func(file.clone(), a.clone(), extra.clone())?;
             File::write(file.clone(), (literal!(",")).clone());
-            serializeList1(file.clone(), rest.clone(), extra.clone(), func.clone())?;
+            serializeList1(file, rest.clone(), extra, func.clone())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -910,22 +910,22 @@ fn serializeList1<ArgType: Clone + 'static + metamodelica::gc::MMTrace, Extra: C
 
 fn serializeExp(mut file: File::File, mut exp: Arc<DAE::Exp>) -> Result<()> {
     File::write(file.clone(), (literal!("\"")).clone());
-    File::writeEscape(file.clone(), (expStr(exp.clone())?).clone(), JSON.clone());
-    File::write(file.clone(), (literal!("\"")).clone());
+    File::writeEscape(file.clone(), (expStr(exp)?).clone(), JSON.clone());
+    File::write(file, (literal!("\"")).clone());
     Ok(())
 }
 
 fn serializeCref(mut file: File::File, mut cr: Arc<DAE::ComponentRef>) -> Result<()> {
     File::write(file.clone(), (literal!("\"")).clone());
-    writeCref(file.clone(), cr.clone(), JSON.clone())?;
-    File::write(file.clone(), (literal!("\"")).clone());
+    writeCref(file.clone(), cr, JSON.clone())?;
+    File::write(file, (literal!("\"")).clone());
     Ok(())
 }
 
 fn serializeString(mut file: File::File, mut string: ArcStr) -> () {
     File::write(file.clone(), (literal!("\"")).clone());
-    File::writeEscape(file.clone(), (string.clone()).clone(), JSON.clone());
-    File::write(file.clone(), (literal!("\"")).clone());
+    File::writeEscape(file.clone(), (string).clone(), JSON.clone());
+    File::write(file, (literal!("\"")).clone());
     ()
 }
 
@@ -933,7 +933,7 @@ fn serializePath(mut file: File::File, mut path: Arc<Absyn::Path>) -> Result<()>
     let mut p: Arc<Absyn::Path> = path.clone();
     let mut b: bool = true;
     File::write(file.clone(), (literal!("\"")).clone());
-    while b.clone() {
+    while b {
         (p, b) = (::match_deref::match_deref! { match &(p.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => {
             File::writeEscape(file.clone(), (var_field!((*p).name, Absyn::Path::IDENT).clone()).clone(), JSON.clone());
@@ -948,29 +948,29 @@ fn serializePath(mut file: File::File, mut path: Arc<Absyn::Path>) -> Result<()>
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    File::write(file.clone(), (literal!("\"")).clone());
+    File::write(file, (literal!("\"")).clone());
     Ok(())
 }
 
 fn serializeEquationIndex(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>) -> Result<()> {
-    File::writeInt(file.clone(), SimCodeUtil::simEqSystemIndex(eq.clone())?, (literal!("%d")).clone());
+    File::writeInt(file, SimCodeUtil::simEqSystemIndex(eq)?, (literal!("%d")).clone());
     Ok(())
 }
 
 fn serializeIfBranch(mut file: File::File, mut branch: (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)) -> Result<()> {
     let mut exp: Arc<DAE::Exp>;
     let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
-    (exp, eqs) = branch.clone();
+    (exp, eqs) = branch;
     File::write(file.clone(), (literal!("[")).clone());
-    serializeExp(file.clone(), exp.clone())?;
+    serializeExp(file.clone(), exp)?;
     File::write(file.clone(), (literal!(",")).clone());
-    serializeList(file.clone(), eqs.clone(), (std::sync::Arc::new(serializeEquationIndex) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<SimCode::SimEqSystem>) -> Result<()> + 'static>))?;
-    File::write(file.clone(), (literal!("]")).clone());
+    serializeList(file.clone(), eqs, (std::sync::Arc::new(serializeEquationIndex) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<SimCode::SimEqSystem>) -> Result<()> + 'static>))?;
+    File::write(file, (literal!("]")).clone());
     Ok(())
 }
 
 fn serializeSource(mut file: File::File, mut source: Arc<DAE::ElementSource>, mut withOperations: bool) -> () {
-    File::write(file.clone(), (literal!("{}")).clone());
+    File::write(file, (literal!("{}")).clone());
     ()
 }
 

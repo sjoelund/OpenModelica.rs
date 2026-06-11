@@ -64,7 +64,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub fn typeConvert(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut inValueLst3: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inType1.clone(), inType2.clone(), inValueLst3.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inType1, inType2, inValueLst3)) {
         (_, _, Deref @ metamodelica::List::Nil) => {
             metamodelica::nil()
         },
@@ -180,13 +180,13 @@ pub(crate) fn valueExpType(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::T
 
 fn valueExpTypeExpVar(mut etp: Arc<DAE::Type>, mut name: ArcStr) -> Arc<DAE::Var> {
     let mut expVar: Arc<DAE::Var>;
-    expVar = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: etp.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None });
+    expVar = Arc::new(DAE::Var { name: (name).clone(), attributes: DAE::dummyAttrVar().clone(), ty: etp, binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None });
     expVar
 }
 
 pub fn isZero(mut inValue: Arc<Values::Value>) -> bool {
     let mut isZero: bool;
-    isZero = (::match_deref::match_deref! { match &(inValue.clone()) {
+    isZero = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::REAL { real: rval } => {
             realEq(rval.clone(), metamodelica::OrderedFloat(0.0_f64))
         },
@@ -203,7 +203,7 @@ pub fn isZero(mut inValue: Arc<Values::Value>) -> bool {
 
 pub fn isArray(mut inValue: Arc<Values::Value>) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -213,7 +213,7 @@ pub fn isArray(mut inValue: Arc<Values::Value>) -> bool {
 
 pub fn isRecord(mut inValue: Arc<Values::Value>) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::RECORD { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -224,19 +224,19 @@ pub fn isRecord(mut inValue: Arc<Values::Value>) -> bool {
 pub fn nthArrayelt(mut inValue: Arc<Values::Value>, mut inInteger: i32) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
     let mut vlst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    let __pa0 = ::match_deref::match_deref! { match &(inValue.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { valueLst: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     vlst = __pa0.clone();
-    outValue = (vlst.clone()).get(inInteger.clone())?;
+    outValue = (vlst).get(inInteger)?;
     Ok(outValue)
 }
 
 pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>, mut op: Values::IntRealOp) -> Result<Arc<Values::Value>> {
     let mut outv: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     outv = 'mc: {
-        let __mc_input = (val1.clone(), val2.clone(), op.clone());
+        let __mc_input = (val1, val2, op);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
@@ -509,19 +509,19 @@ pub fn safeLessEq(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>) ->
         },
         (Deref @ Values::Value::REAL { real: r1 }, _) => {
             let mut r2: metamodelica::Real;
-            r2 = intReal(valueInteger(val2.clone())?);
+            r2 = intReal(valueInteger(val2)?);
             r1.clone() <= r2.clone()
         },
         (_, Deref @ Values::Value::REAL { real: r2 }) => {
             let mut r1: metamodelica::Real;
-            r1 = intReal(valueInteger(val1.clone())?);
+            r1 = intReal(valueInteger(val1)?);
             r1.clone() <= r2.clone()
         },
         (_, _) => {
             let mut i1: i32;
             let mut i2: i32;
-            i1 = valueInteger(val1.clone())?;
-            i2 = valueInteger(val2.clone())?;
+            i1 = valueInteger(val1)?;
+            i2 = valueInteger(val2)?;
             i1.clone() <= i2.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -531,14 +531,14 @@ pub fn safeLessEq(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>) ->
 
 pub(crate) fn writeToFileAsArgs(mut vallst: Arc<metamodelica::List<Arc<Values::Value>>>, mut filename: ArcStr) -> Result<()> {
     let mut r#str: ArcStr;
-    r#str = (ValuesDump::unparseValues(vallst.clone())?).clone();
-    System::writeFile((filename.clone()).clone(), (r#str.clone()).clone())?;
+    r#str = (ValuesDump::unparseValues(vallst)?).clone();
+    System::writeFile((filename).clone(), (r#str).clone())?;
     Ok(())
 }
 
 pub fn addElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -577,7 +577,7 @@ pub fn addElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 
 pub fn subElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -609,7 +609,7 @@ pub fn subElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 
 pub fn mulElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -641,7 +641,7 @@ pub fn mulElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 
 pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -677,7 +677,7 @@ pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 
 pub fn powElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -736,7 +736,7 @@ pub fn absynExpValue(mut exp: Arc<Absyn::Exp>) -> Result<Arc<Values::Value>> {
         __acc.reverse()
     })),
         Deref @ Absyn::Exp::CODE { .. } => Arc::new(Values::Value::CODE { A: var_field!((*exp).code, Absyn::Exp::CODE).clone() }),
-        _ => Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_EXPRESSION { exp: exp.clone() }) }),
+        _ => Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_EXPRESSION { exp: exp }) }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(value)
@@ -744,7 +744,7 @@ pub fn absynExpValue(mut exp: Arc<Absyn::Exp>) -> Result<Arc<Values::Value>> {
 
 pub fn expValue(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
-    outValue = (::match_deref::match_deref! { match &(inExp.clone()) {
+    outValue = (::match_deref::match_deref! { match &(inExp) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
             Arc::new(Values::Value::INTEGER { integer: i.clone() })
         },
@@ -764,7 +764,7 @@ pub fn expValue(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Values::Value>> {
 
 pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE::Exp>>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
-    outExp = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outExp = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::INTEGER { integer: i } => {
             Arc::new(DAE::Exp::ICONST { integer: i.clone() })
         },
@@ -781,7 +781,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::ENUM_LITERAL { name: path.clone(), index: i.clone() })
         },
         Deref @ Values::Value::ARRAY { valueLst: vallist, dimLst: int_dims } => {
-            valueExpArray(vallist.clone(), int_dims.clone(), originalExp.clone())?
+            valueExpArray(vallist.clone(), int_dims.clone(), originalExp)?
         },
         Deref @ Values::Value::TUPLE { valueLst: vallist } => {
             let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -871,7 +871,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             let mut e: Arc<DAE::Exp>;
             let mut ety: Arc<DAE::Type>;
             if isSome(originalExp.clone()) {
-                let __pa0 = ::match_deref::match_deref! { match &(originalExp.clone()) {
+                let __pa0 = ::match_deref::match_deref! { match &(originalExp) {
                     Some(__pa0) => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
@@ -899,7 +899,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
 fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut inDims: Arc<metamodelica::List<i32>>, mut originalExp: Option<Arc<DAE::Exp>>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
-        let __mc_input = (values.clone(), inDims.clone(), originalExp.clone());
+        let __mc_input = (values.clone(), inDims.clone(), originalExp);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _) => {
@@ -1044,7 +1044,7 @@ pub fn valueReal(mut inValue: Arc<Values::Value>) -> Result<metamodelica::Real> 
 
 pub fn valueBool(mut inValue: Arc<Values::Value>) -> Result<bool> {
     let mut outBool: bool;
-    let __pa0 = ::match_deref::match_deref! { match &(inValue.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::BOOL { boolean: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1055,7 +1055,7 @@ pub fn valueBool(mut inValue: Arc<Values::Value>) -> Result<bool> {
 pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<metamodelica::List<metamodelica::Real>> {
     let mut outReal: Arc<metamodelica::List<metamodelica::Real>>;
     outReal = 'mc: {
-        let __mc_input = inValue.clone();
+        let __mc_input = inValue;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -1103,7 +1103,7 @@ pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> A
 
 pub(crate) fn valueString(mut value: Arc<Values::Value>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    let __pa0 = ::match_deref::match_deref! { match &(value.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(value) {
         Deref @ Values::Value::STRING { string: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1114,31 +1114,31 @@ pub(crate) fn valueString(mut value: Arc<Values::Value>) -> Result<ArcStr> {
 pub fn arrayValueInts(mut inValue: Arc<Values::Value>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outReal: Arc<metamodelica::List<i32>>;
     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
-    let __pa0 = ::match_deref::match_deref! { match &(inValue.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { valueLst: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     vals = __pa0.clone();
-    outReal = List::map(vals.clone(), (std::sync::Arc::new(valueInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<i32> + 'static>))?;
+    outReal = List::map(vals, (std::sync::Arc::new(valueInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<i32> + 'static>))?;
     Ok(outReal)
 }
 
 pub fn arrayValueReals(mut inValue: Arc<Values::Value>) -> Result<Arc<metamodelica::List<metamodelica::Real>>> {
     let mut outReal: Arc<metamodelica::List<metamodelica::Real>>;
     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
-    let __pa0 = ::match_deref::match_deref! { match &(inValue.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { valueLst: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     vals = __pa0.clone();
-    outReal = valueReals(vals.clone());
+    outReal = valueReals(vals);
     Ok(outReal)
 }
 
 pub fn matrixValueReals(mut inValue: Arc<Values::Value>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>> {
     let mut outReals: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
     outReals = 'mc: {
-        let __mc_input = inValue.clone();
+        let __mc_input = inValue;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::ARRAY { valueLst: vals, .. } => {
@@ -1166,7 +1166,7 @@ pub fn arrayValueStrings(mut value: Arc<Values::Value>) -> Result<Arc<metamodeli
     let mut strings: Arc<metamodelica::List<ArcStr>>;
     strings = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut v in (arrayValues(value.clone())?).into_iter().cloned() {
+        for mut v in (arrayValues(value)?).into_iter().cloned() {
             let __x = valueString(v.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -1177,7 +1177,7 @@ pub fn arrayValueStrings(mut value: Arc<Values::Value>) -> Result<Arc<metamodeli
 
 pub fn valueNeg(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
-    outValue = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outValue = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::REAL { real: r } => {
             let mut r_1: metamodelica::Real;
             r_1 = -(r.clone());
@@ -1203,7 +1203,7 @@ pub(crate) fn valueSum(mut value1: Arc<Values::Value>, mut value2: Arc<Values::V
     result = (::match_deref::match_deref! { match &((value1.clone(), value2.clone())) {
         (Deref @ Values::Value::INTEGER { .. }, Deref @ Values::Value::INTEGER { .. }) => Arc::new(Values::Value::INTEGER { integer: var_field!((*value1).integer, Values::Value::INTEGER).clone() + var_field!((*value2).integer, Values::Value::INTEGER).clone() }),
         (Deref @ Values::Value::STRING { .. }, Deref @ Values::Value::STRING { .. }) => Arc::new(Values::Value::STRING { string: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*var_field!((*value1).string, Values::Value::STRING).clone()); __mm_s.push_str(&*var_field!((*value2).string, Values::Value::STRING).clone()); ArcStr::from(__mm_s) }).clone() }),
-        _ => Arc::new(Values::Value::REAL { real: valueReal(value1.clone())? + valueReal(value2.clone())? }),
+        _ => Arc::new(Values::Value::REAL { real: valueReal(value1)? + valueReal(value2)? }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -1213,7 +1213,7 @@ pub(crate) fn valueSubtract(mut value1: Arc<Values::Value>, mut value2: Arc<Valu
     let mut result: Arc<Values::Value>;
     result = (::match_deref::match_deref! { match &((value1.clone(), value2.clone())) {
         (Deref @ Values::Value::INTEGER { .. }, Deref @ Values::Value::INTEGER { .. }) => Arc::new(Values::Value::INTEGER { integer: var_field!((*value1).integer, Values::Value::INTEGER).clone() - var_field!((*value2).integer, Values::Value::INTEGER).clone() }),
-        _ => Arc::new(Values::Value::REAL { real: valueReal(value1.clone())? - valueReal(value2.clone())? }),
+        _ => Arc::new(Values::Value::REAL { real: valueReal(value1)? - valueReal(value2)? }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -1223,7 +1223,7 @@ pub(crate) fn valueMultiply(mut value1: Arc<Values::Value>, mut value2: Arc<Valu
     let mut result: Arc<Values::Value>;
     result = (::match_deref::match_deref! { match &((value1.clone(), value2.clone())) {
         (Deref @ Values::Value::INTEGER { .. }, Deref @ Values::Value::INTEGER { .. }) => Arc::new(Values::Value::INTEGER { integer: var_field!((*value1).integer, Values::Value::INTEGER).clone() * var_field!((*value2).integer, Values::Value::INTEGER).clone() }),
-        _ => Arc::new(Values::Value::REAL { real: valueReal(value1.clone())? * valueReal(value2.clone())? }),
+        _ => Arc::new(Values::Value::REAL { real: valueReal(value1)? * valueReal(value2)? }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -1240,7 +1240,7 @@ pub(crate) fn valueDivide(mut value1: Arc<Values::Value>, mut value2: Arc<Values
             Error::addMessage(Error::DIVISION_BY_ZERO.clone(), list![(literal!("0")).clone(), (realString(var_field!((*value2).real, Values::Value::REAL).clone())).clone()])?;
             bail!("fail")
         },
-        _ => Arc::new(Values::Value::REAL { real: valueReal(value1.clone())? / valueReal(value2.clone())? }),
+        _ => Arc::new(Values::Value::REAL { real: valueReal(value1)? / valueReal(value2)? }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -1248,7 +1248,7 @@ pub(crate) fn valueDivide(mut value1: Arc<Values::Value>, mut value2: Arc<Values
 
 pub(crate) fn valuePow(mut value1: Arc<Values::Value>, mut value2: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
     let mut result: Arc<Values::Value>;
-    result = Arc::new(Values::Value::REAL { real: (valueReal(value1.clone())?).powf(valueReal(value2.clone())?) });
+    result = Arc::new(Values::Value::REAL { real: (valueReal(value1)?).powf(valueReal(value2)?) });
     Ok(result)
 }
 
@@ -1256,7 +1256,7 @@ pub(crate) fn sumArray(mut value: Arc<Values::Value>) -> Result<Arc<Values::Valu
     let mut result: Arc<Values::Value>;
     result = (::match_deref::match_deref! { match &(value.clone()) {
         Deref @ Values::Value::ARRAY { .. } => sumArrayelt(var_field!((*value).valueLst, Values::Value::ARRAY).clone())?,
-        _ => value.clone(),
+        _ => value,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -1265,7 +1265,7 @@ pub(crate) fn sumArray(mut value: Arc<Values::Value>) -> Result<Arc<Values::Valu
 pub fn sumArrayelt(mut values: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
     let mut result: Arc<Values::Value>;
     result = sumArray(listHead(values.clone())?)?;
-    for mut v in &*listRest(values.clone())? {
+    for mut v in &*listRest(values)? {
         let mut v = v.clone();
         result = valueSum(sumArray(v.clone())?, result.clone())?;
     }
@@ -1276,7 +1276,7 @@ pub fn multScalarArrayelt(mut scalarValue: Arc<Values::Value>, mut arrayValues: 
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: multScalarArrayelt(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valueMultiply(scalarValue.clone(), v.clone())?,
@@ -1293,7 +1293,7 @@ pub fn addScalarArrayelt(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: addScalarArrayelt(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valueSum(scalarValue.clone(), v.clone())?,
@@ -1310,7 +1310,7 @@ pub fn subScalarArrayelt(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: subScalarArrayelt(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valueSubtract(scalarValue.clone(), v.clone())?,
@@ -1327,7 +1327,7 @@ pub(crate) fn subArrayeltScalar(mut scalarValue: Arc<Values::Value>, mut arrayVa
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: subArrayeltScalar(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valueSubtract(v.clone(), scalarValue.clone())?,
@@ -1344,7 +1344,7 @@ pub fn divScalarArrayelt(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: divScalarArrayelt(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valueDivide(scalarValue.clone(), v.clone())?,
@@ -1361,7 +1361,7 @@ pub fn divArrayeltScalar(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: divArrayeltScalar(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valueDivide(v.clone(), scalarValue.clone())?,
@@ -1378,7 +1378,7 @@ pub fn powScalarArrayelt(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: powScalarArrayelt(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valuePow(scalarValue.clone(), v.clone())?,
@@ -1395,7 +1395,7 @@ pub fn powArrayeltScalar(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
     let mut result: Arc<metamodelica::List<Arc<Values::Value>>>;
     result = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut v in (arrayValues.clone()).into_iter().cloned() {
+        for mut v in (arrayValues).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ Values::Value::ARRAY { .. } => Arc::new(Values::Value::ARRAY { valueLst: powArrayeltScalar(scalarValue.clone(), var_field!((*v).valueLst, Values::Value::ARRAY).clone())?, dimLst: var_field!((*v).dimLst, Values::Value::ARRAY).clone() }),
         _ => valuePow(scalarValue.clone(), v.clone())?,
@@ -1411,7 +1411,7 @@ pub fn powArrayeltScalar(mut scalarValue: Arc<Values::Value>, mut arrayValues: A
 pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
-        let __mc_input = (inValueLst1.clone(), inValueLst2.clone());
+        let __mc_input = (inValueLst1, inValueLst2);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i1 }, tail: v1lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i2 }, tail: v2lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }) => {
@@ -1640,7 +1640,7 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
 
 pub fn crossProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
-    outValue = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValue = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x3 }, tail: Deref @ metamodelica::List::Nil } } }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y3 }, tail: Deref @ metamodelica::List::Nil } } }) => {
             let mut z1: metamodelica::Real;
             let mut z2: metamodelica::Real;
@@ -1670,7 +1670,7 @@ pub fn crossProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>
 
 pub fn multMatrix(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
+    outValueLst = (::match_deref::match_deref! { match &((inValueLst1, inValueLst2)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, .. }, tail: rest1 }, m2 @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { .. }, tail: _ }) => {
             let mut res1: Arc<Values::Value>;
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -1689,7 +1689,7 @@ pub fn multMatrix(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, 
 fn matrixStripFirstColumn(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<(Arc<Values::Value>, Arc<metamodelica::List<Arc<Values::Value>>>)> {
     let mut outValue: Arc<Values::Value>;
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    (outValue, outValueLst) = (::match_deref::match_deref! { match &(inValueLst.clone()) {
+    (outValue, outValueLst) = (::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: v1, tail: vrest }, dimLst: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, tail: rest } => {
             let mut resl: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut resl2: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -1716,7 +1716,7 @@ fn matrixStripFirstColumn(mut inValueLst: Arc<metamodelica::List<Arc<Values::Val
 
 pub fn intlistToValue(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
-    outValue = (::match_deref::match_deref! { match &(inIntegerLst.clone()) {
+    outValue = (::match_deref::match_deref! { match &(inIntegerLst) {
         Deref @ metamodelica::List::Nil => {
             Arc::new(Values::Value::ARRAY { valueLst: metamodelica::nil(), dimLst: list![0] })
         },
@@ -1739,7 +1739,7 @@ pub fn intlistToValue(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<
 
 pub fn arrayValues(mut inValue: Arc<Values::Value>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
-    outValueLst = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outValueLst = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { valueLst: v_lst, .. } => {
             v_lst.clone()
         },
@@ -1750,7 +1750,7 @@ pub fn arrayValues(mut inValue: Arc<Values::Value>) -> Result<Arc<metamodelica::
 
 pub fn arrayScalar(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
-    let __pa0 = ::match_deref::match_deref! { match &(inValue.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1760,7 +1760,7 @@ pub fn arrayScalar(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Value>
 
 pub(crate) fn writePtolemyplotDataset(mut inString1: ArcStr, mut inValue2: Arc<Values::Value>, mut inStringLst3: Arc<metamodelica::List<ArcStr>>, mut inString4: ArcStr) -> Result<i32> {
     let mut outInteger: i32;
-    outInteger = (::match_deref::match_deref! { match &((inString1.clone(), inValue2.clone(), inStringLst3.clone(), inString4.clone())) {
+    outInteger = (::match_deref::match_deref! { match &((inString1, inValue2, inStringLst3, inString4)) {
         (filename, Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: t, tail: rest }, .. }, Deref @ metamodelica::List::Cons { head: _, tail: varnames }, message) => {
             let mut r#str: ArcStr;
             let mut handle: i32;
@@ -1780,7 +1780,7 @@ pub(crate) fn writePtolemyplotDataset(mut inString1: ArcStr, mut inValue2: Arc<V
 }
 
 fn unparsePtolemyValues(mut inValue: Arc<Values::Value>, mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &((inValue.clone(), inValueLst.clone(), inStringLst.clone())) {
+    let () = (::match_deref::match_deref! { match &((inValue, inValueLst, inStringLst)) {
         (_, Deref @ metamodelica::List::Nil, _) => {
             ()
         },
@@ -1795,14 +1795,14 @@ fn unparsePtolemyValues(mut inValue: Arc<Values::Value>, mut inValueLst: Arc<met
 }
 
 fn unparsePtolemySet(mut v1: Arc<Values::Value>, mut v2: Arc<Values::Value>, mut varname: ArcStr) -> Result<()> {
-    Print::printBuf(stringAppendList(list![(literal!("DataSet: ")).clone(), (varname.clone()).clone(), (literal!("\n")).clone()]))?;
-    unparsePtolemySet2(v1.clone(), v2.clone())?;
+    Print::printBuf(stringAppendList(list![(literal!("DataSet: ")).clone(), (varname).clone(), (literal!("\n")).clone()]))?;
+    unparsePtolemySet2(v1, v2)?;
     Ok(())
 }
 
 fn unparsePtolemySet2(mut inValue1: Arc<Values::Value>, mut inValue2: Arc<Values::Value>) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inValue1.clone(), inValue2.clone());
+        let __mc_input = (inValue1, inValue2);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Nil, .. }, Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Nil, .. }) => {
@@ -1842,7 +1842,7 @@ fn unparsePtolemySet2(mut inValue1: Arc<Values::Value>, mut inValue2: Arc<Values
 pub(crate) fn reverseMatrix(mut inValue: Arc<Values::Value>) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
-        let __mc_input = inValue.clone();
+        let __mc_input = inValue;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::ARRAY { valueLst: lst, dimLst: dims } => {
@@ -1870,7 +1870,7 @@ pub(crate) fn reverseMatrix(mut inValue: Arc<Values::Value>) -> Arc<Values::Valu
 
 pub fn nthnthArrayelt(mut inLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValue: Arc<Values::Value>, mut lastValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inLst.clone(), inValue.clone(), lastValue.clone())) {
+        ::match_deref::match_deref! { match &((inLst, inValue, lastValue)) {
         (Deref @ metamodelica::List::Nil, _, preRes) => {
             return Ok(preRes.clone())
         },
@@ -1896,7 +1896,7 @@ pub fn nthnthArrayelt(mut inLst: Arc<metamodelica::List<Arc<Values::Value>>>, mu
 
 pub fn valueInteger(mut inValue: Arc<Values::Value>) -> Result<i32> {
     let mut outInteger: i32;
-    outInteger = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outInteger = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::INTEGER { integer: i } => {
             i.clone()
         },
@@ -1916,7 +1916,7 @@ pub fn valueInteger(mut inValue: Arc<Values::Value>) -> Result<i32> {
 
 pub fn valueDimensions(mut inValue: Arc<Values::Value>) -> Arc<metamodelica::List<i32>> {
     let mut outDimensions: Arc<metamodelica::List<i32>>;
-    outDimensions = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outDimensions = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::ARRAY { dimLst: dims, .. } => {
             dims.clone()
         },
@@ -1930,7 +1930,7 @@ pub fn valueDimensions(mut inValue: Arc<Values::Value>) -> Arc<metamodelica::Lis
 
 pub fn extractValueString(mut val: Arc<Values::Value>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    let __pa0 = ::match_deref::match_deref! { match &(val.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(val) {
         Deref @ Values::Value::STRING { string: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1940,7 +1940,7 @@ pub fn extractValueString(mut val: Arc<Values::Value>) -> Result<ArcStr> {
 
 pub(crate) fn getCode(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::CodeNode>> {
     let mut code: Arc<Absyn::CodeNode>;
-    let __pa0 = ::match_deref::match_deref! { match &(val.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(val) {
         Deref @ Values::Value::CODE { A: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1951,12 +1951,12 @@ pub(crate) fn getCode(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::CodeNode
 pub fn getPath(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::Path>> {
     let mut path: Arc<Absyn::Path>;
     let mut code: Arc<Absyn::CodeNode>;
-    let __pa0 = ::match_deref::match_deref! { match &(val.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(val) {
         Deref @ Values::Value::CODE { A: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     code = __pa0.clone();
-    let __pa1 = ::match_deref::match_deref! { match &(code.clone()) {
+    let __pa1 = ::match_deref::match_deref! { match &(code) {
         Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa1 } => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1966,7 +1966,7 @@ pub fn getPath(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::Path>> {
 
 pub fn printCodeVariableName(mut val: Arc<Values::Value>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((::match_deref::match_deref! { match &(val.clone()) {
+    r#str = ((::match_deref::match_deref! { match &(val) {
         Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_EXPRESSION { exp } } => {
             Dump::printExpStr(exp.clone())?
         },
@@ -1981,10 +1981,10 @@ pub fn printCodeVariableName(mut val: Arc<Values::Value>) -> Result<ArcStr> {
 pub fn boxIfUnboxedVal(mut v: Arc<Values::Value>) -> Arc<Values::Value> {
     let mut ov: Arc<Values::Value>;
     ov = (::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ Values::Value::INTEGER { integer: _ } => Arc::new(Values::Value::META_BOX { value: v.clone() }),
-        Deref @ Values::Value::REAL { real: _ } => Arc::new(Values::Value::META_BOX { value: v.clone() }),
-        Deref @ Values::Value::BOOL { boolean: _ } => Arc::new(Values::Value::META_BOX { value: v.clone() }),
-        _ => v.clone(),
+        Deref @ Values::Value::INTEGER { integer: _ } => Arc::new(Values::Value::META_BOX { value: v }),
+        Deref @ Values::Value::REAL { real: _ } => Arc::new(Values::Value::META_BOX { value: v }),
+        Deref @ Values::Value::BOOL { boolean: _ } => Arc::new(Values::Value::META_BOX { value: v }),
+        _ => v,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ov
@@ -1997,7 +1997,7 @@ pub fn unboxIfBoxedVal(mut iv: Arc<Values::Value>) -> Arc<Values::Value> {
             v.clone()
         },
         _ => {
-            iv.clone()
+            iv
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2006,7 +2006,7 @@ pub fn unboxIfBoxedVal(mut iv: Arc<Values::Value>) -> Arc<Values::Value> {
 
 pub fn arrayOrListVals(mut v: Arc<Values::Value>, mut boxIfUnboxed: bool) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-    vals = (::match_deref::match_deref! { match &((v.clone(), boxIfUnboxed.clone())) {
+    vals = (::match_deref::match_deref! { match &((v, boxIfUnboxed)) {
         (Deref @ Values::Value::ARRAY { valueLst: __esc_vals, .. }, _) => {
             vals = (*__esc_vals).clone();
             vals.clone()
@@ -2027,7 +2027,7 @@ pub fn arrayOrListVals(mut v: Arc<Values::Value>, mut boxIfUnboxed: bool) -> Res
 pub fn containsEmpty(mut inValue: Arc<Values::Value>) -> Option<Arc<Values::Value>> {
     let mut outEmptyVal: Option<Arc<Values::Value>>;
     outEmptyVal = (::match_deref::match_deref! { match &(inValue.clone()) {
-        Deref @ Values::Value::EMPTY { .. } => Some(inValue.clone()),
+        Deref @ Values::Value::EMPTY { .. } => Some(inValue),
         Deref @ Values::Value::ARRAY { .. } => arrayContainsEmpty(var_field!((*inValue).valueLst, Values::Value::ARRAY).clone()),
         Deref @ Values::Value::RECORD { .. } => arrayContainsEmpty(var_field!((*inValue).orderd, Values::Value::RECORD).clone()),
         Deref @ Values::Value::TUPLE { .. } => arrayContainsEmpty(var_field!((*inValue).valueLst, Values::Value::TUPLE).clone()),
@@ -2039,7 +2039,7 @@ pub fn containsEmpty(mut inValue: Arc<Values::Value>) -> Option<Arc<Values::Valu
 
 pub(crate) fn arrayContainsEmpty(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>) -> Option<Arc<Values::Value>> {
     let mut outOptValue: Option<Arc<Values::Value>> = None;
-    for mut val in &*inValues.clone() {
+    for mut val in &*inValues {
         let mut val = val.clone();
         outOptValue = containsEmpty(val.clone());
         if isSome(outOptValue.clone()) {
@@ -2051,7 +2051,7 @@ pub(crate) fn arrayContainsEmpty(mut inValues: Arc<metamodelica::List<Arc<Values
 
 pub fn liftValueList(mut inValue: Arc<Values::Value>, mut inDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value> = inValue.clone();
-    for mut dim in &*inDimensions.clone().reverse() {
+    for mut dim in &*inDimensions.reverse() {
         let mut dim = dim.clone();
         outValue = ValuesMake::makeArray(List::fill(outValue.clone(), Expression::dimensionSize(dim.clone())?));
     }
@@ -2060,7 +2060,7 @@ pub fn liftValueList(mut inValue: Arc<Values::Value>, mut inDimensions: Arc<meta
 
 pub fn isEmpty(mut inValue: Arc<Values::Value>) -> bool {
     let mut outIsEmpty: bool;
-    outIsEmpty = (::match_deref::match_deref! { match &(inValue.clone()) {
+    outIsEmpty = (::match_deref::match_deref! { match &(inValue) {
         Deref @ Values::Value::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2090,14 +2090,14 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
         }
         __acc.reverse()
     }));
-            outValue.clone()
+            outValue
         },
         (Deref @ Values::Value::INTEGER { .. }, Deref @ DAE::Type::T_REAL { .. }) => {
             Arc::new(Values::Value::REAL { real: intReal(var_field!((*outValue).integer, Values::Value::INTEGER).clone()) })
         },
         (Deref @ Values::Value::ARRAY { .. }, Deref @ DAE::Type::T_ARRAY { .. }) => {
             let mut ty: Arc<DAE::Type>;
-            ty = Expression::unliftArray(inType.clone())?;
+            ty = Expression::unliftArray(inType)?;
             assign_variant_field!(outValue => Values::Value::ARRAY; valueLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut v in (var_field!((*outValue).valueLst, Values::Value::ARRAY).clone()).into_iter().cloned() {
@@ -2106,10 +2106,10 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
         }
         __acc.reverse()
     }));
-            outValue.clone()
+            outValue
         },
         _ => {
-            outValue.clone()
+            outValue
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2119,8 +2119,8 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
 pub fn fixZeroSizeArray(mut e: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut e: Arc<DAE::Exp> = e;
     e = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN { .. }, .. }, scalar: false, array: Deref @ metamodelica::List::Nil } => Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: !(Types::isArray(Types::unliftArray(ty.clone())?)), array: metamodelica::nil() }),
-        _ => e.clone(),
+        Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN { .. }, .. }, scalar: false, array: Deref @ metamodelica::List::Nil } => Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: !(Types::isArray(Types::unliftArray(ty)?)), array: metamodelica::nil() }),
+        _ => e,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(e)

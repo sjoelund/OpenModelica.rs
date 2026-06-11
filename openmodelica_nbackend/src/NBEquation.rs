@@ -264,11 +264,11 @@ pub mod Iterator {
             iter_cref = ComponentRef::makeIterator(node2.clone(), openmodelica_nf_frontend::NFType::interned_INTEGER())?;
             iter_var = BackendDAE::lowerIterator(iter_cref.clone())?;
             iter_cref = BVariable::getVarName(iter_var.clone());
-            UnorderedSet::add(iter_var.clone(), set.clone())?;
+            UnorderedSet::add(iter_var.clone(), set)?;
             (iter_cref.clone(), range2.clone(), Some(map.clone()))
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.createFrame")); __mm_s.push_str(&*literal!(" failed to inline iterator expression: ")); __mm_s.push_str(&*InstNode::toString(Util::tuple21(iter.clone()))?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toString(Util::tuple22(iter.clone()))?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.createFrame")); __mm_s.push_str(&*literal!(" failed to inline iterator expression: ")); __mm_s.push_str(&*InstNode::toString(Util::tuple21(iter.clone()))?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toString(Util::tuple22(iter))?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -287,7 +287,7 @@ pub mod Iterator {
         if frames.clone().is_empty() {
             iter = crate::NBEquation::Iterator::interned_EMPTY();
         } else {
-            (names, ranges, maps) = List::unzip3(frames.clone());
+            (names, ranges, maps) = List::unzip3(frames);
             iter = (::match_deref::match_deref! { match &((names.clone(), ranges.clone(), maps.clone())) {
         (Deref @ metamodelica::List::Cons { head: __esc_name, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __esc_range, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __esc_map, tail: Deref @ metamodelica::List::Nil }) => {
             name = (*__esc_name).clone();
@@ -295,7 +295,7 @@ pub mod Iterator {
             map = (*__esc_map).clone();
             Arc::new(Iterator::SINGLE { name: name.clone(), range: range.clone(), map: map.clone() })
         },
-        _ => Arc::new(Iterator::NESTED { names: metamodelica::arrayFromVec(names.clone().into_iter().cloned().collect()), ranges: metamodelica::arrayFromVec(ranges.clone().into_iter().cloned().collect()), maps: metamodelica::arrayFromVec(maps.clone().into_iter().cloned().collect()) }),
+        _ => Arc::new(Iterator::NESTED { names: metamodelica::arrayFromVec(names.into_iter().cloned().collect()), ranges: metamodelica::arrayFromVec(ranges.into_iter().cloned().collect()), maps: metamodelica::arrayFromVec(maps.into_iter().cloned().collect()) }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         }
@@ -311,9 +311,9 @@ pub mod Iterator {
         let mut maps1: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         let mut maps2: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         if !(frames.clone().is_empty()) {
-            (names1, ranges1, maps1) = getFrames(iter.clone())?;
-            (names2, ranges2, maps2) = List::unzip3(frames.clone());
-            iter = fromFrames(List::zip3(listAppend(names1.clone(), names2.clone()), listAppend(ranges1.clone(), ranges2.clone()), listAppend(maps1.clone(), maps2.clone())));
+            (names1, ranges1, maps1) = getFrames(iter)?;
+            (names2, ranges2, maps2) = List::unzip3(frames);
+            iter = fromFrames(List::zip3(listAppend(names1, names2), listAppend(ranges1, ranges2), listAppend(maps1, maps2)));
         }
         Ok(iter)
     }
@@ -340,16 +340,16 @@ pub mod Iterator {
         let mut tmp_maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
         if List::hasOneElement(iterators.clone()) {
-            result = listHead(iterators.clone())?;
+            result = listHead(iterators)?;
         } else {
-            for mut iter in &*iterators.clone().reverse() {
+            for mut iter in &*iterators.reverse() {
                 let mut iter = iter.clone();
                 (tmp_names, tmp_ranges, tmp_maps) = getFrames(iter.clone())?;
                 names = listAppend(tmp_names.clone(), names.clone());
                 ranges = listAppend(tmp_ranges.clone(), ranges.clone());
                 maps = listAppend(tmp_maps.clone(), maps.clone());
             }
-            result = Arc::new(Iterator::NESTED { names: metamodelica::arrayFromVec(names.clone().into_iter().cloned().collect()), ranges: metamodelica::arrayFromVec(ranges.clone().into_iter().cloned().collect()), maps: metamodelica::arrayFromVec(maps.clone().into_iter().cloned().collect()) });
+            result = Arc::new(Iterator::NESTED { names: metamodelica::arrayFromVec(names.into_iter().cloned().collect()), ranges: metamodelica::arrayFromVec(ranges.into_iter().cloned().collect()), maps: metamodelica::arrayFromVec(maps.into_iter().cloned().collect()) });
         }
         Ok(result)
     }
@@ -359,8 +359,8 @@ pub mod Iterator {
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
         let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
-        (names, ranges, maps) = getFrames(iterator.clone())?;
-        for mut tpl in &*List::zip3(names.clone(), ranges.clone(), maps.clone()) {
+        (names, ranges, maps) = getFrames(iterator)?;
+        for mut tpl in &*List::zip3(names, ranges, maps) {
             let mut tpl = tpl.clone();
             result = metamodelica::cons(fromFrames(list![tpl.clone()]), result.clone());
         }
@@ -372,10 +372,10 @@ pub mod Iterator {
         iter = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => {
             let mut replacor: Arc<ComponentRef::NFComponentRef>;
-            replacor = ComponentRef::rename(({ let mut __mm_s = String::new(); __mm_s.push_str(&*newBaseName.clone()); __mm_s.push_str(&*intString(1)); ArcStr::from(__mm_s) }).clone(), var_field!((*iter).name, Iterator::SINGLE).clone())?;
-            UnorderedMap::add(var_field!((*iter).name, Iterator::SINGLE).clone(), Expression::fromCref(replacor.clone(), false)?, replacements.clone())?;
+            replacor = ComponentRef::rename(({ let mut __mm_s = String::new(); __mm_s.push_str(&*newBaseName); __mm_s.push_str(&*intString(1)); ArcStr::from(__mm_s) }).clone(), var_field!((*iter).name, Iterator::SINGLE).clone())?;
+            UnorderedMap::add(var_field!((*iter).name, Iterator::SINGLE).clone(), Expression::fromCref(replacor.clone(), false)?, replacements)?;
             assign_variant_field!(iter => Iterator::SINGLE; name = replacor.clone());
-            iter.clone()
+            iter
         },
         Deref @ NESTED { .. } => {
             let mut replacor: Arc<ComponentRef::NFComponentRef>;
@@ -388,7 +388,7 @@ pub mod Iterator {
                     var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
-            iter.clone()
+            iter
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -404,20 +404,20 @@ pub mod Iterator {
             if metamodelica::arrayLength(var_field!((*iter1).ranges, Iterator::NESTED).clone()) == metamodelica::arrayLength(var_field!((*iter2).ranges, Iterator::NESTED).clone()) && metamodelica::arrayLength(var_field!((*iter1).maps, Iterator::NESTED).clone()) == metamodelica::arrayLength(var_field!((*iter2).maps, Iterator::NESTED).clone()) {
                 for mut i in 1..=metamodelica::arrayLength(var_field!((*iter1).ranges, Iterator::NESTED).clone()) {
                     b = Expression::isEqual(({let __elt = var_field!((*iter1).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*iter2).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
-                    if !(b.clone()) {
+                    if !(b) {
                         break;
                     }
                 }
                 for mut i in 1..=metamodelica::arrayLength(var_field!((*iter1).maps, Iterator::NESTED).clone()) {
                     b = Util::optionEqual(({let __elt = var_field!((*iter1).maps, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*iter2).maps, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Iterator>, Arc<Iterator>) -> Result<bool> + 'static>))?;
-                    if !(b.clone()) {
+                    if !(b) {
                         break;
                     }
                 }
             } else {
                 b = false;
             }
-            b.clone()
+            b
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -427,7 +427,7 @@ pub mod Iterator {
 
     pub(crate) fn isEmpty(mut iter: Arc<Iterator>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(iter.clone()) {
+        b = (::match_deref::match_deref! { match &(iter) {
         Deref @ EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -437,7 +437,7 @@ pub mod Iterator {
 
     pub(crate) fn isResizable(mut iter: Arc<Iterator>) -> Result<bool> {
         let mut b: bool;
-        b = List::any(types(iter.clone())?, (std::sync::Arc::new(Type::isResizable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<bool> + 'static>))?;
+        b = List::any(types(iter)?, (std::sync::Arc::new(Type::isResizable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<bool> + 'static>))?;
         Ok(b)
     }
 
@@ -460,10 +460,10 @@ pub mod Iterator {
             }
             rest1 = intersectRest(var_field!((*iter1).name, Iterator::SINGLE).clone(), start1.clone(), step1.clone(), stop1.clone(), start_max.clone() - step1.clone(), stop_min.clone() + step1.clone(), var_field!((*iter1).map, Iterator::SINGLE).clone())?;
             rest2 = intersectRest(var_field!((*iter2).name, Iterator::SINGLE).clone(), start2.clone(), step2.clone(), stop2.clone(), start_max.clone() - step2.clone(), stop_min.clone() + step2.clone(), var_field!((*iter2).map, Iterator::SINGLE).clone())?;
-            (intersection.clone(), rest1.clone(), rest2.clone())
+            (intersection, rest1, rest2)
         },
         _ => {
-            (crate::NBEquation::Iterator::interned_EMPTY(), (iter1.clone(), crate::NBEquation::Iterator::interned_EMPTY()), (crate::NBEquation::Iterator::interned_EMPTY(), iter2.clone()))
+            (crate::NBEquation::Iterator::interned_EMPTY(), (iter1, crate::NBEquation::Iterator::interned_EMPTY()), (crate::NBEquation::Iterator::interned_EMPTY(), iter2))
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -474,17 +474,17 @@ pub mod Iterator {
         let mut rest: (Arc<Iterator>, Arc<Iterator>);
         let mut rest_left: Arc<Iterator>;
         let mut rest_right: Arc<Iterator>;
-        if start.clone() > start_max.clone() {
+        if start > start_max {
             rest_left = crate::NBEquation::Iterator::interned_EMPTY();
         } else {
-            rest_left = Arc::new(Iterator::SINGLE { name: name.clone(), range: Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: start.clone() }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step.clone() })), Arc::new(Expression::NFExpression::INTEGER { value: start_max.clone() }))?, map: map.clone() });
+            rest_left = Arc::new(Iterator::SINGLE { name: name.clone(), range: Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: start }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step })), Arc::new(Expression::NFExpression::INTEGER { value: start_max }))?, map: map.clone() });
         }
-        if stop_min.clone() > stop.clone() {
+        if stop_min > stop {
             rest_right = crate::NBEquation::Iterator::interned_EMPTY();
         } else {
-            rest_right = Arc::new(Iterator::SINGLE { name: name.clone(), range: Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: stop_min.clone() }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step.clone() })), Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }))?, map: map.clone() });
+            rest_right = Arc::new(Iterator::SINGLE { name: name, range: Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: stop_min }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step })), Arc::new(Expression::NFExpression::INTEGER { value: stop }))?, map: map });
         }
-        rest = (rest_left.clone(), rest_right.clone());
+        rest = (rest_left, rest_right);
         Ok(rest)
     }
 
@@ -502,7 +502,7 @@ pub mod Iterator {
     }),
         Deref @ EMPTY { .. } => metamodelica::nil(),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.types")); __mm_s.push_str(&*literal!(" could not get types for: ")); __mm_s.push_str(&*toString(iter.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.types")); __mm_s.push_str(&*literal!(" could not get types for: ")); __mm_s.push_str(&*toString(iter)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -513,18 +513,18 @@ pub mod Iterator {
     pub(crate) fn sizes(mut iter: Arc<Iterator>, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
         let mut sizes: Arc<metamodelica::List<i32>>;
         sizes = (::match_deref::match_deref! { match &(iter.clone()) {
-        Deref @ SINGLE { .. } => list![Expression::rangeSize(var_field!((*iter).range, Iterator::SINGLE).clone(), resize.clone())?],
+        Deref @ SINGLE { .. } => list![Expression::rangeSize(var_field!((*iter).range, Iterator::SINGLE).clone(), resize)?],
         Deref @ NESTED { .. } => ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone())).into_iter() {
-            let __x = Expression::rangeSize(({let __elt = var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), resize.clone())?;
+            let __x = Expression::rangeSize(({let __elt = var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), resize)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
         Deref @ EMPTY { .. } => metamodelica::nil(),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.sizes")); __mm_s.push_str(&*literal!(" could not get sizes for: ")); __mm_s.push_str(&*toString(iter.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.sizes")); __mm_s.push_str(&*literal!(" could not get sizes for: ")); __mm_s.push_str(&*toString(iter)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -535,7 +535,7 @@ pub mod Iterator {
     pub(crate) fn size(mut iter: Arc<Iterator>, mut resize: bool) -> Result<i32> {
         let mut size: i32 = ({
         let mut __acc: i32 = 1;
-        for mut i in (metamodelica::cons(1, sizes(iter.clone(), resize.clone())?)).into_iter().cloned() {
+        for mut i in (metamodelica::cons(1, sizes(iter.clone(), resize)?)).into_iter().cloned() {
             let __x = i.clone();
             __acc *= __x;
         }
@@ -572,8 +572,8 @@ pub mod Iterator {
             let mut exp: Arc<Expression::NFExpression> = exp;
             exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RANGE { .. } => Expression::makeRange(var_field!((*exp).start, Expression::NFExpression::RANGE).clone(), None, var_field!((*exp).start, Expression::NFExpression::RANGE).clone())?,
-        Deref @ Expression::ARRAY { .. } => if (metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()) > 0) {Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: openmodelica_nf_frontend::NFType::interned_INTEGER(), dimensions: list![Dimension::fromInteger(1, Variability::CONSTANT.clone())] }), arrayCreate(1, ({let __elt = var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone(); __elt})), Expression::isLiteral(({let __elt = var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone(); __elt}))?)} else {exp.clone()},
-        _ => exp.clone(),
+        Deref @ Expression::ARRAY { .. } => if (metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()) > 0) {Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: openmodelica_nf_frontend::NFType::interned_INTEGER(), dimensions: list![Dimension::fromInteger(1, Variability::CONSTANT.clone())] }), arrayCreate(1, ({let __elt = var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone(); __elt})), Expression::isLiteral(({let __elt = var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone(); __elt}))?)} else {exp},
+        _ => exp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             Ok(exp)
@@ -603,7 +603,7 @@ pub mod Iterator {
             let mut step: i32;
             (start, step, _) = Expression::getIntegerRange(var_field!((*iter).range, Iterator::SINGLE).clone(), true)?;
             UnorderedMap::add(var_field!((*iter).name, Iterator::SINGLE).clone(), Arc::new(Expression::NFExpression::INTEGER { value: start.clone() + ({let __elt = location.borrow()[(1-1) as usize].clone(); __elt}) * step.clone() }), replacements.clone())?;
-            createMappedLocationReplacement(var_field!((*iter).map, Iterator::SINGLE).clone(), ({let __elt = location.borrow()[(1-1) as usize].clone(); __elt}), replacements.clone())?;
+            createMappedLocationReplacement(var_field!((*iter).map, Iterator::SINGLE).clone(), ({let __elt = location.borrow()[(1-1) as usize].clone(); __elt}), replacements)?;
             ()
         },
         Deref @ NESTED { .. } if (metamodelica::arrayLength(location.clone()) == metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone())) => {
@@ -626,9 +626,9 @@ pub mod Iterator {
     }
 
     pub(crate) fn createMappedLocationReplacement(mut map: Option<Arc<Iterator>>, mut location: i32, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
-        let () = (::match_deref::match_deref! { match &(map.clone()) {
+        let () = (::match_deref::match_deref! { match &(map) {
         Some(Deref @ SINGLE { name, range: arr @ Deref @ Expression::ARRAY { .. }, .. }) => {
-            UnorderedMap::add(name.clone(), ({let __elt = var_field!((**arr).elements, Expression::NFExpression::ARRAY).borrow()[(location.clone()-1) as usize].clone(); __elt}), replacements.clone())?;
+            UnorderedMap::add(name.clone(), ({let __elt = var_field!((**arr).elements, Expression::NFExpression::ARRAY).borrow()[(location-1) as usize].clone(); __elt}), replacements)?;
             ()
         },
         _ => {
@@ -643,27 +643,27 @@ pub mod Iterator {
         let mut failed: bool = false;
         failed = (::match_deref::match_deref! { match &((replacor.clone(), replacee.clone())) {
         (Deref @ SINGLE { .. }, Deref @ SINGLE { .. }) => {
-            failed = createSingleReplacement(var_field!((*replacor).name, Iterator::SINGLE).clone(), var_field!((*replacor).range, Iterator::SINGLE).clone(), var_field!((*replacee).name, Iterator::SINGLE).clone(), var_field!((*replacee).range, Iterator::SINGLE).clone(), replacements.clone())?;
-            failed.clone()
+            failed = createSingleReplacement(var_field!((*replacor).name, Iterator::SINGLE).clone(), var_field!((*replacor).range, Iterator::SINGLE).clone(), var_field!((*replacee).name, Iterator::SINGLE).clone(), var_field!((*replacee).range, Iterator::SINGLE).clone(), replacements)?;
+            failed
         },
         (Deref @ NESTED { .. }, Deref @ NESTED { .. }) => {
             if metamodelica::arrayLength(var_field!((*replacor).names, Iterator::NESTED).clone()) == metamodelica::arrayLength(var_field!((*replacee).names, Iterator::NESTED).clone()) {
                 for mut i in 1..=metamodelica::arrayLength(var_field!((*replacor).names, Iterator::NESTED).clone()) {
                     failed = createSingleReplacement(({let __elt = var_field!((*replacor).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*replacor).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*replacee).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*replacee).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), replacements.clone())?;
-                    if failed.clone() {
+                    if failed {
                         break;
                     }
                 }
             } else {
                 failed = true;
             }
-            failed.clone()
+            failed
         },
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if failed.clone() {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.createReplacement")); __mm_s.push_str(&*literal!(" could not create replacements for replacor: ")); __mm_s.push_str(&*toString(replacor.clone())?); __mm_s.push_str(&*literal!(" and replacee: ")); __mm_s.push_str(&*toString(replacee.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
+        if failed {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.createReplacement")); __mm_s.push_str(&*literal!(" could not create replacements for replacor: ")); __mm_s.push_str(&*toString(replacor)?); __mm_s.push_str(&*literal!(" and replacee: ")); __mm_s.push_str(&*toString(replacee)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
         }
         Ok(())
@@ -671,7 +671,7 @@ pub mod Iterator {
 
     pub(crate) fn createSingleReplacement(mut replacor_cref: Arc<ComponentRef::NFComponentRef>, mut replacor_range: Arc<Expression::NFExpression>, mut replacee_cref: Arc<ComponentRef::NFComponentRef>, mut replacee_range: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<bool> {
         fn rangeLength(mut start: i32, mut step: i32, mut stop: i32) -> i32 {
-            let mut length: i32 = (((metamodelica::OrderedFloat((stop.clone() - start.clone() + Util::intSign(step.clone())) as f64)) / metamodelica::OrderedFloat((step.clone()) as f64)).0.floor() as i32);
+            let mut length: i32 = (((metamodelica::OrderedFloat((stop - start + Util::intSign(step)) as f64)) / metamodelica::OrderedFloat((step) as f64)).0.floor() as i32);
             length
         }
 
@@ -702,7 +702,7 @@ pub mod Iterator {
             let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
-            (names, ranges, maps) = getFrames(iter.clone())?;
+            (names, ranges, maps) = getFrames(iter)?;
             fromFrames(listAppend(({
         let mut __acc: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>)>> = metamodelica::nil();
         for mut tpl in (var_field!((*call).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone()).into_iter().cloned() {
@@ -716,7 +716,7 @@ pub mod Iterator {
             let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
-            (names, ranges, maps) = getFrames(iter.clone())?;
+            (names, ranges, maps) = getFrames(iter)?;
             fromFrames(listAppend(({
         let mut __acc: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>)>> = metamodelica::nil();
         for mut tpl in (var_field!((*call).iters, Call::NFCall::TYPED_REDUCTION).clone()).into_iter().cloned() {
@@ -727,7 +727,7 @@ pub mod Iterator {
     }), List::zip3(names.clone(), ranges.clone(), maps.clone())))
         },
         _ => {
-            iter.clone()
+            iter
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -738,9 +738,9 @@ pub mod Iterator {
         let mut iter: Arc<Iterator>;
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-        (exp, iter) = extractFromCall(exp.clone(), crate::NBEquation::Iterator::interned_EMPTY(), replacements.clone(), new_iters.clone(), dims_map.clone())?;
-        exp = Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-        (exp, _, _, _) = Typing::typeExp(exp.clone(), NFInstContext::RHS.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"), true)?;
+        (exp, iter) = extractFromCall(exp, crate::NBEquation::Iterator::interned_EMPTY(), replacements.clone(), new_iters, dims_map)?;
+        exp = Expression::map(exp, (std::sync::Arc::new({ let __pe_b1 = replacements; move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        (exp, _, _, _) = Typing::typeExp(exp, NFInstContext::RHS.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"), true)?;
         Ok((iter, exp))
     }
 
@@ -759,7 +759,7 @@ pub mod Iterator {
             }
             tmp = fromFrames(frames.clone());
             if !(isEmpty(iter.clone())) {
-                createReplacement(iter.clone(), tmp.clone(), replacements.clone())?;
+                createReplacement(iter.clone(), tmp.clone(), replacements)?;
             } else {
                 iter = tmp.clone();
             }
@@ -772,18 +772,18 @@ pub mod Iterator {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), dims_map.clone())?;
-            (var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), iter.clone())
+    }), dims_map)?;
+            (var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), iter)
         },
         Deref @ Expression::CALL { .. } => {
-            (exp.clone(), iter.clone())
+            (exp.clone(), iter)
         },
         Deref @ Expression::IF { .. } if (extractFromCallIfException(exp.clone())) => {
-            (exp.clone(), iter.clone())
+            (exp.clone(), iter)
         },
         _ => {
-            (exp, iter) = Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = replacements.clone(); let __pe_b3 = new_iters.clone(); let __pe_b4 = dims_map.clone(); move |__pe_a0, __pe_a1| extractFromCall(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Iterator>) -> Result<(Arc<Expression::NFExpression>, Arc<Iterator>)> + 'static>), iter.clone())?;
-            (exp.clone(), iter.clone())
+            (exp, iter) = Expression::mapFoldShallow(exp, (std::sync::Arc::new({ let __pe_b2 = replacements; let __pe_b3 = new_iters; let __pe_b4 = dims_map; move |__pe_a0, __pe_a1| extractFromCall(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Iterator>) -> Result<(Arc<Expression::NFExpression>, Arc<Iterator>)> + 'static>), iter)?;
+            (exp.clone(), iter)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -806,12 +806,12 @@ pub mod Iterator {
         let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
-        (names, ranges, _) = getFrames(iter.clone())?;
+        (names, ranges, _) = getFrames(iter)?;
         subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-        let __thr_src0 = names.clone();
+        let __thr_src0 = names;
         let mut __thr_it0 = (&__thr_src0).into_iter();
-        let __thr_src1 = ranges.clone();
+        let __thr_src1 = ranges;
         let mut __thr_it1 = (&__thr_src1).into_iter();
         loop {
             match (__thr_it0.next(), __thr_it1.next()) {
@@ -837,27 +837,27 @@ pub mod Iterator {
             step = Util::getOptionOrDefault(var_field!((*range).step, Expression::NFExpression::RANGE).clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }));
             sub_exp = Expression::fromCref(iter_name.clone(), false)?;
             if !(Expression::isOne(var_field!((*range).start, Expression::NFExpression::RANGE).clone())?) {
-                sub_exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp.clone()], inv_arguments: list![var_field!((*range).start, Expression::NFExpression::RANGE).clone()], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) });
+                sub_exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp], inv_arguments: list![var_field!((*range).start, Expression::NFExpression::RANGE).clone()], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) });
             }
             if !(Expression::isOne(step.clone())?) {
-                sub_exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp.clone()], inv_arguments: list![step.clone()], operator: Operator::makeMul(openmodelica_nf_frontend::NFType::interned_REAL()) });
+                sub_exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp], inv_arguments: list![step], operator: Operator::makeMul(openmodelica_nf_frontend::NFType::interned_REAL()) });
             }
             if !(Expression::isOne(var_field!((*range).start, Expression::NFExpression::RANGE).clone())?) {
-                sub_exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 })], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(Expression::typeOf(sub_exp.clone())) });
+                sub_exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 })], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(Expression::typeOf(sub_exp)) });
             }
-            sub_exp = SimplifyExp::simplifyDump(sub_exp.clone(), true, literal!("NBEquation.Iterator.normalizedSubscript"), (literal!("")).clone())?;
+            sub_exp = SimplifyExp::simplifyDump(sub_exp, true, literal!("NBEquation.Iterator.normalizedSubscript"), (literal!("")).clone())?;
             if !(Type::isInteger(Expression::typeOf(sub_exp.clone()))?) {
-                sub_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::INTEGER_REAL().clone(), list![sub_exp.clone()], Variability::DISCRETE.clone(), Purity::PURE.clone(), NFBuiltinFuncs::INTEGER_REAL().returnType.clone()) });
+                sub_exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::INTEGER_REAL().clone(), list![sub_exp], Variability::DISCRETE.clone(), Purity::PURE.clone(), NFBuiltinFuncs::INTEGER_REAL().returnType.clone()) });
             }
-            Arc::new(Subscript::NFSubscript::INDEX { index: sub_exp.clone() })
+            Arc::new(Subscript::NFSubscript::INDEX { index: sub_exp })
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.normalizedSubscript")); __mm_s.push_str(&*literal!(" failed because range is no range: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.normalizedSubscript")); __mm_s.push_str(&*literal!(" failed because range is no range: ")); __mm_s.push_str(&*Expression::toString(range)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        UnorderedMap::add(iter_name.clone(), sub.clone(), iter_map.clone())?;
+        UnorderedMap::add(iter_name, sub.clone(), iter_map)?;
         Ok(sub)
     }
 
@@ -880,7 +880,7 @@ pub mod Iterator {
             let mut range: Arc<Expression::NFExpression>;
             let mut operator: Arc<Operator::NFOperator>;
             (names, ranges, maps) = getFrames(iter.clone())?;
-            for mut frame in &*List::zip3(names.clone(), ranges.clone(), maps.clone()) {
+            for mut frame in &*List::zip3(names.clone(), ranges, maps) {
                 let mut frame = frame.clone();
                 UnorderedMap::add(Util::tuple31(frame.clone()), Util::tuple32(frame.clone()), iter_map.clone())?;
                 UnorderedMap::add(Util::tuple31(frame.clone()), Util::tuple33(frame.clone()), opt_map.clone())?;
@@ -891,12 +891,12 @@ pub mod Iterator {
                 cref = listHead(occs.clone())?;
                 (tmpEqn, status, invert) = Solve::solveBody(tmpEqn.clone(), cref.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Path>, Arc<Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Path>) -> Result<bool> + 'static>), 1))?;
                 operator = if (invert.clone() == Solve::RelationInversion::TRUE.clone()) {Operator::invert(var_field!((*condition).operator, Expression::NFExpression::RELATION).clone())?} else {var_field!((*condition).operator, Expression::NFExpression::RELATION).clone()};
-                if status.clone() == Solve::Status::EXPLICIT.clone() && invert.clone() != Solve::RelationInversion::UNKNOWN.clone() {
+                if status == Solve::Status::EXPLICIT.clone() && invert.clone() != Solve::RelationInversion::UNKNOWN.clone() {
                     range = UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?;
                     match '__try0: {
                         (range, status) = (::match_deref::match_deref! { match &(range.clone()) {
-        Deref @ Expression::RANGE { .. } => (unwrap_break_err!(adaptRange(unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo")), '__try0), unwrap_break_err!(Util::getOption(unwrap_break_err!(Equation::getRHS(tmpEqn.clone()), '__try0)), '__try0), operator.clone()), '__try0), status.clone()),
-        Deref @ Expression::ARRAY { .. } => (unwrap_break_err!(adaptArray(unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo")), '__try0), unwrap_break_err!(Util::getOption(unwrap_break_err!(Equation::getRHS(tmpEqn.clone()), '__try0)), '__try0), operator.clone()), '__try0), status.clone()),
+        Deref @ Expression::RANGE { .. } => (unwrap_break_err!(adaptRange(unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo")), '__try0), unwrap_break_err!(Util::getOption(unwrap_break_err!(Equation::getRHS(tmpEqn.clone()), '__try0)), '__try0), operator.clone()), '__try0), status),
+        Deref @ Expression::ARRAY { .. } => (unwrap_break_err!(adaptArray(unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo")), '__try0), unwrap_break_err!(Util::getOption(unwrap_break_err!(Equation::getRHS(tmpEqn.clone()), '__try0)), '__try0), operator.clone()), '__try0), status),
         _ => (range.clone(), Solve::Status::UNSOLVABLE.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -916,20 +916,20 @@ pub mod Iterator {
                     status = Solve::Status::UNSOLVABLE.clone();
                 }
             }
-            if status.clone() == Solve::Status::EXPLICIT.clone() {
+            if status == Solve::Status::EXPLICIT.clone() {
                 iter = fromFrames(({
         let mut __acc: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>)>> = metamodelica::nil();
-        for mut name in (names.clone()).into_iter().cloned() {
+        for mut name in (names).into_iter().cloned() {
             let __x = (name.clone(), UnorderedMap::getSafe(name.clone(), iter_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?, UnorderedMap::getSafe(name.clone(), opt_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
             }
-            (iter.clone(), status.clone())
+            (iter, status)
         },
         _ => {
-            (iter.clone(), Solve::Status::UNSOLVABLE.clone())
+            (iter, Solve::Status::UNSOLVABLE.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -943,7 +943,7 @@ pub mod Iterator {
         let mut step: i32 = 0;
         let mut stop: i32 = 0;
         let mut within_range: bool;
-        (thresh, start, step, stop) = (::match_deref::match_deref! { match &((rhs.clone(), range.clone())) {
+        (thresh, start, step, stop) = (::match_deref::match_deref! { match &((rhs, range.clone())) {
         (Deref @ Expression::INTEGER { value: __esc_thresh }, __esc_range @ Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: __esc_start }, step: Some(Deref @ Expression::INTEGER { value: __esc_step }), stop: Deref @ Expression::INTEGER { value: __esc_stop }, .. }) => {
             range = (*__esc_range).clone();
             thresh = (*__esc_thresh).clone();
@@ -965,24 +965,24 @@ pub mod Iterator {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        within_range = thresh.clone() * sign(metamodelica::OrderedFloat((step.clone()) as f64)) > start.clone() * sign(metamodelica::OrderedFloat((step.clone()) as f64)) && thresh.clone() * sign(metamodelica::OrderedFloat((step.clone()) as f64)) < stop.clone() * sign(metamodelica::OrderedFloat((step.clone()) as f64));
+        within_range = thresh * sign(metamodelica::OrderedFloat((step) as f64)) > start * sign(metamodelica::OrderedFloat((step) as f64)) && thresh * sign(metamodelica::OrderedFloat((step) as f64)) < stop * sign(metamodelica::OrderedFloat((step) as f64));
         range = (match operator.op.clone() {
-        Operator::Op::EQUAL => if (within_range.clone()) {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: thresh.clone() }), None, Arc::new(Expression::NFExpression::INTEGER { value: thresh.clone() }))?} else {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Some(Arc::new(Expression::NFExpression::INTEGER { value: 0 })), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?},
-        Operator::Op::NEQUAL => if (within_range.clone()) {Expression::makeExpArray(metamodelica::arrayFromVec(({
+        Operator::Op::EQUAL => if (within_range) {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: thresh }), None, Arc::new(Expression::NFExpression::INTEGER { value: thresh }))?} else {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Some(Arc::new(Expression::NFExpression::INTEGER { value: 0 })), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?},
+        Operator::Op::NEQUAL => if (within_range) {Expression::makeExpArray(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (List::intRange3(start.clone(), step.clone(), stop.clone())?).into_iter().cloned() {
-            if !(i.clone() != thresh.clone()) { continue; }
+        for mut i in (List::intRange3(start, step, stop)?).into_iter().cloned() {
+            if !(i.clone() != thresh) { continue; }
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true)} else {range.clone()},
-        Operator::Op::LESS => interceptRange(thresh.clone() - 1, start.clone(), step.clone(), stop.clone(), within_range.clone(), sign(metamodelica::OrderedFloat((step.clone()) as f64)) > 0, range.clone(), (std::sync::Arc::new(fnptr!(intLe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
-        Operator::Op::LESSEQ => interceptRange(thresh.clone(), start.clone(), step.clone(), stop.clone(), within_range.clone(), sign(metamodelica::OrderedFloat((step.clone()) as f64)) > 0, range.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
-        Operator::Op::GREATER => interceptRange(thresh.clone() + 1, start.clone(), step.clone(), stop.clone(), within_range.clone(), sign(metamodelica::OrderedFloat((step.clone()) as f64)) < 0, range.clone(), (std::sync::Arc::new(fnptr!(intGe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
-        Operator::Op::GREATEREQ => interceptRange(thresh.clone(), start.clone(), step.clone(), stop.clone(), within_range.clone(), sign(metamodelica::OrderedFloat((step.clone()) as f64)) < 0, range.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
+    }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true)} else {range},
+        Operator::Op::LESS => interceptRange(thresh - 1, start, step, stop, within_range, sign(metamodelica::OrderedFloat((step) as f64)) > 0, range, (std::sync::Arc::new(fnptr!(intLe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
+        Operator::Op::LESSEQ => interceptRange(thresh, start, step, stop, within_range, sign(metamodelica::OrderedFloat((step) as f64)) > 0, range, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
+        Operator::Op::GREATER => interceptRange(thresh + 1, start, step, stop, within_range, sign(metamodelica::OrderedFloat((step) as f64)) < 0, range, (std::sync::Arc::new(fnptr!(intGe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
+        Operator::Op::GREATEREQ => interceptRange(thresh, start, step, stop, within_range, sign(metamodelica::OrderedFloat((step) as f64)) < 0, range, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptRange")); __mm_s.push_str(&*literal!(" failed for operator: ")); __mm_s.push_str(&*Operator::toDebugString(operator.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptRange")); __mm_s.push_str(&*literal!(" failed for operator: ")); __mm_s.push_str(&*Operator::toDebugString(operator)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
     });
@@ -993,18 +993,18 @@ pub mod Iterator {
         type intComp = std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>;
 
         fn lowerBoundary(mut thresh: i32, mut start: i32, mut step: i32) -> i32 {
-            let mut boundary: i32 = thresh.clone() + intMod(start.clone() - thresh.clone(), step.clone());
+            let mut boundary: i32 = thresh + intMod(start - thresh, step);
             boundary
         }
 
         let mut range: Arc<Expression::NFExpression> = range;
         if within_range.clone() {
             if at_end.clone() {
-                range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: start.clone() }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step.clone() })), Arc::new(Expression::NFExpression::INTEGER { value: thresh.clone() }))?;
+                range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: start }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step })), Arc::new(Expression::NFExpression::INTEGER { value: thresh }))?;
             } else {
-                range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: lowerBoundary(thresh.clone(), start.clone(), step.clone()) }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step.clone() })), Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }))?;
+                range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: lowerBoundary(thresh, start, step) }), Some(Arc::new(Expression::NFExpression::INTEGER { value: step })), Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }))?;
             }
-        } else if func(if (at_end.clone()) {stop.clone()} else {start.clone()}, thresh.clone())? {
+        } else if func(if (at_end.clone()) {stop.clone()} else {start}, thresh)? {
             range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Some(Arc::new(Expression::NFExpression::INTEGER { value: 0 })), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?;
         }
         Ok(range)
@@ -1014,7 +1014,7 @@ pub mod Iterator {
         let mut array: Arc<Expression::NFExpression> = array;
         let mut thresh: i32 = 0;
         let mut elems: Arc<metamodelica::List<i32>>;
-        (thresh, elems) = (::match_deref::match_deref! { match &((rhs.clone(), array.clone())) {
+        (thresh, elems) = (::match_deref::match_deref! { match &((rhs, array.clone())) {
         (Deref @ Expression::INTEGER { value: __esc_thresh }, Deref @ Expression::ARRAY { literal: true, .. }) => {
             thresh = (*__esc_thresh).clone();
             (thresh.clone(), ({
@@ -1027,17 +1027,17 @@ pub mod Iterator {
     }))
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptArray")); __mm_s.push_str(&*literal!(" failed because array range is non literal: ")); __mm_s.push_str(&*Expression::toString(array.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptArray")); __mm_s.push_str(&*literal!(" failed because array range is non literal: ")); __mm_s.push_str(&*Expression::toString(array)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         array = (match operator.op.clone() {
-        Operator::Op::EQUAL => if (List::contains(elems.clone(), thresh.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?) {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: thresh.clone() }), None, Arc::new(Expression::NFExpression::INTEGER { value: thresh.clone() }))?} else {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Some(Arc::new(Expression::NFExpression::INTEGER { value: 0 })), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?},
+        Operator::Op::EQUAL => if (List::contains(elems, thresh, (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?) {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: thresh }), None, Arc::new(Expression::NFExpression::INTEGER { value: thresh }))?} else {Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Some(Arc::new(Expression::NFExpression::INTEGER { value: 0 })), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?},
         Operator::Op::NEQUAL => Expression::makeExpArray(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (elems.clone()).into_iter().cloned() {
-            if !(i.clone() != thresh.clone()) { continue; }
+        for mut i in (elems).into_iter().cloned() {
+            if !(i.clone() != thresh) { continue; }
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
@@ -1045,8 +1045,8 @@ pub mod Iterator {
     }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true),
         Operator::Op::LESS => Expression::makeExpArray(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (elems.clone()).into_iter().cloned() {
-            if !(i.clone() < thresh.clone()) { continue; }
+        for mut i in (elems).into_iter().cloned() {
+            if !(i.clone() < thresh) { continue; }
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
@@ -1054,8 +1054,8 @@ pub mod Iterator {
     }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true),
         Operator::Op::LESSEQ => Expression::makeExpArray(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (elems.clone()).into_iter().cloned() {
-            if !(i.clone() <= thresh.clone()) { continue; }
+        for mut i in (elems).into_iter().cloned() {
+            if !(i.clone() <= thresh) { continue; }
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
@@ -1063,8 +1063,8 @@ pub mod Iterator {
     }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true),
         Operator::Op::GREATER => Expression::makeExpArray(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (elems.clone()).into_iter().cloned() {
-            if !(i.clone() > thresh.clone()) { continue; }
+        for mut i in (elems).into_iter().cloned() {
+            if !(i.clone() > thresh) { continue; }
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
@@ -1072,15 +1072,15 @@ pub mod Iterator {
     }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true),
         Operator::Op::GREATEREQ => Expression::makeExpArray(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (elems.clone()).into_iter().cloned() {
-            if !(i.clone() >= thresh.clone()) { continue; }
+        for mut i in (elems).into_iter().cloned() {
+            if !(i.clone() >= thresh) { continue; }
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }).into_iter().cloned().collect()), openmodelica_nf_frontend::NFType::interned_INTEGER(), true),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptArray")); __mm_s.push_str(&*literal!(" failed for operator: ")); __mm_s.push_str(&*Operator::toDebugString(operator.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptArray")); __mm_s.push_str(&*literal!(" failed for operator: ")); __mm_s.push_str(&*Operator::toDebugString(operator)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
     });
@@ -1097,15 +1097,15 @@ pub mod Iterator {
             range = (::match_deref::match_deref! { match &(range.clone()) {
         Deref @ Expression::RANGE { .. } => {
             step = Util::getOptionOrDefault(var_field!((*range).step, Expression::NFExpression::RANGE).clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }));
-            if Expression::isNegative(step.clone())? && eo.clone() == EvalOrder::FORWARD.clone() || Expression::isPositive(step.clone())? && eo.clone() == EvalOrder::BACKWARD.clone() {
-                res = Expression::revertRange(range.clone())?;
+            if Expression::isNegative(step.clone())? && eo == EvalOrder::FORWARD.clone() || Expression::isPositive(step)? && eo == EvalOrder::BACKWARD.clone() {
+                res = Expression::revertRange(range)?;
             } else {
-                res = range.clone();
+                res = range;
             }
-            res.clone()
+            res
         },
         Deref @ Expression::ARRAY { literal: true, .. } => {
-            if eo.clone() == EvalOrder::FORWARD.clone() {
+            if eo == EvalOrder::FORWARD.clone() {
                 elements = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut e in (var_field!((*range).elements, Expression::NFExpression::ARRAY).clone()).borrow().iter() {
@@ -1116,13 +1116,13 @@ pub mod Iterator {
     });
                 assign_variant_field!(range => Expression::NFExpression::ARRAY; elements = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut e in (List::sort(elements.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?).into_iter().cloned() {
+        for mut e in (List::sort(elements, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?).into_iter().cloned() {
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: e.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }).into_iter().cloned().collect()));
-            } else if eo.clone() == EvalOrder::BACKWARD.clone() {
+            } else if eo == EvalOrder::BACKWARD.clone() {
                 elements = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut e in (var_field!((*range).elements, Expression::NFExpression::ARRAY).clone()).borrow().iter() {
@@ -1133,17 +1133,17 @@ pub mod Iterator {
     });
                 assign_variant_field!(range => Expression::NFExpression::ARRAY; elements = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut e in (List::sort(elements.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?).into_iter().cloned() {
+        for mut e in (List::sort(elements, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?).into_iter().cloned() {
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: e.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }).into_iter().cloned().collect()));
             }
-            range.clone()
+            range
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.applyOrder.applySingleOrder")); __mm_s.push_str(&*literal!(" failed for unhandled range expression: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.applyOrder.applySingleOrder")); __mm_s.push_str(&*literal!(" failed for unhandled range expression: ")); __mm_s.push_str(&*Expression::toString(range)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1154,7 +1154,7 @@ pub mod Iterator {
         let mut iter: Arc<Iterator> = iter;
         iter = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => {
-            assign_variant_field!(iter => Iterator::SINGLE; range = applySingleOrder(var_field!((*iter).name, Iterator::SINGLE).clone(), var_field!((*iter).range, Iterator::SINGLE).clone(), order.clone())?);
+            assign_variant_field!(iter => Iterator::SINGLE; range = applySingleOrder(var_field!((*iter).name, Iterator::SINGLE).clone(), var_field!((*iter).range, Iterator::SINGLE).clone(), order)?);
             iter.clone()
         },
         Deref @ NESTED { .. } => {
@@ -1178,8 +1178,8 @@ pub mod Iterator {
             let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(name.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) };
             let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             if isSome(map.clone()) {
-                (names, _, _) = getFrames(Util::getOption(map.clone())?)?;
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*ComponentRef::toString(listHead(names.clone())?)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+                (names, _, _) = getFrames(Util::getOption(map)?)?;
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*ComponentRef::toString(listHead(names)?)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             }
             Ok(r#str)
         }
@@ -1211,15 +1211,15 @@ pub mod Iterator {
         iter = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => {
             if isSome(funcCrefOpt.clone()) {
-                funcCref = Util::getOption(funcCrefOpt.clone())?;
+                funcCref = Util::getOption(funcCrefOpt)?;
                 assign_variant_field!(iter => Iterator::SINGLE; name = funcCref(var_field!((*iter).name, Iterator::SINGLE).clone())?);
             }
             assign_variant_field!(iter => Iterator::SINGLE; range = mapFunc(var_field!((*iter).range, Iterator::SINGLE).clone(), funcExp.clone())?);
-            iter.clone()
+            iter
         },
         Deref @ NESTED { .. } => {
             if isSome(funcCrefOpt.clone()) {
-                funcCref = Util::getOption(funcCrefOpt.clone())?;
+                funcCref = Util::getOption(funcCrefOpt)?;
                 for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()) {
                     {
                         let __cell0 = funcCref(({let __elt = var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
@@ -1235,7 +1235,7 @@ pub mod Iterator {
                     var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
-            iter.clone()
+            iter
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.map")); __mm_s.push_str(&*literal!(" failed for an unknown reason.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -1434,19 +1434,19 @@ pub mod Equation {
         let mut s: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(size(Pointer::create(eq.clone()), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) };
         let mut tupl_recd_str: ArcStr = arcstr::literal!("");
         r#str = ((::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ SCALAR_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[SCAL] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone())?); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::SCALAR_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) },
-        Deref @ ARRAY_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[ARRY] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone())?); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::ARRAY_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ SCALAR_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[SCAL] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone())?); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::SCALAR_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ ARRAY_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[ARRY] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone())?); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::ARRAY_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) },
         Deref @ RECORD_EQUATION { .. } => {
             tupl_recd_str = (if (Type::isTuple(var_field!((*eq).ty, Equation::RECORD_EQUATION).clone())) {literal!("[TUPL] ")} else {literal!("[RECD] ")}).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*tupl_recd_str.clone()); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone())?); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::RECORD_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*tupl_recd_str); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone())?); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::RECORD_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) }
         },
-        Deref @ ALGORITHM { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[ALGO] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::ALGORITHM).clone(), (literal!(" ")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Algorithm::toString(var_field!((*eq).alg, Equation::ALGORITHM).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ IF_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*IfEquationBody::toString(var_field!((*eq).body, Equation::IF_EQUATION).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[-IF-] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::IF_EQUATION).clone(), (literal!(" ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), false)?); ArcStr::from(__mm_s) },
-        Deref @ FOR_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*forEquationToString(var_field!((*eq).iter, Equation::FOR_EQUATION).clone(), var_field!((*eq).body, Equation::FOR_EQUATION).clone(), (literal!("")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[FOR-] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::FOR_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ WHEN_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*WhenEquationBody::toString(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[WHEN] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::WHEN_EQUATION).clone(), (literal!(" ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), false)?); ArcStr::from(__mm_s) },
-        Deref @ AUX_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[AUX-] ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("Auxiliary equation for ")); __mm_s.push_str(&*Variable::toString(Pointer::access(var_field!((*eq).auxiliary, Equation::AUX_EQUATION).clone()), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) },
-        Deref @ DUMMY_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[DUMY] (0) Dummy equation.")); ArcStr::from(__mm_s) },
-        _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[FAIL] (0) ")); __mm_s.push_str(&*literal!("NBEquation.Equation.toString")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) },
+        Deref @ ALGORITHM { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[ALGO] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::ALGORITHM).clone(), (literal!(" ")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Algorithm::toString(var_field!((*eq).alg, Equation::ALGORITHM).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ IF_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*IfEquationBody::toString(var_field!((*eq).body, Equation::IF_EQUATION).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[-IF-] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::IF_EQUATION).clone(), (literal!(" ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), false)?); ArcStr::from(__mm_s) },
+        Deref @ FOR_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*forEquationToString(var_field!((*eq).iter, Equation::FOR_EQUATION).clone(), var_field!((*eq).body, Equation::FOR_EQUATION).clone(), (literal!("")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[FOR-] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::FOR_EQUATION).clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ WHEN_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*WhenEquationBody::toString(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[----] ")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[WHEN] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*EquationAttributes::toString(var_field!((*eq).attr, Equation::WHEN_EQUATION).clone(), (literal!(" ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), false)?); ArcStr::from(__mm_s) },
+        Deref @ AUX_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[AUX-] ")); __mm_s.push_str(&*s); __mm_s.push_str(&*literal!("Auxiliary equation for ")); __mm_s.push_str(&*Variable::toString(Pointer::access(var_field!((*eq).auxiliary, Equation::AUX_EQUATION).clone()), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) },
+        Deref @ DUMMY_EQUATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[DUMY] (0) Dummy equation.")); ArcStr::from(__mm_s) },
+        _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("[FAIL] (0) ")); __mm_s.push_str(&*literal!("NBEquation.Equation.toString")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(r#str)
@@ -1454,7 +1454,7 @@ pub mod Equation {
 
     pub(crate) fn pointerToString(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        r#str = (toString(Pointer::access(eqn_ptr.clone()), (r#str.clone()).clone())?).clone();
+        r#str = (toString(Pointer::access(eqn_ptr), (r#str).clone())?).clone();
         Ok(r#str)
     }
 
@@ -1469,7 +1469,7 @@ pub mod Equation {
         Deref @ FOR_EQUATION { .. } => var_field!((*eq).source, Equation::FOR_EQUATION).clone(),
         Deref @ WHEN_EQUATION { .. } => var_field!((*eq).source, Equation::WHEN_EQUATION).clone(),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.source")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.source")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eq, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1485,37 +1485,37 @@ pub mod Equation {
     pub(crate) fn size(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut resize: bool) -> Result<i32> {
         let mut s: i32;
         let mut eqn: Arc<Equation>;
-        eqn = Pointer::access(eqn_ptr.clone());
+        eqn = Pointer::access(eqn_ptr);
         s = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
             1
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            Type::sizeOf(var_field!((*eqn).ty, Equation::ARRAY_EQUATION).clone(), resize.clone())?
+            Type::sizeOf(var_field!((*eqn).ty, Equation::ARRAY_EQUATION).clone(), resize)?
         },
         Deref @ RECORD_EQUATION { .. } => {
-            Type::sizeOf(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone(), resize.clone())?
+            Type::sizeOf(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone(), resize)?
         },
         Deref @ ALGORITHM { .. } => {
             var_field!((*eqn).size, Equation::ALGORITHM).clone()
         },
         Deref @ IF_EQUATION { .. } => {
-            if (resize.clone()) {IfEquationBody::size(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), resize.clone())?} else {var_field!((*eqn).size, Equation::IF_EQUATION).clone()}
+            if (resize) {IfEquationBody::size(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), resize)?} else {var_field!((*eqn).size, Equation::IF_EQUATION).clone()}
         },
         Deref @ FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            if (resize.clone()) {Iterator::size(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), resize.clone())? * size(Pointer::create(body.clone()), resize.clone())?} else {var_field!((*eqn).size, Equation::FOR_EQUATION).clone()}
+            if (resize) {Iterator::size(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), resize)? * size(Pointer::create(body.clone()), resize)?} else {var_field!((*eqn).size, Equation::FOR_EQUATION).clone()}
         },
         Deref @ WHEN_EQUATION { .. } => {
-            if (resize.clone()) {WhenEquationBody::size(var_field!((*eqn).body, Equation::WHEN_EQUATION).clone(), resize.clone())?} else {var_field!((*eqn).size, Equation::WHEN_EQUATION).clone()}
+            if (resize) {WhenEquationBody::size(var_field!((*eqn).body, Equation::WHEN_EQUATION).clone(), resize)?} else {var_field!((*eqn).size, Equation::WHEN_EQUATION).clone()}
         },
         Deref @ AUX_EQUATION { .. } => {
-            Variable::size(Pointer::access(var_field!((*eqn).auxiliary, Equation::AUX_EQUATION).clone()), resize.clone())?
+            Variable::size(Pointer::access(var_field!((*eqn).auxiliary, Equation::AUX_EQUATION).clone()), resize)?
         },
         Deref @ DUMMY_EQUATION { .. } => {
             0
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.size")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.size")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1526,19 +1526,19 @@ pub mod Equation {
     pub(crate) fn sizes(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
         let mut size_lst: Arc<metamodelica::List<i32>>;
         let mut eqn: Arc<Equation>;
-        eqn = Pointer::access(eqn_ptr.clone());
+        eqn = Pointer::access(eqn_ptr);
         size_lst = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => list![1],
-        Deref @ ARRAY_EQUATION { .. } => list![Type::sizeOf(var_field!((*eqn).ty, Equation::ARRAY_EQUATION).clone(), resize.clone())?],
-        Deref @ RECORD_EQUATION { .. } => list![Type::sizeOf(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone(), resize.clone())?],
+        Deref @ ARRAY_EQUATION { .. } => list![Type::sizeOf(var_field!((*eqn).ty, Equation::ARRAY_EQUATION).clone(), resize)?],
+        Deref @ RECORD_EQUATION { .. } => list![Type::sizeOf(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone(), resize)?],
         Deref @ ALGORITHM { .. } => list![var_field!((*eqn).size, Equation::ALGORITHM).clone()],
         Deref @ IF_EQUATION { .. } => list![var_field!((*eqn).size, Equation::IF_EQUATION).clone()],
-        Deref @ FOR_EQUATION { .. } => Iterator::sizes(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), resize.clone())?.reverse(),
+        Deref @ FOR_EQUATION { .. } => Iterator::sizes(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), resize)?.reverse(),
         Deref @ WHEN_EQUATION { .. } => list![var_field!((*eqn).size, Equation::WHEN_EQUATION).clone()],
-        Deref @ AUX_EQUATION { .. } => list![Variable::size(Pointer::access(var_field!((*eqn).auxiliary, Equation::AUX_EQUATION).clone()), resize.clone())?],
+        Deref @ AUX_EQUATION { .. } => list![Variable::size(Pointer::access(var_field!((*eqn).auxiliary, Equation::AUX_EQUATION).clone()), resize)?],
         Deref @ DUMMY_EQUATION { .. } => metamodelica::nil(),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.sizes")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.sizes")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1566,8 +1566,8 @@ pub mod Equation {
         _ => eqn.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if !(referenceEq(&*(eqn.clone()),&*(new.clone()))) {
-            Pointer::update(eqn_ptr.clone(), new.clone());
+        if !(referenceEq(&*(eqn),&*(new.clone()))) {
+            Pointer::update(eqn_ptr.clone(), new);
         }
         Ok(eqn_ptr)
     }
@@ -1586,8 +1586,8 @@ pub mod Equation {
         let mut b: bool;
         let mut eqn1: Pointer::Pointer<Arc<Equation>>;
         let mut eqn2: Pointer::Pointer<Arc<Equation>>;
-        (eqn1, eqn2) = tpl.clone();
-        b = isEqualPtr(eqn1.clone(), eqn2.clone())?;
+        (eqn1, eqn2) = tpl;
+        b = isEqualPtr(eqn1, eqn2)?;
         Ok(b)
     }
 
@@ -1600,8 +1600,8 @@ pub mod Equation {
         let mut b: bool;
         let mut eqn1: Arc<Equation>;
         let mut eqn2: Arc<Equation>;
-        (eqn1, eqn2) = tpl.clone();
-        b = isEqual(eqn1.clone(), eqn2.clone())?;
+        (eqn1, eqn2) = tpl;
+        b = isEqual(eqn1, eqn2)?;
         Ok(b)
     }
 
@@ -1646,8 +1646,8 @@ pub mod Equation {
         if isDummy(Pointer::access(eqn.clone())) {
             name = openmodelica_nf_frontend::NFComponentRef::interned_EMPTY();
         } else {
-            residualVar = getResidualVar(eqn.clone())?;
-            name = BVariable::getVarName(residualVar.clone());
+            residualVar = getResidualVar(eqn)?;
+            name = BVariable::getVarName(residualVar);
         }
         Ok(name)
     }
@@ -1665,7 +1665,7 @@ pub mod Equation {
 
     pub(crate) fn getSolvedVar(mut eqn: Arc<Equation>) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable>;
-        var = (::match_deref::match_deref! { match &(eqn.clone()) {
+        var = (::match_deref::match_deref! { match &(eqn) {
         Deref @ SCALAR_EQUATION { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
             BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?
         },
@@ -1686,17 +1686,17 @@ pub mod Equation {
     pub(crate) fn makeAssignment(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut idx: Pointer::Pointer<i32>, mut r#str: ArcStr, mut iter: Arc<Iterator::Iterator>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Pointer::Pointer<Arc<Equation>>> {
         let mut eq: Pointer::Pointer<Arc<Equation>>;
         let mut e: Arc<Equation>;
-        e = makeAssignmentEqn(lhs.clone(), rhs.clone(), iter.clone(), attr.clone())?;
-        eq = Pointer::create(e.clone());
-        createName(eq.clone(), idx.clone(), (r#str.clone()).clone())?;
+        e = makeAssignmentEqn(lhs, rhs, iter, attr)?;
+        eq = Pointer::create(e);
+        createName(eq.clone(), idx, (r#str).clone())?;
         Ok(eq)
     }
 
     pub(crate) fn makeAssignmentUpdate(mut eq: Arc<Equation>, mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Arc<Equation>> {
         let mut eq: Arc<Equation> = eq;
         let mut res_var: Pointer::Pointer<Arc<Variable::NFVariable>> = getResidualVar(Pointer::create(eq.clone()))?;
-        eq = makeAssignmentEqn(lhs.clone(), rhs.clone(), iter.clone(), attr.clone())?;
-        eq = setResidualVar(eq.clone(), res_var.clone())?;
+        eq = makeAssignmentEqn(lhs, rhs, iter, attr)?;
+        eq = setResidualVar(eq, res_var)?;
         Ok(eq)
     }
 
@@ -1705,22 +1705,22 @@ pub mod Equation {
         let mut ty: Arc<Type::NFType> = Expression::typeOf(lhs.clone());
         e = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::ARRAY { .. } => {
-            Arc::new(Equation::ARRAY_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: attr.clone(), recordSize: None })
+            Arc::new(Equation::ARRAY_EQUATION { ty: ty.clone(), lhs: lhs, rhs: rhs, source: DAE::emptyElementSource().clone(), attr: attr.clone(), recordSize: None })
         },
         Deref @ Type::TUPLE { .. } => {
-            Arc::new(Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: attr.clone(), recordSize: Type::sizeOf(ty.clone(), false)? })
+            Arc::new(Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs, rhs: rhs, source: DAE::emptyElementSource().clone(), attr: attr.clone(), recordSize: Type::sizeOf(ty.clone(), false)? })
         },
         Deref @ Type::COMPLEX { complexTy: ct @ Deref @ ComplexType::RECORD { .. }, .. } => {
-            Arc::new(Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: attr.clone(), recordSize: metamodelica::arrayLength(var_field!((**ct).fields, ComplexType::NFComplexType::RECORD).clone()) })
+            Arc::new(Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs, rhs: rhs, source: DAE::emptyElementSource().clone(), attr: attr.clone(), recordSize: metamodelica::arrayLength(var_field!((**ct).fields, ComplexType::NFComplexType::RECORD).clone()) })
         },
         _ => {
-            Arc::new(Equation::SCALAR_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: attr.clone() })
+            Arc::new(Equation::SCALAR_EQUATION { ty: ty.clone(), lhs: lhs, rhs: rhs, source: DAE::emptyElementSource().clone(), attr: attr.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if !(Iterator::isEmpty(iter.clone())) {
-            e = Arc::new(Equation::FOR_EQUATION { size: Type::sizeOf(ty.clone(), false)? * Iterator::size(iter.clone(), false)?, iter: iter.clone(), body: list![e.clone()], source: DAE::emptyElementSource().clone(), attr: attr.clone() });
-            e = Inline::inlineForEquation(e.clone())?;
+            e = Arc::new(Equation::FOR_EQUATION { size: Type::sizeOf(ty, false)? * Iterator::size(iter.clone(), false)?, iter: iter, body: list![e], source: DAE::emptyElementSource().clone(), attr: attr });
+            e = Inline::inlineForEquation(e)?;
         }
         Ok(e)
     }
@@ -1728,21 +1728,21 @@ pub mod Equation {
     pub(crate) fn makeAlgorithm(mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut init: bool) -> Result<Pointer::Pointer<Arc<Equation>>> {
         let mut eqn: Pointer::Pointer<Arc<Equation>>;
         let mut alg: Arc<Algorithm::NFAlgorithm>;
-        alg = Arc::new(Algorithm::NFAlgorithm { statements: stmts.clone(), inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: DAE::emptyElementSource().clone() });
-        alg = Algorithm::setInputsOutputs(alg.clone())?;
-        eqn = BackendDAE::lowerAlgorithm(alg.clone(), init.clone())?;
+        alg = Arc::new(Algorithm::NFAlgorithm { statements: stmts, inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: DAE::emptyElementSource().clone() });
+        alg = Algorithm::setInputsOutputs(alg)?;
+        eqn = BackendDAE::lowerAlgorithm(alg, init)?;
         Ok(eqn)
     }
 
     pub(crate) fn forEquationToString(mut iter: Arc<Iterator::Iterator>, mut body: Arc<metamodelica::List<Arc<Equation>>>, mut r#str: ArcStr, mut indent: ArcStr, mut indicator: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indicator.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("for ")); __mm_s.push_str(&*Iterator::toString(iter.clone())?); __mm_s.push_str(&*literal!(" loop\n")); ArcStr::from(__mm_s) }).clone();
-        for mut eqn in &*body.clone() {
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indicator); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("for ")); __mm_s.push_str(&*Iterator::toString(iter)?); __mm_s.push_str(&*literal!(" loop\n")); ArcStr::from(__mm_s) }).clone();
+        for mut eqn in &*body {
             let mut eqn = eqn.clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(eqn.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("end for;")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("end for;")); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -1785,36 +1785,36 @@ pub mod Equation {
         let mut eq: Arc<Equation> = eq;
         eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::SCALAR_EQUATION; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::SCALAR_EQUATION; attr = attr);
+            eq
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::ARRAY_EQUATION; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::ARRAY_EQUATION; attr = attr);
+            eq
         },
         Deref @ RECORD_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::RECORD_EQUATION; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::RECORD_EQUATION; attr = attr);
+            eq
         },
         Deref @ ALGORITHM { .. } => {
-            assign_variant_field!(eq => Equation::ALGORITHM; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::ALGORITHM; attr = attr);
+            eq
         },
         Deref @ IF_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::IF_EQUATION; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::IF_EQUATION; attr = attr);
+            eq
         },
         Deref @ FOR_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::FOR_EQUATION; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::FOR_EQUATION; attr = attr);
+            eq
         },
         Deref @ WHEN_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::WHEN_EQUATION; attr = attr.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::WHEN_EQUATION; attr = attr);
+            eq
         },
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
-            assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(setAttributes(body.clone(), attr.clone())?));
-            eq.clone()
+            assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(setAttributes(body.clone(), attr)?));
+            eq
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1825,36 +1825,36 @@ pub mod Equation {
         let mut eq: Arc<Equation> = eq;
         eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::SCALAR_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::SCALAR_EQUATION).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::SCALAR_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::SCALAR_EQUATION).clone(), kind, clock_idx));
+            eq
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::ARRAY_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::ARRAY_EQUATION).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::ARRAY_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::ARRAY_EQUATION).clone(), kind, clock_idx));
+            eq
         },
         Deref @ RECORD_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::RECORD_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::RECORD_EQUATION).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::RECORD_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::RECORD_EQUATION).clone(), kind, clock_idx));
+            eq
         },
         Deref @ ALGORITHM { .. } => {
-            assign_variant_field!(eq => Equation::ALGORITHM; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::ALGORITHM).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::ALGORITHM; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::ALGORITHM).clone(), kind, clock_idx));
+            eq
         },
         Deref @ IF_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::IF_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::IF_EQUATION).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::IF_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::IF_EQUATION).clone(), kind, clock_idx));
+            eq
         },
         Deref @ FOR_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::FOR_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::FOR_EQUATION).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::FOR_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::FOR_EQUATION).clone(), kind, clock_idx));
+            eq
         },
         Deref @ WHEN_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::WHEN_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::WHEN_EQUATION).clone(), kind.clone(), clock_idx.clone()));
-            eq.clone()
+            assign_variant_field!(eq => Equation::WHEN_EQUATION; attr = EquationAttributes::setKind(var_field!((*eq).attr, Equation::WHEN_EQUATION).clone(), kind, clock_idx));
+            eq
         },
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
-            assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(setKind(body.clone(), kind.clone(), clock_idx.clone())?));
-            eq.clone()
+            assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(setKind(body.clone(), kind, clock_idx)?));
+            eq
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1900,8 +1900,8 @@ pub mod Equation {
         let mut eq: Arc<Equation> = eq;
         let mut attr: Arc<EquationAttributes::EquationAttributes>;
         attr = getAttributes(eq.clone());
-        assign_field!(attr.derivative = Some(derivative.clone()));
-        eq = setAttributes(eq.clone(), attr.clone())?;
+        assign_field!(attr.derivative = Some(derivative));
+        eq = setAttributes(eq, attr)?;
         Ok(eq)
     }
 
@@ -1919,7 +1919,7 @@ pub mod Equation {
             if !(referenceEq(&*(rhs.clone()),&*(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::SCALAR_EQUATION; rhs = rhs.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ ARRAY_EQUATION { .. } => {
             let mut lhs: Arc<Expression::NFExpression>;
@@ -1932,7 +1932,7 @@ pub mod Equation {
             if !(referenceEq(&*(rhs.clone()),&*(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::ARRAY_EQUATION; rhs = rhs.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ RECORD_EQUATION { .. } => {
             let mut lhs: Arc<Expression::NFExpression>;
@@ -1945,7 +1945,7 @@ pub mod Equation {
             if !(referenceEq(&*(rhs.clone()),&*(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::RECORD_EQUATION; rhs = rhs.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ ALGORITHM { .. } => {
             let mut alg: Arc<Algorithm::NFAlgorithm>;
@@ -1953,15 +1953,15 @@ pub mod Equation {
             if !(referenceEq(&*(alg.clone()),&*(var_field!((*eq).alg, Equation::ALGORITHM).clone()))) {
                 assign_variant_field!(eq => Equation::ALGORITHM; alg = Algorithm::setInputsOutputs(alg.clone())?);
             }
-            eq.clone()
+            eq
         },
         Deref @ IF_EQUATION { .. } => {
             let mut ifEqBody: Arc<IfEquationBody::IfEquationBody>;
-            ifEqBody = IfEquationBody::map(var_field!((*eq).body, Equation::IF_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+            ifEqBody = IfEquationBody::map(var_field!((*eq).body, Equation::IF_EQUATION).clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
             if !(referenceEq(&*(ifEqBody.clone()),&*(var_field!((*eq).body, Equation::IF_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::IF_EQUATION; body = ifEqBody.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ FOR_EQUATION { .. } => {
             let mut iter: Arc<Iterator::Iterator>;
@@ -1977,29 +1977,29 @@ pub mod Equation {
         }
         __acc.reverse()
     }));
-            eq.clone()
+            eq
         },
         Deref @ WHEN_EQUATION { .. } => {
             let mut whenEqBody: Arc<WhenEquationBody::WhenEquationBody>;
-            whenEqBody = WhenEquationBody::map(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+            whenEqBody = WhenEquationBody::map(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
             if !(referenceEq(&*(whenEqBody.clone()),&*(var_field!((*eq).body, Equation::WHEN_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::WHEN_EQUATION; body = whenEqBody.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
             let mut new_body: Arc<Equation>;
-            new_body = map(body.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+            new_body = map(body.clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
             if !(referenceEq(&*(new_body.clone()),&*(body.clone()))) {
                 assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(new_body.clone()));
             }
-            eq.clone()
+            eq
         },
         Deref @ DUMMY_EQUATION { .. } => {
-            eq.clone()
+            eq
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.map")); __mm_s.push_str(&*literal!(" failed because there was no suitable case for: ")); __mm_s.push_str(&*toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.map")); __mm_s.push_str(&*literal!(" failed because there was no suitable case for: ")); __mm_s.push_str(&*toString(eq, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2012,11 +2012,11 @@ pub mod Equation {
         eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ IF_EQUATION { .. } => {
             let mut ifEqBody: Arc<IfEquationBody::IfEquationBody>;
-            ifEqBody = IfEquationBody::mapCondition(var_field!((*eq).body, Equation::IF_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+            ifEqBody = IfEquationBody::mapCondition(var_field!((*eq).body, Equation::IF_EQUATION).clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
             if !(referenceEq(&*(ifEqBody.clone()),&*(var_field!((*eq).body, Equation::IF_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::IF_EQUATION; body = ifEqBody.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ FOR_EQUATION { .. } => {
             assign_variant_field!(eq => Equation::FOR_EQUATION; body = ({
@@ -2027,26 +2027,26 @@ pub mod Equation {
         }
         __acc.reverse()
     }));
-            eq.clone()
+            eq
         },
         Deref @ WHEN_EQUATION { .. } => {
             let mut whenEqBody: Arc<WhenEquationBody::WhenEquationBody>;
-            whenEqBody = WhenEquationBody::mapCondition(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+            whenEqBody = WhenEquationBody::mapCondition(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
             if !(referenceEq(&*(whenEqBody.clone()),&*(var_field!((*eq).body, Equation::WHEN_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::WHEN_EQUATION; body = whenEqBody.clone());
             }
-            eq.clone()
+            eq
         },
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
             let mut new_body: Arc<Equation>;
-            new_body = mapCondition(body.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+            new_body = mapCondition(body.clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
             if !(referenceEq(&*(new_body.clone()),&*(body.clone()))) {
                 assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(new_body.clone()));
             }
-            eq.clone()
+            eq
         },
         _ => {
-            eq.clone()
+            eq
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2056,23 +2056,23 @@ pub mod Equation {
     pub(crate) fn collectCrefs(mut eq: Arc<Equation>, mut filter: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
         let mut cref_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-        map(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = filter.clone(); let __pe_b2 = acc.clone(); move |__pe_a0| Slice::filterExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| filter(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), mapFunc.clone())?;
-        cref_lst = UnorderedSet::toList(acc.clone());
+        map(eq, (std::sync::Arc::new({ let __pe_b1 = filter.clone(); let __pe_b2 = acc.clone(); move |__pe_a0| Slice::filterExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| filter(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), mapFunc.clone())?;
+        cref_lst = UnorderedSet::toList(acc);
         Ok(cref_lst)
     }
 
     pub(crate) fn collectFromSet(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut check_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
-        if UnorderedSet::contains(cref.clone(), check_set.clone())? {
-            UnorderedSet::add(cref.clone(), acc.clone())?;
+        if UnorderedSet::contains(cref.clone(), check_set)? {
+            UnorderedSet::add(cref.clone(), acc)?;
         }
         Ok(cref)
     }
 
     pub(crate) fn collectFromMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut check_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, T>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
-        if UnorderedMap::contains(cref.clone(), check_map.clone())? {
-            UnorderedSet::add(cref.clone(), acc.clone())?;
+        if UnorderedMap::contains(cref.clone(), check_map)? {
+            UnorderedSet::add(cref.clone(), acc)?;
         }
         Ok(cref)
     }
@@ -2096,7 +2096,7 @@ pub mod Equation {
         Deref @ IF_EQUATION { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
             (exp, success) = IfEquationBody::getLHS(var_field!((*eq).body, Equation::IF_EQUATION).clone(), openmodelica_nf_frontend::NFExpression::interned_END())?;
-            if (success.clone()) {return Ok(Some(exp.clone()))} else {return Ok(None)}
+            if (success) {return Ok(Some(exp.clone()))} else {return Ok(None)}
         },
         _ => {
             return Ok(None)
@@ -2124,23 +2124,23 @@ pub mod Equation {
         let mut eq: Arc<Equation> = eq;
         eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::SCALAR_EQUATION; lhs = lhs.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::SCALAR_EQUATION; lhs = lhs);
+            eq
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::ARRAY_EQUATION; lhs = lhs.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::ARRAY_EQUATION; lhs = lhs);
+            eq
         },
         Deref @ RECORD_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::RECORD_EQUATION; lhs = lhs.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::RECORD_EQUATION; lhs = lhs);
+            eq
         },
         Deref @ FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            assign_variant_field!(eq => Equation::FOR_EQUATION; body = list![setLHS(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?, lhs.clone())?]);
-            eq.clone()
+            assign_variant_field!(eq => Equation::FOR_EQUATION; body = list![setLHS(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?, lhs)?]);
+            eq
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.setLHS")); __mm_s.push_str(&*literal!(" failed because LHS ")); __mm_s.push_str(&*Expression::toString(lhs.clone())?); __mm_s.push_str(&*literal!(" could not be set for:\n ")); __mm_s.push_str(&*toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.setLHS")); __mm_s.push_str(&*literal!(" failed because LHS ")); __mm_s.push_str(&*Expression::toString(lhs)?); __mm_s.push_str(&*literal!(" could not be set for:\n ")); __mm_s.push_str(&*toString(eq, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2152,23 +2152,23 @@ pub mod Equation {
         let mut eq: Arc<Equation> = eq;
         eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::SCALAR_EQUATION; rhs = rhs.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::SCALAR_EQUATION; rhs = rhs);
+            eq
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::ARRAY_EQUATION; rhs = rhs.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::ARRAY_EQUATION; rhs = rhs);
+            eq
         },
         Deref @ RECORD_EQUATION { .. } => {
-            assign_variant_field!(eq => Equation::RECORD_EQUATION; rhs = rhs.clone());
-            eq.clone()
+            assign_variant_field!(eq => Equation::RECORD_EQUATION; rhs = rhs);
+            eq
         },
         Deref @ FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            assign_variant_field!(eq => Equation::FOR_EQUATION; body = list![setRHS(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?, rhs.clone())?]);
-            eq.clone()
+            assign_variant_field!(eq => Equation::FOR_EQUATION; body = list![setRHS(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?, rhs)?]);
+            eq
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.setRHS")); __mm_s.push_str(&*literal!(" failed because RHS could not be set for: ")); __mm_s.push_str(&*toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.setRHS")); __mm_s.push_str(&*literal!(" failed because RHS could not be set for: ")); __mm_s.push_str(&*toString(eq, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2186,12 +2186,12 @@ pub mod Equation {
         ty = Expression::typeOf(lhs.clone());
         opt_rec_size = Type::complexSize(ty.clone(), false)?;
         eqn = (::match_deref::match_deref! { match &((ty.clone(), opt_rec_size.clone())) {
-        (Deref @ Type::ARRAY { .. }, _) => Arc::new(Equation::ARRAY_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: src.clone(), attr: attr.clone(), recordSize: opt_rec_size.clone() }),
+        (Deref @ Type::ARRAY { .. }, _) => Arc::new(Equation::ARRAY_EQUATION { ty: ty, lhs: lhs, rhs: rhs, source: src, attr: attr, recordSize: opt_rec_size }),
         (Deref @ Type::COMPLEX { .. }, Some(__esc_rec_size)) => {
             rec_size = (*__esc_rec_size).clone();
-            Arc::new(Equation::RECORD_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: src.clone(), attr: attr.clone(), recordSize: rec_size.clone() })
+            Arc::new(Equation::RECORD_EQUATION { ty: ty, lhs: lhs, rhs: rhs, source: src, attr: attr, recordSize: rec_size.clone() })
         },
-        _ => Arc::new(Equation::SCALAR_EQUATION { ty: ty.clone(), lhs: lhs.clone(), rhs: rhs.clone(), source: src.clone(), attr: attr.clone() }),
+        _ => Arc::new(Equation::SCALAR_EQUATION { ty: ty, lhs: lhs, rhs: rhs, source: src, attr: attr }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(eqn)
@@ -2207,7 +2207,7 @@ pub mod Equation {
                 rhs = var_field!((*eqn).lhs, Equation::SCALAR_EQUATION).clone(),
                 lhs = tmpExp.clone()
             );
-            eqn.clone()
+            eqn
         },
         Deref @ ARRAY_EQUATION { .. } => {
             let mut tmpExp: Arc<Expression::NFExpression>;
@@ -2216,7 +2216,7 @@ pub mod Equation {
                 rhs = var_field!((*eqn).lhs, Equation::ARRAY_EQUATION).clone(),
                 lhs = tmpExp.clone()
             );
-            eqn.clone()
+            eqn
         },
         Deref @ RECORD_EQUATION { .. } => {
             let mut tmpExp: Arc<Expression::NFExpression>;
@@ -2225,10 +2225,10 @@ pub mod Equation {
                 rhs = var_field!((*eqn).lhs, Equation::RECORD_EQUATION).clone(),
                 lhs = tmpExp.clone()
             );
-            eqn.clone()
+            eqn
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.swapLHSandRHS")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.swapLHSandRHS")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2241,7 +2241,7 @@ pub mod Equation {
 
         fn apply(mut e: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<Expression::NFExpression> {
             let mut e: Arc<Expression::NFExpression> = e;
-            e = func(e.clone()).unwrap();
+            e = func(e).unwrap();
             e
         }
 
@@ -2376,11 +2376,11 @@ pub mod Equation {
         let mut dummy_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>> = metamodelica::nil();
         (residualVar, _) = BVariable::makeResidualVar((context.clone()).clone(), Pointer::access(idx.clone()), getType(eqn.clone(), false)?)?;
         Pointer::update(idx.clone(), Pointer::access(idx.clone()) + 1);
-        eqn = setResidualVar(eqn.clone(), residualVar.clone())?;
+        eqn = setResidualVar(eqn, residualVar)?;
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ IF_EQUATION { .. } => {
-            IfEquationBody::createNames(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), idx.clone(), (context.clone()).clone())?;
-            eqn.clone()
+            IfEquationBody::createNames(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), idx, (context).clone())?;
+            eqn
         },
         Deref @ FOR_EQUATION { .. } => {
             dummy_eqns = ({
@@ -2397,18 +2397,18 @@ pub mod Equation {
             }
             assign_variant_field!(eqn => Equation::FOR_EQUATION; body = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation>>> = metamodelica::nil();
-        for mut body_eqn in (dummy_eqns.clone()).into_iter().cloned() {
+        for mut body_eqn in (dummy_eqns).into_iter().cloned() {
             let __x = Pointer::access(body_eqn.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
-            eqn.clone()
+            eqn
         },
-        _ => eqn.clone(),
+        _ => eqn,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Pointer::update(eqn_ptr.clone(), eqn.clone());
+        Pointer::update(eqn_ptr, eqn);
         Ok(())
     }
 
@@ -2416,35 +2416,35 @@ pub mod Equation {
         let mut eqn: Arc<Equation> = eqn;
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::SCALAR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::SCALAR_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::SCALAR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::SCALAR_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::ARRAY_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ARRAY_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::ARRAY_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ARRAY_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ RECORD_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::RECORD_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::RECORD_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::RECORD_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::RECORD_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ ALGORITHM { .. } => {
-            assign_variant_field!(eqn => Equation::ALGORITHM; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ALGORITHM).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::ALGORITHM; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ALGORITHM).clone(), residualVar));
+            eqn
         },
         Deref @ IF_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::IF_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::IF_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::IF_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::IF_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ FOR_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::FOR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::FOR_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::FOR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::FOR_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ WHEN_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::WHEN_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::WHEN_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::WHEN_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::WHEN_EQUATION).clone(), residualVar));
+            eqn
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.setResidualVar")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.setResidualVar")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2458,54 +2458,54 @@ pub mod Equation {
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::SCALAR_EQUATION).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::SCALAR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::SCALAR_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::SCALAR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::SCALAR_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ ARRAY_EQUATION { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::ARRAY_EQUATION).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::ARRAY_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ARRAY_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::ARRAY_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ARRAY_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ RECORD_EQUATION { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::RECORD_EQUATION).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::RECORD_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::RECORD_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::RECORD_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::RECORD_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ ALGORITHM { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::ALGORITHM).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::ALGORITHM; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ALGORITHM).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::ALGORITHM; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::ALGORITHM).clone(), residualVar));
+            eqn
         },
         Deref @ IF_EQUATION { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::IF_EQUATION).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::IF_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::IF_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::IF_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::IF_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ FOR_EQUATION { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::FOR_EQUATION).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::FOR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::FOR_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::FOR_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::FOR_EQUATION).clone(), residualVar));
+            eqn
         },
         Deref @ WHEN_EQUATION { .. } => {
             residualVar = EquationAttributes::getResidualVar(var_field!((*eqn).attr, Equation::WHEN_EQUATION).clone())?;
-            residualVar = BVariable::subIdxName(residualVar.clone(), idx.clone())?;
-            assign_variant_field!(eqn => Equation::WHEN_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::WHEN_EQUATION).clone(), residualVar.clone()));
-            eqn.clone()
+            residualVar = BVariable::subIdxName(residualVar, idx.clone())?;
+            assign_variant_field!(eqn => Equation::WHEN_EQUATION; attr = EquationAttributes::setResidualVar(var_field!((*eqn).attr, Equation::WHEN_EQUATION).clone(), residualVar));
+            eqn
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.subIdxName")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.subIdxName")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Pointer::update(idx.clone(), Pointer::access(idx.clone()) + 1);
-        Pointer::update(eqn_ptr.clone(), eqn.clone());
+        Pointer::update(idx.clone(), Pointer::access(idx) + 1);
+        Pointer::update(eqn_ptr, eqn);
         Ok(())
     }
 
@@ -2520,7 +2520,7 @@ pub mod Equation {
         if isResidual(eqn_ptr.clone()) {
             return Ok(eqn_ptr.clone());
         }
-        residualCref = (::match_deref::match_deref! { match &((eqn.clone(), residualCref_opt.clone())) {
+        residualCref = (::match_deref::match_deref! { match &((eqn.clone(), residualCref_opt)) {
         (_, Some(__esc_residualCref)) => {
             residualCref = (*__esc_residualCref).clone();
             residualCref.clone()
@@ -2530,7 +2530,7 @@ pub mod Equation {
             residualCref = getEqnName(eqn_ptr.clone())?;
             subs = Iterator::normalizedSubscripts(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))?;
             subs = listAppend(List::fill(openmodelica_nf_frontend::NFSubscript::interned_WHOLE(), Type::dimensionCount(getType(listHead(var_field!((*eqn).body, Equation::FOR_EQUATION).clone())?, false)?)), subs.clone());
-            residualCref = ComponentRef::setSubscripts(subs.clone(), residualCref.clone())?;
+            residualCref = ComponentRef::setSubscripts(subs.clone(), residualCref)?;
             residualCref.clone()
         },
         _ => {
@@ -2540,24 +2540,24 @@ pub mod Equation {
     } });
         (eqn, failed) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ IF_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::IF_EQUATION; body = IfEquationBody::createResidual(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), residualCref.clone(), new.clone(), allowFail.clone())?);
-            (IfEquationBody::inline(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), eqn.clone())?, false)
+            assign_variant_field!(eqn => Equation::IF_EQUATION; body = IfEquationBody::createResidual(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), residualCref, new, allowFail)?);
+            (IfEquationBody::inline(var_field!((*eqn).body, Equation::IF_EQUATION).clone(), eqn)?, false)
         },
         Deref @ FOR_EQUATION { .. } => {
             assign_variant_field!(eqn => Equation::FOR_EQUATION; body = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation>>> = metamodelica::nil();
         for mut body_eqn in (var_field!((*eqn).body, Equation::FOR_EQUATION).clone()).into_iter().cloned() {
-            let __x = Pointer::access(createResidual(Pointer::create(body_eqn.clone()), Some(residualCref.clone()), new.clone(), allowFail.clone())?);
+            let __x = Pointer::access(createResidual(Pointer::create(body_eqn.clone()), Some(residualCref.clone()), new, allowFail)?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
-            (eqn.clone(), false)
+            (eqn, false)
         },
         _ => {
-            lhs = Expression::fromCref(residualCref.clone(), false)?;
+            lhs = Expression::fromCref(residualCref, false)?;
             match '__try0: {
-                rhs = unwrap_break_err!(getResidualExp(eqn.clone(), !(allowFail.clone())), '__try0);
+                rhs = unwrap_break_err!(getResidualExp(eqn.clone(), !(allowFail)), '__try0);
                 eqn = unwrap_break_err!(setLHS(eqn.clone(), lhs.clone()), '__try0);
                 eqn = unwrap_break_err!(setRHS(eqn.clone(), rhs.clone()), '__try0);
                 failed = false;
@@ -2568,24 +2568,24 @@ pub mod Equation {
                 }
                 Err(_) => {
                     failed = true;
-                    if !(allowFail.clone()) {
+                    if !(allowFail) {
                         bail!("fail");
                     }
                 }
             }
-            (eqn.clone(), failed.clone())
+            (eqn, failed)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if !(failed.clone()) {
+        if !(failed) {
             attr = getAttributes(eqn.clone());
             assign_field!(attr.residual = true);
-            eqn = setAttributes(eqn.clone(), attr.clone())?;
+            eqn = setAttributes(eqn, attr)?;
         }
-        if new.clone() {
-            eqn_ptr = Pointer::create(eqn.clone());
+        if new {
+            eqn_ptr = Pointer::create(eqn);
         } else {
-            Pointer::update(eqn_ptr.clone(), eqn.clone());
+            Pointer::update(eqn_ptr.clone(), eqn);
         }
         Ok(eqn_ptr)
     }
@@ -2610,7 +2610,7 @@ pub mod Equation {
             for mut op in &*list![(literal!("'+'")).clone(), (literal!("'0'")).clone(), (literal!("'-'")).clone()] {
                 let mut op = op.clone();
                 if !(Class::hasOperator((op.clone()).clone(), cls.clone())) {
-                    if throwOnFail.clone() {
+                    if throwOnFail {
                         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Trying to construct residual expression of type ")); __mm_s.push_str(&*Type::toString(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone())?); __mm_s.push_str(&*literal!(" for equation ")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!(" but operator ")); __mm_s.push_str(&*op.clone()); __mm_s.push_str(&*literal!(" is not defined.")); ArcStr::from(__mm_s) }).clone()])?;
                     }
                     bail!("fail");
@@ -2623,14 +2623,14 @@ pub mod Equation {
             getResidualExp(listHead(var_field!((*eqn).body, Equation::FOR_EQUATION).clone())?, true)?
         },
         _ => {
-            if throwOnFail.clone() {
-                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.getResidualExp")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            if throwOnFail {
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.getResidualExp")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             }
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        exp = SimplifyExp::simplifyDump(exp.clone(), true, literal!("NBEquation.Equation.getResidualExp"), (literal!("")).clone())?;
+        exp = SimplifyExp::simplifyDump(exp, true, literal!("NBEquation.Equation.getResidualExp"), (literal!("")).clone())?;
         Ok(exp)
     }
 
@@ -2642,10 +2642,10 @@ pub mod Equation {
         Deref @ RECORD_EQUATION { .. } => var_field!((*eq).ty, Equation::RECORD_EQUATION).clone(),
         Deref @ FOR_EQUATION { .. } => {
             ty = getType(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?, false)?;
-            if !(skipIterator.clone()) {
-                ty = Type::liftArrayRightList(ty.clone(), Iterator::dimensions(var_field!((*eq).iter, Equation::FOR_EQUATION).clone())?);
+            if !(skipIterator) {
+                ty = Type::liftArrayRightList(ty, Iterator::dimensions(var_field!((*eq).iter, Equation::FOR_EQUATION).clone())?);
             }
-            ty.clone()
+            ty
         },
         Deref @ WHEN_EQUATION { .. } => WhenEquationBody::getType(var_field!((*eq).body, Equation::WHEN_EQUATION).clone())?,
         Deref @ IF_EQUATION { .. } => IfEquationBody::getType(var_field!((*eq).body, Equation::IF_EQUATION).clone())?,
@@ -2687,10 +2687,10 @@ pub mod Equation {
         let mut eqn: Arc<Equation> = eqn;
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ FOR_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::FOR_EQUATION; iter = Iterator::applyOrder(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), order.clone())?);
-            eqn.clone()
+            assign_variant_field!(eqn => Equation::FOR_EQUATION; iter = Iterator::applyOrder(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), order)?);
+            eqn
         },
-        _ => eqn.clone(),
+        _ => eqn,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(eqn)
@@ -2698,7 +2698,7 @@ pub mod Equation {
 
     pub(crate) fn isDummy(mut eqn: Arc<Equation>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(eqn.clone()) {
+        b = (::match_deref::match_deref! { match &(eqn) {
         Deref @ DUMMY_EQUATION { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2709,7 +2709,7 @@ pub mod Equation {
     pub(crate) fn isResidual(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
         let mut attr: Arc<EquationAttributes::EquationAttributes>;
-        attr = getAttributes(Pointer::access(eqn_ptr.clone()));
+        attr = getAttributes(Pointer::access(eqn_ptr));
         b = attr.residual.clone();
         b
     }
@@ -2717,7 +2717,7 @@ pub mod Equation {
     pub(crate) fn isDiscrete(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
         let mut attr: Arc<EquationAttributes::EquationAttributes>;
-        attr = getAttributes(Pointer::access(eqn_ptr.clone()));
+        attr = getAttributes(Pointer::access(eqn_ptr));
         b = attr.kind.clone() == EquationKind::DISCRETE.clone();
         b
     }
@@ -2725,14 +2725,14 @@ pub mod Equation {
     pub(crate) fn isContinuous(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
         let mut attr: Arc<EquationAttributes::EquationAttributes>;
-        attr = getAttributes(Pointer::access(eqn_ptr.clone()));
+        attr = getAttributes(Pointer::access(eqn_ptr));
         b = attr.kind.clone() == EquationKind::CONTINUOUS.clone();
         b
     }
 
     pub(crate) fn isDiscontinuous(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = !(isContinuous(eqn_ptr.clone()));
+        b = !(isContinuous(eqn_ptr));
         b
     }
 
@@ -2741,7 +2741,7 @@ pub mod Equation {
         let mut eqn: Arc<Equation> = Pointer::access(eqn_ptr.clone());
         b = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ RECORD_EQUATION { .. } => Type::isContinuous(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone())?,
-        _ => isContinuous(eqn_ptr.clone()),
+        _ => isContinuous(eqn_ptr),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(b)
@@ -2750,7 +2750,7 @@ pub mod Equation {
     pub(crate) fn isInitial(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
         let mut attr: Arc<EquationAttributes::EquationAttributes>;
-        attr = getAttributes(Pointer::access(eqn_ptr.clone()));
+        attr = getAttributes(Pointer::access(eqn_ptr));
         b = attr.exclusively_initial.clone();
         b
     }
@@ -2776,7 +2776,7 @@ pub mod Equation {
 
     pub(crate) fn isIfEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         Deref @ IF_EQUATION { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2786,7 +2786,7 @@ pub mod Equation {
 
     pub(crate) fn isForEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         Deref @ FOR_EQUATION { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2796,7 +2796,7 @@ pub mod Equation {
 
     pub(crate) fn isArrayEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         Deref @ ARRAY_EQUATION { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2806,7 +2806,7 @@ pub mod Equation {
 
     pub(crate) fn isRecordOrTupleEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         Deref @ RECORD_EQUATION { .. } => {
             true
         },
@@ -2829,7 +2829,7 @@ pub mod Equation {
 
     pub(crate) fn isRecordEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         e @ Deref @ RECORD_EQUATION { .. } => {
             !(Type::isTuple(var_field!((**e).ty, Equation::RECORD_EQUATION).clone()))
         },
@@ -2846,7 +2846,7 @@ pub mod Equation {
 
     pub(crate) fn isTupleEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         e @ Deref @ RECORD_EQUATION { .. } => {
             Type::isTuple(var_field!((**e).ty, Equation::RECORD_EQUATION).clone())
         },
@@ -2860,7 +2860,7 @@ pub mod Equation {
 
     pub(crate) fn isAlgorithm(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         Deref @ ALGORITHM { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2870,15 +2870,15 @@ pub mod Equation {
 
     pub(crate) fn isParameterEquation(mut eqn: Arc<Equation>) -> Result<bool> {
         let mut b: bool = true;
-        let mut b_ptr: Pointer::Pointer<bool> = Pointer::create(b.clone());
-        map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = b_ptr.clone(); move |__pe_a0| expIsParamOrConst(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = b_ptr.clone(); move |__pe_a0| crefIsParamOrConst(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-        b = Pointer::access(b_ptr.clone());
+        let mut b_ptr: Pointer::Pointer<bool> = Pointer::create(b);
+        map(eqn, (std::sync::Arc::new({ let __pe_b1 = b_ptr.clone(); move |__pe_a0| expIsParamOrConst(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = b_ptr.clone(); move |__pe_a0| crefIsParamOrConst(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        b = Pointer::access(b_ptr);
         Ok(b)
     }
 
     pub(crate) fn isClocked(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(getAttributes(Pointer::access(eqn_ptr.clone()))) {
+        b = (::match_deref::match_deref! { match &(getAttributes(Pointer::access(eqn_ptr))) {
         Deref @ EquationAttributes::EQUATION_ATTRIBUTES { kind: EquationKind::CLOCKED { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2899,7 +2899,7 @@ pub mod Equation {
 
     pub(crate) fn isCompound(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
+        b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr)) {
         Deref @ ALGORITHM { .. } => true,
         Deref @ IF_EQUATION { .. } => true,
         Deref @ WHEN_EQUATION { .. } => true,
@@ -2911,13 +2911,13 @@ pub mod Equation {
 
     pub(crate) fn isResizable(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
         let mut b: bool;
-        b = Type::isResizable(getType(Pointer::access(eqn_ptr.clone()), false)?)?;
+        b = Type::isResizable(getType(Pointer::access(eqn_ptr), false)?)?;
         Ok(b)
     }
 
     pub(crate) fn hasDerivative(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(getAttributes(Pointer::access(eqn_ptr.clone()))) {
+        b = (::match_deref::match_deref! { match &(getAttributes(Pointer::access(eqn_ptr))) {
         Deref @ EquationAttributes::EQUATION_ATTRIBUTES { derivative: Some(_), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2930,11 +2930,11 @@ pub mod Equation {
         if Pointer::access(b_ptr.clone()) {
             let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            crefIsParamOrConst(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), b_ptr.clone())?;
+            crefIsParamOrConst(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), b_ptr)?;
             ()
         },
         Deref @ Expression::CALL { .. } => {
-            Pointer::update(b_ptr.clone(), Call::isImpure(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?);
+            Pointer::update(b_ptr, Call::isImpure(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?);
             ()
         },
         _ => (),
@@ -2947,7 +2947,7 @@ pub mod Equation {
     pub(crate) fn crefIsParamOrConst(mut cref: Arc<ComponentRef::NFComponentRef>, mut b_ptr: Pointer::Pointer<bool>) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
         if Pointer::access(b_ptr.clone()) {
-            Pointer::update(b_ptr.clone(), BVariable::isParamOrConst(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?));
+            Pointer::update(b_ptr, BVariable::isParamOrConst(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?));
         }
         Ok(cref)
     }
@@ -2994,22 +2994,22 @@ pub mod Equation {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if BVariable::isClock(var_ptr.clone()) {
-            eqnAttr = default(EquationKind::CLOCKED.clone(), initial_.clone(), Some(-1), None);
-        } else if BVariable::isContinuous(var_ptr.clone(), initial_.clone())? {
-            eqnAttr = default(EquationKind::CONTINUOUS.clone(), initial_.clone(), None, var.backendinfo.annotations.optimizerExpression.clone());
+            eqnAttr = default(EquationKind::CLOCKED.clone(), initial_, Some(-1), None);
+        } else if BVariable::isContinuous(var_ptr, initial_)? {
+            eqnAttr = default(EquationKind::CONTINUOUS.clone(), initial_, None, var.backendinfo.annotations.optimizerExpression.clone());
         } else {
-            eqnAttr = default(EquationKind::DISCRETE.clone(), initial_.clone(), None, None);
+            eqnAttr = default(EquationKind::DISCRETE.clone(), initial_, None, None);
         }
-        (iter, rhs) = Iterator::extract(rhs.clone(), new_iters.clone(), dims_map.clone())?;
-        rhs = SimplifyExp::simplifyDump(rhs.clone(), true, literal!("NBEquation.Equation.generateBindingEquation"), (literal!("")).clone())?;
+        (iter, rhs) = Iterator::extract(rhs, new_iters, dims_map.clone())?;
+        rhs = SimplifyExp::simplifyDump(rhs, true, literal!("NBEquation.Equation.generateBindingEquation"), (literal!("")).clone())?;
         if Iterator::isEmpty(iter.clone()) {
             lhs = Expression::fromCref(var.name.clone(), false)?;
-            eqn = makeAssignment(lhs.clone(), rhs.clone(), idx.clone(), (context.clone()).clone(), crate::NBEquation::Iterator::interned_EMPTY(), eqnAttr.clone())?;
+            eqn = makeAssignment(lhs, rhs, idx, (context).clone(), crate::NBEquation::Iterator::interned_EMPTY(), eqnAttr)?;
         } else {
-            rhs = Expression::map(rhs.clone(), (std::sync::Arc::new(Expression::repairOperator) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            rhs = Expression::map(rhs, (std::sync::Arc::new(Expression::repairOperator) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             subs = Iterator::normalizedSubscripts(iter.clone(), iter_map.clone())?;
-            lhs = Expression::fromCref(ComponentRef::mergeSubscriptsMapped(var.name.clone(), dims_map.clone(), iter_map.clone())?, false)?;
-            eqn = makeAssignment(lhs.clone(), rhs.clone(), idx.clone(), (context.clone()).clone(), iter.clone(), eqnAttr.clone())?;
+            lhs = Expression::fromCref(ComponentRef::mergeSubscriptsMapped(var.name.clone(), dims_map, iter_map)?, false)?;
+            eqn = makeAssignment(lhs, rhs, idx, (context).clone(), iter, eqnAttr)?;
             renameIterators(eqn.clone(), (literal!("$i")).clone())?;
         }
         Ok(eqn)
@@ -3022,11 +3022,11 @@ pub mod Equation {
         Deref @ FOR_EQUATION { .. } => {
             let mut body: Arc<Equation>;
             (body, acc) = mergeIterators(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?, false)?;
-            acc = metamodelica::cons(var_field!((*eq).iter, Equation::FOR_EQUATION).clone(), acc.clone());
-            (if (top_level.clone()) {Arc::new(Equation::FOR_EQUATION { size: var_field!((*eq).size, Equation::FOR_EQUATION).clone(), iter: Iterator::merge(acc.clone())?, body: list![body.clone()], source: var_field!((*eq).source, Equation::FOR_EQUATION).clone(), attr: var_field!((*eq).attr, Equation::FOR_EQUATION).clone() })} else {body.clone()}, acc.clone())
+            acc = metamodelica::cons(var_field!((*eq).iter, Equation::FOR_EQUATION).clone(), acc);
+            (if (top_level) {Arc::new(Equation::FOR_EQUATION { size: var_field!((*eq).size, Equation::FOR_EQUATION).clone(), iter: Iterator::merge(acc.clone())?, body: list![body.clone()], source: var_field!((*eq).source, Equation::FOR_EQUATION).clone(), attr: var_field!((*eq).attr, Equation::FOR_EQUATION).clone() })} else {body.clone()}, acc)
         },
         _ => {
-            (eq.clone(), metamodelica::nil())
+            (eq, metamodelica::nil())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3048,7 +3048,7 @@ pub mod Equation {
             body.clone()
         },
         _ => {
-            eqn.clone()
+            eqn
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3062,7 +3062,7 @@ pub mod Equation {
             let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
             replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             assign_variant_field!(eqn => Equation::FOR_EQUATION;
-                iter = Iterator::rename(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), (newBaseName.clone()).clone(), replacements.clone())?,
+                iter = Iterator::rename(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), (newBaseName).clone(), replacements.clone())?,
                 body = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation>>> = metamodelica::nil();
         for mut body_eqn in (var_field!((*eqn).body, Equation::FOR_EQUATION).clone()).into_iter().cloned() {
@@ -3072,7 +3072,7 @@ pub mod Equation {
         __acc.reverse()
     })
             );
-            Pointer::update(eqn_ptr.clone(), eqn.clone());
+            Pointer::update(eqn_ptr, eqn);
             ()
         },
         _ => {
@@ -3095,11 +3095,11 @@ pub mod Equation {
         let mut rest1_right: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
         let mut rest2_left: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
         let mut rest2_right: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
-        let mut shift: ArcStr = StringUtil::repeat((literal!("  ")).clone(), nesting_level.clone());
+        let mut shift: ArcStr = StringUtil::repeat((literal!("  ")).clone(), nesting_level);
         if Flags::isSet(Flags::DUMP_SLICE.clone())? {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level.clone())); __mm_s.push_str(&*literal!("] ### Entwining following equations:\n")); __mm_s.push_str(&*List::toString(eqn_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level)); __mm_s.push_str(&*literal!("] ### Entwining following equations:\n")); __mm_s.push_str(&*List::toString(eqn_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
         }
-        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(eqn_lst.clone()) {
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(eqn_lst) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
@@ -3114,7 +3114,7 @@ pub mod Equation {
             rest = __pa3.clone();
             eqn1 = (::match_deref::match_deref! { match &((eqn1.clone(), eqn2.clone())) {
         (Deref @ FOR_EQUATION { .. }, Deref @ FOR_EQUATION { .. }) if (Iterator::isEqual(var_field!((*eqn1).iter, Equation::FOR_EQUATION).clone(), var_field!((*eqn2).iter, Equation::FOR_EQUATION).clone())?) => {
-            assign_variant_field!(eqn1 => Equation::FOR_EQUATION; body = entwine(listAppend(var_field!((*eqn1).body, Equation::FOR_EQUATION).clone(), var_field!((*eqn2).body, Equation::FOR_EQUATION).clone()), nesting_level.clone() + 1)?);
+            assign_variant_field!(eqn1 => Equation::FOR_EQUATION; body = entwine(listAppend(var_field!((*eqn1).body, Equation::FOR_EQUATION).clone(), var_field!((*eqn2).body, Equation::FOR_EQUATION).clone()), nesting_level + 1)?);
             eqn1.clone()
         },
         (Deref @ FOR_EQUATION { .. }, Deref @ FOR_EQUATION { .. }) => {
@@ -3132,7 +3132,7 @@ pub mod Equation {
                 tmp = metamodelica::cons(Arc::new(Equation::FOR_EQUATION { size: var_field!((*eqn2).size, Equation::FOR_EQUATION).clone(), iter: rest2_left.clone(), body: var_field!((*eqn2).body, Equation::FOR_EQUATION).clone(), source: var_field!((*eqn2).source, Equation::FOR_EQUATION).clone(), attr: var_field!((*eqn2).attr, Equation::FOR_EQUATION).clone() }), tmp.clone());
             }
             if !(Iterator::isEmpty(intersection.clone())) {
-                tmp = metamodelica::cons(Arc::new(Equation::FOR_EQUATION { size: var_field!((*eqn1).size, Equation::FOR_EQUATION).clone(), iter: intersection.clone(), body: entwine(listAppend(var_field!((*eqn1).body, Equation::FOR_EQUATION).clone(), var_field!((*eqn2).body, Equation::FOR_EQUATION).clone()), nesting_level.clone() + 1)?, source: var_field!((*eqn1).source, Equation::FOR_EQUATION).clone(), attr: var_field!((*eqn1).attr, Equation::FOR_EQUATION).clone() }), tmp.clone());
+                tmp = metamodelica::cons(Arc::new(Equation::FOR_EQUATION { size: var_field!((*eqn1).size, Equation::FOR_EQUATION).clone(), iter: intersection.clone(), body: entwine(listAppend(var_field!((*eqn1).body, Equation::FOR_EQUATION).clone(), var_field!((*eqn2).body, Equation::FOR_EQUATION).clone()), nesting_level + 1)?, source: var_field!((*eqn1).source, Equation::FOR_EQUATION).clone(), attr: var_field!((*eqn1).attr, Equation::FOR_EQUATION).clone() }), tmp.clone());
             }
             if !(Iterator::isEmpty(rest1_right.clone())) {
                 tmp = metamodelica::cons(Arc::new(Equation::FOR_EQUATION { size: var_field!((*eqn1).size, Equation::FOR_EQUATION).clone(), iter: rest1_right.clone(), body: var_field!((*eqn1).body, Equation::FOR_EQUATION).clone(), source: var_field!((*eqn1).source, Equation::FOR_EQUATION).clone(), attr: var_field!((*eqn1).attr, Equation::FOR_EQUATION).clone() }), tmp.clone());
@@ -3156,9 +3156,9 @@ pub mod Equation {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         }
-        entwined = metamodelica::cons(eqn1.clone(), entwined.clone()).reverse();
+        entwined = metamodelica::cons(eqn1, entwined).reverse();
         if Flags::isSet(Flags::DUMP_SLICE.clone())? {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level.clone())); __mm_s.push_str(&*literal!("] +++ Result of entwining:\n")); __mm_s.push_str(&*List::toString(entwined.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level)); __mm_s.push_str(&*literal!("] +++ Result of entwining:\n")); __mm_s.push_str(&*List::toString(entwined.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
         }
         Ok(entwined)
     }
@@ -3171,33 +3171,33 @@ pub mod Equation {
         let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
         eqn = Pointer::access(eqn_ptr.clone());
         (sliced_eqn, slicing_status) = (::match_deref::match_deref! { match &(eqn.clone()) {
-        _ if (indices.clone().is_empty()) => (list![Pointer::create(eqn.clone())], SlicingStatus::UNCHANGED.clone()),
+        _ if (indices.clone().is_empty()) => (list![Pointer::create(eqn)], SlicingStatus::UNCHANGED.clone()),
         Deref @ RECORD_EQUATION { .. } => {
-            slicing_status = if (size(eqn_ptr.clone(), false)? == (indices.clone().len() as i32)) {SlicingStatus::TRIVIAL.clone()} else {SlicingStatus::NONTRIVIAL.clone()};
-            (list![Pointer::create(eqn.clone())], slicing_status.clone())
+            slicing_status = if (size(eqn_ptr, false)? == (indices.clone().len() as i32)) {SlicingStatus::TRIVIAL.clone()} else {SlicingStatus::NONTRIVIAL.clone()};
+            (list![Pointer::create(eqn)], slicing_status)
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            slicing_status = if (size(eqn_ptr.clone(), false)? == (indices.clone().len() as i32)) {SlicingStatus::TRIVIAL.clone()} else {SlicingStatus::NONTRIVIAL.clone()};
-            (list![Pointer::create(eqn.clone())], slicing_status.clone())
+            slicing_status = if (size(eqn_ptr, false)? == (indices.clone().len() as i32)) {SlicingStatus::TRIVIAL.clone()} else {SlicingStatus::NONTRIVIAL.clone()};
+            (list![Pointer::create(eqn)], slicing_status)
         },
         Deref @ FOR_EQUATION { .. } => {
             dims = Type::arrayDims(getType(eqn.clone(), false)?);
             sizes = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut dim in (dims.clone()).into_iter().cloned() {
+        for mut dim in (dims).into_iter().cloned() {
             let __x = Dimension::size(dim.clone(), false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            slicing_status = if (size(eqn_ptr.clone(), false)? == (indices.clone().len() as i32)) {SlicingStatus::TRIVIAL.clone()} else {SlicingStatus::NONTRIVIAL.clone()};
-            if slicing_status.clone() == SlicingStatus::NONTRIVIAL.clone() {
-                sliced_eqn = sliceFor(listHead(var_field!((*eqn).body, Equation::FOR_EQUATION).clone())?, getForIterator(eqn.clone()), sizes.clone(), getForFrames(eqn.clone())?.reverse(), indices.clone(), false)?;
+            slicing_status = if (size(eqn_ptr, false)? == (indices.clone().len() as i32)) {SlicingStatus::TRIVIAL.clone()} else {SlicingStatus::NONTRIVIAL.clone()};
+            if slicing_status == SlicingStatus::NONTRIVIAL.clone() {
+                sliced_eqn = sliceFor(listHead(var_field!((*eqn).body, Equation::FOR_EQUATION).clone())?, getForIterator(eqn.clone()), sizes, getForFrames(eqn)?.reverse(), indices.clone(), false)?;
             }
-            (sliced_eqn.clone(), slicing_status.clone())
+            (sliced_eqn, slicing_status)
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.slice")); __mm_s.push_str(&*literal!(" failed because slicing is not yet supported for:\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.slice")); __mm_s.push_str(&*literal!(" failed because slicing is not yet supported for:\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3220,11 +3220,11 @@ pub mod Equation {
         let mut size: i32;
         let mut new_iter: Arc<Iterator::Iterator>;
         if List::hasOneElement(indices.clone()) {
-            location = Slice::indexToLocation(listHead(indices.clone())?, sizes.clone());
+            location = Slice::indexToLocation(listHead(indices)?, sizes);
             replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-            Iterator::createLocationReplacements(iter.clone(), metamodelica::arrayFromVec(location.clone().into_iter().cloned().collect()), replacements.clone())?;
-            tmp = map(body.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            result = list![Pointer::create(tmp.clone())];
+            Iterator::createLocationReplacements(iter, metamodelica::arrayFromVec(location.into_iter().cloned().collect()), replacements.clone())?;
+            tmp = map(body, (std::sync::Arc::new({ let __pe_b1 = replacements; move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            result = list![Pointer::create(tmp)];
         } else {
             locations = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -3234,14 +3234,14 @@ pub mod Equation {
         }
         __acc.reverse()
     });
-            locations_T = Slice::transposeLocations(locations.clone(), (sizes.clone().len() as i32));
-            frame_locations = List::zip(locations_T.clone(), frames.clone());
-            (frame_locations, replacements, frame_status) = Slice::orderTransposedFrameLocations(frame_locations.clone())?;
-            if frame_status.clone() == FrameOrderingStatus::FAILURE.clone() {
-                if naive.clone() {
+            locations_T = Slice::transposeLocations(locations, (sizes.clone().len() as i32));
+            frame_locations = List::zip(locations_T, frames.clone());
+            (frame_locations, replacements, frame_status) = Slice::orderTransposedFrameLocations(frame_locations)?;
+            if frame_status == FrameOrderingStatus::FAILURE.clone() {
+                if naive {
                     result = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>>> = metamodelica::nil();
-        for mut i in (indices.clone()).into_iter().cloned() {
+        for mut i in (indices).into_iter().cloned() {
             let __x = sliceFor(body.clone(), iter.clone(), sizes.clone(), frames.clone(), list![i.clone()], true)?;
             __acc = cons(__x, __acc);
         }
@@ -3250,7 +3250,7 @@ pub mod Equation {
                 } else {
                     result = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>>> = metamodelica::nil();
-        for mut subset in (Slice::naiveSeparation(indices.clone())?).into_iter().cloned() {
+        for mut subset in (Slice::naiveSeparation(indices)?).into_iter().cloned() {
             let __x = sliceFor(body.clone(), iter.clone(), sizes.clone(), frames.clone(), subset.clone(), true)?;
             __acc = cons(__x, __acc);
         }
@@ -3258,12 +3258,12 @@ pub mod Equation {
     }))?;
                 }
             } else {
-                (new_frames, removed_diagonals_opt, recollect_status) = Slice::recollectRangesHeuristic(frame_locations.clone())?;
-                if recollect_status.clone() == RecollectStatus::FAILURE.clone() || isSome(removed_diagonals_opt.clone()) {
-                    if naive.clone() {
+                (new_frames, removed_diagonals_opt, recollect_status) = Slice::recollectRangesHeuristic(frame_locations)?;
+                if recollect_status == RecollectStatus::FAILURE.clone() || isSome(removed_diagonals_opt) {
+                    if naive {
                         result = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>>> = metamodelica::nil();
-        for mut i in (indices.clone()).into_iter().cloned() {
+        for mut i in (indices).into_iter().cloned() {
             let __x = sliceFor(body.clone(), iter.clone(), sizes.clone(), frames.clone(), list![i.clone()], true)?;
             __acc = cons(__x, __acc);
         }
@@ -3272,7 +3272,7 @@ pub mod Equation {
                     } else {
                         result = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>>> = metamodelica::nil();
-        for mut subset in (Slice::naiveSeparation(indices.clone())?).into_iter().cloned() {
+        for mut subset in (Slice::naiveSeparation(indices)?).into_iter().cloned() {
             let __x = sliceFor(body.clone(), iter.clone(), sizes.clone(), frames.clone(), subset.clone(), true)?;
             __acc = cons(__x, __acc);
         }
@@ -3280,11 +3280,11 @@ pub mod Equation {
     }))?;
                     }
                 } else {
-                    tmp = map(body.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-                    new_iter = Iterator::fromFrames(new_frames.clone());
+                    tmp = map(body.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements; move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+                    new_iter = Iterator::fromFrames(new_frames);
                     size = Iterator::size(new_iter.clone(), false)? * self::size(Pointer::create(tmp.clone()), false)?;
-                    tmp = Arc::new(Equation::FOR_EQUATION { size: size.clone(), iter: new_iter.clone(), body: list![tmp.clone()], source: getSource(body.clone()), attr: getAttributes(body.clone()) });
-                    result = list![Pointer::create(tmp.clone())];
+                    tmp = Arc::new(Equation::FOR_EQUATION { size: size, iter: new_iter, body: list![tmp], source: getSource(body.clone()), attr: getAttributes(body) });
+                    result = list![Pointer::create(tmp)];
                 }
             }
         }
@@ -3296,18 +3296,18 @@ pub mod Equation {
         let mut solve_status: Solve::Status = Solve::Status::UNPROCESSED;
         let mut eqn: Arc<Equation>;
         let mut location: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        eqn = Pointer::access(eqn_ptr.clone());
+        eqn = Pointer::access(eqn_ptr);
         (sliced_eqn, solve_status) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ FOR_EQUATION { .. } => {
-            location = Slice::indexToLocation(scal_idx.clone(), sizes.clone());
-            Iterator::createLocationReplacements(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), metamodelica::arrayFromVec(location.clone().into_iter().cloned().collect()), replacements.clone())?;
-            sliced_eqn = map(listHead(var_field!((*eqn).body, Equation::FOR_EQUATION).clone())?, (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            location = Slice::indexToLocation(scal_idx, sizes);
+            Iterator::createLocationReplacements(var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(), metamodelica::arrayFromVec(location.into_iter().cloned().collect()), replacements.clone())?;
+            sliced_eqn = map(listHead(var_field!((*eqn).body, Equation::FOR_EQUATION).clone())?, (std::sync::Arc::new({ let __pe_b1 = replacements; move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if !(ComponentRef::isEmpty(cref_to_solve.clone())) {
-                (sliced_eqn, solve_status, _) = Solve::solveBody(sliced_eqn.clone(), cref_to_solve.clone(), funcMap.clone())?;
+                (sliced_eqn, solve_status, _) = Solve::solveBody(sliced_eqn, cref_to_solve, funcMap)?;
             }
-            (sliced_eqn.clone(), solve_status.clone())
+            (sliced_eqn, solve_status)
         },
-        _ => (eqn.clone(), Solve::Status::UNPROCESSED.clone()),
+        _ => (eqn, Solve::Status::UNPROCESSED.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok((sliced_eqn, solve_status))
@@ -3317,8 +3317,8 @@ pub mod Equation {
         let mut equality_exp: Arc<Expression::NFExpression>;
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         let mut exp: Arc<Expression::NFExpression>;
-        (cref, exp) = tpl.clone();
-        equality_exp = Arc::new(Expression::NFExpression::RELATION { exp1: Expression::fromCref(cref.clone(), false)?, operator: Arc::new(Operator::NFOperator { ty: ComponentRef::nodeType(cref.clone())?, op: Operator::Op::NEQUAL.clone() }), exp2: SimplifyExp::simplifyDump(exp.clone(), true, literal!("NBEquation.Equation.makeInequality"), (literal!("")).clone())?, index: -1 });
+        (cref, exp) = tpl;
+        equality_exp = Arc::new(Expression::NFExpression::RELATION { exp1: Expression::fromCref(cref.clone(), false)?, operator: Arc::new(Operator::NFOperator { ty: ComponentRef::nodeType(cref)?, op: Operator::Op::NEQUAL.clone() }), exp2: SimplifyExp::simplifyDump(exp, true, literal!("NBEquation.Equation.makeInequality"), (literal!("")).clone())?, index: -1 });
         Ok(equality_exp)
     }
 
@@ -3355,7 +3355,7 @@ pub mod Equation {
             } else {
                 stmts = list![Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: var_field!((*eqn).lhs, Equation::RECORD_EQUATION).clone(), rhs: var_field!((*eqn).rhs, Equation::RECORD_EQUATION).clone(), ty: var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone(), source: var_field!((*eqn).source, Equation::RECORD_EQUATION).clone() })];
             }
-            stmts.clone()
+            stmts
         },
         Deref @ RECORD_EQUATION { .. } => {
             list![Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: var_field!((*eqn).lhs, Equation::RECORD_EQUATION).clone(), rhs: var_field!((*eqn).rhs, Equation::RECORD_EQUATION).clone(), ty: var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone(), source: var_field!((*eqn).source, Equation::RECORD_EQUATION).clone() })]
@@ -3392,7 +3392,7 @@ pub mod Equation {
             var_field!((*eqn).alg, Equation::ALGORITHM).statements.clone()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.toStatement")); __mm_s.push_str(&*literal!(" failed it is not yet supported for:\n")); __mm_s.push_str(&*toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Equation.toStatement")); __mm_s.push_str(&*literal!(" failed it is not yet supported for:\n")); __mm_s.push_str(&*toString(eqn, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3443,20 +3443,20 @@ pub mod IfEquationBody {
         let mut size: i32;
         (attr, isAlgorithm) = (::match_deref::match_deref! { match &(body.then_eqns.clone()) {
         Deref @ metamodelica::List::Cons { head: then_eqn, tail: Deref @ metamodelica::List::Nil } => {
-            (if (Equation::isDiscrete(then_eqn.clone())) {default(EquationKind::DISCRETE.clone(), init.clone(), None, None)} else {default(EquationKind::CONTINUOUS.clone(), init.clone(), None, None)}, Equation::isAlgorithm(then_eqn.clone()))
+            (if (Equation::isDiscrete(then_eqn.clone())) {default(EquationKind::DISCRETE.clone(), init, None, None)} else {default(EquationKind::CONTINUOUS.clone(), init, None, None)}, Equation::isAlgorithm(then_eqn.clone()))
         },
         _ => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addMessage(Error::COMPILER_WARNING.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.toEquation")); __mm_s.push_str(&*literal!(": Creating if-equation with multiple body equations. Unsure of type:\n")); __mm_s.push_str(&*toString(body.clone(), (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
             }
-            (default(EquationKind::CONTINUOUS.clone(), init.clone(), None, None), false)
+            (default(EquationKind::CONTINUOUS.clone(), init, None, None), false)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        e = Arc::new(Equation::Equation::IF_EQUATION { size: self::size(body.clone(), false)?, body: body.clone(), source: source.clone(), attr: attr.clone() });
-        if isAlgorithm.clone() {
-            alg = Arc::new(Algorithm::NFAlgorithm { statements: Equation::toStatement(e.clone())?, inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: source.clone() });
-            alg = Algorithm::setInputsOutputs(alg.clone())?;
+        e = Arc::new(Equation::Equation::IF_EQUATION { size: self::size(body.clone(), false)?, body: body, source: source.clone(), attr: attr.clone() });
+        if isAlgorithm {
+            alg = Arc::new(Algorithm::NFAlgorithm { statements: Equation::toStatement(e)?, inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: source });
+            alg = Algorithm::setInputsOutputs(alg)?;
             size = ({
         let mut __acc: i32 = 0;
         for mut out in (alg.outputs.clone()).into_iter().cloned() {
@@ -3465,9 +3465,9 @@ pub mod IfEquationBody {
         }
         __acc
     });
-            eqn = Pointer::create(Arc::new(Equation::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: alg.source.clone(), expand: openmodelica_frontend_types::DAE::Expand::EXPAND, attr: attr.clone() }));
+            eqn = Pointer::create(Arc::new(Equation::Equation::ALGORITHM { size: size, alg: alg.clone(), source: alg.source.clone(), expand: openmodelica_frontend_types::DAE::Expand::EXPAND, attr: attr }));
         } else {
-            eqn = Pointer::create(e.clone());
+            eqn = Pointer::create(e);
         }
         Ok(eqn)
     }
@@ -3475,9 +3475,9 @@ pub mod IfEquationBody {
     pub(crate) fn makeIfEquation(mut body: Arc<IfEquationBody>, mut idx: Pointer::Pointer<i32>, mut r#str: ArcStr, mut iter: Arc<Iterator::Iterator>, mut source: Arc<DAE::ElementSource>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
         let mut eq: Pointer::Pointer<Arc<Equation::Equation>>;
         let mut e: Arc<Equation::Equation>;
-        e = makeIfEquationEqn(body.clone(), iter.clone(), source.clone(), attr.clone())?;
-        eq = Pointer::create(e.clone());
-        Equation::createName(eq.clone(), idx.clone(), (r#str.clone()).clone())?;
+        e = makeIfEquationEqn(body, iter, source, attr)?;
+        eq = Pointer::create(e);
+        Equation::createName(eq.clone(), idx, (r#str).clone())?;
         Ok(eq)
     }
 
@@ -3485,39 +3485,39 @@ pub mod IfEquationBody {
         let mut e: Arc<Equation::Equation>;
         e = Arc::new(Equation::Equation::IF_EQUATION { size: size(body.clone(), false)?, body: body.clone(), source: source.clone(), attr: attr.clone() });
         if !(Iterator::isEmpty(iter.clone())) {
-            e = Arc::new(Equation::Equation::FOR_EQUATION { size: size(body.clone(), false)? * Iterator::size(iter.clone(), false)?, iter: iter.clone(), body: list![e.clone()], source: source.clone(), attr: attr.clone() });
-            e = Inline::inlineForEquation(e.clone())?;
+            e = Arc::new(Equation::Equation::FOR_EQUATION { size: size(body, false)? * Iterator::size(iter.clone(), false)?, iter: iter, body: list![e], source: source, attr: attr });
+            e = Inline::inlineForEquation(e)?;
         }
         Ok(e)
     }
 
     pub(crate) fn toString(mut body: Arc<IfEquationBody>, mut indent: ArcStr, mut elseStr: ArcStr, mut selfCall: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = (elseStr.clone()).clone();
-        if !(selfCall.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); ArcStr::from(__mm_s) }).clone();
+        r#str = (elseStr).clone();
+        if !(selfCall) {
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indent.clone()); ArcStr::from(__mm_s) }).clone();
         }
         if !(Expression::isEnd(body.condition.clone())) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("if ")); __mm_s.push_str(&*Expression::toString(body.condition.clone())?); __mm_s.push_str(&*literal!(" then\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("if ")); __mm_s.push_str(&*Expression::toString(body.condition.clone())?); __mm_s.push_str(&*literal!(" then\n")); ArcStr::from(__mm_s) }).clone();
         } else {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         for mut eqn in &*body.then_eqns.clone() {
             let mut eqn = eqn.clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Equation::toString(Pointer::access(eqn.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         if isSome(body.else_if.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(Util::getOption(body.else_if.clone())?, (indent.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("else")); ArcStr::from(__mm_s) }).clone(), true)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toString(Util::getOption(body.else_if.clone())?, (indent.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("else")); ArcStr::from(__mm_s) }).clone(), true)?); ArcStr::from(__mm_s) }).clone();
         }
-        if !(selfCall.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("end if;")); ArcStr::from(__mm_s) }).clone();
+        if !(selfCall) {
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("end if;")); ArcStr::from(__mm_s) }).clone();
         }
         Ok(r#str)
     }
 
     pub(crate) fn map(mut ifBody: Arc<IfEquationBody>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut funcCrefOpt: Option<Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<IfEquationBody>> {
         let mut ifBody: Arc<IfEquationBody> = ifBody;
-        ifBody = mapEqnExpCref(ifBody.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static> = (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| Equation::map(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>); move |__pe_a0| Pointer::apply(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
+        ifBody = mapEqnExpCref(ifBody, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static> = (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| Equation::map(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>); move |__pe_a0| Pointer::apply(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
         Ok(ifBody)
     }
 
@@ -3526,9 +3526,9 @@ pub mod IfEquationBody {
         let mut condition: Arc<Expression::NFExpression>;
         condition = mapFunc(ifBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(ifBody.condition.clone()))) {
-            assign_field!(ifBody.condition = condition.clone());
+            assign_field!(ifBody.condition = condition);
         }
-        assign_field!(ifBody.else_if = Util::applyOption(ifBody.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| mapCondition(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> + 'static>))?);
+        assign_field!(ifBody.else_if = Util::applyOption(ifBody.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt; let __pe_b3 = mapFunc.clone(); move |__pe_a0| mapCondition(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> + 'static>))?);
         Ok(ifBody)
     }
 
@@ -3539,14 +3539,14 @@ pub mod IfEquationBody {
         let mut old_else_if: Arc<IfEquationBody>;
         condition = mapFunc(ifBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(ifBody.condition.clone()))) {
-            assign_field!(ifBody.condition = condition.clone());
+            assign_field!(ifBody.condition = condition);
         }
         assign_field!(ifBody.then_eqns = List::map(ifBody.then_eqns.clone(), func.clone())?);
         if isSome(ifBody.else_if.clone()) {
             old_else_if = Util::getOption(ifBody.else_if.clone())?;
-            else_if = mapEqnExpCref(old_else_if.clone(), func.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&*(else_if.clone()),&*(old_else_if.clone()))) {
-                assign_field!(ifBody.else_if = Some(else_if.clone()));
+            else_if = mapEqnExpCref(old_else_if.clone(), func.clone(), funcExp.clone(), funcCrefOpt, mapFunc.clone())?;
+            if !(referenceEq(&*(else_if.clone()),&*(old_else_if))) {
+                assign_field!(ifBody.else_if = Some(else_if));
             }
         }
         Ok(ifBody)
@@ -3556,7 +3556,7 @@ pub mod IfEquationBody {
         let mut size: i32 = ({
         let mut __acc: i32 = 0;
         for mut eqn in (body.then_eqns.clone()).into_iter().cloned() {
-            let __x = Equation::size(eqn.clone(), resize.clone())?;
+            let __x = Equation::size(eqn.clone(), resize)?;
             __acc += __x;
         }
         __acc
@@ -3593,7 +3593,7 @@ pub mod IfEquationBody {
             Equation::createName(eqn.clone(), idx.clone(), (context.clone()).clone())?;
         }
         if isSome(body.else_if.clone()) {
-            createNames(Util::getOption(body.else_if.clone())?, idx.clone(), (context.clone()).clone())?;
+            createNames(Util::getOption(body.else_if.clone())?, idx, (context).clone())?;
         }
         Ok(())
     }
@@ -3602,7 +3602,7 @@ pub mod IfEquationBody {
         let mut stmts: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>;
         let mut stmt: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>);
         let mut condition: Arc<Expression::NFExpression> = if (Expression::isEnd(body.condition.clone())) {Arc::new(Expression::NFExpression::BOOLEAN { value: true })} else {body.condition.clone()};
-        stmt = (condition.clone(), List::flatten(({
+        stmt = (condition, List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Statement::NFStatement>>>>> = metamodelica::nil();
         for mut eqn in (body.then_eqns.clone()).into_iter().cloned() {
             let __x = Equation::toStatement(Pointer::access(eqn.clone()))?;
@@ -3611,9 +3611,9 @@ pub mod IfEquationBody {
         __acc.reverse()
     }))?);
         if isSome(body.else_if.clone()) {
-            stmts = metamodelica::cons(stmt.clone(), toStatement(Util::getOption(body.else_if.clone())?)?);
+            stmts = metamodelica::cons(stmt, toStatement(Util::getOption(body.else_if.clone())?)?);
         } else {
-            stmts = list![stmt.clone()];
+            stmts = list![stmt];
         }
         Ok(stmts)
     }
@@ -3621,15 +3621,15 @@ pub mod IfEquationBody {
     pub(crate) fn createResidual(mut body: Arc<IfEquationBody>, mut res: Arc<ComponentRef::NFComponentRef>, mut new: bool, mut allowFail: bool) -> Result<Arc<IfEquationBody>> {
         let mut body_res: Arc<IfEquationBody>;
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
-        body_res = Arc::new(IfEquationBody { condition: body.condition.clone(), then_eqns: metamodelica::nil(), else_if: Util::applyOption(body.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = res.clone(); let __pe_b2 = new.clone(); let __pe_b3 = allowFail.clone(); move |__pe_a0| createResidual(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> + 'static>))? });
+        body_res = Arc::new(IfEquationBody { condition: body.condition.clone(), then_eqns: metamodelica::nil(), else_if: Util::applyOption(body.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = res.clone(); let __pe_b2 = new; let __pe_b3 = allowFail; move |__pe_a0| createResidual(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> + 'static>))? });
         body_res = (::match_deref::match_deref! { match &(body.then_eqns.clone()) {
         Deref @ metamodelica::List::Cons { head: __esc_eqn_ptr, tail: Deref @ metamodelica::List::Nil } => {
             eqn_ptr = (*__esc_eqn_ptr).clone();
-            assign_field!(body_res.then_eqns = metamodelica::cons(Equation::createResidual(eqn_ptr.clone(), Some(res.clone()), new.clone(), allowFail.clone())?, body_res.then_eqns.clone()));
-            body_res.clone()
+            assign_field!(body_res.then_eqns = metamodelica::cons(Equation::createResidual(eqn_ptr.clone(), Some(res), new, allowFail)?, body_res.then_eqns.clone()));
+            body_res
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.createResidual")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(body.clone(), (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.createResidual")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*toString(body, (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3643,9 +3643,9 @@ pub mod IfEquationBody {
         let mut rhs: Arc<Expression::NFExpression>;
         let mut success: bool;
         (lhs, success) = getLHS(body.clone(), openmodelica_nf_frontend::NFExpression::interned_END())?;
-        if success.clone() {
-            rhs = SimplifyExp::simplify(getRHS(body.clone())?, false)?;
-            eqn = Equation::makeAssignmentUpdate(eqn.clone(), lhs.clone(), rhs.clone(), Equation::getForIterator(eqn.clone()), Equation::getAttributes(eqn.clone()))?;
+        if success {
+            rhs = SimplifyExp::simplify(getRHS(body)?, false)?;
+            eqn = Equation::makeAssignmentUpdate(eqn.clone(), lhs, rhs, Equation::getForIterator(eqn.clone()), Equation::getAttributes(eqn))?;
         }
         Ok(eqn)
     }
@@ -3663,20 +3663,20 @@ pub mod IfEquationBody {
                 _ => bail!("pattern mismatch"),
             } };
             new_exp = __pa0.clone();
-            if Expression::isEnd(exp.clone()) || Expression::isEqual(exp.clone(), new_exp.clone())? {
+            if Expression::isEnd(exp.clone()) || Expression::isEqual(exp, new_exp.clone())? {
                 if isSome(body.else_if.clone()) {
-                    (new_exp, success) = getLHS(Util::getOption(body.else_if.clone())?, new_exp.clone())?;
+                    (new_exp, success) = getLHS(Util::getOption(body.else_if.clone())?, new_exp)?;
                 }
             } else {
                 if Flags::isSet(Flags::FAILTRACE.clone())? {
-                    Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.getLHS")); __mm_s.push_str(&*literal!(" failed because of ambiguous LHS for:\n")); __mm_s.push_str(&*toString(body.clone(), (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone())?;
+                    Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.getLHS")); __mm_s.push_str(&*literal!(" failed because of ambiguous LHS for:\n")); __mm_s.push_str(&*toString(body, (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone())?;
                 }
                 success = false;
             }
-            new_exp.clone()
+            new_exp
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.getLHS")); __mm_s.push_str(&*literal!(" failed because of un-split if-equation:\n")); __mm_s.push_str(&*toString(body.clone(), (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.getLHS")); __mm_s.push_str(&*literal!(" failed because of un-split if-equation:\n")); __mm_s.push_str(&*toString(body, (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3697,12 +3697,12 @@ pub mod IfEquationBody {
             } };
             new_exp = __pa0.clone();
             if isSome(body.else_if.clone()) {
-                new_exp = Arc::new(Expression::NFExpression::IF { ty: Expression::typeOf(new_exp.clone()), condition: body.condition.clone(), trueBranch: new_exp.clone(), falseBranch: getRHS(Util::getOption(body.else_if.clone())?)? });
+                new_exp = Arc::new(Expression::NFExpression::IF { ty: Expression::typeOf(new_exp.clone()), condition: body.condition.clone(), trueBranch: new_exp, falseBranch: getRHS(Util::getOption(body.else_if.clone())?)? });
             }
-            new_exp.clone()
+            new_exp
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.getRHS")); __mm_s.push_str(&*literal!(" failed because of un-split if-equation:\n")); __mm_s.push_str(&*toString(body.clone(), (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.IfEquationBody.getRHS")); __mm_s.push_str(&*literal!(" failed because of un-split if-equation:\n")); __mm_s.push_str(&*toString(body, (literal!("")).clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3717,7 +3717,7 @@ pub mod IfEquationBody {
         let mut condition: Arc<Expression::NFExpression>;
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
         let mut tmp: Option<Arc<IfEquationBody>>;
-        (conditions, then_eqns) = splitCollect(sortForSplit(body.clone())?, conditions.clone(), then_eqns.clone())?;
+        (conditions, then_eqns) = splitCollect(sortForSplit(body)?, conditions, then_eqns.clone())?;
         for mut i in 1..=metamodelica::arrayLength(then_eqns.clone()) {
             tmp = None;
             let __range0 = &*List::zip(conditions.clone(), ({let __elt = then_eqns.borrow()[(i.clone()-1) as usize].clone(); __elt}));
@@ -3749,10 +3749,10 @@ pub mod IfEquationBody {
             } else {
                 body = Some(b.clone());
             }
-            body.clone()
+            body
         },
         _ => {
-            body.clone()
+            body
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3787,7 +3787,7 @@ pub mod IfEquationBody {
         }
         __acc.reverse()
     });
-        ty = if ((body_types.clone().len() as i32) == 1) {listHead(body_types.clone())?} else {Arc::new(Type::NFType::TUPLE { types: body_types.clone(), names: None })};
+        ty = if ((body_types.clone().len() as i32) == 1) {listHead(body_types)?} else {Arc::new(Type::NFType::TUPLE { types: body_types, names: None })};
         Ok(ty)
     }
 
@@ -3814,18 +3814,18 @@ pub mod IfEquationBody {
         let mut conditions: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = conditions;
         let mut then_eqns: metamodelica::Array<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = then_eqns;
         let mut i: i32 = 1;
-        conditions = metamodelica::cons(body.condition.clone(), conditions.clone());
+        conditions = metamodelica::cons(body.condition.clone(), conditions);
         for mut eqn in &*body.then_eqns.clone() {
             let mut eqn = eqn.clone();
             {
-                let __cell0 = metamodelica::cons(eqn.clone(), ({let __elt = then_eqns.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                let __idx0 = i.clone();
+                let __cell0 = metamodelica::cons(eqn.clone(), ({let __elt = then_eqns.borrow()[(i-1) as usize].clone(); __elt}));
+                let __idx0 = i;
                 then_eqns.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
-            i = i.clone() + 1;
+            i = i + 1;
         }
         if isSome(body.else_if.clone()) {
-            (conditions, then_eqns) = splitCollect(Util::getOption(body.else_if.clone())?, conditions.clone(), then_eqns.clone())?;
+            (conditions, then_eqns) = splitCollect(Util::getOption(body.else_if.clone())?, conditions, then_eqns.clone())?;
         }
         Ok((conditions, then_eqns))
     }
@@ -3867,12 +3867,12 @@ pub mod WhenEquationBody {
 
     pub(crate) fn fromFlatList(mut flat_list: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>>, mut body: Option<Arc<WhenEquationBody>>) -> Option<Arc<WhenEquationBody>> {
         let mut body: Option<Arc<WhenEquationBody>> = body;
-        body = (::match_deref::match_deref! { match &(flat_list.clone()) {
+        body = (::match_deref::match_deref! { match &(flat_list) {
         Deref @ metamodelica::List::Cons { head: (condition, stmts), tail: tail } => {
-            fromFlatList(tail.clone(), Some(Arc::new(WhenEquationBody { condition: condition.clone(), when_stmts: stmts.clone(), else_when: body.clone() })))
+            fromFlatList(tail.clone(), Some(Arc::new(WhenEquationBody { condition: condition.clone(), when_stmts: stmts.clone(), else_when: body })))
         },
         _ => {
-            body.clone()
+            body
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3881,20 +3881,20 @@ pub mod WhenEquationBody {
 
     pub(crate) fn toString(mut body: Arc<WhenEquationBody>, mut indent: ArcStr, mut elseStr: ArcStr, mut selfCall: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = (elseStr.clone()).clone();
-        if !(selfCall.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); ArcStr::from(__mm_s) }).clone();
+        r#str = (elseStr).clone();
+        if !(selfCall) {
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indent.clone()); ArcStr::from(__mm_s) }).clone();
         }
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("when ")); __mm_s.push_str(&*Expression::toString(body.condition.clone())?); __mm_s.push_str(&*literal!(" then\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("when ")); __mm_s.push_str(&*Expression::toString(body.condition.clone())?); __mm_s.push_str(&*literal!(" then\n")); ArcStr::from(__mm_s) }).clone();
         for mut stmt in &*body.when_stmts.clone() {
             let mut stmt = stmt.clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*WhenStatement::toString(stmt.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         if isSome(body.else_when.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(Util::getOption(body.else_when.clone())?, (indent.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("else")); ArcStr::from(__mm_s) }).clone(), true)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toString(Util::getOption(body.else_when.clone())?, (indent.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("else")); ArcStr::from(__mm_s) }).clone(), true)?); ArcStr::from(__mm_s) }).clone();
         }
-        if !(selfCall.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("end when;")); ArcStr::from(__mm_s) }).clone();
+        if !(selfCall) {
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("end when;")); ArcStr::from(__mm_s) }).clone();
         }
         Ok(r#str)
     }
@@ -3903,7 +3903,7 @@ pub mod WhenEquationBody {
         let mut s: i32 = ({
         let mut __acc: i32 = 0;
         for mut stmt in (body.when_stmts.clone()).into_iter().cloned() {
-            let __x = WhenStatement::size(stmt.clone(), resize.clone())?;
+            let __x = WhenStatement::size(stmt.clone(), resize)?;
             __acc += __x;
         }
         __acc
@@ -4007,9 +4007,9 @@ pub mod WhenEquationBody {
         __acc.reverse()
     }));
         if isSome(body.else_when.clone()) {
-            stmts = metamodelica::cons(stmt.clone(), toStatement(Util::getOption(body.else_when.clone())?)?);
+            stmts = metamodelica::cons(stmt, toStatement(Util::getOption(body.else_when.clone())?)?);
         } else {
-            stmts = list![stmt.clone()];
+            stmts = list![stmt];
         }
         Ok(stmts)
     }
@@ -4019,11 +4019,11 @@ pub mod WhenEquationBody {
         let mut condition: Arc<Expression::NFExpression>;
         condition = mapFunc(whenBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(whenBody.condition.clone()))) {
-            assign_field!(whenBody.condition = condition.clone());
+            assign_field!(whenBody.condition = condition);
         }
         assign_field!(
             whenBody.when_stmts = List::map(whenBody.when_stmts.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| WhenStatement::map(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenStatement::WhenStatement>) -> Result<Arc<WhenStatement::WhenStatement>> + 'static>))?,
-            whenBody.else_when = Util::applyOption(whenBody.else_when.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| map(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenEquationBody>) -> Result<Arc<WhenEquationBody>> + 'static>))?
+            whenBody.else_when = Util::applyOption(whenBody.else_when.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt; let __pe_b3 = mapFunc.clone(); move |__pe_a0| map(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenEquationBody>) -> Result<Arc<WhenEquationBody>> + 'static>))?
         );
         Ok(whenBody)
     }
@@ -4033,9 +4033,9 @@ pub mod WhenEquationBody {
         let mut condition: Arc<Expression::NFExpression>;
         condition = mapFunc(whenBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(whenBody.condition.clone()))) {
-            assign_field!(whenBody.condition = condition.clone());
+            assign_field!(whenBody.condition = condition);
         }
-        assign_field!(whenBody.else_when = Util::applyOption(whenBody.else_when.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| mapCondition(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenEquationBody>) -> Result<Arc<WhenEquationBody>> + 'static>))?);
+        assign_field!(whenBody.else_when = Util::applyOption(whenBody.else_when.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt; let __pe_b3 = mapFunc.clone(); move |__pe_a0| mapCondition(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenEquationBody>) -> Result<Arc<WhenEquationBody>> + 'static>))?);
         Ok(whenBody)
     }
 
@@ -4055,10 +4055,10 @@ pub mod WhenEquationBody {
         let mut assigns: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>;
         let mut stmt: Option<Arc<WhenStatement::WhenStatement>> = None;
         let mut new_body: Option<Arc<WhenEquationBody>>;
-        flat_when = collectForSplit(Some(body.clone()), discr_map.clone(), state_set.clone())?;
+        flat_when = collectForSplit(Some(body), discr_map.clone(), state_set.clone())?;
         discretes = UnorderedMap::keyList(discr_map.clone());
-        states = UnorderedSet::toList(state_set.clone());
-        for mut disc in &*discretes.clone() {
+        states = UnorderedSet::toList(state_set);
+        for mut disc in &*discretes {
             let mut disc = disc.clone();
             if !(UnorderedSet::contains(disc.clone(), discr_marks.clone())?) {
                 set = UnorderedMap::getSafe(disc.clone(), discr_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?;
@@ -4087,7 +4087,7 @@ pub mod WhenEquationBody {
                 }
             }
         }
-        for mut state in &*states.clone() {
+        for mut state in &*states {
             let mut state = state.clone();
             flat_new = metamodelica::nil();
             for mut tpl in &*flat_when.clone() {
@@ -4110,7 +4110,7 @@ pub mod WhenEquationBody {
             }
         }
         flat_new = metamodelica::nil();
-        for mut tpl in &*flat_when.clone() {
+        for mut tpl in &*flat_when {
             let mut tpl = tpl.clone();
             (condition, stmts) = tpl.clone();
             stmts = ({
@@ -4134,7 +4134,7 @@ pub mod WhenEquationBody {
                 acc_condition = combineConditions(acc_condition.clone(), condition.clone(), true);
             }
         }
-        bodies = bodies.clone().reverse();
+        bodies = bodies.reverse();
         Ok(bodies)
     }
 
@@ -4163,7 +4163,7 @@ pub mod WhenEquationBody {
                 assign_field!(b.condition = Expression::makeArrayCheckLiteral(Arc::new(Type::NFType::ARRAY { elementType: openmodelica_nf_frontend::NFType::interned_BOOLEAN(), dimensions: list![Dimension::fromInteger((conditions.clone().len() as i32), Variability::CONSTANT.clone())] }), metamodelica::arrayFromVec(conditions.clone().into_iter().cloned().collect()))?);
                 body = Some(b.clone());
             }
-            body.clone()
+            body
         },
         Some(b) => {
             let mut b = (*b).clone();
@@ -4173,10 +4173,10 @@ pub mod WhenEquationBody {
             } else {
                 body = Some(b.clone());
             }
-            body.clone()
+            body
         },
         _ => {
-            body.clone()
+            body
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4229,7 +4229,7 @@ pub mod WhenEquationBody {
         let mut flat_when: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>>;
         let mut body: Arc<WhenEquationBody>;
         if isSome(body_opt.clone()) {
-            body = Util::getOption(body_opt.clone())?;
+            body = Util::getOption(body_opt)?;
             for mut stmt in &*body.when_stmts.clone() {
                 let mut stmt = stmt.clone();
                 let () = (::match_deref::match_deref! { match &(stmt.clone()) {
@@ -4255,7 +4255,7 @@ pub mod WhenEquationBody {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            flat_when = metamodelica::cons((body.condition.clone(), body.when_stmts.clone()), collectForSplit(body.else_when.clone(), discr_map.clone(), state_set.clone())?);
+            flat_when = metamodelica::cons((body.condition.clone(), body.when_stmts.clone()), collectForSplit(body.else_when.clone(), discr_map, state_set)?);
         } else {
             flat_when = metamodelica::nil();
         }
@@ -4276,7 +4276,7 @@ pub mod WhenEquationBody {
                 UnorderedSet::add(c.clone(), set.clone())?;
             }
         }
-        for mut c in &*crefs.clone() {
+        for mut c in &*crefs {
             let mut c = c.clone();
             UnorderedMap::add(c.clone(), set.clone(), discr_map.clone())?;
         }
@@ -4285,7 +4285,7 @@ pub mod WhenEquationBody {
 
     fn getAssignments(mut crefSet: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>) -> Result<Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>> {
         let mut assigns: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>> = metamodelica::nil();
-        for mut stmt in &*stmts.clone() {
+        for mut stmt in &*stmts {
             let mut stmt = stmt.clone();
             let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ WhenStatement::ASSIGN { lhs: Deref @ Expression::CREF { cref, .. }, .. } if (UnorderedSet::contains(cref.clone(), crefSet.clone())?) => {
@@ -4314,7 +4314,7 @@ pub mod WhenEquationBody {
 
     fn getFirstReinit(mut cref: Arc<ComponentRef::NFComponentRef>, mut stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>) -> Result<Option<Arc<WhenStatement::WhenStatement>>> {
         let mut assign: Option<Arc<WhenStatement::WhenStatement>> = None;
-        for mut stmt in &*stmts.clone() {
+        for mut stmt in &*stmts {
             let mut stmt = stmt.clone();
             let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ WhenStatement::REINIT { .. } if (ComponentRef::isEqual(cref.clone(), var_field!((*stmt).stateVar, WhenStatement::WhenStatement::REINIT).clone())?) => {
@@ -4331,11 +4331,11 @@ pub mod WhenEquationBody {
 
     fn combineConditions(mut acc_condition: Arc<Expression::NFExpression>, mut condition: Arc<Expression::NFExpression>, mut invert: bool) -> Arc<Expression::NFExpression> {
         let mut condition: Arc<Expression::NFExpression> = condition;
-        if invert.clone() {
-            condition = Expression::logicNegate(condition.clone());
+        if invert {
+            condition = Expression::logicNegate(condition);
         }
         if !(Expression::isEmpty(acc_condition.clone())) {
-            condition = Arc::new(Expression::NFExpression::LBINARY { exp1: acc_condition.clone(), operator: Operator::makeAnd(openmodelica_nf_frontend::NFType::interned_BOOLEAN()), exp2: condition.clone() });
+            condition = Arc::new(Expression::NFExpression::LBINARY { exp1: acc_condition, operator: Operator::makeAnd(openmodelica_nf_frontend::NFType::interned_BOOLEAN()), exp2: condition });
         }
         condition
     }
@@ -4432,24 +4432,24 @@ pub mod WhenStatement {
     pub use self::WhenStatement::{ASSIGN,REINIT,ASSERT,TERMINATE,NORETCALL};
     pub(crate) fn toString(mut stmt: Arc<WhenStatement>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        r#str = ((::match_deref::match_deref! { match &(stmt.clone()) {
+        r#str = ((::match_deref::match_deref! { match &(stmt) {
         Deref @ ASSIGN { lhs, rhs, .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Expression::toString(lhs.clone())?); __mm_s.push_str(&*literal!(" := ")); __mm_s.push_str(&*Expression::toString(rhs.clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*Expression::toString(lhs.clone())?); __mm_s.push_str(&*literal!(" := ")); __mm_s.push_str(&*Expression::toString(rhs.clone())?); ArcStr::from(__mm_s) }
         },
         Deref @ REINIT { stateVar, value, .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("reinit(")); __mm_s.push_str(&*ComponentRef::toString(stateVar.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(value.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("reinit(")); __mm_s.push_str(&*ComponentRef::toString(stateVar.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(value.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         Deref @ ASSERT { condition, message, level, .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("assert(")); __mm_s.push_str(&*Expression::toString(condition.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(message.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(level.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("assert(")); __mm_s.push_str(&*Expression::toString(condition.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(message.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(level.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         Deref @ TERMINATE { message, .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("terminate(")); __mm_s.push_str(&*Expression::toString(message.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("terminate(")); __mm_s.push_str(&*Expression::toString(message.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         Deref @ NORETCALL { exp: value, .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Expression::toString(value.clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*Expression::toString(value.clone())?); ArcStr::from(__mm_s) }
         },
         _ => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("NBEquation.WhenStatement.toString")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("NBEquation.WhenStatement.toString")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -4460,8 +4460,8 @@ pub mod WhenStatement {
         let mut b: bool;
         let mut stmt1: Arc<WhenStatement>;
         let mut stmt2: Arc<WhenStatement>;
-        (stmt1, stmt2) = tpl.clone();
-        b = isEqual(stmt1.clone(), stmt2.clone())?;
+        (stmt1, stmt2) = tpl;
+        b = isEqual(stmt1, stmt2)?;
         Ok(b)
     }
 
@@ -4488,7 +4488,7 @@ pub mod WhenStatement {
         Deref @ TERMINATE { .. } => Arc::new(Statement::NFStatement::TERMINATE { message: var_field!((*wstmt).message, WhenStatement::TERMINATE).clone(), source: var_field!((*wstmt).source, WhenStatement::TERMINATE).clone() }),
         Deref @ NORETCALL { .. } => Arc::new(Statement::NFStatement::NORETCALL { exp: var_field!((*wstmt).exp, WhenStatement::NORETCALL).clone(), source: var_field!((*wstmt).source, WhenStatement::NORETCALL).clone() }),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.WhenStatement.toStatement")); __mm_s.push_str(&*literal!(" failed because of unrecognized statement: ")); __mm_s.push_str(&*toString(wstmt.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.WhenStatement.toStatement")); __mm_s.push_str(&*literal!(" failed because of unrecognized statement: ")); __mm_s.push_str(&*toString(wstmt, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4499,8 +4499,8 @@ pub mod WhenStatement {
     pub(crate) fn toEquation(mut stmt: Arc<WhenStatement>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut init: bool) -> Result<Arc<Equation::Equation>> {
         let mut eqn: Arc<Equation::Equation>;
         eqn = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ ASSIGN { .. } => Equation::makeAssignmentEqn(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone(), var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone(), crate::NBEquation::Iterator::interned_EMPTY(), attr.clone())?,
-        _ => Equation::setAttributes(Pointer::access(Equation::makeAlgorithm(list![toStatement(stmt.clone())?], init.clone())?), attr.clone())?,
+        Deref @ ASSIGN { .. } => Equation::makeAssignmentEqn(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone(), var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone(), crate::NBEquation::Iterator::interned_EMPTY(), attr)?,
+        _ => Equation::setAttributes(Pointer::access(Equation::makeAlgorithm(list![toStatement(stmt)?], init)?), attr)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(eqn)
@@ -4509,7 +4509,7 @@ pub mod WhenStatement {
     pub(crate) fn size(mut stmt: Arc<WhenStatement>, mut resize: bool) -> Result<i32> {
         let mut s: i32;
         s = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ ASSIGN { .. } => Type::sizeOf(Expression::typeOf(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone()), resize.clone())?,
+        Deref @ ASSIGN { .. } => Type::sizeOf(Expression::typeOf(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone()), resize)?,
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4518,7 +4518,7 @@ pub mod WhenStatement {
 
     pub(crate) fn isAssign(mut stmt: Arc<WhenStatement>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(stmt.clone()) {
+        b = (::match_deref::match_deref! { match &(stmt) {
         Deref @ ASSIGN { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4528,7 +4528,7 @@ pub mod WhenStatement {
 
     pub(crate) fn isAssignOrReinit(mut stmt: Arc<WhenStatement>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(stmt.clone()) {
+        b = (::match_deref::match_deref! { match &(stmt) {
         Deref @ ASSIGN { .. } => true,
         Deref @ REINIT { .. } => true,
         _ => false,
@@ -4561,14 +4561,14 @@ pub mod WhenStatement {
             if !(referenceEq(&*(rhs.clone()),&*(var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::ASSIGN; rhs = rhs.clone());
             }
-            stmt.clone()
+            stmt
         },
         Deref @ REINIT { .. } => {
             let mut funcCref: MapFuncCref;
             let mut value: Arc<Expression::NFExpression>;
             let mut stateVar: Arc<ComponentRef::NFComponentRef>;
             if isSome(funcCrefOpt.clone()) {
-                let __pa0 = ::match_deref::match_deref! { match &(funcCrefOpt.clone()) {
+                let __pa0 = ::match_deref::match_deref! { match &(funcCrefOpt) {
                     Some(__pa0) => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
@@ -4582,7 +4582,7 @@ pub mod WhenStatement {
             if !(referenceEq(&*(value.clone()),&*(var_field!((*stmt).value, WhenStatement::REINIT).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::REINIT; value = value.clone());
             }
-            stmt.clone()
+            stmt
         },
         Deref @ ASSERT { .. } => {
             let mut condition: Arc<Expression::NFExpression>;
@@ -4595,10 +4595,10 @@ pub mod WhenStatement {
             if !(referenceEq(&*(message.clone()),&*(var_field!((*stmt).message, WhenStatement::ASSERT).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::ASSERT; message = message.clone());
             }
-            stmt.clone()
+            stmt
         },
         Deref @ TERMINATE { .. } => {
-            stmt.clone()
+            stmt
         },
         Deref @ NORETCALL { .. } => {
             let mut value: Arc<Expression::NFExpression>;
@@ -4606,10 +4606,10 @@ pub mod WhenStatement {
             if !(referenceEq(&*(value.clone()),&*(var_field!((*stmt).exp, WhenStatement::NORETCALL).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::NORETCALL; exp = value.clone());
             }
-            stmt.clone()
+            stmt
         },
         _ => {
-            stmt.clone()
+            stmt
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4625,7 +4625,7 @@ pub mod WhenStatement {
         Deref @ TERMINATE { .. } => OldBackendDAE::WhenOperator::TERMINATE { message: Expression::toDAE(var_field!((*stmt).message, WhenStatement::TERMINATE).clone(), false)?, source: var_field!((*stmt).source, WhenStatement::TERMINATE).clone() },
         Deref @ NORETCALL { .. } => OldBackendDAE::WhenOperator::NORETCALL { exp: Expression::toDAE(var_field!((*stmt).exp, WhenStatement::NORETCALL).clone(), false)?, source: var_field!((*stmt).source, WhenStatement::NORETCALL).clone() },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.WhenStatement.convert")); __mm_s.push_str(&*literal!(" failed because of unrecognized statement: ")); __mm_s.push_str(&*toString(stmt.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.WhenStatement.convert")); __mm_s.push_str(&*literal!(" failed because of unrecognized statement: ")); __mm_s.push_str(&*toString(stmt, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4689,9 +4689,9 @@ pub mod EquationAttributes {
 
     pub(crate) fn toString(mut attr: Arc<EquationAttributes>, mut indent: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = ((::match_deref::match_deref! { match &(attr.clone()) {
+        r#str = ((::match_deref::match_deref! { match &(attr) {
         Deref @ EquationAttributes { residualVar: Some(residualVar), .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*ComponentRef::toString(BVariable::getVarName(residualVar.clone()))?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*ComponentRef::toString(BVariable::getVarName(residualVar.clone()))?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => {
             literal!("")
@@ -4704,15 +4704,15 @@ pub mod EquationAttributes {
     pub(crate) fn setKind(mut attr: Arc<EquationAttributes>, mut kind: EquationKind, mut clock_idx: Option<i32>) -> Arc<EquationAttributes> {
         let mut attr: Arc<EquationAttributes> = attr;
         assign_field!(
-            attr.kind = kind.clone(),
-            attr.clock_idx = clock_idx.clone()
+            attr.kind = kind,
+            attr.clock_idx = clock_idx
         );
         attr
     }
 
     pub(crate) fn setResidualVar(mut attr: Arc<EquationAttributes>, mut residualVar: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<EquationAttributes> {
         let mut attr: Arc<EquationAttributes> = attr;
-        assign_field!(attr.residualVar = Some(residualVar.clone()));
+        assign_field!(attr.residualVar = Some(residualVar));
         attr
     }
 
@@ -4747,7 +4747,7 @@ pub mod EquationAttributes {
 
 pub(crate) fn default(mut kind: EquationKind, mut exclusively_initial: bool, mut clock_idx: Option<i32>, mut optimizerExpression: Option<OptimizerExpression>) -> Arc<EquationAttributes::EquationAttributes> {
     let mut attr: Arc<EquationAttributes::EquationAttributes>;
-    attr = Arc::new(EquationAttributes::EquationAttributes { derivative: None, residualVar: None, clock_idx: clock_idx.clone(), residual: false, exclusively_initial: exclusively_initial.clone(), evalStages: Evaluation::DEFAULT_STAGES.clone(), kind: kind.clone(), optimizerExpression: optimizerExpression.clone() });
+    attr = Arc::new(EquationAttributes::EquationAttributes { derivative: None, residualVar: None, clock_idx: clock_idx, residual: false, exclusively_initial: exclusively_initial, evalStages: Evaluation::DEFAULT_STAGES.clone(), kind: kind, optimizerExpression: optimizerExpression });
     attr
 }
 
@@ -4775,8 +4775,8 @@ impl Default for EquationKind {
 
 pub(crate) fn convertEquationKind(mut eqKind: EquationKind, mut clock_idx: Option<i32>, mut exclusively_initial: bool) -> Result<OldBackendDAE::EquationKind> {
     let mut oldEqKind: OldBackendDAE::EquationKind;
-    oldEqKind = (match (eqKind.clone(), clock_idx.clone()) {
-        (_, _) if (exclusively_initial.clone()) => {
+    oldEqKind = (match (eqKind, clock_idx.clone()) {
+        (_, _) if (exclusively_initial) => {
             openmodelica_backend_types::BackendDAE::EquationKind::INITIAL_EQUATION
         },
         (EquationKind::CONTINUOUS { .. }, None) => {
@@ -4795,7 +4795,7 @@ pub(crate) fn convertEquationKind(mut eqKind: EquationKind, mut clock_idx: Optio
             openmodelica_backend_types::BackendDAE::EquationKind::UNKNOWN_EQUATION_KIND
         },
         (_, Some(_)) => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.convertEquationKind")); __mm_s.push_str(&*literal!(" failed because the non-clock equation kind ")); __mm_s.push_str(&*equationKindString(eqKind.clone(), clock_idx.clone(), exclusively_initial.clone())?); __mm_s.push_str(&*literal!(" has a clock index.")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.convertEquationKind")); __mm_s.push_str(&*literal!(" failed because the non-clock equation kind ")); __mm_s.push_str(&*equationKindString(eqKind, clock_idx, exclusively_initial)?); __mm_s.push_str(&*literal!(" has a clock index.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         (EquationKind::CLOCKED { .. }, None) => {
@@ -4812,18 +4812,18 @@ pub(crate) fn convertEquationKind(mut eqKind: EquationKind, mut clock_idx: Optio
 
 pub(crate) fn equationKindString(mut eqKind: EquationKind, mut clock_idx: Option<i32>, mut exclusively_initial: bool) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((match eqKind.clone() {
+    r#str = ((match eqKind {
         EquationKind::CONTINUOUS { .. } => literal!("[CONT"),
         EquationKind::CLOCKED { .. } => literal!("[CLCK"),
         EquationKind::DISCRETE => literal!("[DISC"),
         EquationKind::EMPTY => literal!("[EMTY"),
         _ => literal!("[UKWN"),
     })).clone();
-    r#str = (if (exclusively_initial.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[INI]")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAE]")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }}).clone();
+    r#str = (if (exclusively_initial) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[INI]")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAE]")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }}).clone();
     if isSome(clock_idx.clone()) {
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(Util::getOption(clock_idx.clone())?)); __mm_s.push_str(&*literal!(")]")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(Util::getOption(clock_idx)?)); __mm_s.push_str(&*literal!(")]")); ArcStr::from(__mm_s) }).clone();
     } else {
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
     }
     Ok(r#str)
 }
@@ -4867,35 +4867,35 @@ pub mod EquationPointers {
         let mut mapping: metamodelica::Array<(i32, i32)> = Default::default();
         let mut filter: Arc<UnorderedSet::UnorderedSet<ArcStr>> = <Arc<UnorderedSet::UnorderedSet<ArcStr>> as ::std::default::Default>::default();
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
-        if useMapping.clone() {
+        if useMapping {
             length = 15;
-            mapping = Util::getOption(mapping_opt.clone())?;
+            mapping = Util::getOption(mapping_opt)?;
         } else {
             length = 10;
         }
-        if filterEqs.clone() {
-            filter = Util::getOption(filter_opt.clone())?;
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Filtered ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone();
+        if filterEqs {
+            filter = Util::getOption(filter_opt)?;
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Filtered ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone();
         }
-        if printEmpty.clone() || luI.clone() > 0 {
-            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Equations (")); __mm_s.push_str(&*intString(size(equations.clone()))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(equations.clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
-            for mut i in 1..=luI.clone() {
+        if printEmpty || luI > 0 {
+            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" Equations (")); __mm_s.push_str(&*intString(size(equations.clone()))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(equations.clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
+            for mut i in 1..=luI {
                 if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                     eqn = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
-                    if !(filterEqs.clone()) || UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(eqn.clone())?)?).clone(), filter.clone())? {
-                        if useMapping.clone() {
-                            (scal_start, _) = ({let __elt = mapping.borrow()[(current_index.clone()-1) as usize].clone(); __elt});
-                            index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(current_index.clone())); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(scal_start.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+                    if !(filterEqs) || UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(eqn.clone())?)?).clone(), filter.clone())? {
+                        if useMapping {
+                            (scal_start, _) = ({let __elt = mapping.borrow()[(current_index-1) as usize].clone(); __elt});
+                            index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(current_index)); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(scal_start)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                         } else {
-                            index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(current_index.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+                            index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(current_index)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                         }
-                        index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*index.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length.clone() - ((index.clone()).clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
+                        index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*index.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length - ((index.clone()).clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
                         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Equation::toString(Pointer::access(eqn.clone()), (index.clone()).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     }
-                    current_index = current_index.clone() + 1;
+                    current_index = current_index + 1;
                 }
             }
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         } else {
             r#str = (literal!("")).clone();
         }
@@ -4906,20 +4906,20 @@ pub mod EquationPointers {
         let mut equationPointers: Arc<EquationPointers>;
         let mut arr_size: i32;
         let mut bucketSize: i32;
-        arr_size = std::cmp::max(size.clone(), BaseHashTable::lowBucketSize.clone());
-        bucketSize = Util::nextPrime(arr_size.clone());
-        equationPointers = Arc::new(EquationPointers { map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize.clone()), eqArr: ExpandableArray::new(arr_size.clone(), Pointer::create(crate::NBEquation::Equation::interned_DUMMY_EQUATION())) });
+        arr_size = std::cmp::max(size, BaseHashTable::lowBucketSize.clone());
+        bucketSize = Util::nextPrime(arr_size);
+        equationPointers = Arc::new(EquationPointers { map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize), eqArr: ExpandableArray::new(arr_size, Pointer::create(crate::NBEquation::Equation::interned_DUMMY_EQUATION())) });
         equationPointers
     }
 
     pub(crate) fn clone(mut equations: Arc<EquationPointers>, mut shallow: bool) -> Result<Arc<EquationPointers>> {
         let mut new: Arc<EquationPointers>;
-        if shallow.clone() {
-            new = fromList(toList(equations.clone())?)?;
+        if shallow {
+            new = fromList(toList(equations)?)?;
         } else {
             new = fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        for mut eqn in (toList(equations.clone())?).into_iter().cloned() {
+        for mut eqn in (toList(equations)?).into_iter().cloned() {
             let __x = Pointer::create(Pointer::access(eqn.clone()));
             __acc = cons(__x, __acc);
         }
@@ -4936,9 +4936,9 @@ pub mod EquationPointers {
 
     pub(crate) fn scalarSize(mut equations: Arc<EquationPointers>, mut resize: bool) -> Result<i32> {
         let mut sz: i32 = 0;
-        for mut eqn_ptr in &*toList(equations.clone())? {
+        for mut eqn_ptr in &*toList(equations)? {
             let mut eqn_ptr = eqn_ptr.clone();
-            sz = sz.clone() + Equation::size(eqn_ptr.clone(), resize.clone())?;
+            sz = sz + Equation::size(eqn_ptr.clone(), resize)?;
         }
         Ok(sz)
     }
@@ -4957,20 +4957,20 @@ pub mod EquationPointers {
     pub(crate) fn fromList(mut eq_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers>;
         equations = empty((eq_lst.clone().len() as i32));
-        equations = addList(eq_lst.clone(), equations.clone())?;
+        equations = addList(eq_lst, equations)?;
         Ok(equations)
     }
 
     pub(crate) fn addList(mut eq_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut equations: Arc<EquationPointers>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
-        equations = List::fold(eq_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Arc<EquationPointers>) -> Result<Arc<EquationPointers>> + 'static>), equations.clone())?;
+        equations = List::fold(eq_lst, (std::sync::Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Arc<EquationPointers>) -> Result<Arc<EquationPointers>> + 'static>), equations)?;
         Ok(equations)
     }
 
     pub(crate) fn removeList(mut eq_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut equations: Arc<EquationPointers>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
-        equations = List::fold(eq_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Arc<EquationPointers>) -> Result<Arc<EquationPointers>> + 'static>), equations.clone())?;
-        equations = compress(equations.clone())?;
+        equations = List::fold(eq_lst, (std::sync::Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Arc<EquationPointers>) -> Result<Arc<EquationPointers>> + 'static>), equations)?;
+        equations = compress(equations)?;
         Ok(equations)
     }
 
@@ -4979,14 +4979,14 @@ pub mod EquationPointers {
         let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
         eqns = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        for mut eqn in (toList(equations.clone())?).into_iter().cloned() {
+        for mut eqn in (toList(equations)?).into_iter().cloned() {
             if !(!(func(eqn.clone())?)) { continue; }
             let __x = eqn.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-        equations = fromList(eqns.clone())?;
+        equations = fromList(eqns)?;
         Ok(equations)
     }
 
@@ -4996,13 +4996,13 @@ pub mod EquationPointers {
         let mut index: i32 = 0;
         name = Equation::getEqnName(eqn.clone())?;
         let () = (match UnorderedMap::get(name.clone(), equations.map.clone())? {
-        Some(mut index) if (index.clone() > 0) => {
-            ExpandableArray::update(index.clone(), eqn.clone(), equations.eqArr.clone())?;
+        Some(mut index) if (index > 0) => {
+            ExpandableArray::update(index, eqn, equations.eqArr.clone())?;
             ()
         },
         _ => {
-            (_, index) = ExpandableArray::add(eqn.clone(), equations.eqArr.clone())?;
-            UnorderedMap::add(name.clone(), index.clone(), equations.map.clone())?;
+            (_, index) = ExpandableArray::add(eqn, equations.eqArr.clone())?;
+            UnorderedMap::add(name, index, equations.map.clone())?;
             ()
         },
     });
@@ -5013,11 +5013,11 @@ pub mod EquationPointers {
         let mut equations: Arc<EquationPointers> = equations;
         let mut name: Arc<ComponentRef::NFComponentRef>;
         let mut index: i32 = 0;
-        name = Equation::getEqnName(eqn.clone())?;
+        name = Equation::getEqnName(eqn)?;
         let () = (match UnorderedMap::get(name.clone(), equations.map.clone())? {
-        Some(mut index) if (index.clone() > 0) => {
-            ExpandableArray::delete(index.clone(), equations.eqArr.clone())?;
-            UnorderedMap::add(name.clone(), -1, equations.map.clone())?;
+        Some(mut index) if (index > 0) => {
+            ExpandableArray::delete(index, equations.eqArr.clone())?;
+            UnorderedMap::add(name, -1, equations.map.clone())?;
             ()
         },
         _ => (),
@@ -5033,8 +5033,8 @@ pub mod EquationPointers {
         let mut followEquations: Arc<metamodelica::List<ArcStr>> = Flags::getConfigStringList(Flags::DEBUG_FOLLOW_EQUATIONS.clone())?;
         let mut debug: bool = !(followEquations.clone().is_empty());
         let mut debug_eqns: Arc<UnorderedSet::UnorderedSet<ArcStr>> = <Arc<UnorderedSet::UnorderedSet<ArcStr>> as ::std::default::Default>::default();
-        if debug.clone() {
-            debug_eqns = UnorderedSet::fromList(followEquations.clone(), (std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+        if debug {
+            debug_eqns = UnorderedSet::fromList(followEquations, (std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
         }
         for mut i in 1..=ExpandableArray::getLastUsedIndex(equations.eqArr.clone()) {
             if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
@@ -5042,7 +5042,7 @@ pub mod EquationPointers {
                 eq = Pointer::access(eq_ptr.clone());
                 new_eq = func(eq.clone())?;
                 if !(referenceEq(&*(eq.clone()),&*(new_eq.clone()))) {
-                    if debug.clone() && (UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(eq_ptr.clone())?)?).clone(), debug_eqns.clone())? || UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(Pointer::create(new_eq.clone()))?)?).clone(), debug_eqns.clone())?) && !(Equation::equalName(Pointer::create(eq.clone()), Pointer::create(new_eq.clone()))?) {
+                    if debug && (UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(eq_ptr.clone())?)?).clone(), debug_eqns.clone())? || UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(Pointer::create(new_eq.clone()))?)?).clone(), debug_eqns.clone())?) && !(Equation::equalName(Pointer::create(eq.clone()), Pointer::create(new_eq.clone()))?) {
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations] The equation:\n")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nGets replaced by:\n")); __mm_s.push_str(&*Equation::toString(new_eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Pointer::update(eq_ptr.clone(), new_eq.clone());
@@ -5090,7 +5090,7 @@ pub mod EquationPointers {
                 }
             }
         }
-        equations = compress(equations.clone())?;
+        equations = compress(equations)?;
         Ok(equations)
     }
 
@@ -5140,7 +5140,7 @@ pub mod EquationPointers {
             if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                 eq_ptr = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
                 (extArg, delete) = func(eq_ptr.clone(), extArg.clone())?;
-                if delete.clone() {
+                if delete {
                     Pointer::update(eq_ptr.clone(), crate::NBEquation::Equation::interned_DUMMY_EQUATION());
                     assign_field!(equations.eqArr = ExpandableArray::delete(i.clone(), equations.eqArr.clone())?);
                 }
@@ -5151,7 +5151,7 @@ pub mod EquationPointers {
 
     pub(crate) fn getEqnAt(mut equations: Arc<EquationPointers>, mut index: i32) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
-        eqn = ExpandableArray::get(index.clone(), equations.eqArr.clone())?;
+        eqn = ExpandableArray::get(index, equations.eqArr.clone())?;
         Ok(eqn)
     }
 
@@ -5159,14 +5159,14 @@ pub mod EquationPointers {
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
         eqn = (match UnorderedMap::get(name.clone(), equations.map.clone())? {
         Some(mut index) if (index.clone() > 0) => {
-            getEqnAt(equations.clone(), index.clone())?
+            getEqnAt(equations, index.clone())?
         },
         Some(_) => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EquationPointers.getEqnByName")); __mm_s.push_str(&*literal!(" failed because the equation with the name ")); __mm_s.push_str(&*ComponentRef::toString(name.clone())?); __mm_s.push_str(&*literal!(" has already been deleted.")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EquationPointers.getEqnByName")); __mm_s.push_str(&*literal!(" failed because the equation with the name ")); __mm_s.push_str(&*ComponentRef::toString(name)?); __mm_s.push_str(&*literal!(" has already been deleted.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EquationPointers.getEqnByName")); __mm_s.push_str(&*literal!(" failed because there is no equation with the name ")); __mm_s.push_str(&*ComponentRef::toString(name.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EquationPointers.getEqnByName")); __mm_s.push_str(&*literal!(" failed because there is no equation with the name ")); __mm_s.push_str(&*ComponentRef::toString(name)?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
     });
@@ -5200,7 +5200,7 @@ pub mod EquationPointers {
     } });
             }
         }
-        equations = fromList(eqns.clone())?;
+        equations = fromList(eqns)?;
         Ok(equations)
     }
 
@@ -5211,10 +5211,10 @@ pub mod EquationPointers {
         let mut hash_lst_ptr: Pointer::Pointer<Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Equation::Equation>>)>>> = Pointer::create(metamodelica::nil());
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
         size = ExpandableArray::getNumberOfElements(equations.eqArr.clone());
-        mapPtr(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (metamodelica::OrderedFloat((size.clone()) as f64)).ln()).0.floor() as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>))?;
-        hash_lst = List::sort(Pointer::access(hash_lst_ptr.clone()), std::sync::Arc::new(fnptr!(BackendUtil::indexTplGt, _, _)))?;
-        equations = empty(size.clone());
-        for mut tpl in &*hash_lst.clone() {
+        mapPtr(equations, (std::sync::Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size) as f64) * (metamodelica::OrderedFloat((size) as f64)).ln()).0.floor() as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>))?;
+        hash_lst = List::sort(Pointer::access(hash_lst_ptr), std::sync::Arc::new(fnptr!(BackendUtil::indexTplGt, _, _)))?;
+        equations = empty(size);
+        for mut tpl in &*hash_lst {
             let mut tpl = tpl.clone();
             (_, eqn_ptr) = tpl.clone();
             assign_field!(equations.eqArr = ExpandableArray::add(eqn_ptr.clone(), equations.eqArr.clone())?.0);
@@ -5226,7 +5226,7 @@ pub mod EquationPointers {
         let mut residuals: Arc<VariablePointers::VariablePointers>;
         residuals = BVariable::VariablePointers::fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        for mut eqn in (toList(equations.clone())?).into_iter().cloned() {
+        for mut eqn in (toList(equations)?).into_iter().cloned() {
             let __x = Equation::getResidualVar(eqn.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -5240,8 +5240,8 @@ pub mod EquationPointers {
         let mut eqn: Arc<Equation::Equation>;
         let mut hash: i32;
         eqn = Pointer::access(eqn_ptr.clone());
-        hash = BackendUtil::noNameHashEq(eqn.clone(), r#mod.clone())?;
-        Pointer::update(hash_lst_ptr.clone(), metamodelica::cons((hash.clone(), eqn_ptr.clone()), Pointer::access(hash_lst_ptr.clone())));
+        hash = BackendUtil::noNameHashEq(eqn, r#mod)?;
+        Pointer::update(hash_lst_ptr.clone(), metamodelica::cons((hash, eqn_ptr.clone()), Pointer::access(hash_lst_ptr)));
         Ok(eqn_ptr)
     }
 
@@ -5365,9 +5365,9 @@ pub mod EqData {
     pub(crate) fn scalarSize(mut eqData: Arc<EqData>, mut resize: bool) -> Result<i32> {
         let mut s: i32;
         s = (::match_deref::match_deref! { match &(eqData.clone()) {
-        Deref @ EQ_DATA_SIM { .. } => EquationPointers::scalarSize(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), resize.clone())?,
-        Deref @ EQ_DATA_JAC { .. } => EquationPointers::scalarSize(var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone(), resize.clone())?,
-        Deref @ EQ_DATA_HES { .. } => EquationPointers::scalarSize(var_field!((*eqData).equations, EqData::EQ_DATA_HES).clone(), resize.clone())?,
+        Deref @ EQ_DATA_SIM { .. } => EquationPointers::scalarSize(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), resize)?,
+        Deref @ EQ_DATA_JAC { .. } => EquationPointers::scalarSize(var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone(), resize)?,
+        Deref @ EQ_DATA_HES { .. } => EquationPointers::scalarSize(var_field!((*eqData).equations, EqData::EQ_DATA_HES).clone(), resize)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(s)
@@ -5385,7 +5385,7 @@ pub mod EqData {
                 initials = EquationPointers::map(var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone(), func.clone())?,
                 auxiliaries = EquationPointers::map(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone(), func.clone())?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_JAC { .. } => {
             assign_variant_field!(eqData => EqData::EQ_DATA_JAC;
@@ -5393,7 +5393,7 @@ pub mod EqData {
                 temporary = EquationPointers::map(var_field!((*eqData).temporary, EqData::EQ_DATA_JAC).clone(), func.clone())?,
                 auxiliaries = EquationPointers::map(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_JAC).clone(), func.clone())?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_HES { .. } => {
             Pointer::update(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone(), func(Pointer::access(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone()))?);
@@ -5401,7 +5401,7 @@ pub mod EqData {
                 temporary = EquationPointers::map(var_field!((*eqData).temporary, EqData::EQ_DATA_HES).clone(), func.clone())?,
                 auxiliaries = EquationPointers::map(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone(), func.clone())?
             );
-            eqData.clone()
+            eqData
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -5421,7 +5421,7 @@ pub mod EqData {
                 auxiliaries = EquationPointers::mapExp(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 removed = EquationPointers::mapExp(var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_JAC { .. } => {
             assign_variant_field!(eqData => EqData::EQ_DATA_JAC;
@@ -5430,7 +5430,7 @@ pub mod EqData {
                 auxiliaries = EquationPointers::mapExp(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_JAC).clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 removed = EquationPointers::mapExp(var_field!((*eqData).removed, EqData::EQ_DATA_JAC).clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_HES { .. } => {
             Pointer::update(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone(), Equation::map(Pointer::access(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone()), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
@@ -5439,7 +5439,7 @@ pub mod EqData {
                 auxiliaries = EquationPointers::mapExp(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 removed = EquationPointers::mapExp(var_field!((*eqData).removed, EqData::EQ_DATA_HES).clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
-            eqData.clone()
+            eqData
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -5453,28 +5453,28 @@ pub mod EqData {
             let mut tmp: ArcStr;
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equation Data Simulation (scalar simulation equations: ")); __mm_s.push_str(&*intString(EquationPointers::scalarSize(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((tmp.clone()).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            if level.clone() == 0 {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone(), (literal!("Simulation")).clone(), None, false, filter_opt.clone())?); ArcStr::from(__mm_s) }).clone();
+            if level == 0 {
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone(), (literal!("Simulation")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
             } else {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone(), (literal!("Continuous")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone(), (literal!("Clocked")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone(), (literal!("Discrete")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone(), (literal!("(Exclusively) Initial")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone(), (literal!("Removed")).clone(), None, false, filter_opt.clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone(), (literal!("Continuous")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone(), (literal!("Clocked")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone(), (literal!("Discrete")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone(), (literal!("(Exclusively) Initial")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone(), (literal!("Removed")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
             }
             tmp.clone()
         },
         Deref @ EQ_DATA_JAC { .. } => {
             let mut tmp: ArcStr;
-            if level.clone() == 0 {
-                tmp = (EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone(), (literal!("Jacobian")).clone(), None, false, filter_opt.clone())?).clone();
+            if level == 0 {
+                tmp = (EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone(), (literal!("Jacobian")).clone(), None, false, filter_opt)?).clone();
             } else {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).results, EqData::EQ_DATA_JAC).clone(), (literal!("Residual")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).temporary, EqData::EQ_DATA_JAC).clone(), (literal!("Inner")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_JAC).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt.clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).results, EqData::EQ_DATA_JAC).clone(), (literal!("Residual")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).temporary, EqData::EQ_DATA_JAC).clone(), (literal!("Inner")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_JAC).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
             }
             tmp.clone()
         },
         Deref @ EQ_DATA_HES { .. } => {
             let mut tmp: ArcStr;
-            if level.clone() == 0 {
-                tmp = (EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_HES).clone(), (literal!("Hessian")).clone(), None, false, filter_opt.clone())?).clone();
+            if level == 0 {
+                tmp = (EquationPointers::toString(var_field!((*eqData).equations, EqData::EQ_DATA_HES).clone(), (literal!("Hessian")).clone(), None, false, filter_opt)?).clone();
             } else {
-                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Result Equation")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Equation::toString(Pointer::access(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).temporary, EqData::EQ_DATA_HES).clone(), (literal!("Temporary Inner")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt.clone())?); ArcStr::from(__mm_s) }).clone();
+                tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Result Equation")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Equation::toString(Pointer::access(var_field!((*eqData).result, EqData::EQ_DATA_HES).clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).temporary, EqData::EQ_DATA_HES).clone(), (literal!("Temporary Inner")).clone(), None, false, filter_opt.clone())?); __mm_s.push_str(&*EquationPointers::toString(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone(), (literal!("Auxiliary")).clone(), None, false, filter_opt)?); ArcStr::from(__mm_s) }).clone();
             }
             tmp.clone()
         },
@@ -5523,16 +5523,16 @@ pub mod EqData {
         let mut eqData: Arc<EqData> = eqData;
         eqData = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ EQ_DATA_SIM { .. } => {
-            assign_variant_field!(eqData => EqData::EQ_DATA_SIM; equations = equations.clone());
-            eqData.clone()
+            assign_variant_field!(eqData => EqData::EQ_DATA_SIM; equations = equations);
+            eqData
         },
         Deref @ EQ_DATA_JAC { .. } => {
-            assign_variant_field!(eqData => EqData::EQ_DATA_JAC; equations = equations.clone());
-            eqData.clone()
+            assign_variant_field!(eqData => EqData::EQ_DATA_JAC; equations = equations);
+            eqData
         },
         Deref @ EQ_DATA_HES { .. } => {
-            assign_variant_field!(eqData => EqData::EQ_DATA_HES; equations = equations.clone());
-            eqData.clone()
+            assign_variant_field!(eqData => EqData::EQ_DATA_HES; equations = equations);
+            eqData
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -5559,9 +5559,9 @@ pub mod EqData {
 
     pub(crate) fn addTypedList(mut eqData: Arc<EqData>, mut eq_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut eqType: EqType, mut newName: bool) -> Result<Arc<EqData>> {
         let mut eqData: Arc<EqData> = eqData;
-        eqData = (::match_deref::match_deref! { match &((eqData.clone(), eqType.clone())) {
+        eqData = (::match_deref::match_deref! { match &((eqData.clone(), eqType)) {
         (Deref @ EQ_DATA_SIM { .. }, EqType::CONTINUOUS { .. }) => {
-            if newName.clone() {
+            if newName {
                 for mut eqn_ptr in &*eq_lst.clone() {
                     let mut eqn_ptr = eqn_ptr.clone();
                     Equation::createName(eqn_ptr.clone(), var_field!((*eqData).uniqueIndex, EqData::EQ_DATA_SIM).clone(), (arcstr::literal!(SIMULATION_STR)).clone())?;
@@ -5570,12 +5570,12 @@ pub mod EqData {
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
                 equations = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone())?,
                 simulation = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone())?,
-                continuous = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone())?
+                continuous = EquationPointers::addList(eq_lst, var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone())?
             );
-            eqData.clone()
+            eqData
         },
         (Deref @ EQ_DATA_SIM { .. }, EqType::DISCRETE) => {
-            if newName.clone() {
+            if newName {
                 for mut eqn_ptr in &*eq_lst.clone() {
                     let mut eqn_ptr = eqn_ptr.clone();
                     Equation::createName(eqn_ptr.clone(), var_field!((*eqData).uniqueIndex, EqData::EQ_DATA_SIM).clone(), (arcstr::literal!(SIMULATION_STR)).clone())?;
@@ -5584,22 +5584,22 @@ pub mod EqData {
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
                 equations = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone())?,
                 simulation = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone())?,
-                discretes = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone())?
+                discretes = EquationPointers::addList(eq_lst, var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone())?
             );
-            eqData.clone()
+            eqData
         },
         (Deref @ EQ_DATA_SIM { .. }, EqType::CLOCKED { .. }) => {
-            if newName.clone() {
+            if newName {
                 for mut eqn_ptr in &*eq_lst.clone() {
                     let mut eqn_ptr = eqn_ptr.clone();
                     Equation::createName(eqn_ptr.clone(), var_field!((*eqData).uniqueIndex, EqData::EQ_DATA_SIM).clone(), (arcstr::literal!(SIMULATION_STR)).clone())?;
                 }
             }
-            assign_variant_field!(eqData => EqData::EQ_DATA_SIM; clocked = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone())?);
-            eqData.clone()
+            assign_variant_field!(eqData => EqData::EQ_DATA_SIM; clocked = EquationPointers::addList(eq_lst, var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone())?);
+            eqData
         },
         (Deref @ EQ_DATA_SIM { .. }, EqType::INITIAL) => {
-            if newName.clone() {
+            if newName {
                 for mut eqn_ptr in &*eq_lst.clone() {
                     let mut eqn_ptr = eqn_ptr.clone();
                     Equation::createName(eqn_ptr.clone(), var_field!((*eqData).uniqueIndex, EqData::EQ_DATA_SIM).clone(), (arcstr::literal!(SIMULATION_STR)).clone())?;
@@ -5607,9 +5607,9 @@ pub mod EqData {
             }
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
                 equations = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone())?,
-                initials = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone())?
+                initials = EquationPointers::addList(eq_lst, var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone())?
             );
-            eqData.clone()
+            eqData
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EqData.addTypedList")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -5631,7 +5631,7 @@ pub mod EqData {
         let mut removed_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         eqData = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ EQ_DATA_SIM { .. } => {
-            if newName.clone() {
+            if newName {
                 for mut eqn_ptr in &*eq_lst.clone() {
                     let mut eqn_ptr = eqn_ptr.clone();
                     Equation::createName(eqn_ptr.clone(), var_field!((*eqData).uniqueIndex, EqData::EQ_DATA_SIM).clone(), (arcstr::literal!(SIMULATION_STR)).clone())?;
@@ -5639,16 +5639,16 @@ pub mod EqData {
             }
             (simulation_lst, continuous_lst, clocked_lst, discretes_lst, initials_lst, auxiliaries_lst, removed_lst) = typeList(eq_lst.clone())?;
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
-                equations = EquationPointers::addList(eq_lst.clone(), var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone())?,
-                simulation = EquationPointers::addList(simulation_lst.clone(), var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone())?,
-                continuous = EquationPointers::addList(continuous_lst.clone(), var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone())?,
-                clocked = EquationPointers::addList(clocked_lst.clone(), var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone())?,
-                discretes = EquationPointers::addList(discretes_lst.clone(), var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone())?,
-                initials = EquationPointers::addList(initials_lst.clone(), var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone())?,
-                auxiliaries = EquationPointers::addList(auxiliaries_lst.clone(), var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone())?,
-                removed = EquationPointers::addList(removed_lst.clone(), var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone())?
+                equations = EquationPointers::addList(eq_lst, var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone())?,
+                simulation = EquationPointers::addList(simulation_lst, var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone())?,
+                continuous = EquationPointers::addList(continuous_lst, var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone())?,
+                clocked = EquationPointers::addList(clocked_lst, var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone())?,
+                discretes = EquationPointers::addList(discretes_lst, var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone())?,
+                initials = EquationPointers::addList(initials_lst, var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone())?,
+                auxiliaries = EquationPointers::addList(auxiliaries_lst, var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone())?,
+                removed = EquationPointers::addList(removed_lst, var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone())?
             );
-            eqData.clone()
+            eqData
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EqData.addUntypedList")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -5671,9 +5671,9 @@ pub mod EqData {
                 clocked = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone())?,
                 initials = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone())?,
                 auxiliaries = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone())?,
-                removed = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone())?
+                removed = EquationPointers::removeList(eq_lst, var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone())?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_JAC { .. } => {
             assign_variant_field!(eqData => EqData::EQ_DATA_JAC;
@@ -5681,18 +5681,18 @@ pub mod EqData {
                 results = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).results, EqData::EQ_DATA_JAC).clone())?,
                 temporary = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).temporary, EqData::EQ_DATA_JAC).clone())?,
                 auxiliaries = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).auxiliaries, EqData::EQ_DATA_JAC).clone())?,
-                removed = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).removed, EqData::EQ_DATA_JAC).clone())?
+                removed = EquationPointers::removeList(eq_lst, var_field!((*eqData).removed, EqData::EQ_DATA_JAC).clone())?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_HES { .. } => {
             assign_variant_field!(eqData => EqData::EQ_DATA_HES;
                 equations = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).equations, EqData::EQ_DATA_HES).clone())?,
                 temporary = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).temporary, EqData::EQ_DATA_HES).clone())?,
                 auxiliaries = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone())?,
-                removed = EquationPointers::removeList(eq_lst.clone(), var_field!((*eqData).removed, EqData::EQ_DATA_HES).clone())?
+                removed = EquationPointers::removeList(eq_lst, var_field!((*eqData).removed, EqData::EQ_DATA_HES).clone())?
             );
-            eqData.clone()
+            eqData
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EqData.removeList")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -5705,14 +5705,14 @@ pub mod EqData {
 
     pub(crate) fn removeTypedCheck(mut eqData: Arc<EqData>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>, mut eqType: EqType) -> Result<Arc<EqData>> {
         let mut eqData: Arc<EqData> = eqData;
-        eqData = (::match_deref::match_deref! { match &((eqData.clone(), eqType.clone())) {
+        eqData = (::match_deref::match_deref! { match &((eqData.clone(), eqType)) {
         (Deref @ EQ_DATA_SIM { .. }, EqType::CONTINUOUS { .. }) => {
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
                 equations = EquationPointers::removeCheck(var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone(), func.clone())?,
                 simulation = EquationPointers::removeCheck(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), func.clone())?,
                 continuous = EquationPointers::removeCheck(var_field!((*eqData).continuous, EqData::EQ_DATA_SIM).clone(), func.clone())?
             );
-            eqData.clone()
+            eqData
         },
         (Deref @ EQ_DATA_SIM { .. }, EqType::DISCRETE) => {
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
@@ -5720,18 +5720,18 @@ pub mod EqData {
                 simulation = EquationPointers::removeCheck(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), func.clone())?,
                 discretes = EquationPointers::removeCheck(var_field!((*eqData).discretes, EqData::EQ_DATA_SIM).clone(), func.clone())?
             );
-            eqData.clone()
+            eqData
         },
         (Deref @ EQ_DATA_SIM { .. }, EqType::CLOCKED { .. }) => {
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM; clocked = EquationPointers::removeCheck(var_field!((*eqData).clocked, EqData::EQ_DATA_SIM).clone(), func.clone())?);
-            eqData.clone()
+            eqData
         },
         (Deref @ EQ_DATA_SIM { .. }, EqType::INITIAL) => {
             assign_variant_field!(eqData => EqData::EQ_DATA_SIM;
                 equations = EquationPointers::removeCheck(var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone(), func.clone())?,
                 initials = EquationPointers::removeCheck(var_field!((*eqData).initials, EqData::EQ_DATA_SIM).clone(), func.clone())?
             );
-            eqData.clone()
+            eqData
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EqData.removeTypedCheck")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -5755,7 +5755,7 @@ pub mod EqData {
                 auxiliaries = EquationPointers::compress(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_SIM).clone())?,
                 removed = EquationPointers::compress(var_field!((*eqData).removed, EqData::EQ_DATA_SIM).clone())?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_JAC { .. } => {
             assign_variant_field!(eqData => EqData::EQ_DATA_JAC;
@@ -5765,7 +5765,7 @@ pub mod EqData {
                 auxiliaries = EquationPointers::compress(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_JAC).clone())?,
                 removed = EquationPointers::compress(var_field!((*eqData).removed, EqData::EQ_DATA_JAC).clone())?
             );
-            eqData.clone()
+            eqData
         },
         Deref @ EQ_DATA_HES { .. } => {
             assign_variant_field!(eqData => EqData::EQ_DATA_HES;
@@ -5774,7 +5774,7 @@ pub mod EqData {
                 auxiliaries = EquationPointers::compress(var_field!((*eqData).auxiliaries, EqData::EQ_DATA_HES).clone())?,
                 removed = EquationPointers::compress(var_field!((*eqData).removed, EqData::EQ_DATA_HES).clone())?
             );
-            eqData.clone()
+            eqData
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EqData.compress")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -5795,7 +5795,7 @@ pub(crate) fn typeList(mut equations: Arc<metamodelica::List<Pointer::Pointer<Ar
     let mut initials_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     let mut auxiliaries_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     let mut removed_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    for mut eq in &*equations.clone() {
+    for mut eq in &*equations {
         let mut eq = eq.clone();
         let () = (::match_deref::match_deref! { match &(Equation::getAttributes(Pointer::access(eq.clone()))) {
         Deref @ EquationAttributes::EQUATION_ATTRIBUTES { exclusively_initial: true, .. } => {

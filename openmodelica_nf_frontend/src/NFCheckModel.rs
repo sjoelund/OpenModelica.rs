@@ -65,12 +65,12 @@ pub(crate) fn checkModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(
     let mut equations: i32 = 0;
     for mut v in &*flatModel.variables.clone() {
         let mut v = v.clone();
-        (variables, equations) = countVariableSize(v.clone(), variables.clone(), equations.clone())?;
+        (variables, equations) = countVariableSize(v.clone(), variables, equations)?;
     }
-    equations = equations.clone() + Equation::sizeOfList(flatModel.equations.clone());
+    equations = equations + Equation::sizeOfList(flatModel.equations.clone());
     for mut a in &*flatModel.algorithms.clone() {
         let mut a = a.clone();
-        equations = equations.clone() + countAlgorithmSize(a.clone())?;
+        equations = equations + countAlgorithmSize(a.clone())?;
     }
     Ok((variables, equations))
 }
@@ -95,12 +95,12 @@ pub(crate) fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variable
     if Type::isExternalObject(ty.clone()) {
         return Ok((variables.clone(), equations.clone()));
     }
-    var_size = Type::sizeOf(ty.clone(), false)?;
-    variables = variables.clone() + var_size.clone();
-    if Variable::isTopLevelInput(var.clone()) {
-        equations = equations.clone() + var_size.clone();
+    var_size = Type::sizeOf(ty, false)?;
+    variables = variables + var_size;
+    if Variable::isTopLevelInput(var) {
+        equations = equations + var_size;
     } else {
-        equations = equations.clone() + Type::sizeOf(Binding::getType(binding.clone())?, false)?;
+        equations = equations + Type::sizeOf(Binding::getType(binding)?, false)?;
     }
     Ok((variables, equations))
 }
@@ -109,10 +109,10 @@ pub(crate) fn countAlgorithmSize(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result
     let mut equations: i32 = 0;
     let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     crefs = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-    crefs = List::fold(alg.statements.clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?;
-    equations = equations.clone() + UnorderedSet::size(crefs.clone());
+    crefs = List::fold(alg.statements.clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs)?;
+    equations = equations + UnorderedSet::size(crefs.clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Algorithm size: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", UnorderedSet::size(crefs.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    for mut cr in &*UnorderedSet::toList(crefs.clone()) {
+    for mut cr in &*UnorderedSet::toList(crefs) {
         let mut cr = cr.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -122,24 +122,24 @@ pub(crate) fn countAlgorithmSize(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result
 fn statementOutputs(mut stmt: Arc<Statement::NFStatement>, mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
     let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = crefs;
     crefs = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::ASSIGNMENT { .. } => Expression::fold(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new(statementOutputCrefFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?,
-        Deref @ Statement::FOR { .. } => List::fold(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?,
+        Deref @ Statement::ASSIGNMENT { .. } => Expression::fold(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new(statementOutputCrefFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs)?,
+        Deref @ Statement::FOR { .. } => List::fold(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs)?,
         Deref @ Statement::IF { .. } => {
             for mut b in &*var_field!((*stmt).branches, Statement::NFStatement::IF).clone() {
                 let mut b = b.clone();
                 crefs = List::fold(Util::tuple22(b.clone()), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?;
             }
-            crefs.clone()
+            crefs
         },
         Deref @ Statement::WHEN { .. } => {
             for mut b in &*var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone() {
                 let mut b = b.clone();
                 crefs = List::fold(Util::tuple22(b.clone()), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?;
             }
-            crefs.clone()
+            crefs
         },
-        Deref @ Statement::WHILE { .. } => List::fold(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?,
-        _ => crefs.clone(),
+        Deref @ Statement::WHILE { .. } => List::fold(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs)?,
+        _ => crefs,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(crefs)
@@ -151,9 +151,9 @@ fn statementOutputCrefFinder(mut exp: Arc<Expression::NFExpression>, mut crefs: 
     crefs = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
             (cref, _) = ComponentRef::stripSubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone());
-            Expression::fold((ExpandExp::expand(Expression::fromCref(cref.clone(), false)?, false, false)?).0, (std::sync::Arc::new(statementOutputCrefFinder2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?
+            Expression::fold((ExpandExp::expand(Expression::fromCref(cref, false)?, false, false)?).0, (std::sync::Arc::new(statementOutputCrefFinder2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs)?
         },
-        _ => crefs.clone(),
+        _ => crefs,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(crefs)

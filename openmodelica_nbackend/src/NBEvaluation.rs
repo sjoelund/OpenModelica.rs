@@ -132,9 +132,9 @@ pub(crate) fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Ar
         __acc.reverse()
     })
             );
-            bdae.clone()
+            bdae
         },
-        _ => bdae.clone(),
+        _ => bdae,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(bdae)

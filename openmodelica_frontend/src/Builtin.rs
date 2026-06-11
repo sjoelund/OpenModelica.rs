@@ -57,7 +57,7 @@ use openmodelica_util::Util;
 
 pub(crate) fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(cref.clone()) {
+    b = (::match_deref::match_deref! { match &(cref) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
             variableNameIsBuiltin((id.clone()).clone())?
         },
@@ -71,7 +71,7 @@ pub(crate) fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool
 
 pub(crate) fn variableNameIsBuiltin(mut name: ArcStr) -> Result<bool> {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(name.clone()) {
+    b = (::match_deref::match_deref! { match &(name) {
         Deref @ "time" => true,
         Deref @ "startTime" => Config::acceptOptimicaGrammar()?,
         Deref @ "finalTime" => Config::acceptOptimicaGrammar()?,
@@ -84,7 +84,7 @@ pub(crate) fn variableNameIsBuiltin(mut name: ArcStr) -> Result<bool> {
 }
 
 pub fn isDer(mut inPath: Arc<Absyn::Path>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inPath.clone()) {
+    let () = (::match_deref::match_deref! { match &(inPath) {
         Deref @ Absyn::Path::IDENT { name: Deref @ "der" } => {
             ()
         },
@@ -102,7 +102,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
     let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
-        let __mc_input = inCache.clone();
+        let __mc_input = inCache;
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut graph: FCore::Graph = graph.clone();
@@ -140,7 +140,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
 fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph> {
     let mut initialEnv: FCore::Graph;
     initialEnv = 'mc: {
-        let __mc_input = inEnvOpt.clone();
+        let __mc_input = inEnvOpt;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             if '__try0: {

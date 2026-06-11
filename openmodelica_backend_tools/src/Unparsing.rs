@@ -20,7 +20,7 @@ use openmodelica_util::Util;
 
 fn lm_42(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_42 in &*items.clone() {
+    for mut lstElt_42 in &*items {
         let mut lstElt_42 = lstElt_42.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_42.clone()) {
         i_cl => {
@@ -35,16 +35,16 @@ fn lm_42(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 pub fn programExternalHeader(mut txt: Tpl::Text, mut a_program: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Automatically generated header for external MetaModelica functions */\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = lm_42(out_txt.clone(), a_program.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Automatically generated header for external MetaModelica functions */\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = lm_42(out_txt, a_program)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
     Ok(out_txt)
 }
 
 fn lm_44(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_44 in &*items.clone() {
+    for mut lstElt_44 in &*items {
         let mut lstElt_44 = lstElt_44.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_44.clone()) {
         Deref @ DAE::Var { name: i_var_name, .. } => {
@@ -65,7 +65,7 @@ fn lm_44(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>) 
 
 fn fun_45(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fieldsStr: Tpl::Text, mut in_a_nElts: Tpl::Text, mut in_a_omcname: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_fieldsStr.clone(), in_a_nElts.clone(), in_a_omcname.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_fieldsStr, in_a_nElts, in_a_omcname)) {
         (txt, Deref @ "0", _, _, a_omcname) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ADD_METARECORD_DEFINITIONS const char* ")).clone() }))?;
@@ -91,7 +91,7 @@ fn fun_45(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fieldsStr: Tpl::T
 
 fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_46 in &*items.clone() {
+    for mut lstElt_46 in &*items {
         let mut lstElt_46 = lstElt_46.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_46.clone()) {
         Deref @ DAE::Type::T_METARECORD { fields: i_ty_fields, path: i_path, .. } => {
@@ -153,18 +153,18 @@ fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>)
 
 pub fn programExternalHeaderFromTypes(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Automatically generated header for bootstrapping MetaModelica */\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_46(out_txt.clone(), a_tys.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Automatically generated header for bootstrapping MetaModelica */\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::pushIter(out_txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_46(out_txt, a_tys)?;
+    out_txt = Tpl::popIter(out_txt)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
     Ok(out_txt)
 }
 
 fn lm_48(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_c_name: ArcStr) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_48 in &*items.clone() {
+    for mut lstElt_48 in &*items {
         let mut lstElt_48 = lstElt_48.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_48.clone()) {
         i_elt => {
@@ -179,7 +179,7 @@ fn lm_48(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 fn fun_49(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cl.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cl)) {
         (txt, i_c @ Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: Deref @ Absyn::Path::IDENT { name: i_name }, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = elementExternalHeader(txt.clone(), i_c.clone(), (i_name.clone()).clone())?;
@@ -200,13 +200,13 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>) -> Result<Tpl
 
 pub(crate) fn classExternalHeader(mut txt: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_49(txt.clone(), a_cl.clone())?;
+    out_txt = fun_49(txt, a_cl)?;
     Ok(out_txt)
 }
 
 pub(crate) fn pathString(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_path)) {
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?)
@@ -231,7 +231,7 @@ pub(crate) fn pathString(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>)
 
 pub(crate) fn metaHelperBoxStart(mut in_txt: Tpl::Text, mut in_a_numVariables: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_numVariables.clone()) {
+    out_txt = (match (in_txt, in_a_numVariables) {
         (mut txt, mut i_numVariables @ 0) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_numVariables.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -294,7 +294,7 @@ pub(crate) fn metaHelperBoxStart(mut in_txt: Tpl::Text, mut in_a_numVariables: i
 
 fn lm_53(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_53 in &*items.clone() {
+    for mut lstElt_53 in &*items {
         let mut lstElt_53 = lstElt_53.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_53.clone()) {
         Deref @ SCode::Element::COMPONENT { name: i_name, .. } => {
@@ -313,7 +313,7 @@ fn lm_53(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 fn lm_54(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_54 in &*items.clone() {
+    for mut lstElt_54 in &*items {
         let mut lstElt_54 = lstElt_54.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_54.clone()) {
         Deref @ SCode::Element::COMPONENT { name: i_name, .. } => {
@@ -334,7 +334,7 @@ fn lm_54(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fieldsStr: Tpl::Text, mut in_a_nElts: Tpl::Text, mut in_a_omcname: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_fieldsStr.clone(), in_a_nElts.clone(), in_a_omcname.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_fieldsStr, in_a_nElts, in_a_omcname)) {
         (txt, Deref @ "0", _, _, a_omcname) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ADD_METARECORD_DEFINITIONS const char* ")).clone() }))?;
@@ -360,7 +360,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fieldsStr: Tpl::T
 
 fn fun_56(mut in_txt: Tpl::Text, mut in_a_p_elementLst: Arc<metamodelica::List<Arc<SCode::Element>>>, mut in_a_fields: Tpl::Text, mut in_a_omcname: Tpl::Text, mut in_a_ctor: Tpl::Text, mut in_a_fullname: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_p_elementLst.clone(), in_a_fields.clone(), in_a_omcname.clone(), in_a_ctor.clone(), in_a_fullname.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_p_elementLst, in_a_fields, in_a_omcname, in_a_ctor, in_a_fullname)) {
         (txt, Deref @ metamodelica::List::Nil, _, a_omcname, a_ctor, a_fullname) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static const MMC_DEFSTRUCTLIT(")).clone() }))?;
@@ -405,7 +405,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_p_elementLst: Arc<metamodelica::List<A
 
 pub(crate) fn elementExternalHeader(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_pack: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_pack.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_elt, in_a_pack)) {
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: i_r_name, index: i_r_index, .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_pack) => {
             let mut str_11: ArcStr;
             let mut l_fieldsDescription: Tpl::Text;
@@ -494,7 +494,7 @@ fn lm_58(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
     let mut txt: Tpl::Text = txt;
     let mut a_buf2: Tpl::Text = a_buf2;
     let mut a_buf1: Tpl::Text = a_buf1;
-    for mut lstElt_58 in &*items.clone() {
+    for mut lstElt_58 in &*items {
         let mut lstElt_58 = lstElt_58.clone();
         (txt, a_buf2, a_buf1) = (::match_deref::match_deref! { match &(lstElt_58.clone()) {
         i_cl => {
@@ -514,19 +514,19 @@ pub fn programExternalHeaderJulia(mut txt: Tpl::Text, mut a_program: Arc<metamod
     let mut l_buf1: Tpl::Text;
     l_buf1 = Tpl::emptyTxt.clone();
     l_buf2 = Tpl::emptyTxt.clone();
-    (l_res, l_buf2, l_buf1) = lm_58(Tpl::emptyTxt.clone(), a_program.clone(), l_buf2.clone(), l_buf1.clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Automatically generated header for external MetaModelica functions */\n")).clone(), (literal!("#include <julia.h>\n")).clone(), (literal!("#include <assert.h>\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone(), (literal!("#ifdef ADD_METARECORD_DEFINITIONS\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_buf1.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("void OpenModelica_initAbsynReferences()\n")).clone(), (literal!("{\n")).clone(), (literal!("  /* Note: These values may be garbage collected away? Call this before each file is parsed? */\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_buf2.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("#else\n")).clone(), (literal!("void OpenModelica_initAbsynReferences();\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_res.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+    (l_res, l_buf2, l_buf1) = lm_58(Tpl::emptyTxt.clone(), a_program, l_buf2, l_buf1)?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* Automatically generated header for external MetaModelica functions */\n")).clone(), (literal!("#include <julia.h>\n")).clone(), (literal!("#include <assert.h>\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("extern \"C\" {\n")).clone(), (literal!("#endif\n")).clone(), (literal!("#ifdef ADD_METARECORD_DEFINITIONS\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeText(out_txt, l_buf1)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("void OpenModelica_initAbsynReferences()\n")).clone(), (literal!("{\n")).clone(), (literal!("  /* Note: These values may be garbage collected away? Call this before each file is parsed? */\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::writeText(out_txt, l_buf2)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("#else\n")).clone(), (literal!("void OpenModelica_initAbsynReferences();\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeText(out_txt, l_res)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
     Ok(out_txt)
 }
 
@@ -534,7 +534,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>, mut in_a_buf1
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
-    (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cl.clone(), in_a_buf1.clone(), in_a_buf2.clone(), in_a_pack.clone())) {
+    (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt, in_a_cl, in_a_buf1, in_a_buf2, in_a_pack)) {
         (txt, i_c @ Deref @ SCode::Element::CLASS { name: i_c_name, .. }, a_buf1, a_buf2, a_pack) => {
             let mut txt = (*txt).clone();
             let mut a_buf1 = (*a_buf1).clone();
@@ -572,7 +572,7 @@ pub(crate) fn classExternalHeaderJulia(mut txt: Tpl::Text, mut a_buf1: Tpl::Text
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
-    (out_txt, out_a_buf1, out_a_buf2) = fun_60(txt.clone(), a_cl.clone(), a_buf1.clone(), a_buf2.clone(), (a_pack.clone()).clone())?;
+    (out_txt, out_a_buf1, out_a_buf2) = fun_60(txt, a_cl, a_buf1, a_buf2, (a_pack).clone())?;
     Ok((out_txt, out_a_buf1, out_a_buf2))
 }
 
@@ -580,7 +580,7 @@ fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
     let mut txt: Tpl::Text = txt;
     let mut a_buf2: Tpl::Text = a_buf2;
     let mut a_buf1: Tpl::Text = a_buf1;
-    for mut lstElt_62 in &*items.clone() {
+    for mut lstElt_62 in &*items {
         let mut lstElt_62 = lstElt_62.clone();
         (txt, a_buf2, a_buf1) = (::match_deref::match_deref! { match &(lstElt_62.clone()) {
         i_elt => {
@@ -597,7 +597,7 @@ fn fun_63(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>, mut in_a_buf1
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
-    (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cl.clone(), in_a_buf1.clone(), in_a_buf2.clone())) {
+    (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt, in_a_cl, in_a_buf1, in_a_buf2)) {
         (txt, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_buf1, a_buf2) => {
             let mut txt = (*txt).clone();
             let mut a_buf1 = (*a_buf1).clone();
@@ -617,13 +617,13 @@ pub(crate) fn classExternalHeaderJuliaWork(mut txt: Tpl::Text, mut a_buf1: Tpl::
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
-    (out_txt, out_a_buf1, out_a_buf2) = fun_63(txt.clone(), a_cl.clone(), a_buf1.clone(), a_buf2.clone())?;
+    (out_txt, out_a_buf1, out_a_buf2) = fun_63(txt, a_cl, a_buf1, a_buf2)?;
     Ok((out_txt, out_a_buf1, out_a_buf2))
 }
 
 fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_65 in &*items.clone() {
+    for mut lstElt_65 in &*items {
         let mut lstElt_65 = lstElt_65.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_65.clone()) {
         Deref @ SCode::Element::COMPONENT { name: i_name, .. } => {
@@ -642,7 +642,7 @@ fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_66 in &*items.clone() {
+    for mut lstElt_66 in &*items {
         let mut lstElt_66 = lstElt_66.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_66.clone()) {
         Deref @ SCode::Element::COMPONENT { name: i_name, .. } => {
@@ -661,7 +661,7 @@ fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 fn lm_67(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_67 in &*items.clone() {
+    for mut lstElt_67 in &*items {
         let mut lstElt_67 = lstElt_67.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_67.clone()) {
         Deref @ SCode::Element::COMPONENT { name: i_name, .. } => {
@@ -681,7 +681,7 @@ fn lm_67(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_fields1: Tpl::Text, mut in_a_fields2: Tpl::Text, mut in_a_p_elementLst: Arc<metamodelica::List<Arc<SCode::Element>>>, mut in_a_fieldsWithType: Tpl::Text, mut in_a_omcname: Tpl::Text, mut in_a_fullname: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_fields1.clone(), in_a_fields2.clone(), in_a_p_elementLst.clone(), in_a_fieldsWithType.clone(), in_a_omcname.clone(), in_a_fullname.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_fields1, in_a_fields2, in_a_p_elementLst, in_a_fieldsWithType, in_a_omcname, in_a_fullname)) {
         (txt, 0, _, _, _, _, a_omcname, a_fullname) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define ")).clone() }))?;
@@ -785,7 +785,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_buf
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
-    (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_buf1.clone(), in_a_buf2.clone(), in_a_pack.clone())) {
+    (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt, in_a_elt, in_a_buf1, in_a_buf2, in_a_pack)) {
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_UNIONTYPE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, .. }, name: i_c_name, .. }, a_buf1, a_buf2, a_pack) => {
             let mut l_omcname: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -895,7 +895,7 @@ pub(crate) fn elementExternalHeaderJulia(mut txt: Tpl::Text, mut a_buf1: Tpl::Te
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
-    (out_txt, out_a_buf1, out_a_buf2) = fun_69(txt.clone(), a_elt.clone(), a_buf1.clone(), a_buf2.clone(), (a_pack.clone()).clone())?;
+    (out_txt, out_a_buf1, out_a_buf2) = fun_69(txt, a_elt, a_buf1, a_buf2, (a_pack).clone())?;
     Ok((out_txt, out_a_buf1, out_a_buf2))
 }
 

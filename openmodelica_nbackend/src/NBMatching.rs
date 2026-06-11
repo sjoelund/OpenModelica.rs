@@ -106,15 +106,15 @@ pub(crate) fn EMPTY_MATCHING() -> Arc<NBMatching> { __EMPTY_MATCHING_TLS.with(|_
 
 pub(crate) fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> ArcStr {
     let mut r#str: ArcStr = r#str;
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Scalar Matching")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toStringSingle(matching.var_to_eqn.clone(), false)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toStringSingle(matching.eqn_to_var.clone(), true)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("Scalar Matching")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toStringSingle(matching.var_to_eqn.clone(), false)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*toStringSingle(matching.eqn_to_var.clone(), true)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     r#str
 }
 
 pub(crate) fn trivial(mut n: i32) -> Arc<NBMatching> {
     let mut matching: Arc<NBMatching>;
-    let mut arr: metamodelica::Array<i32> = Array::createIntRange(n.clone());
+    let mut arr: metamodelica::Array<i32> = Array::createIntRange(n);
     matching = Arc::new(NBMatching { var_to_eqn: arr.clone(), eqn_to_var: arr.clone() });
     matching
 }
@@ -122,8 +122,8 @@ pub(crate) fn trivial(mut n: i32) -> Arc<NBMatching> {
 pub(crate) fn regular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut transposed: bool, mut partially: bool, mut clear: bool) -> Result<Arc<NBMatching>> {
     let mut matching: Arc<NBMatching> = matching;
     let mut marked_eqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
-    (matching, marked_eqns, _, _) = continue_(matching.clone(), adj.clone(), transposed.clone(), clear.clone())?;
-    if !(partially.clone()) && !(List::flatten(marked_eqns.clone())?.is_empty()) {
+    (matching, marked_eqns, _, _) = continue_(matching, adj, transposed, clear)?;
+    if !(partially) && !(List::flatten(marked_eqns)?.is_empty()) {
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBMatching.regular")); __mm_s.push_str(&*literal!(" failed because the partition is structurally singular.")); ArcStr::from(__mm_s) }).clone()])?;
         bail!("fail");
     }
@@ -142,7 +142,7 @@ pub(crate) fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Ma
     let mut mapping: Option<Arc<Adjacency::Mapping::Mapping>>;
     let mut matrixStrictness: Adjacency::MatrixStrictness;
     let mut changed: bool;
-    if let Ok((__pa0, __pa1, __pa2, __pa3)) = continue_(matching.clone(), adj.clone(), transposed.clone(), clear.clone()) {
+    if let Ok((__pa0, __pa1, __pa2, __pa3)) = continue_(matching.clone(), adj.clone(), transposed, clear) {
         matching = __pa0.clone();
         marked_eqns = __pa1.clone();
         mapping = __pa2.clone();
@@ -151,18 +151,18 @@ pub(crate) fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Ma
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBMatching.singular")); __mm_s.push_str(&*literal!(" failed to match partition:\n")); __mm_s.push_str(&*BVariable::VariablePointers::toString(vars.clone(), (literal!("partition vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*EquationPointers::toString(eqns.clone(), (literal!("partition eqns")).clone(), None, true, None)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Adjacency::Matrix::toString(adj.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
         bail!("fail");
     }
-    if Partition::kindIsInitial(kind.clone()) {
-        (adj, full, vars, eqns, varData, eqData, changed) = ResolveSingularities::balanceInitialization(adj.clone(), full.clone(), vars.clone(), eqns.clone(), varData.clone(), eqData.clone(), kind.clone(), funcMap.clone(), matching.clone(), mapping.clone())?;
+    if Partition::kindIsInitial(kind) {
+        (adj, full, vars, eqns, varData, eqData, changed) = ResolveSingularities::balanceInitialization(adj, full, vars, eqns, varData, eqData, kind, funcMap.clone(), matching.clone(), mapping)?;
     } else {
-        (adj, full, vars, eqns, varData, eqData, changed) = ResolveSingularities::indexReduction(adj.clone(), full.clone(), vars.clone(), eqns.clone(), varData.clone(), eqData.clone(), kind.clone(), funcMap.clone(), matching.clone(), mapping.clone())?;
+        (adj, full, vars, eqns, varData, eqData, changed) = ResolveSingularities::indexReduction(adj, full, vars, eqns, varData, eqData, kind, funcMap.clone(), matching.clone(), mapping)?;
     }
-    if changed.clone() {
-        full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind.clone())?;
-        adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), matrixStrictness.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
-        if Partition::kindIsInitial(kind.clone()) {
+    if changed {
+        full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind)?;
+        adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), matrixStrictness, crate::NBEquation::Iterator::interned_EMPTY())?;
+        if Partition::kindIsInitial(kind) {
             matching = regular(EMPTY_MATCHING().clone(), adj.clone(), false, false, true)?;
         } else {
-            (matching, adj, full, vars, eqns, varData, eqData) = singular(EMPTY_MATCHING().clone(), adj.clone(), full.clone(), vars.clone(), eqns.clone(), funcMap.clone(), varData.clone(), eqData.clone(), kind.clone(), transposed.clone(), true)?;
+            (matching, adj, full, vars, eqns, varData, eqData) = singular(EMPTY_MATCHING().clone(), adj, full, vars, eqns, funcMap, varData, eqData, kind, transposed, true)?;
         }
     }
     Ok((matching, adj, full, vars, eqns, varData, eqData))
@@ -177,10 +177,10 @@ pub(crate) fn continue_(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::M
     let mut eqn_to_var: metamodelica::Array<i32> = Default::default();
     (matching, marked_eqns, mapping, matrixStrictness) = (::match_deref::match_deref! { match &(adj.clone()) {
         Deref @ Adjacency::Matrix::FINAL { .. } => {
-            (var_to_eqn, eqn_to_var) = getAssignments(matching.clone(), var_field!((*adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), var_field!((*adj).mT, Adjacency::Matrix::Matrix::FINAL).clone())?;
-            (var_to_eqn, eqn_to_var, marked_eqns) = PFPlusExternal(var_field!((*adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), var_to_eqn.clone(), eqn_to_var.clone(), clear.clone())?;
+            (var_to_eqn, eqn_to_var) = getAssignments(matching, var_field!((*adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), var_field!((*adj).mT, Adjacency::Matrix::Matrix::FINAL).clone())?;
+            (var_to_eqn, eqn_to_var, marked_eqns) = PFPlusExternal(var_field!((*adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), var_to_eqn.clone(), eqn_to_var.clone(), clear)?;
             matching = Arc::new(NBMatching { var_to_eqn: var_to_eqn.clone(), eqn_to_var: eqn_to_var.clone() });
-            (matching.clone(), marked_eqns.clone(), Some(var_field!((*adj).mapping, Adjacency::Matrix::Matrix::FINAL).clone()), var_field!((*adj).st, Adjacency::Matrix::Matrix::FINAL).clone())
+            (matching, marked_eqns, Some(var_field!((*adj).mapping, Adjacency::Matrix::Matrix::FINAL).clone()), var_field!((*adj).st, Adjacency::Matrix::Matrix::FINAL).clone())
         },
         Deref @ Adjacency::Matrix::EMPTY { .. } => (EMPTY_MATCHING().clone(), metamodelica::nil(), None, Adjacency::MatrixStrictness::FULL.clone()),
         _ => {
@@ -212,8 +212,8 @@ pub(crate) fn getAssignments(mut matching: Arc<NBMatching>, mut m: metamodelica:
     let mut eqn_to_var: metamodelica::Array<i32>;
     let mut nVars: i32 = metamodelica::arrayLength(mT.clone());
     let mut nEqns: i32 = metamodelica::arrayLength(m.clone());
-    var_to_eqn = Array::expandToSize(nVars.clone(), matching.var_to_eqn.clone(), -1)?;
-    eqn_to_var = Array::expandToSize(nEqns.clone(), matching.eqn_to_var.clone(), -1)?;
+    var_to_eqn = Array::expandToSize(nVars, matching.var_to_eqn.clone(), -1)?;
+    eqn_to_var = Array::expandToSize(nEqns, matching.eqn_to_var.clone(), -1)?;
     Ok((var_to_eqn, eqn_to_var))
 }
 
@@ -231,7 +231,7 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
     let mut arr_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut start_idx: i32;
     if isSome(mapping_opt.clone()) {
-        mapping = Util::getOption(mapping_opt.clone())?;
+        mapping = Util::getOption(mapping_opt)?;
         var_map_matched = UnorderedMap::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
         var_map_unmatched = UnorderedMap::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
         eqn_map_matched = UnorderedMap::new((std::sync::Arc::new(Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(Equation::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
@@ -240,23 +240,23 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
             arr_var = ExpandableArray::get(({let __elt = mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(); __elt}), variables.varArr.clone())?;
             (start_idx, _) = ({let __elt = mapping.var_AtS.borrow()[(({let __elt = mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             if ({let __elt = matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0 {
-                Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx.clone(), var_map_matched.clone())?;
+                Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx, var_map_matched.clone())?;
             } else {
-                Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx.clone(), var_map_unmatched.clone())?;
+                Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx, var_map_unmatched.clone())?;
             }
         }
         for mut eqn in 1..=metamodelica::arrayLength(matching.eqn_to_var.clone()) {
             arr_eqn = ExpandableArray::get(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), equations.eqArr.clone())?;
             (start_idx, _) = ({let __elt = mapping.eqn_AtS.borrow()[(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             if ({let __elt = matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) > 0 {
-                Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx.clone(), eqn_map_matched.clone())?;
+                Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx, eqn_map_matched.clone())?;
             } else {
-                Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx.clone(), eqn_map_unmatched.clone())?;
+                Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx, eqn_map_unmatched.clone())?;
             }
         }
         matched_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
-        for mut slice in (Slice::fromMap(var_map_matched.clone())).into_iter().cloned() {
+        for mut slice in (Slice::fromMap(var_map_matched)).into_iter().cloned() {
             let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| BVariable::size(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>))?;
             __acc = cons(__x, __acc);
         }
@@ -264,7 +264,7 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
     });
         unmatched_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
-        for mut slice in (Slice::fromMap(var_map_unmatched.clone())).into_iter().cloned() {
+        for mut slice in (Slice::fromMap(var_map_unmatched)).into_iter().cloned() {
             let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| BVariable::size(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>))?;
             __acc = cons(__x, __acc);
         }
@@ -272,7 +272,7 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
     });
         matched_eqns = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
-        for mut slice in (Slice::fromMap(eqn_map_matched.clone())).into_iter().cloned() {
+        for mut slice in (Slice::fromMap(eqn_map_matched)).into_iter().cloned() {
             let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Equation::size(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>))?;
             __acc = cons(__x, __acc);
         }
@@ -280,7 +280,7 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
     });
         unmatched_eqns = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
-        for mut slice in (Slice::fromMap(eqn_map_unmatched.clone())).into_iter().cloned() {
+        for mut slice in (Slice::fromMap(eqn_map_unmatched)).into_iter().cloned() {
             let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Equation::size(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>))?;
             __acc = cons(__x, __acc);
         }
@@ -307,10 +307,10 @@ pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<
 
 fn toStringSingle(mut mapping: metamodelica::Array<i32>, mut inverse: bool) -> ArcStr {
     let mut r#str: ArcStr;
-    let mut head: ArcStr = if (inverse.clone()) {literal!("equation to variable")} else {literal!("variable to equation")};
-    let mut from: ArcStr = if (inverse.clone()) {literal!("eqn")} else {literal!("var")};
-    let mut to: ArcStr = if (inverse.clone()) {literal!("var")} else {literal!("eqn")};
-    r#str = (StringUtil::headline_4((head.clone()).clone())).clone();
+    let mut head: ArcStr = if (inverse) {literal!("equation to variable")} else {literal!("variable to equation")};
+    let mut from: ArcStr = if (inverse) {literal!("eqn")} else {literal!("var")};
+    let mut to: ArcStr = if (inverse) {literal!("var")} else {literal!("eqn")};
+    r#str = (StringUtil::headline_4((head).clone())).clone();
     for mut i in 1..=metamodelica::arrayLength(mapping.clone()) {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*from.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(" --> ")); __mm_s.push_str(&*to.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(({let __elt = mapping.borrow()[(i.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     }
@@ -327,23 +327,23 @@ fn scalarMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
     let mut var_marks: metamodelica::Array<bool> = Default::default();
     let mut eqn_marks: metamodelica::Array<bool> = Default::default();
     let mut pathFound: bool;
-    var_to_eqn = arrayCreate(nVars.clone(), -1);
-    for mut eqn in 1..=nEqns.clone() {
-        var_marks = arrayCreate(nVars.clone(), false);
-        eqn_marks = arrayCreate(nEqns.clone(), false);
+    var_to_eqn = arrayCreate(nVars, -1);
+    for mut eqn in 1..=nEqns {
+        var_marks = arrayCreate(nVars, false);
+        eqn_marks = arrayCreate(nEqns, false);
         (var_to_eqn, var_marks, eqn_marks, pathFound) = augmentPath(eqn.clone(), m.clone(), mT.clone(), var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone());
-        if !(pathFound.clone()) {
-            if !(partially.clone()) {
+        if !(pathFound) {
+            if !(partially) {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBMatching.scalarMatching")); __mm_s.push_str(&*literal!(" failed because the partition is structurally singular. Index Reduction is not yet supported")); ArcStr::from(__mm_s) }).clone()])?;
-            } else if transposed.clone() {
+            } else if transposed {
                 marked_eqns = metamodelica::cons(BackendUtil::findTrueIndices(var_marks.clone()), marked_eqns.clone());
             } else {
                 marked_eqns = metamodelica::cons(BackendUtil::findTrueIndices(eqn_marks.clone()), marked_eqns.clone());
             }
         }
     }
-    eqn_to_var = arrayCreate(nEqns.clone(), -1);
-    for mut var in 1..=nVars.clone() {
+    eqn_to_var = arrayCreate(nEqns, -1);
+    for mut var in 1..=nVars {
         if ({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0 {
             {
                 let __cell0 = var.clone();
@@ -352,11 +352,11 @@ fn scalarMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
             }
         }
     }
-    if nEqns.clone() > 0 {
+    if nEqns > 0 {
         GCExt::free(var_marks.clone());
         GCExt::free(eqn_marks.clone());
     }
-    matching = if (transposed.clone()) {Arc::new(NBMatching { var_to_eqn: eqn_to_var.clone(), eqn_to_var: var_to_eqn.clone() })} else {Arc::new(NBMatching { var_to_eqn: var_to_eqn.clone(), eqn_to_var: eqn_to_var.clone() })};
+    matching = if (transposed) {Arc::new(NBMatching { var_to_eqn: eqn_to_var.clone(), eqn_to_var: var_to_eqn.clone() })} else {Arc::new(NBMatching { var_to_eqn: var_to_eqn.clone(), eqn_to_var: eqn_to_var.clone() })};
     Ok((matching, marked_eqns))
 }
 
@@ -367,23 +367,23 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
     let mut pathFound: bool = false;
     {
         let __cell0 = true;
-        let __idx0 = eqn.clone();
+        let __idx0 = eqn;
         eqn_marks.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
-    let __range1 = &*({let __elt = m.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+    let __range1 = &*({let __elt = m.borrow()[(eqn-1) as usize].clone(); __elt});
     for mut var in __range1 {
         let mut var = var.clone();
         if ({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) <= 0 {
             pathFound = true;
             {
-                let __cell2 = eqn.clone();
+                let __cell2 = eqn;
                 let __idx2 = var.clone();
                 var_to_eqn.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
             }
             return (var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone(), pathFound.clone());
         }
     }
-    let __range3 = &*({let __elt = m.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+    let __range3 = &*({let __elt = m.borrow()[(eqn-1) as usize].clone(); __elt});
     for mut var in __range3 {
         let mut var = var.clone();
         if !(({let __elt = var_marks.borrow()[(var.clone()-1) as usize].clone(); __elt})) {
@@ -393,9 +393,9 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
                 var_marks.clone().borrow_mut()[(__idx4-1) as usize] = __cell4;
             }
             (var_to_eqn, var_marks, eqn_marks, pathFound) = augmentPath(({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}), m.clone(), mT.clone(), var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone());
-            if pathFound.clone() {
+            if pathFound {
                 {
-                    let __cell5 = eqn.clone();
+                    let __cell5 = eqn;
                     let __idx5 = var.clone();
                     var_to_eqn.clone().borrow_mut()[(__idx5-1) as usize] = __cell5;
                 }
@@ -415,9 +415,9 @@ fn PFPlusExternal(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
     let mut nonZero: i32 = BackendUtil::countElem(m.clone());
     let mut cheap: i32 = 0;
     let mut algIndx: i32 = 5;
-    BackendDAEEXT::setAssignment(n2.clone(), n1.clone(), ass2.clone(), ass1.clone());
-    BackendDAEEXT::setAdjacencyMatrix(n1.clone(), n2.clone(), nonZero.clone(), m.clone());
-    BackendDAEEXT::matching(n1.clone(), n2.clone(), algIndx.clone(), cheap.clone(), metamodelica::OrderedFloat(1.0_f64), if (clear.clone()) {1} else {0});
+    BackendDAEEXT::setAssignment(n2, n1, ass2.clone(), ass1.clone());
+    BackendDAEEXT::setAdjacencyMatrix(n1, n2, nonZero, m.clone());
+    BackendDAEEXT::matching(n1, n2, algIndx, cheap, metamodelica::OrderedFloat(1.0_f64), if (clear) {1} else {0});
     BackendDAEEXT::getAssignment(ass2.clone(), ass1.clone())?;
     Ok((ass1, ass2, marked_eqns))
 }

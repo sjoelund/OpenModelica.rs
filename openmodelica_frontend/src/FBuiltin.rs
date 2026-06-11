@@ -225,7 +225,7 @@ pub(crate) fn getBasicTypes() -> Result<Arc<metamodelica::List<Arc<SCode::Elemen
 
 pub(crate) fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>, mut useOptimica: bool) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &((cref.clone(), useOptimica.clone())) {
+    b = (::match_deref::match_deref! { match &((cref, useOptimica)) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _) => true,
         (_, false) => false,
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "startTime", .. }, true) => true,
@@ -239,7 +239,7 @@ pub(crate) fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>, mut useOptimic
 }
 
 pub(crate) fn isDer(mut inPath: Arc<Absyn::Path>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inPath.clone()) {
+    let () = (::match_deref::match_deref! { match &(inPath) {
         Deref @ Absyn::Path::IDENT { name: Deref @ "der" } => {
             ()
         },
@@ -471,7 +471,7 @@ pub(crate) fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, F
     let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
-        let __mc_input = inCache.clone();
+        let __mc_input = inCache;
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut graph: FCore::Graph = graph.clone();
@@ -507,7 +507,7 @@ pub(crate) fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, F
 fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph> {
     let mut initialEnv: FCore::Graph;
     initialEnv = 'mc: {
-        let __mc_input = inEnvOpt.clone();
+        let __mc_input = inEnvOpt;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             if '__try0: {
@@ -559,14 +559,14 @@ pub type MakeCompNode = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, m
 pub(crate) fn initialGraphModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>, mut mkCompNode: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
     let mut graph: FCore::Graph = graph;
     let enumeration2int: Arc<DAE::Type> = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: None, path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: metamodelica::nil(), literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }) });
-    graph = mkCompNode(timeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), timeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
-    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ANYTYPE { anyClassType: Some(ClassInf::State::CONNECTOR { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy$")).clone() }), isExpandable: false }) }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("cardinality")).clone() }) }), Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ANYTYPE { anyClassType: Some(ClassInf::State::CONNECTOR { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy$")).clone() }), isExpandable: true }) }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("cardinality")).clone() }) })], FGraph::top(graph.clone())?, (literal!("cardinality")).clone(), graph.clone())?;
-    graph = mkTypeNode(list![enumeration2int.clone()], FGraph::top(graph.clone())?, (literal!("Integer")).clone(), graph.clone())?;
-    graph = mkTypeNode(list![enumeration2int.clone()], FGraph::top(graph.clone())?, (literal!("EnumToInteger")).clone(), graph.clone())?;
-    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: argsRealX().clone(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("noEvent")).clone() }) })], FGraph::top(graph.clone())?, (literal!("noEvent")).clone(), graph.clone())?;
-    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: argsRealX().clone(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("actualStream")).clone() }) })], FGraph::top(graph.clone())?, (literal!("actualStream")).clone(), graph.clone())?;
-    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: argsRealX().clone(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("inStream")).clone() }) })], FGraph::top(graph.clone())?, (literal!("inStream")).clone(), graph.clone())?;
+    graph = mkCompNode(timeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph)?;
+    graph = FGraph::updateComp(graph, timeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
+    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ANYTYPE { anyClassType: Some(ClassInf::State::CONNECTOR { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy$")).clone() }), isExpandable: false }) }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("cardinality")).clone() }) }), Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ANYTYPE { anyClassType: Some(ClassInf::State::CONNECTOR { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy$")).clone() }), isExpandable: true }) }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("cardinality")).clone() }) })], FGraph::top(graph.clone())?, (literal!("cardinality")).clone(), graph)?;
+    graph = mkTypeNode(list![enumeration2int.clone()], FGraph::top(graph.clone())?, (literal!("Integer")).clone(), graph)?;
+    graph = mkTypeNode(list![enumeration2int], FGraph::top(graph.clone())?, (literal!("EnumToInteger")).clone(), graph)?;
+    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: argsRealX().clone(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("noEvent")).clone() }) })], FGraph::top(graph.clone())?, (literal!("noEvent")).clone(), graph)?;
+    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: argsRealX().clone(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("actualStream")).clone() }) })], FGraph::top(graph.clone())?, (literal!("actualStream")).clone(), graph)?;
+    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: argsRealX().clone(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("inStream")).clone() }) })], FGraph::top(graph.clone())?, (literal!("inStream")).clone(), graph)?;
     Ok(graph)
 }
 
@@ -575,7 +575,7 @@ pub(crate) fn initialGraphMetaModelica(mut graph: FCore::Graph, mut mkTypeNode: 
     if !(Config::acceptMetaModelicaGrammar()?) {
         return Ok(graph.clone());
     }
-    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("index")).clone(), ty: DAE::T_INTEGER_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_METABOXED_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("getGlobalRoot")).clone() }) })], FGraph::top(graph.clone())?, (literal!("getGlobalRoot")).clone(), graph.clone())?;
+    graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("index")).clone(), ty: DAE::T_INTEGER_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_METABOXED_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("getGlobalRoot")).clone() }) })], FGraph::top(graph.clone())?, (literal!("getGlobalRoot")).clone(), graph)?;
     Ok(graph)
 }
 
@@ -584,14 +584,14 @@ pub(crate) fn initialGraphOptimica(mut graph: FCore::Graph, mut mkCompNode: Arc<
     if !(Config::acceptOptimicaGrammar()?) {
         return Ok(graph.clone());
     }
-    graph = mkCompNode(objectiveVarComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), objectiveVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
-    graph = mkCompNode(objectiveIntegrandComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), objectiveIntegrandVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
-    graph = mkCompNode(startTimeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), startTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
-    graph = mkCompNode(finalTimeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), finalTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
+    graph = mkCompNode(objectiveVarComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph)?;
+    graph = FGraph::updateComp(graph, objectiveVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
+    graph = mkCompNode(objectiveIntegrandComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph)?;
+    graph = FGraph::updateComp(graph, objectiveIntegrandVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
+    graph = mkCompNode(startTimeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph)?;
+    graph = FGraph::updateComp(graph, startTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
+    graph = mkCompNode(finalTimeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph)?;
+    graph = FGraph::updateComp(graph, finalTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
     Ok(graph)
 }
 

@@ -118,7 +118,7 @@ pub(crate) fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOpt
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = (inGraph.clone(), inOptions.clone(), inMsg.clone());
+        let __mc_input = (inGraph, inOptions.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut g, _, _) = __mc_input.clone() else { bail!("nomatch") };
             let mut r: Ref;
@@ -197,7 +197,7 @@ pub(crate) fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = (inGraph.clone(), inRefs.clone(), inMsg.clone());
+        let __mc_input = (inGraph, inRefs.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil, _) => {
@@ -246,7 +246,7 @@ pub(crate) fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Pa
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = (inGraph.clone(), inPath.clone(), inMsg.clone());
+        let __mc_input = (inGraph, inPath.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (g, Deref @ Absyn::Path::IDENT { name: i }, _) => {
@@ -318,7 +318,7 @@ pub(crate) fn ext(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOp
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = inGraph.clone();
+        let __mc_input = inGraph;
         if let Ok(__v) = (|| -> Result<_> {
             let mut g = __mc_input.clone() else { bail!("nomatch") };
             let mut r: Ref;
@@ -355,7 +355,7 @@ pub(crate) fn imp(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOp
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = inGraph.clone();
+        let __mc_input = inGraph;
         if let Ok(__v) = (|| -> Result<_> {
             let mut g = __mc_input.clone() else { bail!("nomatch") };
             let mut r: Ref;
@@ -383,7 +383,7 @@ fn imp_qual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports:
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = (inGraph.clone(), inImports.clone());
+        let __mc_input = (inGraph, inImports);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (g, Deref @ metamodelica::List::Cons { head: Absyn::Import::NAMED_IMPORT { name, .. }, tail: rest_imps }) => {
@@ -426,7 +426,7 @@ pub(crate) fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, m
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = (inGraph.clone(), inImports.clone());
+        let __mc_input = (inGraph, inImports);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (g, Deref @ metamodelica::List::Cons { head: Absyn::Import::UNQUAL_IMPORT { path }, tail: _ }) => {
@@ -458,7 +458,7 @@ pub(crate) fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, m
 pub(crate) fn fq(mut inGraph: Graph, mut inName: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
-    (outGraph, outRef) = name(inGraph.clone(), FGraph::top(inGraph.clone())?, inName.clone(), inOptions.clone(), inMsg.clone())?;
+    (outGraph, outRef) = name(inGraph.clone(), FGraph::top(inGraph)?, inName, inOptions, inMsg)?;
     Ok((outGraph, outRef))
 }
 
@@ -466,7 +466,7 @@ pub(crate) fn cr(mut inGraph: Graph, mut inRef: Ref, mut inCref: Arc<Absyn::Comp
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
-        let __mc_input = (inGraph.clone(), inCref.clone(), inMsg.clone());
+        let __mc_input = (inGraph, inCref.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (g, Deref @ Absyn::ComponentRef::CREF_IDENT { name: i, subscripts: _ }, _) => {

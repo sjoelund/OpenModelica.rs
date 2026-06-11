@@ -111,19 +111,19 @@ pub const HASH_SEED: i32 = 5381;
 pub(crate) static dummyInfo: SourceInfo = SourceInfo { fileName: literal!(""), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
 
 pub fn isIntGreater(mut lhs: i32, mut rhs: i32) -> bool {
-    let mut b: bool = lhs.clone() > rhs.clone();
+    let mut b: bool = lhs > rhs;
     b
 }
 
 pub(crate) fn isRealGreater(mut lhs: metamodelica::Real, mut rhs: metamodelica::Real) -> bool {
-    let mut b: bool = lhs.clone() > rhs.clone();
+    let mut b: bool = lhs > rhs;
     b
 }
 
 pub(crate) fn linuxDotSlash() -> ArcStr {
     let mut r#str: ArcStr;
     r#str = (arcstr::literal!(Autoconf::os)).clone();
-    r#str = (if (r#str.clone() == literal!("linux") || r#str.clone() == literal!("darwin")) {literal!("./")} else {literal!("")}).clone();
+    r#str = (if (r#str.clone() == literal!("linux") || r#str == literal!("darwin")) {literal!("./")} else {literal!("")}).clone();
     r#str
 }
 
@@ -142,13 +142,13 @@ pub fn flagValue(mut flag: ArcStr, mut arguments: Arc<metamodelica::List<ArcStr>
             break;
         }
     }
-    flagVal = (if (rest.clone().is_empty()) {literal!("")} else {listHead(rest.clone())?}).clone();
+    flagVal = (if (rest.clone().is_empty()) {literal!("")} else {listHead(rest)?}).clone();
     Ok(flagVal)
 }
 
 pub(crate) fn selectFirstNonEmptyString(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
     let mut outResult: ArcStr;
-    for mut e in &*inStrings.clone() {
+    for mut e in &*inStrings {
         let mut e = e.clone();
         if e.clone() != literal!("") {
             outResult = (e.clone()).clone();
@@ -163,9 +163,9 @@ pub fn compareTupleIntGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inT
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
-    (a, _) = inTplA.clone();
-    (b, _) = inTplB.clone();
-    res = intGt(a.clone(), b.clone());
+    (a, _) = inTplA;
+    (b, _) = inTplB;
+    res = intGt(a, b);
     res
 }
 
@@ -173,9 +173,9 @@ pub(crate) fn compareTupleIntLt<T: Clone + 'static + metamodelica::gc::MMTrace>(
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
-    (a, _) = inTplA.clone();
-    (b, _) = inTplB.clone();
-    res = intLt(a.clone(), b.clone());
+    (a, _) = inTplA;
+    (b, _) = inTplB;
+    res = intLt(a, b);
     res
 }
 
@@ -183,9 +183,9 @@ pub fn compareTuple2IntGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut in
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
-    (_, a) = inTplA.clone();
-    (_, b) = inTplB.clone();
-    res = intGt(a.clone(), b.clone());
+    (_, a) = inTplA;
+    (_, b) = inTplB;
+    res = intGt(a, b);
     res
 }
 
@@ -193,27 +193,27 @@ pub fn compareTuple2IntLt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut in
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
-    (_, a) = inTplA.clone();
-    (_, b) = inTplB.clone();
-    res = intLt(a.clone(), b.clone());
+    (_, a) = inTplA;
+    (_, b) = inTplB;
+    res = intLt(a, b);
     res
 }
 
 pub fn tuple21<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2)) -> T1 {
     let mut outValue: T1;
-    (outValue, _) = inTuple.clone();
+    (outValue, _) = inTuple;
     outValue
 }
 
 pub fn tuple22<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2)) -> T2 {
     let mut outValue: T2;
-    (_, outValue) = inTuple.clone();
+    (_, outValue) = inTuple;
     outValue
 }
 
 pub(crate) fn optTuple22<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: Option<(T1, T2)>) -> Result<T2> {
     let mut outValue: T2;
-    let __pa0 = ::match_deref::match_deref! { match &(inTuple.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inTuple) {
         Some((_, __pa0)) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -225,101 +225,101 @@ pub fn tuple312<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'st
     let mut outTuple: (T1, T2);
     let mut e1: T1;
     let mut e2: T2;
-    (e1, e2, _) = inTuple.clone();
-    outTuple = (e1.clone(), e2.clone());
+    (e1, e2, _) = inTuple;
+    outTuple = (e1, e2);
     outTuple
 }
 
 pub fn tuple31<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: (T1, T2, T3)) -> T1 {
     let mut outValue: T1;
-    (outValue, _, _) = inValue.clone();
+    (outValue, _, _) = inValue;
     outValue
 }
 
 pub fn tuple32<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: (T1, T2, T3)) -> T2 {
     let mut outValue: T2;
-    (_, outValue, _) = inValue.clone();
+    (_, outValue, _) = inValue;
     outValue
 }
 
 pub fn tuple33<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: (T1, T2, T3)) -> T3 {
     let mut outValue: T3;
-    (_, _, outValue) = inValue.clone();
+    (_, _, outValue) = inValue;
     outValue
 }
 
 pub fn tuple41<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T1 {
     let mut outValue: T1;
-    (outValue, _, _, _) = inTuple.clone();
+    (outValue, _, _, _) = inTuple;
     outValue
 }
 
 pub fn tuple42<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T2 {
     let mut outValue: T2;
-    (_, outValue, _, _) = inTuple.clone();
+    (_, outValue, _, _) = inTuple;
     outValue
 }
 
 pub fn tuple43<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T3 {
     let mut outValue: T3;
-    (_, _, outValue, _) = inTuple.clone();
+    (_, _, outValue, _) = inTuple;
     outValue
 }
 
 pub fn tuple44<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T4 {
     let mut outValue: T4;
-    (_, _, _, outValue) = inTuple.clone();
+    (_, _, _, outValue) = inTuple;
     outValue
 }
 
 pub(crate) fn tuple51<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T1 {
     let mut outValue: T1;
-    (outValue, _, _, _, _) = inTuple.clone();
+    (outValue, _, _, _, _) = inTuple;
     outValue
 }
 
 pub(crate) fn tuple52<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T2 {
     let mut outValue: T2;
-    (_, outValue, _, _, _) = inTuple.clone();
+    (_, outValue, _, _, _) = inTuple;
     outValue
 }
 
 pub(crate) fn tuple53<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T3 {
     let mut outValue: T3;
-    (_, _, outValue, _, _) = inTuple.clone();
+    (_, _, outValue, _, _) = inTuple;
     outValue
 }
 
 pub(crate) fn tuple54<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T4 {
     let mut outValue: T4;
-    (_, _, _, outValue, _) = inTuple.clone();
+    (_, _, _, outValue, _) = inTuple;
     outValue
 }
 
 pub(crate) fn tuple55<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T5 {
     let mut outValue: T5;
-    (_, _, _, _, outValue) = inTuple.clone();
+    (_, _, _, _, outValue) = inTuple;
     outValue
 }
 
 pub fn tuple61<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace, T6: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5, T6)) -> T1 {
     let mut outValue: T1;
-    (outValue, _, _, _, _, _) = inTuple.clone();
+    (outValue, _, _, _, _, _) = inTuple;
     outValue
 }
 
 pub fn tuple62<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace, T6: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5, T6)) -> T2 {
     let mut outValue: T2;
-    (_, outValue, _, _, _, _) = inTuple.clone();
+    (_, outValue, _, _, _, _) = inTuple;
     outValue
 }
 
 pub(crate) fn stringContainsChar(mut r#str: ArcStr, mut char: ArcStr) -> Result<bool> {
     let mut res: bool = false;
     let mut ch: i32;
-    ch = stringCharInt((char.clone()).clone())?;
+    ch = stringCharInt((char).clone())?;
     for mut i in 1..=((r#str.clone()).clone().len() as i32) {
-        if metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), i.clone()) == ch.clone() {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), i.clone()) == ch {
             res = true;
             return Ok(res.clone());
         }
@@ -329,7 +329,7 @@ pub(crate) fn stringContainsChar(mut r#str: ArcStr, mut char: ArcStr) -> Result<
 
 pub(crate) fn stringDelimitListPrintBuf(mut inStringLst: Arc<metamodelica::List<ArcStr>>, mut inDelimiter: ArcStr) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = inStringLst.clone();
+        let __mc_input = inStringLst;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -367,15 +367,15 @@ pub(crate) fn stringDelimitListAndSeparate(mut r#str: Arc<metamodelica::List<Arc
     let mut res: ArcStr;
     let mut handle: i32;
     handle = Print::saveAndClearBuf()?;
-    stringDelimitListAndSeparate2(r#str.clone(), (sep1.clone()).clone(), (sep2.clone()).clone(), n.clone(), 0)?;
+    stringDelimitListAndSeparate2(r#str, (sep1).clone(), (sep2).clone(), n, 0)?;
     res = (Print::getString()?).clone();
-    Print::restoreBuf(handle.clone())?;
+    Print::restoreBuf(handle)?;
     Ok(res)
 }
 
 fn stringDelimitListAndSeparate2(mut inStringLst1: Arc<metamodelica::List<ArcStr>>, mut inString2: ArcStr, mut inString3: ArcStr, mut inInteger4: i32, mut inInteger5: i32) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inStringLst1.clone(), inString2.clone(), inString3.clone(), inInteger4.clone(), inInteger5.clone());
+        let __mc_input = (inStringLst1, inString2, inString3, inInteger4, inInteger5);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _, _, _, _) => {
@@ -449,8 +449,8 @@ fn stringDelimitListAndSeparate2(mut inStringLst1: Arc<metamodelica::List<ArcStr
 pub fn stringDelimitListNonEmptyElts(mut lst: Arc<metamodelica::List<ArcStr>>, mut delim: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut lst1: Arc<metamodelica::List<ArcStr>>;
-    lst1 = List::select(lst.clone(), (std::sync::Arc::new(fnptr!(isNotEmptyString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>))?;
-    r#str = stringDelimitList(lst1.clone(), (delim.clone()).clone());
+    lst1 = List::select(lst, (std::sync::Arc::new(fnptr!(isNotEmptyString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>))?;
+    r#str = stringDelimitList(lst1, (delim).clone());
     Ok(r#str)
 }
 
@@ -458,10 +458,10 @@ pub fn mulStringDelimit2Int(mut inString: ArcStr, mut delim: ArcStr) -> Result<i
     let mut i: i32;
     let mut lst: Arc<metamodelica::List<ArcStr>>;
     let mut lst2: Arc<metamodelica::List<i32>>;
-    lst = stringSplitAtChar((inString.clone()).clone(), (delim.clone()).clone())?;
-    lst2 = List::map(lst.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>))?;
+    lst = stringSplitAtChar((inString).clone(), (delim).clone())?;
+    lst2 = List::map(lst, (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>))?;
     if !(lst2.clone().is_empty()) {
-        i = List::fold(lst2.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
+        i = List::fold(lst2, (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
     } else {
         i = 0;
     }
@@ -470,7 +470,7 @@ pub fn mulStringDelimit2Int(mut inString: ArcStr, mut delim: ArcStr) -> Result<i
 
 pub fn stringReplaceChar(mut inString1: ArcStr, mut inString2: ArcStr, mut inString3: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (System::stringReplace((inString1.clone()).clone(), (inString2.clone()).clone(), (inString3.clone()).clone())?).clone();
+    outString = (System::stringReplace((inString1).clone(), (inString2).clone(), (inString3).clone())?).clone();
     Ok(outString)
 }
 
@@ -478,9 +478,9 @@ pub fn stringSplitAtChar(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<me
     let mut strings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut ch: i32 = stringCharInt((token.clone()).clone())?;
     let mut cur: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    for mut c in &*stringListStringChar((string.clone()).clone()) {
+    for mut c in &*stringListStringChar((string).clone()) {
         let mut c = c.clone();
-        if stringCharInt((c.clone()).clone())? == ch.clone() {
+        if stringCharInt((c.clone()).clone())? == ch {
             strings = metamodelica::cons(stringAppendList(cur.clone().reverse()), strings.clone());
             cur = metamodelica::nil();
         } else {
@@ -488,9 +488,9 @@ pub fn stringSplitAtChar(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<me
         }
     }
     if !(cur.clone().is_empty()) {
-        strings = metamodelica::cons(stringAppendList(cur.clone().reverse()), strings.clone());
+        strings = metamodelica::cons(stringAppendList(cur.reverse()), strings);
     }
-    strings = strings.clone().reverse();
+    strings = strings.reverse();
     Ok(strings)
 }
 
@@ -499,7 +499,7 @@ pub(crate) fn optionToString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut
 
     let mut r#str: ArcStr;
     let mut t: T;
-    r#str = ((match ot.clone() {
+    r#str = ((match ot {
         Some(mut __esc_t) => {
             t = __esc_t.clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOME(")); __mm_s.push_str(&*f(t.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
@@ -513,7 +513,7 @@ pub fn applyOption<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
     let mut outOption: Option<TO>;
-    outOption = (match inOption.clone() {
+    outOption = (match inOption {
         Some(mut ival) => {
             Some(inFunc(ival.clone())?)
         },
@@ -528,9 +528,9 @@ pub fn applyOption1<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>;
 
     let mut outOption: Option<TO>;
-    outOption = (match inOption.clone() {
+    outOption = (match inOption {
         Some(mut ival) => {
-            Some(inFunc(ival.clone(), inArg.clone())?)
+            Some(inFunc(ival.clone(), inArg)?)
         },
         _ => {
             None
@@ -543,12 +543,12 @@ pub fn applyOptionOrDefault<TI: Clone + 'static + metamodelica::gc::MMTrace, TO:
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
-    outValue = (match inValue.clone() {
+    outValue = (match inValue {
         Some(mut value) => {
             inFunc(value.clone())?
         },
         _ => {
-            inDefaultValue.clone()
+            inDefaultValue
         },
     });
     Ok(outValue)
@@ -558,12 +558,12 @@ pub(crate) fn applyOptionOrDefault1<TI: Clone + 'static + metamodelica::gc::MMTr
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
-    outValue = (match inValue.clone() {
+    outValue = (match inValue {
         Some(mut value) => {
-            inFunc(value.clone(), inArg.clone())?
+            inFunc(value.clone(), inArg)?
         },
         _ => {
-            inDefaultValue.clone()
+            inDefaultValue
         },
     });
     Ok(outValue)
@@ -573,12 +573,12 @@ pub(crate) fn applyOptionOrDefault2<TI: Clone + 'static + metamodelica::gc::MMTr
     pub type FuncType<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT1, ArgT2) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
-    outValue = (match inValue.clone() {
+    outValue = (match inValue {
         Some(mut value) => {
-            inFunc(value.clone(), inArg1.clone(), inArg2.clone())?
+            inFunc(value.clone(), inArg1, inArg2)?
         },
         _ => {
-            inDefaultValue.clone()
+            inDefaultValue
         },
     });
     Ok(outValue)
@@ -589,9 +589,9 @@ pub(crate) fn applyOption_2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut 
 
     let mut outValue: Option<T>;
     outValue = (match (inValue1.clone(), inValue2.clone()) {
-        (None, _) => inValue2.clone(),
-        (_, None) => inValue1.clone(),
-        _ => Some(inFunc(getOption(inValue1.clone())?, getOption(inValue2.clone())?)?),
+        (None, _) => inValue2,
+        (_, None) => inValue1,
+        _ => Some(inFunc(getOption(inValue1)?, getOption(inValue2)?)?),
     });
     Ok(outValue)
 }
@@ -602,13 +602,13 @@ pub fn makeOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: T
 }
 
 pub(crate) fn makeOptionOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inCondition: bool, mut inValue: T) -> Option<T> {
-    let mut outOption: Option<T> = if (inCondition.clone()) {Some(inValue.clone())} else {None};
+    let mut outOption: Option<T> = if (inCondition) {Some(inValue.clone())} else {None};
     outOption
 }
 
 pub fn getOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: Option<T>) -> Result<T> {
     let mut outValue: T;
-    let __pa0 = ::match_deref::match_deref! { match &(inOption.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inOption) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -618,47 +618,47 @@ pub fn getOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: O
 
 pub fn getOptionOrDefault<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: Option<T>, mut inDefault: T) -> T {
     let mut outValue: T;
-    outValue = (match inOption.clone() {
+    outValue = (match inOption {
         Some(mut value) => {
             value.clone()
         },
         _ => {
-            inDefault.clone()
+            inDefault
         },
     });
     outValue
 }
 
 pub(crate) fn intGreaterZero(mut v: i32) -> bool {
-    let mut res: bool = v.clone() > 0;
+    let mut res: bool = v > 0;
     res
 }
 
 pub fn intPositive(mut v: i32) -> bool {
-    let mut res: bool = v.clone() >= 0;
+    let mut res: bool = v >= 0;
     res
 }
 
 pub(crate) fn intNegative(mut v: i32) -> bool {
-    let mut res: bool = v.clone() < 0;
+    let mut res: bool = v < 0;
     res
 }
 
 pub fn intSign(mut i: i32) -> i32 {
-    let mut o: i32 = if (i.clone() == 0) {0} else if (i.clone() > 0) {1} else {-1};
+    let mut o: i32 = if (i == 0) {0} else if (i > 0) {1} else {-1};
     o
 }
 
 pub fn intCompare(mut inN: i32, mut inM: i32) -> i32 {
-    let mut outResult: i32 = if (inN.clone() == inM.clone()) {0} else if (inN.clone() > inM.clone()) {1} else {-1};
+    let mut outResult: i32 = if (inN == inM) {0} else if (inN > inM) {1} else {-1};
     outResult
 }
 
 pub fn intPow(mut base: i32, mut exponent: i32) -> Result<i32> {
     let mut result: i32 = 1;
-    if exponent.clone() >= 0 {
-        for mut i in 1..=exponent.clone() {
-            result = result.clone() * base.clone();
+    if exponent >= 0 {
+        for mut i in 1..=exponent {
+            result = result * base;
         }
     } else {
         bail!("fail");
@@ -667,17 +667,17 @@ pub fn intPow(mut base: i32, mut exponent: i32) -> Result<i32> {
 }
 
 pub(crate) fn realNegative(mut v: metamodelica::Real) -> bool {
-    let mut res: bool = v.clone() < metamodelica::OrderedFloat((0) as f64);
+    let mut res: bool = v < metamodelica::OrderedFloat((0) as f64);
     res
 }
 
 pub fn realCompare(mut inN: metamodelica::Real, mut inM: metamodelica::Real) -> i32 {
-    let mut outResult: i32 = if (inN.clone() == inM.clone()) {0} else if (inN.clone() > inM.clone()) {1} else {-1};
+    let mut outResult: i32 = if (inN == inM) {0} else if (inN > inM) {1} else {-1};
     outResult
 }
 
 pub fn boolCompare(mut inN: bool, mut inM: bool) -> i32 {
-    let mut outResult: i32 = if (inN.clone() == inM.clone()) {0} else if (inN.clone() > inM.clone()) {1} else {-1};
+    let mut outResult: i32 = if (inN == inM) {0} else if (inN > inM) {1} else {-1};
     outResult
 }
 
@@ -698,13 +698,13 @@ pub(crate) fn writeFileOrErrorMsg(mut inFilename: ArcStr, mut inString: ArcStr) 
 
 pub fn strncmp(mut inString1: ArcStr, mut inString2: ArcStr, mut inLength: i32) -> bool {
     let mut outEqual: bool;
-    outEqual = 0 == System::strncmp((inString1.clone()).clone(), (inString2.clone()).clone(), inLength.clone());
+    outEqual = 0 == System::strncmp((inString1).clone(), (inString2).clone(), inLength);
     outEqual
 }
 
 pub fn notStrncmp(mut inString1: ArcStr, mut inString2: ArcStr, mut inLength: i32) -> bool {
     let mut outEqual: bool;
-    outEqual = 0 != System::strncmp((inString1.clone()).clone(), (inString2.clone()).clone(), inLength.clone());
+    outEqual = 0 != System::strncmp((inString1).clone(), (inString2).clone(), inLength);
     outEqual
 }
 
@@ -716,9 +716,9 @@ pub fn tickStr() -> ArcStr {
 pub fn replaceWindowsBackSlashWithPathDelimiter(mut inPath: ArcStr) -> Result<ArcStr> {
     let mut outPath: ArcStr;
     if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
-        outPath = (System::stringReplace((inPath.clone()).clone(), (literal!("\\")).clone(), (arcstr::literal!(Autoconf::pathDelimiter)).clone())?).clone();
+        outPath = (System::stringReplace((inPath).clone(), (literal!("\\")).clone(), (arcstr::literal!(Autoconf::pathDelimiter)).clone())?).clone();
     } else {
-        outPath = (inPath.clone()).clone();
+        outPath = (inPath).clone();
     }
     Ok(outPath)
 }
@@ -727,59 +727,59 @@ pub fn getAbsoluteDirectoryAndFile(mut filename: ArcStr) -> Result<(ArcStr, ArcS
     let mut dirname: ArcStr;
     let mut basename: ArcStr;
     let mut realpath: ArcStr;
-    realpath = (System::realpath((filename.clone()).clone())?).clone();
+    realpath = (System::realpath((filename).clone())?).clone();
     dirname = (System::dirname((realpath.clone()).clone())).clone();
-    basename = (System::basename((realpath.clone()).clone())).clone();
-    dirname = (replaceWindowsBackSlashWithPathDelimiter((dirname.clone()).clone())?).clone();
+    basename = (System::basename((realpath).clone())).clone();
+    dirname = (replaceWindowsBackSlashWithPathDelimiter((dirname).clone())?).clone();
     Ok((dirname, basename))
 }
 
 pub(crate) fn rawStringToInputString(mut inString: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (System::stringReplace((inString.clone()).clone(), (literal!("\\\"")).clone(), (literal!("\"")).clone())?).clone();
-    outString = (System::stringReplace((outString.clone()).clone(), (literal!("\\\\")).clone(), (literal!("\\")).clone())?).clone();
+    outString = (System::stringReplace((inString).clone(), (literal!("\\\"")).clone(), (literal!("\"")).clone())?).clone();
+    outString = (System::stringReplace((outString).clone(), (literal!("\\\\")).clone(), (literal!("\\")).clone())?).clone();
     Ok(outString)
 }
 
 pub fn escapeModelicaStringToCString(mut modelicaString: ArcStr) -> ArcStr {
     let mut cString: ArcStr;
-    cString = (System::escapedString((modelicaString.clone()).clone(), true)).clone();
+    cString = (System::escapedString((modelicaString).clone(), true)).clone();
     cString
 }
 
 pub fn escapeModelicaStringToJLString(mut modelicaString: ArcStr) -> Result<ArcStr> {
     let mut cString: ArcStr;
-    cString = (System::stringReplace((modelicaString.clone()).clone(), (literal!("$")).clone(), (literal!("")).clone())?).clone();
-    cString = (System::stringReplace((cString.clone()).clone(), (literal!("\"")).clone(), (literal!("")).clone())?).clone();
-    cString = (System::stringReplace((cString.clone()).clone(), (literal!("\"")).clone(), (literal!("")).clone())?).clone();
-    cString = (System::stringReplace((cString.clone()).clone(), (literal!("\"\"")).clone(), (literal!("")).clone())?).clone();
-    cString = (System::escapedString((cString.clone()).clone(), true)).clone();
+    cString = (System::stringReplace((modelicaString).clone(), (literal!("$")).clone(), (literal!("")).clone())?).clone();
+    cString = (System::stringReplace((cString).clone(), (literal!("\"")).clone(), (literal!("")).clone())?).clone();
+    cString = (System::stringReplace((cString).clone(), (literal!("\"")).clone(), (literal!("")).clone())?).clone();
+    cString = (System::stringReplace((cString).clone(), (literal!("\"\"")).clone(), (literal!("")).clone())?).clone();
+    cString = (System::escapedString((cString).clone(), true)).clone();
     Ok(cString)
 }
 
 pub fn escapeModelicaStringToXmlString(mut modelicaString: ArcStr) -> Result<ArcStr> {
     let mut xmlString: ArcStr;
-    xmlString = (System::stringReplace((modelicaString.clone()).clone(), (literal!("&")).clone(), (literal!("&amp;")).clone())?).clone();
-    xmlString = (System::stringReplace((xmlString.clone()).clone(), (literal!("\"")).clone(), (literal!("&quot;")).clone())?).clone();
-    xmlString = (System::stringReplace((xmlString.clone()).clone(), (literal!("<")).clone(), (literal!("&lt;")).clone())?).clone();
-    xmlString = (System::stringReplace((xmlString.clone()).clone(), (literal!(">")).clone(), (literal!("&gt;")).clone())?).clone();
-    xmlString = (System::stringReplace((xmlString.clone()).clone(), (literal!("\n")).clone(), (literal!("&#10;")).clone())?).clone();
-    xmlString = (System::stringReplace((xmlString.clone()).clone(), (literal!("\r")).clone(), (literal!("&#13;")).clone())?).clone();
+    xmlString = (System::stringReplace((modelicaString).clone(), (literal!("&")).clone(), (literal!("&amp;")).clone())?).clone();
+    xmlString = (System::stringReplace((xmlString).clone(), (literal!("\"")).clone(), (literal!("&quot;")).clone())?).clone();
+    xmlString = (System::stringReplace((xmlString).clone(), (literal!("<")).clone(), (literal!("&lt;")).clone())?).clone();
+    xmlString = (System::stringReplace((xmlString).clone(), (literal!(">")).clone(), (literal!("&gt;")).clone())?).clone();
+    xmlString = (System::stringReplace((xmlString).clone(), (literal!("\n")).clone(), (literal!("&#10;")).clone())?).clone();
+    xmlString = (System::stringReplace((xmlString).clone(), (literal!("\r")).clone(), (literal!("&#13;")).clone())?).clone();
     Ok(xmlString)
 }
 
 pub fn makeQuotedIdentifier(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut quotedIdentifier: ArcStr;
-    quotedIdentifier = (System::stringReplace((r#str.clone()).clone(), (literal!("\\")).clone(), (literal!("\\\\")).clone())?).clone();
-    quotedIdentifier = (System::stringReplace((quotedIdentifier.clone()).clone(), (literal!("'")).clone(), (literal!("\\'")).clone())?).clone();
-    quotedIdentifier = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("'")); __mm_s.push_str(&*quotedIdentifier.clone()); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone();
+    quotedIdentifier = (System::stringReplace((r#str).clone(), (literal!("\\")).clone(), (literal!("\\\\")).clone())?).clone();
+    quotedIdentifier = (System::stringReplace((quotedIdentifier).clone(), (literal!("'")).clone(), (literal!("\\'")).clone())?).clone();
+    quotedIdentifier = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("'")); __mm_s.push_str(&*quotedIdentifier); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone();
     Ok(quotedIdentifier)
 }
 
 pub fn escapeQuotes(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut quotes: ArcStr;
-    quotes = (System::stringReplace((r#str.clone()).clone(), (literal!("\\")).clone(), (literal!("\\\\")).clone())?).clone();
-    quotes = (System::stringReplace((quotes.clone()).clone(), (literal!("'")).clone(), (literal!("\\'")).clone())?).clone();
+    quotes = (System::stringReplace((r#str).clone(), (literal!("\\")).clone(), (literal!("\\\\")).clone())?).clone();
+    quotes = (System::stringReplace((quotes).clone(), (literal!("'")).clone(), (literal!("\\'")).clone())?).clone();
     Ok(quotes)
 }
 
@@ -800,15 +800,15 @@ pub fn make3Tuple<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + '
 
 pub(crate) fn mulListIntegerOpt(mut inList: Arc<metamodelica::List<Option<i32>>>, mut inAccum: i32) -> Result<i32> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inList.clone()) {
+        ::match_deref::match_deref! { match &(inList) {
         Deref @ metamodelica::List::Nil => {
-            return Ok(inAccum.clone())
+            return Ok(inAccum)
         },
         Deref @ metamodelica::List::Cons { head: Some(i), tail: rest } => {
-            { (inList, inAccum) = (rest.clone(), i.clone() * inAccum.clone()); continue '__tco; }
+            { (inList, inAccum) = (rest.clone(), i.clone() * inAccum); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: None, tail: rest } => {
-            { (inList, inAccum) = (rest.clone(), inAccum.clone()); continue '__tco; }
+            { (inList, inAccum) = (rest.clone(), inAccum); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -819,7 +819,7 @@ pub(crate) fn mulListIntegerOpt(mut inList: Arc<metamodelica::List<Option<i32>>>
 pub type StatefulBoolean = metamodelica::Array<bool>;
 
 pub fn makeStatefulBoolean(mut b: bool) -> StatefulBoolean {
-    let mut sb: StatefulBoolean = arrayCreate(1, b.clone());
+    let mut sb: StatefulBoolean = arrayCreate(1, b);
     sb
 }
 
@@ -829,7 +829,7 @@ pub fn getStatefulBoolean(mut sb: StatefulBoolean) -> bool {
 }
 
 pub fn setStatefulBoolean(mut sb: StatefulBoolean, mut b: bool) -> Result<()> {
-    metamodelica::arrayUpdate(sb.clone(), 1, b.clone())?;
+    metamodelica::arrayUpdate(sb.clone(), 1, b)?;
     Ok(())
 }
 
@@ -837,7 +837,7 @@ pub fn optionEqual<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 
     pub type CompareFunc<T1: Clone + 'static, T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>;
 
     let mut outEqual: bool;
-    outEqual = (match (inOption1.clone(), inOption2.clone()) {
+    outEqual = (match (inOption1, inOption2) {
         (Some(mut val1), Some(mut val2)) => {
             inFunc(val1.clone(), val2.clone())?
         },
@@ -871,10 +871,10 @@ pub fn makeValueOrDefault<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: C
 
 pub fn xmlEscape(mut s1: ArcStr) -> Result<ArcStr> {
     let mut s2: ArcStr;
-    s2 = (stringReplaceChar((s1.clone()).clone(), (literal!("&")).clone(), (literal!("&amp;")).clone())?).clone();
-    s2 = (stringReplaceChar((s2.clone()).clone(), (literal!("<")).clone(), (literal!("&lt;")).clone())?).clone();
-    s2 = (stringReplaceChar((s2.clone()).clone(), (literal!(">")).clone(), (literal!("&gt;")).clone())?).clone();
-    s2 = (stringReplaceChar((s2.clone()).clone(), (literal!("\"")).clone(), (literal!("&quot;")).clone())?).clone();
+    s2 = (stringReplaceChar((s1).clone(), (literal!("&")).clone(), (literal!("&amp;")).clone())?).clone();
+    s2 = (stringReplaceChar((s2).clone(), (literal!("<")).clone(), (literal!("&lt;")).clone())?).clone();
+    s2 = (stringReplaceChar((s2).clone(), (literal!(">")).clone(), (literal!("&gt;")).clone())?).clone();
+    s2 = (stringReplaceChar((s2).clone(), (literal!("\"")).clone(), (literal!("&quot;")).clone())?).clone();
     Ok(s2)
 }
 
@@ -896,8 +896,8 @@ pub(crate) fn stringAppendReverse(mut str1: ArcStr, mut str2: ArcStr) -> ArcStr 
 pub(crate) fn stringAppendNonEmpty(mut inString1: ArcStr, mut inString2: ArcStr) -> ArcStr {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inString2.clone()) {
-        Deref @ "" => inString2.clone(),
-        _ => stringAppend((inString1.clone()).clone(), (inString2.clone()).clone()),
+        Deref @ "" => inString2,
+        _ => stringAppend((inString1).clone(), (inString2).clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     outString
@@ -912,13 +912,13 @@ pub fn getCurrentDateTime() -> DateTime {
     let mut mon: i32;
     let mut year: i32;
     (sec, min, hour, mday, mon, year) = System::getCurrentDateTime();
-    dt = DateTime { sec: sec.clone(), min: min.clone(), hour: hour.clone(), mday: mday.clone(), mon: mon.clone(), year: year.clone() };
+    dt = DateTime { sec: sec, min: min, hour: hour, mday: mday, mon: mon, year: year };
     dt
 }
 
 pub fn isSuccess(mut status: Status) -> Result<bool> {
     let mut bool: bool;
-    bool = (match status.clone() {
+    bool = (match status {
         Status::SUCCESS { .. } => true,
         Status::FAILURE { .. } => false,
     });
@@ -932,7 +932,7 @@ pub fn id<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: T) -> T {
 
 pub fn buildMapStr(mut inLst1: Arc<metamodelica::List<ArcStr>>, mut inLst2: Arc<metamodelica::List<ArcStr>>, mut inMiddleDelimiter: ArcStr, mut inEndDelimiter: ArcStr) -> Result<ArcStr> {
     let mut outStr: ArcStr;
-    outStr = ((::match_deref::match_deref! { match &((inLst1.clone(), inLst2.clone(), inMiddleDelimiter.clone(), inEndDelimiter.clone())) {
+    outStr = ((::match_deref::match_deref! { match &((inLst1, inLst2, inMiddleDelimiter, inEndDelimiter)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, _) => {
             literal!("")
         },
@@ -957,29 +957,29 @@ pub fn assoc<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: 
         let mut k: Key;
         let mut v: Val;
         (k, v) = listHead(inList.clone())?;
-        if (inKey.clone() == k.clone()) {return Ok(v.clone())} else {{ (inKey, inList) = (inKey.clone(), listRest(inList.clone())?); continue '__tco; }}
+        if (inKey.clone() == k) {return Ok(v)} else {{ (inKey, inList) = (inKey, listRest(inList)?); continue '__tco; }}
     }
 }
 
 pub fn boolInt(mut inBoolean: bool) -> i32 {
-    let mut outInteger: i32 = if (inBoolean.clone()) {1} else {0};
+    let mut outInteger: i32 = if (inBoolean) {1} else {0};
     outInteger
 }
 
 pub(crate) fn intBool(mut inInteger: i32) -> bool {
-    let mut outBoolean: bool = inInteger.clone() > 0;
+    let mut outBoolean: bool = inInteger > 0;
     outBoolean
 }
 
 pub(crate) fn stringBool(mut inString: ArcStr) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = stringBool2((System::tolower((inString.clone()).clone())).clone())?;
+    outBoolean = stringBool2((System::tolower((inString).clone())).clone())?;
     Ok(outBoolean)
 }
 
 fn stringBool2(mut inString: ArcStr) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inString.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inString) {
         Deref @ "true" => true,
         Deref @ "false" => false,
         Deref @ "yes" => true,
@@ -991,7 +991,7 @@ fn stringBool2(mut inString: ArcStr) -> Result<bool> {
 
 pub fn stringEqCaseInsensitive(mut str1: ArcStr, mut str2: ArcStr) -> bool {
     let mut eq: bool;
-    eq = stringEq((System::tolower((str1.clone()).clone())).clone(), (System::tolower((str2.clone()).clone())).clone());
+    eq = stringEq((System::tolower((str1).clone())).clone(), (System::tolower((str2).clone())).clone());
     eq
 }
 
@@ -999,19 +999,19 @@ pub fn stringPadRight(mut inString: ArcStr, mut inPadWidth: i32, mut inPadString
     let mut outString: ArcStr;
     let mut pad_length: i32;
     let mut pad_str: ArcStr;
-    pad_length = inPadWidth.clone() - ((inString.clone()).clone().len() as i32);
-    if pad_length.clone() > 0 {
+    pad_length = inPadWidth - ((inString.clone()).clone().len() as i32);
+    if pad_length > 0 {
         pad_str = stringAppendList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut i in (1..=pad_length.clone()).into_iter() {
+        for mut i in (1..=pad_length).into_iter() {
             let __x = inPadString.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
-        outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inString.clone()); __mm_s.push_str(&*pad_str.clone()); ArcStr::from(__mm_s) }).clone();
+        outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inString); __mm_s.push_str(&*pad_str); ArcStr::from(__mm_s) }).clone();
     } else {
-        outString = (inString.clone()).clone();
+        outString = (inString).clone();
     }
     outString
 }
@@ -1020,19 +1020,19 @@ pub fn stringPadLeft(mut inString: ArcStr, mut inPadWidth: i32, mut inPadString:
     let mut outString: ArcStr;
     let mut pad_length: i32;
     let mut pad_str: ArcStr;
-    pad_length = inPadWidth.clone() - ((inString.clone()).clone().len() as i32);
-    if pad_length.clone() > 0 {
+    pad_length = inPadWidth - ((inString.clone()).clone().len() as i32);
+    if pad_length > 0 {
         pad_str = stringAppendList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut i in (1..=pad_length.clone()).into_iter() {
+        for mut i in (1..=pad_length).into_iter() {
             let __x = inPadString.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
-        outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*pad_str.clone()); __mm_s.push_str(&*inString.clone()); ArcStr::from(__mm_s) }).clone();
+        outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*pad_str); __mm_s.push_str(&*inString); ArcStr::from(__mm_s) }).clone();
     } else {
-        outString = (inString.clone()).clone();
+        outString = (inString).clone();
     }
     outString
 }
@@ -1044,27 +1044,27 @@ pub(crate) fn intProduct(mut lst: Arc<metamodelica::List<i32>>) -> Result<i32> {
 
 pub fn nextPrime(mut inN: i32) -> i32 {
     let mut outNextPrime: i32;
-    outNextPrime = if (inN.clone() <= 2) {2} else {nextPrime2(inN.clone() + intMod(inN.clone() + 1, 2))};
+    outNextPrime = if (inN <= 2) {2} else {nextPrime2(inN + intMod(inN + 1, 2))};
     outNextPrime
 }
 
 fn nextPrime2(mut inN: i32) -> i32 {
     '__tco: loop {
-        if (nextPrime_isPrime(inN.clone())) {return inN.clone()} else {{ inN = inN.clone() + 2; continue '__tco; }}
+        if (nextPrime_isPrime(inN)) {return inN} else {{ inN = inN + 2; continue '__tco; }}
     }
 }
 
 fn nextPrime_isPrime(mut inN: i32) -> bool {
     let mut outIsPrime: bool;
     let mut i: i32 = 3;
-    let mut q: i32 = intDiv(inN.clone(), 3);
-    while q.clone() >= i.clone() {
-        if inN.clone() == q.clone() * i.clone() {
+    let mut q: i32 = intDiv(inN, 3);
+    while q >= i {
+        if inN == q * i {
             outIsPrime = false;
             return outIsPrime.clone();
         }
-        i = i.clone() + 2;
-        q = intDiv(inN.clone(), i.clone());
+        i = i + 2;
+        q = intDiv(inN, i);
     }
     outIsPrime = true;
     outIsPrime
@@ -1077,19 +1077,19 @@ pub(crate) fn anyToEmptyString<T: Clone + 'static + metamodelica::gc::MMTrace>(m
 
 pub fn removeLast3Char(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut outStr: ArcStr;
-    outStr = substring((r#str.clone()).clone(), 1, ((r#str.clone()).clone().len() as i32) - 3)?;
+    outStr = substring((r#str.clone()).clone(), 1, ((r#str).clone().len() as i32) - 3)?;
     Ok(outStr)
 }
 
 pub fn removeLast4Char(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut outStr: ArcStr;
-    outStr = substring((r#str.clone()).clone(), 1, ((r#str.clone()).clone().len() as i32) - 4)?;
+    outStr = substring((r#str.clone()).clone(), 1, ((r#str).clone().len() as i32) - 4)?;
     Ok(outStr)
 }
 
 pub fn removeLastNChar(mut r#str: ArcStr, mut n: i32) -> Result<ArcStr> {
     let mut outStr: ArcStr;
-    outStr = substring((r#str.clone()).clone(), 1, ((r#str.clone()).clone().len() as i32) - n.clone())?;
+    outStr = substring((r#str.clone()).clone(), 1, ((r#str).clone().len() as i32) - n)?;
     Ok(outStr)
 }
 
@@ -1101,9 +1101,9 @@ pub fn stringNotEqual(mut str1: ArcStr, mut str2: ArcStr) -> bool {
 pub fn swap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut cond: bool, mut in1: T, mut in2: T) -> (T, T) {
     let mut out1: T;
     let mut out2: T;
-    (out1, out2) = (match cond.clone() {
-        true => (in2.clone(), in1.clone()),
-        _ => (in1.clone(), in2.clone()),
+    (out1, out2) = (match cond {
+        true => (in2, in1),
+        _ => (in1, in2),
     });
     (out1, out2)
 }
@@ -1115,15 +1115,15 @@ pub fn replace<T: Clone + 'static + metamodelica::gc::MMTrace>(mut replaced: T, 
 
 pub fn realRangeSize(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inStop: metamodelica::Real) -> i32 {
     let mut outSize: i32;
-    outSize = ((((inStop.clone() - inStart.clone()) / inStep.clone() + metamodelica::OrderedFloat(5e-15_f64)).floor()).0.floor() as i32) + 1;
-    outSize = std::cmp::max(outSize.clone(), 0);
+    outSize = ((((inStop - inStart) / inStep + metamodelica::OrderedFloat(5e-15_f64)).floor()).0.floor() as i32) + 1;
+    outSize = std::cmp::max(outSize, 0);
     outSize
 }
 
 fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentDirExists: bool) -> bool {
     let mut outBool: bool;
     outBool = 'mc: {
-        let __mc_input = parentDirExists.clone();
+        let __mc_input = parentDirExists;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut b: bool;
@@ -1162,42 +1162,42 @@ pub fn createDirectoryTree(mut inString: ArcStr) -> bool {
     } else {
         parentDir = (System::dirname((inString.clone()).clone())).clone();
         parentDirExists = System::directoryExists((parentDir.clone()).clone());
-        outBool = createDirectoryTreeH((inString.clone()).clone(), (parentDir.clone()).clone(), parentDirExists.clone());
+        outBool = createDirectoryTreeH((inString).clone(), (parentDir).clone(), parentDirExists);
     }
     outBool
 }
 
 pub(crate) fn nextPowerOf2(mut i: i32) -> i32 {
     let mut v: i32;
-    v = i.clone() - 1;
-    v = intBitOr(v.clone(), intBitRShift(v.clone(), 1));
-    v = intBitOr(v.clone(), intBitRShift(v.clone(), 2));
-    v = intBitOr(v.clone(), intBitRShift(v.clone(), 4));
-    v = intBitOr(v.clone(), intBitRShift(v.clone(), 8));
-    v = intBitOr(v.clone(), intBitRShift(v.clone(), 16));
-    v = v.clone() + 1;
+    v = i - 1;
+    v = intBitOr(v, intBitRShift(v, 1));
+    v = intBitOr(v, intBitRShift(v, 2));
+    v = intBitOr(v, intBitRShift(v, 4));
+    v = intBitOr(v, intBitRShift(v, 8));
+    v = intBitOr(v, intBitRShift(v, 16));
+    v = v + 1;
     v
 }
 
 pub fn isCIdentifier(mut r#str: ArcStr) -> bool {
     let mut b: bool;
     let mut i: i32;
-    (i, _) = System::regex((r#str.clone()).clone(), (literal!("^[_A-Za-z][_A-Za-z0-9]*$")).clone(), 0, true, false);
-    b = i.clone() == 1;
+    (i, _) = System::regex((r#str).clone(), (literal!("^[_A-Za-z][_A-Za-z0-9]*$")).clone(), 0, true, false);
+    b = i == 1;
     b
 }
 
 pub(crate) fn isIntegerString(mut r#str: ArcStr) -> bool {
     let mut b: bool;
     let mut i: i32;
-    (i, _) = System::regex((r#str.clone()).clone(), (literal!("^[0-9][0-9]*$")).clone(), 0, true, false);
-    b = i.clone() == 1;
+    (i, _) = System::regex((r#str).clone(), (literal!("^[0-9][0-9]*$")).clone(), 0, true, false);
+    b = i == 1;
     b
 }
 
 pub fn stringTrunc(mut r#str: ArcStr, mut len: i32) -> Result<ArcStr> {
     let mut truncatedStr: ArcStr;
-    truncatedStr = (if (((r#str.clone()).clone().len() as i32) <= len.clone()) {r#str.clone()} else {substring((r#str.clone()).clone(), 0, len.clone())?}).clone();
+    truncatedStr = (if (((r#str.clone()).clone().len() as i32) <= len) {r#str} else {substring((r#str).clone(), 0, len)?}).clone();
     Ok(truncatedStr)
 }
 
@@ -1220,8 +1220,8 @@ pub fn absoluteOrRelative(mut inFileName: ArcStr) -> ArcStr {
     pwd = (System::pwd()).clone();
     pd = (arcstr::literal!(Autoconf::pathDelimiter)).clone();
     if !(System::regularFileExists((inFileName.clone()).clone())) {
-        f = stringAppendList(list![(pwd.clone()).clone(), (pd.clone()).clone(), (inFileName.clone()).clone()]);
-        outFileName = (if (System::regularFileExists((f.clone()).clone())) {f.clone()} else {outFileName.clone()}).clone();
+        f = stringAppendList(list![(pwd).clone(), (pd).clone(), (inFileName).clone()]);
+        outFileName = (if (System::regularFileExists((f.clone()).clone())) {f} else {outFileName}).clone();
     }
     outFileName
 }
@@ -1233,13 +1233,13 @@ pub fn hashFileNamePrefix(mut inFileNamePrefix: ArcStr) -> Result<ArcStr> {
 
 pub fn intLstString(mut lst: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
     let mut s: ArcStr;
-    s = stringDelimitList(List::map(lst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+    s = stringDelimitList(List::map(lst, (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
     Ok(s)
 }
 
 pub fn sourceInfoIsEmpty(mut inInfo: SourceInfo) -> bool {
     let mut outIsEmpty: bool;
-    outIsEmpty = (::match_deref::match_deref! { match &(inInfo.clone()) {
+    outIsEmpty = (::match_deref::match_deref! { match &(inInfo) {
         SourceInfo { fileName: Deref @ "", .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1274,16 +1274,16 @@ pub(crate) fn profilerresults() -> Result<()> {
     t1 = profilertime1();
     t2 = profilertime2();
     metamodelica::print((literal!("Time all: ")).clone());
-    metamodelica::print((realString(tg.clone())).clone());
+    metamodelica::print((realString(tg)).clone());
     metamodelica::print((literal!("\n")).clone());
     metamodelica::print((literal!("Time t1: ")).clone());
-    metamodelica::print((realString(t1.clone())).clone());
+    metamodelica::print((realString(t1)).clone());
     metamodelica::print((literal!("\n")).clone());
     metamodelica::print((literal!("Time t2: ")).clone());
-    metamodelica::print((realString(t2.clone())).clone());
+    metamodelica::print((realString(t2)).clone());
     metamodelica::print((literal!("\n")).clone());
     metamodelica::print((literal!("Time all-t1-t2: ")).clone());
-    metamodelica::print((realString(((tg.clone()) - (t1.clone())) - (t2.clone()))).clone());
+    metamodelica::print((realString(((tg) - (t1)) - (t2))).clone());
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
@@ -1313,14 +1313,14 @@ pub fn profilerstart2() -> Result<()> {
 pub fn profilerstop1() -> Result<()> {
     let mut t: metamodelica::Real;
     t = System::realtimeTock(ClockIndexes::RT_PROFILER1.clone())?;
-    { let __v = (crate::Globals::profilerTime1Index.with(|__root| __root.borrow().clone())) + (t.clone()); crate::Globals::profilerTime1Index.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = (crate::Globals::profilerTime1Index.with(|__root| __root.borrow().clone())) + (t); crate::Globals::profilerTime1Index.with(|__root| *__root.borrow_mut() = __v) };
     Ok(())
 }
 
 pub fn profilerstop2() -> Result<()> {
     let mut t: metamodelica::Real;
     t = System::realtimeTock(ClockIndexes::RT_PROFILER2.clone())?;
-    { let __v = (crate::Globals::profilerTime2Index.with(|__root| __root.borrow().clone())) + (t.clone()); crate::Globals::profilerTime2Index.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = (crate::Globals::profilerTime2Index.with(|__root| __root.borrow().clone())) + (t); crate::Globals::profilerTime2Index.with(|__root| *__root.borrow_mut() = __v) };
     Ok(())
 }
 
@@ -1355,7 +1355,7 @@ pub fn applyTuple21<T1: Clone + 'static + metamodelica::gc::MMTrace + metamodeli
     let mut e2: T2;
     (e1_1, e2) = inTuple.clone();
     e1_2 = func(e1_1.clone())?;
-    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(e1_1.clone()), &(e1_2.clone()))) {inTuple.clone()} else {(e1_2.clone(), e2.clone())};
+    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(e1_1), &(e1_2.clone()))) {inTuple} else {(e1_2, e2)};
     Ok(outTuple)
 }
 
@@ -1368,7 +1368,7 @@ pub(crate) fn applyTuple22<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: 
     let mut e2_2: T2;
     (e1, e2_1) = inTuple.clone();
     e2_2 = func(e2_1.clone())?;
-    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(e2_1.clone()), &(e2_2.clone()))) {inTuple.clone()} else {(e1.clone(), e2_2.clone())};
+    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(e2_1), &(e2_2.clone()))) {inTuple} else {(e1, e2_2)};
     Ok(outTuple)
 }
 
@@ -1382,7 +1382,7 @@ pub fn applyTuple31<T1: Clone + 'static + metamodelica::gc::MMTrace + metamodeli
     let mut t3: T3;
     (t1, t2, t3) = inTuple.clone();
     t1_new = func(t1.clone())?;
-    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(t1.clone()), &(t1_new.clone()))) {inTuple.clone()} else {(t1_new.clone(), t2.clone(), t3.clone())};
+    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(t1), &(t1_new.clone()))) {inTuple} else {(t1_new, t2, t3)};
     Ok(outTuple)
 }
 
@@ -1394,22 +1394,22 @@ pub fn referenceCompare<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clo
 
 pub(crate) fn gcd(mut a: i32, mut b: i32) -> i32 {
     '__tco: loop {
-        if (b.clone() == 0) {return a.clone()} else {{ (a, b) = (b.clone(), intMod(a.clone(), b.clone())); continue '__tco; }}
+        if (b == 0) {return a} else {{ (a, b) = (b, intMod(a, b)); continue '__tco; }}
     }
 }
 
 pub(crate) fn lcm(mut a: i32, mut b: i32) -> i32 {
     let mut res: i32;
-    res = if (a.clone() < 0 || b.clone() < 0) {-1} else {intDiv(a.clone() * b.clone(), gcd(a.clone(), b.clone()))};
+    res = if (a < 0 || b < 0) {-1} else {intDiv(a * b, gcd(a, b))};
     res
 }
 
 pub(crate) fn msb(mut n: i32) -> i32 {
     let mut res: i32 = 0;
-    let mut i: i32 = n.clone();
-    while i.clone() > 0 {
-        i = intBitRShift(i.clone(), 1);
-        res = res.clone() + 1;
+    let mut i: i32 = n;
+    while i > 0 {
+        i = intBitRShift(i, 1);
+        res = res + 1;
     }
     res
 }
@@ -1418,7 +1418,7 @@ pub fn foldcallN<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut n: i32, mu
     pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(FT) -> Result<FT> + 'static>;
 
     let mut outResult: FT = inStartValue.clone();
-    for mut i in 1..=n.clone() {
+    for mut i in 1..=n {
         outResult = inFoldFunc(outResult.clone())?;
     }
     Ok(outResult)

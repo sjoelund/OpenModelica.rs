@@ -78,13 +78,13 @@ pub fn diff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq1: Arc<metamo
     let mut end2: i32;
     let mut arr1: metamodelica::Array<T>;
     let mut arr2: metamodelica::Array<T>;
-    arr1 = metamodelica::arrayFromVec(seq1.clone().into_iter().cloned().collect());
-    arr2 = metamodelica::arrayFromVec(seq2.clone().into_iter().cloned().collect());
+    arr1 = metamodelica::arrayFromVec(seq1.into_iter().cloned().collect());
+    arr2 = metamodelica::arrayFromVec(seq2.into_iter().cloned().collect());
     start1 = 1;
     start2 = 1;
     end1 = metamodelica::arrayLength(arr1.clone());
     end2 = metamodelica::arrayLength(arr2.clone());
-    out = diffSeq(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), isWhitespaceNotComment.clone(), toString.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone(), metamodelica::nil(), metamodelica::nil())?;
+    out = diffSeq(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), isWhitespaceNotComment.clone(), toString.clone(), start1, end1, start2, end2, metamodelica::nil(), metamodelica::nil())?;
     Ok(out)
 }
 
@@ -98,7 +98,7 @@ pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mu
     let mut b: bool;
     let mut i: i32;
     i = Print::saveAndClearBuf().unwrap();
-    for mut d in &*seq.clone() {
+    for mut d in &*seq {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
         (Diff::Equal, __esc_ts) => {
@@ -115,7 +115,7 @@ pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mu
         },
         _ => panic!("match: no arm matched"),
     } });
-        if !(ts.clone().is_empty()) && (b.clone() || true && true && true) {
+        if !(ts.clone().is_empty()) && (b || true && true && true) {
             Print::printBuf((open.clone()).clone()).unwrap();
             for mut t in &*ts.clone() {
                 let mut t = t.clone();
@@ -125,7 +125,7 @@ pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mu
         }
     }
     res = (Print::getString().unwrap()).clone();
-    Print::restoreBuf(i.clone()).unwrap();
+    Print::restoreBuf(i).unwrap();
     res
 }
 
@@ -137,7 +137,7 @@ pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc
     let mut b: bool;
     let mut i: i32;
     i = Print::saveAndClearBuf().unwrap();
-    for mut d in &*seq.clone() {
+    for mut d in &*seq {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
         (Diff::Equal, __esc_ts) => {
@@ -154,7 +154,7 @@ pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc
         },
         _ => panic!("match: no arm matched"),
     } });
-        if !(ts.clone().is_empty()) && (b.clone() || true && true && true) {
+        if !(ts.clone().is_empty()) && (b || true && true && true) {
             Print::printBuf((open.clone()).clone()).unwrap();
             for mut t in &*ts.clone() {
                 let mut t = t.clone();
@@ -164,7 +164,7 @@ pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc
         }
     }
     res = (Print::getString().unwrap()).clone();
-    Print::restoreBuf(i.clone()).unwrap();
+    Print::restoreBuf(i).unwrap();
     res
 }
 
@@ -176,7 +176,7 @@ pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<
     let mut b: bool;
     let mut i: i32;
     i = Print::saveAndClearBuf().unwrap();
-    for mut d in &*seq.clone() {
+    for mut d in &*seq {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
         (Diff::Equal, __esc_ts) => {
@@ -193,7 +193,7 @@ pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<
         },
         _ => panic!("match: no arm matched"),
     } });
-        if !(ts.clone().is_empty()) && (b.clone() || true && true && false) {
+        if !(ts.clone().is_empty()) && (b || true && true && false) {
             Print::printBuf((open.clone()).clone()).unwrap();
             for mut t in &*ts.clone() {
                 let mut t = t.clone();
@@ -203,7 +203,7 @@ pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<
         }
     }
     res = (Print::getString().unwrap()).clone();
-    Print::restoreBuf(i.clone()).unwrap();
+    Print::restoreBuf(i).unwrap();
     res
 }
 
@@ -215,51 +215,51 @@ fn diffSeq<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelic
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
-    let mut start1: i32 = inStart1.clone();
-    let mut end1: i32 = inEnd1.clone();
-    let mut start2: i32 = inStart2.clone();
-    let mut end2: i32 = inEnd2.clone();
+    let mut start1: i32 = inStart1;
+    let mut end1: i32 = inEnd1;
+    let mut start2: i32 = inStart2;
+    let mut end2: i32 = inEnd2;
     let mut len1: i32;
     let mut len2: i32;
     let mut prefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inPrefixes.clone();
     let mut suffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inSuffixes.clone();
-    len1 = end1.clone() - start1.clone() + 1;
-    len2 = end2.clone() - start2.clone() + 1;
-    if len1.clone() < 1 && len2.clone() < 1 {
-        out = List::append_reverse(prefixes.clone(), suffixes.clone());
+    len1 = end1 - start1 + 1;
+    len2 = end2 - start2 + 1;
+    if len1 < 1 && len2 < 1 {
+        out = List::append_reverse(prefixes, suffixes);
         return Ok(out.clone());
-    } else if len1.clone() < 1 {
-        out = List::append_reverse(prefixes.clone(), metamodelica::cons((Diff::Add.clone(), ({
+    } else if len1 < 1 {
+        out = List::append_reverse(prefixes, metamodelica::cons((Diff::Add.clone(), ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for mut e in (start2.clone()..=end2.clone()).into_iter() {
+        for mut e in (start2..=end2).into_iter() {
             let __x = ({let __elt = arr2.borrow()[(e.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })), suffixes.clone()));
+    })), suffixes));
         return Ok(out.clone());
-    } else if len2.clone() < 1 {
-        out = List::append_reverse(prefixes.clone(), metamodelica::cons((Diff::Delete.clone(), ({
+    } else if len2 < 1 {
+        out = List::append_reverse(prefixes, metamodelica::cons((Diff::Delete.clone(), ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for mut e in (start1.clone()..=end1.clone()).into_iter() {
+        for mut e in (start1..=end1).into_iter() {
             let __x = ({let __elt = arr1.borrow()[(e.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })), suffixes.clone()));
+    })), suffixes));
         return Ok(out.clone());
     }
-    if if (len1.clone() == len2.clone()) {({
+    if if (len1 == len2) {({
         let mut __acc: Option<bool> = None;
-        for e in (1..=len1.clone()).into_iter() {
-            let __x = equals(({let __elt = arr1.borrow()[(e.clone() + start1.clone() - 1-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(e.clone() + start2.clone() - 1-1) as usize].clone(); __elt}))?;
+        for e in (1..=len1).into_iter() {
+            let __x = equals(({let __elt = arr1.borrow()[(e.clone() + start1 - 1-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(e.clone() + start2 - 1-1) as usize].clone(); __elt}))?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
         __acc.unwrap_or(true)
     })} else {false} {
         out = list![(Diff::Equal.clone(), ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for mut e in (start1.clone()..=end1.clone()).into_iter() {
+        for mut e in (start1..=end1).into_iter() {
             let __x = ({let __elt = arr1.borrow()[(e.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
@@ -267,29 +267,29 @@ fn diffSeq<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelic
     }))];
         return Ok(out.clone());
     }
-    (prefixes, start1, start2) = trimCommonPrefix(arr1.clone(), start1.clone(), end1.clone(), arr2.clone(), start2.clone(), end2.clone(), equals.clone(), prefixes.clone(), isWhitespaceNotComment.clone(), toString.clone())?;
-    (suffixes, end1, end2) = trimCommonSuffix(arr1.clone(), start1.clone(), end1.clone(), arr2.clone(), start2.clone(), end2.clone(), equals.clone(), suffixes.clone(), isWhitespaceNotComment.clone())?;
-    if start1.clone() != inStart1.clone() || start2.clone() != inStart2.clone() || end1.clone() != inEnd1.clone() || end2.clone() != inEnd2.clone() {
-        out = diffSeq(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), isWhitespaceNotComment.clone(), toString.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone(), prefixes.clone(), suffixes.clone())?;
+    (prefixes, start1, start2) = trimCommonPrefix(arr1.clone(), start1, end1, arr2.clone(), start2, end2, equals.clone(), prefixes, isWhitespaceNotComment.clone(), toString.clone())?;
+    (suffixes, end1, end2) = trimCommonSuffix(arr1.clone(), start1, end1, arr2.clone(), start2, end2, equals.clone(), suffixes, isWhitespaceNotComment.clone())?;
+    if start1 != inStart1 || start2 != inStart2 || end1 != inEnd1 || end2 != inEnd2 {
+        out = diffSeq(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), isWhitespaceNotComment.clone(), toString.clone(), start1, end1, start2, end2, prefixes, suffixes)?;
         return Ok(out.clone());
     } else {
         out = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
-            Ok(onlyAdditions(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), toString.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone())?)
+            Ok(onlyAdditions(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), toString.clone(), start1, end1, start2, end2)?)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
-            Ok(onlyRemovals(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), toString.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone())?)
+            Ok(onlyRemovals(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), toString.clone(), start1, end1, start2, end2)?)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(myersGreedyDiff(arr1.clone(), arr2.clone(), equals.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone())?)
+            Ok(myersGreedyDiff(arr1.clone(), arr2.clone(), equals.clone(), start1, end1, start2, end2)?)
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
-        out = List::append_reverse(prefixes.clone(), listAppend(out.clone(), suffixes.clone()));
+        out = List::append_reverse(prefixes, listAppend(out, suffixes));
         return Ok(out.clone());
     }
     bail!("fail");
@@ -298,15 +298,15 @@ fn diffSeq<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelic
 
 fn addToList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inlst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut ind: Diff, mut inacc: Arc<metamodelica::List<T>>, mut newd: Diff, mut t: T) -> (Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, Diff, Arc<metamodelica::List<T>>) {
     let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inlst.clone();
-    let mut d: Diff = newd.clone();
+    let mut d: Diff = newd;
     let mut acc: Arc<metamodelica::List<T>> = inacc.clone();
-    if ind.clone() == newd.clone() {
-        acc = metamodelica::cons(t.clone(), acc.clone());
+    if ind == newd {
+        acc = metamodelica::cons(t, acc);
     } else {
-        if !(inacc.clone().is_empty()) {
-            lst = metamodelica::cons((ind.clone(), acc.clone().reverse()), lst.clone());
+        if !(inacc.is_empty()) {
+            lst = metamodelica::cons((ind, acc.reverse()), lst);
         }
-        acc = list![t.clone()];
+        acc = list![t];
     }
     (lst, d, acc)
 }
@@ -314,7 +314,7 @@ fn addToList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inlst: Arc<meta
 fn endList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inlst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut ind: Diff, mut inacc: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> {
     let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inlst.clone();
     if !(inacc.clone().is_empty()) {
-        lst = metamodelica::cons((ind.clone(), inacc.clone().reverse()), lst.clone());
+        lst = metamodelica::cons((ind, inacc.reverse()), lst);
     }
     lst
 }
@@ -332,37 +332,37 @@ fn onlyAdditions<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metam
     let mut d: Diff = Diff::Equal.clone();
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
     out = metamodelica::nil();
-    while start1.clone() + x.clone() <= end1.clone() && start2.clone() + y.clone() <= end2.clone() {
-        if equals(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Equal.clone(), ({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}));
-            x = x.clone() + 1;
-            y = y.clone() + 1;
-        } else if isWhitespace(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}));
-            x = x.clone() + 1;
+    while start1 + x <= end1 && start2 + y <= end2 {
+        if equals(({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Equal.clone(), ({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}));
+            x = x + 1;
+            y = y + 1;
+        } else if isWhitespace(({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}));
+            x = x + 1;
         } else {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}));
-            y = y.clone() + 1;
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}));
+            y = y + 1;
         }
     }
-    while start1.clone() + x.clone() <= end1.clone() {
-        if isWhitespace(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}));
-            x = x.clone() + 1;
-        } else {
-            bail!("fail");
-        }
-    }
-    while start2.clone() + y.clone() <= end2.clone() {
-        if isWhitespace(({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}));
-            y = y.clone() + 1;
+    while start1 + x <= end1 {
+        if isWhitespace(({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}));
+            x = x + 1;
         } else {
             bail!("fail");
         }
     }
-    out = endList(out.clone(), d.clone(), lst.clone());
-    out = out.clone().reverse();
+    while start2 + y <= end2 {
+        if isWhitespace(({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}));
+            y = y + 1;
+        } else {
+            bail!("fail");
+        }
+    }
+    out = endList(out, d, lst);
+    out = out.reverse();
     Ok(out)
 }
 
@@ -379,37 +379,37 @@ fn onlyRemovals<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamo
     let mut d: Diff = Diff::Equal.clone();
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
     out = metamodelica::nil();
-    while start1.clone() + x.clone() <= end1.clone() && start2.clone() + y.clone() <= end2.clone() {
-        if equals(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Equal.clone(), ({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}));
-            x = x.clone() + 1;
-            y = y.clone() + 1;
-        } else if isWhitespace(({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}));
-            y = y.clone() + 1;
+    while start1 + x <= end1 && start2 + y <= end2 {
+        if equals(({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Equal.clone(), ({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}));
+            x = x + 1;
+            y = y + 1;
+        } else if isWhitespace(({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}));
+            y = y + 1;
         } else {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}));
-            x = x.clone() + 1;
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}));
+            x = x + 1;
         }
     }
-    while start1.clone() + x.clone() <= end1.clone() {
-        if isWhitespace(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}));
-            x = x.clone() + 1;
-        } else {
-            bail!("fail");
-        }
-    }
-    while start2.clone() + y.clone() <= end2.clone() {
-        if isWhitespace(({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))? {
-            (out, d, lst) = addToList(out.clone(), d.clone(), lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}));
-            y = y.clone() + 1;
+    while start1 + x <= end1 {
+        if isWhitespace(({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Delete.clone(), ({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}));
+            x = x + 1;
         } else {
             bail!("fail");
         }
     }
-    out = endList(out.clone(), d.clone(), lst.clone());
-    out = out.clone().reverse();
+    while start2 + y <= end2 {
+        if isWhitespace(({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}))? {
+            (out, d, lst) = addToList(out.clone(), d, lst.clone(), Diff::Add.clone(), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}));
+            y = y + 1;
+        } else {
+            bail!("fail");
+        }
+    }
+    out = endList(out, d, lst);
+    out = out.reverse();
     Ok(out)
 }
 
@@ -427,44 +427,44 @@ fn myersGreedyDiff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: met
     let mut V: metamodelica::Array<i32>;
     let mut paths: metamodelica::Array<Arc<metamodelica::List<(i32, i32)>>>;
     let mut prevPath: Arc<metamodelica::List<(i32, i32)>>;
-    len1 = end1.clone() - start1.clone() + 1;
-    len2 = end2.clone() - start2.clone() + 1;
-    maxIter = len1.clone() + len2.clone();
-    sz = 2 * maxIter.clone() + 1;
-    middle = maxIter.clone() + 1;
-    V = arrayCreate(sz.clone(), 0);
-    paths = arrayCreate(sz.clone(), metamodelica::nil());
-    for mut D in 0..=maxIter.clone() {
+    len1 = end1 - start1 + 1;
+    len2 = end2 - start2 + 1;
+    maxIter = len1 + len2;
+    sz = 2 * maxIter + 1;
+    middle = maxIter + 1;
+    V = arrayCreate(sz, 0);
+    paths = arrayCreate(sz, metamodelica::nil());
+    for mut D in 0..=maxIter {
         for mut k in (-(D.clone())..=D.clone()).step_by((2) as usize) {
-            if k.clone() == -(D.clone()) || k.clone() != D.clone() && ({let __elt = V.borrow()[(k.clone() - 1 + middle.clone()-1) as usize].clone(); __elt}) < ({let __elt = V.borrow()[(k.clone() + 1 + middle.clone()-1) as usize].clone(); __elt}) {
-                x = ({let __elt = V.borrow()[(k.clone() + 1 + middle.clone()-1) as usize].clone(); __elt});
-                prevPath = ({let __elt = paths.borrow()[(k.clone() + 1 + middle.clone()-1) as usize].clone(); __elt});
+            if k.clone() == -(D.clone()) || k.clone() != D.clone() && ({let __elt = V.borrow()[(k.clone() - 1 + middle-1) as usize].clone(); __elt}) < ({let __elt = V.borrow()[(k.clone() + 1 + middle-1) as usize].clone(); __elt}) {
+                x = ({let __elt = V.borrow()[(k.clone() + 1 + middle-1) as usize].clone(); __elt});
+                prevPath = ({let __elt = paths.borrow()[(k.clone() + 1 + middle-1) as usize].clone(); __elt});
             } else {
-                x = ({let __elt = V.borrow()[(k.clone() - 1 + middle.clone()-1) as usize].clone(); __elt}) + 1;
-                prevPath = ({let __elt = paths.borrow()[(k.clone() - 1 + middle.clone()-1) as usize].clone(); __elt});
+                x = ({let __elt = V.borrow()[(k.clone() - 1 + middle-1) as usize].clone(); __elt}) + 1;
+                prevPath = ({let __elt = paths.borrow()[(k.clone() - 1 + middle-1) as usize].clone(); __elt});
             }
-            y = x.clone() - k.clone();
+            y = x - k.clone();
             {
-                let __cell0 = metamodelica::cons((x.clone(), y.clone()), prevPath.clone());
-                let __idx0 = k.clone() + middle.clone();
+                let __cell0 = metamodelica::cons((x, y), prevPath.clone());
+                let __idx0 = k.clone() + middle;
                 paths.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
-            while if (x.clone() < len1.clone() && y.clone() < len2.clone()) {equals(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))?} else {false} {
-                x = x.clone() + 1;
-                y = y.clone() + 1;
+            while if (x < len1 && y < len2) {equals(({let __elt = arr1.borrow()[(start1 + x-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2 + y-1) as usize].clone(); __elt}))?} else {false} {
+                x = x + 1;
+                y = y + 1;
                 {
-                    let __cell1 = metamodelica::cons((x.clone(), y.clone()), ({let __elt = paths.borrow()[(k.clone() + middle.clone()-1) as usize].clone(); __elt}));
-                    let __idx1 = k.clone() + middle.clone();
+                    let __cell1 = metamodelica::cons((x, y), ({let __elt = paths.borrow()[(k.clone() + middle-1) as usize].clone(); __elt}));
+                    let __idx1 = k.clone() + middle;
                     paths.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
             {
-                let __cell2 = x.clone();
-                let __idx2 = k.clone() + middle.clone();
+                let __cell2 = x;
+                let __idx2 = k.clone() + middle;
                 V.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
             }
-            if x.clone() >= len1.clone() && y.clone() >= len2.clone() {
-                out = myersGreedyPathToDiff(arr1.clone(), arr2.clone(), start1.clone(), start2.clone(), ({let __elt = paths.borrow()[(k.clone() + middle.clone()-1) as usize].clone(); __elt}))?;
+            if x >= len1 && y >= len2 {
+                out = myersGreedyPathToDiff(arr1.clone(), arr2.clone(), start1, start2, ({let __elt = paths.borrow()[(k.clone() + middle-1) as usize].clone(); __elt}))?;
                 return Ok(out.clone());
             }
         }
@@ -490,36 +490,36 @@ fn myersGreedyPathToDiff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr
     } };
     x2 = __pa0.clone();
     y2 = __pa1.clone();
-    for mut path in &*listRest(paths.clone())? {
+    for mut path in &*listRest(paths)? {
         let mut path = path.clone();
         (x1, y1) = path.clone();
-        if x2.clone() - x1.clone() == 1 && y2.clone() - y1.clone() == 1 {
+        if x2 - x1 == 1 && y2 - y1 == 1 {
             d1 = Diff::Equal.clone();
-            t = ({let __elt = arr1.borrow()[(start1.clone() + x1.clone()-1) as usize].clone(); __elt});
-        } else if x2.clone() - x1.clone() == 1 && y2.clone() == y1.clone() {
+            t = ({let __elt = arr1.borrow()[(start1 + x1-1) as usize].clone(); __elt});
+        } else if x2 - x1 == 1 && y2 == y1 {
             d1 = Diff::Delete.clone();
-            t = ({let __elt = arr1.borrow()[(start1.clone() + x1.clone()-1) as usize].clone(); __elt});
-        } else if y2.clone() - y1.clone() == 1 && x2.clone() == x1.clone() {
+            t = ({let __elt = arr1.borrow()[(start1 + x1-1) as usize].clone(); __elt});
+        } else if y2 - y1 == 1 && x2 == x1 {
             d1 = Diff::Add.clone();
-            t = ({let __elt = arr2.borrow()[(start2.clone() + y1.clone()-1) as usize].clone(); __elt});
+            t = ({let __elt = arr2.borrow()[(start2 + y1-1) as usize].clone(); __elt});
         } else {
             metamodelica::print((literal!("myersGreedyPathToDiff: This cannot happen\n")).clone());
             bail!("fail");
         }
         if lst.clone().is_empty() {
             lst = list![t.clone()];
-        } else if d1.clone() == d2.clone() {
+        } else if d1 == d2 {
             lst = metamodelica::cons(t.clone(), lst.clone());
         } else {
-            out = metamodelica::cons((d2.clone(), lst.clone()), out.clone());
+            out = metamodelica::cons((d2, lst.clone()), out.clone());
             lst = list![t.clone()];
         }
-        d2 = d1.clone();
-        x2 = x1.clone();
-        y2 = y1.clone();
+        d2 = d1;
+        x2 = x1;
+        y2 = y1;
     }
     if !(lst.clone().is_empty()) {
-        out = metamodelica::cons((d2.clone(), lst.clone()), out.clone());
+        out = metamodelica::cons((d2, lst), out);
     }
     Ok(out)
 }
@@ -532,25 +532,25 @@ fn trimCommonPrefix<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: me
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut prefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = acc.clone();
-    let mut start1: i32 = inStart1.clone();
-    let mut start2: i32 = inStart2.clone();
+    let mut start1: i32 = inStart1;
+    let mut start2: i32 = inStart2;
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
-    while start1.clone() <= end1.clone() && start2.clone() <= end2.clone() {
-        if equals(({let __elt = arr1.borrow()[(start1.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2.clone()-1) as usize].clone(); __elt}))? {
-            lst = metamodelica::cons(({let __elt = arr1.borrow()[(start1.clone()-1) as usize].clone(); __elt}), lst.clone());
-            start1 = start1.clone() + 1;
-            start2 = start2.clone() + 1;
-        } else if start2.clone() + 1 <= end2.clone() && isWhitespaceNotComment(({let __elt = arr2.borrow()[(start2.clone()-1) as usize].clone(); __elt}))? {
-            if !(equals(({let __elt = arr1.borrow()[(start1.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2.clone() + 1-1) as usize].clone(); __elt}))?) {
+    while start1 <= end1 && start2 <= end2 {
+        if equals(({let __elt = arr1.borrow()[(start1-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2-1) as usize].clone(); __elt}))? {
+            lst = metamodelica::cons(({let __elt = arr1.borrow()[(start1-1) as usize].clone(); __elt}), lst.clone());
+            start1 = start1 + 1;
+            start2 = start2 + 1;
+        } else if start2 + 1 <= end2 && isWhitespaceNotComment(({let __elt = arr2.borrow()[(start2-1) as usize].clone(); __elt}))? {
+            if !(equals(({let __elt = arr1.borrow()[(start1-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2 + 1-1) as usize].clone(); __elt}))?) {
                 break;
             }
-            start2 = start2.clone() + 1;
+            start2 = start2 + 1;
         } else {
             break;
         }
     }
     if !(lst.clone().is_empty()) {
-        prefixes = metamodelica::cons((Diff::Equal.clone(), lst.clone().reverse()), prefixes.clone());
+        prefixes = metamodelica::cons((Diff::Equal.clone(), lst.reverse()), prefixes);
     }
     Ok((prefixes, start1, start2))
 }
@@ -561,25 +561,25 @@ fn trimCommonSuffix<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: me
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut suffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = acc.clone();
-    let mut end1: i32 = inEnd1.clone();
-    let mut end2: i32 = inEnd2.clone();
+    let mut end1: i32 = inEnd1;
+    let mut end2: i32 = inEnd2;
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
-    while start1.clone() <= end1.clone() && start2.clone() <= end2.clone() {
-        if equals(({let __elt = arr1.borrow()[(end1.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(end2.clone()-1) as usize].clone(); __elt}))? {
-            lst = metamodelica::cons(({let __elt = arr1.borrow()[(end1.clone()-1) as usize].clone(); __elt}), lst.clone());
-            end1 = end1.clone() - 1;
-            end2 = end2.clone() - 1;
-        } else if start2.clone() <= end2.clone() - 1 && isWhitespaceNotComment(({let __elt = arr2.borrow()[(end2.clone()-1) as usize].clone(); __elt}))? {
-            if !(equals(({let __elt = arr1.borrow()[(end1.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(end2.clone() - 1-1) as usize].clone(); __elt}))?) {
+    while start1 <= end1 && start2 <= end2 {
+        if equals(({let __elt = arr1.borrow()[(end1-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(end2-1) as usize].clone(); __elt}))? {
+            lst = metamodelica::cons(({let __elt = arr1.borrow()[(end1-1) as usize].clone(); __elt}), lst.clone());
+            end1 = end1 - 1;
+            end2 = end2 - 1;
+        } else if start2 <= end2 - 1 && isWhitespaceNotComment(({let __elt = arr2.borrow()[(end2-1) as usize].clone(); __elt}))? {
+            if !(equals(({let __elt = arr1.borrow()[(end1-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(end2 - 1-1) as usize].clone(); __elt}))?) {
                 break;
             }
-            end2 = end2.clone() - 1;
+            end2 = end2 - 1;
         } else {
             break;
         }
     }
     if !(lst.clone().is_empty()) {
-        suffixes = metamodelica::cons((Diff::Equal.clone(), lst.clone()), suffixes.clone());
+        suffixes = metamodelica::cons((Diff::Equal.clone(), lst), suffixes);
     }
     Ok((suffixes, end1, end2))
 }
@@ -590,7 +590,7 @@ fn printStartToEnd<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: meta
     let mut res: ArcStr;
     res = stringAppendList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut index in (startIndex.clone()..=endIndex.clone()).into_iter() {
+        for mut index in (startIndex..=endIndex).into_iter() {
             let __x = toString(metamodelica::arrayGet(arr.clone(), index.clone())?)?;
             __acc = cons(__x, __acc);
         }

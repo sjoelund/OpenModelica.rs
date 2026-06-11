@@ -98,26 +98,26 @@ pub(crate) fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinear
         i = metamodelica::Dangerous::arrayGetNoBoundsChecking(ints.clone(), j.clone());
         gain = metamodelica::Dangerous::arrayGetNoBoundsChecking(g.clone(), j.clone());
         offset = metamodelica::Dangerous::arrayGetNoBoundsChecking(g.clone(), j.clone());
-        if gain.clone() < intReal(System::intMaxLit()) {
-            lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i.clone())) as f64) * gain.clone() + offset.clone();
-            step = metamodelica::OrderedFloat((SBInterval::stepValue(i.clone())) as f64) * gain.clone();
-            hi = metamodelica::OrderedFloat((SBInterval::upperBound(i.clone())) as f64) * gain.clone() + offset.clone();
-            if lo.clone() != metamodelica::OrderedFloat((((lo.clone()).0.floor() as i32)) as f64) && SBInterval::lowerBound(i.clone()) > 0 {
+        if gain < intReal(System::intMaxLit()) {
+            lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i.clone())) as f64) * gain + offset;
+            step = metamodelica::OrderedFloat((SBInterval::stepValue(i.clone())) as f64) * gain;
+            hi = metamodelica::OrderedFloat((SBInterval::upperBound(i.clone())) as f64) * gain + offset;
+            if lo != metamodelica::OrderedFloat((((lo).0.floor() as i32)) as f64) && SBInterval::lowerBound(i.clone()) > 0 {
                 compatible = false;
                 break;
             }
-            if step.clone() != metamodelica::OrderedFloat((((step.clone()).0.floor() as i32)) as f64) && SBInterval::stepValue(i.clone()) > 0 {
+            if step != metamodelica::OrderedFloat((((step).0.floor() as i32)) as f64) && SBInterval::stepValue(i.clone()) > 0 {
                 compatible = false;
                 break;
             }
-            if hi.clone() != metamodelica::OrderedFloat((((hi.clone()).0.floor() as i32)) as f64) && SBInterval::upperBound(i.clone()) > 0 {
+            if hi != metamodelica::OrderedFloat((((hi).0.floor() as i32)) as f64) && SBInterval::upperBound(i.clone()) > 0 {
                 compatible = false;
                 break;
             }
         }
     }
-    if compatible.clone() {
-        map = Arc::new(SBPWAtomicLinearMap { dom: SBAtomicSet::copy(dom.clone()), lmap: SBLinearMap::copy(lmap.clone()) });
+    if compatible {
+        map = Arc::new(SBPWAtomicLinearMap { dom: SBAtomicSet::copy(dom), lmap: SBLinearMap::copy(lmap) });
     } else {
         map = newEmpty();
     }
@@ -149,7 +149,7 @@ pub(crate) fn isEmpty(mut map: Arc<SBPWAtomicLinearMap>) -> bool {
 pub(crate) fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
     fn crop_inf(mut v: metamodelica::Real) -> i32 {
         let mut i: i32;
-        i = if (v.clone() >= intReal(System::intMaxLit())) {System::intMaxLit()} else {((v.clone()).0.floor() as i32)};
+        i = if (v >= intReal(System::intMaxLit())) {System::intMaxLit()} else {((v).0.floor() as i32)};
         i
     }
 
@@ -182,9 +182,9 @@ pub(crate) fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet:
     offsets = SBLinearMap::offset(map.lmap.clone());
     res = metamodelica::arrayCreate(metamodelica::arrayLength(inters.clone()), ({let __elt = inters.borrow()[(1-1) as usize].clone(); __elt}));
     for mut i in 1..=metamodelica::arrayLength(inters.clone()) {
-        int = metamodelica::Dangerous::arrayGetNoBoundsChecking(inters.clone(), i.clone());
-        gain = ({let __elt = gains.borrow()[(i.clone()-1) as usize].clone(); __elt});
-        offset = ({let __elt = offsets.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        int = metamodelica::Dangerous::arrayGetNoBoundsChecking(inters.clone(), i);
+        gain = ({let __elt = gains.borrow()[(i-1) as usize].clone(); __elt});
+        offset = ({let __elt = offsets.borrow()[(i-1) as usize].clone(); __elt});
         tmp_lo = metamodelica::OrderedFloat((SBInterval::lowerBound(int.clone())) as f64) * gain.clone() + offset.clone();
         tmp_step = metamodelica::OrderedFloat((SBInterval::stepValue(int.clone())) as f64) * gain.clone();
         tmp_hi = metamodelica::OrderedFloat((SBInterval::upperBound(int.clone())) as f64) * gain.clone() + offset.clone();
@@ -197,7 +197,7 @@ pub(crate) fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet:
             new_step = 1;
             new_hi = System::intMaxLit();
         }
-        unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone(), i.clone(), SBInterval::new(new_lo.clone(), new_step.clone(), new_hi.clone())) };
+        unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone(), i, SBInterval::new(new_lo.clone(), new_step.clone(), new_hi.clone())) };
     }
     outSet = SBAtomicSet::new(SBMultiInterval::fromArray(res.clone())?);
     Ok(outSet)
@@ -210,10 +210,10 @@ pub(crate) fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicS
     let mut aux: Arc<SBAtomicSet::SBAtomicSet>;
     let mut inv: Arc<SBPWAtomicLinearMap>;
     full_im = image(map.clone(), map.dom.clone())?;
-    actual_im = SBAtomicSet::intersection(full_im.clone(), set.clone())?;
+    actual_im = SBAtomicSet::intersection(full_im, set)?;
     inv = new(actual_im.clone(), SBLinearMap::inverse(map.lmap.clone()));
-    aux = image(inv.clone(), actual_im.clone())?;
-    outSet = SBAtomicSet::intersection(map.dom.clone(), aux.clone())?;
+    aux = image(inv, actual_im)?;
+    outSet = SBAtomicSet::intersection(map.dom.clone(), aux)?;
     Ok(outSet)
 }
 
@@ -236,7 +236,7 @@ pub(crate) fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*SBInterval::toString(({let __elt = ints.borrow()[(i.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({let __elt = g.borrow()[(i.clone()-1) as usize].clone(); __elt})))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({let __elt = o.borrow()[(i.clone()-1) as usize].clone(); __elt})))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         strl = metamodelica::cons((r#str.clone()).clone(), strl.clone());
     }
-    r#str = stringDelimitList(strl.clone(), (literal!("x")).clone());
+    r#str = stringDelimitList(strl, (literal!("x")).clone());
     r#str
 }
 

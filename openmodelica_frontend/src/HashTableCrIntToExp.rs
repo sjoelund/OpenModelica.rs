@@ -76,14 +76,14 @@ pub type FuncExpStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr>
 
 fn hashFunc(mut tpl: Key) -> Result<i32> {
     let mut res: i32;
-    res = ComponentReferenceBasics::hashComponentRef(Util::tuple21(tpl.clone()))? + Util::tuple22(tpl.clone());
+    res = ComponentReferenceBasics::hashComponentRef(Util::tuple21(tpl.clone()))? + Util::tuple22(tpl);
     Ok(res)
 }
 
 fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> bool {
     let mut res: bool;
     res = 'mc: {
-        let __mc_input = (tpl1.clone(), tpl2.clone());
+        let __mc_input = (tpl1, tpl2);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 ((cr1, i1), (cr2, i2)) => {
@@ -108,7 +108,7 @@ fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> bool {
 
 fn printKey(mut tpl: Key) -> Result<ArcStr> {
     let mut res: ArcStr;
-    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(Util::tuple21(tpl.clone()))?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*intString(Util::tuple22(tpl.clone()))); ArcStr::from(__mm_s) }).clone();
+    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(Util::tuple21(tpl.clone()))?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*intString(Util::tuple22(tpl))); ArcStr::from(__mm_s) }).clone();
     Ok(res)
 }
 
@@ -120,7 +120,7 @@ pub fn emptyHashTable() -> HashTable {
 
 pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
-    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(hashFunc) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(keyEqual, (Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32)) -> Result<bool> + 'static>), (std::sync::Arc::new(printKey) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
+    hashTable = BaseHashTable::emptyHashTableWork(size, ((std::sync::Arc::new(hashFunc) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(keyEqual, (Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32)) -> Result<bool> + 'static>), (std::sync::Arc::new(printKey) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 

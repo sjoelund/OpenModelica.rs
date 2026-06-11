@@ -57,19 +57,19 @@ pub fn getTotalModel(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, 
     let mut used: UseTable;
     let mut prev_size: i32 = 0;
     used = UnorderedSet::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 13);
-    analysePath(classPath.clone(), used.clone())?;
+    analysePath(classPath, used.clone())?;
     UnorderedSet::add((literal!("constructor")).clone(), used.clone())?;
     UnorderedSet::add((literal!("destructor")).clone(), used.clone())?;
-    while UnorderedSet::size(used.clone()) != prev_size.clone() {
+    while UnorderedSet::size(used.clone()) != prev_size {
         prev_size = UnorderedSet::size(used.clone());
         analyseProgram(program.clone(), used.clone())?;
     }
-    program = saveElements(program.clone(), used.clone())?;
+    program = saveElements(program, used)?;
     Ok(program)
 }
 
 pub(crate) fn analyseProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<()> {
-    for mut e in &*program.clone() {
+    for mut e in &*program {
         let mut e = e.clone();
         analyseElement(e.clone(), used.clone())?;
     }
@@ -77,7 +77,7 @@ pub(crate) fn analyseProgram(mut program: Arc<metamodelica::List<Arc<SCode::Elem
 }
 
 pub(crate) fn analyseElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<()> {
-    for mut e in &*elements.clone() {
+    for mut e in &*elements {
         let mut e = e.clone();
         analyseElement(e.clone(), used.clone())?;
     }
@@ -120,7 +120,7 @@ pub(crate) fn analyseElement(mut element: Arc<SCode::Element>, mut used: UseTabl
 }
 
 pub(crate) fn analyseImport(mut imp: Absyn::Import, mut used: UseTable) -> Result<()> {
-    analysePath(AbsynUtil::importPath(imp.clone())?, used.clone())?;
+    analysePath(AbsynUtil::importPath(imp)?, used)?;
     Ok(())
 }
 
@@ -133,19 +133,19 @@ pub(crate) fn analyseClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable)
             analyseAlgorithms(var_field!((*def).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), used.clone())?;
             analyseAlgorithms(var_field!((*def).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), used.clone())?;
             if isSome(var_field!((*def).externalDecl, SCode::ClassDef::PARTS).clone()) {
-                analyseExternalDecl(Util::getOption(var_field!((*def).externalDecl, SCode::ClassDef::PARTS).clone())?, used.clone())?;
+                analyseExternalDecl(Util::getOption(var_field!((*def).externalDecl, SCode::ClassDef::PARTS).clone())?, used)?;
             }
             ()
         },
         Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => {
             analyseMod(var_field!((*def).modifications, SCode::ClassDef::CLASS_EXTENDS).clone(), used.clone())?;
-            analyseClassDef(var_field!((*def).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), used.clone())?;
+            analyseClassDef(var_field!((*def).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), used)?;
             ()
         },
         Deref @ SCode::ClassDef::DERIVED { .. } => {
             analyseTypeSpec(var_field!((*def).typeSpec, SCode::ClassDef::DERIVED).clone(), used.clone())?;
             analyseMod(var_field!((*def).modifications, SCode::ClassDef::DERIVED).clone(), used.clone())?;
-            analyseAttributes(var_field!((*def).attributes, SCode::ClassDef::DERIVED).clone(), used.clone())?;
+            analyseAttributes(var_field!((*def).attributes, SCode::ClassDef::DERIVED).clone(), used)?;
             ()
         },
         _ => (),
@@ -156,7 +156,7 @@ pub(crate) fn analyseClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable)
 
 pub(crate) fn analyseExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut used: UseTable) -> Result<()> {
     if isSome(extDecl.annotation_.clone()) {
-        analyseAnnotation(Util::getOption(extDecl.annotation_.clone())?, used.clone())?;
+        analyseAnnotation(Util::getOption(extDecl.annotation_.clone())?, used)?;
     }
     Ok(())
 }
@@ -165,7 +165,7 @@ pub(crate) fn analyseOperatorRecord(mut element: Arc<SCode::Element>, mut used: 
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
             UnorderedSet::add((var_field!((*element).name, SCode::Element::CLASS).clone()).clone(), used.clone())?;
-            for mut e in &*SCodeUtil::getClassElements(element.clone()) {
+            for mut e in &*SCodeUtil::getClassElements(element) {
                 let mut e = e.clone();
                 analyseOperatorRecord(e.clone(), used.clone())?;
             }
@@ -178,21 +178,21 @@ pub(crate) fn analyseOperatorRecord(mut element: Arc<SCode::Element>, mut used: 
 }
 
 pub(crate) fn analyseAttributes(mut attributes: SCode::Attributes, mut used: UseTable) -> Result<()> {
-    analyseDims(attributes.arrayDims.clone(), used.clone())?;
+    analyseDims(attributes.arrayDims.clone(), used)?;
     Ok(())
 }
 
 pub(crate) fn analysePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut used: UseTable) -> Result<()> {
-    analyseReplaceable(prefixes.replaceablePrefix.clone(), used.clone())?;
+    analyseReplaceable(prefixes.replaceablePrefix.clone(), used)?;
     Ok(())
 }
 
 pub(crate) fn analyseReplaceable(mut repl: Arc<SCode::Replaceable>, mut used: UseTable) -> Result<()> {
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
-    let () = (::match_deref::match_deref! { match &(repl.clone()) {
+    let () = (::match_deref::match_deref! { match &(repl) {
         Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
             cc = (*__esc_cc).clone();
-            analyseConstrainClass(cc.clone(), used.clone())?;
+            analyseConstrainClass(cc.clone(), used)?;
             ()
         },
         _ => (),
@@ -204,7 +204,7 @@ pub(crate) fn analyseReplaceable(mut repl: Arc<SCode::Replaceable>, mut used: Us
 pub(crate) fn analyseConstrainClass(mut cc: Arc<SCode::ConstrainClass>, mut used: UseTable) -> Result<()> {
     analysePath(cc.constrainingClass.clone(), used.clone())?;
     analyseMod(cc.modifier.clone(), used.clone())?;
-    analyseComment(cc.comment.clone(), used.clone())?;
+    analyseComment(cc.comment.clone(), used)?;
     Ok(())
 }
 
@@ -215,11 +215,11 @@ pub(crate) fn analyseMod(mut r#mod: Arc<SCode::Mod>, mut used: UseTable) -> Resu
                 let mut s = s.clone();
                 analyseMod(s.r#mod.clone(), used.clone())?;
             }
-            analyseExpOpt(var_field!((*r#mod).binding, SCode::Mod::MOD).clone(), used.clone())?;
+            analyseExpOpt(var_field!((*r#mod).binding, SCode::Mod::MOD).clone(), used)?;
             ()
         },
         Deref @ SCode::Mod::REDECL { .. } => {
-            analyseElement(var_field!((*r#mod).element, SCode::Mod::REDECL).clone(), used.clone())?;
+            analyseElement(var_field!((*r#mod).element, SCode::Mod::REDECL).clone(), used)?;
             ()
         },
         _ => (),
@@ -233,7 +233,7 @@ pub(crate) fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) 
         Deref @ Absyn::TypeSpec::TPATH { .. } => {
             analysePath(var_field!((*ty).path, Absyn::TypeSpec::TPATH).clone(), used.clone())?;
             if isSome(var_field!((*ty).arrayDim, Absyn::TypeSpec::TPATH).clone()) {
-                analyseDims(Util::getOption(var_field!((*ty).arrayDim, Absyn::TypeSpec::TPATH).clone())?, used.clone())?;
+                analyseDims(Util::getOption(var_field!((*ty).arrayDim, Absyn::TypeSpec::TPATH).clone())?, used)?;
             }
             ()
         },
@@ -244,7 +244,7 @@ pub(crate) fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) 
                 analyseTypeSpec(t.clone(), used.clone())?;
             }
             if isSome(var_field!((*ty).arrayDim, Absyn::TypeSpec::TCOMPLEX).clone()) {
-                analyseDims(Util::getOption(var_field!((*ty).arrayDim, Absyn::TypeSpec::TCOMPLEX).clone())?, used.clone())?;
+                analyseDims(Util::getOption(var_field!((*ty).arrayDim, Absyn::TypeSpec::TCOMPLEX).clone())?, used)?;
             }
             ()
         },
@@ -254,7 +254,7 @@ pub(crate) fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) 
 }
 
 pub(crate) fn analysePath(mut path: Arc<Absyn::Path>, mut used: UseTable) -> Result<()> {
-    for mut i in &*AbsynUtil::pathToStringList(path.clone())? {
+    for mut i in &*AbsynUtil::pathToStringList(path)? {
         let mut i = i.clone();
         UnorderedSet::add((i.clone()).clone(), used.clone())?;
     }
@@ -262,7 +262,7 @@ pub(crate) fn analysePath(mut path: Arc<Absyn::Path>, mut used: UseTable) -> Res
 }
 
 pub(crate) fn analyseEquations(mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut used: UseTable) -> Result<()> {
-    for mut e in &*eqs.clone() {
+    for mut e in &*eqs {
         let mut e = e.clone();
         analyseEquation(e.clone(), used.clone())?;
     }
@@ -278,31 +278,31 @@ pub(crate) fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) 
                 analyseEquations(b.clone(), used.clone())?;
             }
             analyseEquations(var_field!((*eq).elseBranch, SCode::Equation::EQ_IF).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_IF).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_IF).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_EQUALS { .. } => {
             analyseExp(var_field!((*eq).expLeft, SCode::Equation::EQ_EQUALS).clone(), used.clone())?;
             analyseExp(var_field!((*eq).expRight, SCode::Equation::EQ_EQUALS).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_EQUALS).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_EQUALS).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_PDE { .. } => {
             analyseExp(var_field!((*eq).expLeft, SCode::Equation::EQ_PDE).clone(), used.clone())?;
             analyseExp(var_field!((*eq).expRight, SCode::Equation::EQ_PDE).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_PDE).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_PDE).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_CONNECT { .. } => {
             analyseCref(var_field!((*eq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), used.clone(), true)?;
             analyseCref(var_field!((*eq).crefRight, SCode::Equation::EQ_CONNECT).clone(), used.clone(), true)?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_CONNECT).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_CONNECT).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_FOR { .. } => {
             analyseExpOpt(var_field!((*eq).range, SCode::Equation::EQ_FOR).clone(), used.clone())?;
             analyseEquations(var_field!((*eq).eEquationLst, SCode::Equation::EQ_FOR).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_FOR).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_FOR).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_WHEN { .. } => {
@@ -313,30 +313,30 @@ pub(crate) fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) 
                 analyseExp(Util::tuple21(b.clone()), used.clone())?;
                 analyseEquations(Util::tuple22(b.clone()), used.clone())?;
             }
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_WHEN).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_WHEN).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_ASSERT { .. } => {
             analyseExp(var_field!((*eq).condition, SCode::Equation::EQ_ASSERT).clone(), used.clone())?;
             analyseExp(var_field!((*eq).message, SCode::Equation::EQ_ASSERT).clone(), used.clone())?;
             analyseExp(var_field!((*eq).level, SCode::Equation::EQ_ASSERT).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_ASSERT).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_ASSERT).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_TERMINATE { .. } => {
             analyseExp(var_field!((*eq).message, SCode::Equation::EQ_TERMINATE).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_TERMINATE).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_TERMINATE).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_REINIT { .. } => {
             analyseExp(var_field!((*eq).cref, SCode::Equation::EQ_REINIT).clone(), used.clone())?;
             analyseExp(var_field!((*eq).expReinit, SCode::Equation::EQ_REINIT).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_REINIT).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_REINIT).clone(), used)?;
             ()
         },
         Deref @ SCode::Equation::EQ_NORETCALL { .. } => {
             analyseExp(var_field!((*eq).exp, SCode::Equation::EQ_NORETCALL).clone(), used.clone())?;
-            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_NORETCALL).clone(), used.clone())?;
+            analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_NORETCALL).clone(), used)?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -345,7 +345,7 @@ pub(crate) fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) 
 }
 
 pub(crate) fn analyseAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut used: UseTable) -> Result<()> {
-    for mut a in &*algs.clone() {
+    for mut a in &*algs {
         let mut a = a.clone();
         analyseAlgorithm(a.clone(), used.clone())?;
     }
@@ -353,12 +353,12 @@ pub(crate) fn analyseAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::Algo
 }
 
 pub(crate) fn analyseAlgorithm(mut alg: Arc<SCode::AlgorithmSection>, mut used: UseTable) -> Result<()> {
-    analyseStatements(alg.statements.clone(), used.clone())?;
+    analyseStatements(alg.statements.clone(), used)?;
     Ok(())
 }
 
 pub(crate) fn analyseStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut used: UseTable) -> Result<()> {
-    for mut s in &*stmts.clone() {
+    for mut s in &*stmts {
         let mut s = s.clone();
         analyseStatement(s.clone(), used.clone())?;
     }
@@ -370,7 +370,7 @@ pub(crate) fn analyseStatement(mut stmt: Arc<SCode::Statement>, mut used: UseTab
         Deref @ SCode::Statement::ALG_ASSIGN { .. } => {
             analyseExp(var_field!((*stmt).assignComponent, SCode::Statement::ALG_ASSIGN).clone(), used.clone())?;
             analyseExp(var_field!((*stmt).value, SCode::Statement::ALG_ASSIGN).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSIGN).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSIGN).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_IF { .. } => {
@@ -382,25 +382,25 @@ pub(crate) fn analyseStatement(mut stmt: Arc<SCode::Statement>, mut used: UseTab
                 analyseStatements(Util::tuple22(b.clone()), used.clone())?;
             }
             analyseStatements(var_field!((*stmt).elseBranch, SCode::Statement::ALG_IF).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_IF).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_IF).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_FOR { .. } => {
             analyseExpOpt(var_field!((*stmt).range, SCode::Statement::ALG_FOR).clone(), used.clone())?;
             analyseStatements(var_field!((*stmt).forBody, SCode::Statement::ALG_FOR).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_FOR).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_FOR).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_PARFOR { .. } => {
             analyseExpOpt(var_field!((*stmt).range, SCode::Statement::ALG_PARFOR).clone(), used.clone())?;
             analyseStatements(var_field!((*stmt).parforBody, SCode::Statement::ALG_PARFOR).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_PARFOR).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_PARFOR).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_WHILE { .. } => {
             analyseExp(var_field!((*stmt).boolExpr, SCode::Statement::ALG_WHILE).clone(), used.clone())?;
             analyseStatements(var_field!((*stmt).whileBody, SCode::Statement::ALG_WHILE).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHILE).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHILE).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_WHEN_A { .. } => {
@@ -409,42 +409,42 @@ pub(crate) fn analyseStatement(mut stmt: Arc<SCode::Statement>, mut used: UseTab
                 analyseExp(Util::tuple21(b.clone()), used.clone())?;
                 analyseStatements(Util::tuple22(b.clone()), used.clone())?;
             }
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHEN_A).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHEN_A).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_ASSERT { .. } => {
             analyseExp(var_field!((*stmt).condition, SCode::Statement::ALG_ASSERT).clone(), used.clone())?;
             analyseExp(var_field!((*stmt).message, SCode::Statement::ALG_ASSERT).clone(), used.clone())?;
             analyseExp(var_field!((*stmt).level, SCode::Statement::ALG_ASSERT).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSERT).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSERT).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_TERMINATE { .. } => {
             analyseExp(var_field!((*stmt).message, SCode::Statement::ALG_TERMINATE).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_TERMINATE).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_TERMINATE).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_REINIT { .. } => {
             analyseExp(var_field!((*stmt).cref, SCode::Statement::ALG_REINIT).clone(), used.clone())?;
             analyseExp(var_field!((*stmt).newValue, SCode::Statement::ALG_REINIT).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_REINIT).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_REINIT).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_NORETCALL { .. } => {
             analyseExp(var_field!((*stmt).exp, SCode::Statement::ALG_NORETCALL).clone(), used.clone())?;
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_NORETCALL).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_NORETCALL).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_RETURN { .. } => {
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_RETURN).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_RETURN).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_BREAK { .. } => {
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_BREAK).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_BREAK).clone(), used)?;
             ()
         },
         Deref @ SCode::Statement::ALG_CONTINUE { .. } => {
-            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_CONTINUE).clone(), used.clone())?;
+            analyseComment(var_field!((*stmt).comment, SCode::Statement::ALG_CONTINUE).clone(), used)?;
             ()
         },
         _ => (),
@@ -456,7 +456,7 @@ pub(crate) fn analyseStatement(mut stmt: Arc<SCode::Statement>, mut used: UseTab
 pub use analyseSubscripts as analyseDims;
 
 pub fn analyseSubscripts(mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut used: UseTable) -> Result<()> {
-    for mut s in &*subs.clone() {
+    for mut s in &*subs {
         let mut s = s.clone();
         analyseSubscript(s.clone(), used.clone())?;
     }
@@ -466,7 +466,7 @@ pub fn analyseSubscripts(mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>
 pub(crate) fn analyseSubscript(mut sub: Arc<Absyn::Subscript>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => {
-            analyseExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone(), used.clone())?;
+            analyseExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone(), used)?;
             ()
         },
         _ => (),
@@ -477,13 +477,13 @@ pub(crate) fn analyseSubscript(mut sub: Arc<Absyn::Subscript>, mut used: UseTabl
 
 pub(crate) fn analyseExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut used: UseTable) -> Result<()> {
     if isSome(exp.clone()) {
-        analyseExp(Util::getOption(exp.clone())?, used.clone())?;
+        analyseExp(Util::getOption(exp)?, used)?;
     }
     Ok(())
 }
 
 pub(crate) fn analyseExpList(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut used: UseTable) -> Result<()> {
-    for mut e in &*expl.clone() {
+    for mut e in &*expl {
         let mut e = e.clone();
         analyseExp(e.clone(), used.clone())?;
     }
@@ -491,7 +491,7 @@ pub(crate) fn analyseExpList(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>,
 }
 
 pub(crate) fn analyseExp(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -> Result<()> {
-    AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(analyseExpTraverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<UnorderedSet::UnorderedSet<ArcStr>>) -> Result<(Arc<Absyn::Exp>, Arc<UnorderedSet::UnorderedSet<ArcStr>>)> + 'static>), used.clone())?;
+    AbsynUtil::traverseExp(exp, (std::sync::Arc::new(analyseExpTraverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<UnorderedSet::UnorderedSet<ArcStr>>) -> Result<(Arc<Absyn::Exp>, Arc<UnorderedSet::UnorderedSet<ArcStr>>)> + 'static>), used)?;
     Ok(())
 }
 
@@ -520,20 +520,20 @@ pub(crate) fn analyseExpTraverse(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -
 pub(crate) fn analyseCref(mut cref: Arc<Absyn::ComponentRef>, mut used: UseTable, mut includeLast: bool) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => {
-            analyseCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), used.clone(), includeLast.clone())?;
+            analyseCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), used, includeLast)?;
             ()
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => {
             UnorderedSet::add((var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), used.clone())?;
             analyseSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), used.clone())?;
-            analyseCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), used.clone(), includeLast.clone())?;
+            analyseCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), used, includeLast)?;
             ()
         },
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => {
-            if includeLast.clone() {
+            if includeLast {
                 UnorderedSet::add((var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), used.clone())?;
             }
-            analyseSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), used.clone())?;
+            analyseSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), used)?;
             ()
         },
         _ => (),
@@ -544,23 +544,23 @@ pub(crate) fn analyseCref(mut cref: Arc<Absyn::ComponentRef>, mut used: UseTable
 
 pub(crate) fn analyseComment(mut comment: Arc<SCode::Comment>, mut used: UseTable) -> Result<()> {
     if isSome(comment.annotation_.clone()) {
-        analyseAnnotation(Util::getOption(comment.annotation_.clone())?, used.clone())?;
+        analyseAnnotation(Util::getOption(comment.annotation_.clone())?, used)?;
     }
     Ok(())
 }
 
 pub(crate) fn analyseAnnotation(mut ann: Arc<SCode::Annotation>, mut used: UseTable) -> Result<()> {
-    analyseMod(ann.modification.clone(), used.clone())?;
+    analyseMod(ann.modification.clone(), used)?;
     Ok(())
 }
 
 pub(crate) fn saveElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outElements: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    for mut e in &*elements.clone() {
+    for mut e in &*elements {
         let mut e = e.clone();
         outElements = saveElement(e.clone(), used.clone(), outElements.clone())?;
     }
-    outElements = metamodelica::Dangerous::listReverseInPlace(outElements.clone());
+    outElements = metamodelica::Dangerous::listReverseInPlace(outElements);
     Ok(outElements)
 }
 
@@ -570,11 +570,11 @@ pub(crate) fn saveElement(mut element: Arc<SCode::Element>, mut used: UseTable, 
     elements = (::match_deref::match_deref! { match &(elem.clone()) {
         Deref @ SCode::Element::CLASS { .. } if (UnorderedSet::contains((var_field!((*elem).name, SCode::Element::CLASS).clone()).clone(), used.clone())?) => {
             assign_variant_field!(elem => SCode::Element::CLASS; classDef = saveClassDef(var_field!((*elem).classDef, SCode::Element::CLASS).clone(), used.clone())?);
-            metamodelica::cons(elem.clone(), elements.clone())
+            metamodelica::cons(elem.clone(), elements)
         },
-        Deref @ SCode::Element::CLASS { .. } => elements.clone(),
-        Deref @ SCode::Element::EXTENDS { .. } if (AbsynUtil::pathContains(var_field!((*elem).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!("Icons")).clone())?) => elements.clone(),
-        _ => metamodelica::cons(element.clone(), elements.clone()),
+        Deref @ SCode::Element::CLASS { .. } => elements,
+        Deref @ SCode::Element::EXTENDS { .. } if (AbsynUtil::pathContains(var_field!((*elem).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!("Icons")).clone())?) => elements,
+        _ => metamodelica::cons(element, elements),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(elements)
@@ -584,11 +584,11 @@ pub(crate) fn saveClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable) ->
     let mut def: Arc<SCode::ClassDef> = def;
     let () = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
-            assign_variant_field!(def => SCode::ClassDef::PARTS; elementLst = saveElements(var_field!((*def).elementLst, SCode::ClassDef::PARTS).clone(), used.clone())?);
+            assign_variant_field!(def => SCode::ClassDef::PARTS; elementLst = saveElements(var_field!((*def).elementLst, SCode::ClassDef::PARTS).clone(), used)?);
             ()
         },
         Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => {
-            assign_variant_field!(def => SCode::ClassDef::CLASS_EXTENDS; composition = saveClassDef(var_field!((*def).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), used.clone())?);
+            assign_variant_field!(def => SCode::ClassDef::CLASS_EXTENDS; composition = saveClassDef(var_field!((*def).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), used)?);
             ()
         },
         _ => (),

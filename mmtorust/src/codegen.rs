@@ -19,7 +19,7 @@ use openmodelica_ast::Absyn;
 use crate::MM;
 use std::collections::HashMap;
 use crate::hierarchy::{InstanceHierarchy, FunctionInput, NameNode, NodeKind, Ty, extract_default, extract_default_exp, lookup_node, lookup_node_ty, lookup_record_through_unions, uniontype_needs_mod, collect_type_vars_in_ty};
-use crate::typedexp::{self, TypedExp, TypedPat, TypedCase, Lit, BinOpKind, UnOpKind, MatchKind, ReductionIter, ReductionIterKind, cref_to_dotted, CrefSegment};
+use crate::typedexp::{self, TypedExp, TypedPat, TypedCase, TypedStmt, Lit, BinOpKind, UnOpKind, MatchKind, ReductionIter, ReductionIterKind, cref_to_dotted, CrefSegment};
 use anyhow::{Result,bail};
 
 // ── Import-aware generation context ──────────────────────────────────────────
@@ -584,6 +584,21 @@ struct GenCtx {
     /// Monotonic counter for synthesizing fresh names for real-literal
     /// pattern bindings (see `pat_extra_guards`).
     pat_lit_counter: u32,
+    /// Binding mode of each in-scope variable: whether the Rust binding owns its
+    /// value (`let x: T`, by-value parameter, by-value pattern binding) or is a
+    /// shared reference (`&T` / `&Arc<T>`, e.g. a match-arm variable bound
+    /// through a borrowed `match_deref!`/`&(…)` scrutinee, or a `for x in &list`
+    /// loop variable). The aggressive `.clone()` the lowering emits at every
+    /// variable read serves *two* purposes — MetaModelica's copy-by-value
+    /// semantics, and normalising a reference binding back to an owned value — so
+    /// eliding a clone (move on last use, or copy of a `Copy` value) is only
+    /// sound when the binding is `Owned`. A name absent from this map is treated
+    /// as non-owned (keep the clone): the safe default. Populated at every
+    /// binding site ([`emit_function`] for the function scope, the match-arm and
+    /// for-loop emitters for nested bindings) and saved/restored at scope
+    /// boundaries alongside `variant_shapes`/`match_refbound`. See the `Var` arm
+    /// of [`emit_exp`].
+    place_mode: HashMap<String, PlaceMode>,
     /// Stack of enclosing loop labels (innermost last), one entry per active
     /// `for`/`while` loop. `Some(label)` when the loop was emitted with an
     /// explicit `'__loopN:` label because its body contains a `break`/`continue`
@@ -597,6 +612,21 @@ struct GenCtx {
 /// Binding-shape classification for variables tracked in `GenCtx::variants`.
 /// Determines how `var_field!` should dereference the variable to obtain the
 /// underlying enum value for pattern matching.
+/// Binding mode of a local variable in the generated Rust — see
+/// [`GenCtx::place_mode`].
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum PlaceMode {
+    /// The binding owns its value (`let x: T`, a by-value parameter, or a
+    /// by-value pattern binding). A read may move the value (when it is the last
+    /// use) or copy it (when `T: Copy`); a `.clone()` is only needed to keep the
+    /// binding alive for a later read.
+    Owned,
+    /// The binding is a shared reference (`&T` / `&Arc<T>`). A read yields a
+    /// reference, so producing an owned value requires `.clone()`, and the value
+    /// can never be moved out.
+    Ref,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum VarShape {
     /// Owned `T` (the variable holds an enum value directly).
@@ -674,6 +704,7 @@ impl GenCtx {
             pat_extra_guards: Vec::new(),
             pat_bind_rename: HashMap::new(),
             pat_lit_counter: 0,
+            place_mode: HashMap::new(),
             loop_label_stack: Vec::new(),
         }
     }
@@ -5040,6 +5071,651 @@ fn collect_type_vars_in_typed_stmts(stmts: &[typedexp::TypedStmt], out: &mut Vec
     visit_stmts(stmts, out);
 }
 
+// ── Last-use liveness analysis ────────────────────────────────────────────────
+//
+// MetaModelica passes values by copy, so the lowering reads every variable with
+// `.clone()`. Many of those clones are the *final* read of an owned binding: the
+// value could be moved instead, avoiding an `Arc` refcount bump or a deep
+// `Vec`/`String`/record copy. [`mark_last_uses`] is a backward dataflow pass over
+// the structured statement/expression IR that sets `TypedExp::Var.last_use` on
+// each occurrence that is provably the last read on every forward path. The code
+// generator combines that flag with the variable's binding mode (owned vs `&T`)
+// to decide between a move and a clone — see the `Var` arm of [`emit_exp`].
+//
+// `live` is the set of variable base names that may still be read before being
+// overwritten on some path forward from the current point (processed in reverse
+// evaluation order). A read of `v` is a last use iff `v ∉ live` when the read
+// executes. Reads add `v`; a binding/full reassignment removes it.
+//
+// Correctness over the safe side: a missed last use just keeps a (correct)
+// clone, and moving a value that is in fact dead is observably identical to
+// cloning it (clone has no side effects in the generated runtime). The only way
+// an over-eager move can go wrong is a use-after-move, which is a *compile*
+// error in the generated crate, never silent misbehaviour. Constructs with
+// non-linear control flow — loops (`for`/`while`), `try`/`failure`, reductions,
+// and `matchcontinue` (which retries arms on failure) — are handled
+// conservatively: every variable they read is kept live and no move is marked
+// inside them. (Copy-typed clones are elided independently of liveness, so loops
+// still lose their `i.clone()` noise.)
+
+/// The base variable name a `Var` reference reads — its first dotted/segment
+/// component. Liveness and the move decision operate on this enclosing binding
+/// (a field/subscript access `node.f[i]` is a read of `node`).
+fn var_base_name(name: &str, segments: &[CrefSegment]) -> String {
+    match segments.first() {
+        Some(seg) => seg.name.clone(),
+        None => name.split('.').next().unwrap_or(name).to_owned(),
+    }
+}
+
+/// Entry point: mark the last-use occurrences in a function body. `outputs` are
+/// the function's output components — they are read by the implicit tail return,
+/// so they are live when the body finishes.
+pub(crate) fn mark_last_uses(stmts: &mut [TypedStmt], outputs: &HashSet<String>) {
+    let mut live = outputs.clone();
+    live_stmts(stmts, &mut live, outputs);
+}
+
+fn live_stmts(stmts: &mut [TypedStmt], live: &mut HashSet<String>, outputs: &HashSet<String>) {
+    for s in stmts.iter_mut().rev() {
+        live_stmt(s, live, outputs);
+    }
+}
+
+fn live_stmt(stmt: &mut TypedStmt, live: &mut HashSet<String>, outputs: &HashSet<String>) {
+    match stmt {
+        TypedStmt::Assign { lhs, rhs } => {
+            // The LHS pattern (re)defines the bound names — they are dead before
+            // the RHS runs — and reads any subscript/field base it targets.
+            pat_kill_and_gen(lhs, live, outputs);
+            live_exp(rhs, live, outputs);
+        }
+        TypedStmt::NoRetCall { call } => live_exp(call, live, outputs),
+        TypedStmt::If { cond, then_, elseif, else_ } => {
+            // Branches are mutually exclusive: analyse each from the same
+            // post-`if` live set, then union their live-ins for the enclosing
+            // context. Conditions are read before branching.
+            let live_out = live.clone();
+            let mut acc = HashSet::new();
+            let mut b = live_out.clone();
+            live_stmts(else_, &mut b, outputs);
+            acc.extend(b);
+            for (_, body) in elseif.iter_mut() {
+                let mut b = live_out.clone();
+                live_stmts(body, &mut b, outputs);
+                acc.extend(b);
+            }
+            let mut b = live_out.clone();
+            live_stmts(then_, &mut b, outputs);
+            acc.extend(b);
+            *live = acc;
+            for (c, _) in elseif.iter_mut().rev() {
+                live_exp(c, live, outputs);
+            }
+            live_exp(cond, live, outputs);
+        }
+        TypedStmt::For { var, range, body } => {
+            // Loop: a value read in the body is live across the back-edge.
+            // Conservative — keep every body read live and mark no moves inside.
+            // The range is evaluated once in the enclosing scope.
+            let mut reads = HashSet::new();
+            collect_stmts_names(body, &mut reads);
+            reads.remove(var);
+            live.extend(reads);
+            live_exp(range, live, outputs);
+        }
+        TypedStmt::While { cond, body } => {
+            let mut reads = HashSet::new();
+            collect_stmts_names(body, &mut reads);
+            collect_exp_names(cond, &mut reads);
+            live.extend(reads);
+        }
+        TypedStmt::Try { body, else_body } => {
+            // A failure mid-`body` transfers to `else_body`; treat both
+            // conservatively so a value moved in `body` can't be needed by the
+            // recovery path.
+            let mut reads = HashSet::new();
+            collect_stmts_names(body, &mut reads);
+            collect_stmts_names(else_body, &mut reads);
+            live.extend(reads);
+        }
+        TypedStmt::Failure { body } => {
+            let mut reads = HashSet::new();
+            collect_stmts_names(body, &mut reads);
+            live.extend(reads);
+        }
+        TypedStmt::Return => {
+            // `return;` diverges to the function tail, which reads every output
+            // (`return Ok((outputs…))`). The textual successors do not execute,
+            // so the live set at this point is exactly the outputs.
+            *live = outputs.clone();
+        }
+        TypedStmt::Break | TypedStmt::Continue | TypedStmt::Todo(_) => {}
+    }
+}
+
+fn live_exp(exp: &mut TypedExp, live: &mut HashSet<String>, outputs: &HashSet<String>) {
+    match exp {
+        TypedExp::Lit(_) | TypedExp::Todo(_) => {}
+        TypedExp::Var { name, segments, last_use, .. } => {
+            // Subscripts are read as part of the access; process them (reverse)
+            // before deciding the base's last-use status.
+            for seg in segments.iter_mut().rev() {
+                for sub in seg.subscripts.iter_mut().rev() {
+                    live_exp(sub, live, outputs);
+                }
+            }
+            let base = var_base_name(name, segments);
+            *last_use = !live.contains(&base);
+            live.insert(base);
+        }
+        TypedExp::BinOp { lhs, rhs, .. } => {
+            live_exp(rhs, live, outputs);
+            live_exp(lhs, live, outputs);
+        }
+        TypedExp::UnOp { operand, .. } => live_exp(operand, live, outputs),
+        TypedExp::Call { args, named_args, .. }
+        | TypedExp::Constructor { args, named_args, .. } => {
+            for (_, a) in named_args.iter_mut().rev() {
+                live_exp(a, live, outputs);
+            }
+            for a in args.iter_mut().rev() {
+                live_exp(a, live, outputs);
+            }
+        }
+        TypedExp::PartEval { func, args, named_args, callee_is_local, .. } => {
+            for (_, a) in named_args.iter_mut().rev() {
+                live_exp(a, live, outputs);
+            }
+            for a in args.iter_mut().rev() {
+                live_exp(a, live, outputs);
+            }
+            // A `callee_is_local` partial application closes over the local
+            // function-typed binding; count it as a read so it is not moved.
+            if *callee_is_local {
+                live.insert(func.split('.').next().unwrap_or(func).to_owned());
+            }
+        }
+        TypedExp::If { cond, then_, elseif, else_, .. } => {
+            let live_out = live.clone();
+            let mut acc = HashSet::new();
+            let mut b = live_out.clone();
+            live_exp(else_, &mut b, outputs);
+            acc.extend(b);
+            for (_, e) in elseif.iter_mut() {
+                let mut b = live_out.clone();
+                live_exp(e, &mut b, outputs);
+                acc.extend(b);
+            }
+            let mut b = live_out.clone();
+            live_exp(then_, &mut b, outputs);
+            acc.extend(b);
+            *live = acc;
+            for (c, _) in elseif.iter_mut().rev() {
+                live_exp(c, live, outputs);
+            }
+            live_exp(cond, live, outputs);
+        }
+        TypedExp::Cons { head, tail, .. } => {
+            live_exp(tail, live, outputs);
+            live_exp(head, live, outputs);
+        }
+        TypedExp::Tuple(elems) | TypedExp::Array { elems, .. } => {
+            for e in elems.iter_mut().rev() {
+                live_exp(e, live, outputs);
+            }
+        }
+        TypedExp::Range { start, step, stop, .. } => {
+            live_exp(stop, live, outputs);
+            if let Some(s) = step {
+                live_exp(s, live, outputs);
+            }
+            live_exp(start, live, outputs);
+        }
+        TypedExp::Reduction { body, iterators, .. } => {
+            // The body and per-iterator guards run once per element (loop
+            // semantics) → conservative. Iterator variables are fresh per
+            // element; the ranges are evaluated once in the enclosing scope.
+            let mut reads = HashSet::new();
+            collect_exp_names(body, &mut reads);
+            for it in iterators.iter() {
+                if let Some(g) = &it.guard {
+                    collect_exp_names(g, &mut reads);
+                }
+            }
+            for it in iterators.iter() {
+                reads.remove(&it.name);
+            }
+            live.extend(reads);
+            for it in iterators.iter_mut().rev() {
+                live_exp(&mut it.range, live, outputs);
+            }
+        }
+        TypedExp::Match { kind, input, cases, as_binding, .. } => {
+            if matches!(kind, MatchKind::MatchContinue) {
+                // matchcontinue retries earlier arms when an arm fails — a value
+                // moved in one arm could be needed on retry. Conservative.
+                let mut reads = HashSet::new();
+                for case in cases.iter() {
+                    collect_case_names(case, &mut reads);
+                }
+                live.extend(reads);
+                live_exp(input, live, outputs);
+            } else {
+                // Arm *bodies* are mutually exclusive, but the patterns and
+                // guards are tried *sequentially* during arm selection: arm i's
+                // guard runs only if arms 1..i-1 did not commit, so a variable a
+                // guard reads is still live while earlier arms are tried. Treat
+                // every guard/pattern read as a shared "decision" live set across
+                // the whole match (conservative — no move marked inside guards or
+                // patterns), and apply per-arm mutual exclusion only to the
+                // bodies (stmts/result/locals). Without this, the same variable
+                // used in several arms' guards would be marked last-use in each
+                // arm independently and moved out of the first guard (E0382).
+                let live_out = live.clone();
+                let mut decision = HashSet::new();
+                for case in cases.iter() {
+                    if let Some(g) = &case.guard {
+                        collect_exp_names(g, &mut decision);
+                    }
+                    collect_pat_names(&case.pattern, &mut decision);
+                }
+                let mut acc = decision.clone();
+                for case in cases.iter_mut() {
+                    let mut clive = live_out.clone();
+                    clive.extend(decision.iter().cloned());
+                    live_exp(&mut case.result, &mut clive, outputs);
+                    live_stmts(&mut case.stmts, &mut clive, outputs);
+                    for (lname, _, default, _) in case.locals.iter_mut().rev() {
+                        clive.remove(lname);
+                        if let Some(d) = default {
+                            live_exp(d, &mut clive, outputs);
+                        }
+                    }
+                    // Pattern-bound names are arm-local: kill them (without
+                    // marking) so they don't leak as live above the match. The
+                    // guard is intentionally not walked for marking — its reads
+                    // are already in `decision`.
+                    let mut binds = HashSet::new();
+                    collect_pat_names(&case.pattern, &mut binds);
+                    for b in &binds {
+                        clive.remove(b);
+                    }
+                    acc.extend(clive);
+                }
+                *live = acc;
+                if let Some(b) = as_binding {
+                    live.remove(b);
+                }
+                live_exp(input, live, outputs);
+            }
+        }
+    }
+}
+
+/// Reset `last_use` on every `Var` in `exp` (and, for an embedded `match`, its
+/// arm statements). Used after default-argument inlining splices *copies* of
+/// actual-argument expressions into a call's default slots: that duplication
+/// happens after [`mark_last_uses`] ran, so a `last_use` carried by a spliced
+/// copy (or by the original actual, now used in two places) is stale — a
+/// duplicated value must be cloned, never moved.
+fn clear_last_use(exp: &mut TypedExp) {
+    match exp {
+        TypedExp::Var { last_use, segments, .. } => {
+            *last_use = false;
+            for seg in segments.iter_mut() {
+                for sub in seg.subscripts.iter_mut() {
+                    clear_last_use(sub);
+                }
+            }
+        }
+        TypedExp::Lit(_) | TypedExp::Todo(_) => {}
+        TypedExp::BinOp { lhs, rhs, .. } => {
+            clear_last_use(lhs);
+            clear_last_use(rhs);
+        }
+        TypedExp::UnOp { operand, .. } => clear_last_use(operand),
+        TypedExp::Call { args, named_args, .. }
+        | TypedExp::Constructor { args, named_args, .. }
+        | TypedExp::PartEval { args, named_args, .. } => {
+            for a in args.iter_mut() {
+                clear_last_use(a);
+            }
+            for (_, a) in named_args.iter_mut() {
+                clear_last_use(a);
+            }
+        }
+        TypedExp::If { cond, then_, elseif, else_, .. } => {
+            clear_last_use(cond);
+            clear_last_use(then_);
+            clear_last_use(else_);
+            for (c, e) in elseif.iter_mut() {
+                clear_last_use(c);
+                clear_last_use(e);
+            }
+        }
+        TypedExp::Cons { head, tail, .. } => {
+            clear_last_use(head);
+            clear_last_use(tail);
+        }
+        TypedExp::Tuple(elems) | TypedExp::Array { elems, .. } => {
+            for e in elems.iter_mut() {
+                clear_last_use(e);
+            }
+        }
+        TypedExp::Range { start, step, stop, .. } => {
+            clear_last_use(start);
+            clear_last_use(stop);
+            if let Some(s) = step {
+                clear_last_use(s);
+            }
+        }
+        TypedExp::Reduction { body, iterators, .. } => {
+            clear_last_use(body);
+            for it in iterators.iter_mut() {
+                clear_last_use(&mut it.range);
+                if let Some(g) = &mut it.guard {
+                    clear_last_use(g);
+                }
+            }
+        }
+        TypedExp::Match { input, cases, .. } => {
+            clear_last_use(input);
+            for case in cases.iter_mut() {
+                if let Some(g) = &mut case.guard {
+                    clear_last_use(g);
+                }
+                for (_, _, d, _) in case.locals.iter_mut() {
+                    if let Some(d) = d {
+                        clear_last_use(d);
+                    }
+                }
+                for s in case.stmts.iter_mut() {
+                    clear_last_use_stmt(s);
+                }
+                clear_last_use(&mut case.result);
+            }
+        }
+    }
+}
+
+fn clear_last_use_stmt(stmt: &mut TypedStmt) {
+    match stmt {
+        TypedStmt::Assign { rhs, .. } => clear_last_use(rhs),
+        TypedStmt::NoRetCall { call } => clear_last_use(call),
+        TypedStmt::If { cond, then_, elseif, else_ } => {
+            clear_last_use(cond);
+            for s in then_.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+            for s in else_.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+            for (c, body) in elseif.iter_mut() {
+                clear_last_use(c);
+                for s in body.iter_mut() {
+                    clear_last_use_stmt(s);
+                }
+            }
+        }
+        TypedStmt::For { range, body, .. } => {
+            clear_last_use(range);
+            for s in body.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+        }
+        TypedStmt::While { cond, body } => {
+            clear_last_use(cond);
+            for s in body.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+        }
+        TypedStmt::Try { body, else_body } => {
+            for s in body.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+            for s in else_body.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+        }
+        TypedStmt::Failure { body } => {
+            for s in body.iter_mut() {
+                clear_last_use_stmt(s);
+            }
+        }
+        TypedStmt::Return | TypedStmt::Break | TypedStmt::Continue | TypedStmt::Todo(_) => {}
+    }
+}
+
+/// Process a pattern in *binding* position (match arm head, or the LHS of `:=`):
+/// fresh bindings kill the name (it is redefined here, so dead above this point);
+/// `Index`/`FieldAccess` targets instead *read* their base (the array/record must
+/// already exist) and are never killed.
+fn pat_kill_and_gen(pat: &mut TypedPat, live: &mut HashSet<String>, outputs: &HashSet<String>) {
+    match pat {
+        TypedPat::Wildcard
+        | TypedPat::Lit(_)
+        | TypedPat::EmptyList
+        | TypedPat::None_
+        | TypedPat::Todo(_) => {}
+        TypedPat::Var(n) => {
+            live.remove(n);
+        }
+        TypedPat::Some_(p) => pat_kill_and_gen(p, live, outputs),
+        TypedPat::Cons { head, tail } => {
+            pat_kill_and_gen(head, live, outputs);
+            pat_kill_and_gen(tail, live, outputs);
+        }
+        TypedPat::Tuple(ps) => {
+            for p in ps.iter_mut() {
+                pat_kill_and_gen(p, live, outputs);
+            }
+        }
+        TypedPat::Constructor { fields, named_fields, .. } => {
+            for p in fields.iter_mut() {
+                pat_kill_and_gen(p, live, outputs);
+            }
+            for (_, p) in named_fields.iter_mut() {
+                pat_kill_and_gen(p, live, outputs);
+            }
+        }
+        TypedPat::As { var, pat } => {
+            live.remove(var);
+            pat_kill_and_gen(pat, live, outputs);
+        }
+        TypedPat::Index { base, index } => {
+            live_exp(base, live, outputs);
+            live_exp(index, live, outputs);
+        }
+        TypedPat::FieldAccess { base, .. } => pat_base_reads(base, live, outputs),
+    }
+}
+
+/// A `FieldAccess` LHS base (`x.field := …`) reads `x`; recurse through nested
+/// field chains. Other shapes carry no read here.
+fn pat_base_reads(pat: &mut TypedPat, live: &mut HashSet<String>, outputs: &HashSet<String>) {
+    match pat {
+        TypedPat::Var(n) => {
+            live.insert(n.clone());
+        }
+        TypedPat::FieldAccess { base, .. } => pat_base_reads(base, live, outputs),
+        TypedPat::Index { base, index } => {
+            live_exp(base, live, outputs);
+            live_exp(index, live, outputs);
+        }
+        _ => {}
+    }
+}
+
+// Conservative name collectors for non-linear-control-flow regions: gather a
+// superset of the variable names a region may reference (reads, pattern binds,
+// and assignment targets). Used to keep everything a loop/try/matchcontinue
+// touches live so no move is marked inside.
+
+fn collect_exp_names(exp: &TypedExp, out: &mut HashSet<String>) {
+    match exp {
+        TypedExp::Lit(_) | TypedExp::Todo(_) => {}
+        TypedExp::Var { name, segments, .. } => {
+            out.insert(var_base_name(name, segments));
+            for seg in segments {
+                for sub in &seg.subscripts {
+                    collect_exp_names(sub, out);
+                }
+            }
+        }
+        TypedExp::BinOp { lhs, rhs, .. } => {
+            collect_exp_names(lhs, out);
+            collect_exp_names(rhs, out);
+        }
+        TypedExp::UnOp { operand, .. } => collect_exp_names(operand, out),
+        TypedExp::Call { args, named_args, .. }
+        | TypedExp::Constructor { args, named_args, .. }
+        | TypedExp::PartEval { args, named_args, .. } => {
+            for a in args {
+                collect_exp_names(a, out);
+            }
+            for (_, a) in named_args {
+                collect_exp_names(a, out);
+            }
+        }
+        TypedExp::If { cond, then_, elseif, else_, .. } => {
+            collect_exp_names(cond, out);
+            collect_exp_names(then_, out);
+            collect_exp_names(else_, out);
+            for (c, e) in elseif {
+                collect_exp_names(c, out);
+                collect_exp_names(e, out);
+            }
+        }
+        TypedExp::Cons { head, tail, .. } => {
+            collect_exp_names(head, out);
+            collect_exp_names(tail, out);
+        }
+        TypedExp::Tuple(elems) | TypedExp::Array { elems, .. } => {
+            for e in elems {
+                collect_exp_names(e, out);
+            }
+        }
+        TypedExp::Range { start, step, stop, .. } => {
+            collect_exp_names(start, out);
+            collect_exp_names(stop, out);
+            if let Some(s) = step {
+                collect_exp_names(s, out);
+            }
+        }
+        TypedExp::Reduction { body, iterators, .. } => {
+            collect_exp_names(body, out);
+            for it in iterators {
+                collect_exp_names(&it.range, out);
+                if let Some(g) = &it.guard {
+                    collect_exp_names(g, out);
+                }
+            }
+        }
+        TypedExp::Match { input, cases, .. } => {
+            collect_exp_names(input, out);
+            for case in cases {
+                collect_case_names(case, out);
+            }
+        }
+    }
+}
+
+fn collect_case_names(case: &TypedCase, out: &mut HashSet<String>) {
+    if let Some(g) = &case.guard {
+        collect_exp_names(g, out);
+    }
+    for (_, _, default, _) in &case.locals {
+        if let Some(d) = default {
+            collect_exp_names(d, out);
+        }
+    }
+    collect_stmts_names(&case.stmts, out);
+    collect_exp_names(&case.result, out);
+}
+
+fn collect_stmts_names(stmts: &[TypedStmt], out: &mut HashSet<String>) {
+    for s in stmts {
+        collect_stmt_names(s, out);
+    }
+}
+
+fn collect_stmt_names(stmt: &TypedStmt, out: &mut HashSet<String>) {
+    match stmt {
+        TypedStmt::Assign { lhs, rhs } => {
+            collect_pat_names(lhs, out);
+            collect_exp_names(rhs, out);
+        }
+        TypedStmt::NoRetCall { call } => collect_exp_names(call, out),
+        TypedStmt::If { cond, then_, elseif, else_ } => {
+            collect_exp_names(cond, out);
+            collect_stmts_names(then_, out);
+            collect_stmts_names(else_, out);
+            for (c, body) in elseif {
+                collect_exp_names(c, out);
+                collect_stmts_names(body, out);
+            }
+        }
+        TypedStmt::For { range, body, .. } => {
+            collect_exp_names(range, out);
+            collect_stmts_names(body, out);
+        }
+        TypedStmt::While { cond, body } => {
+            collect_exp_names(cond, out);
+            collect_stmts_names(body, out);
+        }
+        TypedStmt::Try { body, else_body } => {
+            collect_stmts_names(body, out);
+            collect_stmts_names(else_body, out);
+        }
+        TypedStmt::Failure { body } => collect_stmts_names(body, out),
+        TypedStmt::Return | TypedStmt::Break | TypedStmt::Continue | TypedStmt::Todo(_) => {}
+    }
+}
+
+/// Collect every name a binding/assignment pattern mentions (bound names *and*
+/// the bases of `Index`/`FieldAccess` targets and their subscripts). A superset
+/// is all the conservative-region callers need.
+fn collect_pat_names(pat: &TypedPat, out: &mut HashSet<String>) {
+    match pat {
+        TypedPat::Wildcard
+        | TypedPat::Lit(_)
+        | TypedPat::EmptyList
+        | TypedPat::None_
+        | TypedPat::Todo(_) => {}
+        TypedPat::Var(n) => {
+            out.insert(n.clone());
+        }
+        TypedPat::Some_(p) => collect_pat_names(p, out),
+        TypedPat::Cons { head, tail } => {
+            collect_pat_names(head, out);
+            collect_pat_names(tail, out);
+        }
+        TypedPat::Tuple(ps) => {
+            for p in ps {
+                collect_pat_names(p, out);
+            }
+        }
+        TypedPat::Constructor { fields, named_fields, .. } => {
+            for p in fields {
+                collect_pat_names(p, out);
+            }
+            for (_, p) in named_fields {
+                collect_pat_names(p, out);
+            }
+        }
+        TypedPat::As { var, pat } => {
+            out.insert(var.clone());
+            collect_pat_names(pat, out);
+        }
+        TypedPat::Index { base, index } => {
+            collect_exp_names(base, out);
+            collect_exp_names(index, out);
+        }
+        TypedPat::FieldAccess { base, .. } => collect_pat_names(base, out),
+    }
+}
+
 /// Maintained Rust source for functions whose automatic lowering is provably
 /// wrong, keyed by the function's qualified MetaModelica name. [`emit_function`]
 /// writes the returned text verbatim instead of generating a body. The source
@@ -5951,7 +6627,7 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         None => local_alg_items,
     };
 
-    let typed_stmts = typedexp::infer_stmts(alg_items, &mut infer_env, top_level, &pkg_prefix, &all_type_vars);
+    let mut typed_stmts = typedexp::infer_stmts(alg_items, &mut infer_env, top_level, &pkg_prefix, &all_type_vars);
 
     // Also collect type vars referenced inside the body — most importantly,
     // those declared on match-arm `local` components like
@@ -5972,6 +6648,21 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     // re-assignments to outputs/protected components and so `return;` inside
     // a match arm can expand to the same Ok(...) tuple as the function tail.
     ctx.fn_env_vars = env.vars.clone();
+    // Every function-scope variable (input, output, protected local) is an
+    // owned Rust binding — a by-value parameter or a `let mut` local. Record the
+    // binding mode so the `Var` arm of `emit_exp` may move/copy instead of clone
+    // at a last use (see [`GenCtx::place_mode`]). Reset per function; match-arm
+    // and for-loop emitters layer nested bindings on top and restore at scope
+    // exit.
+    ctx.place_mode.clear();
+    for k in env.vars.keys() {
+        ctx.place_mode.insert(k.clone(), PlaceMode::Owned);
+    }
+    // Backward liveness: mark the final read of each variable so the `Var` arm
+    // of `emit_exp` can move (not clone) an owned value there. The outputs are
+    // read by the implicit tail return, so they are live when the body ends.
+    let output_live: HashSet<String> = env.outputs.iter().cloned().collect();
+    mark_last_uses(&mut typed_stmts, &output_live);
     // Snapshot the function-scope variable names (inputs/outputs/protected)
     // for the escaping-pattern-binding writeback in `emit_match`.
     ctx.fn_scope_vars = env.vars.keys().cloned().collect();
@@ -7009,7 +7700,8 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
         }
         TypedExp::Lit(Lit::Bool(v)) => v.to_string(),
 
-        TypedExp::Var { name, segments, ty, .. } => {
+        TypedExp::Var { name, segments, ty, last_use: node_last_use } => {
+            let node_last_use = *node_last_use;
             // Translate references that point at the original (nested)
             // location of an identity-passthrough helper to its hoisted
             // module-level location. `qualify_hoisted_nested_fns` preserved
@@ -7253,6 +7945,24 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // construct rather than the runtime function. Remap such names
             // to their qualified runtime path before fnptr! wrapping.
             let var_str = remap_shadowed_builtin_path(&var_str, resolved_fn_qname.as_deref());
+            // Clone-elision inputs (see the `copy`/`node_last_use` arms below).
+            // `base` is the enclosing binding this reference reads.
+            let base = var_base_name(name, segments);
+            // An owned binding may be moved/copied; a reference binding (`&T`)
+            // must clone to yield an owned value. Cross-check the match-arm
+            // ref-tracking as a safety net so a function-scope local rebound by
+            // reference in an enclosing arm is never treated as owned.
+            let owned = matches!(ctx.place_mode.get(&base), Some(PlaceMode::Owned))
+                && !ctx.match_refbound.contains(&base)
+                && !matches!(ctx.variant_shapes.get(&base), Some(VarShape::RefArc));
+            // A plain single-segment local read with no field/subscript access —
+            // the only shape we move a non-`Copy` value out of (moving a whole
+            // owned local is always allowed; moving a *field* out could hit a
+            // `Drop` type, and indexing yields a place we can't move from).
+            let is_plain_local = segments.len() <= 1
+                && !name.contains('.')
+                && segments.iter().all(|s| s.subscripts.is_empty());
+            let copy = ty_is_copy(effective_ty);
             let emitted = match effective_ty {
                 // Infallible concrete function used as a value. Wrap with
                 // `fnptr!(path, ArgTy1, …)` so the closure satisfies the
@@ -7553,6 +8263,25 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 // that `arcstr::literal!("foo")` produces from a literal.
                 Ty::Str if is_const_str_cref(name, segments, ctx, top_level) =>
                     format!("arcstr::literal!({var_str})"),
+                // A `Copy` value (`i32`/`f64`/`bool`/Modelica enumeration) read
+                // from an owned plain local: a bare read copies it and leaves the
+                // binding usable, so the `.clone()` is a pure no-op. Restricted to
+                // `is_plain_local` — a *field* read of a variant-narrowed binding
+                // lowers to `var_field!(…)`, which yields a `&T` reference, so
+                // there the `.clone()` is load-bearing (it produces the owned
+                // value the context expects).
+                _ if copy && is_plain_local && owned => var_str,
+                // Final read of an owned, non-`Copy` plain local: move the value
+                // instead of cloning it (the marquee win — no `Arc` refcount bump
+                // or `Vec`/`String`/record deep copy). `node_last_use` is set by
+                // the backward liveness pass [`mark_last_uses`]; the binding-mode
+                // and plain-local guards keep the move sound. `Array` (an
+                // `Rc<RefCell<…>>`) is excluded: a subsequent self-assignment
+                // `a = f(a.borrow()…)` would otherwise borrow the moved place
+                // across the write (E0506), and cloning the `Rc` is only a
+                // refcount bump anyway.
+                _ if node_last_use && is_plain_local && owned
+                    && !matches!(effective_ty, Ty::Array(_)) => var_str,
                 _ => format!("{var_str}.clone()"),
             };
             // `emit_var` reported an inline `RefCell::borrow()` guard (an
@@ -7943,7 +8672,25 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                                     bindings.insert(formals[j].0.clone(), e.clone());
                                 }
                             }
-                            slots[i] = Some(substitute_formal_refs(&default_tpl, &bindings));
+                            let mut substituted = substitute_formal_refs(&default_tpl, &bindings);
+                            // The default may reference earlier formals, splicing
+                            // *copies* of their actual-argument expressions in.
+                            // That duplicates those actuals — each is also emitted
+                            // in its own positional slot — so neither copy may
+                            // move. The liveness pass ran before defaults were
+                            // known, so clear `last_use` on the inlined default
+                            // and on every slot the default references.
+                            clear_last_use(&mut substituted);
+                            let mut default_names = HashSet::new();
+                            collect_exp_names(&default_tpl, &mut default_names);
+                            for (j, (fname, _, _)) in formals.iter().enumerate() {
+                                if default_names.contains(fname)
+                                    && let Some(e) = slots[j].as_mut()
+                                {
+                                    clear_last_use(e);
+                                }
+                            }
+                            slots[i] = Some(substituted);
                         }
                     }
                 }
@@ -12173,7 +12920,7 @@ fn qualify_hoisted_nested_fns<'a>(
     use TypedExp as E;
     let recur = |e: TypedExp| qualify_hoisted_nested_fns(e, callee_qname, callee_node, callee_module);
     match exp {
-        E::Var { ref name, ref segments, ref ty }
+        E::Var { ref name, ref segments, ref ty, .. }
             if !name.contains('.')
                 && segments.len() <= 1
                 && segments.iter().all(|s| s.subscripts.is_empty() && s.name == *name) =>
@@ -12198,7 +12945,7 @@ fn qualify_hoisted_nested_fns<'a>(
                 let new_segments: Vec<CrefSegment> = qualified.split('.')
                     .map(|p| CrefSegment { name: p.to_owned(), subscripts: vec![] })
                     .collect();
-                return E::Var { name: qualified, segments: new_segments, ty: ty.clone() };
+                return E::Var { name: qualified, segments: new_segments, ty: ty.clone(), last_use: false };
             }
             exp
         }
@@ -12266,7 +13013,7 @@ fn canonicalize_call_funcs<'a>(
         // is not in scope there. Qualify the head to its FQN
         // (e.g. `NFInstNode.ScopeType`) so the call-site `emit_var` /
         // `ctx.shorten` step can resolve it.
-        E::Var { ref name, ref segments, ref ty }
+        E::Var { ref name, ref segments, ref ty, .. }
             if segments.len() >= 2
                 && segments.iter().all(|s| s.subscripts.is_empty()) =>
         {
@@ -12344,12 +13091,13 @@ fn canonicalize_call_funcs<'a>(
                         name: new_name,
                         segments: new_segments,
                         ty: ty.clone(),
+                        last_use: false,
                     };
                 }
             }
             exp
         }
-        E::Var { ref name, ref segments, ref ty }
+        E::Var { ref name, ref segments, ref ty, .. }
             if !name.contains('.')
                 && segments.len() <= 1
                 && segments.iter().all(|s| s.subscripts.is_empty() && s.name == *name) =>
@@ -12389,7 +13137,7 @@ fn canonicalize_call_funcs<'a>(
                     // (`emit_var`) re-splits the dotted name and applies
                     // `ctx.shorten`, producing e.g. `SCodeDump::defaultOptions`
                     // or `CacheTree::addConflictDefault`.
-                    E::Var { name: qname, segments: Vec::new(), ty: ty.clone() }
+                    E::Var { name: qname, segments: Vec::new(), ty: ty.clone(), last_use: false }
                 } else {
                     exp
                 }
@@ -12486,7 +13234,7 @@ fn append_access_segments(base: &TypedExp, tail_segs: &[CrefSegment], ty: &Ty) -
         TypedExp::Var { name, segments, .. } => {
             let mut joined = segments.clone();
             joined.extend(tail_segs.iter().cloned());
-            Some(TypedExp::Var { name: name.clone(), segments: joined, ty: ty.clone() })
+            Some(TypedExp::Var { name: name.clone(), segments: joined, ty: ty.clone(), last_use: false })
         }
         TypedExp::If { cond, then_, elseif, else_, .. } => {
             let then_ = append_access_segments(then_, tail_segs, ty)?;
@@ -12531,7 +13279,7 @@ fn append_access_segments(base: &TypedExp, tail_segs: &[CrefSegment], ty: &Ty) -
 fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) -> TypedExp {
     match exp {
         TypedExp::Lit(l) => TypedExp::Lit(l.clone()),
-        TypedExp::Var { name, segments, ty } => {
+        TypedExp::Var { name, segments, ty, .. } => {
             // Recurse into subscript expressions in either branch.
             let new_segments: Vec<CrefSegment> = segments.iter().map(|seg| CrefSegment {
                 name: seg.name.clone(),
@@ -12596,7 +13344,7 @@ fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) 
                     return spliced;
                 }
             }
-            TypedExp::Var { name: name.clone(), segments: new_segments, ty: ty.clone() }
+            TypedExp::Var { name: name.clone(), segments: new_segments, ty: ty.clone(), last_use: false }
         }
         TypedExp::BinOp { op, lhs, rhs, ty } => TypedExp::BinOp {
             op: *op,
@@ -15976,6 +16724,16 @@ fn try_emit_reference_eq<'a>(
     }
 }
 
+/// True when a value of this type is `Copy` in the generated Rust, so a
+/// `.clone()` on it compiles to the same bitwise copy as a plain read. The
+/// generator emits these as primitive scalars (`i32`/`f64`/`bool`) or as
+/// `#[derive(Copy)]` enums (Modelica enumerations — see the enumeration arm of
+/// `emit_node`). Every other generated type owns heap data (`Arc`/`ArcStr`/
+/// `Vec`/`RefCell`/record) and is move-only.
+fn ty_is_copy(ty: &Ty) -> bool {
+    matches!(ty, Ty::I32 | Ty::F64 | Ty::Bool | Ty::Enumeration(_))
+}
+
 fn is_arc_wrapped(ty: &Ty, ctx: &GenCtx) -> bool {
     let qname = match ty {
         Ty::RustStruct(n) | Ty::RustEnum(n) | Ty::AliasTo(n) | Ty::ExternalObject(n) => n.as_str(),
@@ -18833,7 +19591,7 @@ fn emit_stmt<'a>(
                     let elem_ty = elem_tys.get(i).cloned().unwrap_or(Ty::Unknown);
                     let synth = typedexp::TypedStmt::Assign {
                         lhs: p.clone(),
-                        rhs: typedexp::TypedExp::Var { name: tmp, segments: vec![], ty: elem_ty },
+                        rhs: typedexp::TypedExp::Var { name: tmp, segments: vec![], ty: elem_ty, last_use: false },
                     };
                     emit_stmt(out, indent, &synth, fail_mode.clone(), ctx, env, top_level, fresh);
                 }
@@ -20113,7 +20871,7 @@ fn propagate_exp_partial_eq<'a>(
     use typedexp::TypedExp as E;
     match exp {
         E::Lit(_) | E::Todo(_) => {}
-        E::Var { name, segments, ty } => {
+        E::Var { name, segments, ty, .. } => {
             // A reference to a user function as a *value* (e.g. via
             // `fnptr!(union, _, _)` or a bare `&someFn` callback)
             // instantiates the callee's type parameters with whatever
@@ -20482,7 +21240,7 @@ fn visit_exp_for_static(exp: &typedexp::TypedExp, out: &mut std::collections::Ha
     use typedexp::TypedExp as E;
     match exp {
         E::Lit(_) | E::Todo(_) => {}
-        E::Var { name, segments, ty } => {
+        E::Var { name, segments, ty, .. } => {
             let bare = name.rsplit('.').next().unwrap_or(name);
             if STATIC_REQUIRING_BUILTINS.contains(&bare) {
                 let mut tvs = Vec::new();
@@ -20615,7 +21373,7 @@ fn visit_exp_for_eq(exp: &typedexp::TypedExp, out: &mut std::collections::HashSe
     use typedexp::{TypedExp as E, BinOpKind};
     match exp {
         E::Lit(_) | E::Todo(_) => {}
-        E::Var { name, segments, ty } => {
+        E::Var { name, segments, ty, .. } => {
             // A reference to one of the PartialEq-requiring builtins as a
             // *value* (e.g. `&valueEq` passed as a callback to
             // `deleteMemberOnTrue(..., &valueEq)`) instantiates the

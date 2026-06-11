@@ -255,22 +255,22 @@ pub mod LookupState {
     }
     pub use self::LookupState::{BEGIN,COMP,CLASS_COMP,COMP_CLASS,COMP_FUNC,PACKAGE,CLASS,FUNC,PREDEF_COMP,PREDEF_CLASS,IMPORT,PARTIAL_CLASS,NON_CONSTANT,NON_ENCAPSULATED,ERROR};
     pub(crate) fn assertClass(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut context: i32, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_CLASS(), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), context.clone(), info.clone())?;
+        assertState(endState, crate::NFLookupState::LookupState::interned_CLASS(), node, Arc::new(LookupStateName::LookupStateName::PATH { path: name }), context, info)?;
         Ok(())
     }
 
     pub(crate) fn assertFunction(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_FUNC(), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
+        assertState(endState, crate::NFLookupState::LookupState::interned_FUNC(), node, Arc::new(LookupStateName::LookupStateName::CREF { cref: name }), context, info)?;
         Ok(())
     }
 
     pub(crate) fn assertComponent(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_COMP(), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
+        assertState(endState, crate::NFLookupState::LookupState::interned_COMP(), node, Arc::new(LookupStateName::LookupStateName::CREF { cref: name }), context, info)?;
         Ok(())
     }
 
     pub(crate) fn assertImport(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_IMPORT(), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), InstContext::NO_CONTEXT.clone(), info.clone())?;
+        assertState(endState, crate::NFLookupState::LookupState::interned_IMPORT(), node, Arc::new(LookupStateName::LookupStateName::PATH { path: name }), InstContext::NO_CONTEXT.clone(), info)?;
         Ok(())
     }
 
@@ -281,7 +281,7 @@ pub mod LookupState {
             callable = false;
             return Ok(callable.clone());
         }
-        n = InstNode::resolveInner(node.clone());
+        n = InstNode::resolveInner(node);
         Inst::expand(n.clone(), InstContext::NO_CONTEXT.clone())?;
         callable = (::match_deref::match_deref! { match &(InstNode::restriction(n.clone())) {
         Deref @ Restriction::RECORD { .. } => true,
@@ -296,17 +296,17 @@ pub mod LookupState {
 
     pub(crate) fn isCallableComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut callable: bool;
-        callable = Class::isFunction(InstNode::getClass(node.clone())?);
+        callable = Class::isFunction(InstNode::getClass(node)?);
         Ok(callable)
     }
 
     pub(crate) fn isFunction(mut state: Arc<LookupState>, mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut isFunction: bool;
-        isFunction = (::match_deref::match_deref! { match &(state.clone()) {
+        isFunction = (::match_deref::match_deref! { match &(state) {
         Deref @ FUNC { .. } => true,
         Deref @ COMP_FUNC { .. } => true,
-        Deref @ CLASS { .. } => isCallableType(node.clone())?,
-        Deref @ COMP { .. } => isCallableComponent(node.clone())?,
+        Deref @ CLASS { .. } => isCallableType(node)?,
+        Deref @ COMP { .. } => isCallableComponent(node)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -315,7 +315,7 @@ pub mod LookupState {
 
     pub(crate) fn isClass(mut state: Arc<LookupState>) -> bool {
         let mut isClass: bool;
-        isClass = (::match_deref::match_deref! { match &(state.clone()) {
+        isClass = (::match_deref::match_deref! { match &(state) {
         Deref @ COMP_CLASS { .. } => true,
         Deref @ CLASS { .. } => true,
         Deref @ PREDEF_CLASS { .. } => true,
@@ -367,17 +367,17 @@ pub mod LookupState {
             ()
         },
         (Deref @ COMP_CLASS { .. }, Deref @ FUNC { .. }) => {
-            printFoundWrongTypeError(endState.clone(), expectedState.clone(), name.clone(), info.clone())?;
+            printFoundWrongTypeError(endState, expectedState, name, info)?;
             bail!("fail")
         },
         (Deref @ COMP_FUNC { .. }, _) => {
             let mut name_str: ArcStr;
-            name_str = (LookupStateName::toString(name.clone())?).clone();
-            Error::addSourceMessage(Error::FOUND_FUNC_NAME_VIA_COMP_NONCALL.clone(), list![(name_str.clone()).clone()], info.clone())?;
+            name_str = (LookupStateName::toString(name)?).clone();
+            Error::addSourceMessage(Error::FOUND_FUNC_NAME_VIA_COMP_NONCALL.clone(), list![(name_str.clone()).clone()], info)?;
             bail!("fail")
         },
         (Deref @ COMP_CLASS { .. }, _) => {
-            Error::addSourceMessage(Error::FOUND_CLASS_NAME_VIA_COMPONENT.clone(), list![(LookupStateName::toString(name.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::FOUND_CLASS_NAME_VIA_COMPONENT.clone(), list![(LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, Deref @ FUNC { .. }) => {
@@ -391,59 +391,59 @@ pub mod LookupState {
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, Deref @ COMP { .. }) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::UNEXPECTED_COMPONENT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::UNEXPECTED_COMPONENT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, _) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ CLASS_COMP { .. } }, Deref @ COMP { .. }) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::CLASS_IN_COMPOSITE_COMP_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::CLASS_IN_COMPOSITE_COMP_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ CLASS_COMP { .. } }, _) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ IMPORT { .. } }, _) => {
             let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
-            Error::addSourceMessage(Error::IMPORT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::IMPORT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name)?).clone()], info)?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ PARTIAL_CLASS { .. } }, _) => {
             let mut node2: Arc<InstNode::InstNode>;
-            if !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
+            if !(InstContext::inRelaxed(context) || InstContext::inRedeclared(context)) {
                 node2 = listHead(InstNode::scopeList(node.clone(), false, metamodelica::nil())?)?;
                 if InstNode::isComponent(node2.clone())? {
                     Error::addMultiSourceMessage(Error::USE_OF_PARTIAL_CLASS.clone(), list![(InstNode::name(node2.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(Class::constrainingClassPath(node.clone())?, (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(node.clone()), InstNode::info(node2.clone())])?;
                 } else {
-                    Error::addSourceMessage(Error::LOOKUP_IN_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], info.clone())?;
+                    Error::addSourceMessage(Error::LOOKUP_IN_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], info)?;
                 }
                 bail!("fail");
             }
             ()
         },
         (Deref @ ERROR { errorState: Deref @ NON_CONSTANT { .. } }, _) => {
-            Error::addMultiSourceMessage(Error::NON_CONSTANT_IN_ENCLOSING_SCOPE.clone(), list![(InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone()), info.clone()])?;
+            Error::addMultiSourceMessage(Error::NON_CONSTANT_IN_ENCLOSING_SCOPE.clone(), list![(InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone()), info])?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ NON_ENCAPSULATED { .. } }, _) => {
-            Error::addMultiSourceMessage(Error::NON_ENCAPSULATED_CLASS_ACCESS.clone(), list![(InstNode::name(InstNode::parent(node.clone()))?).clone(), (InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone()), info.clone()])?;
+            Error::addMultiSourceMessage(Error::NON_ENCAPSULATED_CLASS_ACCESS.clone(), list![(InstNode::name(InstNode::parent(node.clone()))?).clone(), (InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone()), info])?;
             bail!("fail")
         },
         (_, Deref @ IMPORT { .. }) => {
             ()
         },
         _ => {
-            printFoundWrongTypeError(endState.clone(), expectedState.clone(), name.clone(), info.clone())?;
+            printFoundWrongTypeError(endState, expectedState, name, info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -453,7 +453,7 @@ pub mod LookupState {
 
     pub(crate) fn isError(mut state: Arc<LookupState>) -> bool {
         let mut isError: bool;
-        isError = (::match_deref::match_deref! { match &(state.clone()) {
+        isError = (::match_deref::match_deref! { match &(state) {
         Deref @ ERROR { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -463,7 +463,7 @@ pub mod LookupState {
 
     pub(crate) fn lookupStateString(mut state: Arc<LookupState>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = ((::match_deref::match_deref! { match &(state.clone()) {
+        r#str = ((::match_deref::match_deref! { match &(state) {
         Deref @ BEGIN { .. } => literal!("<begin>"),
         Deref @ COMP { .. } => literal!("component"),
         Deref @ CLASS_COMP { .. } => literal!("component"),
@@ -483,30 +483,30 @@ pub mod LookupState {
         let mut name_str: ArcStr;
         let mut found_str: ArcStr;
         let mut expected_str: ArcStr;
-        name_str = (LookupStateName::toString(name.clone())?).clone();
-        found_str = (lookupStateString(foundState.clone())?).clone();
-        expected_str = (lookupStateString(expectedState.clone())?).clone();
-        Error::addSourceMessage(Error::LOOKUP_FOUND_WRONG_TYPE.clone(), list![(name_str.clone()).clone(), (expected_str.clone()).clone(), (found_str.clone()).clone()], info.clone())?;
+        name_str = (LookupStateName::toString(name)?).clone();
+        found_str = (lookupStateString(foundState)?).clone();
+        expected_str = (lookupStateString(expectedState)?).clone();
+        Error::addSourceMessage(Error::LOOKUP_FOUND_WRONG_TYPE.clone(), list![(name_str).clone(), (expected_str).clone(), (found_str).clone()], info)?;
         Ok(())
     }
 
     pub(crate) fn next(mut node: Arc<InstNode::InstNode>, mut currentState: Arc<LookupState>, mut context: i32, mut checkAccessViolations: bool) -> Result<Arc<LookupState>> {
         let mut nextState: Arc<LookupState>;
         let mut entry_ty: Arc<LookupState>;
-        if checkAccessViolations.clone() && !(InstContext::inInstanceAPI(context.clone())) {
+        if checkAccessViolations && !(InstContext::inInstanceAPI(context)) {
             checkProtection(node.clone(), currentState.clone())?;
         }
         entry_ty = nodeState(node.clone())?;
-        nextState = next2(entry_ty.clone(), currentState.clone(), node.clone())?;
+        nextState = next2(entry_ty, currentState, node)?;
         Ok(nextState)
     }
 
     pub(crate) fn checkProtection(mut node: Arc<InstNode::InstNode>, mut currentState: Arc<LookupState>) -> Result<()> {
-        let () = (::match_deref::match_deref! { match &(currentState.clone()) {
+        let () = (::match_deref::match_deref! { match &(currentState) {
         Deref @ BEGIN { .. } => (),
         _ => {
             if InstNode::isProtected(node.clone()) && !(Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("protectedAccess")).clone())?) {
-                Error::addSourceMessage(Error::PROTECTED_ACCESS.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
+                Error::addSourceMessage(Error::PROTECTED_ACCESS.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node))?;
                 bail!("fail");
             }
             ()
@@ -521,14 +521,14 @@ pub mod LookupState {
         if InstNode::isComponent(node.clone())? || InstNode::isName(node.clone()) || InstNode::isEmpty(node.clone()) {
             state = crate::NFLookupState::LookupState::interned_COMP();
         } else {
-            state = elementState(InstNode::definition(node.clone())?)?;
+            state = elementState(InstNode::definition(node)?)?;
         }
         Ok(state)
     }
 
     pub(crate) fn elementState(mut element: Arc<SCode::Element>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState>;
-        state = (::match_deref::match_deref! { match &(element.clone()) {
+        state = (::match_deref::match_deref! { match &(element) {
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => crate::NFLookupState::LookupState::interned_PACKAGE(),
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { .. }, .. } => crate::NFLookupState::LookupState::interned_FUNC(),
         Deref @ SCode::Element::CLASS { .. } => crate::NFLookupState::LookupState::interned_CLASS(),
@@ -543,19 +543,19 @@ pub mod LookupState {
 
     pub(crate) fn next2(mut elementState: Arc<LookupState>, mut currentState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
         let mut nextState: Arc<LookupState>;
-        nextState = (::match_deref::match_deref! { match &((elementState.clone(), currentState.clone())) {
-        (_, Deref @ BEGIN { .. }) => elementState.clone(),
+        nextState = (::match_deref::match_deref! { match &((elementState.clone(), currentState)) {
+        (_, Deref @ BEGIN { .. }) => elementState,
         (Deref @ COMP { .. }, Deref @ COMP { .. }) => crate::NFLookupState::LookupState::interned_COMP(),
         (Deref @ FUNC { .. }, Deref @ COMP { .. }) => crate::NFLookupState::LookupState::interned_COMP_FUNC(),
         (_, Deref @ COMP { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
         (Deref @ COMP { .. }, Deref @ CLASS_COMP { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
         (Deref @ CLASS_COMP { .. }, Deref @ CLASS_COMP { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
         (Deref @ COMP { .. }, Deref @ PACKAGE { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
-        (_, Deref @ PACKAGE { .. }) => elementState.clone(),
+        (_, Deref @ PACKAGE { .. }) => elementState,
         (Deref @ COMP { .. }, Deref @ CLASS { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
-        (_, Deref @ CLASS { .. }) => elementState.clone(),
+        (_, Deref @ CLASS { .. }) => elementState,
         (Deref @ COMP { .. }, Deref @ FUNC { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
-        (_, Deref @ FUNC { .. }) => elementState.clone(),
+        (_, Deref @ FUNC { .. }) => elementState,
         (Deref @ FUNC { .. }, Deref @ COMP_CLASS { .. }) => crate::NFLookupState::LookupState::interned_COMP_FUNC(),
         (Deref @ CLASS { .. }, Deref @ COMP_CLASS { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
         (Deref @ PACKAGE { .. }, Deref @ COMP_CLASS { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
@@ -565,7 +565,7 @@ pub mod LookupState {
         (Deref @ COMP { .. }, _) => Arc::new(LookupState::ERROR { errorState: crate::NFLookupState::LookupState::interned_COMP_FUNC() }),
         (_, Deref @ CLASS_COMP { .. }) => Arc::new(LookupState::ERROR { errorState: crate::NFLookupState::LookupState::interned_CLASS_COMP() }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.next2")); __mm_s.push_str(&*literal!(" failed on unknown transition for element ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookupState.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.next2")); __mm_s.push_str(&*literal!(" failed on unknown transition for element ")); __mm_s.push_str(&*InstNode::name(node)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookupState.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -578,7 +578,7 @@ pub mod LookupState {
         if isError(state.clone()) {
             return Ok(state.clone());
         }
-        if inEnclosingScope.clone() && !(InstContext::inRelaxed(context.clone())) && isNonConstantComponent(ComponentRef::node(cref.clone())?)? {
+        if inEnclosingScope && !(InstContext::inRelaxed(context)) && isNonConstantComponent(ComponentRef::node(cref)?)? {
             state = Arc::new(LookupState::ERROR { errorState: crate::NFLookupState::LookupState::interned_NON_CONSTANT() });
         }
         Ok(state)
@@ -586,7 +586,7 @@ pub mod LookupState {
 
     pub(crate) fn isNonConstantComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut res: bool;
-        res = InstNode::isComponent(node.clone())? && !(Component::isConst(InstNode::component(node.clone())?)?);
+        res = InstNode::isComponent(node.clone())? && !(Component::isConst(InstNode::component(node)?)?);
         Ok(res)
     }
 

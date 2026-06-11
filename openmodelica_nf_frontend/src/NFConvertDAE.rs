@@ -85,8 +85,8 @@ use openmodelica_util::Util;
 pub fn convert(mut flatModel: Arc<FlatModel::NFFlatModel>, mut functions: Arc<Flatten::FunctionTreeImpl::Tree>) -> Result<(DAE::DAElist, Arc<AvlTreePathFunction::Tree>)> {
     let mut dae: DAE::DAElist;
     let mut daeFunctions: Arc<AvlTreePathFunction::Tree>;
-    daeFunctions = convertFunctionTree(functions.clone())?;
-    dae = convertModel(flatModel.clone())?;
+    daeFunctions = convertFunctionTree(functions)?;
+    dae = convertModel(flatModel)?;
     execStat(literal!("NFConvertDAE.convert"))?;
     Ok((dae, daeFunctions))
 }
@@ -96,12 +96,12 @@ pub fn convertModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<DAE::D
     let mut elems: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut class_elem: Arc<DAE::Element>;
     elems = convertVariables(flatModel.variables.clone(), metamodelica::nil())?;
-    elems = convertEquations(flatModel.equations.clone(), elems.clone())?;
-    elems = convertInitialEquations(flatModel.initialEquations.clone(), elems.clone())?;
-    elems = convertAlgorithms(flatModel.algorithms.clone(), elems.clone())?;
-    elems = convertInitialAlgorithms(flatModel.initialAlgorithms.clone(), elems.clone())?;
-    class_elem = Arc::new(DAE::Element::COMP { ident: (FlatModel::fullName(flatModel.clone())?).clone(), dAElist: elems.clone(), source: flatModel.source.clone(), comment: ElementSource::getOptComment(flatModel.source.clone())? });
-    dae = DAE::DAElist { elementLst: list![class_elem.clone()] };
+    elems = convertEquations(flatModel.equations.clone(), elems)?;
+    elems = convertInitialEquations(flatModel.initialEquations.clone(), elems)?;
+    elems = convertAlgorithms(flatModel.algorithms.clone(), elems)?;
+    elems = convertInitialAlgorithms(flatModel.initialAlgorithms.clone(), elems)?;
+    class_elem = Arc::new(DAE::Element::COMP { ident: (FlatModel::fullName(flatModel.clone())?).clone(), dAElist: elems, source: flatModel.source.clone(), comment: ElementSource::getOptComment(flatModel.source.clone())? });
+    dae = DAE::DAElist { elementLst: list![class_elem] };
     Ok(dae)
 }
 
@@ -109,7 +109,7 @@ pub fn convertStatements(mut statements: Arc<metamodelica::List<Arc<Statement::N
     let mut elements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-        for mut s in (statements.clone()).into_iter().cloned() {
+        for mut s in (statements).into_iter().cloned() {
             let __x = convertStatement(s.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -149,7 +149,7 @@ fn convertVariables(mut variables: Arc<metamodelica::List<Arc<Variable::NFVariab
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
     let mut settings: VariableConversionSettings;
     settings = VariableConversionSettings { isFunctionParameter: false, addTypeToSource: Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? || Flags::isSet(Flags::VISUAL_XML.clone())? };
-    for mut var in &*variables.clone().reverse() {
+    for mut var in &*variables.reverse() {
         let mut var = var.clone();
         elements = metamodelica::cons(convertVariable(var.clone(), settings.clone())?, elements.clone());
     }
@@ -162,7 +162,7 @@ fn convertVariable(mut var: Arc<Variable::NFVariable>, mut settings: VariableCon
     let mut binding_exp: Option<Arc<DAE::Exp>>;
     binding_exp = Binding::toDAEExp(var.binding.clone())?;
     var_attr = convertVarAttributes(var.typeAttributes.clone(), var.ty.clone(), var.attributes.clone())?;
-    daeVar = makeDAEVar(var.name.clone(), var.ty.clone(), binding_exp.clone(), var.attributes.clone(), var.visibility.clone(), var_attr.clone(), var.comment.clone(), settings.clone(), var.info.clone(), Variable::isEncrypted(var.clone())?)?;
+    daeVar = makeDAEVar(var.name.clone(), var.ty.clone(), binding_exp, var.attributes.clone(), var.visibility.clone(), var_attr, var.comment.clone(), settings, var.info.clone(), Variable::isEncrypted(var)?)?;
     Ok(daeVar)
 }
 
@@ -172,14 +172,14 @@ fn makeDAEVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFT
     let mut dty: Arc<DAE::Type>;
     let mut source: Arc<DAE::ElementSource>;
     dcref = ComponentRef::toDAE(cref.clone())?;
-    dty = Type::toDAE(if (settings.isFunctionParameter.clone()) {Type::arrayElementType(ty.clone())} else {ty.clone()}, true)?;
-    source = ElementSource::createElementSource(info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
+    dty = Type::toDAE(if (settings.isFunctionParameter.clone()) {Type::arrayElementType(ty)} else {ty}, true)?;
+    source = ElementSource::createElementSource(info, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
     if settings.addTypeToSource.clone() {
-        source = addComponentTypeToSource(cref.clone(), source.clone())?;
+        source = addComponentTypeToSource(cref, source)?;
     }
     var = (::match_deref::match_deref! { match &(attr.clone()) {
-        Deref @ Attributes::ATTRIBUTES { .. } => Arc::new(DAE::Element::VAR { componentRef: dcref.clone(), kind: Prefixes::variabilityToDAE(attr.variability.clone()), direction: Prefixes::directionToDAE(attr.direction.clone()), parallelism: Prefixes::parallelismToDAE(attr.parallelism.clone())?, protection: Prefixes::visibilityToDAE(vis.clone()), ty: dty.clone(), binding: binding.clone(), dims: ComponentReferenceBasics::crefDims(dcref.clone())?, connectorType: Prefixes::ConnectorType::toDAE(attr.connectorType.clone()), source: source.clone(), variableAttributesOption: vattr.clone(), comment: Some(comment.clone()), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted.clone() }),
-        _ => Arc::new(DAE::Element::VAR { componentRef: dcref.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: Prefixes::visibilityToDAE(vis.clone()), ty: dty.clone(), binding: binding.clone(), dims: metamodelica::nil(), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), source: source.clone(), variableAttributesOption: vattr.clone(), comment: Some(comment.clone()), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted.clone() }),
+        Deref @ Attributes::ATTRIBUTES { .. } => Arc::new(DAE::Element::VAR { componentRef: dcref.clone(), kind: Prefixes::variabilityToDAE(attr.variability.clone()), direction: Prefixes::directionToDAE(attr.direction.clone()), parallelism: Prefixes::parallelismToDAE(attr.parallelism.clone())?, protection: Prefixes::visibilityToDAE(vis), ty: dty, binding: binding, dims: ComponentReferenceBasics::crefDims(dcref)?, connectorType: Prefixes::ConnectorType::toDAE(attr.connectorType.clone()), source: source, variableAttributesOption: vattr, comment: Some(comment), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted }),
+        _ => Arc::new(DAE::Element::VAR { componentRef: dcref, kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: Prefixes::visibilityToDAE(vis), ty: dty, binding: binding, dims: metamodelica::nil(), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), source: source, variableAttributesOption: vattr, comment: Some(comment), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(var)
@@ -189,10 +189,10 @@ fn addComponentTypeToSource(mut cref: Arc<ComponentRef::NFComponentRef>, mut sou
     let mut source: Arc<DAE::ElementSource> = source;
     source = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { .. } => {
-            source = ElementSource::addElementSourceType(source.clone(), InstNode::scopePath(InstNode::classScope(InstNode::getDerivedNode(InstNode::parent(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone()), true)), InstNode::ScopeType::RELATIVE.clone(), false)?)?;
-            addComponentTypeToSource(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), source.clone())?
+            source = ElementSource::addElementSourceType(source, InstNode::scopePath(InstNode::classScope(InstNode::getDerivedNode(InstNode::parent(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone()), true)), InstNode::ScopeType::RELATIVE.clone(), false)?)?;
+            addComponentTypeToSource(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), source)?
         },
-        _ => source.clone(),
+        _ => source,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
@@ -203,17 +203,17 @@ fn convertVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::
     let mut is_final: bool;
     let mut is_final_opt: Option<bool>;
     is_final = compAttrs.isFinal.clone() || compAttrs.variability.clone() == Variability::STRUCTURAL_PARAMETER.clone();
-    if attrs.clone().is_empty() && !(is_final.clone()) {
+    if attrs.clone().is_empty() && !(is_final) {
         attributes = None;
         return Ok(attributes.clone());
     }
-    is_final_opt = Some(is_final.clone());
-    attributes = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
-        Deref @ Type::REAL => convertRealVarAttributes(attrs.clone(), is_final_opt.clone())?,
-        Deref @ Type::INTEGER => convertIntVarAttributes(attrs.clone(), is_final_opt.clone())?,
-        Deref @ Type::BOOLEAN => convertBoolVarAttributes(attrs.clone(), is_final_opt.clone())?,
-        Deref @ Type::STRING => convertStringVarAttributes(attrs.clone(), is_final_opt.clone())?,
-        Deref @ Type::ENUMERATION { .. } => convertEnumVarAttributes(attrs.clone(), is_final_opt.clone())?,
+    is_final_opt = Some(is_final);
+    attributes = (::match_deref::match_deref! { match &(Type::arrayElementType(ty)) {
+        Deref @ Type::REAL => convertRealVarAttributes(attrs, is_final_opt)?,
+        Deref @ Type::INTEGER => convertIntVarAttributes(attrs, is_final_opt)?,
+        Deref @ Type::BOOLEAN => convertBoolVarAttributes(attrs, is_final_opt)?,
+        Deref @ Type::STRING => convertStringVarAttributes(attrs, is_final_opt)?,
+        Deref @ Type::ENUMERATION { .. } => convertEnumVarAttributes(attrs, is_final_opt)?,
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -235,7 +235,7 @@ fn convertRealVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
     let mut state_select: Option<DAE::StateSelect> = None;
     let mut uncertain: Option<DAE::Uncertainty> = None;
     let mut start_origin: Option<Arc<DAE::Exp>> = None;
-    for mut attr in &*attrs.clone() {
+    for mut attr in &*attrs {
         let mut attr = attr.clone();
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -288,7 +288,7 @@ fn convertRealVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: quantity.clone(), unit: unit.clone(), displayUnit: displayUnit.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), nominal: nominal.clone(), stateSelectOption: state_select.clone(), uncertainOption: uncertain.clone(), distributionOption: None, equationBound: None, isProtected: None, finalPrefix: isFinal.clone(), startOrigin: start_origin.clone() }));
+    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: quantity, unit: unit, displayUnit: displayUnit, min: min, max: max, start: start, fixed: fixed, nominal: nominal, stateSelectOption: state_select, uncertainOption: uncertain, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: isFinal, startOrigin: start_origin }));
     Ok(attributes)
 }
 
@@ -302,7 +302,7 @@ fn convertIntVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindin
     let mut start: Option<Arc<DAE::Exp>> = None;
     let mut fixed: Option<Arc<DAE::Exp>> = None;
     let mut start_origin: Option<Arc<DAE::Exp>> = None;
-    for mut attr in &*attrs.clone() {
+    for mut attr in &*attrs {
         let mut attr = attr.clone();
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -334,7 +334,7 @@ fn convertIntVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindin
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_INT { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: isFinal.clone(), startOrigin: start_origin.clone() }));
+    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_INT { quantity: quantity, min: min, max: max, start: start, fixed: fixed, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: isFinal, startOrigin: start_origin }));
     Ok(attributes)
 }
 
@@ -346,7 +346,7 @@ fn convertBoolVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
     let mut start: Option<Arc<DAE::Exp>> = None;
     let mut fixed: Option<Arc<DAE::Exp>> = None;
     let mut start_origin: Option<Arc<DAE::Exp>> = None;
-    for mut attr in &*attrs.clone() {
+    for mut attr in &*attrs {
         let mut attr = attr.clone();
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -370,7 +370,7 @@ fn convertBoolVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_BOOL { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), equationBound: None, isProtected: None, finalPrefix: isFinal.clone(), startOrigin: start_origin.clone() }));
+    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_BOOL { quantity: quantity, start: start, fixed: fixed, equationBound: None, isProtected: None, finalPrefix: isFinal, startOrigin: start_origin }));
     Ok(attributes)
 }
 
@@ -382,7 +382,7 @@ fn convertStringVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bin
     let mut start: Option<Arc<DAE::Exp>> = None;
     let mut fixed: Option<Arc<DAE::Exp>> = None;
     let mut start_origin: Option<Arc<DAE::Exp>> = None;
-    for mut attr in &*attrs.clone() {
+    for mut attr in &*attrs {
         let mut attr = attr.clone();
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -406,7 +406,7 @@ fn convertStringVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bin
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_STRING { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), equationBound: None, isProtected: None, finalPrefix: isFinal.clone(), startOrigin: start_origin.clone() }));
+    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_STRING { quantity: quantity, start: start, fixed: fixed, equationBound: None, isProtected: None, finalPrefix: isFinal, startOrigin: start_origin }));
     Ok(attributes)
 }
 
@@ -420,7 +420,7 @@ fn convertEnumVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
     let mut start: Option<Arc<DAE::Exp>> = None;
     let mut fixed: Option<Arc<DAE::Exp>> = None;
     let mut start_origin: Option<Arc<DAE::Exp>> = None;
-    for mut attr in &*attrs.clone() {
+    for mut attr in &*attrs {
         let mut attr = attr.clone();
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
@@ -452,7 +452,7 @@ fn convertEnumVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), equationBound: None, isProtected: None, finalPrefix: isFinal.clone(), startOrigin: start_origin.clone() }));
+    attributes = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity, min: min, max: max, start: start, fixed: fixed, equationBound: None, isProtected: None, finalPrefix: isFinal, startOrigin: start_origin }));
     Ok(attributes)
 }
 
@@ -464,8 +464,8 @@ fn convertVarAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<Option<Ar
 fn convertStateSelectAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<Option<DAE::StateSelect>> {
     let mut stateSelect: Option<DAE::StateSelect>;
     let mut name: ArcStr;
-    name = (getStateSelectName(Expression::arrayFirstScalar(Binding::getTypedExp(binding.clone())?)?)?).clone();
-    stateSelect = Some(lookupStateSelectMember((name.clone()).clone())?);
+    name = (getStateSelectName(Expression::arrayFirstScalar(Binding::getTypedExp(binding)?)?)?).clone();
+    stateSelect = Some(lookupStateSelectMember((name).clone())?);
     Ok(stateSelect)
 }
 
@@ -480,7 +480,7 @@ fn getStateSelectName(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> 
             { exp = e.clone(); continue '__tco; }
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -497,7 +497,7 @@ fn lookupStateSelectMember(mut name: ArcStr) -> Result<DAE::StateSelect> {
         Deref @ "prefer" => openmodelica_frontend_types::DAE::StateSelect::PREFER,
         Deref @ "always" => openmodelica_frontend_types::DAE::StateSelect::ALWAYS,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -517,12 +517,12 @@ fn convertUncertaintyAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<O
             InstNode::name(node.clone())?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertUncertaintyAttribute")); __mm_s.push_str(&*literal!(" got invalid Uncertainty expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertUncertaintyAttribute")); __mm_s.push_str(&*literal!(" got invalid Uncertainty expression ")); __mm_s.push_str(&*Expression::toString(exp)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-    stateSelect = Some(lookupUncertaintyMember((name.clone()).clone())?);
+    stateSelect = Some(lookupUncertaintyMember((name).clone())?);
     Ok(stateSelect)
 }
 
@@ -534,7 +534,7 @@ fn lookupUncertaintyMember(mut name: ArcStr) -> Result<DAE::Uncertainty> {
         Deref @ "refine" => openmodelica_frontend_types::DAE::Uncertainty::REFINE,
         Deref @ "propagate" => openmodelica_frontend_types::DAE::Uncertainty::PROPAGATE,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupUncertaintyMember")); __mm_s.push_str(&*literal!(" got unknown Uncertainty literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupUncertaintyMember")); __mm_s.push_str(&*literal!(" got unknown Uncertainty literal ")); __mm_s.push_str(&*name); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -549,7 +549,7 @@ fn convertStartOrigin(mut binding: Arc<Binding::NFBinding>) -> Option<Arc<DAE::E
 
 fn convertEquations(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
-    for mut eq in &*equations.clone().reverse() {
+    for mut eq in &*equations.reverse() {
         let mut eq = eq.clone();
         elements = convertEquation(eq.clone(), elements.clone())?;
     }
@@ -564,7 +564,7 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
             let mut cr2: Arc<DAE::ComponentRef>;
             cr1 = ComponentRef::toDAE(var_field!((**lhs).cref, Expression::NFExpression::CREF).clone())?;
             cr2 = ComponentRef::toDAE(var_field!((**rhs).cref, Expression::NFExpression::CREF).clone())?;
-            metamodelica::cons(Arc::new(DAE::Element::EQUEQUATION { cr1: cr1.clone(), cr2: cr2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::EQUEQUATION { cr1: cr1.clone(), cr2: cr2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() }), elements)
         },
         Deref @ Equation::EQUALITY { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -578,16 +578,16 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), exp: e1.clone(), array: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })} else {Arc::new(DAE::Element::EQUATION { exp: e1.clone(), scalar: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })}, elements.clone())
+    }), exp: e1.clone(), array: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })} else {Arc::new(DAE::Element::EQUATION { exp: e1.clone(), scalar: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })}, elements)
         },
         Deref @ Equation::FOR { .. } => {
-            metamodelica::cons(convertForEquation(eq.clone(), false)?, elements.clone())
+            metamodelica::cons(convertForEquation(eq.clone(), false)?, elements)
         },
         Deref @ Equation::IF { .. } => {
-            metamodelica::cons(convertIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), false)?, elements.clone())
+            metamodelica::cons(convertIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), false)?, elements)
         },
         Deref @ Equation::WHEN { .. } => {
-            metamodelica::cons(convertWhenEquation(var_field!((*eq).branches, Equation::NFEquation::WHEN).clone(), var_field!((*eq).source, Equation::NFEquation::WHEN).clone())?, elements.clone())
+            metamodelica::cons(convertWhenEquation(var_field!((*eq).branches, Equation::NFEquation::WHEN).clone(), var_field!((*eq).source, Equation::NFEquation::WHEN).clone())?, elements)
         },
         Deref @ Equation::ASSERT { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -596,20 +596,20 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
             e1 = Expression::toDAE(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), false)?;
             e3 = Expression::toDAE(var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), false)?;
-            metamodelica::cons(Arc::new(DAE::Element::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() }), elements)
         },
         Deref @ Equation::TERMINATE { .. } => {
-            metamodelica::cons(Arc::new(DAE::Element::TERMINATE { message: Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::TERMINATE { message: Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() }), elements)
         },
         Deref @ Equation::REINIT { .. } => {
             let mut e1: Arc<DAE::Exp>;
             let mut cr1: Arc<DAE::ComponentRef>;
             cr1 = ComponentRef::toDAE(Expression::toCref(var_field!((*eq).cref, Equation::NFEquation::REINIT).clone())?)?;
             e1 = Expression::toDAE(var_field!((*eq).reinitExp, Equation::NFEquation::REINIT).clone(), false)?;
-            metamodelica::cons(Arc::new(DAE::Element::REINIT { componentRef: cr1.clone(), exp: e1.clone(), source: var_field!((*eq).source, Equation::NFEquation::REINIT).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::REINIT { componentRef: cr1.clone(), exp: e1.clone(), source: var_field!((*eq).source, Equation::NFEquation::REINIT).clone() }), elements)
         },
         Deref @ Equation::NORETCALL { .. } => {
-            metamodelica::cons(Arc::new(DAE::Element::NORETCALL { exp: Expression::toDAE(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::NORETCALL { exp: Expression::toDAE(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() }), elements)
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
@@ -628,7 +628,7 @@ fn convertForEquation(mut forEquation: Arc<Equation::NFEquation>, mut isInitial:
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut dbody: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut source: Arc<DAE::ElementSource>;
-    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(forEquation.clone()) {
+    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(forEquation) {
         Deref @ Equation::FOR { iterator: __pa0, range: Some(__pa1), body: __pa2, source: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -636,20 +636,20 @@ fn convertForEquation(mut forEquation: Arc<Equation::NFEquation>, mut isInitial:
     range = __pa1.clone();
     body = __pa2.clone();
     source = __pa3.clone();
-    if isInitial.clone() {
-        dbody = convertInitialEquations(body.clone(), metamodelica::nil())?;
+    if isInitial {
+        dbody = convertInitialEquations(body, metamodelica::nil())?;
     } else {
-        dbody = convertEquations(body.clone(), metamodelica::nil())?;
+        dbody = convertEquations(body, metamodelica::nil())?;
     }
     let __pa4 = ::match_deref::match_deref! { match &(InstNode::component(iterator.clone())?) {
         Deref @ Component::ITERATOR { ty: __pa4, .. } => __pa4.clone(),
         _ => bail!("pattern mismatch"),
     } };
     ty = __pa4.clone();
-    if isInitial.clone() {
-        forDAE = Arc::new(DAE::Element::INITIAL_FOR_EQUATION { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty.clone()), iter: (InstNode::name(iterator.clone())?).clone(), index: 0, range: Expression::toDAE(range.clone(), false)?, equations: dbody.clone(), source: source.clone() });
+    if isInitial {
+        forDAE = Arc::new(DAE::Element::INITIAL_FOR_EQUATION { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty), iter: (InstNode::name(iterator)?).clone(), index: 0, range: Expression::toDAE(range, false)?, equations: dbody, source: source });
     } else {
-        forDAE = Arc::new(DAE::Element::FOR_EQUATION { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty.clone()), iter: (InstNode::name(iterator.clone())?).clone(), index: 0, range: Expression::toDAE(range.clone(), false)?, equations: dbody.clone(), source: source.clone() });
+        forDAE = Arc::new(DAE::Element::FOR_EQUATION { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty), iter: (InstNode::name(iterator)?).clone(), index: 0, range: Expression::toDAE(range, false)?, equations: dbody, source: source });
     }
     Ok(forDAE)
 }
@@ -661,7 +661,7 @@ fn convertIfEquation(mut ifBranches: Arc<metamodelica::List<Arc<Equation::Branch
     let mut dconds: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut dbranches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>;
     let mut else_branch: Arc<metamodelica::List<Arc<DAE::Element>>>;
-    for mut branch in &*ifBranches.clone() {
+    for mut branch in &*ifBranches {
         let mut branch = branch.clone();
         (conds, branches) = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ Equation::Branch::BRANCH { .. } => (metamodelica::cons(var_field!((*branch).condition, Equation::Branch::Branch::BRANCH).clone(), conds.clone()), metamodelica::cons(var_field!((*branch).body, Equation::Branch::Branch::BRANCH).clone(), branches.clone())),
@@ -672,42 +672,42 @@ fn convertIfEquation(mut ifBranches: Arc<metamodelica::List<Arc<Equation::Branch
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    dbranches = if (isInitial.clone()) {({
+    dbranches = if (isInitial) {({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
-        for mut b in (branches.clone()).into_iter().cloned() {
+        for mut b in (branches).into_iter().cloned() {
             let __x = convertInitialEquations(b.clone(), metamodelica::nil())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     })} else {({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
-        for mut b in (branches.clone()).into_iter().cloned() {
+        for mut b in (branches).into_iter().cloned() {
             let __x = convertEquations(b.clone(), metamodelica::nil())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     })};
     if Expression::isTrue(listHead(conds.clone())?) {
-        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(dbranches.clone()) {
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(dbranches) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
         else_branch = __pa0.clone();
         dbranches = __pa1.clone();
-        conds = listRest(conds.clone())?;
+        conds = listRest(conds)?;
     } else {
         else_branch = metamodelica::nil();
     }
     dconds = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for mut c in (conds.clone()).into_iter().cloned() {
+        for mut c in (conds).into_iter().cloned() {
             let __x = Expression::toDAE(c.clone(), false)?;
             __acc = cons(__x, __acc);
         }
         __acc
     });
-    dbranches = metamodelica::Dangerous::listReverseInPlace(dbranches.clone());
-    ifEquation = if (isInitial.clone()) {Arc::new(DAE::Element::INITIAL_IF_EQUATION { condition1: dconds.clone(), equations2: dbranches.clone(), equations3: else_branch.clone(), source: source.clone() })} else {Arc::new(DAE::Element::IF_EQUATION { condition1: dconds.clone(), equations2: dbranches.clone(), equations3: else_branch.clone(), source: source.clone() })};
+    dbranches = metamodelica::Dangerous::listReverseInPlace(dbranches);
+    ifEquation = if (isInitial) {Arc::new(DAE::Element::INITIAL_IF_EQUATION { condition1: dconds, equations2: dbranches, equations3: else_branch, source: source })} else {Arc::new(DAE::Element::IF_EQUATION { condition1: dconds, equations2: dbranches, equations3: else_branch, source: source })};
     Ok(ifEquation)
 }
 
@@ -716,7 +716,7 @@ fn convertWhenEquation(mut whenBranches: Arc<metamodelica::List<Arc<Equation::Br
     let mut cond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut els: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut when_eq: Option<Arc<DAE::Element>> = None;
-    for mut b in &*whenBranches.clone().reverse() {
+    for mut b in &*whenBranches.reverse() {
         let mut b = b.clone();
         when_eq = (::match_deref::match_deref! { match &(b.clone()) {
         Deref @ Equation::Branch::BRANCH { .. } => {
@@ -727,7 +727,7 @@ fn convertWhenEquation(mut whenBranches: Arc<metamodelica::List<Arc<Equation::Br
         _ => bail!("match: no arm matched"),
     } });
     }
-    let __pa0 = ::match_deref::match_deref! { match &(when_eq.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(when_eq) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -737,7 +737,7 @@ fn convertWhenEquation(mut whenBranches: Arc<metamodelica::List<Arc<Equation::Br
 
 fn convertInitialEquations(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
-    for mut eq in &*equations.clone().reverse() {
+    for mut eq in &*equations.reverse() {
         let mut eq = eq.clone();
         elements = convertInitialEquation(eq.clone(), elements.clone())?;
     }
@@ -759,13 +759,13 @@ fn convertInitialEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<m
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), exp: e1.clone(), array: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })} else {Arc::new(DAE::Element::INITIALEQUATION { exp1: e1.clone(), exp2: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })}, elements.clone())
+    }), exp: e1.clone(), array: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })} else {Arc::new(DAE::Element::INITIALEQUATION { exp1: e1.clone(), exp2: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })}, elements)
         },
         Deref @ Equation::FOR { .. } => {
-            metamodelica::cons(convertForEquation(eq.clone(), true)?, elements.clone())
+            metamodelica::cons(convertForEquation(eq, true)?, elements)
         },
         Deref @ Equation::IF { .. } => {
-            metamodelica::cons(convertIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), true)?, elements.clone())
+            metamodelica::cons(convertIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), true)?, elements)
         },
         Deref @ Equation::ASSERT { .. } => {
             let mut e1: Arc<DAE::Exp>;
@@ -774,16 +774,16 @@ fn convertInitialEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<m
             e1 = Expression::toDAE(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), false)?;
             e3 = Expression::toDAE(var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), false)?;
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), source: var_field!((*eq).source, Equation::NFEquation::ASSERT).clone() }), elements)
         },
         Deref @ Equation::TERMINATE { .. } => {
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_TERMINATE { message: Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_TERMINATE { message: Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() }), elements)
         },
         Deref @ Equation::NORETCALL { .. } => {
-            metamodelica::cons(Arc::new(DAE::Element::INITIAL_NORETCALL { exp: Expression::toDAE(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() }), elements.clone())
+            metamodelica::cons(Arc::new(DAE::Element::INITIAL_NORETCALL { exp: Expression::toDAE(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() }), elements)
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertInitialEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertInitialEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -793,7 +793,7 @@ fn convertInitialEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<m
 
 fn convertAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
-    for mut alg in &*algorithms.clone().reverse() {
+    for mut alg in &*algorithms.reverse() {
         let mut alg = alg.clone();
         elements = convertAlgorithm(alg.clone(), elements.clone())?;
     }
@@ -805,8 +805,8 @@ fn convertAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut elements: Arc<meta
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut dalg: Arc<DAE::Algorithm>;
     stmts = convertStatements(alg.statements.clone())?;
-    dalg = Arc::new(DAE::Algorithm { statementLst: stmts.clone() });
-    elements = metamodelica::cons(Arc::new(DAE::Element::ALGORITHM { algorithm_: dalg.clone(), source: alg.source.clone() }), elements.clone());
+    dalg = Arc::new(DAE::Algorithm { statementLst: stmts });
+    elements = metamodelica::cons(Arc::new(DAE::Element::ALGORITHM { algorithm_: dalg, source: alg.source.clone() }), elements);
     Ok(elements)
 }
 
@@ -814,7 +814,7 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
     let mut elem: Arc<DAE::Statement>;
     elem = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSIGNMENT { .. } => {
-            convertAssignment(stmt.clone())?
+            convertAssignment(stmt)?
         },
         Deref @ Statement::FUNCTION_ARRAY_INIT { .. } => {
             let mut ty: Arc<DAE::Type>;
@@ -822,7 +822,7 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             Arc::new(DAE::Statement::STMT_ARRAY_INIT { name: (var_field!((*stmt).name, Statement::NFStatement::FUNCTION_ARRAY_INIT).clone()).clone(), ty: ty.clone(), source: var_field!((*stmt).source, Statement::NFStatement::FUNCTION_ARRAY_INIT).clone() })
         },
         Deref @ Statement::FOR { .. } => {
-            convertForStatement(stmt.clone())?
+            convertForStatement(stmt)?
         },
         Deref @ Statement::IF { .. } => {
             convertIfStatement(var_field!((*stmt).branches, Statement::NFStatement::IF).clone(), var_field!((*stmt).source, Statement::NFStatement::IF).clone())?
@@ -869,7 +869,7 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             Arc::new(DAE::Statement::STMT_FAILURE { body: convertStatements(var_field!((*stmt).body, Statement::NFStatement::FAILURE).clone())?, source: var_field!((*stmt).source, Statement::NFStatement::FAILURE).clone() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertStatement")); __mm_s.push_str(&*literal!(" got unknown statement ")); __mm_s.push_str(&*Statement::toString(stmt.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertStatement")); __mm_s.push_str(&*literal!(" got unknown statement ")); __mm_s.push_str(&*Statement::toString(stmt, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -887,7 +887,7 @@ fn convertAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::S
     let mut dlhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut drhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
-    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(stmt.clone()) {
+    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(stmt) {
         Deref @ Statement::ASSIGNMENT { lhs: __pa0, rhs: __pa1, ty: __pa2, source: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -902,41 +902,41 @@ fn convertAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::S
         } };
         expl = __pa4.clone();
         daeStmt = (::match_deref::match_deref! { match &(expl.clone()) {
-        Deref @ metamodelica::List::Nil => Arc::new(DAE::Statement::STMT_NORETCALL { exp: Expression::toDAE(rhs.clone(), false)?, source: src.clone() }),
+        Deref @ metamodelica::List::Nil => Arc::new(DAE::Statement::STMT_NORETCALL { exp: Expression::toDAE(rhs, false)?, source: src }),
         Deref @ metamodelica::List::Cons { head: __esc_lhs, tail: Deref @ metamodelica::List::Nil } => {
             lhs = (*__esc_lhs).clone();
             dty = Type::toDAE(ty.clone(), true)?;
             dlhs = Expression::toDAE(lhs.clone(), false)?;
-            drhs = Arc::new(DAE::Exp::TSUB { exp: Expression::toDAE(rhs.clone(), false)?, ix: 1, ty: dty.clone() });
-            if Type::isArray(ty.clone()) {
-                daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: dty.clone(), lhs: dlhs.clone(), exp: drhs.clone(), source: src.clone() });
+            drhs = Arc::new(DAE::Exp::TSUB { exp: Expression::toDAE(rhs, false)?, ix: 1, ty: dty.clone() });
+            if Type::isArray(ty) {
+                daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: dty, lhs: dlhs, exp: drhs, source: src });
             } else {
-                daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN { type_: dty.clone(), exp1: dlhs.clone(), exp: drhs.clone(), source: src.clone() });
+                daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN { type_: dty, exp1: dlhs, exp: drhs, source: src });
             }
-            daeStmt.clone()
+            daeStmt
         },
         _ => {
-            dty = Type::toDAE(ty.clone(), true)?;
-            drhs = Expression::toDAE(rhs.clone(), false)?;
-            Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: dty.clone(), expExpLst: ({
+            dty = Type::toDAE(ty, true)?;
+            drhs = Expression::toDAE(rhs, false)?;
+            Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: dty, expExpLst: ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for mut e in (expl.clone()).into_iter().cloned() {
+        for mut e in (expl).into_iter().cloned() {
             let __x = Expression::toDAE(e.clone(), false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), exp: drhs.clone(), source: src.clone() })
+    }), exp: drhs, source: src })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     } else {
         dty = Type::toDAE(ty.clone(), true)?;
-        dlhs = Expression::toDAE(lhs.clone(), false)?;
-        drhs = Expression::toDAE(rhs.clone(), false)?;
-        if Type::isArray(ty.clone()) {
-            daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: dty.clone(), lhs: dlhs.clone(), exp: drhs.clone(), source: src.clone() });
+        dlhs = Expression::toDAE(lhs, false)?;
+        drhs = Expression::toDAE(rhs, false)?;
+        if Type::isArray(ty) {
+            daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: dty, lhs: dlhs, exp: drhs, source: src });
         } else {
-            daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN { type_: dty.clone(), exp1: dlhs.clone(), exp: drhs.clone(), source: src.clone() });
+            daeStmt = Arc::new(DAE::Statement::STMT_ASSIGN { type_: dty, exp1: dlhs, exp: drhs, source: src });
         }
     }
     Ok(daeStmt)
@@ -952,7 +952,7 @@ fn convertForStatement(mut forStmt: Arc<Statement::NFStatement>) -> Result<Arc<D
     let mut source: Arc<DAE::ElementSource>;
     let mut for_type: Arc<Statement::ForType>;
     let mut loop_vars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
-    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(forStmt.clone()) {
+    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(forStmt) {
         Deref @ Statement::FOR { iterator: __pa0, range: Some(__pa1), body: __pa2, forType: __pa3, source: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -961,10 +961,10 @@ fn convertForStatement(mut forStmt: Arc<Statement::NFStatement>) -> Result<Arc<D
     body = __pa2.clone();
     for_type = __pa3.clone();
     source = __pa4.clone();
-    dbody = convertStatements(body.clone())?;
+    dbody = convertStatements(body)?;
     ty = InstNode::getType(iterator.clone())?;
     forDAE = (::match_deref::match_deref! { match &(for_type.clone()) {
-        Deref @ Statement::ForType::NORMAL => Arc::new(DAE::Statement::STMT_FOR { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty.clone()), iter: (InstNode::name(iterator.clone())?).clone(), range: Expression::toDAE(range.clone(), false)?, statementLst: dbody.clone(), source: source.clone() }),
+        Deref @ Statement::ForType::NORMAL => Arc::new(DAE::Statement::STMT_FOR { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty), iter: (InstNode::name(iterator)?).clone(), range: Expression::toDAE(range, false)?, statementLst: dbody, source: source }),
         Deref @ Statement::ForType::PARALLEL { .. } => {
             loop_vars = ({
         let mut __acc: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
@@ -974,7 +974,7 @@ fn convertForStatement(mut forStmt: Arc<Statement::NFStatement>) -> Result<Arc<D
         }
         __acc.reverse()
     });
-            Arc::new(DAE::Statement::STMT_PARFOR { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty.clone()), iter: (InstNode::name(iterator.clone())?).clone(), range: Expression::toDAE(range.clone(), false)?, statementLst: dbody.clone(), loopPrlVars: loop_vars.clone(), source: source.clone() })
+            Arc::new(DAE::Statement::STMT_PARFOR { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty), iter: (InstNode::name(iterator)?).clone(), range: Expression::toDAE(range, false)?, statementLst: dbody, loopPrlVars: loop_vars, source: source })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -986,9 +986,9 @@ fn convertForStatementParallelVar(mut var: (Arc<ComponentRef::NFComponentRef>, S
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut dcref: Arc<DAE::ComponentRef>;
     let mut info: SourceInfo;
-    (cref, info) = var.clone();
-    dcref = ComponentRef::toDAE(cref.clone())?;
-    outVar = (dcref.clone(), info.clone());
+    (cref, info) = var;
+    dcref = ComponentRef::toDAE(cref)?;
+    outVar = (dcref, info);
     Ok(outVar)
 }
 
@@ -1001,26 +1001,26 @@ fn convertIfStatement(mut ifBranches: Arc<metamodelica::List<(Arc<Expression::NF
     let mut first: bool = true;
     let mut single: bool = (ifBranches.clone().len() as i32) == 1;
     let mut else_stmt: Arc<DAE::Else> = openmodelica_frontend_types::DAE::Else::interned_NOELSE();
-    for mut b in &*ifBranches.clone().reverse() {
+    for mut b in &*ifBranches.reverse() {
         let mut b = b.clone();
         (cond, stmts) = b.clone();
         dcond = Expression::toDAE(cond.clone(), false)?;
         dstmts = convertStatements(stmts.clone())?;
-        if first.clone() && !(single.clone()) && Expression::isTrue(cond.clone()) {
+        if first && !(single) && Expression::isTrue(cond.clone()) {
             else_stmt = Arc::new(DAE::Else::ELSE { statementLst: dstmts.clone() });
         } else {
             else_stmt = Arc::new(DAE::Else::ELSEIF { exp: dcond.clone(), statementLst: dstmts.clone(), else_: else_stmt.clone() });
         }
         first = false;
     }
-    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(else_stmt.clone()) {
+    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(else_stmt) {
         Deref @ DAE::Else::ELSEIF { exp: __pa0, statementLst: __pa1, else_: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
     dcond = __pa0.clone();
     dstmts = __pa1.clone();
     else_stmt = __pa2.clone();
-    ifStatement = Arc::new(DAE::Statement::STMT_IF { exp: dcond.clone(), statementLst: dstmts.clone(), else_: else_stmt.clone(), source: source.clone() });
+    ifStatement = Arc::new(DAE::Statement::STMT_IF { exp: dcond, statementLst: dstmts, else_: else_stmt, source: source });
     Ok(ifStatement)
 }
 
@@ -1031,7 +1031,7 @@ fn convertWhenStatement(mut whenBranches: Arc<metamodelica::List<(Arc<Expression
     let mut cond: Arc<DAE::Exp>;
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut when_stmt: Option<Arc<DAE::Statement>> = None;
-    for mut b in &*whenBranches.clone().reverse() {
+    for mut b in &*whenBranches.reverse() {
         let mut b = b.clone();
         co = Util::tuple21(b.clone());
         conditions = ({
@@ -1054,7 +1054,7 @@ fn convertWhenStatement(mut whenBranches: Arc<metamodelica::List<(Arc<Expression
         __acc.reverse()
     }), initialCall: false, statementLst: stmts.clone(), elseWhen: when_stmt.clone(), source: source.clone() }));
     }
-    let __pa0 = ::match_deref::match_deref! { match &(when_stmt.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(when_stmt) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1064,7 +1064,7 @@ fn convertWhenStatement(mut whenBranches: Arc<metamodelica::List<(Arc<Expression
 
 fn convertInitialAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
-    for mut alg in &*algorithms.clone().reverse() {
+    for mut alg in &*algorithms.reverse() {
         let mut alg = alg.clone();
         elements = convertInitialAlgorithm(alg.clone(), elements.clone())?;
     }
@@ -1076,8 +1076,8 @@ fn convertInitialAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut elements: A
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut dalg: Arc<DAE::Algorithm>;
     stmts = convertStatements(alg.statements.clone())?;
-    dalg = Arc::new(DAE::Algorithm { statementLst: stmts.clone() });
-    elements = metamodelica::cons(Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: dalg.clone(), source: alg.source.clone() }), elements.clone());
+    dalg = Arc::new(DAE::Algorithm { statementLst: stmts });
+    elements = metamodelica::cons(Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: dalg, source: alg.source.clone() }), elements);
     Ok(elements)
 }
 
@@ -1113,26 +1113,26 @@ fn convertFunction(mut func: Arc<Function::Function>) -> Result<DAE::Function> {
     let mut def: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     cls = InstNode::getClass(Function::instance(func.clone()))?;
-    dfunc = (::match_deref::match_deref! { match &(cls.clone()) {
+    dfunc = (::match_deref::match_deref! { match &(cls) {
         Deref @ Class::TYPED_DERIVED { restriction: Deref @ Restriction::FUNCTION, .. } if (Function::isPartialDerivative(func.clone())) => {
             def = DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: Function::getDerivedFunctionName(func.clone())?, derivedVars: Function::getDerivedInputNames(func.clone())? };
-            Function::toDAE(func.clone(), def.clone())?
+            Function::toDAE(func.clone(), def)?
         },
         Deref @ Class::INSTANCED_CLASS { sections: __esc_sections, restriction: Deref @ Restriction::FUNCTION, .. } => {
             sections = (*__esc_sections).clone();
             elems = convertFunctionParams(func.inputs.clone(), metamodelica::nil())?;
-            elems = convertFunctionParams(func.outputs.clone(), elems.clone())?;
-            elems = convertFunctionParams(func.locals.clone(), elems.clone())?;
+            elems = convertFunctionParams(func.outputs.clone(), elems)?;
+            elems = convertFunctionParams(func.locals.clone(), elems)?;
             def = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
-            elems = convertAlgorithms(var_field!((*sections).algorithms, Sections::NFSections::SECTIONS).clone(), elems.clone())?;
-            DAE::FunctionDefinition::FUNCTION_DEF { body: elems.clone().reverse() }
+            elems = convertAlgorithms(var_field!((*sections).algorithms, Sections::NFSections::SECTIONS).clone(), elems)?;
+            DAE::FunctionDefinition::FUNCTION_DEF { body: elems.reverse() }
         },
-        Deref @ Sections::EXTERNAL { .. } => convertExternalDecl(sections.clone(), elems.clone().reverse())?,
-        _ => DAE::FunctionDefinition::FUNCTION_DEF { body: elems.clone().reverse() },
+        Deref @ Sections::EXTERNAL { .. } => convertExternalDecl(sections.clone(), elems.reverse())?,
+        _ => DAE::FunctionDefinition::FUNCTION_DEF { body: elems.reverse() },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            Function::toDAE(func.clone(), def.clone())?
+            Function::toDAE(func.clone(), def)?
         },
         Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::RECORD_CONSTRUCTOR, .. } => DAE::Function::RECORD_CONSTRUCTOR { path: Function::name(func.clone()), type_: Function::makeDAEType(func.clone(), false)?, source: DAE::emptyElementSource().clone() },
         _ => {
@@ -1146,7 +1146,7 @@ fn convertFunction(mut func: Arc<Function::Function>) -> Result<DAE::Function> {
 
 fn convertFunctionParams(mut params: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
-    for mut p in &*params.clone() {
+    for mut p in &*params {
         let mut p = p.clone();
         elements = metamodelica::cons(convertFunctionParam(p.clone())?, elements.clone());
     }
@@ -1175,14 +1175,14 @@ fn convertFunctionParam(mut node: Arc<InstNode::InstNode>) -> Result<Arc<DAE::El
             cls = InstNode::getClass(var_field!((*comp).classInst, Component::NFComponent::COMPONENT).clone())?;
             ty_attr = ({
         let mut __acc: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
-        for mut m in (Class::getTypeAttributes(cls.clone())).into_iter().cloned() {
+        for mut m in (Class::getTypeAttributes(cls)).into_iter().cloned() {
             let __x = (Modifier::name(m.clone())?, Modifier::binding(m.clone()));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            var_attr = convertVarAttributes(ty_attr.clone(), ty.clone(), attr.clone())?;
-            makeDAEVar(cref.clone(), ty.clone(), binding.clone(), attr.clone(), InstNode::visibility(node.clone()), var_attr.clone(), var_field!((*comp).comment, Component::NFComponent::COMPONENT).clone(), FUNCTION_VARIABLE_CONVERSION_SETTINGS.clone(), info.clone(), false)?
+            var_attr = convertVarAttributes(ty_attr, ty.clone(), attr.clone())?;
+            makeDAEVar(cref, ty.clone(), binding, attr.clone(), InstNode::visibility(node), var_attr, var_field!((*comp).comment, Component::NFComponent::COMPONENT).clone(), FUNCTION_VARIABLE_CONVERSION_SETTINGS.clone(), info.clone(), false)?
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertFunctionParam")); __mm_s.push_str(&*literal!(" got invalid component.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
@@ -1209,8 +1209,8 @@ fn convertExternalDecl(mut extDecl: Arc<Sections::NFSections>, mut parameters: A
         __acc.reverse()
     });
             ret_arg = convertExternalDeclOutput(var_field!((*extDecl).outputRef, Sections::NFSections::EXTERNAL).clone())?;
-            decl = DAE::ExternalDecl { name: (var_field!((*extDecl).name, Sections::NFSections::EXTERNAL).clone()).clone(), args: args.clone(), returnArg: ret_arg.clone(), language: (var_field!((*extDecl).language, Sections::NFSections::EXTERNAL).clone()).clone(), ann: var_field!((*extDecl).ann, Sections::NFSections::EXTERNAL).clone() };
-            DAE::FunctionDefinition::FUNCTION_EXT { body: parameters.clone(), externalDecl: decl.clone() }
+            decl = DAE::ExternalDecl { name: (var_field!((*extDecl).name, Sections::NFSections::EXTERNAL).clone()).clone(), args: args, returnArg: ret_arg, language: (var_field!((*extDecl).language, Sections::NFSections::EXTERNAL).clone()).clone(), ann: var_field!((*extDecl).ann, Sections::NFSections::EXTERNAL).clone() };
+            DAE::FunctionDefinition::FUNCTION_EXT { body: parameters, externalDecl: decl }
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1229,7 +1229,7 @@ fn convertExternalDeclArg(mut exp: Arc<Expression::NFExpression>) -> Result<DAE:
             DAE::ExtArg::EXTARGSIZE { componentRef: ComponentRef::toDAE(cref.clone())?, type_: Type::toDAE(var_field!((**cref).ty, ComponentRef::NFComponentRef::CREF).clone(), true)?, exp: Expression::toDAE(e.clone(), false)? }
         },
         _ => {
-            DAE::ExtArg::EXTARGEXP { exp: Expression::toDAE(exp.clone(), false)?, type_: Type::toDAE(Expression::typeOf(exp.clone()), true)? }
+            DAE::ExtArg::EXTARGEXP { exp: Expression::toDAE(exp.clone(), false)?, type_: Type::toDAE(Expression::typeOf(exp), true)? }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1254,7 +1254,7 @@ fn convertExternalDeclOutput(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
 
 pub(crate) fn makeTypeVars(mut complexCls: Arc<InstNode::InstNode>) -> Result<Arc<metamodelica::List<Arc<DAE::Var>>>> {
     let mut typeVars: Arc<metamodelica::List<Arc<DAE::Var>>>;
-    typeVars = { let mut cls = InstNode::getClass(complexCls.clone())?; (::match_deref::match_deref! { match &(cls) {
+    typeVars = { let mut cls = InstNode::getClass(complexCls)?; (::match_deref::match_deref! { match &(cls) {
         Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::RECORD { .. }, .. } => ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
         for mut c in (ClassTree::getComponents(var_field!((*cls).elements, Class::NFClass::INSTANCED_CLASS).clone())?).borrow().iter() {
@@ -1293,7 +1293,7 @@ pub(crate) fn makeTypeVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<
     let mut attr: Arc<Attributes::NFAttributes>;
     comp = InstNode::component(InstNode::resolveOuter(component.clone()))?;
     attr = Component::getAttributes(comp.clone());
-    typeVar = Arc::new(DAE::Var { name: (InstNode::name(component.clone())?).clone(), attributes: Attributes::toDAE(attr.clone(), InstNode::visibility(component.clone()))?, ty: Type::toDAE(Component::getType(comp.clone())?, true)?, binding: Binding::toDAE(Component::getBinding(comp.clone()))?, bind_from_outside: false, constOfForIteratorRange: None });
+    typeVar = Arc::new(DAE::Var { name: (InstNode::name(component.clone())?).clone(), attributes: Attributes::toDAE(attr, InstNode::visibility(component))?, ty: Type::toDAE(Component::getType(comp.clone())?, true)?, binding: Binding::toDAE(Component::getBinding(comp))?, bind_from_outside: false, constOfForIteratorRange: None });
     Ok(typeVar)
 }
 
@@ -1313,24 +1313,24 @@ pub(crate) fn makeTypeRecordVar(mut component: Arc<InstNode::InstNode>) -> Resul
         vis = InstNode::visibility(component.clone());
     }
     binding = Component::getBinding(comp.clone());
-    binding = Binding::mapExp(binding.clone(), (std::sync::Arc::new(stripScopePrefixExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-    binding = Flatten::flattenBinding(binding.clone(), Flatten::EMPTY_PREFIX().clone(), false)?;
+    binding = Binding::mapExp(binding, (std::sync::Arc::new(stripScopePrefixExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    binding = Flatten::flattenBinding(binding, Flatten::EMPTY_PREFIX().clone(), false)?;
     bind_from_outside = Binding::source(binding.clone()) == Binding::Source::MODIFIER.clone();
-    ty = Component::getType(comp.clone())?;
-    ty = Type::mapDims(ty.clone(), (std::sync::Arc::new(stripScopePrefixFromDim) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
-    typeVar = Arc::new(DAE::Var { name: (InstNode::name(component.clone())?).clone(), attributes: Attributes::toDAE(attr.clone(), vis.clone())?, ty: Type::toDAE(ty.clone(), true)?, binding: Binding::toDAE(binding.clone())?, bind_from_outside: bind_from_outside.clone(), constOfForIteratorRange: None });
+    ty = Component::getType(comp)?;
+    ty = Type::mapDims(ty, (std::sync::Arc::new(stripScopePrefixFromDim) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
+    typeVar = Arc::new(DAE::Var { name: (InstNode::name(component)?).clone(), attributes: Attributes::toDAE(attr, vis)?, ty: Type::toDAE(ty, true)?, binding: Binding::toDAE(binding)?, bind_from_outside: bind_from_outside, constOfForIteratorRange: None });
     Ok(typeVar)
 }
 
 fn stripScopePrefixFromDim(mut dim: Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> {
     let mut dim: Arc<Dimension::NFDimension> = dim;
-    dim = Dimension::mapExp(dim.clone(), (std::sync::Arc::new(fnptr!(stripScopePrefixCrefExp, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    dim = Dimension::mapExp(dim, (std::sync::Arc::new(fnptr!(stripScopePrefixCrefExp, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(dim)
 }
 
 fn stripScopePrefixExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    exp = Expression::map(exp.clone(), (std::sync::Arc::new(fnptr!(stripScopePrefixCrefExp, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    exp = Expression::map(exp, (std::sync::Arc::new(fnptr!(stripScopePrefixCrefExp, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(exp)
 }
 

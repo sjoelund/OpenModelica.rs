@@ -83,7 +83,7 @@ pub(crate) fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> bool {
 
 pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
-    r = (match (r1.clone(), r2.clone()) {
+    r = (match (r1, r2) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32;
             let mut ri2: i32;
@@ -103,17 +103,17 @@ fn normalizeZero(mut r: Rational) -> Rational {
     let mut outR: Rational;
     outR = (match r.clone() {
         Rational { nom: 0, denom: _ } => Rational { nom: 0, denom: 1 },
-        _ => r.clone(),
+        _ => r,
     });
     outR
 }
 
 pub fn rationalString(mut r: Rational) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ((match r.clone() {
+    r#str = ((match r {
         Rational { nom: mut n, denom: mut d } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(n.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(d.clone())); ArcStr::from(__mm_s) }).clone();
-            r#str.clone()
+            r#str
         },
     })).clone();
     Ok(r#str)
@@ -121,7 +121,7 @@ pub fn rationalString(mut r: Rational) -> Result<ArcStr> {
 
 pub fn equals(mut r1: Rational, mut r2: Rational) -> Result<bool> {
     let mut res: bool;
-    res = (match (r1.clone(), r2.clone()) {
+    res = (match (r1, r2) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             i1.clone() * i4.clone() - i3.clone() * i2.clone() == 0
         },
@@ -131,7 +131,7 @@ pub fn equals(mut r1: Rational, mut r2: Rational) -> Result<bool> {
 
 pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
-    r = (match (r1.clone(), r2.clone()) {
+    r = (match (r1, r2) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32;
             let mut ri2: i32;
@@ -149,7 +149,7 @@ pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 
 pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
-    r = (match (r1.clone(), r2.clone()) {
+    r = (match (r1, r2) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32;
             let mut ri2: i32;
@@ -167,7 +167,7 @@ pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 
 pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
-    r = (match (r1.clone(), r2.clone()) {
+    r = (match (r1, r2) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32;
             let mut ri2: i32;
@@ -185,9 +185,9 @@ pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 
 pub(crate) fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
     '__tco: loop {
-        match i2.clone() {
-        0 => return i1.clone(),
-        _ => { (i1, i2) = (i2.clone(), intMod(i1.clone(), i2.clone())); continue '__tco; },
+        match i2 {
+        0 => return i1,
+        _ => { (i1, i2) = (i2, intMod(i1, i2)); continue '__tco; },
     }
     }
 }

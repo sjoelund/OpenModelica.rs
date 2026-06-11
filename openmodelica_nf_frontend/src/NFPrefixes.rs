@@ -86,7 +86,7 @@ pub mod ConnectorType {
 
     pub(crate) fn fromSCode(mut scodeCty: SCode::ConnectorType) -> Result<Type> {
         let mut cty: Type;
-        cty = (match scodeCty.clone() {
+        cty = (match scodeCty {
         SCode::ConnectorType::POTENTIAL { .. } => 0,
         SCode::ConnectorType::FLOW { .. } => FLOW.clone(),
         SCode::ConnectorType::STREAM { .. } => STREAM.clone(),
@@ -96,11 +96,11 @@ pub mod ConnectorType {
 
     pub(crate) fn toDAE(mut cty: Type) -> Arc<DAE::ConnectorType> {
         let mut dcty: Arc<DAE::ConnectorType>;
-        if intBitAnd(cty.clone(), POTENTIAL.clone()) > 0 {
+        if intBitAnd(cty, POTENTIAL.clone()) > 0 {
             dcty = openmodelica_frontend_types::DAE::ConnectorType::interned_POTENTIAL();
-        } else if intBitAnd(cty.clone(), FLOW.clone()) > 0 {
+        } else if intBitAnd(cty, FLOW.clone()) > 0 {
             dcty = openmodelica_frontend_types::DAE::ConnectorType::interned_FLOW();
-        } else if intBitAnd(cty.clone(), STREAM.clone()) > 0 {
+        } else if intBitAnd(cty, STREAM.clone()) > 0 {
             dcty = Arc::new(DAE::ConnectorType::STREAM { associatedFlow: None });
         } else {
             dcty = openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR();
@@ -110,116 +110,116 @@ pub mod ConnectorType {
 
     pub(crate) fn merge(mut outerCty: Type, mut innerCty: Type, mut node: Arc<InstNode::InstNode>, mut isClass: bool) -> Result<Type> {
         let mut cty: Type;
-        if intBitAnd(outerCty.clone(), FLOW_STREAM_MASK.clone()) > 0 && intBitAnd(innerCty.clone(), FLOW_STREAM_MASK.clone()) > 0 {
-            printPrefixError((toString(outerCty.clone())).clone(), (toString(innerCty.clone())).clone(), node.clone())?;
+        if intBitAnd(outerCty, FLOW_STREAM_MASK.clone()) > 0 && intBitAnd(innerCty, FLOW_STREAM_MASK.clone()) > 0 {
+            printPrefixError((toString(outerCty)).clone(), (toString(innerCty)).clone(), node)?;
         }
-        cty = intBitOr(outerCty.clone(), innerCty.clone());
+        cty = intBitOr(outerCty, innerCty);
         Ok(cty)
     }
 
     pub(crate) fn isPotential(mut cty: Type) -> bool {
         let mut isPotential: bool;
-        isPotential = intBitAnd(cty.clone(), POTENTIAL.clone()) > 0;
+        isPotential = intBitAnd(cty, POTENTIAL.clone()) > 0;
         isPotential
     }
 
     pub(crate) fn setPotential(mut cty: Type) -> Type {
         let mut cty: Type = cty;
-        cty = intBitOr(cty.clone(), POTENTIAL.clone());
+        cty = intBitOr(cty, POTENTIAL.clone());
         cty
     }
 
     pub(crate) fn isFlow(mut cty: Type) -> bool {
         let mut isFlow: bool;
-        isFlow = intBitAnd(cty.clone(), FLOW.clone()) > 0;
+        isFlow = intBitAnd(cty, FLOW.clone()) > 0;
         isFlow
     }
 
     pub(crate) fn isStream(mut cty: Type) -> bool {
         let mut isStream: bool;
-        isStream = intBitAnd(cty.clone(), STREAM.clone()) > 0;
+        isStream = intBitAnd(cty, STREAM.clone()) > 0;
         isStream
     }
 
     pub(crate) fn isFlowOrStream(mut cty: Type) -> bool {
         let mut isFlowOrStream: bool;
-        isFlowOrStream = intBitAnd(cty.clone(), FLOW_STREAM_MASK.clone()) > 0;
+        isFlowOrStream = intBitAnd(cty, FLOW_STREAM_MASK.clone()) > 0;
         isFlowOrStream
     }
 
     pub(crate) fn unsetFlowStream(mut cty: Type) -> Type {
         let mut cty: Type = cty;
-        cty = intBitAnd(cty.clone(), intBitNot(FLOW_STREAM_MASK.clone()));
+        cty = intBitAnd(cty, intBitNot(FLOW_STREAM_MASK.clone()));
         cty
     }
 
     pub(crate) fn isConnector(mut cty: Type) -> bool {
         let mut isConnector: bool;
-        isConnector = intBitAnd(cty.clone(), CONNECTOR.clone()) > 0;
+        isConnector = intBitAnd(cty, CONNECTOR.clone()) > 0;
         isConnector
     }
 
     pub(crate) fn setConnector(mut cty: Type) -> Type {
         let mut cty: Type = cty;
-        cty = intBitOr(cty.clone(), CONNECTOR.clone());
+        cty = intBitOr(cty, CONNECTOR.clone());
         cty
     }
 
     pub(crate) fn isConnectorType(mut cty: Type) -> bool {
         let mut isConnector: bool;
-        isConnector = intBitAnd(cty.clone(), CONNECTOR_MASK.clone()) > 0;
+        isConnector = intBitAnd(cty, CONNECTOR_MASK.clone()) > 0;
         isConnector
     }
 
     pub(crate) fn isExpandable(mut cty: Type) -> bool {
         let mut isExpandable: bool;
-        isExpandable = intBitAnd(cty.clone(), EXPANDABLE.clone()) > 0;
+        isExpandable = intBitAnd(cty, EXPANDABLE.clone()) > 0;
         isExpandable
     }
 
     pub(crate) fn setExpandable(mut cty: Type) -> Type {
         let mut cty: Type = cty;
-        cty = intBitOr(cty.clone(), EXPANDABLE.clone());
+        cty = intBitOr(cty, EXPANDABLE.clone());
         cty
     }
 
     pub(crate) fn isUndeclared(mut cty: Type) -> bool {
         let mut isExpandableElement: bool;
-        isExpandableElement = intBitAnd(cty.clone(), UNDECLARED_MASK.clone()) > 0;
+        isExpandableElement = intBitAnd(cty, UNDECLARED_MASK.clone()) > 0;
         isExpandableElement
     }
 
     pub(crate) fn isVirtual(mut cty: Type) -> bool {
         let mut isVirtual: bool;
-        isVirtual = intBitAnd(cty.clone(), VIRTUAL.clone()) > 0;
+        isVirtual = intBitAnd(cty, VIRTUAL.clone()) > 0;
         isVirtual
     }
 
     pub(crate) fn isPotentiallyPresent(mut cty: Type) -> bool {
         let mut isPotentiallyPresent: bool;
-        isPotentiallyPresent = intBitAnd(cty.clone(), POTENTIALLY_PRESENT.clone()) > 0;
+        isPotentiallyPresent = intBitAnd(cty, POTENTIALLY_PRESENT.clone()) > 0;
         isPotentiallyPresent
     }
 
     pub(crate) fn setPresent(mut cty: Type) -> Type {
         let mut cty: Type = cty;
-        cty = intBitAnd(cty.clone(), intBitNot(POTENTIALLY_PRESENT.clone()));
+        cty = intBitAnd(cty, intBitNot(POTENTIALLY_PRESENT.clone()));
         cty
     }
 
     pub(crate) fn isAugmented(mut cty: Type) -> bool {
         let mut augmented: bool;
-        augmented = intBitAnd(cty.clone(), AUGMENTED.clone()) > 0;
+        augmented = intBitAnd(cty, AUGMENTED.clone()) > 0;
         augmented
     }
 
     pub(crate) fn toString(mut cty: Type) -> ArcStr {
         let mut r#str: ArcStr;
-        if intBitAnd(cty.clone(), FLOW.clone()) > 0 {
+        if intBitAnd(cty, FLOW.clone()) > 0 {
             r#str = (literal!("flow")).clone();
-        } else if intBitAnd(cty.clone(), STREAM.clone()) > 0 {
+        } else if intBitAnd(cty, STREAM.clone()) > 0 {
             r#str = (literal!("stream")).clone();
-        } else if intBitAnd(cty.clone(), EXPANDABLE.clone()) > 0 {
+        } else if intBitAnd(cty, EXPANDABLE.clone()) > 0 {
             r#str = (literal!("expandable")).clone();
         } else {
             r#str = (literal!("")).clone();
@@ -229,9 +229,9 @@ pub mod ConnectorType {
 
     pub(crate) fn unparse(mut cty: Type) -> ArcStr {
         let mut r#str: ArcStr;
-        if intBitAnd(cty.clone(), FLOW.clone()) > 0 {
+        if intBitAnd(cty, FLOW.clone()) > 0 {
             r#str = (literal!("flow ")).clone();
-        } else if intBitAnd(cty.clone(), STREAM.clone()) > 0 {
+        } else if intBitAnd(cty, STREAM.clone()) > 0 {
             r#str = (literal!("stream ")).clone();
         } else {
             r#str = (literal!("")).clone();
@@ -242,28 +242,28 @@ pub mod ConnectorType {
     pub(crate) fn toDebugString(mut cty: Type) -> ArcStr {
         let mut r#str: ArcStr;
         let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        if intBitAnd(cty.clone(), POTENTIAL.clone()) > 0 {
-            strl = metamodelica::cons((literal!("potential")).clone(), strl.clone());
+        if intBitAnd(cty, POTENTIAL.clone()) > 0 {
+            strl = metamodelica::cons((literal!("potential")).clone(), strl);
         }
-        if intBitAnd(cty.clone(), FLOW.clone()) > 0 {
-            strl = metamodelica::cons((literal!("flow")).clone(), strl.clone());
+        if intBitAnd(cty, FLOW.clone()) > 0 {
+            strl = metamodelica::cons((literal!("flow")).clone(), strl);
         }
-        if intBitAnd(cty.clone(), STREAM.clone()) > 0 {
-            strl = metamodelica::cons((literal!("stream")).clone(), strl.clone());
+        if intBitAnd(cty, STREAM.clone()) > 0 {
+            strl = metamodelica::cons((literal!("stream")).clone(), strl);
         }
-        if intBitAnd(cty.clone(), POTENTIALLY_PRESENT.clone()) > 0 {
-            strl = metamodelica::cons((literal!("potentially present")).clone(), strl.clone());
+        if intBitAnd(cty, POTENTIALLY_PRESENT.clone()) > 0 {
+            strl = metamodelica::cons((literal!("potentially present")).clone(), strl);
         }
-        if intBitAnd(cty.clone(), VIRTUAL.clone()) > 0 {
-            strl = metamodelica::cons((literal!("virtual")).clone(), strl.clone());
+        if intBitAnd(cty, VIRTUAL.clone()) > 0 {
+            strl = metamodelica::cons((literal!("virtual")).clone(), strl);
         }
-        if intBitAnd(cty.clone(), CONNECTOR.clone()) > 0 {
-            strl = metamodelica::cons((literal!("connector")).clone(), strl.clone());
+        if intBitAnd(cty, CONNECTOR.clone()) > 0 {
+            strl = metamodelica::cons((literal!("connector")).clone(), strl);
         }
-        if intBitAnd(cty.clone(), EXPANDABLE.clone()) > 0 {
-            strl = metamodelica::cons((literal!("expandable")).clone(), strl.clone());
+        if intBitAnd(cty, EXPANDABLE.clone()) > 0 {
+            strl = metamodelica::cons((literal!("expandable")).clone(), strl);
         }
-        r#str = stringDelimitList(strl.clone(), (literal!(" ")).clone());
+        r#str = stringDelimitList(strl, (literal!(" ")).clone());
         r#str
     }
 
@@ -439,7 +439,7 @@ pub(crate) use self::Replaceable::{REPLACEABLE,NOT_REPLACEABLE};
 
 pub(crate) fn parallelismFromSCode(mut scodePar: SCode::Parallelism) -> Result<Parallelism> {
     let mut par: Parallelism;
-    par = (match scodePar.clone() {
+    par = (match scodePar {
         SCode::Parallelism::PARGLOBAL { .. } => Parallelism::GLOBAL.clone(),
         SCode::Parallelism::PARLOCAL { .. } => Parallelism::LOCAL.clone(),
         SCode::Parallelism::NON_PARALLEL { .. } => Parallelism::NON_PARALLEL.clone(),
@@ -449,7 +449,7 @@ pub(crate) fn parallelismFromSCode(mut scodePar: SCode::Parallelism) -> Result<P
 
 pub(crate) fn parallelismToSCode(mut par: Parallelism) -> Result<SCode::Parallelism> {
     let mut scodePar: SCode::Parallelism;
-    scodePar = (match par.clone() {
+    scodePar = (match par {
         Parallelism::GLOBAL => openmodelica_frontend_types::SCode::Parallelism::PARGLOBAL,
         Parallelism::LOCAL { .. } => openmodelica_frontend_types::SCode::Parallelism::PARLOCAL,
         Parallelism::NON_PARALLEL => openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL,
@@ -459,7 +459,7 @@ pub(crate) fn parallelismToSCode(mut par: Parallelism) -> Result<SCode::Parallel
 
 pub(crate) fn parallelismToDAE(mut par: Parallelism) -> Result<DAE::VarParallelism> {
     let mut dpar: DAE::VarParallelism;
-    dpar = (match par.clone() {
+    dpar = (match par {
         Parallelism::GLOBAL => openmodelica_frontend_types::DAE::VarParallelism::PARGLOBAL,
         Parallelism::LOCAL { .. } => openmodelica_frontend_types::DAE::VarParallelism::PARLOCAL,
         Parallelism::NON_PARALLEL => openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL,
@@ -469,7 +469,7 @@ pub(crate) fn parallelismToDAE(mut par: Parallelism) -> Result<DAE::VarParalleli
 
 pub(crate) fn parallelismString(mut par: Parallelism) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match par.clone() {
+    r#str = ((match par {
         Parallelism::GLOBAL => literal!("parglobal"),
         Parallelism::LOCAL { .. } => literal!("parlocal"),
         _ => literal!(""),
@@ -479,7 +479,7 @@ pub(crate) fn parallelismString(mut par: Parallelism) -> ArcStr {
 
 pub(crate) fn unparseParallelism(mut par: Parallelism) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match par.clone() {
+    r#str = ((match par {
         Parallelism::GLOBAL => literal!("parglobal "),
         Parallelism::LOCAL { .. } => literal!("parlocal "),
         _ => literal!(""),
@@ -489,21 +489,21 @@ pub(crate) fn unparseParallelism(mut par: Parallelism) -> ArcStr {
 
 pub(crate) fn mergeParallelism(mut outerPar: Parallelism, mut innerPar: Parallelism, mut node: Arc<InstNode::InstNode>) -> Result<Parallelism> {
     let mut par: Parallelism = Parallelism::NON_PARALLEL;
-    if outerPar.clone() == Parallelism::NON_PARALLEL.clone() {
-        par = innerPar.clone();
-    } else if innerPar.clone() == Parallelism::NON_PARALLEL.clone() {
-        par = outerPar.clone();
-    } else if innerPar.clone() == outerPar.clone() {
-        par = innerPar.clone();
+    if outerPar == Parallelism::NON_PARALLEL.clone() {
+        par = innerPar;
+    } else if innerPar == Parallelism::NON_PARALLEL.clone() {
+        par = outerPar;
+    } else if innerPar == outerPar {
+        par = innerPar;
     } else {
-        printPrefixError((parallelismString(outerPar.clone())).clone(), (parallelismString(innerPar.clone())).clone(), node.clone())?;
+        printPrefixError((parallelismString(outerPar)).clone(), (parallelismString(innerPar)).clone(), node)?;
     }
     Ok(par)
 }
 
 pub(crate) fn variabilityFromSCode(mut scodeVar: SCode::Variability) -> Result<Variability> {
     let mut var: Variability;
-    var = (match scodeVar.clone() {
+    var = (match scodeVar {
         SCode::Variability::CONST { .. } => Variability::CONSTANT.clone(),
         SCode::Variability::PARAM { .. } => Variability::PARAMETER.clone(),
         SCode::Variability::DISCRETE { .. } => Variability::DISCRETE.clone(),
@@ -514,7 +514,7 @@ pub(crate) fn variabilityFromSCode(mut scodeVar: SCode::Variability) -> Result<V
 
 pub(crate) fn variabilityToSCode(mut var: Variability) -> SCode::Variability {
     let mut scodeVar: SCode::Variability;
-    scodeVar = (match var.clone() {
+    scodeVar = (match var {
         Variability::CONSTANT => openmodelica_frontend_types::SCode::Variability::CONST,
         Variability::STRUCTURAL_PARAMETER => openmodelica_frontend_types::SCode::Variability::PARAM,
         Variability::PARAMETER { .. } => openmodelica_frontend_types::SCode::Variability::PARAM,
@@ -527,7 +527,7 @@ pub(crate) fn variabilityToSCode(mut var: Variability) -> SCode::Variability {
 
 pub(crate) fn variabilityToDAE(mut var: Variability) -> DAE::VarKind {
     let mut varKind: DAE::VarKind;
-    varKind = (match var.clone() {
+    varKind = (match var {
         Variability::CONSTANT => openmodelica_frontend_types::DAE::VarKind::CONST,
         Variability::STRUCTURAL_PARAMETER => openmodelica_frontend_types::DAE::VarKind::PARAM,
         Variability::PARAMETER { .. } => openmodelica_frontend_types::DAE::VarKind::PARAM,
@@ -540,7 +540,7 @@ pub(crate) fn variabilityToDAE(mut var: Variability) -> DAE::VarKind {
 
 pub(crate) fn variabilityToDAEConst(mut var: Variability) -> DAE::Const {
     let mut r#const: DAE::Const;
-    r#const = (match var.clone() {
+    r#const = (match var {
         Variability::CONSTANT => openmodelica_frontend_types::DAE::Const::C_CONST,
         Variability::STRUCTURAL_PARAMETER => openmodelica_frontend_types::DAE::Const::C_PARAM,
         Variability::PARAMETER { .. } => openmodelica_frontend_types::DAE::Const::C_PARAM,
@@ -552,7 +552,7 @@ pub(crate) fn variabilityToDAEConst(mut var: Variability) -> DAE::Const {
 
 pub(crate) fn variabilityString(mut var: Variability) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((match var.clone() {
+    r#str = ((match var {
         Variability::CONSTANT => literal!("constant"),
         Variability::STRUCTURAL_PARAMETER => literal!("parameter"),
         Variability::PARAMETER { .. } => literal!("parameter"),
@@ -566,41 +566,41 @@ pub(crate) fn variabilityString(mut var: Variability) -> Result<ArcStr> {
 
 pub(crate) fn unparseVariability(mut var: Variability, mut ty: Arc<Type::NFType>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((match var.clone() {
+    r#str = ((match var {
         Variability::CONSTANT => literal!("constant "),
         Variability::STRUCTURAL_PARAMETER => literal!("parameter "),
         Variability::PARAMETER { .. } => literal!("parameter "),
         Variability::NON_STRUCTURAL_PARAMETER => literal!("parameter "),
-        Variability::DISCRETE => if (Type::isDiscrete(ty.clone())?) {literal!("")} else {literal!("discrete ")},
+        Variability::DISCRETE => if (Type::isDiscrete(ty)?) {literal!("")} else {literal!("discrete ")},
         _ => literal!(""),
     })).clone();
     Ok(r#str)
 }
 
 pub fn variabilityMax(mut var1: Variability, mut var2: Variability) -> Variability {
-    let mut var: Variability = if (var1.clone() > var2.clone()) {var1.clone()} else {var2.clone()};
+    let mut var: Variability = if (var1 > var2) {var1} else {var2};
     var
 }
 
 pub(crate) fn variabilityMin(mut var1: Variability, mut var2: Variability) -> Variability {
-    let mut var: Variability = if (var1.clone() > var2.clone()) {var2.clone()} else {var1.clone()};
+    let mut var: Variability = if (var1 > var2) {var2} else {var1};
     var
 }
 
 pub(crate) fn effectiveVariability(mut inVar: Variability) -> Variability {
     let mut outVar: Variability;
-    outVar = (match inVar.clone() {
+    outVar = (match inVar {
         Variability::STRUCTURAL_PARAMETER => Variability::PARAMETER.clone(),
         Variability::NON_STRUCTURAL_PARAMETER => Variability::PARAMETER.clone(),
         Variability::IMPLICITLY_DISCRETE => Variability::DISCRETE.clone(),
-        _ => inVar.clone(),
+        _ => inVar,
     });
     outVar
 }
 
 pub(crate) fn purityString(mut purity: Purity) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((match purity.clone() {
+    r#str = ((match purity {
         Purity::PURE => literal!("pure"),
         Purity::IMPURE => literal!("impure"),
     })).clone();
@@ -608,13 +608,13 @@ pub(crate) fn purityString(mut purity: Purity) -> Result<ArcStr> {
 }
 
 pub(crate) fn purityMin(mut p1: Purity, mut p2: Purity) -> Purity {
-    let mut p: Purity = if (p1.clone() == Purity::IMPURE.clone()) {p1.clone()} else {p2.clone()};
+    let mut p: Purity = if (p1 == Purity::IMPURE.clone()) {p1} else {p2};
     p
 }
 
 pub(crate) fn directionFromSCode(mut scodeDir: Absyn::Direction) -> Direction {
     let mut dir: Direction;
-    dir = (match scodeDir.clone() {
+    dir = (match scodeDir {
         Absyn::Direction::INPUT { .. } => Direction::INPUT.clone(),
         Absyn::Direction::OUTPUT { .. } => Direction::OUTPUT.clone(),
         _ => Direction::NONE.clone(),
@@ -624,7 +624,7 @@ pub(crate) fn directionFromSCode(mut scodeDir: Absyn::Direction) -> Direction {
 
 pub(crate) fn directionToDAE(mut dir: Direction) -> DAE::VarDirection {
     let mut ddir: DAE::VarDirection;
-    ddir = (match dir.clone() {
+    ddir = (match dir {
         Direction::INPUT => openmodelica_frontend_types::DAE::VarDirection::INPUT,
         Direction::OUTPUT => openmodelica_frontend_types::DAE::VarDirection::OUTPUT,
         _ => openmodelica_frontend_types::DAE::VarDirection::BIDIR,
@@ -634,7 +634,7 @@ pub(crate) fn directionToDAE(mut dir: Direction) -> DAE::VarDirection {
 
 pub(crate) fn directionToAbsyn(mut dir: Direction) -> Absyn::Direction {
     let mut adir: Absyn::Direction;
-    adir = (match dir.clone() {
+    adir = (match dir {
         Direction::INPUT => openmodelica_ast::Absyn::Direction::INPUT,
         Direction::OUTPUT => openmodelica_ast::Absyn::Direction::OUTPUT,
         _ => openmodelica_ast::Absyn::Direction::BIDIR,
@@ -644,7 +644,7 @@ pub(crate) fn directionToAbsyn(mut dir: Direction) -> Absyn::Direction {
 
 pub(crate) fn directionString(mut dir: Direction) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match dir.clone() {
+    r#str = ((match dir {
         Direction::INPUT => literal!("input"),
         Direction::OUTPUT => literal!("output"),
         _ => literal!(""),
@@ -654,7 +654,7 @@ pub(crate) fn directionString(mut dir: Direction) -> ArcStr {
 
 pub(crate) fn unparseDirection(mut dir: Direction) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match dir.clone() {
+    r#str = ((match dir {
         Direction::INPUT => literal!("input "),
         Direction::OUTPUT => literal!("output "),
         _ => literal!(""),
@@ -664,21 +664,21 @@ pub(crate) fn unparseDirection(mut dir: Direction) -> ArcStr {
 
 pub(crate) fn mergeDirection(mut outerDir: Direction, mut innerDir: Direction, mut node: Arc<InstNode::InstNode>, mut allowSame: bool) -> Result<Direction> {
     let mut dir: Direction = Direction::NONE;
-    if outerDir.clone() == Direction::NONE.clone() {
-        dir = innerDir.clone();
-    } else if innerDir.clone() == Direction::NONE.clone() {
-        dir = outerDir.clone();
-    } else if allowSame.clone() && outerDir.clone() == innerDir.clone() {
-        dir = innerDir.clone();
+    if outerDir == Direction::NONE.clone() {
+        dir = innerDir;
+    } else if innerDir == Direction::NONE.clone() {
+        dir = outerDir;
+    } else if allowSame && outerDir == innerDir {
+        dir = innerDir;
     } else {
-        printPrefixError((directionString(outerDir.clone())).clone(), (directionString(innerDir.clone())).clone(), node.clone())?;
+        printPrefixError((directionString(outerDir)).clone(), (directionString(innerDir)).clone(), node)?;
     }
     Ok(dir)
 }
 
 pub(crate) fn innerOuterFromSCode(mut scodeIO: Absyn::InnerOuter) -> Result<InnerOuter> {
     let mut io: InnerOuter;
-    io = (match scodeIO.clone() {
+    io = (match scodeIO {
         Absyn::InnerOuter::NOT_INNER_OUTER { .. } => InnerOuter::NOT_INNER_OUTER.clone(),
         Absyn::InnerOuter::INNER { .. } => InnerOuter::INNER.clone(),
         Absyn::InnerOuter::OUTER { .. } => InnerOuter::OUTER.clone(),
@@ -689,7 +689,7 @@ pub(crate) fn innerOuterFromSCode(mut scodeIO: Absyn::InnerOuter) -> Result<Inne
 
 pub(crate) fn innerOuterToAbsyn(mut inIO: InnerOuter) -> Result<Absyn::InnerOuter> {
     let mut outIO: Absyn::InnerOuter;
-    outIO = (match inIO.clone() {
+    outIO = (match inIO {
         InnerOuter::NOT_INNER_OUTER => openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER,
         InnerOuter::INNER => openmodelica_ast::Absyn::InnerOuter::INNER,
         InnerOuter::OUTER { .. } => openmodelica_ast::Absyn::InnerOuter::OUTER,
@@ -700,7 +700,7 @@ pub(crate) fn innerOuterToAbsyn(mut inIO: InnerOuter) -> Result<Absyn::InnerOute
 
 pub(crate) fn innerOuterString(mut io: InnerOuter) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match io.clone() {
+    r#str = ((match io {
         InnerOuter::INNER => literal!("inner"),
         InnerOuter::OUTER { .. } => literal!("outer"),
         InnerOuter::INNER_OUTER => literal!("inner outer"),
@@ -711,7 +711,7 @@ pub(crate) fn innerOuterString(mut io: InnerOuter) -> ArcStr {
 
 pub(crate) fn unparseInnerOuter(mut io: InnerOuter) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match io.clone() {
+    r#str = ((match io {
         InnerOuter::INNER => literal!("inner "),
         InnerOuter::OUTER { .. } => literal!("outer "),
         InnerOuter::INNER_OUTER => literal!("inner outer "),
@@ -722,7 +722,7 @@ pub(crate) fn unparseInnerOuter(mut io: InnerOuter) -> ArcStr {
 
 pub(crate) fn visibilityFromSCode(mut scodeVis: SCode::Visibility) -> Visibility {
     let mut vis: Visibility;
-    vis = (match scodeVis.clone() {
+    vis = (match scodeVis {
         SCode::Visibility::PUBLIC { .. } => Visibility::PUBLIC.clone(),
         _ => Visibility::PROTECTED.clone(),
     });
@@ -730,33 +730,33 @@ pub(crate) fn visibilityFromSCode(mut scodeVis: SCode::Visibility) -> Visibility
 }
 
 pub(crate) fn visibilityToDAE(mut vis: Visibility) -> DAE::VarVisibility {
-    let mut dvis: DAE::VarVisibility = if (vis.clone() == Visibility::PUBLIC.clone()) {openmodelica_frontend_types::DAE::VarVisibility::PUBLIC} else {openmodelica_frontend_types::DAE::VarVisibility::PROTECTED};
+    let mut dvis: DAE::VarVisibility = if (vis == Visibility::PUBLIC.clone()) {openmodelica_frontend_types::DAE::VarVisibility::PUBLIC} else {openmodelica_frontend_types::DAE::VarVisibility::PROTECTED};
     dvis
 }
 
 pub(crate) fn visibilityToSCode(mut vis: Visibility) -> SCode::Visibility {
-    let mut scodeVis: SCode::Visibility = if (vis.clone() == Visibility::PUBLIC.clone()) {openmodelica_frontend_types::SCode::Visibility::PUBLIC} else {openmodelica_frontend_types::SCode::Visibility::PROTECTED};
+    let mut scodeVis: SCode::Visibility = if (vis == Visibility::PUBLIC.clone()) {openmodelica_frontend_types::SCode::Visibility::PUBLIC} else {openmodelica_frontend_types::SCode::Visibility::PROTECTED};
     scodeVis
 }
 
 pub(crate) fn visibilityString(mut vis: Visibility) -> ArcStr {
-    let mut r#str: ArcStr = if (vis.clone() == Visibility::PUBLIC.clone()) {literal!("public")} else {literal!("protected")};
+    let mut r#str: ArcStr = if (vis == Visibility::PUBLIC.clone()) {literal!("public")} else {literal!("protected")};
     r#str
 }
 
 pub(crate) fn unparseVisibility(mut vis: Visibility) -> ArcStr {
-    let mut r#str: ArcStr = if (vis.clone() == Visibility::PROTECTED.clone()) {literal!("protected ")} else {literal!("")};
+    let mut r#str: ArcStr = if (vis == Visibility::PROTECTED.clone()) {literal!("protected ")} else {literal!("")};
     r#str
 }
 
 pub(crate) fn mergeVisibility(mut outerVis: Visibility, mut innerVis: Visibility) -> Visibility {
-    let mut vis: Visibility = if (outerVis.clone() == Visibility::PROTECTED.clone()) {outerVis.clone()} else {innerVis.clone()};
+    let mut vis: Visibility = if (outerVis == Visibility::PROTECTED.clone()) {outerVis} else {innerVis};
     vis
 }
 
 pub(crate) fn isReplaceable(mut repl: Replaceable) -> bool {
     let mut res: bool;
-    res = (match repl.clone() {
+    res = (match repl {
         Replaceable::REPLACEABLE { .. } => true,
         _ => false,
     });
@@ -765,7 +765,7 @@ pub(crate) fn isReplaceable(mut repl: Replaceable) -> bool {
 
 pub(crate) fn replaceableString(mut repl: Replaceable) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match repl.clone() {
+    r#str = ((match repl {
         Replaceable::REPLACEABLE { .. } => literal!("replaceable"),
         _ => literal!(""),
     })).clone();
@@ -774,7 +774,7 @@ pub(crate) fn replaceableString(mut repl: Replaceable) -> ArcStr {
 
 pub(crate) fn unparseReplaceable(mut repl: Replaceable) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match repl.clone() {
+    r#str = ((match repl {
         Replaceable::REPLACEABLE { .. } => literal!("replaceable "),
         _ => literal!(""),
     })).clone();
@@ -782,7 +782,7 @@ pub(crate) fn unparseReplaceable(mut repl: Replaceable) -> ArcStr {
 }
 
 pub(crate) fn printPrefixError(mut outerPrefix: ArcStr, mut innerPrefix: ArcStr, mut node: Arc<InstNode::InstNode>) -> Result<()> {
-    Error::addSourceMessage(Error::INVALID_TYPE_PREFIX.clone(), list![(outerPrefix.clone()).clone(), (InstNode::typeName(node.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (innerPrefix.clone()).clone()], InstNode::info(node.clone()))?;
+    Error::addSourceMessage(Error::INVALID_TYPE_PREFIX.clone(), list![(outerPrefix).clone(), (InstNode::typeName(node.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (innerPrefix).clone()], InstNode::info(node))?;
     bail!("fail");
     Ok(())
 }
@@ -790,7 +790,7 @@ pub(crate) fn printPrefixError(mut outerPrefix: ArcStr, mut innerPrefix: ArcStr,
 pub(crate) fn accessLevelFromAbsyn(mut exp: Arc<Absyn::Exp>) -> Option<AccessLevel> {
     let mut access: Option<AccessLevel>;
     let mut name: ArcStr = arcstr::literal!("");
-    access = (::match_deref::match_deref! { match &(exp.clone()) {
+    access = (::match_deref::match_deref! { match &(exp) {
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { name: Deref @ "Access", componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_name, .. }, .. } } => {
             name = (*__esc_name).clone();
             (::match_deref::match_deref! { match &(name.clone()) {

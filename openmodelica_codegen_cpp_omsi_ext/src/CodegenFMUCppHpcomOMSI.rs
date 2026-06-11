@@ -29,7 +29,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub(crate) fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FMUVersion: ArcStr, mut in_a_FMUType: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone()) {
+    out_txt = (match (in_txt, in_a_simCode, in_a_FMUVersion, in_a_FMUType) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: ref i_modelInfo @ SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, hpcomData: HpcOmSimCode::HpcOmData { hpcOmMemory: ref i_hpcomData_hpcOmMemory, schedules: ref i_hpcomData_schedules }, fileNamePrefix: ref i_fileNamePrefix, allEquations: ref i_allEquations, varToArrayIndexMapping: ref i_varToArrayIndexMapping, .. }, mut a_FMUVersion, mut a_FMUType) => {
             let mut txt_46: Tpl::Text;
             let mut txt_45: Tpl::Text;
@@ -165,7 +165,7 @@ pub(crate) fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::S
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -192,18 +192,18 @@ pub(crate) fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCod
     let mut ret_1: ArcStr;
     let mut l_type: Tpl::Text;
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
-    l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
+    l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1).clone())?;
     l_additionalCFlags__GCC = Tpl::emptyTxt.clone();
     l_additionalCFlags__MSVC = Tpl::emptyTxt.clone();
     l_additionalLinkerFlags__GCC = Tpl::emptyTxt.clone();
     l_additionalLinkerFlags__MSVC = Tpl::emptyTxt.clone();
     ret_6 = stringEq((Tpl::textString(l_type.clone())?).clone(), (literal!("pthreads")).clone());
-    ret_7 = stringEq((Tpl::textString(l_type.clone())?).clone(), (literal!("pthreads_spin")).clone());
-    ret_8 = boolOr(ret_6.clone(), ret_7.clone());
-    l_additionalLinkerFlags__GCC = fun_53(l_additionalLinkerFlags__GCC.clone(), ret_8.clone())?;
-    (out_txt, l_additionalCFlags__GCC, l_additionalCFlags__MSVC, l_additionalLinkerFlags__GCC, l_additionalLinkerFlags__MSVC) = CodegenCppHpcomOMSI::getAdditionalMakefileFlags(txt.clone(), l_additionalCFlags__GCC.clone(), l_additionalCFlags__MSVC.clone(), l_additionalLinkerFlags__GCC.clone(), l_additionalLinkerFlags__MSVC.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = CodegenFMUCppOMSI::fmuMakefile(out_txt.clone(), (a_target.clone()).clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), (a_FMUVersion.clone()).clone(), (Tpl::textString(l_additionalLinkerFlags__GCC.clone())?).clone(), (Tpl::textString(l_additionalLinkerFlags__MSVC.clone())?).clone(), (Tpl::textString(l_additionalCFlags__GCC.clone())?).clone(), (Tpl::textString(l_additionalCFlags__MSVC.clone())?).clone())?;
+    ret_7 = stringEq((Tpl::textString(l_type)?).clone(), (literal!("pthreads_spin")).clone());
+    ret_8 = boolOr(ret_6, ret_7);
+    l_additionalLinkerFlags__GCC = fun_53(l_additionalLinkerFlags__GCC, ret_8)?;
+    (out_txt, l_additionalCFlags__GCC, l_additionalCFlags__MSVC, l_additionalLinkerFlags__GCC, l_additionalLinkerFlags__MSVC) = CodegenCppHpcomOMSI::getAdditionalMakefileFlags(txt, l_additionalCFlags__GCC, l_additionalCFlags__MSVC, l_additionalLinkerFlags__GCC, l_additionalLinkerFlags__MSVC)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = CodegenFMUCppOMSI::fmuMakefile(out_txt, (a_target).clone(), a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, (a_FMUVersion).clone(), (Tpl::textString(l_additionalLinkerFlags__GCC)?).clone(), (Tpl::textString(l_additionalLinkerFlags__MSVC)?).clone(), (Tpl::textString(l_additionalCFlags__GCC)?).clone(), (Tpl::textString(l_additionalCFlags__MSVC)?).clone())?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 

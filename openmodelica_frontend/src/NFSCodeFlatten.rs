@@ -61,7 +61,7 @@ pub(crate) fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::El
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut cls_path: Arc<Absyn::Path>;
     cls_path = getLastClassNameInProgram(inProgram.clone())?;
-    (outProgram, _) = flattenClassInProgram(cls_path.clone(), inProgram.clone())?;
+    (outProgram, _) = flattenClassInProgram(cls_path, inProgram)?;
     Ok(outProgram)
 }
 
@@ -69,19 +69,19 @@ fn getLastClassNameInProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::El
     let mut outClassName: Arc<Absyn::Path>;
     let mut prog: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut name: ArcStr;
-    prog = inProgram.clone().reverse();
-    let __pa0 = ::match_deref::match_deref! { match &(List::find(prog.clone(), (std::sync::Arc::new(fnptr!(isClass, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?) {
+    prog = inProgram.reverse();
+    let __pa0 = ::match_deref::match_deref! { match &(List::find(prog, (std::sync::Arc::new(fnptr!(isClass, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?) {
         Deref @ SCode::Element::CLASS { name: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     name = __pa0.clone();
-    outClassName = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
+    outClassName = Arc::new(Absyn::Path::IDENT { name: (name).clone() });
     Ok(outClassName)
 }
 
 fn isClass(mut inClass: Arc<SCode::Element>) -> bool {
     let mut outIsClass: bool;
-    outIsClass = (::match_deref::match_deref! { match &(inClass.clone()) {
+    outIsClass = (::match_deref::match_deref! { match &(inClass) {
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: _ }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -91,7 +91,7 @@ fn isClass(mut inClass: Arc<SCode::Element>) -> bool {
 
 pub(crate) fn flattenClass(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outClass: Arc<SCode::Element>;
-    let __pa0 = ::match_deref::match_deref! { match &(flattenProgram(list![inClass.clone()])?) {
+    let __pa0 = ::match_deref::match_deref! { match &(flattenProgram(list![inClass])?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -103,7 +103,7 @@ pub fn flattenClassInProgram(mut inClassName: Arc<Absyn::Path>, mut inProgram: A
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut outEnv: Env;
     (outProgram, outEnv) = 'mc: {
-        let __mc_input = inProgram.clone();
+        let __mc_input = inProgram;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 prog => {
@@ -142,7 +142,7 @@ pub fn flattenClassInProgram(mut inClassName: Arc<Absyn::Path>, mut inProgram: A
 pub(crate) fn flattenCompleteProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     outProgram = 'mc: {
-        let __mc_input = inProgram.clone();
+        let __mc_input = inProgram;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 prog => {

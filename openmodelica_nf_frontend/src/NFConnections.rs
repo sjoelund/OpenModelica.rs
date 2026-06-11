@@ -128,25 +128,25 @@ pub(crate) fn new() -> Arc<NFConnections> {
 
 pub(crate) fn fromConnectionList(mut connl: Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections>;
-    conns = Arc::new(NFConnections { connections: connl.clone(), flows: metamodelica::nil(), broken: metamodelica::nil() });
+    conns = Arc::new(NFConnections { connections: connl, flows: metamodelica::nil(), broken: metamodelica::nil() });
     conns
 }
 
 pub(crate) fn addConnection(mut conn: Arc<Connection::NFConnection>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
-    assign_field!(conns.connections = metamodelica::cons(conn.clone(), conns.connections.clone()));
+    assign_field!(conns.connections = metamodelica::cons(conn, conns.connections.clone()));
     conns
 }
 
 pub(crate) fn addFlow(mut conn: Arc<Connector::NFConnector>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
-    assign_field!(conns.flows = metamodelica::cons(conn.clone(), conns.flows.clone()));
+    assign_field!(conns.flows = metamodelica::cons(conn, conns.flows.clone()));
     conns
 }
 
 pub(crate) fn addBroken(mut broken: BrokenEdges, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
-    assign_field!(conns.broken = broken.clone());
+    assign_field!(conns.broken = broken);
     conns
 }
 
@@ -179,7 +179,7 @@ pub(crate) fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    assign_field!(flatModel.equations = metamodelica::Dangerous::listReverseInPlace(eql.clone()));
+    assign_field!(flatModel.equations = metamodelica::Dangerous::listReverseInPlace(eql));
     Ok((flatModel, conns))
 }
 
@@ -215,13 +215,13 @@ pub(crate) fn makeConnections(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mu
         return Ok(connections.clone());
     }
     if InstNode::isName(ComponentRef::node(lhsCref.clone())?) || InstNode::isName(ComponentRef::node(rhsCref.clone())?) {
-        cl1 = list![Connector::fromCref(lhsCref.clone(), lhsType.clone(), source.clone())?];
-        cl2 = list![Connector::fromCref(rhsCref.clone(), rhsType.clone(), source.clone())?];
+        cl1 = list![Connector::fromCref(lhsCref, lhsType, source.clone())?];
+        cl2 = list![Connector::fromCref(rhsCref, rhsType, source)?];
     } else {
-        cl1 = makeConnectors(lhsCref.clone(), lhsType.clone(), source.clone())?;
-        cl2 = makeConnectors(rhsCref.clone(), rhsType.clone(), source.clone())?;
+        cl1 = makeConnectors(lhsCref, lhsType, source.clone())?;
+        cl2 = makeConnectors(rhsCref, rhsType, source)?;
     }
-    for mut c1 in &*cl1.clone() {
+    for mut c1 in &*cl1 {
         let mut c1 = c1.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(cl2.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -241,15 +241,15 @@ pub(crate) fn makeConnectors(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty
     let mut cref_exp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     if !(Flags::isSet(Flags::NF_SCALARIZE.clone())?) {
-        connectors = list![Connector::fromCref(cref.clone(), ComponentRef::getSubscriptedType(cref.clone(), false)?, source.clone())?];
+        connectors = list![Connector::fromCref(cref.clone(), ComponentRef::getSubscriptedType(cref, false)?, source)?];
         return Ok(connectors.clone());
     }
     cref_exp = Arc::new(Expression::NFExpression::CREF { ty: ComponentRef::getSubscriptedType(cref.clone(), false)?, cref: cref.clone() });
-    (cref_exp, expanded) = ExpandExp::expand(cref_exp.clone(), false, false)?;
-    if expanded.clone() {
-        connectors = Connector::fromExp(cref_exp.clone(), source.clone(), metamodelica::nil())?;
+    (cref_exp, expanded) = ExpandExp::expand(cref_exp, false, false)?;
+    if expanded {
+        connectors = Connector::fromExp(cref_exp, source, metamodelica::nil())?;
     } else {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnections.makeConnectors")); __mm_s.push_str(&*literal!(" failed to expand connector `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), ElementSource::getInfo(source.clone()))?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnections.makeConnectors")); __mm_s.push_str(&*literal!(" failed to expand connector `")); __mm_s.push_str(&*ComponentRef::toString(cref)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), ElementSource::getInfo(source))?;
     }
     Ok(connectors)
 }
@@ -265,7 +265,7 @@ pub(crate) fn split(mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>>
 
 pub(crate) fn connectCount(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<i32> {
     let mut count: i32;
-    count = UnorderedMap::getOrDefault(conn.clone(), connectCounts.clone(), 0)?;
+    count = UnorderedMap::getOrDefault(conn, connectCounts, 0)?;
     Ok(count)
 }
 
@@ -275,14 +275,14 @@ pub(crate) fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedAr
     let mut flows: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut connections: Arc<metamodelica::List<Arc<Connection::NFConnection>>> = metamodelica::nil();
     let mut count: i32;
-    if keepSingleConnectedArrays.clone() {
+    if keepSingleConnectedArrays {
         connect_counts = analyseArrayConnections(conns.clone())?;
         for mut f in &*conns.flows.clone() {
             let mut f = f.clone();
             count = connectCount(f.clone(), connect_counts.clone())?;
-            if count.clone() == 0 {
+            if count == 0 {
                 flows = metamodelica::cons(f.clone(), flows.clone());
-            } else if count.clone() > 1 || count.clone() == -1 {
+            } else if count > 1 || count == -1 {
                 flows = listAppend(Connector::scalarize(f.clone())?, flows.clone());
             }
         }
@@ -295,8 +295,8 @@ pub(crate) fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedAr
             }
         }
         assign_field!(
-            conns.flows = metamodelica::Dangerous::listReverseInPlace(flows.clone()),
-            conns.connections = metamodelica::Dangerous::listReverseInPlace(connections.clone())
+            conns.flows = metamodelica::Dangerous::listReverseInPlace(flows),
+            conns.connections = metamodelica::Dangerous::listReverseInPlace(connections)
         );
     } else {
         assign_field!(
@@ -321,10 +321,10 @@ pub(crate) fn analyseArrayConnections(mut conns: Arc<NFConnections>) -> Result<A
 pub(crate) fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<()> {
     fn update(mut count: Option<i32>) -> i32 {
         let mut outCount: i32 = 0;
-        outCount = (match count.clone() {
+        outCount = (match count {
         Some(mut __esc_outCount) => {
             outCount = __esc_outCount.clone();
-            if (outCount.clone() >= 0) {outCount.clone() + 1} else {-1}
+            if (outCount >= 0) {outCount + 1} else {-1}
         },
         _ => 1,
     });
@@ -342,18 +342,18 @@ pub(crate) fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut c
 pub(crate) fn toString(mut conns: Arc<NFConnections>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    strl = metamodelica::cons((literal!("FLOWS:")).clone(), strl.clone());
+    strl = metamodelica::cons((literal!("FLOWS:")).clone(), strl);
     for mut f in &*conns.flows.clone() {
         let mut f = f.clone();
         strl = metamodelica::cons((Connector::toString(f.clone())?).clone(), strl.clone());
     }
-    strl = metamodelica::cons((literal!("\nCONNECTIONS:")).clone(), strl.clone());
+    strl = metamodelica::cons((literal!("\nCONNECTIONS:")).clone(), strl);
     for mut c in &*conns.connections.clone() {
         let mut c = c.clone();
         strl = metamodelica::cons((Connection::toString(c.clone())?).clone(), strl.clone());
     }
-    strl = metamodelica::Dangerous::listReverseInPlace(strl.clone());
-    r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());
+    strl = metamodelica::Dangerous::listReverseInPlace(strl);
+    r#str = stringDelimitList(strl, (literal!("\n")).clone());
     Ok(r#str)
 }
 

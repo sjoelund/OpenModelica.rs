@@ -212,14 +212,14 @@ pub(crate) fn flatten(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<
     }
     allStateCrefs = List::flatten(smGroups.clone())?;
     otherEqs = List::filterOnFalse(flatModel.equations.clone(), (std::sync::Arc::new(isTransitionOrInitialState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
-    otherEqs = List::filterOnFalse(otherEqs.clone(), (std::sync::Arc::new({ let __pe_b1 = allStateCrefs.clone(); move |__pe_a0| isOuterStateEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
+    otherEqs = List::filterOnFalse(otherEqs, (std::sync::Arc::new({ let __pe_b1 = allStateCrefs; move |__pe_a0| isOuterStateEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
     outerVarMap = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-    smGroupPairs = List::zip(initStates.clone(), smGroups.clone());
-    smGroupsSorted = List::sort(smGroupPairs.clone(), (std::sync::Arc::new(fnptr!(smGroupDepthLt, (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>), (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>), (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)) -> Result<bool> + 'static>))?;
+    smGroupPairs = List::zip(initStates, smGroups);
+    smGroupsSorted = List::sort(smGroupPairs, (std::sync::Arc::new(fnptr!(smGroupDepthLt, (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>), (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>), (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)) -> Result<bool> + 'static>))?;
     stateToSem = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     smVars = metamodelica::nil();
     smEqs = metamodelica::nil();
-    for mut smPair in &*smGroupsSorted.clone() {
+    for mut smPair in &*smGroupsSorted {
         let mut smPair = smPair.clone();
         (initState, stateCrefs) = smPair.clone();
         parentPrefix = ComponentRef::rest(initState.clone())?;
@@ -242,24 +242,24 @@ pub(crate) fn flatten(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<
     }
     resultEqs = listAppend(({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-        for mut eq in (smEqs.clone()).into_iter().cloned() {
+        for mut eq in (smEqs).into_iter().cloned() {
             let __x = subsActiveStateInEq(eq.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }), ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-        for mut eq in (otherEqs.clone()).into_iter().cloned() {
+        for mut eq in (otherEqs).into_iter().cloned() {
             let __x = subsActiveStateInEq(eq.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
-    resultVars = listAppend(smVars.clone(), flatModel.variables.clone());
+    resultVars = listAppend(smVars, flatModel.variables.clone());
     assign_field!(
-        flatModel.equations = resultEqs.clone(),
+        flatModel.equations = resultEqs,
         flatModel.initialEquations = List::filterOnFalse(flatModel.initialEquations.clone(), (std::sync::Arc::new(isTransitionOrInitialState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?,
-        flatModel.variables = resultVars.clone()
+        flatModel.variables = resultVars
     );
     execStat(literal!("NFStateMachineFlatten.flatten"))?;
     Ok(flatModel)
@@ -277,7 +277,7 @@ fn groupStateMachines(mut equations: Arc<metamodelica::List<Arc<Equation::NFEqua
     let mut cr1: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut cr2: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut group: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
-    for mut eq in &*listAppend(equations.clone(), initialEquations.clone()) {
+    for mut eq in &*listAppend(equations, initialEquations) {
         let mut eq = eq.clone();
         let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: eqCall }, .. } => {
@@ -308,14 +308,14 @@ fn groupStateMachines(mut equations: Arc<metamodelica::List<Arc<Equation::NFEqua
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    for mut initCref in &*allInits.clone() {
+    for mut initCref in &*allInits {
         let mut initCref = initCref.clone();
         group = collectReachableStates(initCref.clone(), allFroms.clone(), allTos.clone())?;
         initStates = metamodelica::cons(initCref.clone(), initStates.clone());
         smGroups = metamodelica::cons(group.clone(), smGroups.clone());
     }
-    initStates = initStates.clone().reverse();
-    smGroups = smGroups.clone().reverse();
+    initStates = initStates.reverse();
+    smGroups = smGroups.reverse();
     Ok((initStates, smGroups))
 }
 
@@ -345,7 +345,7 @@ fn collectReachableStates(mut initCref: Arc<ComponentRef::NFComponentRef>, mut f
             }
         }
     }
-    states = List::sort(states.clone(), (std::sync::Arc::new({ let __pe_b2 = initCref.clone(); move |__pe_a0, __pe_a1| statePriorityGt(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+    states = List::sort(states, (std::sync::Arc::new({ let __pe_b2 = initCref; move |__pe_a0, __pe_a1| statePriorityGt(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     Ok(states)
 }
 
@@ -353,10 +353,10 @@ fn statePriorityGt(mut cr1: Arc<ComponentRef::NFComponentRef>, mut cr2: Arc<Comp
     let mut gt: bool;
     if ComponentRef::isEqual(cr2.clone(), initCref.clone())? {
         gt = true;
-    } else if ComponentRef::isEqual(cr1.clone(), initCref.clone())? {
+    } else if ComponentRef::isEqual(cr1.clone(), initCref)? {
         gt = false;
     } else {
-        gt = ComponentRef::toString(cr1.clone())? > ComponentRef::toString(cr2.clone())?;
+        gt = ComponentRef::toString(cr1)? > ComponentRef::toString(cr2)?;
     }
     Ok(gt)
 }
@@ -368,9 +368,9 @@ fn smGroupDepthLt(mut g1: (Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::
     let mut lt: bool;
     let mut c1: Arc<ComponentRef::NFComponentRef>;
     let mut c2: Arc<ComponentRef::NFComponentRef>;
-    (c1, _) = g1.clone();
-    (c2, _) = g2.clone();
-    lt = ComponentRef::depth(c1.clone()) < ComponentRef::depth(c2.clone());
+    (c1, _) = g1;
+    (c2, _) = g2;
+    lt = ComponentRef::depth(c1) < ComponentRef::depth(c2);
     lt
 }
 
@@ -387,9 +387,9 @@ fn flatSmToDataFlow(mut initStateCref: Arc<ComponentRef::NFComponentRef>, mut st
     let mut varCrefStrings: Arc<metamodelica::List<ArcStr>>;
     transitionEqs = List::filterOnTrue(allEquations.clone(), (std::sync::Arc::new({ let __pe_b1 = stateCrefs.clone(); move |__pe_a0| isTransitionForGroup(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
     initialStateEqs = List::filterOnTrue(allEquations.clone(), (std::sync::Arc::new({ let __pe_b1 = initStateCref.clone(); move |__pe_a0| isInitialStateForGroup(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
-    sem = basicFlatSmSemantics(initStateCref.clone(), stateCrefs.clone(), transitionEqs.clone())?;
-    semWithProp = addPropagationEquations(sem.clone(), enclosingStateCrefOpt.clone(), enclosingSmSemOpt.clone())?;
-    semFinal = elabXInStateOps(semWithProp.clone(), enclosingStateCrefOpt.clone())?;
+    sem = basicFlatSmSemantics(initStateCref, stateCrefs.clone(), transitionEqs)?;
+    semWithProp = addPropagationEquations(sem, enclosingStateCrefOpt.clone(), enclosingSmSemOpt)?;
+    semFinal = elabXInStateOps(semWithProp, enclosingStateCrefOpt)?;
     parentPrefix = ComponentRef::rest(listHead(stateCrefs.clone())?)?;
     if !(ComponentRef::isEmpty(parentPrefix.clone())) {
         varCrefStrings = ({
@@ -400,21 +400,21 @@ fn flatSmToDataFlow(mut initStateCref: Arc<ComponentRef::NFComponentRef>, mut st
         }
         __acc.reverse()
     });
-        semFinal.eqs = List::map(semFinal.eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = parentPrefix.clone(); let __pe_b2 = varCrefStrings.clone(); move |__pe_a0| qualifyOuterVarExpr(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Equation::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>))?;
+        semFinal.eqs = List::map(semFinal.eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = parentPrefix; let __pe_b2 = varCrefStrings; move |__pe_a0| qualifyOuterVarExpr(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Equation::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>))?;
     }
-    accVars = List::flatten(list![accVars.clone(), semFinal.vars.clone(), semFinal.knowns.clone(), semFinal.pvars.clone()])?;
-    accEqs = List::flatten(list![accEqs.clone(), semFinal.eqs.clone(), semFinal.peqs.clone()])?;
-    for mut stateCref in &*stateCrefs.clone() {
+    accVars = List::flatten(list![accVars, semFinal.vars.clone(), semFinal.knowns.clone(), semFinal.pvars.clone()])?;
+    accEqs = List::flatten(list![accEqs, semFinal.eqs.clone(), semFinal.peqs.clone()])?;
+    for mut stateCref in &*stateCrefs {
         let mut stateCref = stateCref.clone();
         (accEqs, accVars) = smCompToDataFlow(stateCref.clone(), semFinal.clone(), allEquations.clone(), allVariables.clone(), accEqs.clone(), accVars.clone(), outerVarMap.clone())?;
     }
-    outSem = semFinal.clone();
+    outSem = semFinal;
     Ok((accEqs, accVars, outSem))
 }
 
 fn qualifyOuterVarExpr(mut e: Arc<Expression::NFExpression>, mut parentPrefix: Arc<ComponentRef::NFComponentRef>, mut varCrefStrings: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Expression::NFExpression>> {
     let mut e: Arc<Expression::NFExpression> = e;
-    e = Expression::map(e.clone(), (std::sync::Arc::new({ let __pe_b1 = parentPrefix.clone(); let __pe_b2 = varCrefStrings.clone(); move |__pe_a0| qualifyOuterVarCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    e = Expression::map(e, (std::sync::Arc::new({ let __pe_b1 = parentPrefix; let __pe_b2 = varCrefStrings; move |__pe_a0| qualifyOuterVarCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(e)
 }
 
@@ -423,9 +423,9 @@ fn qualifyOuterVarCref(mut e: Arc<Expression::NFExpression>, mut parentPrefix: A
     let mut qualCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let () = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::isSimple(var_field!((*e).cref, Expression::NFExpression::CREF).clone())) => {
-            qualCref = ComponentRef::append(var_field!((*e).cref, Expression::NFExpression::CREF).clone(), parentPrefix.clone())?;
-            if listMember((ComponentRef::toString(qualCref.clone())?).clone(), varCrefStrings.clone()) {
-                e = Arc::new(Expression::NFExpression::CREF { ty: var_field!((*e).ty, Expression::NFExpression::CREF).clone(), cref: qualCref.clone() });
+            qualCref = ComponentRef::append(var_field!((*e).cref, Expression::NFExpression::CREF).clone(), parentPrefix)?;
+            if listMember((ComponentRef::toString(qualCref.clone())?).clone(), varCrefStrings) {
+                e = Arc::new(Expression::NFExpression::CREF { ty: var_field!((*e).ty, Expression::NFExpression::CREF).clone(), cref: qualCref });
             }
             ()
         },
@@ -446,10 +446,10 @@ fn smCompToDataFlow(mut stateCref: Arc<ComponentRef::NFComponentRef>, mut sem: F
     let mut crToStart: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
     let mut transformedEqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut extraVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
-    stateEqs = List::filterOnTrue(allEquations.clone(), (std::sync::Arc::new({ let __pe_b1 = stateCref.clone(); move |__pe_a0| isEquationOfState(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
+    stateEqs = List::filterOnTrue(allEquations, (std::sync::Arc::new({ let __pe_b1 = stateCref.clone(); move |__pe_a0| isEquationOfState(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
     stateVars = List::filterOnTrue(allVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = stateCref.clone(); move |__pe_a0| isVariableOfState(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>))?;
     crToStart = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-    for mut v in &*stateVars.clone() {
+    for mut v in &*stateVars {
         let mut v = v.clone();
         if List::any(stateEqs.clone(), (std::sync::Arc::new({ let __pe_b1 = v.name.clone(); move |__pe_a0| equationHasPrevious(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))? {
             UnorderedMap::addUnique(v.name.clone(), getStartValue(v.clone())?, crToStart.clone())?;
@@ -457,13 +457,13 @@ fn smCompToDataFlow(mut stateCref: Arc<ComponentRef::NFComponentRef>, mut sem: F
     }
     transformedEqs = metamodelica::nil();
     extraVars = metamodelica::nil();
-    for mut eq in &*stateEqs.clone() {
+    for mut eq in &*stateEqs {
         let mut eq = eq.clone();
         (transformedEqs, extraVars) = addStateActivationAndReset(eq.clone(), stateCref.clone(), sem.clone(), crToStart.clone(), transformedEqs.clone(), extraVars.clone(), outerVarMap.clone())?;
     }
-    accEqs = listAppend(transformedEqs.clone().reverse(), accEqs.clone());
-    accVars = listAppend(extraVars.clone().reverse(), accVars.clone());
-    addHierarchicalPassThroughs(stateCref.clone(), sem.clone(), allVariables.clone(), outerVarMap.clone())?;
+    accEqs = listAppend(transformedEqs.reverse(), accEqs);
+    accVars = listAppend(extraVars.reverse(), accVars);
+    addHierarchicalPassThroughs(stateCref, sem, allVariables, outerVarMap)?;
     Ok((accEqs, accVars))
 }
 
@@ -474,7 +474,7 @@ fn addHierarchicalPassThroughs(mut stateCref: Arc<ComponentRef::NFComponentRef>,
     let mut topVarCref: Arc<ComponentRef::NFComponentRef>;
     let mut topVar: Arc<Variable::NFVariable>;
     stateStr = (ComponentRef::toString(stateCref.clone())?).clone();
-    activeRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref.clone())?;
+    activeRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref)?;
     for mut v in &*allVariables.clone() {
         let mut v = v.clone();
         if !(ComponentRef::isSimple(v.name.clone())) && stringEqual((ComponentRef::toString(ComponentRef::rest(v.name.clone())?)?).clone(), (stateStr.clone()).clone()) {
@@ -495,7 +495,7 @@ fn addHierarchicalPassThroughs(mut stateCref: Arc<ComponentRef::NFComponentRef>,
 
 fn isSimpleVarNamed(mut v: Arc<Variable::NFVariable>, mut name: ArcStr) -> Result<bool> {
     let mut res: bool;
-    res = ComponentRef::isSimple(v.name.clone()) && stringEqual((ComponentRef::firstName(v.name.clone(), false)?).clone(), (name.clone()).clone());
+    res = ComponentRef::isSimple(v.name.clone()) && stringEqual((ComponentRef::firstName(v.name.clone(), false)?).clone(), (name).clone());
     Ok(res)
 }
 
@@ -507,15 +507,15 @@ fn addStateActivationAndReset(mut inEq: Arc<Equation::NFEquation>, mut stateCref
     let mut accVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = accVars;
     let () = (::match_deref::match_deref! { match &(inEq.clone()) {
         Deref @ Equation::EQUALITY { .. } => {
-            (accEqs, accVars) = addStateActivationAndReset1(inEq.clone(), stateCref.clone(), sem.clone(), crToStart.clone(), accEqs.clone(), accVars.clone(), outerVarMap.clone())?;
+            (accEqs, accVars) = addStateActivationAndReset1(inEq, stateCref, sem, crToStart, accEqs, accVars, outerVarMap)?;
             ()
         },
         Deref @ Equation::WHEN { .. } => {
-            (accEqs, accVars) = transformWhenBranchesAndAccumulate(inEq.clone(), stateCref.clone(), sem.clone(), crToStart.clone(), outerVarMap.clone(), accEqs.clone(), accVars.clone())?;
+            (accEqs, accVars) = transformWhenBranchesAndAccumulate(inEq, stateCref, sem, crToStart, outerVarMap, accEqs, accVars)?;
             ()
         },
         _ => {
-            accEqs = metamodelica::cons(inEq.clone(), accEqs.clone());
+            accEqs = metamodelica::cons(inEq, accEqs);
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -538,20 +538,20 @@ fn transformWhenBranchesAndAccumulate(mut whenEq: Arc<Equation::NFEquation>, mut
         _ => bail!("pattern mismatch"),
     } };
     branches = __pa0.clone();
-    firstBranch = listHead(branches.clone())?;
-    let __pa1 = ::match_deref::match_deref! { match &(firstBranch.clone()) {
+    firstBranch = listHead(branches)?;
+    let __pa1 = ::match_deref::match_deref! { match &(firstBranch) {
         Deref @ Equation::Branch::BRANCH { condition: __pa1, .. } => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
     branchCond = __pa1.clone();
-    if Type::isClock(Expression::typeOf(branchCond.clone()))? {
-        (innerEqs, innerVars) = transformWhenInnerAsPlain(whenEq.clone(), stateCref.clone(), sem.clone(), crToStart.clone(), outerVarMap.clone())?;
-        accEqs = listAppend(innerEqs.clone(), accEqs.clone());
-        accVars = listAppend(innerVars.clone(), accVars.clone());
+    if Type::isClock(Expression::typeOf(branchCond))? {
+        (innerEqs, innerVars) = transformWhenInnerAsPlain(whenEq, stateCref, sem, crToStart, outerVarMap)?;
+        accEqs = listAppend(innerEqs, accEqs);
+        accVars = listAppend(innerVars, accVars);
     } else {
-        (outEq, extraVars) = transformWhenBranches(whenEq.clone(), stateCref.clone(), sem.clone(), crToStart.clone(), outerVarMap.clone())?;
-        accEqs = metamodelica::cons(outEq.clone(), accEqs.clone());
-        accVars = listAppend(extraVars.clone(), accVars.clone());
+        (outEq, extraVars) = transformWhenBranches(whenEq, stateCref, sem, crToStart, outerVarMap)?;
+        accEqs = metamodelica::cons(outEq, accEqs);
+        accVars = listAppend(extraVars, accVars);
     }
     Ok((accEqs, accVars))
 }
@@ -563,12 +563,12 @@ fn transformWhenInnerAsPlain(mut whenEq: Arc<Equation::NFEquation>, mut stateCre
     let mut branchBody: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut transformedBody: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut branchVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let __pa0 = ::match_deref::match_deref! { match &(whenEq.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(whenEq) {
         Deref @ Equation::WHEN { branches: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     branches = __pa0.clone();
-    for mut branch in &*branches.clone() {
+    for mut branch in &*branches {
         let mut branch = branch.clone();
         let () = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ Equation::Branch::BRANCH { body: __esc_branchBody, .. } => {
@@ -602,7 +602,7 @@ fn transformWhenBranches(mut whenEq: Arc<Equation::NFEquation>, mut stateCref: A
     let mut branchCond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut branchCondVar: Variability = Variability::CONSTANT;
     let mut branchBody: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(whenEq.clone()) {
+    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(whenEq) {
         Deref @ Equation::WHEN { branches: __pa0, scope: __pa1, source: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -610,7 +610,7 @@ fn transformWhenBranches(mut whenEq: Arc<Equation::NFEquation>, mut stateCref: A
     whenScope = __pa1.clone();
     whenSource = __pa2.clone();
     newBranches = metamodelica::nil();
-    for mut branch in &*branches.clone() {
+    for mut branch in &*branches {
         let mut branch = branch.clone();
         branch = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ Equation::Branch::BRANCH { condition: __esc_branchCond, conditionVar: __esc_branchCondVar, body: __esc_branchBody } => {
@@ -631,7 +631,7 @@ fn transformWhenBranches(mut whenEq: Arc<Equation::NFEquation>, mut stateCref: A
     } });
         newBranches = metamodelica::cons(branch.clone(), newBranches.clone());
     }
-    outEq = Arc::new(Equation::NFEquation::WHEN { branches: newBranches.clone().reverse(), scope: whenScope.clone(), source: whenSource.clone() });
+    outEq = Arc::new(Equation::NFEquation::WHEN { branches: newBranches.reverse(), scope: whenScope, source: whenSource });
     Ok((outEq, extraVars))
 }
 
@@ -675,7 +675,7 @@ fn addStateActivationAndReset1(mut inEq: Arc<Equation::NFEquation>, mut stateCre
         (newRhs, _) = unwrap_break_err!(Expression::mapFold(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = stateVarCrefs.clone(); move |__pe_a0, __pe_a2| Ok(subsPreviousCrefs(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false), '__try5);
         eq1 = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: newRhs.clone(), ty: lhsTy.clone(), scope: eqScope.clone(), source: eqSource.clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
         isOuterOutput = !(unwrap_break_err!(crefHasPrefix(stateCref.clone(), lhsCref.clone()), '__try5)) && stringEqual((unwrap_break_err!(InstNode::name(eqScope.clone()), '__try5)).clone(), (unwrap_break_err!(ComponentRef::firstName(stateCref.clone(), false), '__try5)).clone());
-        if isOuterOutput.clone() {
+        if isOuterOutput {
             perStateVarCref = ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (unwrap_break_err!(ComponentRef::firstName(lhsCref.clone(), false), '__try5)).clone() }), lhsTy.clone(), metamodelica::nil(), stateCref.clone());
             perStateVar = makeVarWithStart(perStateVarCref.clone(), lhsTy.clone(), Variability::DISCRETE.clone(), getDefaultStart(lhsTy.clone()));
             perStateVarExp = makeCrefExp(perStateVarCref.clone(), lhsTy.clone());
@@ -691,11 +691,11 @@ fn addStateActivationAndReset1(mut inEq: Arc<Equation::NFEquation>, mut stateCre
             for mut svc in &*stateVarCrefs.clone() {
                 let mut svc = svc.clone();
                 hasStateVarOnLHS = unwrap_break_err!(ComponentRef::isEqual(svc.clone(), lhsCref.clone()), '__try5);
-                if hasStateVarOnLHS.clone() {
+                if hasStateVarOnLHS {
                     break;
                 }
             }
-            if hasStateVarOnLHS.clone() {
+            if hasStateVarOnLHS {
                 eq1 = unwrap_break_err!(wrapInStateActivationConditional(eq1.clone(), stateCref.clone(), true), '__try5);
                 eq2 = unwrap_break_err!(createResetEquation(lhsCref.clone(), lhsTy.clone(), stateCref.clone(), sem.clone(), crToStart.clone()), '__try5);
                 accEqs = metamodelica::cons(eq1.clone(), metamodelica::cons(eq2.clone(), accEqs.clone()));
@@ -718,7 +718,7 @@ fn addStateActivationAndReset1(mut inEq: Arc<Equation::NFEquation>, mut stateCre
 
 fn equationHasPrevious(mut eq: Arc<Equation::NFEquation>, mut varCref: Arc<ComponentRef::NFComponentRef>) -> Result<bool> {
     let mut found: bool;
-    found = Equation::containsExp(eq.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static> = (std::sync::Arc::new({ let __pe_b1 = varCref.clone(); move |__pe_a0| isPreviousOfCref(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>); move |__pe_a0| Expression::contains(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
+    found = Equation::containsExp(eq, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static> = (std::sync::Arc::new({ let __pe_b1 = varCref; move |__pe_a0| isPreviousOfCref(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>); move |__pe_a0| Expression::contains(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
     Ok(found)
 }
 
@@ -727,21 +727,21 @@ fn isPreviousOfCref(mut e: Arc<Expression::NFExpression>, mut varCref: Arc<Compo
     let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut argCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    res = (::match_deref::match_deref! { match &(e.clone()) {
+    res = (::match_deref::match_deref! { match &(e) {
         Deref @ Expression::CALL { call: expCall } if (stringEq((Call::functionNameLast(expCall.clone())?).clone(), (literal!("previous")).clone())) => {
             args = Call::arguments(expCall.clone())?;
             res = false;
             if (args.clone().len() as i32) == 1 {
-                res = (::match_deref::match_deref! { match &(listHead(args.clone())?) {
+                res = (::match_deref::match_deref! { match &(listHead(args)?) {
         Deref @ Expression::CREF { cref: __esc_argCref, .. } => {
             argCref = (*__esc_argCref).clone();
-            ComponentRef::isEqual(argCref.clone(), varCref.clone())?
+            ComponentRef::isEqual(argCref.clone(), varCref)?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res.clone()
+            res
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -751,7 +751,7 @@ fn isPreviousOfCref(mut e: Arc<Expression::NFExpression>, mut varCref: Arc<Compo
 
 fn getDefaultStart(mut ty: Arc<Type::NFType>) -> Arc<Expression::NFExpression> {
     let mut result: Arc<Expression::NFExpression>;
-    result = (::match_deref::match_deref! { match &(ty.clone()) {
+    result = (::match_deref::match_deref! { match &(ty) {
         Deref @ Type::INTEGER => Arc::new(Expression::NFExpression::INTEGER { value: 0 }),
         Deref @ Type::REAL => Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }),
         Deref @ Type::BOOLEAN => Arc::new(Expression::NFExpression::BOOLEAN { value: false }),
@@ -814,70 +814,70 @@ fn basicFlatSmSemantics(mut initStateCref: Arc<ComponentRef::NFComponentRef>, mu
     let mut tDim: Arc<Dimension::NFDimension>;
     let mut nStatesDim: Arc<Dimension::NFDimension>;
     preRef = makeSMSPrefix(initStateCref.clone())?;
-    (t, cExps) = createTandC(stateCrefs.clone(), transitionEqs.clone())?;
+    (t, cExps) = createTandC(stateCrefs.clone(), transitionEqs)?;
     nStates = (stateCrefs.clone().len() as i32);
     nTransitions = (t.clone().len() as i32);
-    tDim = Arc::new(Dimension::NFDimension::INTEGER { size: nTransitions.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() });
-    nStatesDim = Arc::new(Dimension::NFDimension::INTEGER { size: nStates.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() });
+    tDim = Arc::new(Dimension::NFDimension::INTEGER { size: nTransitions, var: Variability::STRUCTURAL_PARAMETER.clone() });
+    nStatesDim = Arc::new(Dimension::NFDimension::INTEGER { size: nStates, var: Variability::STRUCTURAL_PARAMETER.clone() });
     tTArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![tDim.clone()] });
-    tTArrayInt = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![tDim.clone()] });
+    tTArrayInt = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![tDim] });
     tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![nStatesDim.clone()] });
-    tArrayInt = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![nStatesDim.clone()] });
+    tArrayInt = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![nStatesDim] });
     nStatesRef = qCref((literal!("nState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef.clone())?;
-    knowns = metamodelica::cons(makeVarWithBinding(nStatesRef.clone(), crate::NFType::interned_INTEGER(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::INTEGER { value: nStates.clone() })), knowns.clone());
+    knowns = metamodelica::cons(makeVarWithBinding(nStatesRef, crate::NFType::interned_INTEGER(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::INTEGER { value: nStates })), knowns);
     i = 0;
     for mut tr in &*t.clone() {
         let mut tr = tr.clone();
-        i = i.clone() + 1;
-        tFromRefs = metamodelica::cons(qCref((literal!("tFrom")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, tFromRefs.clone());
+        i = i + 1;
+        tFromRefs = metamodelica::cons(qCref((literal!("tFrom")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, tFromRefs.clone());
         knowns = metamodelica::cons(makeVarWithBinding(listHead(tFromRefs.clone())?, crate::NFType::interned_INTEGER(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::INTEGER { value: tr.from.clone() })), knowns.clone());
-        tToRefs = metamodelica::cons(qCref((literal!("tTo")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, tToRefs.clone());
+        tToRefs = metamodelica::cons(qCref((literal!("tTo")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, tToRefs.clone());
         knowns = metamodelica::cons(makeVarWithBinding(listHead(tToRefs.clone())?, crate::NFType::interned_INTEGER(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::INTEGER { value: tr.to.clone() })), knowns.clone());
-        tImmediateRefs = metamodelica::cons(qCref((literal!("tImmediate")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, tImmediateRefs.clone());
+        tImmediateRefs = metamodelica::cons(qCref((literal!("tImmediate")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, tImmediateRefs.clone());
         knowns = metamodelica::cons(makeVarWithBinding(listHead(tImmediateRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: tr.immediate.clone() })), knowns.clone());
-        tResetRefs = metamodelica::cons(qCref((literal!("tReset")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, tResetRefs.clone());
+        tResetRefs = metamodelica::cons(qCref((literal!("tReset")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, tResetRefs.clone());
         knowns = metamodelica::cons(makeVarWithBinding(listHead(tResetRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: tr.reset.clone() })), knowns.clone());
-        tSynchronizeRefs = metamodelica::cons(qCref((literal!("tSynchronize")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, tSynchronizeRefs.clone());
+        tSynchronizeRefs = metamodelica::cons(qCref((literal!("tSynchronize")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, tSynchronizeRefs.clone());
         knowns = metamodelica::cons(makeVarWithBinding(listHead(tSynchronizeRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: tr.synchronize.clone() })), knowns.clone());
-        tPriorityRefs = metamodelica::cons(qCref((literal!("tPriority")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, tPriorityRefs.clone());
+        tPriorityRefs = metamodelica::cons(qCref((literal!("tPriority")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, tPriorityRefs.clone());
         knowns = metamodelica::cons(makeVarWithBinding(listHead(tPriorityRefs.clone())?, crate::NFType::interned_INTEGER(), Variability::STRUCTURAL_PARAMETER.clone(), Arc::new(Expression::NFExpression::INTEGER { value: tr.priority.clone() })), knowns.clone());
     }
-    tFromRefs = tFromRefs.clone().reverse();
-    tToRefs = tToRefs.clone().reverse();
-    tImmediateRefs = tImmediateRefs.clone().reverse();
-    tResetRefs = tResetRefs.clone().reverse();
-    tSynchronizeRefs = tSynchronizeRefs.clone().reverse();
-    tPriorityRefs = tPriorityRefs.clone().reverse();
+    tFromRefs = tFromRefs.reverse();
+    tToRefs = tToRefs.reverse();
+    tImmediateRefs = tImmediateRefs.reverse();
+    tResetRefs = tResetRefs.reverse();
+    tSynchronizeRefs = tSynchronizeRefs.reverse();
+    tPriorityRefs = tPriorityRefs.reverse();
     i = 0;
     for mut cExp in &*cExps.clone() {
         let mut cExp = cExp.clone();
-        i = i.clone() + 1;
-        cImmediateRefs = metamodelica::cons(qCref((literal!("cImmediate")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, cImmediateRefs.clone());
-        cRefs = metamodelica::cons(qCref((literal!("c")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, cRefs.clone());
+        i = i + 1;
+        cImmediateRefs = metamodelica::cons(qCref((literal!("cImmediate")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, cImmediateRefs.clone());
+        cRefs = metamodelica::cons(qCref((literal!("c")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef.clone())?, cRefs.clone());
         vars = metamodelica::cons(makeVarWithStart(listHead(cImmediateRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: false })), vars.clone());
         vars = metamodelica::cons(makeVar(listHead(cRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
     }
-    cImmediateRefs = cImmediateRefs.clone().reverse();
-    cRefs = cRefs.clone().reverse();
+    cImmediateRefs = cImmediateRefs.reverse();
+    cRefs = cRefs.reverse();
     activeRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(activeRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(activeRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars);
     resetRef = qCref((literal!("reset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(resetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(resetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars);
     selectedStateRef = qCref((literal!("selectedState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(selectedStateRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(selectedStateRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone()), vars);
     selectedResetRef = qCref((literal!("selectedReset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(selectedResetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(selectedResetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars);
     firedRef = qCref((literal!("fired")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(firedRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(firedRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone()), vars);
     activeStateRef = qCref((literal!("activeState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(activeStateRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(activeStateRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone()), vars);
     activeResetRef = qCref((literal!("activeReset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(activeResetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(activeResetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars);
     nextStateRef = qCref((literal!("nextState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVarWithStart(nextStateRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 })), vars.clone());
+    vars = metamodelica::cons(makeVarWithStart(nextStateRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 })), vars);
     nextResetRef = qCref((literal!("nextReset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVarWithStart(nextResetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: false })), vars.clone());
-    for mut j in 1..=nStates.clone() {
+    vars = metamodelica::cons(makeVarWithStart(nextResetRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: false })), vars);
+    for mut j in 1..=nStates {
         activeResetStatesRefs = metamodelica::cons(qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: j.clone() }) })], preRef.clone())?, activeResetStatesRefs.clone());
         vars = metamodelica::cons(makeVar(listHead(activeResetStatesRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
         nextResetStatesRefs = metamodelica::cons(qCref((literal!("nextResetStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: j.clone() }) })], preRef.clone())?, nextResetStatesRefs.clone());
@@ -885,54 +885,54 @@ fn basicFlatSmSemantics(mut initStateCref: Arc<ComponentRef::NFComponentRef>, mu
         finalStatesRefs = metamodelica::cons(qCref((literal!("finalStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: j.clone() }) })], preRef.clone())?, finalStatesRefs.clone());
         vars = metamodelica::cons(makeVar(listHead(finalStatesRefs.clone())?, crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
     }
-    activeResetStatesRefs = activeResetStatesRefs.clone().reverse();
-    nextResetStatesRefs = nextResetStatesRefs.clone().reverse();
-    finalStatesRefs = finalStatesRefs.clone().reverse();
+    activeResetStatesRefs = activeResetStatesRefs.reverse();
+    nextResetStatesRefs = nextResetStatesRefs.reverse();
+    finalStatesRefs = finalStatesRefs.reverse();
     stateMachineInFinalStateRef = qCref((literal!("stateMachineInFinalState")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    vars = metamodelica::cons(makeVar(stateMachineInFinalStateRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars.clone());
+    vars = metamodelica::cons(makeVar(stateMachineInFinalStateRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone()), vars);
     i = 0;
     for mut cExp in &*cExps.clone() {
         let mut cExp = cExp.clone();
-        i = i.clone() + 1;
-        eqs = metamodelica::cons(makeEq(makeCrefExp((cImmediateRefs.clone()).get(i.clone())?, crate::NFType::interned_BOOLEAN()), cExp.clone(), crate::NFType::interned_BOOLEAN()), eqs.clone());
-        let Transition { immediate: __pa0, .. } = ((t.clone()).get(i.clone())?) else { bail!("pattern mismatch") };
+        i = i + 1;
+        eqs = metamodelica::cons(makeEq(makeCrefExp((cImmediateRefs.clone()).get(i)?, crate::NFType::interned_BOOLEAN()), cExp.clone(), crate::NFType::interned_BOOLEAN()), eqs.clone());
+        let Transition { immediate: __pa0, .. } = ((t.clone()).get(i)?) else { bail!("pattern mismatch") };
         immediateVal = __pa0.clone();
-        rhs = if (immediateVal.clone()) {makeCrefExp((cImmediateRefs.clone()).get(i.clone())?, crate::NFType::interned_BOOLEAN())} else {makePreviousCall(makeCrefExp((cImmediateRefs.clone()).get(i.clone())?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN())};
-        eqs = metamodelica::cons(makeEq(makeCrefExp((cRefs.clone()).get(i.clone())?, crate::NFType::interned_BOOLEAN()), rhs.clone(), crate::NFType::interned_BOOLEAN()), eqs.clone());
+        rhs = if (immediateVal) {makeCrefExp((cImmediateRefs.clone()).get(i)?, crate::NFType::interned_BOOLEAN())} else {makePreviousCall(makeCrefExp((cImmediateRefs.clone()).get(i)?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN())};
+        eqs = metamodelica::cons(makeEq(makeCrefExp((cRefs.clone()).get(i)?, crate::NFType::interned_BOOLEAN()), rhs.clone(), crate::NFType::interned_BOOLEAN()), eqs.clone());
     }
-    eqs = metamodelica::cons(makeEq(makeCrefExp(selectedStateRef.clone(), crate::NFType::interned_INTEGER()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::INTEGER { value: 1 }), makePreviousCall(makeCrefExp(nextStateRef.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), eqs.clone());
-    eqs = metamodelica::cons(makeEq(makeCrefExp(selectedResetRef.clone(), crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), makePreviousCall(makeCrefExp(nextResetRef.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs.clone());
+    eqs = metamodelica::cons(makeEq(makeCrefExp(selectedStateRef.clone(), crate::NFType::interned_INTEGER()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::INTEGER { value: 1 }), makePreviousCall(makeCrefExp(nextStateRef.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), eqs);
+    eqs = metamodelica::cons(makeEq(makeCrefExp(selectedResetRef.clone(), crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), makePreviousCall(makeCrefExp(nextResetRef.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs);
     expLst = metamodelica::nil();
-    for mut j in 1..=nTransitions.clone() {
+    for mut j in 1..=nTransitions {
         expCond = makeRelationEq(makeCrefExp((tFromRefs.clone()).get(j.clone())?, crate::NFType::interned_INTEGER()), makeCrefExp(selectedStateRef.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER());
         expIf = makeIfExp(expCond.clone(), makeCrefExp((cRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), crate::NFType::interned_BOOLEAN());
         expLst = metamodelica::cons(makeIfExp(expIf.clone(), Arc::new(Expression::NFExpression::INTEGER { value: j.clone() }), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NFType::interned_INTEGER()), expLst.clone());
     }
-    expLst = expLst.clone().reverse();
+    expLst = expLst.reverse();
     rhs = if ((expLst.clone().len() as i32) > 1) {makeMaxIntArrCall(expLst.clone())} else if ((expLst.clone().len() as i32) == 1) {listHead(expLst.clone())?} else {Arc::new(Expression::NFExpression::INTEGER { value: 0 })};
-    eqs = metamodelica::cons(makeEq(makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()), rhs.clone(), crate::NFType::interned_INTEGER()), eqs.clone());
+    eqs = metamodelica::cons(makeEq(makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()), rhs.clone(), crate::NFType::interned_INTEGER()), eqs);
     exp1 = makeRelationGt(makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NFType::interned_INTEGER());
-    exp2 = makeCrefExp(qCref((literal!("tTo")).clone(), tTArrayInt.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()) })], preRef.clone())?, crate::NFType::interned_INTEGER());
-    expElse = makeIfExp(exp1.clone(), exp2.clone(), makeCrefExp(selectedStateRef.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER());
-    eqs = metamodelica::cons(makeEq(makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::INTEGER { value: 1 }), expElse.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), eqs.clone());
+    exp2 = makeCrefExp(qCref((literal!("tTo")).clone(), tTArrayInt, list![Arc::new(Subscript::NFSubscript::INDEX { index: makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()) })], preRef.clone())?, crate::NFType::interned_INTEGER());
+    expElse = makeIfExp(exp1, exp2, makeCrefExp(selectedStateRef, crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER());
+    eqs = metamodelica::cons(makeEq(makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::INTEGER { value: 1 }), expElse, crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), eqs);
     exp1 = makeRelationGt(makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NFType::interned_INTEGER());
-    exp2 = makeCrefExp(qCref((literal!("tReset")).clone(), tTArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: makeCrefExp(firedRef.clone(), crate::NFType::interned_INTEGER()) })], preRef.clone())?, crate::NFType::interned_BOOLEAN());
-    expElse = makeIfExp(exp1.clone(), exp2.clone(), makeCrefExp(selectedResetRef.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN());
-    eqs = metamodelica::cons(makeEq(makeCrefExp(activeResetRef.clone(), crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), expElse.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs.clone());
-    eqs = metamodelica::cons(makeEq(makeCrefExp(nextStateRef.clone(), crate::NFType::interned_INTEGER()), makeIfExp(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()), makePreviousCall(makeCrefExp(nextStateRef.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), eqs.clone());
-    eqs = metamodelica::cons(makeEq(makeCrefExp(nextResetRef.clone(), crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), makePreviousCall(makeCrefExp(nextResetRef.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs.clone());
-    for mut j in 1..=nStates.clone() {
+    exp2 = makeCrefExp(qCref((literal!("tReset")).clone(), tTArrayBool, list![Arc::new(Subscript::NFSubscript::INDEX { index: makeCrefExp(firedRef, crate::NFType::interned_INTEGER()) })], preRef.clone())?, crate::NFType::interned_BOOLEAN());
+    expElse = makeIfExp(exp1.clone(), exp2, makeCrefExp(selectedResetRef, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN());
+    eqs = metamodelica::cons(makeEq(makeCrefExp(activeResetRef, crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), expElse.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs);
+    eqs = metamodelica::cons(makeEq(makeCrefExp(nextStateRef.clone(), crate::NFType::interned_INTEGER()), makeIfExp(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()), makePreviousCall(makeCrefExp(nextStateRef, crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER()), eqs);
+    eqs = metamodelica::cons(makeEq(makeCrefExp(nextResetRef.clone(), crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), makePreviousCall(makeCrefExp(nextResetRef, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs);
+    for mut j in 1..=nStates {
         eqs = metamodelica::cons(makeEq(makeCrefExp((activeResetStatesRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), makePreviousCall(makeCrefExp((nextResetStatesRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs.clone());
     }
-    for mut j in 1..=nStates.clone() {
+    for mut j in 1..=nStates {
         exp1 = makeRelationEq(makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: j.clone() }), crate::NFType::interned_INTEGER());
         expThen = makeIfExp(exp1.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), makeCrefExp((activeResetStatesRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN());
         expElse = makePreviousCall(makeCrefExp((nextResetStatesRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN());
         eqs = metamodelica::cons(makeEq(makeCrefExp((nextResetStatesRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), makeIfExp(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), expThen.clone(), expElse.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs.clone());
     }
-    for mut j in 1..=nStates.clone() {
+    for mut j in 1..=nStates {
         expLst = metamodelica::nil();
-        for mut k in 1..=nTransitions.clone() {
+        for mut k in 1..=nTransitions {
             expCond = makeRelationEq(makeCrefExp((tFromRefs.clone()).get(k.clone())?, crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: j.clone() }), crate::NFType::interned_INTEGER());
             expLst = metamodelica::cons(makeIfExp(expCond.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NFType::interned_INTEGER()), expLst.clone());
         }
@@ -940,8 +940,8 @@ fn basicFlatSmSemantics(mut initStateCref: Arc<ComponentRef::NFComponentRef>, mu
         rhs = if ((expLst.clone().len() as i32) > 1) {makeRelationEq(makeMaxIntArrCall(expLst.clone()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NFType::interned_INTEGER())} else if ((expLst.clone().len() as i32) == 1) {makeRelationEq(listHead(expLst.clone())?, Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NFType::interned_INTEGER())} else {Arc::new(Expression::NFExpression::BOOLEAN { value: true })};
         eqs = metamodelica::cons(makeEq(makeCrefExp((finalStatesRefs.clone()).get(j.clone())?, crate::NFType::interned_BOOLEAN()), rhs.clone(), crate::NFType::interned_BOOLEAN()), eqs.clone());
     }
-    eqs = metamodelica::cons(makeEq(makeCrefExp(stateMachineInFinalStateRef.clone(), crate::NFType::interned_BOOLEAN()), makeCrefExp(qCref((literal!("finalStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()) })], preRef.clone())?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs.clone());
-    sem = FlatSmSemantics { initStateRef: initStateCref.clone(), smComps: metamodelica::arrayFromVec(stateCrefs.clone().into_iter().cloned().collect()), t: t.clone(), c: cExps.clone(), vars: vars.clone(), knowns: knowns.clone(), eqs: eqs.clone(), pvars: metamodelica::nil(), peqs: metamodelica::nil(), enclosingState: None };
+    eqs = metamodelica::cons(makeEq(makeCrefExp(stateMachineInFinalStateRef, crate::NFType::interned_BOOLEAN()), makeCrefExp(qCref((literal!("finalStates")).clone(), tArrayBool, list![Arc::new(Subscript::NFSubscript::INDEX { index: makeCrefExp(activeStateRef, crate::NFType::interned_INTEGER()) })], preRef)?, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), eqs);
+    sem = FlatSmSemantics { initStateRef: initStateCref, smComps: metamodelica::arrayFromVec(stateCrefs.into_iter().cloned().collect()), t: t, c: cExps, vars: vars, knowns: knowns, eqs: eqs, pvars: metamodelica::nil(), peqs: metamodelica::nil(), enclosingState: None };
     Ok(sem)
 }
 
@@ -979,31 +979,31 @@ fn addPropagationEquations(mut inSem: FlatSmSemantics, mut enclosingStateCrefOpt
     let mut timeEnteredEq: Arc<Equation::NFEquation>;
     let mut timeInEq: Arc<Equation::NFEquation>;
     initStateRef = inSem.initStateRef.clone();
-    preRef = makeSMSPrefix(initStateRef.clone())?;
+    preRef = makeSMSPrefix(initStateRef)?;
     activeRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
     resetRef = qCref((literal!("reset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
     nStates = metamodelica::arrayLength(inSem.smComps.clone());
-    tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nStates.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() })] });
+    tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nStates, var: Variability::STRUCTURAL_PARAMETER.clone() })] });
     if isNone(enclosingSmSemOpt.clone()) {
         initRef = qCref((literal!("init")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-        pvars = metamodelica::cons(makeVarWithStart(initRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: true })), pvars.clone());
-        peqs = metamodelica::cons(makeEq(makeCrefExp(initRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), crate::NFType::interned_BOOLEAN()), peqs.clone());
-        peqs = metamodelica::cons(makeEq(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), makePreviousCall(makeCrefExp(initRef.clone(), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), peqs.clone());
-        peqs = metamodelica::cons(makeEq(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), crate::NFType::interned_BOOLEAN()), peqs.clone());
+        pvars = metamodelica::cons(makeVarWithStart(initRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: true })), pvars);
+        peqs = metamodelica::cons(makeEq(makeCrefExp(initRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), crate::NFType::interned_BOOLEAN()), peqs);
+        peqs = metamodelica::cons(makeEq(makeCrefExp(resetRef, crate::NFType::interned_BOOLEAN()), makePreviousCall(makeCrefExp(initRef, crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), crate::NFType::interned_BOOLEAN()), peqs);
+        peqs = metamodelica::cons(makeEq(makeCrefExp(activeRef, crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), crate::NFType::interned_BOOLEAN()), peqs);
     } else {
         let __pa0 = ::match_deref::match_deref! { match &(enclosingStateCrefOpt.clone()) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         enclosingStateCref = __pa0.clone();
-        let __pa1 = ::match_deref::match_deref! { match &(enclosingSmSemOpt.clone()) {
+        let __pa1 = ::match_deref::match_deref! { match &(enclosingSmSemOpt) {
             Some(__pa1) => __pa1.clone(),
             _ => bail!("pattern mismatch"),
         } };
         enclosingSem = __pa1.clone();
         enclosingComps = enclosingSem.smComps.clone();
         enclosingInitStateRef = metamodelica::arrayGet(enclosingComps.clone(), 1)?;
-        enclosingPreRef = makeSMSPrefix(enclosingInitStateRef.clone())?;
+        enclosingPreRef = makeSMSPrefix(enclosingInitStateRef)?;
         posOfEnclosing = 1;
         let __range2 = &*Arc::new(enclosingComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
         for mut sc in __range2 {
@@ -1011,15 +1011,15 @@ fn addPropagationEquations(mut inSem: FlatSmSemantics, mut enclosingStateCrefOpt
             if ComponentRef::isEqual(sc.clone(), enclosingStateCref.clone())? {
                 break;
             }
-            posOfEnclosing = posOfEnclosing.clone() + 1;
+            posOfEnclosing = posOfEnclosing + 1;
         }
         enclosingActiveStateRef = qCref((literal!("activeState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), enclosingPreRef.clone())?;
         enclosingActiveResetRef = qCref((literal!("activeReset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), enclosingPreRef.clone())?;
-        enclosingActiveResetStateRef = qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing.clone() }) })], enclosingPreRef.clone())?;
-        peqs = metamodelica::cons(makeEq(makeCrefExp(resetRef.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::LBINARY { exp1: makeCrefExp(enclosingActiveResetStateRef.clone(), crate::NFType::interned_BOOLEAN()), operator: Operator::makeOr(crate::NFType::interned_BOOLEAN()), exp2: Arc::new(Expression::NFExpression::LBINARY { exp1: makeCrefExp(enclosingActiveResetRef.clone(), crate::NFType::interned_BOOLEAN()), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: makeRelationEq(makeCrefExp(enclosingActiveStateRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing.clone() }), crate::NFType::interned_INTEGER()) }) }), crate::NFType::interned_BOOLEAN()), peqs.clone());
-        peqs = metamodelica::cons(makeEq(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), makeRelationEq(makeCrefExp(enclosingActiveStateRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing.clone() }), crate::NFType::interned_INTEGER()), crate::NFType::interned_BOOLEAN()), peqs.clone());
+        enclosingActiveResetStateRef = qCref((literal!("activeResetStates")).clone(), tArrayBool, list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing }) })], enclosingPreRef)?;
+        peqs = metamodelica::cons(makeEq(makeCrefExp(resetRef, crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::LBINARY { exp1: makeCrefExp(enclosingActiveResetStateRef, crate::NFType::interned_BOOLEAN()), operator: Operator::makeOr(crate::NFType::interned_BOOLEAN()), exp2: Arc::new(Expression::NFExpression::LBINARY { exp1: makeCrefExp(enclosingActiveResetRef, crate::NFType::interned_BOOLEAN()), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: makeRelationEq(makeCrefExp(enclosingActiveStateRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing }), crate::NFType::interned_INTEGER()) }) }), crate::NFType::interned_BOOLEAN()), peqs);
+        peqs = metamodelica::cons(makeEq(makeCrefExp(activeRef, crate::NFType::interned_BOOLEAN()), makeRelationEq(makeCrefExp(enclosingActiveStateRef, crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing }), crate::NFType::interned_INTEGER()), crate::NFType::interned_BOOLEAN()), peqs);
     }
-    for mut j in 1..=nStates.clone() {
+    for mut j in 1..=nStates {
         stateRef = metamodelica::arrayGet(inSem.smComps.clone(), j.clone())?;
         (activePlotVar, activePlotEq) = createActiveIndicator(stateRef.clone(), preRef.clone(), j.clone())?;
         pvars = metamodelica::cons(activePlotVar.clone(), pvars.clone());
@@ -1033,9 +1033,9 @@ fn addPropagationEquations(mut inSem: FlatSmSemantics, mut enclosingStateCrefOpt
         pvars = metamodelica::cons(timeEnteredVar.clone(), metamodelica::cons(timeInVar.clone(), pvars.clone()));
         peqs = metamodelica::cons(timeEnteredEq.clone(), metamodelica::cons(timeInEq.clone(), peqs.clone()));
     }
-    outSem.pvars = pvars.clone();
-    outSem.peqs = peqs.clone();
-    outSem.enclosingState = enclosingStateCrefOpt.clone();
+    outSem.pvars = pvars;
+    outSem.peqs = peqs;
+    outSem.enclosingState = enclosingStateCrefOpt;
     Ok(outSem)
 }
 
@@ -1063,9 +1063,9 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
     i = 0;
     for mut tc in &*List::zip(sem.t.clone(), sem.c.clone()) {
         let mut tc = tc.clone();
-        i = i.clone() + 1;
+        i = i + 1;
         (_, c3) = tc.clone();
-        curT = (sem.t.clone()).get(i.clone())?;
+        curT = (sem.t.clone()).get(i)?;
         let Transition { from: __pa0, to: __pa1, immediate: __pa2, reset: __pa3, synchronize: __pa4, priority: __pa5, .. } = (curT.clone()) else { bail!("pattern mismatch") };
         curFrom = __pa0.clone();
         curTo = __pa1.clone();
@@ -1073,18 +1073,18 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
         curReset = __pa3.clone();
         curSynchronize = __pa4.clone();
         curPriority = __pa5.clone();
-        stateRef = metamodelica::arrayGet(sem.smComps.clone(), curFrom.clone())?;
+        stateRef = metamodelica::arrayGet(sem.smComps.clone(), curFrom)?;
         substTickExp = makeCrefExp(qCref((literal!("$ticksInState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), stateRef.clone())?, crate::NFType::interned_INTEGER());
         (c4, found) = subsXInState(c3.clone(), (literal!("ticksInState")).clone(), substTickExp.clone())?;
-        if found.clone() && isSome(enclosingStateCrefOpt.clone()) {
+        if found && isSome(enclosingStateCrefOpt.clone()) {
             Error::addCompilerError((literal!("Found 'ticksInState()' within a state of a hierarchical state machine.")).clone())?;
             bail!("fail");
         }
-        if found.clone() {
+        if found {
             sem.eqs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut eq in (sem.eqs.clone()).into_iter().cloned() {
-            let __x = smeqsSubsXInState(eq.clone(), metamodelica::arrayGet(sem.smComps.clone(), 1)?, i.clone(), (sem.t.clone().len() as i32), substTickExp.clone(), (literal!("ticksInState")).clone())?;
+            let __x = smeqsSubsXInState(eq.clone(), metamodelica::arrayGet(sem.smComps.clone(), 1)?, i, (sem.t.clone().len() as i32), substTickExp.clone(), (literal!("ticksInState")).clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1092,32 +1092,32 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
         }
         substTimeExp = makeCrefExp(qCref((literal!("$timeInState")).clone(), crate::NFType::interned_REAL(), metamodelica::nil(), stateRef.clone())?, crate::NFType::interned_REAL());
         (c4, found) = subsXInState(c4.clone(), (literal!("timeInState")).clone(), substTimeExp.clone())?;
-        if found.clone() && isSome(enclosingStateCrefOpt.clone()) {
+        if found && isSome(enclosingStateCrefOpt.clone()) {
             Error::addCompilerError((literal!("Found 'timeInState()' within a state of a hierarchical state machine.")).clone())?;
             bail!("fail");
         }
-        if found.clone() {
+        if found {
             sem.eqs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut eq in (sem.eqs.clone()).into_iter().cloned() {
-            let __x = smeqsSubsXInState(eq.clone(), metamodelica::arrayGet(sem.smComps.clone(), 1)?, i.clone(), (sem.t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())?;
+            let __x = smeqsSubsXInState(eq.clone(), metamodelica::arrayGet(sem.smComps.clone(), 1)?, i, (sem.t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
         }
-        tElab = metamodelica::cons(Transition { from: curFrom.clone(), to: curTo.clone(), condition: c4.clone(), immediate: curImmediate.clone(), reset: curReset.clone(), synchronize: curSynchronize.clone(), priority: curPriority.clone() }, tElab.clone());
+        tElab = metamodelica::cons(Transition { from: curFrom, to: curTo, condition: c4.clone(), immediate: curImmediate, reset: curReset, synchronize: curSynchronize, priority: curPriority }, tElab.clone());
         cElab = metamodelica::cons(c4.clone(), cElab.clone());
     }
-    sem.t = tElab.clone().reverse();
-    sem.c = cElab.clone().reverse();
+    sem.t = tElab.reverse();
+    sem.c = cElab.reverse();
     Ok(sem)
 }
 
 fn subsXInState(mut inExp: Arc<Expression::NFExpression>, mut funcName: ArcStr, mut substExp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut found: bool = false;
-    (outExp, found) = Expression::mapFold(inExp.clone(), (std::sync::Arc::new({ let __pe_b1 = (funcName.clone()).clone(); let __pe_b2 = substExp.clone(); move |__pe_a0, __pe_a3| Ok(subsXInStateHelper(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
+    (outExp, found) = Expression::mapFold(inExp, (std::sync::Arc::new({ let __pe_b1 = (funcName).clone(); let __pe_b2 = substExp; move |__pe_a0, __pe_a3| Ok(subsXInStateHelper(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
     Ok((outExp, found))
 }
 
@@ -1156,21 +1156,21 @@ fn smeqsSubsXInState(mut eq: Arc<Equation::NFEquation>, mut initStateComp: Arc<C
     let mut newRhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     outEq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { .. } => {
-            preRef = makeSMSPrefix(initStateComp.clone())?;
-            tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nTransitions.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() })] });
-            cRef = qCref((literal!("cImmediate")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?;
+            preRef = makeSMSPrefix(initStateComp)?;
+            tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nTransitions, var: Variability::STRUCTURAL_PARAMETER.clone() })] });
+            cRef = qCref((literal!("cImmediate")).clone(), tArrayBool, list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef)?;
             let __pa0 = ::match_deref::match_deref! { match &(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone()) {
                 Deref @ Expression::CREF { cref: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             lhsRef = __pa0.clone();
-            if ComponentRef::isEqual(cRef.clone(), lhsRef.clone())? {
-                (newRhs, _) = subsXInState(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), (xInState.clone()).clone(), substExp.clone())?;
-                outEq = Arc::new(Equation::NFEquation::EQUALITY { lhs: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), rhs: newRhs.clone(), ty: var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
+            if ComponentRef::isEqual(cRef, lhsRef)? {
+                (newRhs, _) = subsXInState(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), (xInState).clone(), substExp)?;
+                outEq = Arc::new(Equation::NFEquation::EQUALITY { lhs: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), rhs: newRhs, ty: var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
             }
-            outEq.clone()
+            outEq
         },
-        _ => eq.clone(),
+        _ => eq,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outEq)
@@ -1187,13 +1187,13 @@ fn createActiveIndicator(mut stateRef: Arc<ComponentRef::NFComponentRef>, mut pr
     let mut activeStateRef: Arc<ComponentRef::NFComponentRef>;
     let mut andExp: Arc<Expression::NFExpression>;
     let mut eqExp: Arc<Expression::NFExpression>;
-    activePlotRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateRef.clone())?;
+    activePlotRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateRef)?;
     activePlotVar = makeVarWithStart(activePlotRef.clone(), crate::NFType::interned_BOOLEAN(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: false }));
     activeRef = qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?;
-    activeStateRef = qCref((literal!("activeState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef.clone())?;
-    eqExp = makeRelationEq(makeCrefExp(activeStateRef.clone(), crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }), crate::NFType::interned_INTEGER());
-    andExp = Arc::new(Expression::NFExpression::LBINARY { exp1: makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: eqExp.clone() });
-    eqn = makeEq(makeCrefExp(activePlotRef.clone(), crate::NFType::interned_BOOLEAN()), andExp.clone(), crate::NFType::interned_BOOLEAN());
+    activeStateRef = qCref((literal!("activeState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), preRef)?;
+    eqExp = makeRelationEq(makeCrefExp(activeStateRef, crate::NFType::interned_INTEGER()), Arc::new(Expression::NFExpression::INTEGER { value: i }), crate::NFType::interned_INTEGER());
+    andExp = Arc::new(Expression::NFExpression::LBINARY { exp1: makeCrefExp(activeRef, crate::NFType::interned_BOOLEAN()), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: eqExp });
+    eqn = makeEq(makeCrefExp(activePlotRef, crate::NFType::interned_BOOLEAN()), andExp, crate::NFType::interned_BOOLEAN());
     Ok((activePlotVar, eqn))
 }
 
@@ -1205,13 +1205,13 @@ fn createTicksInStateIndicator(mut stateRef: Arc<ComponentRef::NFComponentRef>, 
     let mut expCond: Arc<Expression::NFExpression>;
     let mut expThen: Arc<Expression::NFExpression>;
     let mut expElse: Arc<Expression::NFExpression>;
-    ticksRef = qCref((literal!("$ticksInState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), stateRef.clone())?;
+    ticksRef = qCref((literal!("$ticksInState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), stateRef)?;
     ticksVar = makeVarWithStart(ticksRef.clone(), crate::NFType::interned_INTEGER(), Variability::DISCRETE.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }));
-    ticksExp = makeCrefExp(ticksRef.clone(), crate::NFType::interned_INTEGER());
-    expCond = Arc::new(Expression::NFExpression::LUNARY { operator: Operator::makeNot(crate::NFType::interned_BOOLEAN()), exp: makeCrefExp(stateActiveRef.clone(), crate::NFType::interned_BOOLEAN()) });
+    ticksExp = makeCrefExp(ticksRef, crate::NFType::interned_INTEGER());
+    expCond = Arc::new(Expression::NFExpression::LUNARY { operator: Operator::makeNot(crate::NFType::interned_BOOLEAN()), exp: makeCrefExp(stateActiveRef, crate::NFType::interned_BOOLEAN()) });
     expThen = Arc::new(Expression::NFExpression::INTEGER { value: 0 });
     expElse = Arc::new(Expression::NFExpression::BINARY { exp1: makePreviousCall(ticksExp.clone(), crate::NFType::interned_INTEGER()), operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) });
-    ticksEq = makeEq(ticksExp.clone(), makeIfExp(expCond.clone(), expThen.clone(), expElse.clone(), crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER());
+    ticksEq = makeEq(ticksExp, makeIfExp(expCond, expThen, expElse, crate::NFType::interned_INTEGER()), crate::NFType::interned_INTEGER());
     Ok((ticksVar, ticksEq))
 }
 
@@ -1224,14 +1224,14 @@ fn createTimeEnteredStateIndicator(mut stateRef: Arc<ComponentRef::NFComponentRe
     let mut expThen: Arc<Expression::NFExpression>;
     let mut expElse: Arc<Expression::NFExpression>;
     let mut activeExp: Arc<Expression::NFExpression>;
-    timeEnteredRef = qCref((literal!("$timeEnteredState")).clone(), crate::NFType::interned_REAL(), metamodelica::nil(), stateRef.clone())?;
+    timeEnteredRef = qCref((literal!("$timeEnteredState")).clone(), crate::NFType::interned_REAL(), metamodelica::nil(), stateRef)?;
     timeEnteredVar = makeVarWithStart(timeEnteredRef.clone(), crate::NFType::interned_REAL(), Variability::CONTINUOUS.clone(), Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }));
-    timeEnteredExp = makeCrefExp(timeEnteredRef.clone(), crate::NFType::interned_REAL());
-    activeExp = makeCrefExp(stateActiveRef.clone(), crate::NFType::interned_BOOLEAN());
-    expCond = Arc::new(Expression::NFExpression::LBINARY { exp1: makeRelationEq(makePreviousCall(activeExp.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), crate::NFType::interned_BOOLEAN()), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: makeRelationEq(activeExp.clone(), Arc::new(Expression::NFExpression::BOOLEAN { value: true }), crate::NFType::interned_BOOLEAN()) });
+    timeEnteredExp = makeCrefExp(timeEnteredRef, crate::NFType::interned_REAL());
+    activeExp = makeCrefExp(stateActiveRef, crate::NFType::interned_BOOLEAN());
+    expCond = Arc::new(Expression::NFExpression::LBINARY { exp1: makeRelationEq(makePreviousCall(activeExp.clone(), crate::NFType::interned_BOOLEAN()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), crate::NFType::interned_BOOLEAN()), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: makeRelationEq(activeExp, Arc::new(Expression::NFExpression::BOOLEAN { value: true }), crate::NFType::interned_BOOLEAN()) });
     expThen = makeSampleTimeCall();
     expElse = makePreviousCall(timeEnteredExp.clone(), crate::NFType::interned_REAL());
-    timeEnteredEq = makeEq(timeEnteredExp.clone(), makeIfExp(expCond.clone(), expThen.clone(), expElse.clone(), crate::NFType::interned_REAL()), crate::NFType::interned_REAL());
+    timeEnteredEq = makeEq(timeEnteredExp, makeIfExp(expCond, expThen, expElse, crate::NFType::interned_REAL()), crate::NFType::interned_REAL());
     Ok((timeEnteredVar, timeEnteredEq))
 }
 
@@ -1244,14 +1244,14 @@ fn createTimeInStateIndicator(mut stateRef: Arc<ComponentRef::NFComponentRef>, m
     let mut expThen: Arc<Expression::NFExpression>;
     let mut expElse: Arc<Expression::NFExpression>;
     let mut timeEnteredExp: Arc<Expression::NFExpression>;
-    timeInRef = qCref((literal!("$timeInState")).clone(), crate::NFType::interned_REAL(), metamodelica::nil(), stateRef.clone())?;
+    timeInRef = qCref((literal!("$timeInState")).clone(), crate::NFType::interned_REAL(), metamodelica::nil(), stateRef)?;
     timeInVar = makeVarWithStart(timeInRef.clone(), crate::NFType::interned_REAL(), Variability::CONTINUOUS.clone(), Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }));
-    timeInExp = makeCrefExp(timeInRef.clone(), crate::NFType::interned_REAL());
+    timeInExp = makeCrefExp(timeInRef, crate::NFType::interned_REAL());
     timeEnteredExp = makeCrefExp(timeEnteredVar.name.clone(), crate::NFType::interned_REAL());
-    expCond = makeCrefExp(stateActiveRef.clone(), crate::NFType::interned_BOOLEAN());
-    expThen = Arc::new(Expression::NFExpression::BINARY { exp1: makeSampleTimeCall(), operator: Operator::makeSub(crate::NFType::interned_REAL()), exp2: timeEnteredExp.clone() });
+    expCond = makeCrefExp(stateActiveRef, crate::NFType::interned_BOOLEAN());
+    expThen = Arc::new(Expression::NFExpression::BINARY { exp1: makeSampleTimeCall(), operator: Operator::makeSub(crate::NFType::interned_REAL()), exp2: timeEnteredExp });
     expElse = Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) });
-    timeInEq = makeEq(timeInExp.clone(), makeIfExp(expCond.clone(), expThen.clone(), expElse.clone(), crate::NFType::interned_REAL()), crate::NFType::interned_REAL());
+    timeInEq = makeEq(timeInExp, makeIfExp(expCond, expThen, expElse, crate::NFType::interned_REAL()), crate::NFType::interned_REAL());
     Ok((timeInVar, timeInEq))
 }
 
@@ -1268,7 +1268,7 @@ fn wrapInStateActivationConditional(mut inEq: Arc<Equation::NFEquation>, mut sta
     let mut ty: Arc<Type::NFType>;
     let mut eqScope: Arc<InstNode::InstNode>;
     let mut eqSource: Arc<DAE::ElementSource>;
-    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inEq.clone()) {
+    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inEq) {
         Deref @ Equation::EQUALITY { lhs: __pa0, rhs: __pa1, ty: __pa2, scope: __pa3, source: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -1283,13 +1283,13 @@ fn wrapInStateActivationConditional(mut inEq: Arc<Equation::NFEquation>, mut sta
     } };
     ty = __pa5.clone();
     lhsCref = __pa6.clone();
-    activeRef = makeCrefExp(qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref.clone())?, crate::NFType::interned_BOOLEAN());
-    if isResetEquation.clone() {
-        expElse = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(lhsCref.clone(), false)?); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), ty.clone(), metamodelica::nil(), ComponentRef::rest(lhsCref.clone())?), ty.clone());
+    activeRef = makeCrefExp(qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref)?, crate::NFType::interned_BOOLEAN());
+    if isResetEquation {
+        expElse = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(lhsCref.clone(), false)?); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), ty.clone(), metamodelica::nil(), ComponentRef::rest(lhsCref)?), ty.clone());
     } else {
         expElse = makePreviousCall(lhs.clone(), ty.clone());
     }
-    outEq = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: makeIfExp(activeRef.clone(), rhs.clone(), expElse.clone(), ty.clone()), ty: ty.clone(), scope: eqScope.clone(), source: eqSource.clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
+    outEq = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs, rhs: makeIfExp(activeRef, rhs, expElse, ty.clone()), ty: ty, scope: eqScope, source: eqSource, scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
     Ok(outEq)
 }
 
@@ -1310,7 +1310,7 @@ fn createResetEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
     let mut nStates: i32;
     let mut tArrayBool: Arc<Type::NFType>;
     initStateRef = metamodelica::arrayGet(sem.smComps.clone(), 1)?;
-    preRef = makeSMSPrefix(initStateRef.clone())?;
+    preRef = makeSMSPrefix(initStateRef)?;
     i = 1;
     let __range0 = &*Arc::new(sem.smComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     for mut sc in __range0 {
@@ -1318,20 +1318,20 @@ fn createResetEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
         if ComponentRef::isEqual(sc.clone(), stateCref.clone())? {
             break;
         }
-        i = i.clone() + 1;
+        i = i + 1;
     }
     nStates = metamodelica::arrayLength(sem.smComps.clone());
-    tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nStates.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() })] });
+    tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_BOOLEAN(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nStates, var: Variability::STRUCTURAL_PARAMETER.clone() })] });
     activeResetExp = makeCrefExp(qCref((literal!("activeReset")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), preRef.clone())?, crate::NFType::interned_BOOLEAN());
-    activeResetStatesExp = makeCrefExp(qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, crate::NFType::interned_BOOLEAN());
-    orExp = Arc::new(Expression::NFExpression::LBINARY { exp1: activeResetExp.clone(), operator: Operator::makeOr(crate::NFType::interned_BOOLEAN()), exp2: activeResetStatesExp.clone() });
-    activeExp = makeCrefExp(qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref.clone())?, crate::NFType::interned_BOOLEAN());
-    andExp = Arc::new(Expression::NFExpression::LBINARY { exp1: activeExp.clone(), operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: orExp.clone() });
+    activeResetStatesExp = makeCrefExp(qCref((literal!("activeResetStates")).clone(), tArrayBool, list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) })], preRef)?, crate::NFType::interned_BOOLEAN());
+    orExp = Arc::new(Expression::NFExpression::LBINARY { exp1: activeResetExp, operator: Operator::makeOr(crate::NFType::interned_BOOLEAN()), exp2: activeResetStatesExp });
+    activeExp = makeCrefExp(qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref)?, crate::NFType::interned_BOOLEAN());
+    andExp = Arc::new(Expression::NFExpression::LBINARY { exp1: activeExp, operator: Operator::makeAnd(crate::NFType::interned_BOOLEAN()), exp2: orExp });
     prevExp = makePreviousCall(makeCrefExp(lhsCref.clone(), lhsTy.clone()), lhsTy.clone());
-    startExp = UnorderedMap::getOrDefault(lhsCref.clone(), crToStart.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?;
-    ifExp = makeIfExp(andExp.clone(), startExp.clone(), prevExp.clone(), lhsTy.clone());
-    lhsPrevExp = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(lhsCref.clone(), false)?); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), lhsTy.clone(), metamodelica::nil(), ComponentRef::rest(lhsCref.clone())?), lhsTy.clone());
-    outEq = makeEq(lhsPrevExp.clone(), ifExp.clone(), lhsTy.clone());
+    startExp = UnorderedMap::getOrDefault(lhsCref.clone(), crToStart, Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?;
+    ifExp = makeIfExp(andExp, startExp, prevExp, lhsTy.clone());
+    lhsPrevExp = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(lhsCref.clone(), false)?); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), lhsTy.clone(), metamodelica::nil(), ComponentRef::rest(lhsCref)?), lhsTy.clone());
+    outEq = makeEq(lhsPrevExp, ifExp, lhsTy);
     Ok(outEq)
 }
 
@@ -1340,13 +1340,13 @@ fn createResetEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
 // ============================================================
 fn subsActiveStateInEq(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> {
     let mut eq: Arc<Equation::NFEquation> = eq;
-    eq = Equation::mapExp(eq.clone(), (std::sync::Arc::new(subsActiveStateInExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    eq = Equation::mapExp(eq, (std::sync::Arc::new(subsActiveStateInExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(eq)
 }
 
 fn subsActiveStateInExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    exp = Expression::map(exp.clone(), (std::sync::Arc::new(fnptr!(subsActiveStateHelper, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    exp = Expression::map(exp, (std::sync::Arc::new(fnptr!(subsActiveStateHelper, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(exp)
 }
 
@@ -1428,8 +1428,8 @@ fn createTandC(mut stateCrefs: Arc<metamodelica::List<Arc<ComponentRef::NFCompon
     let mut t: Arc<metamodelica::List<Transition>>;
     let mut c: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut transitions: Arc<metamodelica::List<Transition>>;
-    transitions = List::filterMap(transitionEqs.clone(), (std::sync::Arc::new({ let __pe_b1 = stateCrefs.clone(); move |__pe_a0| extractTransition(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Transition> + 'static>));
-    t = List::sort(transitions.clone(), (std::sync::Arc::new(fnptr!(priorityGt, Transition, Transition)) as std::sync::Arc<dyn ::std::ops::Fn(Transition, Transition) -> Result<bool> + 'static>))?;
+    transitions = List::filterMap(transitionEqs, (std::sync::Arc::new({ let __pe_b1 = stateCrefs; move |__pe_a0| extractTransition(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Transition> + 'static>));
+    t = List::sort(transitions, (std::sync::Arc::new(fnptr!(priorityGt, Transition, Transition)) as std::sync::Arc<dyn ::std::ops::Fn(Transition, Transition) -> Result<bool> + 'static>))?;
     c = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut tr in (t.clone()).into_iter().cloned() {
@@ -1454,7 +1454,7 @@ fn extractTransition(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<meta
     let mut to: i32;
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut eqCall: Arc<Call::NFCall>;
-    let __pa0 = ::match_deref::match_deref! { match &(eq.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(eq) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: __pa0 }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1462,7 +1462,7 @@ fn extractTransition(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<meta
     if !(stringEq((Call::functionNameLast(eqCall.clone())?).clone(), (literal!("transition")).clone())) {
         bail!("fail");
     }
-    args = Call::arguments(eqCall.clone())?;
+    args = Call::arguments(eqCall)?;
     let __pa2 = ::match_deref::match_deref! { match &((args.clone()).get(1)?) {
         Deref @ Expression::CREF { cref: __pa2, .. } => __pa2.clone(),
         _ => bail!("pattern mismatch"),
@@ -1496,7 +1496,7 @@ fn extractTransition(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<meta
         syn = __pa6.clone();
     }
     if (args.clone().len() as i32) >= 7 {
-        let __pa7 = ::match_deref::match_deref! { match &((args.clone()).get(7)?) {
+        let __pa7 = ::match_deref::match_deref! { match &((args).get(7)?) {
             Deref @ Expression::INTEGER { value: __pa7 } => __pa7.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -1508,17 +1508,17 @@ fn extractTransition(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<meta
         if ComponentRef::isEqual(sc.clone(), crFrom.clone())? {
             break;
         }
-        from = from.clone() + 1;
+        from = from + 1;
     }
     to = 1;
-    for mut sc in &*stateCrefs.clone() {
+    for mut sc in &*stateCrefs {
         let mut sc = sc.clone();
         if ComponentRef::isEqual(sc.clone(), crTo.clone())? {
             break;
         }
-        to = to.clone() + 1;
+        to = to + 1;
     }
-    trans = Transition { from: from.clone(), to: to.clone(), condition: cond.clone(), immediate: imm.clone(), reset: rst.clone(), synchronize: syn.clone(), priority: prio.clone() };
+    trans = Transition { from: from, to: to, condition: cond, immediate: imm, reset: rst, synchronize: syn, priority: prio };
     Ok(trans)
 }
 
@@ -1533,7 +1533,7 @@ fn priorityGt(mut t1: Transition, mut t2: Transition) -> bool {
 // ============================================================
 fn isTransitionOrInitialState(mut eq: Arc<Equation::NFEquation>) -> Result<bool> {
     let mut res: bool = false;
-    let () = (::match_deref::match_deref! { match &(eq.clone()) {
+    let () = (::match_deref::match_deref! { match &(eq) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: eqCall }, .. } => {
             res = (::match_deref::match_deref! { match &(Call::functionNameLast(eqCall.clone())?) {
         Deref @ "transition" => true,
@@ -1554,14 +1554,14 @@ fn isTransitionOrInitialState(mut eq: Arc<Equation::NFEquation>) -> Result<bool>
 fn isTransitionForGroup(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<bool> {
     let mut res: bool = false;
     let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let () = (::match_deref::match_deref! { match &(eq.clone()) {
+    let () = (::match_deref::match_deref! { match &(eq) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: eqCall }, .. } if (stringEq((Call::functionNameLast(eqCall.clone())?).clone(), (literal!("transition")).clone())) => {
             let __pa0 = ::match_deref::match_deref! { match &(listHead(Call::arguments(eqCall.clone())?)?) {
                 Deref @ Expression::CREF { cref: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             cr = __pa0.clone();
-            for mut sc in &*stateCrefs.clone() {
+            for mut sc in &*stateCrefs {
                 let mut sc = sc.clone();
                 if ComponentRef::isEqual(cr.clone(), sc.clone())? {
                     res = true;
@@ -1581,14 +1581,14 @@ fn isTransitionForGroup(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<m
 fn isInitialStateForGroup(mut eq: Arc<Equation::NFEquation>, mut initStateCref: Arc<ComponentRef::NFComponentRef>) -> Result<bool> {
     let mut res: bool = false;
     let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let () = (::match_deref::match_deref! { match &(eq.clone()) {
+    let () = (::match_deref::match_deref! { match &(eq) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: eqCall }, .. } if (stringEq((Call::functionNameLast(eqCall.clone())?).clone(), (literal!("initialState")).clone())) => {
             let __pa0 = ::match_deref::match_deref! { match &(listHead(Call::arguments(eqCall.clone())?)?) {
                 Deref @ Expression::CREF { cref: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             cr = __pa0.clone();
-            res = ComponentRef::isEqual(cr.clone(), initStateCref.clone())?;
+            res = ComponentRef::isEqual(cr, initStateCref)?;
             ()
         },
         _ => {
@@ -1603,16 +1603,16 @@ fn isEquationOfState(mut eq: Arc<Equation::NFEquation>, mut stateCref: Arc<Compo
     let mut res: bool = false;
     let mut eqScope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut stateName: ArcStr;
-    stateName = (ComponentRef::firstName(stateCref.clone(), false)?).clone();
-    let () = (::match_deref::match_deref! { match &(eq.clone()) {
+    stateName = (ComponentRef::firstName(stateCref, false)?).clone();
+    let () = (::match_deref::match_deref! { match &(eq) {
         Deref @ Equation::EQUALITY { scope: __esc_eqScope, .. } => {
             eqScope = (*__esc_eqScope).clone();
-            res = stringEqual((InstNode::name(eqScope.clone())?).clone(), (stateName.clone()).clone());
+            res = stringEqual((InstNode::name(eqScope.clone())?).clone(), (stateName).clone());
             ()
         },
         Deref @ Equation::WHEN { scope: __esc_eqScope, .. } => {
             eqScope = (*__esc_eqScope).clone();
-            res = stringEqual((InstNode::name(eqScope.clone())?).clone(), (stateName.clone()).clone());
+            res = stringEqual((InstNode::name(eqScope.clone())?).clone(), (stateName).clone());
             ()
         },
         _ => (),
@@ -1623,7 +1623,7 @@ fn isEquationOfState(mut eq: Arc<Equation::NFEquation>, mut stateCref: Arc<Compo
 
 fn isVariableOfState(mut var: Arc<Variable::NFVariable>, mut stateCref: Arc<ComponentRef::NFComponentRef>) -> Result<bool> {
     let mut res: bool;
-    res = crefHasPrefix(stateCref.clone(), var.name.clone())?;
+    res = crefHasPrefix(stateCref, var.name.clone())?;
     Ok(res)
 }
 
@@ -1631,11 +1631,11 @@ fn isOuterStateEquation(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<m
     let mut res: bool = false;
     let mut eqScope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut scopeName: ArcStr = arcstr::literal!("");
-    let () = (::match_deref::match_deref! { match &(eq.clone()) {
+    let () = (::match_deref::match_deref! { match &(eq) {
         Deref @ Equation::EQUALITY { scope: __esc_eqScope, .. } => {
             eqScope = (*__esc_eqScope).clone();
             scopeName = (InstNode::name(eqScope.clone())?).clone();
-            for mut stateCref in &*stateCrefs.clone() {
+            for mut stateCref in &*stateCrefs {
                 let mut stateCref = stateCref.clone();
                 if stringEqual((scopeName.clone()).clone(), (ComponentRef::firstName(stateCref.clone(), false)?).clone()) {
                     res = true;
@@ -1647,7 +1647,7 @@ fn isOuterStateEquation(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<m
         Deref @ Equation::WHEN { scope: __esc_eqScope, .. } => {
             eqScope = (*__esc_eqScope).clone();
             scopeName = (InstNode::name(eqScope.clone())?).clone();
-            for mut stateCref in &*stateCrefs.clone() {
+            for mut stateCref in &*stateCrefs {
                 let mut stateCref = stateCref.clone();
                 if stringEqual((scopeName.clone()).clone(), (ComponentRef::firstName(stateCref.clone(), false)?).clone()) {
                     res = true;
@@ -1672,27 +1672,27 @@ fn generateMergeEquation(mut outerVarCref: Arc<ComponentRef::NFComponentRef>, mu
     let mut activeRef: Arc<ComponentRef::NFComponentRef>;
     let mut perStateVarRef: Arc<ComponentRef::NFComponentRef>;
     let mut src: Arc<DAE::ElementSource>;
-    stateEntries = UnorderedMap::getOrDefault(outerVarCref.clone(), outerVarMap.clone(), metamodelica::nil())?;
+    stateEntries = UnorderedMap::getOrDefault(outerVarCref.clone(), outerVarMap, metamodelica::nil())?;
     if stateEntries.clone().is_empty() {
         return Ok((accEqs.clone(), accVars.clone()));
     }
     ty = crate::NFType::interned_INTEGER();
-    for mut v in &*allVariables.clone() {
+    for mut v in &*allVariables {
         let mut v = v.clone();
         if ComponentRef::isEqual(v.name.clone(), outerVarCref.clone())? {
             ty = v.ty.clone();
             break;
         }
     }
-    outerVarExp = makeCrefExp(outerVarCref.clone(), ty.clone());
+    outerVarExp = makeCrefExp(outerVarCref, ty.clone());
     mergeRhs = makePreviousCall(outerVarExp.clone(), ty.clone());
-    for mut entry in &*stateEntries.clone() {
+    for mut entry in &*stateEntries {
         let mut entry = entry.clone();
         (activeRef, perStateVarRef) = entry.clone();
         mergeRhs = makeIfExp(makeCrefExp(activeRef.clone(), crate::NFType::interned_BOOLEAN()), makeCrefExp(perStateVarRef.clone(), ty.clone()), mergeRhs.clone(), ty.clone());
     }
     src = ElementSource::createElementSource(Absyn::dummyInfo.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
-    accEqs = metamodelica::cons(Arc::new(Equation::NFEquation::EQUALITY { lhs: outerVarExp.clone(), rhs: mergeRhs.clone(), ty: ty.clone(), scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: src.clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() }), accEqs.clone());
+    accEqs = metamodelica::cons(Arc::new(Equation::NFEquation::EQUALITY { lhs: outerVarExp, rhs: mergeRhs, ty: ty, scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: src, scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() }), accEqs);
     Ok((accEqs, accVars))
 }
 
@@ -1701,15 +1701,15 @@ fn generateMergeEquation(mut outerVarCref: Arc<ComponentRef::NFComponentRef>, mu
 // ============================================================
 fn qCref(mut name: ArcStr, mut ty: Arc<Type::NFType>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut prefixCr: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef>;
-    cref = ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: (name.clone()).clone() }), ty.clone(), subs.clone(), ComponentRef::Origin::CREF.clone());
-    cref = ComponentRef::prepend(prefixCr.clone(), cref.clone())?;
+    cref = ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: (name).clone() }), ty, subs, ComponentRef::Origin::CREF.clone());
+    cref = ComponentRef::prepend(prefixCr, cref)?;
     Ok(cref)
 }
 
 fn makeSMSPrefix(mut initStateCref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut preRef: Arc<ComponentRef::NFComponentRef>;
     preRef = ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: (arcstr::literal!(SMS_PRE)).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
-    preRef = ComponentRef::append(initStateCref.clone(), preRef.clone())?;
+    preRef = ComponentRef::append(initStateCref, preRef)?;
     Ok(preRef)
 }
 
@@ -1720,22 +1720,22 @@ fn makeVar(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType
     let mut v: Arc<Variable::NFVariable>;
     let mut attr: Arc<Attributes::NFAttributes>;
     attr = Attributes::DEFAULT_ATTR().clone();
-    assign_field!(attr.variability = var.clone());
-    v = Arc::new(Variable::NFVariable { name: name.clone(), ty: ty.clone(), binding: Binding::EMPTY_BINDING().clone(), visibility: Visibility::PUBLIC.clone(), attributes: attr.clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: Arc::new(SCode::Comment { annotation_: None, comment: None }), info: Absyn::dummyInfo.clone(), backendinfo: NFBackendExtension::DUMMY_BACKEND_INFO().clone() });
+    assign_field!(attr.variability = var);
+    v = Arc::new(Variable::NFVariable { name: name, ty: ty, binding: Binding::EMPTY_BINDING().clone(), visibility: Visibility::PUBLIC.clone(), attributes: attr, typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: Arc::new(SCode::Comment { annotation_: None, comment: None }), info: Absyn::dummyInfo.clone(), backendinfo: NFBackendExtension::DUMMY_BACKEND_INFO().clone() });
     v
 }
 
 fn makeVarWithStart(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut var: Variability, mut startExp: Arc<Expression::NFExpression>) -> Arc<Variable::NFVariable> {
     let mut v: Arc<Variable::NFVariable>;
-    v = makeVar(name.clone(), ty.clone(), var.clone());
-    assign_field!(v.typeAttributes = list![(literal!("start"), Binding::makeFlat(startExp.clone(), Variability::CONSTANT.clone(), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone())), (literal!("fixed"), Binding::makeFlat(Arc::new(Expression::NFExpression::BOOLEAN { value: true }), Variability::CONSTANT.clone(), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone()))]);
+    v = makeVar(name, ty, var);
+    assign_field!(v.typeAttributes = list![(literal!("start"), Binding::makeFlat(startExp, Variability::CONSTANT.clone(), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone())), (literal!("fixed"), Binding::makeFlat(Arc::new(Expression::NFExpression::BOOLEAN { value: true }), Variability::CONSTANT.clone(), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone()))]);
     v
 }
 
 fn makeVarWithBinding(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut var: Variability, mut bindExp: Arc<Expression::NFExpression>) -> Arc<Variable::NFVariable> {
     let mut v: Arc<Variable::NFVariable>;
-    v = makeVar(name.clone(), ty.clone(), var.clone());
-    assign_field!(v.binding = Binding::makeFlat(bindExp.clone(), var.clone(), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone()));
+    v = makeVar(name, ty, var);
+    assign_field!(v.binding = Binding::makeFlat(bindExp, var, Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone()));
     v
 }
 
@@ -1744,7 +1744,7 @@ fn makeVarWithBinding(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<T
 // ============================================================
 fn makeEq(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Arc<Equation::NFEquation> {
     let mut eq: Arc<Equation::NFEquation>;
-    eq = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: DAE::emptyElementSource().clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
+    eq = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs, rhs: rhs, ty: ty, scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: DAE::emptyElementSource().clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
     eq
 }
 
@@ -1753,19 +1753,19 @@ fn makeEq(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExp
 // ============================================================
 fn makeCrefExp(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression>;
-    exp = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: cref.clone() });
+    exp = Arc::new(Expression::NFExpression::CREF { ty: ty, cref: cref });
     exp
 }
 
 fn makeIfExp(mut cond: Arc<Expression::NFExpression>, mut thenExp: Arc<Expression::NFExpression>, mut elseExp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression>;
-    exp = Arc::new(Expression::NFExpression::IF { ty: ty.clone(), condition: cond.clone(), trueBranch: thenExp.clone(), falseBranch: elseExp.clone() });
+    exp = Arc::new(Expression::NFExpression::IF { ty: ty, condition: cond, trueBranch: thenExp, falseBranch: elseExp });
     exp
 }
 
 fn makePreviousCall(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Arc<Expression::NFExpression> {
     let mut result: Arc<Expression::NFExpression>;
-    result = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::PREVIOUS().clone(), list![exp.clone()], Variability::DISCRETE.clone(), Purity::IMPURE.clone(), ty.clone()) });
+    result = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::PREVIOUS().clone(), list![exp], Variability::DISCRETE.clone(), Purity::IMPURE.clone(), ty) });
     result
 }
 
@@ -1779,7 +1779,7 @@ fn makeMaxIntArrCall(mut exps: Arc<metamodelica::List<Arc<Expression::NFExpressi
     let mut result: Arc<Expression::NFExpression>;
     let mut arrTy: Arc<Type::NFType>;
     arrTy = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: (exps.clone().len() as i32), var: Variability::STRUCTURAL_PARAMETER.clone() })] });
-    result = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::MAX_INT_ARR().clone(), list![Arc::new(Expression::NFExpression::ARRAY { ty: arrTy.clone(), elements: metamodelica::arrayFromVec(exps.clone().into_iter().cloned().collect()), literal: true })], Variability::DISCRETE.clone(), Purity::PURE.clone(), crate::NFType::interned_INTEGER()) });
+    result = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::MAX_INT_ARR().clone(), list![Arc::new(Expression::NFExpression::ARRAY { ty: arrTy, elements: metamodelica::arrayFromVec(exps.into_iter().cloned().collect()), literal: true })], Variability::DISCRETE.clone(), Purity::PURE.clone(), crate::NFType::interned_INTEGER()) });
     result
 }
 
@@ -1791,19 +1791,19 @@ fn makeSampleTimeCall() -> Arc<Expression::NFExpression> {
     ty = crate::NFType::interned_REAL();
     timeExp = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (literal!("time")).clone() }), ty.clone(), metamodelica::nil(), crate::NFComponentRef::interned_EMPTY()) });
     clockExp = Arc::new(Expression::NFExpression::CLKCONST { clk: Arc::new(NFClockKind::NFClockKind::INFERRED_CLOCK { idx: System::tmpTickIndex(Global::inferredClock_index.clone()) }) });
-    result = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SAMPLE_CLOCKED().clone(), list![timeExp.clone(), clockExp.clone()], Variability::CONTINUOUS.clone(), Purity::IMPURE.clone(), ty.clone()) });
+    result = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SAMPLE_CLOCKED().clone(), list![timeExp, clockExp], Variability::CONTINUOUS.clone(), Purity::IMPURE.clone(), ty) });
     result
 }
 
 fn makeRelationEq(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Arc<Expression::NFExpression> {
     let mut result: Arc<Expression::NFExpression>;
-    result = Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeEqual(ty.clone()), exp2: exp2.clone(), index: 0 });
+    result = Arc::new(Expression::NFExpression::RELATION { exp1: exp1, operator: Operator::makeEqual(ty), exp2: exp2, index: 0 });
     result
 }
 
 fn makeRelationGt(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Arc<Expression::NFExpression> {
     let mut result: Arc<Expression::NFExpression>;
-    result = Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeGreater(ty.clone()), exp2: exp2.clone(), index: 0 });
+    result = Arc::new(Expression::NFExpression::RELATION { exp1: exp1, operator: Operator::makeGreater(ty), exp2: exp2, index: 0 });
     result
 }
 
@@ -1832,7 +1832,7 @@ fn getStartValue(mut var: Arc<Variable::NFVariable>) -> Result<Arc<Expression::N
         }
     }
     ty = var.ty.clone();
-    startExp = (::match_deref::match_deref! { match &(ty.clone()) {
+    startExp = (::match_deref::match_deref! { match &(ty) {
         Deref @ Type::INTEGER => Arc::new(Expression::NFExpression::INTEGER { value: 0 }),
         Deref @ Type::REAL => Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }),
         Deref @ Type::BOOLEAN => Arc::new(Expression::NFExpression::BOOLEAN { value: false }),
@@ -1853,7 +1853,7 @@ fn crefHasPrefix(mut prefix: Arc<ComponentRef::NFComponentRef>, mut cref: Arc<Co
         } else if ComponentRef::isEmpty(cref.clone()) {
             return Ok(false)
         } else {
-            { (prefix, cref) = (prefix.clone(), ComponentRef::rest(cref.clone())?); continue '__tco; }
+            { (prefix, cref) = (prefix, ComponentRef::rest(cref)?); continue '__tco; }
         }
     }
 }

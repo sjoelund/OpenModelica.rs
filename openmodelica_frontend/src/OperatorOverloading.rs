@@ -86,8 +86,8 @@ pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inO
             let ref __pa1 @ DAE::PROP { type_: ref __pa0, constFlag: _ } = (Types::propTupleFirstProp(props1.clone())?) else { bail!("pattern mismatch") };
             type1 = __pa0.clone();
             prop = __pa1.clone();
-            exp = Arc::new(DAE::Exp::TSUB { exp: inExp1.clone(), ix: 1, ty: type1.clone() });
-            { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), inProp2.clone(), inExp2.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone()); continue '__tco; }
+            exp = Arc::new(DAE::Exp::TSUB { exp: inExp1, ix: 1, ty: type1.clone() });
+            { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache, inEnv, inOperator1, prop.clone(), exp.clone(), inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo); continue '__tco; }
         },
         (_, _, _, DAE::Properties::PROP { .. }, _, props2 @ DAE::Properties::PROP_TUPLE { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
             let mut cache: FCore::Cache;
@@ -97,8 +97,8 @@ pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inO
             let ref __pa1 @ DAE::PROP { type_: ref __pa0, constFlag: _ } = (Types::propTupleFirstProp(props2.clone())?) else { bail!("pattern mismatch") };
             type2 = __pa0.clone();
             prop = __pa1.clone();
-            exp = Arc::new(DAE::Exp::TSUB { exp: inExp2.clone(), ix: 1, ty: type2.clone() });
-            { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone()); continue '__tco; }
+            exp = Arc::new(DAE::Exp::TSUB { exp: inExp2, ix: 1, ty: type2.clone() });
+            { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache, inEnv, inOperator1, inProp1, inExp1, prop.clone(), exp.clone(), AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo); continue '__tco; }
         },
         (cache, env, aboper, DAE::Properties::PROP { type_: type1, constFlag: const1 }, exp1, DAE::Properties::PROP { type_: type2, constFlag: const2 }, exp2) => {
             let mut opList: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
@@ -115,7 +115,7 @@ pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inO
             let mut type2 = (*type2).clone();
             let mut exp2 = (*exp2).clone();
             if Types::isRecord(Types::arrayElementType(type1.clone())) || Types::isRecord(Types::arrayElementType(type2.clone())) {
-                (cache, exp, _, otype) = binaryUserdef(cache.clone(), env.clone(), aboper.clone(), inExp1.clone(), inExp2.clone(), type1.clone(), type2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone())?;
+                (cache, exp, _, otype) = binaryUserdef(cache.clone(), env.clone(), aboper.clone(), inExp1, inExp2, type1.clone(), type2.clone(), inImpl, inPre, inInfo)?;
                 functionTree = FCore::getFunctionTree(cache.clone());
                 (exp, _) = ExpressionSimplify::simplify1(exp.clone())?;
                 (exp, _, didInline, _) = Inline::inlineExp(exp.clone(), (Some(functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::BUILTIN_EARLY_INLINE, openmodelica_frontend_types::DAE::InlineType::EARLY_INLINE]), DAE::emptyElementSource().clone());
@@ -140,7 +140,7 @@ pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inO
                 exp = replaceOperatorWithFcall(AbExp.clone(), exp1.clone(), oper.clone(), Some(exp2.clone()), r#const.clone())?;
                 (exp, _) = ExpressionSimplify::simplify(exp.clone())?;
                 prop = DAE::Properties::PROP { type_: otype.clone(), constFlag: r#const.clone() };
-                warnUnsafeRelations(inEnv.clone(), AbExp.clone(), r#const.clone(), type1.clone(), type2.clone(), exp1.clone(), exp2.clone(), oper.clone(), inPre.clone(), inInfo.clone());
+                warnUnsafeRelations(inEnv, AbExp, r#const.clone(), type1.clone(), type2.clone(), exp1.clone(), exp2.clone(), oper.clone(), inPre, inInfo);
             }
             return Ok((cache.clone(), exp.clone(), prop.clone()))
         },
@@ -154,7 +154,7 @@ pub(crate) fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOp
     let mut outExp: Arc<DAE::Exp>;
     let mut outProp: DAE::Properties;
     (outCache, outExp, outProp) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), AbExp1.clone());
+        let __mc_input = (inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1, AbExp1.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, DAE::Properties::PROP_TUPLE { .. }, exp1, _) => {
@@ -167,7 +167,7 @@ pub(crate) fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOp
                     type1 = __pa0.clone();
                     prop = __pa1.clone();
                     exp = Arc::new(DAE::Exp::TSUB { exp: exp1.clone(), ix: 1, ty: type1.clone() });
-                    (cache, exp, prop) = unary(inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), inImpl.clone(), inPre.clone(), inInfo.clone())?;
+                    (cache, exp, prop) = unary(inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), inImpl, inPre.clone(), inInfo.clone())?;
                     Ok((cache.clone(), exp.clone(), prop.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -225,7 +225,7 @@ pub(crate) fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOp
                     } };
                     cache = __pa0.clone();
                     types = __pa1.clone();
-                    let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Static::elabCallArgs3(cache.clone(), env.clone(), types.clone(), path.clone(), list![absexp1.clone()], metamodelica::nil(), metamodelica::nil(), inImpl.clone(), inPre.clone(), inInfo.clone())?) {
+                    let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Static::elabCallArgs3(cache.clone(), env.clone(), types.clone(), path.clone(), list![absexp1.clone()], metamodelica::nil(), metamodelica::nil(), inImpl, inPre.clone(), inInfo.clone())?) {
                         (__pa2, Some((__pa3, __pa4))) => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -246,7 +246,7 @@ pub(crate) fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProp: DAE::Properties;
-    (outCache, outExp, outProp) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inExp1.clone())) {
+    (outCache, outExp, outProp) = (::match_deref::match_deref! { match &((inCache, inEnv, inExp1)) {
         (cache, env, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "String", subscripts: _ }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: exp1, tail: restargs }, argNames: nargs }, .. }) => {
             let mut str1: ArcStr;
             let mut path: Arc<Absyn::Path>;
@@ -259,7 +259,7 @@ pub(crate) fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             let mut type1: Arc<DAE::Type>;
             let mut daeExp: Arc<DAE::Exp>;
             let mut cache = (*cache).clone();
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Static::elabExp(cache.clone(), env.clone(), exp1.clone(), inImpl.clone(), inDoVect.clone(), inPre.clone(), inInfo.clone())?) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Static::elabExp(cache.clone(), env.clone(), exp1.clone(), inImpl, inDoVect, inPre.clone(), inInfo.clone())?) {
                 (__pa0, _, DAE::Properties::PROP { type_: __pa1, constFlag: _ }) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -279,7 +279,7 @@ pub(crate) fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa2.clone();
             types = __pa3.clone();
-            let (__pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(Static::elabCallArgs3(cache.clone(), env.clone(), types.clone(), path.clone(), metamodelica::cons(exp1.clone(), restargs.clone()), nargs.clone(), metamodelica::nil(), inImpl.clone(), inPre.clone(), inInfo.clone())?) {
+            let (__pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(Static::elabCallArgs3(cache.clone(), env.clone(), types.clone(), path.clone(), metamodelica::cons(exp1.clone(), restargs.clone()), nargs.clone(), metamodelica::nil(), inImpl, inPre, inInfo)?) {
                 (__pa4, Some((__pa5, __pa6))) => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -296,7 +296,7 @@ pub(crate) fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
 pub(crate) fn elabArglist(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inArgs: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::Type>)>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
     let mut outArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut outTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
-    (outArgs, outTypes) = (::match_deref::match_deref! { match &((inTypes.clone(), inArgs.clone())) {
+    (outArgs, outTypes) = (::match_deref::match_deref! { match &((inTypes, inArgs)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             (metamodelica::nil(), metamodelica::nil())
         },
@@ -348,7 +348,7 @@ pub(crate) fn stringtypes() -> Arc<metamodelica::List<Arc<DAE::Type>>> { __strin
 fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<DAE::Exp>, mut lhsType: Arc<DAE::Type>, mut rhsType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>> {
     let mut outExps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>;
     outExps = 'mc: {
-        let __mc_input = (inTypeList.clone(), inAcc.clone());
+        let __mc_input = (inTypeList, inAcc.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, functionAttributes: attr, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, .. }, tail: restArgs } } }, tail: types }, acc) => {
@@ -392,20 +392,20 @@ fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<A
 
 fn overloadFoldType(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut inType3: Arc<DAE::Type>) -> Option<Arc<DAE::Type>> {
     let mut optType: Option<Arc<DAE::Type>>;
-    optType = if (Types::equivtypesOrRecordSubtypeOf(inType1.clone(), inType2.clone()) && Types::equivtypesOrRecordSubtypeOf(inType1.clone(), inType3.clone())) {Some(inType1.clone())} else {None};
+    optType = if (Types::equivtypesOrRecordSubtypeOf(inType1.clone(), inType2) && Types::equivtypesOrRecordSubtypeOf(inType1.clone(), inType3)) {Some(inType1)} else {None};
     optType
 }
 
 fn deoverloadBinaryUserdefNoConstructorListLhs(mut types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inLhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inRhs: Arc<DAE::Exp>, mut rhsType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inLhs.clone(), inAcc.clone())) {
+        ::match_deref::match_deref! { match &((inLhs, inAcc.clone())) {
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest }, acc) => {
             let mut acc = (*acc).clone();
             acc = deoverloadBinaryUserdefNoConstructor(types.clone(), lhs.clone(), inRhs.clone(), Expression::r#typeof(lhs.clone())?, rhsType.clone(), acc.clone())?;
-            { (types, inLhs, inRhs, rhsType, inAcc) = (types.clone(), rest.clone(), inRhs.clone(), rhsType.clone(), acc.clone()); continue '__tco; }
+            { (types, inLhs, inRhs, rhsType, inAcc) = (types, rest.clone(), inRhs, rhsType, acc.clone()); continue '__tco; }
         },
         _ => {
-            return Ok(inAcc.clone())
+            return Ok(inAcc)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -414,14 +414,14 @@ fn deoverloadBinaryUserdefNoConstructorListLhs(mut types: Arc<metamodelica::List
 
 fn deoverloadBinaryUserdefNoConstructorListRhs(mut types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut lhsType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inRhs.clone(), inAcc.clone())) {
+        ::match_deref::match_deref! { match &((inRhs, inAcc.clone())) {
         (Deref @ metamodelica::List::Cons { head: rhs, tail: rest }, acc) => {
             let mut acc = (*acc).clone();
             acc = deoverloadBinaryUserdefNoConstructor(types.clone(), inLhs.clone(), rhs.clone(), lhsType.clone(), Expression::r#typeof(rhs.clone())?, acc.clone())?;
-            { (types, inLhs, inRhs, lhsType, inAcc) = (types.clone(), inLhs.clone(), rest.clone(), lhsType.clone(), acc.clone()); continue '__tco; }
+            { (types, inLhs, inRhs, lhsType, inAcc) = (types, inLhs, rest.clone(), lhsType, acc.clone()); continue '__tco; }
         },
         _ => {
-            return Ok(inAcc.clone())
+            return Ok(inAcc)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -431,7 +431,7 @@ fn deoverloadBinaryUserdefNoConstructorListRhs(mut types: Arc<metamodelica::List
 fn deoverloadUnaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExps = 'mc: {
-        let __mc_input = (inTypeList.clone(), inAcc.clone());
+        let __mc_input = (inTypeList, inAcc.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, functionAttributes: attr, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: restArgs } }, tail: types }, acc) => {
@@ -474,7 +474,7 @@ fn binaryUserdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOper:
     let mut outExp: Arc<DAE::Exp>;
     let mut foldType: Option<Arc<DAE::Type>> = None;
     let mut outType: Arc<DAE::Type>;
-    (outCache, outExp, foldType, outType) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOper.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone())) {
+    (outCache, outExp, foldType, outType) = (::match_deref::match_deref! { match &((inCache, inEnv, inOper.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone())) {
         (cache, env, op, exp1, exp2, type1, type2) => {
             let mut bool1: bool;
             let mut bool2: bool;
@@ -498,14 +498,14 @@ fn binaryUserdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOper:
             }
             exps = deoverloadBinaryUserdefNoConstructor(types.clone(), exp1.clone(), exp2.clone(), type1.clone(), type2.clone(), metamodelica::nil())?;
             (cache, exps) = binaryCastConstructor(cache.clone(), env.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone(), exps.clone(), types.clone(), info.clone())?;
-            (cache, exps) = binaryUserdefArray(cache.clone(), env.clone(), exps.clone(), bool1.clone() || bool2.clone(), inOper.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+            (cache, exps) = binaryUserdefArray(cache.clone(), env.clone(), exps.clone(), bool1.clone() || bool2.clone(), inOper, inExp1, inExp2, inType1, inType2, r#impl, pre, info)?;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(exps.clone()) {
                 Deref @ metamodelica::List::Cons { head: (__pa0, __pa1), tail: Deref @ metamodelica::List::Nil } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             daeExp = __pa0.clone();
             foldType = __pa1.clone();
-            (cache.clone(), daeExp.clone(), foldType.clone(), Expression::r#typeof(daeExp.clone())?)
+            (cache.clone(), daeExp.clone(), foldType, Expression::r#typeof(daeExp.clone())?)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -515,9 +515,9 @@ fn binaryUserdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOper:
 fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inExps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>, mut isArray: bool, mut inOper: Absyn::Operator, mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>)> {
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut exps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
-    (cache, exps) = (::match_deref::match_deref! { match &((inExps.clone(), isArray.clone())) {
+    (cache, exps) = (::match_deref::match_deref! { match &((inExps.clone(), isArray)) {
         (Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, _) => {
-            (inCache.clone(), inExps.clone())
+            (inCache, inExps)
         },
         (Deref @ metamodelica::List::Nil, true) => {
             let mut isRelation: bool;
@@ -535,11 +535,11 @@ fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inEx
             isVector2 = Types::isArray1D(inType2.clone());
             isMatrix1 = Types::isArray2D(inType1.clone());
             isMatrix2 = Types::isArray2D(inType2.clone());
-            (cache, exps) = binaryUserdefArray2(inCache.clone(), env.clone(), isScalar1.clone(), isVector1.clone(), isMatrix1.clone(), isScalar2.clone(), isVector2.clone(), isMatrix2.clone(), inOper.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
-            (cache.clone(), exps.clone())
+            (cache, exps) = binaryUserdefArray2(inCache, env, isScalar1.clone(), isVector1.clone(), isMatrix1.clone(), isScalar2.clone(), isVector2.clone(), isMatrix2.clone(), inOper, inExp1, inExp2, inType1, inType2, r#impl, pre, info)?;
+            (cache, exps)
         },
         _ => {
-            errorMultipleValid(List::map(inExps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, info.clone())?;
+            errorMultipleValid(List::map(inExps, std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -550,7 +550,7 @@ fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inEx
 fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isScalar1: bool, mut isVector1: bool, mut isMatrix1: bool, mut isScalar2: bool, mut isVector2: bool, mut isMatrix2: bool, mut inOper: Absyn::Operator, mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>)> {
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut exps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>;
-    (cache, exps) = (match (inCache.clone(), isScalar1.clone(), isVector1.clone(), isMatrix1.clone(), isScalar2.clone(), isVector2.clone(), isMatrix2.clone(), inOper.clone()) {
+    (cache, exps) = (match (inCache, isScalar1, isVector1, isMatrix1, isScalar2, isVector2, isMatrix2, inOper.clone()) {
         (mut __esc_cache, false, _, _, true, _, _, _) => {
             cache = __esc_cache.clone();
             let mut exp: Arc<DAE::Exp>;
@@ -562,20 +562,20 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut resultName: ArcStr;
             let mut iterName: ArcStr;
             let mut op: Absyn::Operator;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             newType1 = __pa0.clone();
             dim1 = __pa1.clone();
-            op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
+            op = Util::assoc(inOper, list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
             iterName = (Util::getTempVariableIndex()).clone();
             foldName = (Util::getTempVariableIndex()).clone();
             resultName = (Util::getTempVariableIndex()).clone();
             cr = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName.clone()).clone(), identType: newType1.clone(), subscriptLst: metamodelica::nil() }), ty: newType1.clone() });
-            (cache, exp, _, resType) = binaryUserdef(cache.clone(), env.clone(), op.clone(), cr.clone(), inExp2.clone(), newType1.clone(), inType2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+            (cache, exp, _, resType) = binaryUserdef(cache, env, op.clone(), cr.clone(), inExp2, newType1.clone(), inType2, r#impl, pre, info)?;
             resType = Types::liftArray(resType.clone(), dim1.clone());
-            exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName.clone()).clone(), resultName: (resultName.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp1.clone(), guardExp: None, ty: newType1.clone() }), metamodelica::nil()) });
+            exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName.clone()).clone(), resultName: (resultName.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp1, guardExp: None, ty: newType1.clone() }), metamodelica::nil()) });
             (cache.clone(), list![(exp.clone(), None)])
         },
         (mut __esc_cache, true, _, _, false, _, _, _) => {
@@ -589,8 +589,8 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut resultName: ArcStr;
             let mut iterName: ArcStr;
             let mut op: Absyn::Operator;
-            op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType2.clone()) {
+            op = Util::assoc(inOper, list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType2) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: _ } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -600,9 +600,9 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             foldName = (Util::getTempVariableIndex()).clone();
             resultName = (Util::getTempVariableIndex()).clone();
             cr = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName.clone()).clone(), identType: newType2.clone(), subscriptLst: metamodelica::nil() }), ty: newType2.clone() });
-            (cache, exp, _, resType) = binaryUserdef(cache.clone(), env.clone(), op.clone(), inExp1.clone(), cr.clone(), inType1.clone(), newType2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+            (cache, exp, _, resType) = binaryUserdef(cache, env, op.clone(), inExp1, cr.clone(), inType1, newType2.clone(), r#impl, pre, info)?;
             resType = Arc::new(DAE::Type::T_ARRAY { ty: resType.clone(), dims: list![dim2.clone()] });
-            exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName.clone()).clone(), resultName: (resultName.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp2.clone(), guardExp: None, ty: newType2.clone() }), metamodelica::nil()) });
+            exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName.clone()).clone(), resultName: (resultName.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp2, guardExp: None, ty: newType2.clone() }), metamodelica::nil()) });
             (cache.clone(), list![(exp.clone(), None)])
         },
         (_, _, true, _, _, true, _, Absyn::Operator::MUL { .. }) => {
@@ -640,7 +640,7 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut iterName2: ArcStr;
             let mut zeroConstructor: Option<Arc<Values::Value>>;
             let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -652,7 +652,7 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             } };
             newType1 = __pa3.clone();
             dim1_2 = __pa4.clone();
-            let (__pa6, __pa7) = ::match_deref::match_deref! { match &(inType2.clone()) {
+            let (__pa6, __pa7) = ::match_deref::match_deref! { match &(inType2) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa6, dims: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } => (__pa6.clone(), __pa7.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -671,7 +671,7 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             cr2 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName2.clone()).clone(), identType: newType2.clone(), subscriptLst: metamodelica::nil() }), ty: newType2.clone() });
             cr3 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (foldName1.clone()).clone(), identType: newType1.clone(), subscriptLst: metamodelica::nil() }), ty: newType1.clone() });
             cr4 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (resultName1.clone()).clone(), identType: newType2.clone(), subscriptLst: metamodelica::nil() }), ty: newType2.clone() });
-            let (__pa9, __pa10, __pa11, __pa12) = ::match_deref::match_deref! { match &(binaryUserdef(cache.clone(), env.clone(), openmodelica_ast::Absyn::Operator::ADD, cr1.clone(), cr2.clone(), newType1.clone(), newType2.clone(), r#impl.clone(), pre.clone(), info.clone())?) {
+            let (__pa9, __pa10, __pa11, __pa12) = ::match_deref::match_deref! { match &(binaryUserdef(cache, env.clone(), openmodelica_ast::Absyn::Operator::ADD, cr1.clone(), cr2.clone(), newType1.clone(), newType2.clone(), r#impl, pre.clone(), info.clone())?) {
                 (__pa9, __pa10, Some(__pa11), __pa12) => (__pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -679,13 +679,13 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             exp = __pa10.clone();
             ty = __pa11.clone();
             resType = __pa12.clone();
-            (cache, foldExp, _, _) = binaryUserdef(cache.clone(), env.clone(), openmodelica_ast::Absyn::Operator::ADD, cr3.clone(), cr4.clone(), ty.clone(), ty.clone(), r#impl.clone(), pre.clone(), info.clone())?;
-            (cache, zeroTypes) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), list![ty.clone()], (literal!("'0'")).clone(), info.clone(), metamodelica::nil())?;
-            (cache, zeroConstructor) = getZeroConstructor(cache.clone(), env.clone(), List::filterMap(zeroTypes.clone(), (std::sync::Arc::new(getZeroConstructorExpression) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>)), r#impl.clone(), info.clone())?;
+            (cache, foldExp, _, _) = binaryUserdef(cache, env.clone(), openmodelica_ast::Absyn::Operator::ADD, cr3.clone(), cr4.clone(), ty.clone(), ty.clone(), r#impl, pre, info.clone())?;
+            (cache, zeroTypes) = getOperatorFuncsOrEmpty(cache, env.clone(), list![ty.clone()], (literal!("'0'")).clone(), info.clone(), metamodelica::nil())?;
+            (cache, zeroConstructor) = getZeroConstructor(cache, env, List::filterMap(zeroTypes.clone(), (std::sync::Arc::new(getZeroConstructorExpression) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>)), r#impl, info)?;
             resType = Arc::new(DAE::Type::T_ARRAY { ty: resType.clone(), dims: list![dim1_1.clone()] });
             iter = Arc::new(DAE::ReductionIterator { id: (iterName1.clone()).clone(), exp: cr.clone(), guardExp: None, ty: newType1.clone() });
-            iter1 = Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp1.clone(), guardExp: None, ty: newType1.clone() });
-            iter2 = Arc::new(DAE::ReductionIterator { id: (iterName2.clone()).clone(), exp: inExp2.clone(), guardExp: None, ty: newType2.clone() });
+            iter1 = Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp1, guardExp: None, ty: newType1.clone() });
+            iter2 = Arc::new(DAE::ReductionIterator { id: (iterName2.clone()).clone(), exp: inExp2, guardExp: None, ty: newType2.clone() });
             exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("sum")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::THREAD, exprType: resType.clone(), defaultValue: zeroConstructor.clone(), foldName: (foldName1.clone()).clone(), resultName: (resultName1.clone()).clone(), foldExp: Some(foldExp.clone()) }), expr: exp.clone(), iterators: metamodelica::cons(iter.clone(), metamodelica::cons(iter2.clone(), metamodelica::nil())) });
             exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName2.clone()).clone(), resultName: (resultName2.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(iter1.clone(), metamodelica::nil()) });
             (cache.clone(), list![(exp.clone(), None)])
@@ -727,7 +727,7 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut iterName4: ArcStr;
             let mut zeroConstructor: Option<Arc<Values::Value>>;
             let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -739,7 +739,7 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             } };
             newType1 = __pa3.clone();
             dim1_2 = __pa4.clone();
-            let (__pa6, __pa7) = ::match_deref::match_deref! { match &(inType2.clone()) {
+            let (__pa6, __pa7) = ::match_deref::match_deref! { match &(inType2) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa6, dims: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } => (__pa6.clone(), __pa7.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -752,7 +752,7 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             newType2 = __pa9.clone();
             dim2_2 = __pa10.clone();
             let true = (Expression::dimensionsEqual(dim1_2.clone(), dim2_1.clone())?) else { bail!("pattern mismatch") };
-            transposed = Expression::makePureBuiltinCall((literal!("transpose")).clone(), list![inExp2.clone()], Types::liftArray(Types::liftArray(newType2.clone(), dim2_1.clone()), dim2_2.clone()));
+            transposed = Expression::makePureBuiltinCall((literal!("transpose")).clone(), list![inExp2], Types::liftArray(Types::liftArray(newType2.clone(), dim2_1.clone()), dim2_2.clone()));
             iterName1 = (Util::getTempVariableIndex()).clone();
             iterName2 = (Util::getTempVariableIndex()).clone();
             iterName3 = (Util::getTempVariableIndex()).clone();
@@ -767,19 +767,19 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             cr2 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName2.clone()).clone(), identType: newType2_1.clone(), subscriptLst: metamodelica::nil() }), ty: newType2_1.clone() });
             cr3 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName3.clone()).clone(), identType: newType1.clone(), subscriptLst: metamodelica::nil() }), ty: newType1.clone() });
             cr4 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName4.clone()).clone(), identType: newType2.clone(), subscriptLst: metamodelica::nil() }), ty: newType2.clone() });
-            (cache, mulExp, _, ty) = binaryUserdef(cache.clone(), env.clone(), openmodelica_ast::Absyn::Operator::MUL, cr3.clone(), cr4.clone(), newType1.clone(), newType2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+            (cache, mulExp, _, ty) = binaryUserdef(cache, env.clone(), openmodelica_ast::Absyn::Operator::MUL, cr3.clone(), cr4.clone(), newType1.clone(), newType2.clone(), r#impl, pre.clone(), info.clone())?;
             cr5 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (foldName.clone()).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() }), ty: ty.clone() });
             cr6 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (resultName.clone()).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() }), ty: ty.clone() });
-            let (__pa12, __pa13, __pa14) = ::match_deref::match_deref! { match &(binaryUserdef(cache.clone(), env.clone(), openmodelica_ast::Absyn::Operator::ADD, cr5.clone(), cr6.clone(), ty.clone(), ty.clone(), r#impl.clone(), pre.clone(), info.clone())?) {
+            let (__pa12, __pa13, __pa14) = ::match_deref::match_deref! { match &(binaryUserdef(cache, env.clone(), openmodelica_ast::Absyn::Operator::ADD, cr5.clone(), cr6.clone(), ty.clone(), ty.clone(), r#impl, pre, info.clone())?) {
                 (__pa12, __pa13, Some(__pa14), _) => (__pa12.clone(), __pa13.clone(), __pa14.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             cache = __pa12.clone();
             foldExp = __pa13.clone();
             ty = __pa14.clone();
-            (cache, zeroTypes) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), list![ty.clone()], (literal!("'0'")).clone(), info.clone(), metamodelica::nil())?;
-            (cache, zeroConstructor) = getZeroConstructor(cache.clone(), env.clone(), List::filterMap(zeroTypes.clone(), (std::sync::Arc::new(getZeroConstructorExpression) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>)), r#impl.clone(), info.clone())?;
-            iter1 = Arc::new(DAE::ReductionIterator { id: (iterName1.clone()).clone(), exp: inExp1.clone(), guardExp: None, ty: newType1_1.clone() });
+            (cache, zeroTypes) = getOperatorFuncsOrEmpty(cache, env.clone(), list![ty.clone()], (literal!("'0'")).clone(), info.clone(), metamodelica::nil())?;
+            (cache, zeroConstructor) = getZeroConstructor(cache, env, List::filterMap(zeroTypes.clone(), (std::sync::Arc::new(getZeroConstructorExpression) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>)), r#impl, info)?;
+            iter1 = Arc::new(DAE::ReductionIterator { id: (iterName1.clone()).clone(), exp: inExp1, guardExp: None, ty: newType1_1.clone() });
             iter2 = Arc::new(DAE::ReductionIterator { id: (iterName2.clone()).clone(), exp: transposed.clone(), guardExp: None, ty: newType2_1.clone() });
             iter3 = Arc::new(DAE::ReductionIterator { id: (iterName3.clone()).clone(), exp: cr1.clone(), guardExp: None, ty: newType1_1.clone() });
             iter4 = Arc::new(DAE::ReductionIterator { id: (iterName4.clone()).clone(), exp: cr2.clone(), guardExp: None, ty: newType2_1.clone() });
@@ -807,14 +807,14 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut iterName1: ArcStr;
             let mut iterName2: ArcStr;
             let mut op: Absyn::Operator;
-            op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW), (openmodelica_ast::Absyn::Operator::AND, openmodelica_ast::Absyn::Operator::AND), (openmodelica_ast::Absyn::Operator::OR, openmodelica_ast::Absyn::Operator::OR)])?;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
+            op = Util::assoc(inOper, list![(openmodelica_ast::Absyn::Operator::ADD, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW), (openmodelica_ast::Absyn::Operator::AND, openmodelica_ast::Absyn::Operator::AND), (openmodelica_ast::Absyn::Operator::OR, openmodelica_ast::Absyn::Operator::OR)])?;
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             newType1 = __pa0.clone();
             dim1 = __pa1.clone();
-            let (__pa3, __pa4) = ::match_deref::match_deref! { match &(inType2.clone()) {
+            let (__pa3, __pa4) = ::match_deref::match_deref! { match &(inType2) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa3, dims: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil } } => (__pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -827,10 +827,10 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             iterName2 = (Util::getTempVariableIndex()).clone();
             cr1 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName1.clone()).clone(), identType: newType1.clone(), subscriptLst: metamodelica::nil() }), ty: newType1.clone() });
             cr2 = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iterName2.clone()).clone(), identType: newType2.clone(), subscriptLst: metamodelica::nil() }), ty: newType2.clone() });
-            (cache, exp, _, resType) = binaryUserdef(cache.clone(), env.clone(), op.clone(), cr1.clone(), cr2.clone(), newType1.clone(), newType2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+            (cache, exp, _, resType) = binaryUserdef(cache, env, op.clone(), cr1.clone(), cr2.clone(), newType1.clone(), newType2.clone(), r#impl, pre, info)?;
             resType = Arc::new(DAE::Type::T_ARRAY { ty: resType.clone(), dims: list![dim2.clone()] });
-            iter1 = Arc::new(DAE::ReductionIterator { id: (iterName1.clone()).clone(), exp: inExp1.clone(), guardExp: None, ty: newType1.clone() });
-            iter2 = Arc::new(DAE::ReductionIterator { id: (iterName2.clone()).clone(), exp: inExp2.clone(), guardExp: None, ty: newType2.clone() });
+            iter1 = Arc::new(DAE::ReductionIterator { id: (iterName1.clone()).clone(), exp: inExp1, guardExp: None, ty: newType1.clone() });
+            iter2 = Arc::new(DAE::ReductionIterator { id: (iterName2.clone()).clone(), exp: inExp2, guardExp: None, ty: newType2.clone() });
             exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::THREAD, exprType: resType.clone(), defaultValue: None, foldName: (foldName.clone()).clone(), resultName: (resultName.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(iter1.clone(), metamodelica::cons(iter2.clone(), metamodelica::nil())) });
             (cache.clone(), list![(exp.clone(), None)])
         },
@@ -1102,17 +1102,17 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
     let mut op: Absyn::Operator = inOperator.clone();
     let mut ia1: bool = Types::isArray(t1.clone());
     let mut ia2: bool = Types::isArray(t2.clone());
-    if ia2.clone() && !(ia1.clone()) {
+    if ia2 && !(ia1) {
         (e1, e2, t1, t2) = (match op.clone() {
-        Absyn::Operator::ADD_EW { .. } => (e2.clone(), e1.clone(), t2.clone(), t1.clone()),
-        Absyn::Operator::MUL { .. } => (e2.clone(), e1.clone(), t2.clone(), t1.clone()),
-        Absyn::Operator::MUL_EW { .. } => (e2.clone(), e1.clone(), t2.clone(), t1.clone()),
-        _ => (e1.clone(), e2.clone(), t1.clone(), t2.clone()),
+        Absyn::Operator::ADD_EW { .. } => (e2, e1, t2, t1),
+        Absyn::Operator::MUL { .. } => (e2, e1, t2, t1),
+        Absyn::Operator::MUL_EW { .. } => (e2, e1, t2, t1),
+        _ => (e1, e2, t1, t2),
     });
-    } else if ia1.clone() && !(ia2.clone()) {
+    } else if ia1 && !(ia2) {
         (op, e2) = (match op.clone() {
-        Absyn::Operator::SUB_EW { .. } => (openmodelica_ast::Absyn::Operator::ADD_EW, Expression::negate(e2.clone())?),
-        _ => (op.clone(), e2.clone()),
+        Absyn::Operator::SUB_EW { .. } => (openmodelica_ast::Absyn::Operator::ADD_EW, Expression::negate(e2)?),
+        _ => (op, e2),
     });
     }
     match '__try0: {
@@ -1254,7 +1254,7 @@ fn operatorsUnary(mut op: Absyn::Operator) -> Result<Arc<metamodelica::List<(DAE
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OperatorOverloading.operatorsUnary failed, op: ")); __mm_s.push_str(&*Dump::opSymbol(op.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OperatorOverloading.operatorsUnary failed, op: ")); __mm_s.push_str(&*Dump::opSymbol(op)?); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
     });
@@ -1316,7 +1316,7 @@ fn makeEnumOperator(mut inOp: DAE::Operator, mut inType1: Arc<DAE::Type>, mut in
 
 fn buildOperatorTypes(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>> {
     let mut outOperatorTypes: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
-    outOperatorTypes = (::match_deref::match_deref! { match &((inTypes.clone(), inPath.clone())) {
+    outOperatorTypes = (::match_deref::match_deref! { match &((inTypes, inPath)) {
         (Deref @ metamodelica::List::Nil, _) => {
             metamodelica::nil()
         },
@@ -1336,11 +1336,11 @@ fn operatorReturn(mut inOperator: DAE::Operator, mut inLhsTypes: Arc<metamodelic
     let mut outOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
     outOperators = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        let __thr_src0 = inLhsTypes.clone();
+        let __thr_src0 = inLhsTypes;
         let mut __thr_it0 = (&__thr_src0).into_iter();
-        let __thr_src1 = inRhsTypes.clone();
+        let __thr_src1 = inRhsTypes;
         let mut __thr_it1 = (&__thr_src1).into_iter();
-        let __thr_src2 = inReturnTypes.clone();
+        let __thr_src2 = inReturnTypes;
         let mut __thr_it2 = (&__thr_src2).into_iter();
         loop {
             match (__thr_it0.next(), __thr_it1.next(), __thr_it2.next()) {
@@ -1359,7 +1359,7 @@ fn operatorReturn(mut inOperator: DAE::Operator, mut inLhsTypes: Arc<metamodelic
 
 fn operatorReturnUnary(mut inOperator: DAE::Operator, mut inArgTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inReturnTypes: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>> {
     let mut outOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
-    outOperators = (::match_deref::match_deref! { match &((inOperator.clone(), inArgTypes.clone(), inReturnTypes.clone())) {
+    outOperators = (::match_deref::match_deref! { match &((inOperator, inArgTypes, inReturnTypes)) {
         (_, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             metamodelica::nil()
         },
@@ -1379,7 +1379,7 @@ fn getOperatorFuncsOrEmpty(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
     (cache, funcs) = 'mc: {
-        let __mc_input = tys.clone();
+        let __mc_input = tys;
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: ty, tail: rest } => {
@@ -1433,19 +1433,19 @@ pub mod AvlTreePathPathEnv {
 
     pub(crate) fn keyStr(mut inKey: Key) -> Result<ArcStr> {
         let mut outString: ArcStr;
-        outString = (AbsynUtil::pathString(inKey.clone(), (literal!(".")).clone(), true, false)?).clone();
+        outString = (AbsynUtil::pathString(inKey, (literal!(".")).clone(), true, false)?).clone();
         Ok(outString)
     }
 
     pub(crate) fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr;
-        outString = (AbsynUtil::pathString(inValue.clone(), (literal!(".")).clone(), true, false)?).clone();
+        outString = (AbsynUtil::pathString(inValue, (literal!(".")).clone(), true, false)?).clone();
         Ok(outString)
     }
 
     pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
         let mut outResult: i32;
-        outResult = AbsynUtil::pathCompareNoQual(inKey1.clone(), inKey2.clone())?;
+        outResult = AbsynUtil::pathCompareNoQual(inKey1, inKey2)?;
         Ok(outResult)
     }
 
@@ -1512,23 +1512,23 @@ pub mod AvlTreePathPathEnv {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
-            Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() })
+            Arc::new(Tree::LEAF { key: inKey, value: inValue })
         },
         Deref @ Tree::NODE { key, .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey.clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey, inValue, conflictFunc.clone())?);
             } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), inKey.clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), inKey, inValue, conflictFunc.clone())?);
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::NODE).clone(), key.clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), key.clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::NODE).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
@@ -1536,15 +1536,15 @@ pub mod AvlTreePathPathEnv {
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY() });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey, value: inValue }), right: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey, value: inValue }) });
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
-                outTree = tree.clone();
+                outTree = tree;
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
@@ -1573,7 +1573,7 @@ pub mod AvlTreePathPathEnv {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), key.clone(), value.clone(), conflictFunc.clone())?;
@@ -1588,29 +1588,29 @@ pub mod AvlTreePathPathEnv {
         let mut key_comp: i32 = 0;
         let mut new_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }),
+        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: key, value: r#fn(None)? }),
         Deref @ Tree::NODE { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::NODE).clone())?;
-            if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), key.clone(), r#fn.clone())?);
-            } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), key.clone(), r#fn.clone())?);
+            if key_comp == -1 {
+                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), key, r#fn.clone())?);
+            } else if key_comp == 1 {
+                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), key, r#fn.clone())?);
             } else {
                 assign_variant_field!(tree => Tree::NODE; value = r#fn(Some(var_field!((*tree).value, Tree::NODE).clone()))?);
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
-            if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
+            if key_comp == -1 {
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key, value: r#fn(None)? }), right: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY() });
+            } else if key_comp == 1 {
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key, value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
-                new_tree = tree.clone();
+                new_tree = tree;
             }
-            if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
+            if (key_comp == 0) {new_tree} else {balance(new_tree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1621,7 +1621,7 @@ pub mod AvlTreePathPathEnv {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::LEAF { .. } => {
-            inTree.clone()
+            inTree
         },
         Deref @ Tree::NODE { .. } => {
             let mut lh: i32;
@@ -1632,14 +1632,14 @@ pub mod AvlTreePathPathEnv {
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
             if diff.clone() < -1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
             } else if diff.clone() > 1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
             } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
                 assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             } else {
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             }
             balanced_tree.clone()
         },
@@ -1665,17 +1665,17 @@ pub mod AvlTreePathPathEnv {
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult = inFunc(key.clone(), value.clone(), outResult)?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult
         },
         Deref @ Tree::LEAF { key, value } => {
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = inFunc(key.clone(), value.clone(), outResult)?;
+            outResult
         },
         _ => {
-            outResult.clone()
+            outResult
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1689,20 +1689,20 @@ pub mod AvlTreePathPathEnv {
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
-            value.clone()
+            value
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
-            value.clone()
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value)?;
+            value
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1716,13 +1716,13 @@ pub mod AvlTreePathPathEnv {
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1, foldArg2)?;
             ()
         },
         _ => (),
@@ -1755,7 +1755,7 @@ pub mod AvlTreePathPathEnv {
         let mut tree: Arc<Tree> = crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), key.clone(), value.clone(), conflictFunc.clone())?;
@@ -1771,11 +1771,11 @@ pub mod AvlTreePathPathEnv {
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => bail!("match: no arm matched"),
     } });
-        value = (::match_deref::match_deref! { match &((keyCompare(key.clone(), k.clone())?, tree.clone())) {
+        value = (::match_deref::match_deref! { match &((keyCompare(key.clone(), k)?, tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => var_field!((*tree).value, Tree::LEAF).clone(),
         (0, Deref @ Tree::NODE { .. }) => var_field!((*tree).value, Tree::NODE).clone(),
-        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), key.clone())?,
-        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), key.clone())?,
+        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), key)?,
+        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), key)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(value)
@@ -1790,11 +1790,11 @@ pub mod AvlTreePathPathEnv {
         _ => key.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } });
-            ::match_deref::match_deref! { match &((keyCompare(key.clone(), k.clone())?, tree.clone())) {
+            ::match_deref::match_deref! { match &((keyCompare(key.clone(), k)?, tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => return Ok(Some(var_field!((*tree).value, Tree::LEAF).clone())),
         (0, Deref @ Tree::NODE { .. }) => return Ok(Some(var_field!((*tree).value, Tree::NODE).clone())),
-        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), key.clone()); continue '__tco; },
-        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), key.clone()); continue '__tco; },
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), key); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), key); continue '__tco; },
         _ => return Ok(None),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1815,16 +1815,16 @@ pub mod AvlTreePathPathEnv {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        key_comp = keyCompare(inKey.clone(), key.clone())?;
-        comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
+        key_comp = keyCompare(inKey.clone(), key)?;
+        comp = (::match_deref::match_deref! { match &((key_comp, inTree)) {
         (0, _) => true,
         (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), inKey.clone())?
+            hasKey(tree.clone(), inKey)?
         },
         ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), inKey.clone())?
+            hasKey(tree.clone(), inKey)?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1850,7 +1850,7 @@ pub mod AvlTreePathPathEnv {
 
     pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1861,14 +1861,14 @@ pub mod AvlTreePathPathEnv {
     pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
-        Deref @ Tree::EMPTY { .. } => tree.clone(),
+        Deref @ Tree::EMPTY { .. } => tree,
         Deref @ Tree::NODE { .. } => {
-            tree = add(tree.clone(), var_field!((*treeToJoin).key, Tree::NODE).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree.clone()
+            tree = add(tree, var_field!((*treeToJoin).key, Tree::NODE).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree
         },
-        Deref @ Tree::LEAF { .. } => add(tree.clone(), var_field!((*treeToJoin).key, Tree::LEAF).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
+        Deref @ Tree::LEAF { .. } => add(tree, var_field!((*treeToJoin).key, Tree::LEAF).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
@@ -1878,16 +1878,16 @@ pub mod AvlTreePathPathEnv {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
-            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(key.clone(), lst.clone());
-            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(key.clone(), lst);
+            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, .. } => {
-            metamodelica::cons(key.clone(), lst.clone())
+            metamodelica::cons(key.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1897,14 +1897,14 @@ pub mod AvlTreePathPathEnv {
     pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst),
         Deref @ Tree::NODE { .. } => {
-            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
-            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst);
+            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst
         },
-        _ => lst.clone(),
+        _ => lst,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         lst
@@ -1914,16 +1914,16 @@ pub mod AvlTreePathPathEnv {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
-            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(value.clone(), lst.clone());
-            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(value.clone(), lst);
+            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { value, .. } => {
-            metamodelica::cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1945,7 +1945,7 @@ pub mod AvlTreePathPathEnv {
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
@@ -1953,10 +1953,10 @@ pub mod AvlTreePathPathEnv {
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1973,24 +1973,24 @@ pub mod AvlTreePathPathEnv {
             let mut new_value: Value;
             let mut new_left: Arc<Tree>;
             let mut new_right: Arc<Tree>;
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult)?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult)?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2018,11 +2018,11 @@ pub mod AvlTreePathPathEnv {
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
-        Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
+        Deref @ Tree::LEAF { .. } => printNodeStr(inTree)?,
         Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
             left = (*__esc_left).clone();
             right = (*__esc_right).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2034,8 +2034,8 @@ pub mod AvlTreePathPathEnv {
         let mut left: Option<Arc<Tree>>;
         let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2046,7 +2046,7 @@ pub mod AvlTreePathPathEnv {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
+        _ => referenceEq(&*(t1),&*(t2)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -2066,7 +2066,7 @@ pub mod AvlTreePathPathEnv {
             setTreeLeftRight(child.clone(), node.clone(), crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2087,7 +2087,7 @@ pub mod AvlTreePathPathEnv {
             setTreeLeftRight(child.clone(), crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2098,9 +2098,9 @@ pub mod AvlTreePathPathEnv {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
-        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
-        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig.clone()} else {Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() })},
-        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::LEAF).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() }),
+        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig,
+        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig} else {Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right })},
+        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::LEAF).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(res)
@@ -2121,16 +2121,16 @@ pub mod AvlTreePathPathEnv {
         let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
-            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone(), value.clone()), lst);
+            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, value } => {
-            metamodelica::cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2152,19 +2152,19 @@ pub mod AvlTreePathOperatorTypes {
 
     pub(crate) fn keyStr(mut inKey: Key) -> Result<ArcStr> {
         let mut outString: ArcStr;
-        outString = (AbsynUtil::pathString(inKey.clone(), (literal!(".")).clone(), true, false)?).clone();
+        outString = (AbsynUtil::pathString(inKey, (literal!(".")).clone(), true, false)?).clone();
         Ok(outString)
     }
 
     pub(crate) fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr;
-        outString = (TypesDump::unparseType(Arc::new(DAE::Type::T_METATUPLE { types: inValue.clone() }))?).clone();
+        outString = (TypesDump::unparseType(Arc::new(DAE::Type::T_METATUPLE { types: inValue }))?).clone();
         Ok(outString)
     }
 
     pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
         let mut outResult: i32;
-        outResult = AbsynUtil::pathCompareNoQual(inKey1.clone(), inKey2.clone())?;
+        outResult = AbsynUtil::pathCompareNoQual(inKey1, inKey2)?;
         Ok(outResult)
     }
 
@@ -2233,23 +2233,23 @@ pub mod AvlTreePathOperatorTypes {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
-            Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() })
+            Arc::new(Tree::LEAF { key: inKey, value: inValue })
         },
         Deref @ Tree::NODE { key, .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey.clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey, inValue, conflictFunc.clone())?);
             } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), inKey.clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), inKey, inValue, conflictFunc.clone())?);
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::NODE).clone(), key.clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), key.clone())?;
                 if !(metamodelica::ReferenceEq::reference_eq(&*(var_field!((*tree).value, Tree::NODE).clone()), &*(value.clone()))) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
@@ -2257,15 +2257,15 @@ pub mod AvlTreePathOperatorTypes {
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY() });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey, value: inValue }), right: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey, value: inValue }) });
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
                 if !(metamodelica::ReferenceEq::reference_eq(&*(var_field!((*tree).value, Tree::LEAF).clone()), &*(value.clone()))) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
-                outTree = tree.clone();
+                outTree = tree;
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
@@ -2294,7 +2294,7 @@ pub mod AvlTreePathOperatorTypes {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), key.clone(), value.clone(), conflictFunc.clone())?;
@@ -2309,29 +2309,29 @@ pub mod AvlTreePathOperatorTypes {
         let mut key_comp: i32 = 0;
         let mut new_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }),
+        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: key, value: r#fn(None)? }),
         Deref @ Tree::NODE { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::NODE).clone())?;
-            if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), key.clone(), r#fn.clone())?);
-            } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), key.clone(), r#fn.clone())?);
+            if key_comp == -1 {
+                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), key, r#fn.clone())?);
+            } else if key_comp == 1 {
+                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), key, r#fn.clone())?);
             } else {
                 assign_variant_field!(tree => Tree::NODE; value = r#fn(Some(var_field!((*tree).value, Tree::NODE).clone()))?);
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
-            if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
+            if key_comp == -1 {
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key, value: r#fn(None)? }), right: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY() });
+            } else if key_comp == 1 {
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key, value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
-                new_tree = tree.clone();
+                new_tree = tree;
             }
-            if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
+            if (key_comp == 0) {new_tree} else {balance(new_tree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2342,7 +2342,7 @@ pub mod AvlTreePathOperatorTypes {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::LEAF { .. } => {
-            inTree.clone()
+            inTree
         },
         Deref @ Tree::NODE { .. } => {
             let mut lh: i32;
@@ -2353,14 +2353,14 @@ pub mod AvlTreePathOperatorTypes {
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
             if diff.clone() < -1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
             } else if diff.clone() > 1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
             } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
                 assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             } else {
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             }
             balanced_tree.clone()
         },
@@ -2386,17 +2386,17 @@ pub mod AvlTreePathOperatorTypes {
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult = inFunc(key.clone(), value.clone(), outResult)?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult
         },
         Deref @ Tree::LEAF { key, value } => {
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = inFunc(key.clone(), value.clone(), outResult)?;
+            outResult
         },
         _ => {
-            outResult.clone()
+            outResult
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2410,20 +2410,20 @@ pub mod AvlTreePathOperatorTypes {
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
-            value.clone()
+            value
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
-            value.clone()
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value)?;
+            value
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2437,13 +2437,13 @@ pub mod AvlTreePathOperatorTypes {
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1, foldArg2)?;
             ()
         },
         _ => (),
@@ -2476,7 +2476,7 @@ pub mod AvlTreePathOperatorTypes {
         let mut tree: Arc<Tree> = crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), key.clone(), value.clone(), conflictFunc.clone())?;
@@ -2492,11 +2492,11 @@ pub mod AvlTreePathOperatorTypes {
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => bail!("match: no arm matched"),
     } });
-        value = (::match_deref::match_deref! { match &((keyCompare(key.clone(), k.clone())?, tree.clone())) {
+        value = (::match_deref::match_deref! { match &((keyCompare(key.clone(), k)?, tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => var_field!((*tree).value, Tree::LEAF).clone(),
         (0, Deref @ Tree::NODE { .. }) => var_field!((*tree).value, Tree::NODE).clone(),
-        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), key.clone())?,
-        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), key.clone())?,
+        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), key)?,
+        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), key)?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(value)
@@ -2511,11 +2511,11 @@ pub mod AvlTreePathOperatorTypes {
         _ => key.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } });
-            ::match_deref::match_deref! { match &((keyCompare(key.clone(), k.clone())?, tree.clone())) {
+            ::match_deref::match_deref! { match &((keyCompare(key.clone(), k)?, tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => return Ok(Some(var_field!((*tree).value, Tree::LEAF).clone())),
         (0, Deref @ Tree::NODE { .. }) => return Ok(Some(var_field!((*tree).value, Tree::NODE).clone())),
-        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), key.clone()); continue '__tco; },
-        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), key.clone()); continue '__tco; },
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), key); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), key); continue '__tco; },
         _ => return Ok(None),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2536,16 +2536,16 @@ pub mod AvlTreePathOperatorTypes {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        key_comp = keyCompare(inKey.clone(), key.clone())?;
-        comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
+        key_comp = keyCompare(inKey.clone(), key)?;
+        comp = (::match_deref::match_deref! { match &((key_comp, inTree)) {
         (0, _) => true,
         (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), inKey.clone())?
+            hasKey(tree.clone(), inKey)?
         },
         ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), inKey.clone())?
+            hasKey(tree.clone(), inKey)?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2571,7 +2571,7 @@ pub mod AvlTreePathOperatorTypes {
 
     pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2582,14 +2582,14 @@ pub mod AvlTreePathOperatorTypes {
     pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
-        Deref @ Tree::EMPTY { .. } => tree.clone(),
+        Deref @ Tree::EMPTY { .. } => tree,
         Deref @ Tree::NODE { .. } => {
-            tree = add(tree.clone(), var_field!((*treeToJoin).key, Tree::NODE).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree.clone()
+            tree = add(tree, var_field!((*treeToJoin).key, Tree::NODE).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree
         },
-        Deref @ Tree::LEAF { .. } => add(tree.clone(), var_field!((*treeToJoin).key, Tree::LEAF).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
+        Deref @ Tree::LEAF { .. } => add(tree, var_field!((*treeToJoin).key, Tree::LEAF).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
@@ -2599,16 +2599,16 @@ pub mod AvlTreePathOperatorTypes {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
-            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(key.clone(), lst.clone());
-            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(key.clone(), lst);
+            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, .. } => {
-            metamodelica::cons(key.clone(), lst.clone())
+            metamodelica::cons(key.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2618,14 +2618,14 @@ pub mod AvlTreePathOperatorTypes {
     pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst),
         Deref @ Tree::NODE { .. } => {
-            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
-            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst);
+            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst
         },
-        _ => lst.clone(),
+        _ => lst,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         lst
@@ -2635,16 +2635,16 @@ pub mod AvlTreePathOperatorTypes {
         let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
-            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(value.clone(), lst.clone());
-            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(value.clone(), lst);
+            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { value, .. } => {
-            metamodelica::cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2666,7 +2666,7 @@ pub mod AvlTreePathOperatorTypes {
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
@@ -2674,10 +2674,10 @@ pub mod AvlTreePathOperatorTypes {
             if !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2694,24 +2694,24 @@ pub mod AvlTreePathOperatorTypes {
             let mut new_value: Value;
             let mut new_left: Arc<Tree>;
             let mut new_right: Arc<Tree>;
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult)?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2739,11 +2739,11 @@ pub mod AvlTreePathOperatorTypes {
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
-        Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
+        Deref @ Tree::LEAF { .. } => printNodeStr(inTree)?,
         Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
             left = (*__esc_left).clone();
             right = (*__esc_right).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2755,8 +2755,8 @@ pub mod AvlTreePathOperatorTypes {
         let mut left: Option<Arc<Tree>>;
         let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2767,7 +2767,7 @@ pub mod AvlTreePathOperatorTypes {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
+        _ => referenceEq(&*(t1),&*(t2)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -2787,7 +2787,7 @@ pub mod AvlTreePathOperatorTypes {
             setTreeLeftRight(child.clone(), node.clone(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2808,7 +2808,7 @@ pub mod AvlTreePathOperatorTypes {
             setTreeLeftRight(child.clone(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2819,9 +2819,9 @@ pub mod AvlTreePathOperatorTypes {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
-        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
-        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig.clone()} else {Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() })},
-        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::LEAF).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() }),
+        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig,
+        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig} else {Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right })},
+        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: var_field!((*orig).key, Tree::LEAF).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(res)
@@ -2842,16 +2842,16 @@ pub mod AvlTreePathOperatorTypes {
         let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
-            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone(), value.clone()), lst);
+            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, value } => {
-            metamodelica::cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2879,10 +2879,10 @@ fn getOperatorFuncsOrEmptySingleTy(mut cache: FCore::Cache, mut env: FCore::Grap
     let mut tree1: Arc<AvlTreePathPathEnv::Tree>;
     let mut tree2: Arc<AvlTreePathOperatorTypes::Tree>;
     let mut trees: (Arc<AvlTreePathPathEnv::Tree>, Arc<AvlTreePathOperatorTypes::Tree>);
-    scalarType = Types::arrayElementType(ty.clone());
+    scalarType = Types::arrayElementType(ty);
     pathIn = AbsynUtil::makeFullyQualified(getRecordPath(scalarType.clone())?);
     trees = crate::Globals::operatorOverloadingCache.with(|__root| __root.borrow().clone());
-    (tree1, tree2) = trees.clone();
+    (tree1, tree2) = trees;
     match '__try0: {
         path = unwrap_break_err!(AvlTreePathPathEnv::get(tree1.clone(), pathIn.clone()), '__try0);
         Ok::<_, anyhow::Error>((path.clone(),))
@@ -2898,7 +2898,7 @@ fn getOperatorFuncsOrEmptySingleTy(mut cache: FCore::Cache, mut env: FCore::Grap
         }
     }
     opNamePath = Arc::new(Absyn::Path::IDENT { name: (opName.clone()).clone() });
-    path = AbsynUtil::makeFullyQualified(AbsynUtil::joinPaths(path.clone(), opNamePath.clone())?);
+    path = AbsynUtil::makeFullyQualified(AbsynUtil::joinPaths(path, opNamePath)?);
     match '__try1: {
         funcs = unwrap_break_err!(AvlTreePathOperatorTypes::get(tree2.clone(), path.clone()), '__try1);
         Ok::<_, anyhow::Error>((funcs.clone(),))
@@ -2923,7 +2923,7 @@ fn lookupOperatorBaseClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    (cache, path, env) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inClass.clone())) {
+    (cache, path, env) = (::match_deref::match_deref! { match &((inCache, inEnv, inClass)) {
         (__esc_cache, __esc_env, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __esc_path, arrayDim: None }, .. }, .. }) => {
             cache = (*__esc_cache).clone();
             path = (*__esc_path).clone();
@@ -2953,13 +2953,13 @@ fn checkOperatorFunctionOneOutput(mut ty: Arc<DAE::Type>, mut opType: Arc<DAE::T
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, defaultBinding: None, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, defaultBinding: None, .. }, tail: _ } }, .. } => {
             let mut b: bool;
             b = Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty1.clone()), opType.clone()) || Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty2.clone()), opType.clone());
-            checkOperatorFunctionOneOutputError(b.clone(), opType.clone(), ty.clone(), info.clone())?;
+            checkOperatorFunctionOneOutputError(b.clone(), opType, ty, info)?;
             b.clone()
         },
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, defaultBinding: None, .. }, tail: _ }, .. } => {
             let mut b: bool;
             b = Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty1.clone()), opType.clone());
-            checkOperatorFunctionOneOutputError(b.clone(), opType.clone(), ty.clone(), info.clone())?;
+            checkOperatorFunctionOneOutputError(b.clone(), opType, ty, info)?;
             b.clone()
         },
         _ => {
@@ -2971,16 +2971,16 @@ fn checkOperatorFunctionOneOutput(mut ty: Arc<DAE::Type>, mut opType: Arc<DAE::T
 }
 
 fn checkOperatorFunctionOneOutputError(mut ok: bool, mut opType: Arc<DAE::Type>, mut ty: Arc<DAE::Type>, mut info: SourceInfo) -> Result<()> {
-    let () = (match ok.clone() {
+    let () = (match ok {
         true => {
             ()
         },
         _ => {
             let mut str1: ArcStr;
             let mut str2: ArcStr;
-            str1 = (TypesDump::unparseType(opType.clone())?).clone();
-            str2 = (TypesDump::unparseType(ty.clone())?).clone();
-            Error::addSourceMessage(Error::OP_OVERLOAD_OPERATOR_NOT_INPUT.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
+            str1 = (TypesDump::unparseType(opType)?).clone();
+            str2 = (TypesDump::unparseType(ty)?).clone();
+            Error::addSourceMessage(Error::OP_OVERLOAD_OPERATOR_NOT_INPUT.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info)?;
             bail!("fail")
         },
     });
@@ -2989,10 +2989,10 @@ fn checkOperatorFunctionOneOutputError(mut ok: bool, mut opType: Arc<DAE::Type>,
 
 fn checkOperatorFunctionOutput(mut ty: Arc<DAE::Type>, mut expected: Arc<DAE::Type>, mut info: SourceInfo) -> bool {
     let mut isOK: bool = false;
-    isOK = (::match_deref::match_deref! { match &(ty.clone()) {
+    isOK = (::match_deref::match_deref! { match &(ty) {
         Deref @ DAE::Type::T_FUNCTION { funcResultType: actual, .. } => {
-            isOK = Types::equivtypesOrRecordSubtypeOf(actual.clone(), expected.clone());
-            isOK.clone()
+            isOK = Types::equivtypesOrRecordSubtypeOf(actual.clone(), expected);
+            isOK
         },
         _ => {
             false
@@ -3004,13 +3004,13 @@ fn checkOperatorFunctionOutput(mut ty: Arc<DAE::Type>, mut expected: Arc<DAE::Ty
 
 fn isOperatorBinaryFunctionOrWarn(mut ty: Arc<DAE::Type>, mut info: SourceInfo) -> Result<bool> {
     let mut isBinaryFunc: bool = false;
-    isBinaryFunc = (::match_deref::match_deref! { match &(ty.clone()) {
+    isBinaryFunc = (::match_deref::match_deref! { match &(ty) {
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => {
             false
         },
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, .. }, tail: rest } }, .. } => {
             isBinaryFunc = List::mapMapBoolAnd(rest.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), std::sync::Arc::new(fnptr!(isSome, _)))?;
-            isBinaryFunc.clone()
+            isBinaryFunc
         },
         _ => {
             false
@@ -3022,10 +3022,10 @@ fn isOperatorBinaryFunctionOrWarn(mut ty: Arc<DAE::Type>, mut info: SourceInfo) 
 
 fn isOperatorUnaryFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
     let mut isBinaryFunc: bool = false;
-    isBinaryFunc = (::match_deref::match_deref! { match &(ty.clone()) {
+    isBinaryFunc = (::match_deref::match_deref! { match &(ty) {
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, .. }, tail: rest }, .. } => {
             isBinaryFunc = List::mapMapBoolAnd(rest.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), std::sync::Arc::new(fnptr!(isSome, _)))?;
-            isBinaryFunc.clone()
+            isBinaryFunc
         },
         _ => {
             false
@@ -3039,8 +3039,8 @@ fn getZeroConstructorExpression(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>>
     let mut result: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     result = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_FUNCTION { funcArg: args, functionAttributes: attr, path, .. } => {
-            result = makeCallFillRestDefaults(path.clone(), metamodelica::nil(), args.clone(), Types::makeCallAttr(ty.clone(), attr.clone()))?;
-            result.clone()
+            result = makeCallFillRestDefaults(path.clone(), metamodelica::nil(), args.clone(), Types::makeCallAttr(ty, attr.clone()))?;
+            result
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3050,14 +3050,14 @@ fn getZeroConstructorExpression(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>>
 fn makeCallFillRestDefaults(mut path: Arc<Absyn::Path>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut restArgs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut attr: Arc<DAE::CallAttributes>) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp>;
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
-    exps = listAppend(inExps.clone(), List::mapMap(restArgs.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?);
-    exp = Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: exps.clone(), attr: attr.clone() });
+    exps = listAppend(inExps, List::mapMap(restArgs, (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?);
+    exp = Arc::new(DAE::Exp::CALL { path: path, expLst: exps, attr: attr });
     Ok(exp)
 }
 
 fn getRecordPath(mut inType1: Arc<DAE::Type>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path>;
-    let __pa0 = ::match_deref::match_deref! { match &(Types::arrayElementType(inType1.clone())) {
+    let __pa0 = ::match_deref::match_deref! { match &(Types::arrayElementType(inType1)) {
         Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: __pa0 }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -3070,7 +3070,7 @@ fn deoverload(mut inOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamo
     let mut outArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut outType: Arc<DAE::Type>;
     (outOperator, outArgs, outType) = 'mc: {
-        let __mc_input = (inOperators.clone(), inArgs.clone(), inPrefix.clone());
+        let __mc_input = (inOperators, inArgs, inPrefix);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: (op, params, rtype), tail: _ }, args, pre) => {
@@ -3132,7 +3132,7 @@ fn deoverload(mut inOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamo
 fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inType: Arc<DAE::Type>, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
     outType = 'mc: {
-        let __mc_input = (inOperator.clone(), inTypesTypeLst.clone(), inType.clone(), inPrefix.clone());
+        let __mc_input = (inOperator, inTypesTypeLst, inType, inPrefix);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::ADD_ARR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, _) => {
@@ -3656,7 +3656,7 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
 
 fn nDims(mut inType: Arc<DAE::Type>) -> Result<i32> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inType.clone()) {
+        ::match_deref::match_deref! { match &(inType) {
         Deref @ DAE::Type::T_INTEGER { .. } => {
             return Ok(0)
         },
@@ -3685,13 +3685,13 @@ fn nDims(mut inType: Arc<DAE::Type>) -> Result<i32> {
 
 fn isValidMatrixProductDims(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Result<bool> {
     let mut res: bool;
-    res = Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())? || !(Expression::dimensionKnown(dim1.clone()) || Expression::dimensionKnown(dim2.clone())) || Flags::getConfigBool(Flags::CHECK_MODEL.clone())? && Expression::dimensionsEqual(dim1.clone(), dim2.clone())?;
+    res = Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())? || !(Expression::dimensionKnown(dim1.clone()) || Expression::dimensionKnown(dim2.clone())) || Flags::getConfigBool(Flags::CHECK_MODEL.clone())? && Expression::dimensionsEqual(dim1, dim2)?;
     Ok(res)
 }
 
 fn elementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inType.clone()) {
+        ::match_deref::match_deref! { match &(inType) {
         t @ Deref @ DAE::Type::T_INTEGER { .. } => {
             return Ok(t.clone())
         },
@@ -3720,7 +3720,7 @@ fn elementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
 fn replaceOperatorWithFcall(mut AbExp: Arc<Absyn::Exp>, mut inExp1: Arc<DAE::Exp>, mut inOper: DAE::Operator, mut inExp2: Option<Arc<DAE::Exp>>, mut inConst: DAE::Const) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
-        let __mc_input = (AbExp.clone(), inExp1.clone(), inOper.clone(), inExp2.clone());
+        let __mc_input = (AbExp, inExp1, inOper.clone(), inExp2);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::BINARY { exp1: _, op: _, exp2: _ }, e1, DAE::Operator::USERDEFINED { fqName: funcname }, Some(e2)) => {
@@ -3808,7 +3808,7 @@ fn replaceOperatorWithFcall(mut AbExp: Arc<Absyn::Exp>, mut inExp1: Arc<DAE::Exp
 
 fn warnUnsafeRelations(mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut variability: DAE::Const, mut t1: Arc<DAE::Type>, mut t2: Arc<DAE::Type>, mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>, mut op: DAE::Operator, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> () {
     let () = 'mc: {
-        let __mc_input = (inExp.clone(), variability.clone());
+        let __mc_input = (inExp, variability);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
@@ -3851,7 +3851,7 @@ fn warnUnsafeRelations(mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut 
 }
 
 fn verifyOp(mut op: DAE::Operator) -> Result<()> {
-    let () = (match op.clone() {
+    let () = (match op {
         DAE::Operator::EQUAL { ty: _ } => (),
         DAE::Operator::NEQUAL { ty: _ } => (),
         _ => bail!("match: no arm matched"),
@@ -3863,8 +3863,8 @@ fn errorMultipleValid(mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut info
     let mut str1: ArcStr;
     let mut str2: ArcStr;
     str1 = (intString((exps.clone().len() as i32))).clone();
-    str2 = stringDelimitList(List::map(exps.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
-    Error::addSourceMessage(Error::OP_OVERLOAD_MULTIPLE_VALID.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
+    str2 = stringDelimitList(List::map(exps, (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+    Error::addSourceMessage(Error::OP_OVERLOAD_MULTIPLE_VALID.clone(), list![(str1).clone(), (str2).clone()], info)?;
     Ok(())
 }
 
@@ -3873,7 +3873,7 @@ fn binaryCastConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut i
     let mut resExps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
     (cache, resExps) = (::match_deref::match_deref! { match &(exps.clone()) {
         Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } => {
-            (inCache.clone(), exps.clone())
+            (inCache, exps)
         },
         Deref @ metamodelica::List::Nil => {
             let mut args: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::FuncArg>>>>>;
@@ -3887,18 +3887,18 @@ fn binaryCastConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut i
             tys2 = List::mapMap(args.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
             tys1 = List::setDifference(List::union(tys1.clone(), metamodelica::nil()), list![inType1.clone()])?;
             tys2 = List::setDifference(List::union(tys2.clone(), metamodelica::nil()), list![inType2.clone()])?;
-            (cache, tys1) = getOperatorFuncsOrEmpty(inCache.clone(), env.clone(), tys1.clone(), (literal!("'constructor'")).clone(), info.clone(), metamodelica::nil())?;
-            (cache, tys2) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), tys2.clone(), (literal!("'constructor'")).clone(), info.clone(), metamodelica::nil())?;
+            (cache, tys1) = getOperatorFuncsOrEmpty(inCache, env.clone(), tys1.clone(), (literal!("'constructor'")).clone(), info.clone(), metamodelica::nil())?;
+            (cache, tys2) = getOperatorFuncsOrEmpty(cache, env, tys2.clone(), (literal!("'constructor'")).clone(), info, metamodelica::nil())?;
             tys1 = List::select(tys1.clone(), (std::sync::Arc::new(isOperatorUnaryFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
             tys2 = List::select(tys2.clone(), (std::sync::Arc::new(isOperatorUnaryFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
             exps1 = deoverloadUnaryUserdefNoConstructor(tys1.clone(), inExp1.clone(), inType1.clone(), metamodelica::nil())?;
             exps2 = deoverloadUnaryUserdefNoConstructor(tys2.clone(), inExp2.clone(), inType2.clone(), metamodelica::nil())?;
-            resExps = deoverloadBinaryUserdefNoConstructorListLhs(types.clone(), exps1.clone(), inExp2.clone(), inType2.clone(), metamodelica::nil())?;
-            resExps = deoverloadBinaryUserdefNoConstructorListRhs(types.clone(), inExp1.clone(), exps2.clone(), inType1.clone(), resExps.clone())?;
-            (cache.clone(), resExps.clone())
+            resExps = deoverloadBinaryUserdefNoConstructorListLhs(types.clone(), exps1.clone(), inExp2, inType2, metamodelica::nil())?;
+            resExps = deoverloadBinaryUserdefNoConstructorListRhs(types, inExp1, exps2.clone(), inType1, resExps)?;
+            (cache, resExps)
         },
         _ => {
-            errorMultipleValid(List::map(exps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, info.clone())?;
+            errorMultipleValid(List::map(exps, std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3911,15 +3911,15 @@ fn getZeroConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut zexp
     let mut zeroExpression: Option<Arc<Values::Value>>;
     (cache, zeroExpression) = (::match_deref::match_deref! { match &(zexps.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inCache.clone(), None)
+            (inCache, None)
         },
         Deref @ metamodelica::List::Cons { head: zc, tail: Deref @ metamodelica::List::Nil } => {
             let mut v: Arc<Values::Value>;
-            (cache, v) = Ceval::ceval(inCache.clone(), env.clone(), zc.clone(), r#impl.clone(), Absyn::Msg::MSG { info: info.clone() }, 0)?;
-            (cache.clone(), Some(v.clone()))
+            (cache, v) = Ceval::ceval(inCache, env, zc.clone(), r#impl, Absyn::Msg::MSG { info: info }, 0)?;
+            (cache, Some(v.clone()))
         },
         _ => {
-            errorMultipleValid(zexps.clone(), info.clone())?;
+            errorMultipleValid(zexps, info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

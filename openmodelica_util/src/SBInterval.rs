@@ -80,39 +80,39 @@ fn euclid(mut a: i32, mut b: i32) -> (i32, i32, i32, i32) {
     let mut ua: i32;
     let mut vb: i32;
     let mut q: i32;
-    let mut r1: i32 = a.clone();
-    let mut r2: i32 = b.clone();
-    let mut s1: i32 = a.clone();
+    let mut r1: i32 = a;
+    let mut r2: i32 = b;
+    let mut s1: i32 = a;
     let mut s2: i32 = 0;
     let mut tmp: i32;
-    while r2.clone() != 0 {
-        q = intDiv(r1.clone(), r2.clone());
-        tmp = r2.clone();
-        r2 = r1.clone() - q.clone() * r2.clone();
-        r1 = tmp.clone();
-        tmp = s2.clone();
-        s2 = s1.clone() - q.clone() * s2.clone();
-        s1 = tmp.clone();
+    while r2 != 0 {
+        q = intDiv(r1, r2);
+        tmp = r2;
+        r2 = r1 - q * r2;
+        r1 = tmp;
+        tmp = s2;
+        s2 = s1 - q * s2;
+        s1 = tmp;
     }
-    d = r1.clone();
-    m = s2.clone().abs();
-    ua = s1.clone();
-    vb = r1.clone() - s1.clone();
+    d = r1;
+    m = s2.abs();
+    ua = s1;
+    vb = r1 - s1;
     (d, m, ua, vb)
 }
 
 pub fn new(mut lo: i32, mut step: i32, mut hi: i32) -> Arc<SBInterval> {
     let mut int: Arc<SBInterval>;
-    if lo.clone() >= 0 && step.clone() > 0 && hi.clone() >= 0 {
-        if lo.clone() <= hi.clone() && hi.clone() < System::intMaxLit() {
-            int = Arc::new(SBInterval { lo: lo.clone(), step: step.clone(), hi: hi.clone() - intMod(hi.clone() - lo.clone(), step.clone()) });
-        } else if lo.clone() <= hi.clone() && hi.clone() == System::intMaxLit() {
-            int = Arc::new(SBInterval { lo: lo.clone(), step: step.clone(), hi: System::intMaxLit() });
+    if lo >= 0 && step > 0 && hi >= 0 {
+        if lo <= hi && hi < System::intMaxLit() {
+            int = Arc::new(SBInterval { lo: lo, step: step, hi: hi - intMod(hi - lo, step) });
+        } else if lo <= hi && hi == System::intMaxLit() {
+            int = Arc::new(SBInterval { lo: lo, step: step, hi: System::intMaxLit() });
         } else {
-            int = Arc::new(SBInterval { lo: lo.clone(), step: 0, hi: hi.clone() });
+            int = Arc::new(SBInterval { lo: lo, step: 0, hi: hi });
         }
-    } else if lo.clone() >= 0 && step.clone() == 0 && hi.clone() == lo.clone() {
-        int = Arc::new(SBInterval { lo: lo.clone(), step: 1, hi: hi.clone() });
+    } else if lo >= 0 && step == 0 && hi == lo {
+        int = Arc::new(SBInterval { lo: lo, step: 1, hi: hi });
     } else {
         int = newEmpty();
     }
@@ -170,20 +170,20 @@ pub(crate) fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>)
         int = newEmpty();
     } else {
         (gcd_, new_step, ua, vb) = euclid(int1.step.clone(), int2.step.clone());
-        if 0 != intMod(int1.lo.clone() - int2.lo.clone(), gcd_.clone()) {
+        if 0 != intMod(int1.lo.clone() - int2.lo.clone(), gcd_) {
             int = newEmpty();
         } else {
-            x = intDiv(int1.lo.clone(), gcd_.clone()) * vb.clone() + intDiv(int2.lo.clone(), gcd_.clone()) * ua.clone() + intMod(int1.lo.clone(), gcd_.clone());
+            x = intDiv(int1.lo.clone(), gcd_) * vb + intDiv(int2.lo.clone(), gcd_) * ua + intMod(int1.lo.clone(), gcd_);
             new_lo = intMax(int1.lo.clone(), int2.lo.clone());
             new_hi = intMin(int1.hi.clone(), int2.hi.clone());
-            new_lo = new_lo.clone() + intMod(x.clone() - new_lo.clone(), new_step.clone());
-            if new_hi.clone() < System::intMaxLit() {
-                new_hi = new_hi.clone() - intMod(new_hi.clone() - x.clone(), new_step.clone());
+            new_lo = new_lo + intMod(x - new_lo, new_step);
+            if new_hi < System::intMaxLit() {
+                new_hi = new_hi - intMod(new_hi - x, new_step);
             }
-            if new_hi.clone() < new_lo.clone() {
+            if new_hi < new_lo {
                 int = newEmpty();
             } else {
-                int = new(new_lo.clone(), new_step.clone(), new_hi.clone());
+                int = new(new_lo, new_step, new_hi);
             }
         }
     }
@@ -196,27 +196,27 @@ pub(crate) fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -
     let mut count_r: i32;
     let mut count_s: i32;
     ints = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Arc<SBInterval>, Arc<SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval>, Arc<SBInterval>) -> Result<bool> + 'static>), 13);
-    i2 = intersection(int1.clone(), int2.clone());
+    i2 = intersection(int1.clone(), int2);
     if isEmpty(i2.clone()) {
-        UnorderedSet::add(int1.clone(), ints.clone())?;
+        UnorderedSet::add(int1, ints.clone())?;
     } else if !(isEqual(int1.clone(), i2.clone())) {
         if i2.hi.clone() < int1.hi.clone() {
             UnorderedSet::add(new(i2.hi.clone() + int1.step.clone(), int1.step.clone(), int1.hi.clone()), ints.clone())?;
         }
         count_r = intDiv(i2.step.clone(), int1.step.clone()) - 1;
         count_s = if (i2.hi.clone() < System::intMaxLit()) {intDiv(i2.hi.clone() - i2.lo.clone(), i2.step.clone())} else {System::intMaxLit()};
-        if count_r.clone() < count_s.clone() {
-            if count_s.clone() < System::intMaxLit() {
-                for mut i in ({let __s=count_r.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+        if count_r < count_s {
+            if count_s < System::intMaxLit() {
+                for mut i in ({let __s=count_r; let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                     UnorderedSet::add(new(i2.lo.clone() + i.clone() * int1.step.clone(), i2.step.clone(), i2.hi.clone() - i2.step.clone() + i.clone() * int1.step.clone()), ints.clone())?;
                 }
             } else {
-                for mut i in ({let __s=count_r.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+                for mut i in ({let __s=count_r; let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                     UnorderedSet::add(new(i2.lo.clone() + i.clone() * int1.step.clone(), i2.step.clone(), System::intMaxLit()), ints.clone())?;
                 }
             }
         } else {
-            for mut i in ({let __s=count_s.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+            for mut i in ({let __s=count_s; let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 UnorderedSet::add(new(i2.lo.clone() + int1.step.clone() + (i.clone() - 1) * i2.step.clone(), int1.step.clone(), i2.lo.clone() - int1.step.clone() + i.clone() * i2.step.clone()), ints.clone())?;
             }
         }
@@ -235,36 +235,36 @@ pub(crate) fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut
     let mut ilo: i32;
     let mut istep: i32;
     let mut ihi: i32;
-    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(int.clone()) {
+    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(int) {
         Deref @ SBInterval { lo: __pa0, step: __pa1, hi: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
     lo = metamodelica::OrderedFloat((__pa0.clone()) as f64);
     step = metamodelica::OrderedFloat((__pa1.clone()) as f64);
     hi = metamodelica::OrderedFloat((__pa2.clone()) as f64);
-    if gain.clone() > metamodelica::OrderedFloat((0) as f64) {
-        lo = lo.clone() * gain.clone() + metamodelica::OrderedFloat((offset.clone()) as f64);
-        hi = hi.clone() * gain.clone() + metamodelica::OrderedFloat((offset.clone()) as f64);
-        step = step.clone() * gain.clone();
-        if step.clone() < metamodelica::OrderedFloat((1) as f64) {
+    if gain > metamodelica::OrderedFloat((0) as f64) {
+        lo = lo * gain + metamodelica::OrderedFloat((offset) as f64);
+        hi = hi * gain + metamodelica::OrderedFloat((offset) as f64);
+        step = step * gain;
+        if step < metamodelica::OrderedFloat((1) as f64) {
             step = metamodelica::OrderedFloat(1.0_f64);
-            lo = (lo.clone()).ceil();
-            hi = (hi.clone()).floor();
+            lo = (lo).ceil();
+            hi = (hi).floor();
         }
-        if lo.clone() < metamodelica::OrderedFloat((0) as f64) {
-            lo = lo.clone() + step.clone() * (metamodelica::OrderedFloat((1) as f64) + (lo.clone().abs() / step.clone()).floor());
+        if lo < metamodelica::OrderedFloat((0) as f64) {
+            lo = lo + step * (metamodelica::OrderedFloat((1) as f64) + (lo.abs() / step).floor());
         }
-        if hi.clone() < lo.clone() {
+        if hi < lo {
             res = newEmpty();
         } else {
-            ilo = ((lo.clone()).0.floor() as i32);
-            ihi = ((hi.clone()).0.floor() as i32);
-            istep = if (ilo.clone() == ihi.clone()) {1} else {((step.clone()).0.floor() as i32)};
-            res = new(ilo.clone(), istep.clone(), ihi.clone());
+            ilo = ((lo).0.floor() as i32);
+            ihi = ((hi).0.floor() as i32);
+            istep = if (ilo == ihi) {1} else {((step).0.floor() as i32)};
+            res = new(ilo, istep, ihi);
         }
     } else {
-        if offset.clone() > 0 {
-            res = new(offset.clone(), 1, offset.clone());
+        if offset > 0 {
+            res = new(offset, 1, offset);
         } else {
             res = newEmpty();
         }
@@ -279,7 +279,7 @@ pub(crate) fn cardinality(mut int: Arc<SBInterval>) -> i32 {
 
 pub(crate) fn contains(mut c: i32, mut int: Arc<SBInterval>) -> bool {
     let mut res: bool;
-    res = !(isEmpty(int.clone())) && c.clone() >= int.lo.clone() && c.clone() <= int.hi.clone() && intMod(c.clone() - int.lo.clone(), int.step.clone()) == 0;
+    res = !(isEmpty(int.clone())) && c >= int.lo.clone() && c <= int.hi.clone() && intMod(c - int.lo.clone(), int.step.clone()) == 0;
     res
 }
 

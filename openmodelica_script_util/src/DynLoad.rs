@@ -56,7 +56,7 @@ pub fn executeFunction(mut handle: i32, mut values: Arc<metamodelica::List<Arc<V
 
     let mut outVal: Arc<Values::Value>;
     StackOverflow::clearStacktraceMessages();
-    outVal = executeFunction_internal(handle.clone(), values.clone(), debug.clone())?;
+    outVal = executeFunction_internal(handle, values, debug)?;
     if StackOverflow::hasStacktraceMessages() {
         Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow when evaluating function:\n")); __mm_s.push_str(&*stringDelimitList(StackOverflow::readableStacktraceMessages()?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/DynLoad.mo"))?;
     }

@@ -95,7 +95,7 @@ pub(crate) fn newSet(mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
     let mut pstr: ArcStr;
     let mut sc: i32;
     let mut cr: Arc<DAE::ComponentRef>;
-    let Sets { setCount: __pa0, .. } = (sets.clone()) else { bail!("pattern mismatch") };
+    let Sets { setCount: __pa0, .. } = (sets) else { bail!("pattern mismatch") };
     sc = __pa0.clone();
     match '__try1: {
         cr = unwrap_break_err!(PrefixUtil::prefixFirstCref(prefix.clone()), '__try1);
@@ -111,7 +111,7 @@ pub(crate) fn newSet(mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
             pstr = (literal!("")).clone();
         }
     }
-    sets = Sets { sets: Arc::new(SetTrieNode::SET_TRIE_NODE { name: (pstr.clone()).clone(), cref: cr.clone(), nodes: metamodelica::nil(), connectCount: 0 }), setCount: sc.clone(), connections: metamodelica::nil(), outerConnects: metamodelica::nil() };
+    sets = Sets { sets: Arc::new(SetTrieNode::SET_TRIE_NODE { name: (pstr).clone(), cref: cr, nodes: metamodelica::nil(), connectCount: 0 }), setCount: sc, connections: metamodelica::nil(), outerConnects: metamodelica::nil() };
     Ok(sets)
 }
 
@@ -166,7 +166,7 @@ pub(crate) fn addSet(mut parentSets: Sets, mut childSets: Sets) -> Result<Sets> 
 
 fn isEmptySet(mut sets: Sets) -> bool {
     let mut isEmpty: bool;
-    isEmpty = (::match_deref::match_deref! { match &(sets.clone()) {
+    isEmpty = (::match_deref::match_deref! { match &(sets) {
         Sets { sets: Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { nodes: Deref @ metamodelica::List::Nil, .. }, connections: Deref @ metamodelica::List::Nil, outerConnects: Deref @ metamodelica::List::Nil, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -179,10 +179,10 @@ pub(crate) fn addConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRef>, m
     let mut e1: ConnectorElement;
     let mut e2: ConnectorElement;
     let mut ty: ConnectorType;
-    ty = makeConnectorType(connectorType.clone())?;
-    e1 = findElement(cref1.clone(), face1.clone(), ty.clone(), source.clone(), sets.clone());
-    e2 = findElement(cref2.clone(), face2.clone(), ty.clone(), source.clone(), sets.clone());
-    sets = mergeSets(e1.clone(), e2.clone(), sets.clone())?;
+    ty = makeConnectorType(connectorType)?;
+    e1 = findElement(cref1, face1, ty.clone(), source.clone(), sets.clone());
+    e2 = findElement(cref2, face2, ty, source, sets.clone());
+    sets = mergeSets(e1, e2, sets)?;
     Ok(sets)
 }
 
@@ -213,9 +213,9 @@ pub(crate) fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRe
     let mut crefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut cr2: Arc<DAE::ComponentRef>;
-    crefs1 = ComponentReference::expandCref(cref1.clone(), false);
-    crefs2 = ComponentReference::expandCref(cref2.clone(), false);
-    for mut cr1 in &*crefs1.clone() {
+    crefs1 = ComponentReference::expandCref(cref1, false);
+    crefs2 = ComponentReference::expandCref(cref2, false);
+    for mut cr1 in &*crefs1 {
         let mut cr1 = cr1.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crefs2.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -231,7 +231,7 @@ pub(crate) fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRe
 fn makeConnectorType(mut connectorType: Arc<DAE::ConnectorType>) -> Result<ConnectorType> {
     let mut ty: ConnectorType;
     let mut flowName: Option<Arc<DAE::ComponentRef>> = None;
-    ty = (::match_deref::match_deref! { match &(connectorType.clone()) {
+    ty = (::match_deref::match_deref! { match &(connectorType) {
         Deref @ DAE::ConnectorType::POTENTIAL { .. } => openmodelica_frontend_types::DAE::Connect::ConnectorType::EQU,
         Deref @ DAE::ConnectorType::FLOW { .. } => openmodelica_frontend_types::DAE::Connect::ConnectorType::FLOW,
         Deref @ DAE::ConnectorType::STREAM { associatedFlow: __esc_flowName } => {
@@ -250,20 +250,20 @@ fn makeConnectorType(mut connectorType: Arc<DAE::ConnectorType>) -> Result<Conne
 
 pub(crate) fn addConnectorVariablesFromDAE(mut ignore: bool, mut classState: ClassInf::State, mut prefix: DAE::Prefix, mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut info: SourceInfo, mut elementSource: Arc<DAE::ElementSource>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
-    sets = (match classState.clone() {
-        ClassInf::State::CONNECTOR { path: ref class_path, isExpandable: false } if (!(ignore.clone())) => {
+    sets = (match classState {
+        ClassInf::State::CONNECTOR { path: ref class_path, isExpandable: false } if (!(ignore)) => {
             let mut streams: Arc<metamodelica::List<Arc<DAE::Var>>>;
             let mut flows: Arc<metamodelica::List<Arc<DAE::Var>>>;
-            checkConnectorBalance(vars.clone(), class_path.clone(), info.clone())?;
+            checkConnectorBalance(vars.clone(), class_path.clone(), info)?;
             if !(Flags::isSet(Flags::DISABLE_SINGLE_FLOW_EQ.clone())?) {
-                (flows, streams) = getStreamAndFlowVariables(vars.clone());
-                sets = List::fold2(flows.clone(), (std::sync::Arc::new(addFlowVariableFromDAE) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ElementSource>, DAE::Prefix, Sets) -> Result<Sets> + 'static>), elementSource.clone(), prefix.clone(), sets.clone())?;
-                sets = addStreamFlowAssociations(sets.clone(), prefix.clone(), streams.clone(), flows.clone())?;
+                (flows, streams) = getStreamAndFlowVariables(vars);
+                sets = List::fold2(flows.clone(), (std::sync::Arc::new(addFlowVariableFromDAE) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ElementSource>, DAE::Prefix, Sets) -> Result<Sets> + 'static>), elementSource, prefix.clone(), sets)?;
+                sets = addStreamFlowAssociations(sets, prefix, streams.clone(), flows.clone())?;
             }
-            sets.clone()
+            sets
         },
         _ => {
-            sets.clone()
+            sets
         },
     });
     Ok(sets)
@@ -272,8 +272,8 @@ pub(crate) fn addConnectorVariablesFromDAE(mut ignore: bool, mut classState: Cla
 fn addFlowVariableFromDAE(mut variable: Arc<DAE::Var>, mut elementSource: Arc<DAE::ElementSource>, mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    crefs = daeVarToCrefs(variable.clone())?;
-    for mut cr in &*crefs.clone() {
+    crefs = daeVarToCrefs(variable)?;
+    for mut cr in &*crefs {
         let mut cr = cr.clone();
         sets = addInsideFlowVariable(sets.clone(), cr.clone(), elementSource.clone(), prefix.clone())?;
     }
@@ -295,9 +295,9 @@ fn daeHasExpandableConnectors(mut DAE: DAE::DAElist) -> Result<bool> {
     let mut hasExpandable: bool;
     let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>>;
     if System::getHasExpandableConnectors() {
-        let DAE::DAE { elementLst: __pa0 } = (DAE.clone()) else { bail!("pattern mismatch") };
+        let DAE::DAE { elementLst: __pa0 } = (DAE) else { bail!("pattern mismatch") };
         vars = __pa0.clone();
-        hasExpandable = List::any(vars.clone(), (std::sync::Arc::new(isVarExpandable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
+        hasExpandable = List::any(vars, (std::sync::Arc::new(isVarExpandable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
     } else {
         hasExpandable = false;
     }
@@ -317,7 +317,7 @@ fn isVarExpandable(mut var: Arc<DAE::Element>) -> Result<bool> {
 fn getExpandableVariablesWithNoBinding(mut variables: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut potential: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut name: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    for mut var in &*variables.clone() {
+    for mut var in &*variables {
         let mut var = var.clone();
         let () = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ DAE::Element::VAR { componentRef: __esc_name, binding: None, .. } => {
@@ -337,7 +337,7 @@ fn getExpandableVariablesWithNoBinding(mut variables: Arc<metamodelica::List<Arc
 fn getStreamAndFlowVariables(mut variables: Arc<metamodelica::List<Arc<DAE::Var>>>) -> (Arc<metamodelica::List<Arc<DAE::Var>>>, Arc<metamodelica::List<Arc<DAE::Var>>>) {
     let mut flows: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
     let mut streams: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-    for mut var in &*variables.clone() {
+    for mut var in &*variables {
         let mut var = var.clone();
         let () = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ DAE::Var { attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. }, .. } => {
@@ -363,18 +363,18 @@ fn addStreamFlowAssociations(mut sets: Sets, mut prefix: DAE::Prefix, mut stream
     if streamVars.clone().is_empty() {
         return Ok(sets.clone());
     }
-    let __pa0 = ::match_deref::match_deref! { match &(flowVars.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(flowVars) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     flow_var = __pa0.clone();
-    let __pa2 = ::match_deref::match_deref! { match &(daeVarToCrefs(flow_var.clone())?) {
+    let __pa2 = ::match_deref::match_deref! { match &(daeVarToCrefs(flow_var)?) {
         Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } => __pa2.clone(),
         _ => bail!("pattern mismatch"),
     } };
     flow_cr = __pa2.clone();
-    flow_cr = PrefixUtil::prefixCrefNoContext(prefix.clone(), flow_cr.clone())?;
-    for mut stream_var in &*streamVars.clone() {
+    flow_cr = PrefixUtil::prefixCrefNoContext(prefix, flow_cr)?;
+    for mut stream_var in &*streamVars {
         let mut stream_var = stream_var.clone();
         stream_crs = daeVarToCrefs(stream_var.clone())?;
         for mut stream_cr in &*stream_crs.clone() {
@@ -392,15 +392,15 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
     let mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(var.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(var) {
         Deref @ DAE::Var { name: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     name = __pa0.clone();
     ty = __pa1.clone();
-    ty = Types::derivedBasicType(ty.clone());
+    ty = Types::derivedBasicType(ty);
     crefs = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_REAL { .. } => list![Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() })],
+        Deref @ DAE::Type::T_REAL { .. } => list![Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name).clone(), identType: ty, subscriptLst: metamodelica::nil() })],
         Deref @ DAE::Type::T_COMPLEX { .. } => {
             crs = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -410,10 +410,10 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
         }
         __acc
     });
-            cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
+            cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
             ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-        for mut c in (crs.clone()).into_iter().cloned() {
+        for mut c in (crs).into_iter().cloned() {
             let __x = ComponentReference::joinCrefs(cr.clone(), c.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -422,11 +422,11 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
         },
         Deref @ DAE::Type::T_ARRAY { .. } => {
             dims = TypesDump::getDimensions(ty.clone());
-            cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() });
-            expandArrayCref(cr.clone(), dims.clone(), metamodelica::nil())
+            cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name).clone(), identType: ty, subscriptLst: metamodelica::nil() });
+            expandArrayCref(cr, dims, metamodelica::nil())
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown var ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" in ConnectUtil.daeVarToCrefs")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ConnectUtil.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown var ")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(" in ConnectUtil.daeVarToCrefs")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ConnectUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -437,7 +437,7 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
 fn expandArrayCref(mut cref: Arc<DAE::ComponentRef>, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut accumCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     crefs = 'mc: {
-        let __mc_input = dims.clone();
+        let __mc_input = dims;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -491,7 +491,7 @@ fn reverseEnumType(mut dim: Arc<DAE::Dimension>) -> Arc<DAE::Dimension> {
 fn getNextIndex(mut dim: Arc<DAE::Dimension>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Dimension>)> {
     let mut nextIndex: Arc<DAE::Exp>;
     let mut restDim: Arc<DAE::Dimension>;
-    (nextIndex, restDim) = (::match_deref::match_deref! { match &(dim.clone()) {
+    (nextIndex, restDim) = (::match_deref::match_deref! { match &(dim) {
         Deref @ DAE::Dimension::DIM_INTEGER { integer: 0 } => {
             bail!("fail")
         },
@@ -531,7 +531,7 @@ fn addInsideFlowVariable(mut sets: Sets, mut cref: Arc<DAE::ComponentRef>, mut s
 
 fn addStreamFlowAssociation(mut streamCref: Arc<DAE::ComponentRef>, mut flowCref: Arc<DAE::ComponentRef>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
-    sets = updateSetLeaf(sets.clone(), streamCref.clone(), flowCref.clone(), (std::sync::Arc::new(addStreamFlowAssociation2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>))?;
+    sets = updateSetLeaf(sets, streamCref, flowCref, (std::sync::Arc::new(addStreamFlowAssociation2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>))?;
     Ok(sets)
 }
 
@@ -539,7 +539,7 @@ fn addStreamFlowAssociation2(mut flowCref: Arc<DAE::ComponentRef>, mut node: Arc
     let mut node: Arc<SetTrieNode> = node;
     let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
-            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; flowAssociation = Some(flowCref.clone()));
+            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; flowAssociation = Some(flowCref));
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -549,7 +549,7 @@ fn addStreamFlowAssociation2(mut flowCref: Arc<DAE::ComponentRef>, mut node: Arc
 
 fn getStreamFlowAssociation(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets) -> Result<Arc<DAE::ComponentRef>> {
     let mut flowCref: Arc<DAE::ComponentRef>;
-    let __pa0 = ::match_deref::match_deref! { match &(setTrieGet(streamCref.clone(), sets.sets.clone(), false)?) {
+    let __pa0 = ::match_deref::match_deref! { match &(setTrieGet(streamCref, sets.sets.clone(), false)?) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { flowAssociation: Some(__pa0), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -561,8 +561,8 @@ pub(crate) fn addOuterConnection(mut scope: DAE::Prefix, mut sets: Sets, mut cr1
     let mut sets: Sets = sets;
     let mut new_oc: OuterConnect;
     if !(List::any(sets.outerConnects.clone(), (std::sync::Arc::new({ let __pe_b1 = cr1.clone(); let __pe_b2 = cr2.clone(); move |__pe_a0| outerConnectionMatches(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(OuterConnect) -> Result<bool> + 'static>))?) {
-        new_oc = OuterConnect { scope: scope.clone(), cr1: cr1.clone(), io1: io1.clone(), f1: f1.clone(), cr2: cr2.clone(), io2: io2.clone(), f2: f2.clone(), source: source.clone() };
-        sets.outerConnects = metamodelica::cons(new_oc.clone(), sets.outerConnects.clone());
+        new_oc = OuterConnect { scope: scope, cr1: cr1, io1: io1, f1: f1, cr2: cr2, io2: io2, f2: f2, source: source };
+        sets.outerConnects = metamodelica::cons(new_oc, sets.outerConnects.clone());
     }
     Ok(sets)
 }
@@ -570,7 +570,7 @@ pub(crate) fn addOuterConnection(mut scope: DAE::Prefix, mut sets: Sets, mut cr1
 fn outerConnectionMatches(mut oc: OuterConnect, mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut matches: bool;
     matches = (match oc.clone() {
-        OuterConnect { .. } => ComponentReferenceBasics::crefEqual(oc.cr1.clone(), cr1.clone())? && ComponentReferenceBasics::crefEqual(oc.cr2.clone(), cr2.clone())? || ComponentReferenceBasics::crefEqual(oc.cr1.clone(), cr2.clone())? && ComponentReferenceBasics::crefEqual(oc.cr2.clone(), cr1.clone())?,
+        OuterConnect { .. } => ComponentReferenceBasics::crefEqual(oc.cr1.clone(), cr1.clone())? && ComponentReferenceBasics::crefEqual(oc.cr2.clone(), cr2.clone())? || ComponentReferenceBasics::crefEqual(oc.cr1.clone(), cr2)? && ComponentReferenceBasics::crefEqual(oc.cr2.clone(), cr1)?,
     });
     Ok(matches)
 }
@@ -580,21 +580,21 @@ pub(crate) fn addOuterConnectToSets(mut cref1: Arc<DAE::ComponentRef>, mut cref2
     let mut added: bool = false;
     let mut is_outer1: bool;
     let mut is_outer2: bool;
-    is_outer1 = AbsynUtil::isOuter(io1.clone());
-    is_outer2 = AbsynUtil::isOuter(io2.clone());
-    added = (match (is_outer1.clone(), is_outer2.clone()) {
+    is_outer1 = AbsynUtil::isOuter(io1);
+    is_outer2 = AbsynUtil::isOuter(io2);
+    added = (match (is_outer1, is_outer2) {
         (true, true) => {
-            Error::addSourceMessage(Error::UNSUPPORTED_LANGUAGE_FEATURE.clone(), list![(literal!("Connections where both connectors are outer references")).clone(), (literal!("No suggestion")).clone()], inInfo.clone())?;
+            Error::addSourceMessage(Error::UNSUPPORTED_LANGUAGE_FEATURE.clone(), list![(literal!("Connections where both connectors are outer references")).clone(), (literal!("No suggestion")).clone()], inInfo)?;
             false
         },
         (false, false) => false,
         (true, false) => {
-            (sets, added) = addOuterConnectToSets2(cref1.clone(), cref2.clone(), face1.clone(), face2.clone(), sets.clone());
-            added.clone()
+            (sets, added) = addOuterConnectToSets2(cref1, cref2, face1, face2, sets);
+            added
         },
         (false, true) => {
-            (sets, added) = addOuterConnectToSets2(cref2.clone(), cref1.clone(), face2.clone(), face1.clone(), sets.clone());
-            added.clone()
+            (sets, added) = addOuterConnectToSets2(cref2, cref1, face2, face1, sets);
+            added
         },
         _ => bail!("match: no arm matched"),
     });
@@ -621,7 +621,7 @@ fn addOuterConnectToSets2(mut outerCref: Arc<DAE::ComponentRef>, mut innerCref: 
     });
         sc = sets.setCount.clone();
         sets = unwrap_break_err!(List::threadFold(outer_els.clone(), inner_els.clone(), (std::sync::Arc::new(mergeSets) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, ConnectorElement, Sets) -> Result<Sets> + 'static>), sets.clone()), '__try0);
-        added = sc.clone() != sets.setCount.clone();
+        added = sc != sets.setCount.clone();
         Ok::<_, anyhow::Error>((added.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -637,8 +637,8 @@ fn addOuterConnectToSets2(mut outerCref: Arc<DAE::ComponentRef>, mut innerCref: 
 fn collectOuterElements(mut node: Arc<SetTrieNode>, mut face: Face) -> Result<Arc<metamodelica::List<ConnectorElement>>> {
     let mut outerElements: Arc<metamodelica::List<ConnectorElement>>;
     outerElements = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => List::mapFlat(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new({ let __pe_b1 = face.clone(); let __pe_b2 = None; move |__pe_a0| collectOuterElements2(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>) -> Result<Arc<metamodelica::List<ConnectorElement>>> + 'static>))?,
-        _ => collectOuterElements2(node.clone(), face.clone(), None)?,
+        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => List::mapFlat(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new({ let __pe_b1 = face; let __pe_b2 = None; move |__pe_a0| collectOuterElements2(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>) -> Result<Arc<metamodelica::List<ConnectorElement>>> + 'static>))?,
+        _ => collectOuterElements2(node, face, None)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outerElements)
@@ -649,15 +649,15 @@ fn collectOuterElements2(mut node: Arc<SetTrieNode>, mut face: Face, mut prefix:
     outerElements = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: cr, .. } => {
             let mut cr = (*cr).clone();
-            cr = optPrefixCref(prefix.clone(), cr.clone())?;
-            List::mapFlat(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new({ let __pe_b1 = face.clone(); let __pe_b2 = Some(cr.clone()); move |__pe_a0| collectOuterElements2(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>) -> Result<Arc<metamodelica::List<ConnectorElement>>> + 'static>))?
+            cr = optPrefixCref(prefix, cr.clone())?;
+            List::mapFlat(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new({ let __pe_b1 = face; let __pe_b2 = Some(cr.clone()); move |__pe_a0| collectOuterElements2(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>) -> Result<Arc<metamodelica::List<ConnectorElement>>> + 'static>))?
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
             let mut cr: Arc<DAE::ComponentRef>;
             let mut e: ConnectorElement;
-            e = setTrieGetLeafElement(node.clone(), face.clone())?;
+            e = setTrieGetLeafElement(node, face)?;
             cr = getElementName(e.clone())?;
-            e = setElementName(e.clone(), optPrefixCref(prefix.clone(), cr.clone())?);
+            e = setElementName(e.clone(), optPrefixCref(prefix, cr.clone())?);
             list![e.clone()]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -670,23 +670,23 @@ fn findInnerElement(mut outerElement: ConnectorElement, mut innerCref: Arc<DAE::
     let mut name: Arc<DAE::ComponentRef>;
     let mut ty: ConnectorType;
     let mut src: Arc<DAE::ElementSource>;
-    let ConnectorElement { name: __pa0, ty: __pa1, source: __pa2, .. } = (outerElement.clone()) else { bail!("pattern mismatch") };
+    let ConnectorElement { name: __pa0, ty: __pa1, source: __pa2, .. } = (outerElement) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     ty = __pa1.clone();
     src = __pa2.clone();
-    name = ComponentReference::joinCrefs(innerCref.clone(), name.clone())?;
-    innerElement = findElement(name.clone(), innerFace.clone(), ty.clone(), src.clone(), sets.clone());
+    name = ComponentReference::joinCrefs(innerCref, name)?;
+    innerElement = findElement(name, innerFace, ty, src, sets);
     Ok(innerElement)
 }
 
 fn optPrefixCref(mut prefix: Option<Arc<DAE::ComponentRef>>, mut cref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut cref: Arc<DAE::ComponentRef> = cref;
-    cref = (::match_deref::match_deref! { match &(prefix.clone()) {
+    cref = (::match_deref::match_deref! { match &(prefix) {
         None => {
-            cref.clone()
+            cref
         },
         Some(cr) => {
-            ComponentReference::joinCrefs(cr.clone(), cref.clone())?
+            ComponentReference::joinCrefs(cr.clone(), cref)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -711,48 +711,48 @@ fn findElement(mut cref: Arc<DAE::ComponentRef>, mut face: Face, mut ty: Connect
 
 fn newElement(mut cref: Arc<DAE::ComponentRef>, mut face: Face, mut ty: ConnectorType, mut source: Arc<DAE::ElementSource>, mut set: i32) -> ConnectorElement {
     let mut element: ConnectorElement;
-    element = ConnectorElement { name: cref.clone(), face: face.clone(), ty: ty.clone(), source: source.clone(), set: set.clone() };
+    element = ConnectorElement { name: cref, face: face, ty: ty, source: source, set: set };
     element
 }
 
 fn isNewElement(mut element: ConnectorElement) -> Result<bool> {
     let mut isNew: bool;
     let mut set: i32;
-    let ConnectorElement { set: __pa0, .. } = (element.clone()) else { bail!("pattern mismatch") };
+    let ConnectorElement { set: __pa0, .. } = (element) else { bail!("pattern mismatch") };
     set = __pa0.clone();
-    isNew = set.clone() == Connect::NEW_SET.clone();
+    isNew = set == Connect::NEW_SET.clone();
     Ok(isNew)
 }
 
 fn getElementSetIndex(mut inElement: ConnectorElement) -> Result<i32> {
     let mut outIndex: i32;
-    let ConnectorElement { set: __pa0, .. } = (inElement.clone()) else { bail!("pattern mismatch") };
+    let ConnectorElement { set: __pa0, .. } = (inElement) else { bail!("pattern mismatch") };
     outIndex = __pa0.clone();
     Ok(outIndex)
 }
 
 fn setElementSetIndex(mut element: ConnectorElement, mut index: i32) -> ConnectorElement {
     let mut element: ConnectorElement = element;
-    element.set = index.clone();
+    element.set = index;
     element
 }
 
 fn getElementName(mut element: ConnectorElement) -> Result<Arc<DAE::ComponentRef>> {
     let mut name: Arc<DAE::ComponentRef>;
-    let ConnectorElement { name: __pa0, .. } = (element.clone()) else { bail!("pattern mismatch") };
+    let ConnectorElement { name: __pa0, .. } = (element) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     Ok(name)
 }
 
 fn setElementName(mut element: ConnectorElement, mut name: Arc<DAE::ComponentRef>) -> ConnectorElement {
     let mut element: ConnectorElement = element;
-    element.name = name.clone();
+    element.name = name;
     element
 }
 
 fn getElementSource(mut element: ConnectorElement) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource>;
-    let ConnectorElement { source: __pa0, .. } = (element.clone()) else { bail!("pattern mismatch") };
+    let ConnectorElement { source: __pa0, .. } = (element) else { bail!("pattern mismatch") };
     source = __pa0.clone();
     Ok(source)
 }
@@ -760,8 +760,8 @@ fn getElementSource(mut element: ConnectorElement) -> Result<Arc<DAE::ElementSou
 fn setTrieNewLeaf(mut id: ArcStr, mut element: ConnectorElement) -> Result<Arc<SetTrieNode>> {
     let mut leaf: Arc<SetTrieNode>;
     leaf = (match element.clone() {
-        ConnectorElement { face: DAE::Connect::Face::INSIDE, .. } => Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id.clone()).clone(), insideElement: Some(element.clone()), outsideElement: None, flowAssociation: None, connectCount: 0 }),
-        ConnectorElement { face: DAE::Connect::Face::OUTSIDE, .. } => Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id.clone()).clone(), insideElement: None, outsideElement: Some(element.clone()), flowAssociation: None, connectCount: 0 }),
+        ConnectorElement { face: DAE::Connect::Face::INSIDE, .. } => Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id).clone(), insideElement: Some(element), outsideElement: None, flowAssociation: None, connectCount: 0 }),
+        ConnectorElement { face: DAE::Connect::Face::OUTSIDE, .. } => Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id).clone(), insideElement: None, outsideElement: Some(element), flowAssociation: None, connectCount: 0 }),
         _ => bail!("match: no arm matched"),
     });
     Ok(leaf)
@@ -773,15 +773,15 @@ fn setTrieNewNode(mut cref: Arc<DAE::ComponentRef>, mut element: ConnectorElemen
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
             let mut id: ArcStr;
             id = (ComponentReferenceBasics::printComponentRefStr(cref.clone())?).clone();
-            setTrieNewLeaf((id.clone()).clone(), setElementName(element.clone(), cref.clone()))?
+            setTrieNewLeaf((id.clone()).clone(), setElementName(element, cref))?
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
             let mut id: ArcStr;
             let mut cr: Arc<DAE::ComponentRef>;
             cr = ComponentReferenceBasics::crefFirstCref(cref.clone())?;
             id = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
-            node = setTrieNewNode(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), element.clone())?;
-            Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id.clone()).clone(), cref: cr.clone(), nodes: list![node.clone()], connectCount: 0 })
+            node = setTrieNewNode(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), element)?;
+            Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id.clone()).clone(), cref: cr.clone(), nodes: list![node], connectCount: 0 })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -804,17 +804,17 @@ fn mergeSets(mut element1: ConnectorElement, mut element2: ConnectorElement, mut
     let mut new2: bool;
     new1 = isNewElement(element1.clone())?;
     new2 = isNewElement(element2.clone())?;
-    sets = mergeSets2(element1.clone(), element2.clone(), new1.clone(), new2.clone(), sets.clone())?;
+    sets = mergeSets2(element1, element2, new1, new2, sets)?;
     Ok(sets)
 }
 
 fn mergeSets2(mut element1: ConnectorElement, mut element2: ConnectorElement, mut isNew1: bool, mut isNew2: bool, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
-    sets = (match (isNew1.clone(), isNew2.clone()) {
-        (true, true) => addNewSet(element1.clone(), element2.clone(), sets.clone())?,
-        (true, false) => addToSet(element1.clone(), element2.clone(), sets.clone())?,
-        (false, true) => addToSet(element2.clone(), element1.clone(), sets.clone())?,
-        (false, false) => connectSets(element1.clone(), element2.clone(), sets.clone())?,
+    sets = (match (isNew1, isNew2) {
+        (true, true) => addNewSet(element1, element2, sets)?,
+        (true, false) => addToSet(element1, element2, sets)?,
+        (false, true) => addToSet(element2, element1, sets)?,
+        (false, false) => connectSets(element1, element2, sets)?,
         _ => bail!("match: no arm matched"),
     });
     Ok(sets)
@@ -827,12 +827,12 @@ fn addNewSet(mut element1: ConnectorElement, mut element2: ConnectorElement, mut
     let mut e1: ConnectorElement;
     let mut e2: ConnectorElement;
     sc = sets.setCount.clone() + 1;
-    e1 = setElementSetIndex(element1.clone(), sc.clone());
-    e2 = setElementSetIndex(element2.clone(), sc.clone());
+    e1 = setElementSetIndex(element1, sc);
+    e2 = setElementSetIndex(element2, sc);
     node = sets.sets.clone();
-    node = setTrieAdd(e1.clone(), node.clone())?;
-    sets.sets = setTrieAdd(e2.clone(), node.clone())?;
-    sets.setCount = sc.clone();
+    node = setTrieAdd(e1, node)?;
+    sets.sets = setTrieAdd(e2, node)?;
+    sets.setCount = sc;
     Ok(sets)
 }
 
@@ -840,9 +840,9 @@ fn addToSet(mut element: ConnectorElement, mut set: ConnectorElement, mut sets: 
     let mut sets: Sets = sets;
     let mut index: i32;
     let mut e: ConnectorElement;
-    index = getElementSetIndex(set.clone())?;
-    e = setElementSetIndex(element.clone(), index.clone());
-    sets.sets = setTrieAdd(e.clone(), sets.sets.clone())?;
+    index = getElementSetIndex(set)?;
+    e = setElementSetIndex(element, index);
+    sets.sets = setTrieAdd(e, sets.sets.clone())?;
     Ok(sets)
 }
 
@@ -850,10 +850,10 @@ fn connectSets(mut element1: ConnectorElement, mut element2: ConnectorElement, m
     let mut sets: Sets = sets;
     let mut set1: i32;
     let mut set2: i32;
-    set1 = getElementSetIndex(element1.clone())?;
-    set2 = getElementSetIndex(element2.clone())?;
-    if set1.clone() != set2.clone() {
-        sets.connections = metamodelica::cons((set1.clone(), set2.clone()), sets.connections.clone());
+    set1 = getElementSetIndex(element1)?;
+    set2 = getElementSetIndex(element2)?;
+    if set1 != set2 {
+        sets.connections = metamodelica::cons((set1, set2), sets.connections.clone());
     }
     Ok(sets)
 }
@@ -861,8 +861,8 @@ fn connectSets(mut element1: ConnectorElement, mut element2: ConnectorElement, m
 fn setTrieGetElement(mut cref: Arc<DAE::ComponentRef>, mut face: Face, mut trie: Arc<SetTrieNode>) -> Result<ConnectorElement> {
     let mut element: ConnectorElement;
     let mut node: Arc<SetTrieNode>;
-    node = setTrieGet(cref.clone(), trie.clone(), false)?;
-    element = setTrieGetLeafElement(node.clone(), face.clone())?;
+    node = setTrieGet(cref, trie, false)?;
+    element = setTrieGetLeafElement(node, face)?;
     Ok(element)
 }
 
@@ -872,11 +872,11 @@ fn setTrieAddLeafElement(mut element: ConnectorElement, mut node: Arc<SetTrieNod
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
             let () = (match element.face.clone() {
         DAE::Connect::Face::INSIDE => {
-            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; insideElement = Some(element.clone()));
+            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; insideElement = Some(element));
             ()
         },
         DAE::Connect::Face::OUTSIDE => {
-            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; outsideElement = Some(element.clone()));
+            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; outsideElement = Some(element));
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -890,7 +890,7 @@ fn setTrieAddLeafElement(mut element: ConnectorElement, mut node: Arc<SetTrieNod
 
 fn setTrieGetLeafElement(mut node: Arc<SetTrieNode>, mut face: Face) -> Result<ConnectorElement> {
     let mut element: ConnectorElement;
-    element = (::match_deref::match_deref! { match &((face.clone(), node.clone())) {
+    element = (::match_deref::match_deref! { match &((face, node)) {
         (DAE::Connect::Face::INSIDE, Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { insideElement: Some(e), .. }) => {
             e.clone()
         },
@@ -909,8 +909,8 @@ fn setTrieAdd(mut element: ConnectorElement, mut trie: Arc<SetTrieNode>) -> Resu
     let mut el: ConnectorElement;
     cref = getElementName(element.clone())?;
     el_cr = ComponentReferenceBasics::crefLastCref(cref.clone())?;
-    el = setElementName(element.clone(), el_cr.clone());
-    trie = setTrieUpdate(cref.clone(), el.clone(), trie.clone(), (std::sync::Arc::new(setTrieAddLeafElement) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>))?;
+    el = setElementName(element, el_cr);
+    trie = setTrieUpdate(cref, el, trie, (std::sync::Arc::new(setTrieAddLeafElement) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>))?;
     Ok(trie)
 }
 
@@ -918,7 +918,7 @@ fn updateSetLeaf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut sets: Set
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>;
 
     let mut sets: Sets = sets;
-    sets.sets = setTrieUpdate(cref.clone(), arg.clone(), sets.sets.clone(), updateFunc.clone())?;
+    sets.sets = setTrieUpdate(cref, arg, sets.sets.clone(), updateFunc.clone())?;
     Ok(sets)
 }
 
@@ -930,13 +930,13 @@ fn setTrieUpdate<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. }) => {
             let mut id: ArcStr;
             id = (ComponentReferenceBasics::printComponentRef2Str((var_field!((*cref).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), var_field!((*cref).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?).clone();
-            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateNode((id.clone()).clone(), cref.clone(), var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg.clone(), updateFunc.clone(), var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone())?);
+            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateNode((id.clone()).clone(), cref.clone(), var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg, updateFunc.clone(), var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone())?);
             ()
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. }) => {
             let mut id: ArcStr;
             id = (ComponentReferenceBasics::printComponentRef2Str((var_field!((*cref).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), var_field!((*cref).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?).clone();
-            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateLeaf((id.clone()).clone(), arg.clone(), var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), updateFunc.clone())?);
+            assign_variant_field!(trie => SetTrieNode::SET_TRIE_NODE; nodes = setTrieUpdateLeaf((id.clone()).clone(), arg, var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), updateFunc.clone())?);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -954,13 +954,13 @@ fn setTrieUpdateNode<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut id: A
         let mut node = node.clone();
         if setTrieIsNode(node.clone()) && setTrieNodeName(node.clone())? == id.clone() {
             node2 = setTrieUpdate(cref.clone(), arg.clone(), node.clone(), updateFunc.clone())?;
-            nodes = List::replaceAt(node2.clone(), n.clone(), nodes.clone())?;
+            nodes = List::replaceAt(node2.clone(), n, nodes.clone())?;
             return Ok(nodes.clone());
         } else {
-            n = n.clone() + 1;
+            n = n + 1;
         }
     }
-    nodes = setTrieUpdateNode2(wholeCref.clone(), arg.clone(), updateFunc.clone(), nodes.clone())?;
+    nodes = setTrieUpdateNode2(wholeCref, arg, updateFunc.clone(), nodes)?;
     Ok(nodes)
 }
 
@@ -972,10 +972,10 @@ fn setTrieUpdateNode2<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
             let mut id: ArcStr;
             let mut node: Arc<SetTrieNode>;
-            id = (ComponentReferenceBasics::printComponentRefStr(cref.clone())?).clone();
+            id = (ComponentReferenceBasics::printComponentRefStr(cref)?).clone();
             node = Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id.clone()).clone(), insideElement: None, outsideElement: None, flowAssociation: None, connectCount: 0 });
-            node = updateFunc(arg.clone(), node.clone())?;
-            metamodelica::cons(node.clone(), nodes.clone())
+            node = updateFunc(arg, node.clone())?;
+            metamodelica::cons(node.clone(), nodes)
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
             let mut id: ArcStr;
@@ -983,8 +983,8 @@ fn setTrieUpdateNode2<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref
             let mut child_nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>;
             cr = ComponentReferenceBasics::crefFirstCref(cref.clone())?;
             id = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
-            child_nodes = setTrieUpdateNode2(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg.clone(), updateFunc.clone(), metamodelica::nil())?;
-            metamodelica::cons(Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id.clone()).clone(), cref: cr.clone(), nodes: child_nodes.clone(), connectCount: 0 }), nodes.clone())
+            child_nodes = setTrieUpdateNode2(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), arg, updateFunc.clone(), metamodelica::nil())?;
+            metamodelica::cons(Arc::new(SetTrieNode::SET_TRIE_NODE { name: (id.clone()).clone(), cref: cr.clone(), nodes: child_nodes.clone(), connectCount: 0 }), nodes)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -999,12 +999,12 @@ fn setTrieUpdateLeaf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut id: A
     for mut node in &*nodes.clone() {
         let mut node = node.clone();
         if setTrieNodeName(node.clone())? == id.clone() {
-            nodes = List::replaceAt(updateFunc(arg.clone(), node.clone())?, n.clone(), nodes.clone())?;
+            nodes = List::replaceAt(updateFunc(arg.clone(), node.clone())?, n, nodes.clone())?;
             return Ok(nodes.clone());
         }
-        n = n.clone() + 1;
+        n = n + 1;
     }
-    nodes = metamodelica::cons(updateFunc(arg.clone(), Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id.clone()).clone(), insideElement: None, outsideElement: None, flowAssociation: None, connectCount: 0 }))?, nodes.clone());
+    nodes = metamodelica::cons(updateFunc(arg, Arc::new(SetTrieNode::SET_TRIE_LEAF { name: (id).clone(), insideElement: None, outsideElement: None, flowAssociation: None, connectCount: 0 }))?, nodes);
     Ok(nodes)
 }
 
@@ -1014,8 +1014,8 @@ pub(crate) fn traverseSets<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut
     let mut sets: Sets = sets;
     let mut arg: Arg = arg;
     let mut node: Arc<SetTrieNode>;
-    (node, arg) = setTrieTraverseLeaves(sets.sets.clone(), updateFunc.clone(), arg.clone())?;
-    sets.sets = node.clone();
+    (node, arg) = setTrieTraverseLeaves(sets.sets.clone(), updateFunc.clone(), arg)?;
+    sets.sets = node;
     Ok((sets, arg))
 }
 
@@ -1027,12 +1027,12 @@ fn setTrieTraverseLeaves<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut n
     let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => {
             let mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>;
-            (nodes, arg) = List::map1Fold(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(setTrieTraverseLeaves) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, _, _) -> Result<_> + 'static>), updateFunc.clone(), arg.clone())?;
+            (nodes, arg) = List::map1Fold(var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(setTrieTraverseLeaves) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, _, _) -> Result<_> + 'static>), updateFunc.clone(), arg)?;
             assign_variant_field!(node => SetTrieNode::SET_TRIE_NODE; nodes = nodes.clone());
             ()
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
-            (node, arg) = updateFunc(node.clone(), arg.clone())?;
+            (node, arg) = updateFunc(node, arg)?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1046,14 +1046,14 @@ fn setTrieGet(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>, mut 
     let mut subs_str: ArcStr;
     let mut id_subs: ArcStr;
     let mut id_nosubs: ArcStr;
-    let __pa0 = ::match_deref::match_deref! { match &(trie.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(trie) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { nodes: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     nodes = __pa0.clone();
     id_nosubs = (ComponentReferenceBasics::crefFirstIdent(cref.clone())?).clone();
     subs_str = (List::toString(ComponentReference::crefFirstSubs(cref.clone()), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(",")).clone(), (literal!("]")).clone(), false, 0)?).clone();
-    id_subs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id_nosubs.clone()); __mm_s.push_str(&*subs_str.clone()); ArcStr::from(__mm_s) }).clone();
+    id_subs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id_nosubs.clone()); __mm_s.push_str(&*subs_str); ArcStr::from(__mm_s) }).clone();
     match '__try1: {
         leaf = unwrap_break_err!(setTrieGetNode((id_subs.clone()).clone(), nodes.clone()), '__try1);
         Ok::<_, anyhow::Error>((leaf.clone(),))
@@ -1067,10 +1067,10 @@ fn setTrieGet(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>, mut 
     }
     if !(ComponentReference::crefIsIdent(cref.clone())) {
         if '__try2: {
-            leaf = unwrap_break_err!(setTrieGet(unwrap_break_err!(ComponentReference::crefRest(cref.clone()), '__try2), leaf.clone(), matchPrefix.clone()), '__try2);
+            leaf = unwrap_break_err!(setTrieGet(unwrap_break_err!(ComponentReference::crefRest(cref.clone()), '__try2), leaf.clone(), matchPrefix), '__try2);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
-            let true = (matchPrefix.clone() && !(setTrieIsNode(leaf.clone()))) else { bail!("pattern mismatch") };
+            let true = (matchPrefix && !(setTrieIsNode(leaf.clone()))) else { bail!("pattern mismatch") };
         }
     }
     Ok(leaf)
@@ -1078,15 +1078,15 @@ fn setTrieGet(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>, mut 
 
 fn setTrieGetNode(mut id: ArcStr, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>) -> Result<Arc<SetTrieNode>> {
     let mut node: Arc<SetTrieNode>;
-    node = List::getMemberOnTrue((id.clone()).clone(), nodes.clone(), (std::sync::Arc::new(fnptr!(setTrieNodeNamed, ArcStr, Arc<SetTrieNode>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SetTrieNode>) -> Result<bool> + 'static>))?;
+    node = List::getMemberOnTrue((id).clone(), nodes, (std::sync::Arc::new(fnptr!(setTrieNodeNamed, ArcStr, Arc<SetTrieNode>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SetTrieNode>) -> Result<bool> + 'static>))?;
     Ok(node)
 }
 
 fn setTrieNodeNamed(mut id: ArcStr, mut node: Arc<SetTrieNode>) -> bool {
     let mut isNamed: bool;
     isNamed = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => id.clone() == var_field!((*node).name, SetTrieNode::SET_TRIE_NODE).clone(),
-        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => id.clone() == var_field!((*node).name, SetTrieNode::SET_TRIE_LEAF).clone(),
+        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => id == var_field!((*node).name, SetTrieNode::SET_TRIE_NODE).clone(),
+        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => id == var_field!((*node).name, SetTrieNode::SET_TRIE_LEAF).clone(),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1095,14 +1095,14 @@ fn setTrieNodeNamed(mut id: ArcStr, mut node: Arc<SetTrieNode>) -> bool {
 
 fn setTrieGetLeaf(mut id: ArcStr, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>) -> Result<Arc<SetTrieNode>> {
     let mut node: Arc<SetTrieNode>;
-    node = List::getMemberOnTrue((id.clone()).clone(), nodes.clone(), (std::sync::Arc::new(fnptr!(setTrieLeafNamed, ArcStr, Arc<SetTrieNode>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SetTrieNode>) -> Result<bool> + 'static>))?;
+    node = List::getMemberOnTrue((id).clone(), nodes, (std::sync::Arc::new(fnptr!(setTrieLeafNamed, ArcStr, Arc<SetTrieNode>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SetTrieNode>) -> Result<bool> + 'static>))?;
     Ok(node)
 }
 
 fn setTrieLeafNamed(mut id: ArcStr, mut node: Arc<SetTrieNode>) -> bool {
     let mut isNamed: bool;
     isNamed = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => id.clone() == var_field!((*node).name, SetTrieNode::SET_TRIE_LEAF).clone(),
+        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => id == var_field!((*node).name, SetTrieNode::SET_TRIE_LEAF).clone(),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1111,7 +1111,7 @@ fn setTrieLeafNamed(mut id: ArcStr, mut node: Arc<SetTrieNode>) -> bool {
 
 fn setTrieIsNode(mut node: Arc<SetTrieNode>) -> bool {
     let mut isNode: bool;
-    isNode = (::match_deref::match_deref! { match &(node.clone()) {
+    isNode = (::match_deref::match_deref! { match &(node) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1128,28 +1128,28 @@ pub(crate) fn equations(mut topScope: bool, mut sets: Sets, mut DAE: DAE::DAElis
     let mut broken: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>)>>;
     let mut connected: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>)>>;
     { let __v = None; openmodelica_util::Globals::isInStream.with(|__root| *__root.borrow_mut() = __v) };
-    if !(topScope.clone()) {
+    if !(topScope) {
         return Ok(DAE.clone());
     }
     set_array = generateSetArray(sets.clone())?;
     set_list = Arc::new(set_array.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     if daeHasExpandableConnectors(DAE.clone())? {
-        (set_list, dae) = removeUnusedExpandableVariablesAndConnections(set_list.clone(), DAE.clone())?;
+        (set_list, dae) = removeUnusedExpandableVariablesAndConnections(set_list, DAE)?;
     } else {
-        dae = DAE.clone();
+        dae = DAE;
     }
-    (dae, connected, broken) = ConnectionGraph::handleOverconstrainedConnections(connectionGraph.clone(), (modelNameQualified.clone()).clone(), dae.clone())?;
-    dae2 = equationsDispatch(set_list.clone().reverse(), connected.clone(), broken.clone())?;
-    DAE = DAEUtil::joinDaes(dae.clone(), dae2.clone())?;
-    DAE = evaluateConnectionOperators(sets.clone(), set_array.clone(), DAE.clone())?;
-    DAE = ConnectionGraph::addBrokenEqualityConstraintEquations(DAE.clone(), broken.clone())?;
+    (dae, connected, broken) = ConnectionGraph::handleOverconstrainedConnections(connectionGraph, (modelNameQualified).clone(), dae)?;
+    dae2 = equationsDispatch(set_list.reverse(), connected, broken.clone())?;
+    DAE = DAEUtil::joinDaes(dae, dae2)?;
+    DAE = evaluateConnectionOperators(sets, set_array.clone(), DAE)?;
+    DAE = ConnectionGraph::addBrokenEqualityConstraintEquations(DAE, broken)?;
     Ok(DAE)
 }
 
 fn getExpandableEquSetsAsCrefs(mut sets: Arc<metamodelica::List<Set>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>> {
     let mut crefSets: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = metamodelica::nil();
     let mut cref_set: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    for mut set in &*sets.clone() {
+    for mut set in &*sets {
         let mut set = set.clone();
         let () = (match set.clone() {
         DAE::Connect::Set::SET { ty: DAE::Connect::ConnectorType::EQU, .. } => {
@@ -1167,7 +1167,7 @@ fn getExpandableEquSetsAsCrefs(mut sets: Arc<metamodelica::List<Set>>) -> Result
 
 fn removeCrefsFromSets(mut sets: Arc<metamodelica::List<Set>>, mut nonUsefulExpandable: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Set>>> {
     let mut sets: Arc<metamodelica::List<Set>> = sets;
-    sets = List::select1(sets.clone(), (std::sync::Arc::new(removeCrefsFromSets2) as std::sync::Arc<dyn ::std::ops::Fn(Set, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> + 'static>), nonUsefulExpandable.clone())?;
+    sets = List::select1(sets, (std::sync::Arc::new(removeCrefsFromSets2) as std::sync::Arc<dyn ::std::ops::Fn(Set, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> + 'static>), nonUsefulExpandable)?;
     Ok(sets)
 }
 
@@ -1175,15 +1175,15 @@ fn removeCrefsFromSets2(mut set: Set, mut nonUsefulExpandable: Arc<metamodelica:
     let mut isInSet: bool;
     let mut setCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    setCrefs = getAllEquCrefs(list![set.clone()]);
-    lst = List::intersectionOnTrue(setCrefs.clone(), nonUsefulExpandable.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-    isInSet = lst.clone().is_empty();
+    setCrefs = getAllEquCrefs(list![set]);
+    lst = List::intersectionOnTrue(setCrefs, nonUsefulExpandable, (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    isInSet = lst.is_empty();
     Ok(isInSet)
 }
 
 fn mergeEquSetsAsCrefs(mut setsAsCrefs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>> {
     let mut setsAsCrefs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = setsAsCrefs;
-    setsAsCrefs = (::match_deref::match_deref! { match &(setsAsCrefs.clone()) {
+    setsAsCrefs = (::match_deref::match_deref! { match &(setsAsCrefs) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
         },
@@ -1206,17 +1206,17 @@ fn mergeEquSetsAsCrefs(mut setsAsCrefs: Arc<metamodelica::List<Arc<metamodelica:
 fn mergeWithRest(mut set: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut sets: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>)> {
     let mut set: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = set;
     let mut sets: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = sets;
-    (set, sets) = (::match_deref::match_deref! { match &((set.clone(), sets.clone())) {
+    (set, sets) = (::match_deref::match_deref! { match &((set.clone(), sets)) {
         (_, Deref @ metamodelica::List::Nil) => {
-            (set.clone(), acc.clone().reverse())
+            (set, acc.reverse())
         },
         (set1, Deref @ metamodelica::List::Cons { head: set2, tail: rest }) => {
             let mut b: bool;
             let mut rest = (*rest).clone();
             b = List::intersectionOnTrue(set1.clone(), set2.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?.is_empty();
             set = if (!(b.clone())) {List::unionOnTrue(set1.clone(), set2.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?} else {set1.clone()};
-            (set, rest) = mergeWithRest(set.clone(), rest.clone(), List::consOnTrue(b.clone(), set2.clone(), acc.clone()))?;
-            (set.clone(), rest.clone())
+            (set, rest) = mergeWithRest(set, rest.clone(), List::consOnTrue(b.clone(), set2.clone(), acc))?;
+            (set, rest.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1225,7 +1225,7 @@ fn mergeWithRest(mut set: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut s
 
 fn getOnlyExpandableConnectedCrefs(mut sets: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut usefulConnectedExpandable: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    for mut set in &*sets.clone() {
+    for mut set in &*sets {
         let mut set = set.clone();
         if allCrefsAreExpandable(set.clone()) {
             usefulConnectedExpandable = listAppend(set.clone(), usefulConnectedExpandable.clone());
@@ -1236,7 +1236,7 @@ fn getOnlyExpandableConnectedCrefs(mut sets: Arc<metamodelica::List<Arc<metamode
 
 pub(crate) fn allCrefsAreExpandable(mut connects: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> bool {
     let mut allAreExpandable: bool;
-    for mut cr in &*connects.clone() {
+    for mut cr in &*connects {
         let mut cr = cr.clone();
         if !(isExpandable(cr.clone())) {
             allAreExpandable = false;
@@ -1258,8 +1258,8 @@ fn generateSetArray(mut sets: Sets) -> Result<metamodelica::Array<Set>> {
 fn setArrayAddConnections(mut connections: Arc<metamodelica::List<(i32, i32)>>, mut setCount: i32, mut sets: metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> {
     let mut sets: metamodelica::Array<Set> = sets;
     let mut graph: SetGraph;
-    graph = arrayCreate(setCount.clone(), metamodelica::nil());
-    graph = List::fold(connections.clone(), (std::sync::Arc::new(addConnectionToGraph) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), graph.clone())?;
+    graph = arrayCreate(setCount, metamodelica::nil());
+    graph = List::fold(connections, (std::sync::Arc::new(addConnectionToGraph) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), graph.clone())?;
     for mut i in 1..=metamodelica::arrayLength(graph.clone()) {
         (sets, graph) = setArrayAddConnection(i.clone(), ({let __elt = graph.borrow()[(i.clone()-1) as usize].clone(); __elt}), sets.clone(), graph.clone())?;
     }
@@ -1272,11 +1272,11 @@ fn addConnectionToGraph(mut connection: (i32, i32), mut graph: SetGraph) -> Resu
     let mut set2: i32;
     let mut node1: Arc<metamodelica::List<i32>>;
     let mut node2: Arc<metamodelica::List<i32>>;
-    (set1, set2) = connection.clone();
-    node1 = metamodelica::arrayGet(graph.clone(), set1.clone())?;
-    graph = metamodelica::arrayUpdate(graph.clone(), set1.clone(), metamodelica::cons(set2.clone(), node1.clone()))?;
-    node2 = metamodelica::arrayGet(graph.clone(), set2.clone())?;
-    graph = metamodelica::arrayUpdate(graph.clone(), set2.clone(), metamodelica::cons(set1.clone(), node2.clone()))?;
+    (set1, set2) = connection;
+    node1 = metamodelica::arrayGet(graph.clone(), set1)?;
+    graph = metamodelica::arrayUpdate(graph.clone(), set1, metamodelica::cons(set2, node1))?;
+    node2 = metamodelica::arrayGet(graph.clone(), set2)?;
+    graph = metamodelica::arrayUpdate(graph.clone(), set2, metamodelica::cons(set1, node2))?;
     Ok(graph)
 }
 
@@ -1284,17 +1284,17 @@ fn setArrayAddConnection(mut set: i32, mut edges: Arc<metamodelica::List<i32>>, 
     let mut sets: metamodelica::Array<Set> = sets;
     let mut graph: SetGraph = graph;
     let mut edge_lst: Arc<metamodelica::List<i32>>;
-    for mut e in &*edges.clone() {
+    for mut e in &*edges {
         let mut e = e.clone();
-        if e.clone() != set.clone() {
-            sets = setArrayAddConnection2(e.clone(), set.clone(), sets.clone())?;
+        if e.clone() != set {
+            sets = setArrayAddConnection2(e.clone(), set, sets.clone())?;
             edge_lst = ({let __elt = graph.borrow()[(e.clone()-1) as usize].clone(); __elt});
             {
                 let __cell0 = metamodelica::nil();
                 let __idx0 = e.clone();
                 graph.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
-            (sets, graph) = setArrayAddConnection(set.clone(), edge_lst.clone(), sets.clone(), graph.clone())?;
+            (sets, graph) = setArrayAddConnection(set, edge_lst.clone(), sets.clone(), graph.clone())?;
         }
     }
     Ok((sets, graph))
@@ -1303,10 +1303,10 @@ fn setArrayAddConnection(mut set: i32, mut edges: Arc<metamodelica::List<i32>>, 
 fn setArrayAddConnection2(mut setPointer: i32, mut setPointee: i32, mut sets: metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> {
     let mut sets: metamodelica::Array<Set> = sets;
     let mut set: Set;
-    set = ({let __elt = sets.borrow()[(setPointee.clone()-1) as usize].clone(); __elt});
+    set = ({let __elt = sets.borrow()[(setPointee-1) as usize].clone(); __elt});
     sets = (match set.clone() {
-        DAE::Connect::Set::SET { .. } => metamodelica::arrayUpdate(sets.clone(), setPointer.clone(), Set::SET_POINTER { index: setPointee.clone() })?,
-        DAE::Connect::Set::SET_POINTER { .. } => setArrayAddConnection2(setPointer.clone(), var_field!(set.index, Set::SET_POINTER).clone(), sets.clone())?,
+        DAE::Connect::Set::SET { .. } => metamodelica::arrayUpdate(sets.clone(), setPointer, Set::SET_POINTER { index: setPointee })?,
+        DAE::Connect::Set::SET_POINTER { .. } => setArrayAddConnection2(setPointer, var_field!(set.index, Set::SET_POINTER).clone(), sets.clone())?,
     });
     Ok(sets)
 }
@@ -1315,10 +1315,10 @@ fn generateSetArray2(mut sets: Arc<SetTrieNode>, mut prefix: Arc<metamodelica::L
     let mut setArray: metamodelica::Array<Set> = setArray;
     setArray = (::match_deref::match_deref! { match &(sets.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD { .. }, .. } => {
-            List::fold1(var_field!((*sets).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(generateSetArray2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> + 'static>), prefix.clone(), setArray.clone())?
+            List::fold1(var_field!((*sets).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(generateSetArray2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> + 'static>), prefix, setArray.clone())?
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => {
-            List::fold1(var_field!((*sets).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(generateSetArray2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> + 'static>), metamodelica::cons(var_field!((*sets).cref, SetTrieNode::SET_TRIE_NODE).clone(), prefix.clone()), setArray.clone())?
+            List::fold1(var_field!((*sets).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(generateSetArray2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> + 'static>), metamodelica::cons(var_field!((*sets).cref, SetTrieNode::SET_TRIE_NODE).clone(), prefix), setArray.clone())?
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { insideElement: ie, outsideElement: oe, flowAssociation: flow_cr, .. } => {
             let mut prefix_cr: Option<Arc<DAE::ComponentRef>>;
@@ -1326,7 +1326,7 @@ fn generateSetArray2(mut sets: Arc<SetTrieNode>, mut prefix: Arc<metamodelica::L
             let mut oe = (*oe).clone();
             ie = insertFlowAssociationInStreamElement(ie.clone(), flow_cr.clone())?;
             oe = insertFlowAssociationInStreamElement(oe.clone(), flow_cr.clone())?;
-            prefix_cr = buildElementPrefix(prefix.clone())?;
+            prefix_cr = buildElementPrefix(prefix)?;
             setArray = setArrayAddElement(ie.clone(), prefix_cr.clone(), setArray.clone())?;
             setArray = setArrayAddElement(oe.clone(), prefix_cr.clone(), setArray.clone())?;
             setArray.clone()
@@ -1350,10 +1350,10 @@ fn insertFlowAssociationInStreamElement(mut element: Option<ConnectorElement>, m
         el = __pa0.clone();
         element = (::match_deref::match_deref! { match &(el.clone()) {
         ConnectorElement { ty: DAE::Connect::ConnectorType::STREAM { associatedFlow: None }, .. } => {
-            el.ty = ConnectorType::STREAM { associatedFlow: flowCref.clone() };
-            Some(el.clone())
+            el.ty = ConnectorType::STREAM { associatedFlow: flowCref };
+            Some(el)
         },
-        _ => element.clone(),
+        _ => element,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
@@ -1362,7 +1362,7 @@ fn insertFlowAssociationInStreamElement(mut element: Option<ConnectorElement>, m
 
 fn setArrayAddElement(mut element: Option<ConnectorElement>, mut prefix: Option<Arc<DAE::ComponentRef>>, mut sets: metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> {
     let mut sets: metamodelica::Array<Set> = sets;
-    sets = (::match_deref::match_deref! { match &((element.clone(), prefix.clone())) {
+    sets = (::match_deref::match_deref! { match &((element, prefix)) {
         (None, _) => {
             sets.clone()
         },
@@ -1388,7 +1388,7 @@ fn buildElementPrefix(mut prefix: Arc<metamodelica::List<Arc<DAE::ComponentRef>>
         cref = None;
     } else {
         cr = listHead(prefix.clone())?;
-        for mut c in &*listRest(prefix.clone())? {
+        for mut c in &*listRest(prefix)? {
             let mut c = c.clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(c.clone()) {
                 Deref @ DAE::ComponentRef::CREF_IDENT { ident: __pa0, subscriptLst: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
@@ -1398,7 +1398,7 @@ fn buildElementPrefix(mut prefix: Arc<metamodelica::List<Arc<DAE::ComponentRef>>
             subs = __pa1.clone();
             cr = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: subs.clone(), componentRef: cr.clone() });
         }
-        cref = Some(cr.clone());
+        cref = Some(cr);
     }
     Ok(cref)
 }
@@ -1407,7 +1407,7 @@ fn setArrayUpdate(mut sets: metamodelica::Array<Set>, mut index: i32, mut elemen
     let mut sets: metamodelica::Array<Set> = sets;
     let mut set: Set;
     let mut el: Arc<metamodelica::List<ConnectorElement>> = metamodelica::nil();
-    set = ({let __elt = sets.borrow()[(index.clone()-1) as usize].clone(); __elt});
+    set = ({let __elt = sets.borrow()[(index-1) as usize].clone(); __elt});
     sets = (match (set.clone(), element.clone()) {
         (DAE::Connect::Set::SET { .. }, ConnectorElement { .. }) => {
             if Config::orderConnections()? && isEquType(element.ty.clone()) {
@@ -1415,9 +1415,9 @@ fn setArrayUpdate(mut sets: metamodelica::Array<Set>, mut index: i32, mut elemen
             } else {
                 el = metamodelica::cons(element.clone(), var_field!(set.elements, Set::SET).clone());
             }
-            metamodelica::arrayUpdate(sets.clone(), index.clone(), Set::SET { ty: element.ty.clone(), elements: el.clone() })?
+            metamodelica::arrayUpdate(sets.clone(), index, Set::SET { ty: element.ty.clone(), elements: el })?
         },
-        (DAE::Connect::Set::SET_POINTER { .. }, _) => setArrayUpdate(sets.clone(), var_field!(set.index, Set::SET_POINTER).clone(), element.clone())?,
+        (DAE::Connect::Set::SET_POINTER { .. }, _) => setArrayUpdate(sets.clone(), var_field!(set.index, Set::SET_POINTER).clone(), element)?,
         _ => bail!("match: no arm matched"),
     });
     Ok(sets)
@@ -1431,9 +1431,9 @@ fn equSetElementLess(mut element1: ConnectorElement, mut element2: ConnectorElem
 
 fn setArrayGet(mut setArray: metamodelica::Array<Set>, mut index: i32) -> Result<Set> {
     let mut set: Set;
-    set = ({let __elt = setArray.borrow()[(index.clone()-1) as usize].clone(); __elt});
+    set = ({let __elt = setArray.borrow()[(index-1) as usize].clone(); __elt});
     set = (match set.clone() {
-        DAE::Connect::Set::SET { .. } => set.clone(),
+        DAE::Connect::Set::SET { .. } => set,
         DAE::Connect::Set::SET_POINTER { .. } => setArrayGet(setArray.clone(), var_field!(set.index, Set::SET_POINTER).clone())?,
     });
     Ok(set)
@@ -1444,7 +1444,7 @@ fn equationsDispatch(mut sets: Arc<metamodelica::List<Set>>, mut connected: Arc<
     let mut eql: Arc<metamodelica::List<ConnectorElement>> = metamodelica::nil();
     let mut eqll: Arc<metamodelica::List<Arc<metamodelica::List<ConnectorElement>>>> = metamodelica::nil();
     let mut flowThreshold: metamodelica::Real = Flags::getConfigReal(Flags::FLOW_THRESHOLD.clone())?;
-    for mut set in &*sets.clone() {
+    for mut set in &*sets {
         let mut set = set.clone();
         DAE = (match set.clone() {
         DAE::Connect::Set::SET_POINTER { .. } => DAE.clone(),
@@ -1462,7 +1462,7 @@ fn equationsDispatch(mut sets: Arc<metamodelica::List<Set>>, mut connected: Arc<
         },
         DAE::Connect::Set::SET { ty: DAE::Connect::ConnectorType::STREAM { .. }, elements: ref __esc_eql } => {
             eql = __esc_eql.clone();
-            DAEUtil::joinDaes(generateStreamEquations(eql.clone(), flowThreshold.clone())?, DAE.clone())?
+            DAEUtil::joinDaes(generateStreamEquations(eql.clone(), flowThreshold)?, DAE.clone())?
         },
         DAE::Connect::Set::SET { ty: DAE::Connect::ConnectorType::NO_TYPE, .. } => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("ConnectUtil.equationsDispatch failed on connection set with no type.")).clone()])?;
@@ -1489,14 +1489,14 @@ fn generateEquEquations(mut elements: Arc<metamodelica::List<ConnectorElement>>)
     }
     e1 = listHead(elements.clone())?;
     if Config::orderConnections()? {
-        for mut e2 in &*listRest(elements.clone())? {
+        for mut e2 in &*listRest(elements)? {
             let mut e2 = e2.clone();
             src = ElementSource::mergeSources(e1.source.clone(), e2.source.clone())?;
             src = ElementSource::addElementSourceConnect(src.clone(), (e1.name.clone(), e2.name.clone()))?;
             eql = metamodelica::cons(Arc::new(DAE::Element::EQUEQUATION { cr1: e1.name.clone(), cr2: e2.name.clone(), source: src.clone() }), eql.clone());
         }
     } else {
-        for mut e2 in &*listRest(elements.clone())? {
+        for mut e2 in &*listRest(elements)? {
             let mut e2 = e2.clone();
             (x, y) = Util::swap(shouldFlipEquEquation(e1.name.clone(), e1.source.clone())?, e1.name.clone(), e2.name.clone());
             src = ElementSource::mergeSources(e1.source.clone(), e2.source.clone())?;
@@ -1505,15 +1505,15 @@ fn generateEquEquations(mut elements: Arc<metamodelica::List<ConnectorElement>>)
             e1 = e2.clone();
         }
     }
-    DAE = DAE::DAElist { elementLst: eql.clone().reverse() };
+    DAE = DAE::DAElist { elementLst: eql.reverse() };
     Ok(DAE)
 }
 
 fn shouldFlipEquEquation(mut lhsCref: Arc<DAE::ComponentRef>, mut lhsSource: Arc<DAE::ElementSource>) -> Result<bool> {
     let mut shouldFlip: bool;
-    shouldFlip = (::match_deref::match_deref! { match &(lhsSource.clone()) {
+    shouldFlip = (::match_deref::match_deref! { match &(lhsSource) {
         Deref @ DAE::ElementSource { connectEquationOptLst: Deref @ metamodelica::List::Cons { head: (lhs, _), tail: _ }, .. } => {
-            !(ComponentReferenceBasics::crefPrefixOf(lhs.clone(), lhsCref.clone())?)
+            !(ComponentReferenceBasics::crefPrefixOf(lhs.clone(), lhsCref)?)
         },
         _ => {
             false
@@ -1529,20 +1529,20 @@ fn generateFlowEquations(mut elements: Arc<metamodelica::List<ConnectorElement>>
     let mut src: Arc<DAE::ElementSource>;
     sum = makeFlowExp(listHead(elements.clone())?)?;
     src = getElementSource(listHead(elements.clone())?)?;
-    for mut e in &*listRest(elements.clone())? {
+    for mut e in &*listRest(elements)? {
         let mut e = e.clone();
         sum = Expression::makeRealAdd(sum.clone(), makeFlowExp(e.clone())?);
         src = ElementSource::mergeSources(src.clone(), e.source.clone())?;
     }
-    DAE = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::EQUATION { exp: sum.clone(), scalar: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), source: src.clone() })] };
+    DAE = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::EQUATION { exp: sum, scalar: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), source: src })] };
     Ok(DAE)
 }
 
 fn makeFlowExp(mut element: ConnectorElement) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp>;
     exp = Expression::crefExp(element.name.clone())?;
-    if isOutsideElement(element.clone()) {
-        exp = Expression::negateReal(exp.clone());
+    if isOutsideElement(element) {
+        exp = Expression::negateReal(exp);
     }
     Ok(exp)
 }
@@ -1551,17 +1551,17 @@ pub(crate) fn increaseConnectRefCount(mut lhsCref: Arc<DAE::ComponentRef>, mut r
     let mut sets: Sets = sets;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     if System::getUsesCardinality() {
-        crefs = ComponentReference::expandCref(lhsCref.clone(), false);
-        sets.sets = increaseConnectRefCount2(crefs.clone(), sets.sets.clone())?;
-        crefs = ComponentReference::expandCref(rhsCref.clone(), false);
-        sets.sets = increaseConnectRefCount2(crefs.clone(), sets.sets.clone())?;
+        crefs = ComponentReference::expandCref(lhsCref, false);
+        sets.sets = increaseConnectRefCount2(crefs, sets.sets.clone())?;
+        crefs = ComponentReference::expandCref(rhsCref, false);
+        sets.sets = increaseConnectRefCount2(crefs, sets.sets.clone())?;
     }
     Ok(sets)
 }
 
 pub(crate) fn increaseConnectRefCount2(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut sets: Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> {
     let mut sets: Arc<SetTrieNode> = sets;
-    for mut cr in &*crefs.clone() {
+    for mut cr in &*crefs {
         let mut cr = cr.clone();
         sets = setTrieUpdate(cr.clone(), 1, sets.clone(), (std::sync::Arc::new(increaseRefCount) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>))?;
     }
@@ -1572,11 +1572,11 @@ fn increaseRefCount(mut amount: i32, mut node: Arc<SetTrieNode>) -> Result<Arc<S
     let mut node: Arc<SetTrieNode> = node;
     let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => {
-            assign_variant_field!(node => SetTrieNode::SET_TRIE_NODE; connectCount = var_field!((*node).connectCount, SetTrieNode::SET_TRIE_NODE).clone() + amount.clone());
+            assign_variant_field!(node => SetTrieNode::SET_TRIE_NODE; connectCount = var_field!((*node).connectCount, SetTrieNode::SET_TRIE_NODE).clone() + amount);
             ()
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
-            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; connectCount = var_field!((*node).connectCount, SetTrieNode::SET_TRIE_LEAF).clone() + amount.clone());
+            assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; connectCount = var_field!((*node).connectCount, SetTrieNode::SET_TRIE_LEAF).clone() + amount);
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1623,8 +1623,8 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<ConnectorElement
             let mut dae: DAE::DAElist;
             let mut inside: Arc<metamodelica::List<ConnectorElement>>;
             let mut outside: Arc<metamodelica::List<ConnectorElement>>;
-            (outside, inside) = List::splitOnTrue(elements.clone(), (std::sync::Arc::new(fnptr!(isOutsideElement, ConnectorElement)) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
-            dae = streamEquationGeneral(outside.clone(), inside.clone(), flowThreshold.clone())?;
+            (outside, inside) = List::splitOnTrue(elements, (std::sync::Arc::new(fnptr!(isOutsideElement, ConnectorElement)) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
+            dae = streamEquationGeneral(outside.clone(), inside.clone(), flowThreshold)?;
             dae.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1634,7 +1634,7 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<ConnectorElement
 
 fn isOutsideElement(mut element: ConnectorElement) -> bool {
     let mut isOutside: bool;
-    isOutside = (match element.clone() {
+    isOutside = (match element {
         ConnectorElement { face: DAE::Connect::Face::OUTSIDE, .. } => true,
         _ => false,
     });
@@ -1643,12 +1643,12 @@ fn isOutsideElement(mut element: ConnectorElement) -> bool {
 
 fn isZeroFlowMinMax(mut streamCref: Arc<DAE::ComponentRef>, mut element: ConnectorElement) -> Result<bool> {
     let mut isZero: bool;
-    if compareCrefStreamSet(streamCref.clone(), element.clone())? {
+    if compareCrefStreamSet(streamCref, element.clone())? {
         isZero = false;
     } else if isOutsideElement(element.clone()) {
-        isZero = isZeroFlow(element.clone(), (literal!("max")).clone())?;
+        isZero = isZeroFlow(element, (literal!("max")).clone())?;
     } else {
-        isZero = isZeroFlow(element.clone(), (literal!("min")).clone())?;
+        isZero = isZeroFlow(element, (literal!("min")).clone())?;
     }
     Ok(isZero)
 }
@@ -1659,16 +1659,16 @@ fn isZeroFlow(mut element: ConnectorElement, mut attr: ArcStr) -> Result<bool> {
     let mut attr_oexp: Option<Arc<DAE::Exp>>;
     let mut flow_exp: Arc<DAE::Exp>;
     let mut attr_exp: Arc<DAE::Exp>;
-    flow_exp = flowExp(element.clone())?;
-    ty = Expression::r#typeof(flow_exp.clone())?;
-    attr_oexp = Types::lookupAttributeExp(Types::getAttributes(ty.clone()), (attr.clone()).clone())?;
+    flow_exp = flowExp(element)?;
+    ty = Expression::r#typeof(flow_exp)?;
+    attr_oexp = Types::lookupAttributeExp(Types::getAttributes(ty), (attr).clone())?;
     if isSome(attr_oexp.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(attr_oexp.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(attr_oexp) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         attr_exp = __pa0.clone();
-        isZero = Expression::isZero(attr_exp.clone())?;
+        isZero = Expression::isZero(attr_exp)?;
     } else {
         isZero = false;
     }
@@ -1687,11 +1687,11 @@ fn streamEquationGeneral(mut outsideElements: Arc<metamodelica::List<ConnectorEl
         let mut e = e.clone();
         cref_exp = Expression::crefExp(e.name.clone())?;
         outside = removeStreamSetElement(e.name.clone(), outsideElements.clone())?;
-        res = streamSumEquationExp(outside.clone(), insideElements.clone(), flowThreshold.clone())?;
+        res = streamSumEquationExp(outside.clone(), insideElements.clone(), flowThreshold)?;
         src = ElementSource::addAdditionalComment(e.source.clone(), (literal!(" equation generated by stream handling")).clone())?;
         eql = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: cref_exp.clone(), scalar: res.clone(), source: src.clone() }), eql.clone());
     }
-    DAE = DAE::DAElist { elementLst: eql.clone() };
+    DAE = DAE::DAElist { elementLst: eql };
     Ok(DAE)
 }
 
@@ -1702,19 +1702,19 @@ fn streamSumEquationExp(mut outsideElements: Arc<metamodelica::List<ConnectorEle
     let mut inside_sum1: Arc<DAE::Exp>;
     let mut inside_sum2: Arc<DAE::Exp>;
     if outsideElements.clone().is_empty() {
-        inside_sum1 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        inside_sum2 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        sumExp = Expression::expDiv(inside_sum1.clone(), inside_sum2.clone())?;
+        inside_sum1 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        inside_sum2 = sumMap(insideElements, (std::sync::Arc::new(sumInside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        sumExp = Expression::expDiv(inside_sum1, inside_sum2)?;
     } else if insideElements.clone().is_empty() {
-        outside_sum1 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        outside_sum2 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        sumExp = Expression::expDiv(outside_sum1.clone(), outside_sum2.clone())?;
+        outside_sum1 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        outside_sum2 = sumMap(outsideElements, (std::sync::Arc::new(sumOutside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        sumExp = Expression::expDiv(outside_sum1, outside_sum2)?;
     } else {
-        outside_sum1 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        outside_sum2 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        inside_sum1 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        inside_sum2 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold.clone())?;
-        sumExp = Expression::expDiv(Expression::expAdd(outside_sum1.clone(), inside_sum1.clone())?, Expression::expAdd(outside_sum2.clone(), inside_sum2.clone())?)?;
+        outside_sum1 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        outside_sum2 = sumMap(outsideElements, (std::sync::Arc::new(sumOutside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        inside_sum1 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside1) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        inside_sum2 = sumMap(insideElements, (std::sync::Arc::new(sumInside2) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>), flowThreshold)?;
+        sumExp = Expression::expDiv(Expression::expAdd(outside_sum1, inside_sum1)?, Expression::expAdd(outside_sum2, inside_sum2)?)?;
     }
     Ok(sumExp)
 }
@@ -1725,8 +1725,8 @@ fn sumMap(mut elements: Arc<metamodelica::List<ConnectorElement>>, mut func: Arc
     let mut exp: Arc<DAE::Exp>;
     exp = ({
         let mut __acc: Option<Arc<DAE::Exp>> = None;
-        for mut e in (elements.clone().reverse()).into_iter().cloned() {
-            let __x = func(e.clone(), flowThreshold.clone())?;
+        for mut e in (elements.reverse()).into_iter().cloned() {
+            let __x = func(e.clone(), flowThreshold)?;
             __acc = Some(match __acc { None => __x, Some(__cur) => Expression::expAdd(__x, __cur)? });
         }
         __acc.ok_or_else(|| anyhow::anyhow!("empty Expression.expAdd reduction"))?
@@ -1744,19 +1744,19 @@ fn streamFlowExp(mut element: ConnectorElement) -> Result<(Arc<DAE::Exp>, Arc<DA
     } };
     flow_cr = __pa0.clone();
     streamExp = Expression::crefExp(element.name.clone())?;
-    flowExp = Expression::crefExp(flow_cr.clone())?;
+    flowExp = Expression::crefExp(flow_cr)?;
     Ok((streamExp, flowExp))
 }
 
 fn flowExp(mut element: ConnectorElement) -> Result<Arc<DAE::Exp>> {
     let mut flowExp: Arc<DAE::Exp>;
     let mut flow_cr: Arc<DAE::ComponentRef>;
-    let __pa0 = ::match_deref::match_deref! { match &(element.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(element) {
         ConnectorElement { ty: DAE::Connect::ConnectorType::STREAM { associatedFlow: Some(__pa0) }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     flow_cr = __pa0.clone();
-    flowExp = Expression::crefExp(flow_cr.clone())?;
+    flowExp = Expression::crefExp(flow_cr)?;
     Ok(flowExp)
 }
 
@@ -1765,9 +1765,9 @@ fn sumOutside1(mut element: ConnectorElement, mut flowThreshold: metamodelica::R
     let mut stream_exp: Arc<DAE::Exp>;
     let mut flow_exp: Arc<DAE::Exp>;
     let mut flow_threshold: Arc<DAE::Exp>;
-    (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
-    flow_threshold = Arc::new(DAE::Exp::RCONST { real: flowThreshold.clone() });
-    exp = Expression::expMul(makePositiveMaxCall(flow_exp.clone(), flow_threshold.clone())?, makeInStreamCall(stream_exp.clone())?)?;
+    (stream_exp, flow_exp) = streamFlowExp(element)?;
+    flow_threshold = Arc::new(DAE::Exp::RCONST { real: flowThreshold });
+    exp = Expression::expMul(makePositiveMaxCall(flow_exp, flow_threshold)?, makeInStreamCall(stream_exp)?)?;
     Ok(exp)
 }
 
@@ -1777,19 +1777,19 @@ fn sumInside1(mut element: ConnectorElement, mut flowThreshold: metamodelica::Re
     let mut flow_exp: Arc<DAE::Exp>;
     let mut flow_threshold: Arc<DAE::Exp>;
     let mut flowTy: Arc<DAE::Type>;
-    (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
+    (stream_exp, flow_exp) = streamFlowExp(element)?;
     flowTy = Expression::r#typeof(flow_exp.clone())?;
-    flow_exp = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: flowTy.clone() }, exp: flow_exp.clone() });
-    flow_threshold = Arc::new(DAE::Exp::RCONST { real: flowThreshold.clone() });
-    exp = Expression::expMul(makePositiveMaxCall(flow_exp.clone(), flow_threshold.clone())?, stream_exp.clone())?;
+    flow_exp = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: flowTy }, exp: flow_exp });
+    flow_threshold = Arc::new(DAE::Exp::RCONST { real: flowThreshold });
+    exp = Expression::expMul(makePositiveMaxCall(flow_exp, flow_threshold)?, stream_exp)?;
     Ok(exp)
 }
 
 fn sumOutside2(mut element: ConnectorElement, mut flowThreshold: metamodelica::Real) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp>;
     let mut flow_exp: Arc<DAE::Exp>;
-    flow_exp = flowExp(element.clone())?;
-    exp = makePositiveMaxCall(flow_exp.clone(), Arc::new(DAE::Exp::RCONST { real: flowThreshold.clone() }))?;
+    flow_exp = flowExp(element)?;
+    exp = makePositiveMaxCall(flow_exp, Arc::new(DAE::Exp::RCONST { real: flowThreshold }))?;
     Ok(exp)
 }
 
@@ -1797,10 +1797,10 @@ fn sumInside2(mut element: ConnectorElement, mut flowThreshold: metamodelica::Re
     let mut exp: Arc<DAE::Exp>;
     let mut flow_exp: Arc<DAE::Exp>;
     let mut flowTy: Arc<DAE::Type>;
-    flow_exp = flowExp(element.clone())?;
+    flow_exp = flowExp(element)?;
     flowTy = Expression::r#typeof(flow_exp.clone())?;
-    flow_exp = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: flowTy.clone() }, exp: flow_exp.clone() });
-    exp = makePositiveMaxCall(flow_exp.clone(), Arc::new(DAE::Exp::RCONST { real: flowThreshold.clone() }))?;
+    flow_exp = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: flowTy }, exp: flow_exp });
+    exp = makePositiveMaxCall(flow_exp, Arc::new(DAE::Exp::RCONST { real: flowThreshold }))?;
     Ok(exp)
 }
 
@@ -1813,7 +1813,7 @@ fn makeInStreamCall(mut streamExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut inStreamCall: Arc<DAE::Exp>;
     let mut ty: Arc<DAE::Type>;
     ty = Expression::r#typeof(streamExp.clone())?;
-    inStreamCall = Expression::makeBuiltinCall((literal!("inStream")).clone(), list![streamExp.clone()], ty.clone(), false);
+    inStreamCall = Expression::makeBuiltinCall((literal!("inStream")).clone(), list![streamExp], ty, false);
     Ok(inStreamCall)
 }
 
@@ -1826,16 +1826,16 @@ fn makePositiveMaxCall(mut flowExp: Arc<DAE::Exp>, mut flowThreshold: Arc<DAE::E
     ty = Expression::r#typeof(flowExp.clone())?;
     nominal_oexp = Types::lookupAttributeExp(Types::getAttributes(ty.clone()), (literal!("nominal")).clone())?;
     if isSome(nominal_oexp.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(nominal_oexp.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(nominal_oexp) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         nominal_exp = __pa0.clone();
-        flow_threshold = Expression::expMul(flowThreshold.clone(), nominal_exp.clone())?;
+        flow_threshold = Expression::expMul(flowThreshold, nominal_exp)?;
     } else {
-        flow_threshold = flowThreshold.clone();
+        flow_threshold = flowThreshold;
     }
-    positiveMaxCall = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$OMC$PositiveMax")).clone() }), expLst: list![flowExp.clone(), flow_threshold.clone()], attr: Arc::new(DAE::CallAttributes { ty: ty.clone(), tuple_: false, builtin: true, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL }) });
+    positiveMaxCall = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$OMC$PositiveMax")).clone() }), expLst: list![flowExp, flow_threshold], attr: Arc::new(DAE::CallAttributes { ty: ty, tuple_: false, builtin: true, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL }) });
     { let __v = Some(true); openmodelica_util::Globals::isInStream.with(|__root| *__root.borrow_mut() = __v) };
     Ok(positiveMaxCall)
 }
@@ -1844,10 +1844,10 @@ fn evaluateConnectionOperators(mut sets: Sets, mut setArray: metamodelica::Array
     let mut DAE: DAE::DAElist = DAE;
     let mut flow_threshold: metamodelica::Real;
     let mut has_cardinality: bool = System::getUsesCardinality();
-    if System::getHasStreamConnectors() || has_cardinality.clone() {
+    if System::getHasStreamConnectors() || has_cardinality {
         flow_threshold = Flags::getConfigReal(Flags::FLOW_THRESHOLD.clone())?;
-        (DAE, _, _) = DAEUtil::traverseDAE(DAE.clone(), openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY(), (std::sync::Arc::new({ let __pe_b2 = setArray.clone(); let __pe_b3 = has_cardinality.clone(); let __pe_b4 = flow_threshold.clone(); move |__pe_a0, __pe_a1| evaluateConnectionOperators2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Sets) -> Result<(Arc<DAE::Exp>, Sets)> + 'static>), sets.clone())?;
-        DAE = simplifyDAEElements(has_cardinality.clone(), DAE.clone())?;
+        (DAE, _, _) = DAEUtil::traverseDAE(DAE, openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY(), (std::sync::Arc::new({ let __pe_b2 = setArray.clone(); let __pe_b3 = has_cardinality; let __pe_b4 = flow_threshold; move |__pe_a0, __pe_a1| evaluateConnectionOperators2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Sets) -> Result<(Arc<DAE::Exp>, Sets)> + 'static>), sets)?;
+        DAE = simplifyDAEElements(has_cardinality, DAE)?;
     }
     Ok(DAE)
 }
@@ -1856,9 +1856,9 @@ fn evaluateConnectionOperators2(mut exp: Arc<DAE::Exp>, mut sets: Sets, mut setA
     let mut exp: Arc<DAE::Exp> = exp;
     let mut sets: Sets = sets;
     let mut changed: bool;
-    (exp, changed) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = sets.clone(); let __pe_b2 = setArray.clone(); let __pe_b3 = flowThreshold.clone(); move |__pe_a0, __pe_a4| evaluateConnectionOperatorsExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
-    if changed.clone() && hasCardinality.clone() {
-        (exp, _) = ExpressionSimplify::simplify(exp.clone())?;
+    (exp, changed) = Expression::traverseExpBottomUp(exp, (std::sync::Arc::new({ let __pe_b1 = sets.clone(); let __pe_b2 = setArray.clone(); let __pe_b3 = flowThreshold; move |__pe_a0, __pe_a4| evaluateConnectionOperatorsExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
+    if changed && hasCardinality {
+        (exp, _) = ExpressionSimplify::simplify(exp)?;
     }
     Ok((exp, sets))
 }
@@ -1869,21 +1869,21 @@ fn evaluateConnectionOperatorsExp(mut exp: Arc<DAE::Exp>, mut sets: Sets, mut se
     (exp, changed) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "inStream" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut e: Arc<DAE::Exp>;
-            e = evaluateInStream(cr.clone(), sets.clone(), setArray.clone(), flowThreshold.clone())?;
+            e = evaluateInStream(cr.clone(), sets, setArray.clone(), flowThreshold)?;
             (e.clone(), true)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "actualStream" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut e: Arc<DAE::Exp>;
-            e = evaluateActualStream(cr.clone(), sets.clone(), setArray.clone(), flowThreshold.clone())?;
+            e = evaluateActualStream(cr.clone(), sets, setArray.clone(), flowThreshold)?;
             (e.clone(), true)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cardinality" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut e: Arc<DAE::Exp>;
-            e = evaluateCardinality(cr.clone(), sets.clone());
+            e = evaluateCardinality(cr.clone(), sets);
             (e.clone(), true)
         },
         _ => {
-            (exp.clone(), changed.clone())
+            (exp, changed)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1892,7 +1892,7 @@ fn evaluateConnectionOperatorsExp(mut exp: Arc<DAE::Exp>, mut sets: Sets, mut se
 
 fn mkArrayIfNeeded(mut ty: Arc<DAE::Type>, mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp> = exp;
-    exp = Expression::arrayFill(TypesDump::getDimensions(ty.clone()), exp.clone())?;
+    exp = Expression::arrayFill(TypesDump::getDimensions(ty), exp)?;
     Ok(exp)
 }
 
@@ -1908,10 +1908,10 @@ fn evaluateInStream(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets, mut 
         } else {
             let ConnectorElement { set: __pa1, .. } = (e.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             set = __pa1.clone();
-            let Set::SET { ty: ConnectorType::STREAM { .. }, elements: __pa2 } = (unwrap_break_err!(setArrayGet(setArray.clone(), set.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+            let Set::SET { ty: ConnectorType::STREAM { .. }, elements: __pa2 } = (unwrap_break_err!(setArrayGet(setArray.clone(), set), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             sl = __pa2.clone();
         }
-        exp = unwrap_break_err!(generateInStreamExp(streamCref.clone(), sl.clone(), sets.clone(), setArray.clone(), flowThreshold.clone()), '__try0);
+        exp = unwrap_break_err!(generateInStreamExp(streamCref.clone(), sl.clone(), sets.clone(), setArray.clone(), flowThreshold), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
         let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -1923,7 +1923,7 @@ fn evaluateInStream(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets, mut 
 fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<metamodelica::List<ConnectorElement>>, mut sets: Sets, mut setArray: metamodelica::Array<Set>, mut flowThreshold: metamodelica::Real) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp>;
     let mut reducedStreams: Arc<metamodelica::List<ConnectorElement>>;
-    reducedStreams = List::filterOnFalse(streams.clone(), (std::sync::Arc::new({ let __pe_b0 = streamCref.clone(); move |__pe_a1| isZeroFlowMinMax(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
+    reducedStreams = List::filterOnFalse(streams, (std::sync::Arc::new({ let __pe_b0 = streamCref.clone(); move |__pe_a1| isZeroFlowMinMax(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
     exp = (::match_deref::match_deref! { match &(reducedStreams.clone()) {
         Deref @ metamodelica::List::Cons { head: ConnectorElement { name: c, face: DAE::Connect::Face::INSIDE, .. }, tail: Deref @ metamodelica::List::Nil } => {
             Expression::crefExp(c.clone())?
@@ -1931,7 +1931,7 @@ fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<
         Deref @ metamodelica::List::Cons { head: ConnectorElement { face: DAE::Connect::Face::INSIDE, .. }, tail: Deref @ metamodelica::List::Cons { head: ConnectorElement { face: DAE::Connect::Face::INSIDE, .. }, tail: Deref @ metamodelica::List::Nil } } => {
             let mut c: Arc<DAE::ComponentRef>;
             let mut e: Arc<DAE::Exp>;
-            let __pa0 = ::match_deref::match_deref! { match &(removeStreamSetElement(streamCref.clone(), reducedStreams.clone())?) {
+            let __pa0 = ::match_deref::match_deref! { match &(removeStreamSetElement(streamCref, reducedStreams)?) {
                 Deref @ metamodelica::List::Cons { head: ConnectorElement { name: __pa0, .. }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1942,12 +1942,12 @@ fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<
         Deref @ metamodelica::List::Cons { head: ConnectorElement { face: f1, .. }, tail: Deref @ metamodelica::List::Cons { head: ConnectorElement { face: f2, .. }, tail: Deref @ metamodelica::List::Nil } } if (!(faceEqual(f1.clone(), f2.clone()))) => {
             let mut c: Arc<DAE::ComponentRef>;
             let mut e: Arc<DAE::Exp>;
-            let __pa0 = ::match_deref::match_deref! { match &(removeStreamSetElement(streamCref.clone(), reducedStreams.clone())?) {
+            let __pa0 = ::match_deref::match_deref! { match &(removeStreamSetElement(streamCref, reducedStreams)?) {
                 Deref @ metamodelica::List::Cons { head: ConnectorElement { name: __pa0, .. }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             c = __pa0.clone();
-            e = evaluateInStream(c.clone(), sets.clone(), setArray.clone(), flowThreshold.clone())?;
+            e = evaluateInStream(c.clone(), sets, setArray.clone(), flowThreshold)?;
             e.clone()
         },
         _ => {
@@ -1955,14 +1955,14 @@ fn generateInStreamExp(mut streamCref: Arc<DAE::ComponentRef>, mut streams: Arc<
             let mut expr: Arc<DAE::Exp>;
             let mut inside: Arc<metamodelica::List<ConnectorElement>>;
             let mut outside: Arc<metamodelica::List<ConnectorElement>>;
-            (outside, inside) = List::splitOnTrue(reducedStreams.clone(), (std::sync::Arc::new(fnptr!(isOutsideElement, ConnectorElement)) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
-            inside = removeStreamSetElement(streamCref.clone(), inside.clone())?;
-            e = streamSumEquationExp(outside.clone(), inside.clone(), flowThreshold.clone())?;
+            (outside, inside) = List::splitOnTrue(reducedStreams, (std::sync::Arc::new(fnptr!(isOutsideElement, ConnectorElement)) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<bool> + 'static>))?;
+            inside = removeStreamSetElement(streamCref, inside.clone())?;
+            e = streamSumEquationExp(outside.clone(), inside.clone(), flowThreshold)?;
             if !(inside.clone().is_empty()) {
                 (expr, _) = streamFlowExp(listHead(inside.clone())?)?;
                 e = Expression::makePureBuiltinCall((literal!("$OMC$inStreamDiv")).clone(), list![e.clone(), expr.clone()], Expression::r#typeof(e.clone())?);
             }
-            (e, _) = evaluateConnectionOperators2(e.clone(), sets.clone(), setArray.clone(), false, flowThreshold.clone())?;
+            (e, _) = evaluateConnectionOperators2(e.clone(), sets, setArray.clone(), false, flowThreshold)?;
             e.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1982,17 +1982,17 @@ fn evaluateActualStream(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets, 
     flow_cr = getStreamFlowAssociation(streamCref.clone(), sets.clone())?;
     ety = ComponentReference::crefLastType(flow_cr.clone())?;
     flow_dir = evaluateFlowDirection(ety.clone())?;
-    if flow_dir.clone() == 1 {
-        rel_exp = evaluateInStream(streamCref.clone(), sets.clone(), setArray.clone(), flowThreshold.clone())?;
-    } else if flow_dir.clone() == -1 {
-        rel_exp = Expression::crefExp(streamCref.clone())?;
+    if flow_dir == 1 {
+        rel_exp = evaluateInStream(streamCref, sets, setArray.clone(), flowThreshold)?;
+    } else if flow_dir == -1 {
+        rel_exp = Expression::crefExp(streamCref)?;
     } else {
-        flow_exp = Expression::crefExp(flow_cr.clone())?;
+        flow_exp = Expression::crefExp(flow_cr)?;
         stream_exp = Expression::crefExp(streamCref.clone())?;
-        instream_exp = evaluateInStream(streamCref.clone(), sets.clone(), setArray.clone(), flowThreshold.clone())?;
-        rel_exp = Arc::new(DAE::Exp::IFEXP { expCond: Arc::new(DAE::Exp::RELATION { exp1: flow_exp.clone(), operator: DAE::Operator::GREATER { ty: ety.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None }), expThen: instream_exp.clone(), expElse: stream_exp.clone() });
+        instream_exp = evaluateInStream(streamCref, sets, setArray.clone(), flowThreshold)?;
+        rel_exp = Arc::new(DAE::Exp::IFEXP { expCond: Arc::new(DAE::Exp::RELATION { exp1: flow_exp, operator: DAE::Operator::GREATER { ty: ety }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None }), expThen: instream_exp, expElse: stream_exp });
     }
-    exp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("smooth")).clone() }), expLst: list![Arc::new(DAE::Exp::ICONST { integer: 0 }), rel_exp.clone()], attr: DAE::callAttrBuiltinReal().clone() });
+    exp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("smooth")).clone() }), expLst: list![Arc::new(DAE::Exp::ICONST { integer: 0 }), rel_exp], attr: DAE::callAttrBuiltinReal().clone() });
     Ok(exp)
 }
 
@@ -2003,13 +2003,13 @@ fn evaluateFlowDirection(mut ty: Arc<DAE::Type>) -> Result<i32> {
     let mut max_oval: Option<Arc<Values::Value>>;
     let mut min_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut max_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    attr = Types::getAttributes(ty.clone());
+    attr = Types::getAttributes(ty);
     if attr.clone().is_empty() {
         return Ok(direction.clone());
     }
     min_oval = Types::lookupAttributeValue(attr.clone(), (literal!("min")).clone())?;
-    max_oval = Types::lookupAttributeValue(attr.clone(), (literal!("max")).clone())?;
-    direction = (::match_deref::match_deref! { match &((min_oval.clone(), max_oval.clone())) {
+    max_oval = Types::lookupAttributeValue(attr, (literal!("max")).clone())?;
+    direction = (::match_deref::match_deref! { match &((min_oval, max_oval)) {
         (None, None) => 0,
         (Some(Deref @ Values::Value::REAL { real: __esc_min_val }), None) => {
             min_val = (*__esc_min_val).clone();
@@ -2032,13 +2032,13 @@ fn evaluateFlowDirection(mut ty: Arc<DAE::Type>) -> Result<i32> {
 
 fn evaluateCardinality(mut cref: Arc<DAE::ComponentRef>, mut sets: Sets) -> Arc<DAE::Exp> {
     let mut exp: Arc<DAE::Exp>;
-    exp = Arc::new(DAE::Exp::ICONST { integer: getConnectCount(cref.clone(), sets.sets.clone()) });
+    exp = Arc::new(DAE::Exp::ICONST { integer: getConnectCount(cref, sets.sets.clone()) });
     exp
 }
 
 fn simplifyDAEElements(mut hasCardinality: bool, mut DAE: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut DAE: DAE::DAElist = DAE;
-    if hasCardinality.clone() {
+    if hasCardinality {
         DAE = DAE::DAElist { elementLst: List::mapFlat(DAE.elementLst.clone(), (std::sync::Arc::new(fnptr!(simplifyDAEElement, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>))? };
     }
     Ok(DAE)
@@ -2089,39 +2089,39 @@ fn simplifyDAEIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut cond_value: bool;
     let mut rest_branches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = branches.clone();
-    for mut cond in &*conditions.clone() {
+    for mut cond in &*conditions {
         let mut cond = cond.clone();
         let __pa0 = ::match_deref::match_deref! { match &(cond.clone()) {
             Deref @ DAE::Exp::BCONST { bool: __pa0 } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         cond_value = __pa0.clone();
-        if cond_value.clone() == true {
+        if cond_value == true {
             elements = listHead(rest_branches.clone())?.reverse();
             return Ok(elements.clone());
         }
         rest_branches = listRest(rest_branches.clone())?;
     }
-    elements = elseBranch.clone().reverse();
+    elements = elseBranch.reverse();
     Ok(elements)
 }
 
 fn removeStreamSetElement(mut cref: Arc<DAE::ComponentRef>, mut elements: Arc<metamodelica::List<ConnectorElement>>) -> Result<Arc<metamodelica::List<ConnectorElement>>> {
     let mut elements: Arc<metamodelica::List<ConnectorElement>> = elements;
-    (elements, _) = List::deleteMemberOnTrue(cref.clone(), elements.clone(), (std::sync::Arc::new(compareCrefStreamSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, ConnectorElement) -> Result<bool> + 'static>))?;
+    (elements, _) = List::deleteMemberOnTrue(cref, elements, (std::sync::Arc::new(compareCrefStreamSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, ConnectorElement) -> Result<bool> + 'static>))?;
     Ok(elements)
 }
 
 fn compareCrefStreamSet(mut cref: Arc<DAE::ComponentRef>, mut element: ConnectorElement) -> Result<bool> {
     let mut matches: bool;
-    matches = ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), element.name.clone())?;
+    matches = ComponentReferenceBasics::crefEqualNoStringCompare(cref, element.name.clone())?;
     Ok(matches)
 }
 
 pub(crate) fn componentFace(mut env: FCore::Graph, mut componentRef: Arc<DAE::ComponentRef>) -> Result<Face> {
     let mut face: Face;
     face = 'mc: {
-        let __mc_input = componentRef.clone();
+        let __mc_input = componentRef;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
@@ -2157,7 +2157,7 @@ pub(crate) fn componentFace(mut env: FCore::Graph, mut componentRef: Arc<DAE::Co
 
 pub(crate) fn componentFaceType(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Face> {
     let mut outFace: Face;
-    outFace = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outFace = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE,
         Deref @ DAE::ComponentRef::CREF_QUAL { identType: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::CONNECTOR { path: _, isExpandable: _ }, .. }, .. } => openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE,
         Deref @ DAE::ComponentRef::CREF_QUAL { identType: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::CONNECTOR { path: _, isExpandable: _ }, .. }, .. }, .. } => openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE,
@@ -2171,8 +2171,8 @@ pub(crate) fn checkConnectorBalance(mut vars: Arc<metamodelica::List<Arc<DAE::Va
     let mut potentials: i32;
     let mut flows: i32;
     let mut streams: i32;
-    (potentials, flows, streams) = countConnectorVars(vars.clone())?;
-    let true = (checkConnectorBalance2(potentials.clone(), flows.clone(), streams.clone(), path.clone(), info.clone())?) else { bail!("pattern mismatch") };
+    (potentials, flows, streams) = countConnectorVars(vars)?;
+    let true = (checkConnectorBalance2(potentials, flows, streams, path, info)?) else { bail!("pattern mismatch") };
     Ok(())
 }
 
@@ -2184,16 +2184,16 @@ fn checkConnectorBalance2(mut potentialVars: i32, mut flowVars: i32, mut streamV
     if Config::languageStandardAtMost(Config::LanguageStandard::_2_x.clone())? {
         return Ok(isBalanced.clone());
     }
-    if potentialVars.clone() != flowVars.clone() {
-        flow_str = ArcStr::from(::std::format!("{}", flowVars.clone()));
-        potential_str = ArcStr::from(::std::format!("{}", potentialVars.clone()));
+    if potentialVars != flowVars {
+        flow_str = ArcStr::from(::std::format!("{}", flowVars));
+        potential_str = ArcStr::from(::std::format!("{}", potentialVars));
         class_str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
-        Error::addSourceMessage(Error::UNBALANCED_CONNECTOR.clone(), list![(class_str.clone()).clone(), (potential_str.clone()).clone(), (flow_str.clone()).clone()], info.clone())?;
+        Error::addSourceMessage(Error::UNBALANCED_CONNECTOR.clone(), list![(class_str).clone(), (potential_str).clone(), (flow_str).clone()], info.clone())?;
     }
-    if streamVars.clone() > 0 && flowVars.clone() != 1 {
-        flow_str = ArcStr::from(::std::format!("{}", flowVars.clone()));
-        class_str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
-        Error::addSourceMessage(Error::MISMATCHED_FLOW_IN_STREAM_CONNECTOR.clone(), list![(class_str.clone()).clone(), (flow_str.clone()).clone()], info.clone())?;
+    if streamVars > 0 && flowVars != 1 {
+        flow_str = ArcStr::from(::std::format!("{}", flowVars));
+        class_str = (AbsynUtil::pathString(path, (literal!(".")).clone(), true, false)?).clone();
+        Error::addSourceMessage(Error::MISMATCHED_FLOW_IN_STREAM_CONNECTOR.clone(), list![(class_str).clone(), (flow_str).clone()], info)?;
         isBalanced = false;
     }
     Ok(isBalanced)
@@ -2210,7 +2210,7 @@ fn countConnectorVars(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
     let mut p: i32;
     let mut f: i32;
     let mut s: i32;
-    for mut var in &*vars.clone() {
+    for mut var in &*vars {
         let mut var = var.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(var.clone()) {
             Deref @ DAE::Var { ty: __pa0, attributes: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
@@ -2232,21 +2232,21 @@ fn countConnectorVars(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
             if AbsynUtil::isInputOrOutput(DAEUtil::getAttrDirection(attr.clone()))? {
                 p = 0;
             }
-            potentialVars = potentialVars.clone() + p.clone() * n.clone();
-            flowVars = flowVars.clone() + f.clone() * n.clone();
-            streamVars = streamVars.clone() + s.clone() * n.clone();
+            potentialVars = potentialVars + p * n;
+            flowVars = flowVars + f * n;
+            streamVars = streamVars + s * n;
         } else {
             let () = (::match_deref::match_deref! { match &(attr.clone()) {
         Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. } => {
-            flowVars = flowVars.clone() + sizeOfType(var.ty.clone())?;
+            flowVars = flowVars + sizeOfType(var.ty.clone())?;
             ()
         },
         Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::STREAM { .. }, .. } => {
-            streamVars = streamVars.clone() + sizeOfType(var.ty.clone())?;
+            streamVars = streamVars + sizeOfType(var.ty.clone())?;
             ()
         },
         Deref @ DAE::Attributes { direction: Absyn::Direction::BIDIR { .. }, variability: SCode::Variability::VAR { .. }, .. } => {
-            potentialVars = potentialVars.clone() + sizeOfType(var.ty.clone())?;
+            potentialVars = potentialVars + sizeOfType(var.ty.clone())?;
             ()
         },
         _ => (),
@@ -2259,9 +2259,9 @@ fn countConnectorVars(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
 
 fn sizeOfVariableList(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<i32> {
     let mut size: i32 = 0;
-    for mut var in &*vars.clone() {
+    for mut var in &*vars {
         let mut var = var.clone();
-        size = size.clone() + sizeOfType(var.ty.clone())?;
+        size = size + sizeOfType(var.ty.clone())?;
     }
     Ok(size)
 }
@@ -2308,7 +2308,7 @@ fn sizeOfType(mut ty: Arc<DAE::Type>) -> Result<i32> {
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.sizeOfType failed on ")); __mm_s.push_str(&*TypesDump::printTypeStr(ty.clone())); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.sizeOfType failed on ")); __mm_s.push_str(&*TypesDump::printTypeStr(ty)); ArcStr::from(__mm_s) }).clone())?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -2322,7 +2322,7 @@ pub(crate) fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes:
         let mut pv: i32 = 0;
         let mut fv: i32 = 0;
         let mut sv: i32 = 0;
-        (match (state.clone(), attributes.clone()) {
+        (match (state.clone(), attributes) {
         (ClassInf::State::CONNECTOR { .. }, SCode::Attributes { connectorType: mut ct, direction: Absyn::Direction::BIDIR { .. }, .. }) => {
             if SCodeUtil::flowBool(ct.clone()) {
                 fv = 1;
@@ -2331,7 +2331,7 @@ pub(crate) fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes:
             } else {
                 pv = 1;
             }
-            checkConnectorBalance2(pv.clone(), fv.clone(), sv.clone(), var_field!(state.path, ClassInf::State::CONNECTOR).clone(), info.clone())?
+            checkConnectorBalance2(pv.clone(), fv.clone(), sv.clone(), var_field!(state.path, ClassInf::State::CONNECTOR).clone(), info)?
         },
         _ => {
             true
@@ -2343,7 +2343,7 @@ pub(crate) fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes:
 
 pub(crate) fn isReferenceInConnects(mut connects: Arc<metamodelica::List<ConnectorElement>>, mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut isThere: bool = false;
-    for mut ce in &*connects.clone() {
+    for mut ce in &*connects {
         let mut ce = ce.clone();
         if ComponentReferenceBasics::crefPrefixOf(cref.clone(), ce.name.clone())? {
             isThere = true;
@@ -2357,23 +2357,23 @@ pub(crate) fn removeReferenceFromConnects(mut connects: Arc<metamodelica::List<C
     let mut connects: Arc<metamodelica::List<ConnectorElement>> = connects;
     let mut wasRemoved: bool;
     let mut oe: Option<ConnectorElement>;
-    (connects, oe) = List::deleteMemberOnTrue(cref.clone(), connects.clone(), (std::sync::Arc::new(removeReferenceFromConnects2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, ConnectorElement) -> Result<bool> + 'static>))?;
-    wasRemoved = isSome(oe.clone());
+    (connects, oe) = List::deleteMemberOnTrue(cref, connects, (std::sync::Arc::new(removeReferenceFromConnects2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, ConnectorElement) -> Result<bool> + 'static>))?;
+    wasRemoved = isSome(oe);
     Ok((connects, wasRemoved))
 }
 
 fn removeReferenceFromConnects2(mut cref: Arc<DAE::ComponentRef>, mut element: ConnectorElement) -> Result<bool> {
     let mut matches: bool;
-    matches = ComponentReferenceBasics::crefPrefixOf(cref.clone(), element.name.clone())?;
+    matches = ComponentReferenceBasics::crefPrefixOf(cref, element.name.clone())?;
     Ok(matches)
 }
 
 pub(crate) fn printSetsStr(mut sets: Sets) -> Result<ArcStr> {
     let mut string: ArcStr;
     string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", sets.setCount.clone()))); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone();
-    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*printSetTrieStr(sets.sets.clone(), (literal!("\t")).clone())?); ArcStr::from(__mm_s) }).clone();
-    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*literal!("Connected sets:\n")); ArcStr::from(__mm_s) }).clone();
-    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*printSetConnections(sets.connections.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string); __mm_s.push_str(&*printSetTrieStr(sets.sets.clone(), (literal!("\t")).clone())?); ArcStr::from(__mm_s) }).clone();
+    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string); __mm_s.push_str(&*literal!("Connected sets:\n")); ArcStr::from(__mm_s) }).clone();
+    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string); __mm_s.push_str(&*printSetConnections(sets.connections.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     Ok(string)
 }
 
@@ -2382,19 +2382,19 @@ fn printSetTrieStr(mut trie: Arc<SetTrieNode>, mut accumName: ArcStr) -> Result<
     string = ((::match_deref::match_deref! { match &(trie.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => {
             let mut res: ArcStr;
-            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*accumName.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*trie).name, SetTrieNode::SET_TRIE_LEAF).clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone();
+            res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*accumName); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*trie).name, SetTrieNode::SET_TRIE_LEAF).clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone();
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printLeafElementStr(var_field!((*trie).insideElement, SetTrieNode::SET_TRIE_LEAF).clone())?); ArcStr::from(__mm_s) }).clone();
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printLeafElementStr(var_field!((*trie).outsideElement, SetTrieNode::SET_TRIE_LEAF).clone())?); ArcStr::from(__mm_s) }).clone();
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*printOptFlowAssociation(var_field!((*trie).flowAssociation, SetTrieNode::SET_TRIE_LEAF).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { name: Deref @ "", .. } => {
-            stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (accumName.clone()).clone())?)
+            stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (accumName).clone())?)
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => {
             let mut name: ArcStr;
             let mut res: ArcStr;
-            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*accumName.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*trie).name, SetTrieNode::SET_TRIE_NODE).clone()); ArcStr::from(__mm_s) }).clone();
+            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*accumName); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*trie).name, SetTrieNode::SET_TRIE_NODE).clone()); ArcStr::from(__mm_s) }).clone();
             res = stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (name.clone()).clone())?);
             res.clone()
         },
@@ -2405,7 +2405,7 @@ fn printSetTrieStr(mut trie: Arc<SetTrieNode>, mut accumName: ArcStr) -> Result<
 
 fn printLeafElementStr(mut element: Option<ConnectorElement>) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = ((match element.clone() {
+    string = ((match element {
         Some(mut e @ ConnectorElement { .. }) => {
             let mut res: ArcStr;
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*printFaceStr(e.face.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
@@ -2422,14 +2422,14 @@ fn printLeafElementStr(mut element: Option<ConnectorElement>) -> Result<ArcStr> 
 pub(crate) fn printElementStr(mut element: ConnectorElement) -> Result<ArcStr> {
     let mut string: ArcStr;
     string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(element.name.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
-    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*printFaceStr(element.face.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
-    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*printConnectorTypeStr(element.ty.clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", element.set.clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string); __mm_s.push_str(&*printFaceStr(element.face.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
+    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string); __mm_s.push_str(&*printConnectorTypeStr(element.ty.clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", element.set.clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
     Ok(string)
 }
 
 pub(crate) fn printFaceStr(mut face: Face) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = ((match face.clone() {
+    string = ((match face {
         DAE::Connect::Face::INSIDE => literal!("inside"),
         DAE::Connect::Face::OUTSIDE => literal!("outside"),
         DAE::Connect::Face::NO_FACE => literal!("unknown"),
@@ -2439,7 +2439,7 @@ pub(crate) fn printFaceStr(mut face: Face) -> Result<ArcStr> {
 
 fn printConnectorTypeStr(mut ty: ConnectorType) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = ((match ty.clone() {
+    string = ((match ty {
         DAE::Connect::ConnectorType::EQU => literal!("equ"),
         DAE::Connect::ConnectorType::FLOW => literal!("flow"),
         DAE::Connect::ConnectorType::STREAM { .. } => literal!("stream"),
@@ -2450,7 +2450,7 @@ fn printConnectorTypeStr(mut ty: ConnectorType) -> Result<ArcStr> {
 
 fn printOptFlowAssociation(mut cref: Option<Arc<DAE::ComponentRef>>) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = ((::match_deref::match_deref! { match &(cref.clone()) {
+    string = ((::match_deref::match_deref! { match &(cref) {
         None => {
             literal!("")
         },
@@ -2464,7 +2464,7 @@ fn printOptFlowAssociation(mut cref: Option<Arc<DAE::ComponentRef>>) -> Result<A
 
 fn printSetConnections(mut connections: Arc<metamodelica::List<(i32, i32)>>) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = stringAppendList(List::map(connections.clone(), (std::sync::Arc::new(fnptr!(printSetConnection, (i32, i32))) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32)) -> Result<ArcStr> + 'static>))?);
+    string = stringAppendList(List::map(connections, (std::sync::Arc::new(fnptr!(printSetConnection, (i32, i32))) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32)) -> Result<ArcStr> + 'static>))?);
     Ok(string)
 }
 
@@ -2472,8 +2472,8 @@ fn printSetConnection(mut connection: (i32, i32)) -> ArcStr {
     let mut string: ArcStr;
     let mut set1: i32;
     let mut set2: i32;
-    (set1, set2) = connection.clone();
-    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", set1.clone()))); __mm_s.push_str(&*literal!(" connected to ")); __mm_s.push_str(&*intString(set2.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    (set1, set2) = connection;
+    string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", set1))); __mm_s.push_str(&*literal!(" connected to ")); __mm_s.push_str(&*intString(set2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     string
 }
 
@@ -2488,7 +2488,7 @@ fn printSetStr(mut set: Set) -> Result<ArcStr> {
 
 fn getAllEquCrefs(mut sets: Arc<metamodelica::List<Set>>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    for mut set in &*sets.clone() {
+    for mut set in &*sets {
         let mut set = set.clone();
         let () = (match set.clone() {
         DAE::Connect::Set::SET { ty: DAE::Connect::ConnectorType::EQU, .. } => {
@@ -2517,26 +2517,26 @@ fn removeUnusedExpandableVariablesAndConnections(mut sets: Arc<metamodelica::Lis
     let mut setsAsCrefs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>;
     let DAE::DAE { elementLst: __pa0 } = (DAE.clone()) else { bail!("pattern mismatch") };
     elems = __pa0.clone();
-    expandableVars = getExpandableVariablesWithNoBinding(elems.clone());
+    expandableVars = getExpandableVariablesWithNoBinding(elems);
     dae = DAEUtil::removeVariables(DAE.clone(), expandableVars.clone())?;
-    usedInDAE = getAllExpandableCrefsFromDAE(dae.clone())?;
+    usedInDAE = getAllExpandableCrefsFromDAE(dae)?;
     setsAsCrefs = getExpandableEquSetsAsCrefs(sets.clone())?;
-    setsAsCrefs = mergeEquSetsAsCrefs(setsAsCrefs.clone())?;
-    setsAsCrefs = mergeEquSetsAsCrefs(setsAsCrefs.clone())?;
-    onlyExpandableConnected = getOnlyExpandableConnectedCrefs(setsAsCrefs.clone());
-    unnecessary = List::setDifferenceOnTrue(onlyExpandableConnected.clone(), usedInDAE.clone(), (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::crefEqualWithoutSubs, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-    DAE = DAEUtil::removeVariables(DAE.clone(), unnecessary.clone())?;
-    sets = removeCrefsFromSets(sets.clone(), unnecessary.clone())?;
+    setsAsCrefs = mergeEquSetsAsCrefs(setsAsCrefs)?;
+    setsAsCrefs = mergeEquSetsAsCrefs(setsAsCrefs)?;
+    onlyExpandableConnected = getOnlyExpandableConnectedCrefs(setsAsCrefs);
+    unnecessary = List::setDifferenceOnTrue(onlyExpandableConnected, usedInDAE.clone(), (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::crefEqualWithoutSubs, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    DAE = DAEUtil::removeVariables(DAE, unnecessary.clone())?;
+    sets = removeCrefsFromSets(sets, unnecessary)?;
     equVars = getAllEquCrefs(sets.clone());
-    expandableVars = List::setDifferenceOnTrue(expandableVars.clone(), usedInDAE.clone(), (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::crefEqualWithoutSubs, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-    unnecessary = List::setDifferenceOnTrue(expandableVars.clone(), equVars.clone(), (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::crefEqualWithoutSubs, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-    DAE = DAEUtil::removeVariables(DAE.clone(), unnecessary.clone())?;
+    expandableVars = List::setDifferenceOnTrue(expandableVars, usedInDAE, (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::crefEqualWithoutSubs, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    unnecessary = List::setDifferenceOnTrue(expandableVars, equVars, (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::crefEqualWithoutSubs, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    DAE = DAEUtil::removeVariables(DAE, unnecessary)?;
     Ok((sets, DAE))
 }
 
 fn isEquType(mut ty: ConnectorType) -> bool {
     let mut isEqu: bool;
-    isEqu = (match ty.clone() {
+    isEqu = (match ty {
         DAE::Connect::ConnectorType::EQU => true,
         _ => false,
     });
@@ -2546,11 +2546,11 @@ fn isEquType(mut ty: ConnectorType) -> bool {
 pub fn topLevelInput(mut componentRef: Arc<DAE::ComponentRef>, mut varDirection: DAE::VarDirection, mut connectorType: Arc<DAE::ConnectorType>, mut visibility: DAE::VarVisibility) -> Result<bool> {
     let mut isTopLevel: bool;
     let mut newInst: bool = Flags::isSet(Flags::SCODE_INST.clone())?;
-    isTopLevel = (::match_deref::match_deref! { match &((varDirection.clone(), componentRef.clone(), visibility.clone(), newInst.clone())) {
+    isTopLevel = (::match_deref::match_deref! { match &((varDirection, componentRef.clone(), visibility, newInst)) {
         (_, _, DAE::VarVisibility::PROTECTED { .. }, _) => false,
         (DAE::VarDirection::INPUT { .. }, _, _, true) => true,
         (DAE::VarDirection::INPUT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }, _, _) => true,
-        (DAE::VarDirection::INPUT { .. }, _, _, _) if (faceEqual(componentFaceType(componentRef.clone())?, openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE)) => topLevelConnectorType(connectorType.clone()),
+        (DAE::VarDirection::INPUT { .. }, _, _, _) if (faceEqual(componentFaceType(componentRef.clone())?, openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE)) => topLevelConnectorType(connectorType),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2559,7 +2559,7 @@ pub fn topLevelInput(mut componentRef: Arc<DAE::ComponentRef>, mut varDirection:
 
 fn topLevelConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> bool {
     let mut isTopLevel: bool;
-    isTopLevel = (::match_deref::match_deref! { match &(inConnectorType.clone()) {
+    isTopLevel = (::match_deref::match_deref! { match &(inConnectorType) {
         Deref @ DAE::ConnectorType::FLOW { .. } => true,
         Deref @ DAE::ConnectorType::POTENTIAL { .. } => true,
         _ => false,
@@ -2571,9 +2571,9 @@ fn topLevelConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> bool {
 pub(crate) fn getAllExpandableCrefsFromDAE(mut inDAE: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>;
-    let DAE::DAE { elementLst: __pa0 } = (inDAE.clone()) else { bail!("pattern mismatch") };
+    let DAE::DAE { elementLst: __pa0 } = (inDAE) else { bail!("pattern mismatch") };
     elts = __pa0.clone();
-    let (_, (_, __pa1)) = DAEUtil::traverseDAEElementList(elts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(collectAllExpandableCrefsInExp, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil()))?;
+    let (_, (_, __pa1)) = DAEUtil::traverseDAEElementList(elts, (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(collectAllExpandableCrefsInExp, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil()))?;
     outCrefs = __pa1.clone();
     Ok(outCrefs)
 }
@@ -2583,10 +2583,10 @@ fn collectAllExpandableCrefsInExp(mut exp: Arc<DAE::Exp>, mut acc: Arc<metamodel
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     (outExp, outCrefs) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
-            (exp.clone(), List::consOnTrue(isExpandable(cr.clone()), cr.clone(), acc.clone()))
+            (exp, List::consOnTrue(isExpandable(cr.clone()), cr.clone(), acc))
         },
         _ => {
-            (exp.clone(), acc.clone())
+            (exp, acc)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

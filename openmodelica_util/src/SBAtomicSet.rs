@@ -116,7 +116,7 @@ pub(crate) fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>)
     diff = SBMultiInterval::complement(set1.aset.clone(), set2.aset.clone())?;
     res = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>, Arc<SBAtomicSet>) -> Result<bool> + 'static>), UnorderedSet::bucketCount(diff.clone()));
     if !(UnorderedSet::isEmpty(diff.clone())) {
-        let __range0 = UnorderedSet::toArray(diff.clone()).borrow().iter().cloned().collect::<Vec<_>>();
+        let __range0 = UnorderedSet::toArray(diff).borrow().iter().cloned().collect::<Vec<_>>();
         for mut s in __range0 {
             UnorderedSet::add(new(s.clone()), res.clone())?;
         }
@@ -132,7 +132,7 @@ pub(crate) fn crossProd(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) 
 
 pub(crate) fn cardinality(mut set: Arc<SBAtomicSet>, mut card: i32) -> i32 {
     let mut card: i32 = card;
-    card = card.clone() + SBMultiInterval::cardinality(set.aset.clone());
+    card = card + SBMultiInterval::cardinality(set.aset.clone());
     card
 }
 
@@ -148,7 +148,7 @@ pub(crate) fn minElem(mut set: Arc<SBAtomicSet>) -> Result<metamodelica::Array<i
 
 pub(crate) fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut set: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
     let mut res: Arc<SBAtomicSet>;
-    res = new(SBMultiInterval::replace(i.clone(), dim.clone(), set.aset.clone())?);
+    res = new(SBMultiInterval::replace(i, dim, set.aset.clone())?);
     Ok(res)
 }
 

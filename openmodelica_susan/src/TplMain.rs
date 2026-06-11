@@ -58,7 +58,7 @@ pub(crate) static emptyTxt: std::sync::LazyLock<Tpl::Text> = std::sync::LazyLock
 pub(crate) static dsi: std::sync::LazyLock<SourceInfo> = std::sync::LazyLock::new(|| { TplAbsyn::dummySourceInfo.clone() });
 
 pub fn main(mut inFile: ArcStr) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inFile.clone()) {
+    let () = (::match_deref::match_deref! { match &(inFile) {
         Deref @ "SusanTest.tpl" => {
             tplMainTest((literal!("a")).clone())?;
             ()
@@ -79,7 +79,7 @@ pub fn main(mut inFile: ArcStr) -> Result<()> {
 
 pub(crate) fn translateFile(mut inFile: ArcStr) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = inFile.clone();
+        let __mc_input = inFile;
         if let Ok(__v) = (|| -> Result<_> {
             let mut file = __mc_input.clone() else { bail!("nomatch") };
             let mut destFile: ArcStr;
@@ -123,7 +123,7 @@ pub(crate) fn translateFile(mut inFile: ArcStr) -> Result<()> {
 pub(crate) fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inTestLabel: ArcStr, mut inNotPassedCnt: i32) -> Result<i32> {
     let mut outNotPassedCnt: i32;
     outNotPassedCnt = 'mc: {
-        let __mc_input = (inStringReturned.clone(), inStringShouldBe.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inTestLabel.clone(), inNotPassedCnt.clone());
+        let __mc_input = (inStringReturned, inStringShouldBe, inPrintResult, inPrintErrorBuffer, inTestLabel, inNotPassedCnt);
         if let Ok(__v) = (|| -> Result<_> {
             let (mut strRet, mut strShouldBe, mut printResult, mut printErrBuf, mut strLabel, mut notPassedCnt) = __mc_input.clone() else { bail!("nomatch") };
             let mut strRes: ArcStr;
@@ -168,7 +168,7 @@ pub(crate) fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShoul
 pub(crate) fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inNotPassedCnt: i32) -> Result<i32> {
     let mut outNotPassedCnt: i32;
     outNotPassedCnt = 'mc: {
-        let __mc_input = (inFile.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inNotPassedCnt.clone());
+        let __mc_input = (inFile, inPrintResult, inPrintErrorBuffer, inNotPassedCnt);
         if let Ok(__v) = (|| -> Result<_> {
             let (mut file, mut printRes, mut printErrBuf, mut notPassedCnt) = __mc_input.clone() else { bail!("nomatch") };
             let mut res: ArcStr;
@@ -197,7 +197,7 @@ pub(crate) fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, 
 
 pub(crate) fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = inFile.clone();
+        let __mc_input = inFile;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "a" => {
@@ -679,7 +679,7 @@ pub(crate) use self::Operator::{PLUS,TIMES,LESS};
 fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statement>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
-        let __mc_input = (in_txt.clone(), in_items.clone());
+        let __mc_input = (in_txt, in_items);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ metamodelica::List::Nil) => {
@@ -718,7 +718,7 @@ fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statemen
 pub(crate) fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
-        let __mc_input = (in_txt.clone(), in_i_it.clone());
+        let __mc_input = (in_txt, in_i_it);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ Statement::ASSIGN { lhs: i_lhs, rhs: i_rhs }) => {
@@ -767,7 +767,7 @@ pub(crate) fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> T
 pub(crate) fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
-        let __mc_input = (in_txt.clone(), in_i_it.clone());
+        let __mc_input = (in_txt.clone(), in_i_it);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ Exp::ICONST { value: i_value }) => {
@@ -820,7 +820,7 @@ pub(crate) fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Tpl::Text {
 pub(crate) fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
-        let __mc_input = (in_txt.clone(), in_i_it.clone());
+        let __mc_input = (in_txt.clone(), in_i_it);
         if let Ok(__v) = (|| -> Result<_> {
             let (mut txt, Operator::PLUS { .. }) = __mc_input.clone() else { bail!("nomatch") };
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
@@ -851,7 +851,7 @@ pub(crate) fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Tpl::Text {
 fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
-        let __mc_input = (in_txt.clone(), in_items.clone());
+        let __mc_input = (in_txt, in_items);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ metamodelica::List::Nil) => {
@@ -890,7 +890,7 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> R
 fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
-        let __mc_input = (in_txt.clone(), in_items.clone());
+        let __mc_input = (in_txt, in_items);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ metamodelica::List::Nil) => {
@@ -930,13 +930,13 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 
 pub(crate) fn intMatrix(mut txt: Tpl::Text, mut i_lstOfLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[ ")).clone() }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_55(out_txt.clone(), i_lstOfLst.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ]")).clone() }))?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[ ")).clone() }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;
+    out_txt = Tpl::pushIter(out_txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_55(out_txt, i_lstOfLst)?;
+    out_txt = Tpl::popIter(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ]")).clone() }))?;
     Ok(out_txt)
 }
 

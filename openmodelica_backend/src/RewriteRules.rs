@@ -137,8 +137,8 @@ pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, b
             let mut rules: Rules;
             let mut b: bool;
             rules = getRulesFrontEnd(getAllRules()?);
-            (outExp, b) = matchAndRewriteExpFrontEnd(inExp.clone(), rules.clone())?;
-            (outExp.clone(), b.clone())
+            (outExp, b) = matchAndRewriteExpFrontEnd(inExp, rules.clone())?;
+            (outExp, b.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -149,7 +149,7 @@ pub(crate) fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut changed: bool;
     (outExp, changed) = 'mc: {
-        let __mc_input = inRules.clone();
+        let __mc_input = inRules;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -195,7 +195,7 @@ pub(crate) fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules
 
 pub(crate) fn rewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> Result<Arc<Absyn::Exp>> {
     let mut outExp: Arc<Absyn::Exp>;
-    (outExp, _) = AbsynUtil::traverseExp(inExp.clone(), (std::sync::Arc::new(replaceBindsFrontEnd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Bind>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Bind>>)> + 'static>), inBinds.clone())?;
+    (outExp, _) = AbsynUtil::traverseExp(inExp, (std::sync::Arc::new(replaceBindsFrontEnd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Bind>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Bind>>)> + 'static>), inBinds)?;
     Ok(outExp)
 }
 
@@ -209,7 +209,7 @@ pub(crate) fn replaceBindsFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Bind
             (e2.clone(), bnds.clone())
         },
         _ => {
-            (inExp.clone(), inBinds.clone())
+            (inExp, inBinds)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -219,7 +219,7 @@ pub(crate) fn replaceBindsFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Bind
 pub(crate) fn replaceBindFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> Result<Arc<Absyn::Exp>> {
     let mut outExp: Arc<Absyn::Exp>;
     let mut e: Arc<Absyn::Exp>;
-    for mut bind in &*inBinds.clone() {
+    for mut bind in &*inBinds {
         let mut bind = bind.clone();
         let Bind::FRONTEND_BIND { slot: __pa0, value: __pa1 } = (bind.clone()) else { bail!("pattern mismatch") };
         e = __pa0.clone();
@@ -228,7 +228,7 @@ pub(crate) fn replaceBindFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds
             return Ok(outExp.clone());
         }
     }
-    outExp = inExp.clone();
+    outExp = inExp;
     Ok(outExp)
 }
 
@@ -489,13 +489,13 @@ pub(crate) fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<A
 
 pub(crate) fn matchesExpOptFrontEnd(mut inOExp1: Option<Arc<Absyn::Exp>>, mut inOExp2: Option<Arc<Absyn::Exp>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inOExp1.clone(), inOExp2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inOExp1, inOExp2)) {
         (None, None) => {
-            inAcc.clone()
+            inAcc
         },
         (Some(e1a), Some(e1b)) => {
-            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds.clone()
+            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds
         },
         _ => {
             bail!("fail")
@@ -507,14 +507,14 @@ pub(crate) fn matchesExpOptFrontEnd(mut inOExp1: Option<Arc<Absyn::Exp>>, mut in
 
 pub(crate) fn matchesExpLstFrontEnd(mut inExps1: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inExps2: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inExps1, inExps2)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inAcc.clone()
+            inAcc
         },
         (Deref @ metamodelica::List::Cons { head: e1a, tail: exps1a }, Deref @ metamodelica::List::Cons { head: e1b, tail: exps1b }) => {
-            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), outBinds.clone())?;
-            outBinds.clone()
+            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), outBinds)?;
+            outBinds
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -523,16 +523,16 @@ pub(crate) fn matchesExpLstFrontEnd(mut inExps1: Arc<metamodelica::List<Arc<Absy
 
 pub(crate) fn matchesFargsFrontEnd(mut inFargs1: Arc<Absyn::FunctionArgs>, mut inFargs2: Arc<Absyn::FunctionArgs>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inFargs1.clone(), inFargs2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inFargs1, inFargs2)) {
         (Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: exps1a, argNames: nargs1a }, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: exps1b, argNames: nargs1b }) => {
-            outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
+            outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), inAcc)?;
             let true = (intEq((nargs1a.clone().len() as i32), (nargs1b.clone().len() as i32))) else { bail!("pattern mismatch") };
-            outBinds = matchesNargsFrontEnd(sortNargsFrontEnd(nargs1a.clone())?, sortNargsFrontEnd(nargs1b.clone())?, outBinds.clone())?;
-            outBinds.clone()
+            outBinds = matchesNargsFrontEnd(sortNargsFrontEnd(nargs1a.clone())?, sortNargsFrontEnd(nargs1b.clone())?, outBinds)?;
+            outBinds
         },
         (Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { exp: e1a, iterType: _, iterators: _ }, Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { exp: e1b, iterType: _, iterators: _ }) => {
-            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds.clone()
+            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -541,7 +541,7 @@ pub(crate) fn matchesFargsFrontEnd(mut inFargs1: Arc<Absyn::FunctionArgs>, mut i
 
 pub(crate) fn sortNargsFrontEnd(mut inNargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::NamedArg>>>> {
     let mut outNargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
-    outNargs = List::sort(inNargs.clone(), (std::sync::Arc::new(inNargComp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, Arc<Absyn::NamedArg>) -> Result<bool> + 'static>))?;
+    outNargs = List::sort(inNargs, (std::sync::Arc::new(inNargComp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, Arc<Absyn::NamedArg>) -> Result<bool> + 'static>))?;
     Ok(outNargs)
 }
 
@@ -549,31 +549,31 @@ pub(crate) fn inNargComp(mut inNarg1: Arc<Absyn::NamedArg>, mut inNarg2: Arc<Abs
     let mut isGreater: bool;
     let mut id1: ArcStr;
     let mut id2: ArcStr;
-    let __pa0 = ::match_deref::match_deref! { match &(inNarg1.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inNarg1) {
         Deref @ Absyn::NamedArg { argName: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     id1 = __pa0.clone();
-    let __pa1 = ::match_deref::match_deref! { match &(inNarg2.clone()) {
+    let __pa1 = ::match_deref::match_deref! { match &(inNarg2) {
         Deref @ Absyn::NamedArg { argName: __pa1, .. } => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
     id2 = __pa1.clone();
-    isGreater = intGt(stringCompare((id1.clone()).clone(), (id2.clone()).clone()), 0);
+    isGreater = intGt(stringCompare((id1).clone(), (id2).clone()), 0);
     Ok(isGreater)
 }
 
 pub(crate) fn matchesNargsFrontEnd(mut inNargs1: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inNargs2: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inNargs1.clone(), inNargs2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inNargs1, inNargs2)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inAcc.clone()
+            inAcc
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName: n1a, argValue: e1a }, tail: nargs1a }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName: n1b, argValue: e1b }, tail: nargs1b }) => {
             let true = (stringEq((n1a.clone()).clone(), (n1b.clone()).clone())) else { bail!("pattern mismatch") };
-            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds = matchesNargsFrontEnd(nargs1a.clone(), nargs1b.clone(), outBinds.clone())?;
-            outBinds.clone()
+            outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds = matchesNargsFrontEnd(nargs1a.clone(), nargs1b.clone(), outBinds)?;
+            outBinds
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -582,14 +582,14 @@ pub(crate) fn matchesNargsFrontEnd(mut inNargs1: Arc<metamodelica::List<Arc<Absy
 
 pub(crate) fn matchesExpLstLstFrontEnd(mut inExps1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>, mut inExps2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inExps1, inExps2)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inAcc.clone()
+            inAcc
         },
         (Deref @ metamodelica::List::Cons { head: e1a, tail: exps1a }, Deref @ metamodelica::List::Cons { head: e1b, tail: exps1b }) => {
-            outBinds = matchesExpLstFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds = matchesExpLstLstFrontEnd(exps1a.clone(), exps1b.clone(), outBinds.clone())?;
-            outBinds.clone()
+            outBinds = matchesExpLstFrontEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds = matchesExpLstLstFrontEnd(exps1a.clone(), exps1b.clone(), outBinds)?;
+            outBinds
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -598,7 +598,7 @@ pub(crate) fn matchesExpLstLstFrontEnd(mut inExps1: Arc<metamodelica::List<Arc<m
 
 pub(crate) fn isPlaceHolderFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
     let mut isHolder: bool;
-    isHolder = (::match_deref::match_deref! { match &(inExp.clone()) {
+    isHolder = (::match_deref::match_deref! { match &(inExp) {
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: _ } } => {
             let mut b: bool;
             b = intEq(System::stringFind((name.clone()).clone(), (literal!("'$")).clone())?, 0);
@@ -622,8 +622,8 @@ pub(crate) fn rewriteBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>,
             let mut rules: Rules;
             let mut b: bool;
             rules = getRulesBackEnd(getAllRules()?);
-            (outExp, b) = matchAndRewriteExpBackEnd(inExp.clone(), rules.clone())?;
-            (outExp.clone(), b.clone())
+            (outExp, b) = matchAndRewriteExpBackEnd(inExp, rules.clone())?;
+            (outExp, b.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -634,7 +634,7 @@ pub(crate) fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: R
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut changed: bool;
     (outExp, changed) = 'mc: {
-        let __mc_input = inRules.clone();
+        let __mc_input = inRules;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -684,7 +684,7 @@ pub(crate) fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: R
 
 pub(crate) fn rewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
-    (outExp, _) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(replaceBindsBackEnd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Bind>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Bind>>)> + 'static>), inBinds.clone())?;
+    (outExp, _) = Expression::traverseExpBottomUp(inExp, (std::sync::Arc::new(replaceBindsBackEnd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Bind>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Bind>>)> + 'static>), inBinds)?;
     Ok(outExp)
 }
 
@@ -698,7 +698,7 @@ pub(crate) fn replaceBindsBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) 
             (e2.clone(), bnds.clone())
         },
         _ => {
-            (inExp.clone(), inBinds.clone())
+            (inExp, inBinds)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -709,7 +709,7 @@ pub(crate) fn replaceBindBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -
     let mut outExp: Arc<DAE::Exp>;
     let mut e: Arc<DAE::Exp>;
     let mut to: Arc<DAE::Exp>;
-    for mut bind in &*inBinds.clone() {
+    for mut bind in &*inBinds {
         let mut bind = bind.clone();
         let Bind::BACKEND_BIND { slot: __pa0, value: __pa1 } = (bind.clone()) else { bail!("pattern mismatch") };
         e = __pa0.clone();
@@ -719,7 +719,7 @@ pub(crate) fn replaceBindBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -
             return Ok(outExp.clone());
         }
     }
-    outExp = inExp.clone();
+    outExp = inExp;
     Ok(outExp)
 }
 
@@ -953,13 +953,13 @@ pub(crate) fn matchesBackEnd(mut inExp: Arc<DAE::Exp>, mut inUnifyWith: Arc<DAE:
 
 pub(crate) fn matchesExpOptBackEnd(mut inOExp1: Option<Arc<DAE::Exp>>, mut inOExp2: Option<Arc<DAE::Exp>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inOExp1.clone(), inOExp2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inOExp1, inOExp2)) {
         (None, None) => {
-            inAcc.clone()
+            inAcc
         },
         (Some(e1a), Some(e1b)) => {
-            outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds.clone()
+            outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds
         },
         _ => {
             bail!("fail")
@@ -971,14 +971,14 @@ pub(crate) fn matchesExpOptBackEnd(mut inOExp1: Option<Arc<DAE::Exp>>, mut inOEx
 
 pub(crate) fn matchesExpLstBackEnd(mut inExps1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inExps2: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inExps1, inExps2)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inAcc.clone()
+            inAcc
         },
         (Deref @ metamodelica::List::Cons { head: e1a, tail: exps1a }, Deref @ metamodelica::List::Cons { head: e1b, tail: exps1b }) => {
-            outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), outBinds.clone())?;
-            outBinds.clone()
+            outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), outBinds)?;
+            outBinds
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -987,14 +987,14 @@ pub(crate) fn matchesExpLstBackEnd(mut inExps1: Arc<metamodelica::List<Arc<DAE::
 
 pub(crate) fn matchesExpLstLstBackEnd(mut inExps1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inExps2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inAcc: Binds) -> Result<Binds> {
     let mut outBinds: Binds = metamodelica::nil();
-    outBinds = (::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone())) {
+    outBinds = (::match_deref::match_deref! { match &((inExps1, inExps2)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inAcc.clone()
+            inAcc
         },
         (Deref @ metamodelica::List::Cons { head: e1a, tail: exps1a }, Deref @ metamodelica::List::Cons { head: e1b, tail: exps1b }) => {
-            outBinds = matchesExpLstBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-            outBinds = matchesExpLstLstBackEnd(exps1a.clone(), exps1b.clone(), outBinds.clone())?;
-            outBinds.clone()
+            outBinds = matchesExpLstBackEnd(e1a.clone(), e1b.clone(), inAcc)?;
+            outBinds = matchesExpLstLstBackEnd(exps1a.clone(), exps1b.clone(), outBinds)?;
+            outBinds
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1003,7 +1003,7 @@ pub(crate) fn matchesExpLstLstBackEnd(mut inExps1: Arc<metamodelica::List<Arc<me
 
 pub(crate) fn isPlaceHolderBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut isHolder: bool;
-    isHolder = (::match_deref::match_deref! { match &(inExp.clone()) {
+    isHolder = (::match_deref::match_deref! { match &(inExp) {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, ty: _ } => {
             let mut b: bool;
             b = intEq(System::stringFind((name.clone()).clone(), (literal!("'$")).clone())?, 0);
@@ -1286,7 +1286,7 @@ pub(crate) fn getAllRules() -> Result<Rules> {
     let mut outRules: Rules;
     let mut orules: Option<Arc<metamodelica::List<Rule>>>;
     orules = crate::Globals::rewriteRulesIndex.with(|__root| __root.borrow().clone());
-    let __pa0 = ::match_deref::match_deref! { match &(orules.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(orules) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1296,7 +1296,7 @@ pub(crate) fn getAllRules() -> Result<Rules> {
 
 pub(crate) fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inRules.clone()) {
+        ::match_deref::match_deref! { match &(inRules) {
         Deref @ metamodelica::List::Nil => {
             return metamodelica::nil()
         },
@@ -1315,7 +1315,7 @@ pub(crate) fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
 
 pub(crate) fn getRulesBackEnd(mut inRules: Rules) -> Rules {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inRules.clone()) {
+        ::match_deref::match_deref! { match &(inRules) {
         Deref @ metamodelica::List::Nil => {
             return metamodelica::nil()
         },
@@ -1335,7 +1335,7 @@ pub(crate) fn getRulesBackEnd(mut inRules: Rules) -> Rules {
 fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, mut inAcc: Rules) -> Result<Rules> {
     let mut outRules: Rules;
     outRules = 'mc: {
-        let __mc_input = inStmts.clone();
+        let __mc_input = inStmts;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {

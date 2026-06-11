@@ -75,7 +75,7 @@ pub type SET = SBSet;
 
 pub(crate) fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>) -> Result<Arc<SBSet>> {
     fn is_equal_dim(mut set1: Arc<SBAtomicSet::SBAtomicSet>, mut dim: i32) -> bool {
-        let mut equal: bool = SBAtomicSet::ndim(set1.clone()) == dim.clone();
+        let mut equal: bool = SBAtomicSet::ndim(set1.clone()) == dim;
         equal
     }
 
@@ -83,8 +83,8 @@ pub(crate) fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtom
     let mut dim: i32;
     if !(UnorderedSet::isEmpty(ss.clone())) {
         dim = SBAtomicSet::ndim(UnorderedSet::first(ss.clone())?);
-        if dim.clone() != 0 && UnorderedSet::all(ss.clone(), (std::sync::Arc::new({ let __pe_b1 = dim.clone(); move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))? {
-            set = Arc::new(SBSet { asets: UnorderedSet::copy(ss.clone()), ndim: dim.clone() });
+        if dim != 0 && UnorderedSet::all(ss.clone(), (std::sync::Arc::new({ let __pe_b1 = dim; move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))? {
+            set = Arc::new(SBSet { asets: UnorderedSet::copy(ss.clone()), ndim: dim });
         } else {
             set = newEmpty();
         }
@@ -117,7 +117,7 @@ pub fn isEmpty(mut set: Arc<SBSet>) -> bool {
 }
 
 pub(crate) fn isDim(mut set: Arc<SBSet>, mut dim: i32) -> bool {
-    let mut res: bool = set.ndim.clone() == dim.clone();
+    let mut res: bool = set.ndim.clone() == dim;
     res
 }
 
@@ -139,16 +139,16 @@ pub fn addAtomicSet(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut set: Arc<SBSet>
     }
     if UnorderedSet::isEmpty(set.asets.clone()) {
         UnorderedSet::add(aset.clone(), set.asets.clone())?;
-        assign_field!(set.ndim = SBAtomicSet::ndim(aset.clone()));
+        assign_field!(set.ndim = SBAtomicSet::ndim(aset));
     } else if SBAtomicSet::ndim(aset.clone()) == set.ndim.clone() {
-        UnorderedSet::add(aset.clone(), set.asets.clone())?;
+        UnorderedSet::add(aset, set.asets.clone())?;
     }
     Ok(set)
 }
 
 pub(crate) fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>, mut set: Arc<SBSet>) -> Result<Arc<SBSet>> {
     let mut set: Arc<SBSet> = set;
-    set = UnorderedSet::fold(asets.clone(), (std::sync::Arc::new(addAtomicSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet>) -> Result<Arc<SBSet>> + 'static>), set.clone())?;
+    set = UnorderedSet::fold(asets, (std::sync::Arc::new(addAtomicSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet>) -> Result<Arc<SBSet>> + 'static>), set)?;
     Ok(set)
 }
 
@@ -171,7 +171,7 @@ pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SB
             }
         }
     }
-    outSet = new(res.clone())?;
+    outSet = new(res)?;
     Ok(outSet)
 }
 
@@ -182,7 +182,7 @@ pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSe
     let mut comp_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
     let mut new_sets: Arc<SBSet>;
     outSet = newEmpty();
-    let __pa0 = ::match_deref::match_deref! { match &(intersection(set1.clone(), set2.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(intersection(set1.clone(), set2)?) {
         Deref @ SBSet { asets: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -205,7 +205,7 @@ pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSe
             outSet = addAtomicSets(aux.clone(), outSet.clone())?;
         }
     } else {
-        outSet = addAtomicSets(set1.asets.clone(), outSet.clone())?;
+        outSet = addAtomicSets(set1.asets.clone(), outSet)?;
     }
     Ok(outSet)
 }
@@ -214,9 +214,9 @@ pub fn union(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
     let mut outSet: Arc<SBSet>;
     let mut aux: Arc<SBSet>;
     outSet = Arc::new(SBSet { asets: UnorderedSet::copy(set1.asets.clone()), ndim: set1.ndim.clone() });
-    aux = complement(set2.clone(), outSet.clone())?;
+    aux = complement(set2, outSet.clone())?;
     if !(isEmpty(aux.clone())) {
-        outSet = addAtomicSets(aux.asets.clone(), outSet.clone())?;
+        outSet = addAtomicSets(aux.asets.clone(), outSet)?;
     }
     Ok(outSet)
 }
@@ -231,9 +231,9 @@ pub(crate) fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Resul
         let mut res: bool = false;
         let mut maxCard: i32 = maxCard;
         let mut cardinality: i32 = card(set.clone())?;
-        if cardinality.clone() > maxCard.clone() {
+        if cardinality > maxCard {
             res = true;
-            maxCard = cardinality.clone();
+            maxCard = cardinality;
         }
         Ok((res, maxCard))
     }

@@ -252,7 +252,7 @@ pub mod Branch {
         branch = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ BRANCH { .. } => {
             cond = func(var_field!((*branch).condition, Branch::BRANCH).clone())?;
-            if mapBody.clone() {
+            if mapBody {
                 eql = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*branch).body, Branch::BRANCH).clone()).into_iter().cloned() {
@@ -264,13 +264,13 @@ pub mod Branch {
             } else {
                 eql = var_field!((*branch).body, Branch::BRANCH).clone();
             }
-            Arc::new(Branch::BRANCH { condition: cond.clone(), conditionVar: var_field!((*branch).conditionVar, Branch::BRANCH).clone(), body: eql.clone() })
+            Arc::new(Branch::BRANCH { condition: cond, conditionVar: var_field!((*branch).conditionVar, Branch::BRANCH).clone(), body: eql })
         },
         Deref @ INVALID_BRANCH { .. } => {
             assign_variant_field!(branch => Branch::INVALID_BRANCH; branch = mapExp(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), func.clone(), false)?);
-            branch.clone()
+            branch
         },
-        _ => branch.clone(),
+        _ => branch,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(branch)
@@ -300,17 +300,17 @@ pub mod Branch {
         let mut s: IOStream::IOStream = s;
         s = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ BRANCH { .. } => {
-            if potentialElse.clone() && Expression::isTrue(var_field!((*branch).condition, Branch::BRANCH).clone()) {
-                s = IOStream::append(s.clone(), (literal!("else\n")).clone())?;
+            if potentialElse && Expression::isTrue(var_field!((*branch).condition, Branch::BRANCH).clone()) {
+                s = IOStream::append(s, (literal!("else\n")).clone())?;
             } else {
-                s = IOStream::append(s.clone(), (header.clone()).clone())?;
-                s = IOStream::append(s.clone(), (Expression::toString(var_field!((*branch).condition, Branch::BRANCH).clone())?).clone())?;
-                s = IOStream::append(s.clone(), (literal!(" then\n")).clone())?;
+                s = IOStream::append(s, (header).clone())?;
+                s = IOStream::append(s, (Expression::toString(var_field!((*branch).condition, Branch::BRANCH).clone())?).clone())?;
+                s = IOStream::append(s, (literal!(" then\n")).clone())?;
             }
-            s = toStreamList(var_field!((*branch).body, Branch::BRANCH).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
-            s.clone()
+            s = toStreamList(var_field!((*branch).body, Branch::BRANCH).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
+            s
         },
-        Deref @ INVALID_BRANCH { .. } => toStream(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), (header.clone()).clone(), potentialElse.clone(), (indent.clone()).clone(), s.clone())?,
+        Deref @ INVALID_BRANCH { .. } => toStream(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), (header).clone(), potentialElse, (indent).clone(), s)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(s)
@@ -320,17 +320,17 @@ pub mod Branch {
         let mut s: IOStream::IOStream = s;
         s = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ BRANCH { .. } => {
-            if potentialElse.clone() && Expression::isTrue(var_field!((*branch).condition, Branch::BRANCH).clone()) {
-                s = IOStream::append(s.clone(), (literal!("else\n")).clone())?;
+            if potentialElse && Expression::isTrue(var_field!((*branch).condition, Branch::BRANCH).clone()) {
+                s = IOStream::append(s, (literal!("else\n")).clone())?;
             } else {
-                s = IOStream::append(s.clone(), (header.clone()).clone())?;
-                s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*branch).condition, Branch::BRANCH).clone(), format.clone())?).clone())?;
-                s = IOStream::append(s.clone(), (literal!(" then\n")).clone())?;
+                s = IOStream::append(s, (header).clone())?;
+                s = IOStream::append(s, (Expression::toFlatString(var_field!((*branch).condition, Branch::BRANCH).clone(), format.clone())?).clone())?;
+                s = IOStream::append(s, (literal!(" then\n")).clone())?;
             }
-            s = toFlatStreamList(var_field!((*branch).body, Branch::BRANCH).clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
-            s.clone()
+            s = toFlatStreamList(var_field!((*branch).body, Branch::BRANCH).clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
+            s
         },
-        Deref @ INVALID_BRANCH { .. } => toFlatStream(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), (header.clone()).clone(), format.clone(), potentialElse.clone(), (indent.clone()).clone(), s.clone())?,
+        Deref @ INVALID_BRANCH { .. } => toFlatStream(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), (header).clone(), format, potentialElse, (indent).clone(), s)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(s)
@@ -340,9 +340,9 @@ pub mod Branch {
         let mut r#str: ArcStr;
         let mut s: IOStream::IOStream;
         s = IOStream::create(literal!("NFEquation.Branch.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
-        s = toStream(branch.clone(), (literal!("")).clone(), false, (indent.clone()).clone(), s.clone())?;
+        s = toStream(branch, (literal!("")).clone(), false, (indent).clone(), s)?;
         r#str = (IOStream::string(s.clone())?).clone();
-        IOStream::delete(s.clone())?;
+        IOStream::delete(s)?;
         Ok(r#str)
     }
 
@@ -379,7 +379,7 @@ impl metamodelica::gc::MMTrace for ScalarizeMode {
 
 pub(crate) fn makeEquality(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut scope: Arc<InstNode::InstNode>, mut scalarizeMode: ScalarizeMode) -> Arc<NFEquation> {
     let mut eq: Arc<NFEquation>;
-    eq = Arc::new(NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: scope.clone(), source: src.clone(), scalarizeMode: scalarizeMode.clone() });
+    eq = Arc::new(NFEquation::EQUALITY { lhs: lhs, rhs: rhs, ty: ty, scope: scope, source: src, scalarizeMode: scalarizeMode });
     eq
 }
 
@@ -387,21 +387,21 @@ pub(crate) fn makeCrefEquality(mut lhsCref: Arc<ComponentRef::NFComponentRef>, m
     let mut eq: Arc<NFEquation>;
     let mut e1: Arc<Expression::NFExpression>;
     let mut e2: Arc<Expression::NFExpression>;
-    e1 = Expression::fromCref(lhsCref.clone(), false)?;
-    e2 = Expression::fromCref(rhsCref.clone(), false)?;
-    eq = makeEquality(e1.clone(), e2.clone(), Expression::typeOf(e1.clone()), src.clone(), scope.clone(), ScalarizeMode::NO_PREFERENCE.clone());
+    e1 = Expression::fromCref(lhsCref, false)?;
+    e2 = Expression::fromCref(rhsCref, false)?;
+    eq = makeEquality(e1.clone(), e2, Expression::typeOf(e1), src, scope, ScalarizeMode::NO_PREFERENCE.clone());
     Ok(eq)
 }
 
 pub(crate) fn makeBranch(mut condition: Arc<Expression::NFExpression>, mut body: Arc<metamodelica::List<Arc<NFEquation>>>, mut condVar: Variability) -> Arc<Branch::Branch> {
     let mut branch: Arc<Branch::Branch>;
-    branch = Arc::new(Branch::Branch::BRANCH { condition: condition.clone(), conditionVar: condVar.clone(), body: body.clone() });
+    branch = Arc::new(Branch::Branch::BRANCH { condition: condition, conditionVar: condVar, body: body });
     branch
 }
 
 pub(crate) fn makeIf(mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>>, mut scope: Arc<InstNode::InstNode>, mut src: Arc<DAE::ElementSource>) -> Arc<NFEquation> {
     let mut eq: Arc<NFEquation>;
-    eq = Arc::new(NFEquation::IF { branches: branches.clone(), scope: scope.clone(), source: src.clone() });
+    eq = Arc::new(NFEquation::IF { branches: branches, scope: scope, source: src });
     eq
 }
 
@@ -426,39 +426,39 @@ pub(crate) fn setSource(mut source: Arc<DAE::ElementSource>, mut eq: Arc<NFEquat
     let mut eq: Arc<NFEquation> = eq;
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            assign_variant_field!(eq => NFEquation::EQUALITY; source = source.clone());
+            assign_variant_field!(eq => NFEquation::EQUALITY; source = source);
             ()
         },
         Deref @ CONNECT { .. } => {
-            assign_variant_field!(eq => NFEquation::CONNECT; source = source.clone());
+            assign_variant_field!(eq => NFEquation::CONNECT; source = source);
             ()
         },
         Deref @ FOR { .. } => {
-            assign_variant_field!(eq => NFEquation::FOR; source = source.clone());
+            assign_variant_field!(eq => NFEquation::FOR; source = source);
             ()
         },
         Deref @ IF { .. } => {
-            assign_variant_field!(eq => NFEquation::IF; source = source.clone());
+            assign_variant_field!(eq => NFEquation::IF; source = source);
             ()
         },
         Deref @ WHEN { .. } => {
-            assign_variant_field!(eq => NFEquation::WHEN; source = source.clone());
+            assign_variant_field!(eq => NFEquation::WHEN; source = source);
             ()
         },
         Deref @ ASSERT { .. } => {
-            assign_variant_field!(eq => NFEquation::ASSERT; source = source.clone());
+            assign_variant_field!(eq => NFEquation::ASSERT; source = source);
             ()
         },
         Deref @ TERMINATE { .. } => {
-            assign_variant_field!(eq => NFEquation::TERMINATE; source = source.clone());
+            assign_variant_field!(eq => NFEquation::TERMINATE; source = source);
             ()
         },
         Deref @ REINIT { .. } => {
-            assign_variant_field!(eq => NFEquation::REINIT; source = source.clone());
+            assign_variant_field!(eq => NFEquation::REINIT; source = source);
             ()
         },
         Deref @ NORETCALL { .. } => {
-            assign_variant_field!(eq => NFEquation::NORETCALL; source = source.clone());
+            assign_variant_field!(eq => NFEquation::NORETCALL; source = source);
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -491,7 +491,7 @@ pub(crate) fn info(mut eq: Arc<NFEquation>) -> Result<SourceInfo> {
 pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>;
 
 pub(crate) fn applyList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>) -> Result<()> {
-    for mut eq in &*eql.clone() {
+    for mut eq in &*eql {
         let mut eq = eq.clone();
         apply(eq.clone(), func.clone())?;
     }
@@ -544,7 +544,7 @@ pub(crate) fn apply(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Ar
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    func(eq.clone())?;
+    func(eq)?;
     Ok(())
 }
 
@@ -617,14 +617,14 @@ pub(crate) fn map(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    eq = func(eq.clone())?;
+    eq = func(eq)?;
     Ok(eq)
 }
 
 pub(crate) fn applyExpList(mut eq: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
-    for mut e in &*eq.clone() {
+    for mut e in &*eq {
         let mut e = e.clone();
         applyExp(e.clone(), func.clone())?;
     }
@@ -786,7 +786,7 @@ pub(crate) fn mapExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut 
     let mut eql: Arc<metamodelica::List<Arc<NFEquation>>> = eql;
     eql = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
-        for mut eq in (eql.clone()).into_iter().cloned() {
+        for mut eq in (eql).into_iter().cloned() {
             let __x = mapExp(eq.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -803,14 +803,14 @@ pub(crate) fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()))) {eq.clone()} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()))) {eq} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
         },
         Deref @ CONNECT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::CONNECT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::CONNECT).clone()))) {eq.clone()} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::CONNECT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::CONNECT).clone()))) {eq} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
         },
         Deref @ FOR { .. } => {
             assign_variant_field!(eq => NFEquation::FOR;
@@ -824,7 +824,7 @@ pub(crate) fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
     }),
                 range = Util::applyOption(var_field!((*eq).range, NFEquation::FOR).clone(), func.clone())?
             );
-            eq.clone()
+            eq
         },
         Deref @ IF { .. } => {
             assign_variant_field!(eq => NFEquation::IF; branches = ({
@@ -835,7 +835,7 @@ pub(crate) fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
         }
         __acc.reverse()
     }));
-            eq.clone()
+            eq
         },
         Deref @ WHEN { .. } => {
             assign_variant_field!(eq => NFEquation::WHEN; branches = ({
@@ -846,7 +846,7 @@ pub(crate) fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
         }
         __acc.reverse()
     }));
-            eq.clone()
+            eq
         },
         Deref @ ASSERT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -855,27 +855,27 @@ pub(crate) fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
             e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone())?;
             e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone())?;
             e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).condition, NFEquation::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).message, NFEquation::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*eq).level, NFEquation::ASSERT).clone()))) {eq.clone()} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).condition, NFEquation::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).message, NFEquation::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*eq).level, NFEquation::ASSERT).clone()))) {eq} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).message, NFEquation::TERMINATE).clone()))) {eq.clone()} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).message, NFEquation::TERMINATE).clone()))) {eq} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone())?;
             e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).cref, NFEquation::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()))) {eq.clone()} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).cref, NFEquation::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()))) {eq} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).exp, NFEquation::NORETCALL).clone()))) {eq.clone()} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).exp, NFEquation::NORETCALL).clone()))) {eq} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
         },
         _ => {
-            eq.clone()
+            eq
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -890,18 +890,18 @@ pub(crate) fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::op
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()))) {eq.clone()} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()))) {eq} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
         },
         Deref @ CONNECT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::CONNECT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::CONNECT).clone()))) {eq.clone()} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::CONNECT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::CONNECT).clone()))) {eq} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
         },
         Deref @ FOR { .. } => {
             assign_variant_field!(eq => NFEquation::FOR; range = Util::applyOption(var_field!((*eq).range, NFEquation::FOR).clone(), func.clone())?);
-            eq.clone()
+            eq
         },
         Deref @ IF { .. } => {
             assign_variant_field!(eq => NFEquation::IF; branches = ({
@@ -912,7 +912,7 @@ pub(crate) fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::op
         }
         __acc.reverse()
     }));
-            eq.clone()
+            eq
         },
         Deref @ WHEN { .. } => {
             assign_variant_field!(eq => NFEquation::WHEN; branches = ({
@@ -923,7 +923,7 @@ pub(crate) fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::op
         }
         __acc.reverse()
     }));
-            eq.clone()
+            eq
         },
         Deref @ ASSERT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
@@ -932,27 +932,27 @@ pub(crate) fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::op
             e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone())?;
             e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone())?;
             e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).condition, NFEquation::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).message, NFEquation::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*eq).level, NFEquation::ASSERT).clone()))) {eq.clone()} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).condition, NFEquation::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).message, NFEquation::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*eq).level, NFEquation::ASSERT).clone()))) {eq} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).message, NFEquation::TERMINATE).clone()))) {eq.clone()} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).message, NFEquation::TERMINATE).clone()))) {eq} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone())?;
             e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).cref, NFEquation::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()))) {eq.clone()} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).cref, NFEquation::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()))) {eq} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?;
-            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).exp, NFEquation::NORETCALL).clone()))) {eq.clone()} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).exp, NFEquation::NORETCALL).clone()))) {eq} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
         },
         _ => {
-            eq.clone()
+            eq
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -963,7 +963,7 @@ pub(crate) fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
-    for mut e in &*eq.clone() {
+    for mut e in &*eq {
         let mut e = e.clone();
         arg = foldExp(e.clone(), func.clone(), arg.clone())?;
     }
@@ -976,19 +976,19 @@ pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eq:
     let mut arg: ArgT = arg;
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            arg = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone(), arg.clone())?;
-            arg = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone(), arg.clone())?;
+            arg = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone(), arg)?;
+            arg = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone(), arg)?;
             ()
         },
         Deref @ CONNECT { .. } => {
-            arg = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone(), arg.clone())?;
-            arg = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone(), arg.clone())?;
+            arg = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone(), arg)?;
+            arg = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone(), arg)?;
             ()
         },
         Deref @ FOR { .. } => {
-            arg = foldExpList(var_field!((*eq).body, NFEquation::FOR).clone(), func.clone(), arg.clone())?;
+            arg = foldExpList(var_field!((*eq).body, NFEquation::FOR).clone(), func.clone(), arg)?;
             if isSome(var_field!((*eq).range, NFEquation::FOR).clone()) {
-                arg = func(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?, arg.clone())?;
+                arg = func(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?, arg)?;
             }
             ()
         },
@@ -1023,22 +1023,22 @@ pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eq:
             ()
         },
         Deref @ ASSERT { .. } => {
-            arg = func(var_field!((*eq).condition, NFEquation::ASSERT).clone(), arg.clone())?;
-            arg = func(var_field!((*eq).message, NFEquation::ASSERT).clone(), arg.clone())?;
-            arg = func(var_field!((*eq).level, NFEquation::ASSERT).clone(), arg.clone())?;
+            arg = func(var_field!((*eq).condition, NFEquation::ASSERT).clone(), arg)?;
+            arg = func(var_field!((*eq).message, NFEquation::ASSERT).clone(), arg)?;
+            arg = func(var_field!((*eq).level, NFEquation::ASSERT).clone(), arg)?;
             ()
         },
         Deref @ TERMINATE { .. } => {
-            arg = func(var_field!((*eq).message, NFEquation::TERMINATE).clone(), arg.clone())?;
+            arg = func(var_field!((*eq).message, NFEquation::TERMINATE).clone(), arg)?;
             ()
         },
         Deref @ REINIT { .. } => {
-            arg = func(var_field!((*eq).cref, NFEquation::REINIT).clone(), arg.clone())?;
-            arg = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone(), arg.clone())?;
+            arg = func(var_field!((*eq).cref, NFEquation::REINIT).clone(), arg)?;
+            arg = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone(), arg)?;
             ()
         },
         Deref @ NORETCALL { .. } => {
-            arg = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone(), arg.clone())?;
+            arg = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone(), arg)?;
             ()
         },
         _ => (),
@@ -1101,7 +1101,7 @@ pub(crate) fn containsList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mu
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>;
 
     let mut res: bool;
-    for mut eq in &*eql.clone() {
+    for mut eq in &*eql {
         let mut eq = eq.clone();
         if contains(eq.clone(), func.clone())? {
             res = true;
@@ -1121,10 +1121,10 @@ pub(crate) fn containsExp(mut eq: Arc<NFEquation>, mut r#fn: Arc<dyn ::std::ops:
         Deref @ CONNECT { .. } => r#fn(var_field!((*eq).lhs, NFEquation::CONNECT).clone())? || r#fn(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?,
         Deref @ FOR { .. } => {
             res = if (isSome(var_field!((*eq).range, NFEquation::FOR).clone())) {r#fn(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?)?} else {false};
-            if !(res.clone()) {
+            if !(res) {
                 res = containsExpList(var_field!((*eq).body, NFEquation::FOR).clone(), r#fn.clone())?;
             }
-            res.clone()
+            res
         },
         Deref @ IF { .. } => {
             res = false;
@@ -1146,7 +1146,7 @@ pub(crate) fn containsExp(mut eq: Arc<NFEquation>, mut r#fn: Arc<dyn ::std::ops:
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res.clone()
+            res
         },
         Deref @ WHEN { .. } => {
             res = false;
@@ -1168,7 +1168,7 @@ pub(crate) fn containsExp(mut eq: Arc<NFEquation>, mut r#fn: Arc<dyn ::std::ops:
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            res.clone()
+            res
         },
         Deref @ ASSERT { .. } => r#fn(var_field!((*eq).condition, NFEquation::ASSERT).clone())? || r#fn(var_field!((*eq).message, NFEquation::ASSERT).clone())? || r#fn(var_field!((*eq).level, NFEquation::ASSERT).clone())?,
         Deref @ TERMINATE { .. } => r#fn(var_field!((*eq).message, NFEquation::TERMINATE).clone())?,
@@ -1184,7 +1184,7 @@ pub(crate) fn containsExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>,
     pub type Predicate = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
     let mut res: bool;
-    for mut eq in &*eql.clone() {
+    for mut eq in &*eql {
         let mut eq = eq.clone();
         if containsExp(eq.clone(), func.clone())? {
             res = true;
@@ -1197,7 +1197,7 @@ pub(crate) fn containsExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>,
 
 pub(crate) fn replaceIteratorList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<NFEquation>>>> {
     let mut eql: Arc<metamodelica::List<Arc<NFEquation>>> = eql;
-    eql = mapExpList(eql.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    eql = mapExpList(eql, (std::sync::Arc::new({ let __pe_b1 = iterator; let __pe_b2 = value; move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(eql)
 }
 
@@ -1213,7 +1213,7 @@ pub(crate) fn isArrayEquality(mut eq: Arc<NFEquation>) -> bool {
 
 pub(crate) fn isConnect(mut eq: Arc<NFEquation>) -> bool {
     let mut isConnect: bool;
-    isConnect = (::match_deref::match_deref! { match &(eq.clone()) {
+    isConnect = (::match_deref::match_deref! { match &(eq) {
         Deref @ CONNECT { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1224,7 +1224,7 @@ pub(crate) fn isConnect(mut eq: Arc<NFEquation>) -> bool {
 pub(crate) fn isConnection(mut eq: Arc<NFEquation>) -> Result<bool> {
     let mut res: bool;
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
-    res = (::match_deref::match_deref! { match &(eq.clone()) {
+    res = (::match_deref::match_deref! { match &(eq) {
         Deref @ CONNECT { .. } => true,
         Deref @ NORETCALL { exp: Deref @ Expression::CALL { call: __esc_call }, .. } => {
             call = (*__esc_call).clone();
@@ -1238,9 +1238,9 @@ pub(crate) fn isConnection(mut eq: Arc<NFEquation>) -> Result<bool> {
 
 pub(crate) fn sizeOfList(mut eqs: Arc<metamodelica::List<Arc<NFEquation>>>) -> i32 {
     let mut size: i32 = 0;
-    for mut eq in &*eqs.clone() {
+    for mut eq in &*eqs {
         let mut eq = eq.clone();
-        size = size.clone() + sizeOf(eq.clone());
+        size = size + sizeOf(eq.clone());
     }
     size
 }
@@ -1270,7 +1270,7 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> i32 {
                 Deref @ FOR { .. } => {
                     let mut size: i32 = size.clone();
                     size = Type::sizeOf(Expression::typeOf(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?), false)?;
-                    Ok((size.clone() * sizeOfList(var_field!((*eq).body, NFEquation::FOR).clone()), size.clone()))
+                    Ok((size * sizeOfList(var_field!((*eq).body, NFEquation::FOR).clone()), size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1308,9 +1308,9 @@ pub fn toString(mut eq: Arc<NFEquation>, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFEquation.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
-    s = toStream(eq.clone(), (indent.clone()).clone(), s.clone())?;
+    s = toStream(eq, (indent).clone(), s)?;
     r#str = (IOStream::string(s.clone())?).clone();
-    IOStream::delete(s.clone())?;
+    IOStream::delete(s)?;
     Ok(r#str)
 }
 
@@ -1318,9 +1318,9 @@ pub(crate) fn toStringList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mu
     let mut r#str: ArcStr;
     let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFEquation.toStringList"), openmodelica_util::IOStream::IOStreamType::LIST)?;
-    s = toStreamList(eql.clone(), (indent.clone()).clone(), s.clone())?;
+    s = toStreamList(eql, (indent).clone(), s)?;
     r#str = (IOStream::string(s.clone())?).clone();
-    IOStream::delete(s.clone())?;
+    IOStream::delete(s)?;
     Ok(r#str)
 }
 
@@ -1328,34 +1328,34 @@ pub(crate) fn toStream(mut eq: Arc<NFEquation>, mut indent: ArcStr, mut s: IOStr
     let mut s: IOStream::IOStream = s;
     let mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
     let mut branch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
-    s = IOStream::append(s.clone(), (indent.clone()).clone())?;
+    s = IOStream::append(s, (indent.clone()).clone())?;
     s = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?).clone())?;
-            s.clone()
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(" = ")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?).clone())?;
+            s
         },
         Deref @ CONNECT { .. } => {
-            s = IOStream::append(s.clone(), (literal!("connect(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("connect(")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ FOR { .. } => {
-            s = IOStream::append(s.clone(), (literal!("for ")).clone())?;
-            s = IOStream::append(s.clone(), (InstNode::name(var_field!((*eq).iterator, NFEquation::FOR).clone())?).clone())?;
+            s = IOStream::append(s, (literal!("for ")).clone())?;
+            s = IOStream::append(s, (InstNode::name(var_field!((*eq).iterator, NFEquation::FOR).clone())?).clone())?;
             if isSome(var_field!((*eq).range, NFEquation::FOR).clone()) {
-                s = IOStream::append(s.clone(), (literal!(" in ")).clone())?;
-                s = IOStream::append(s.clone(), (Expression::toString(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?)?).clone())?;
+                s = IOStream::append(s, (literal!(" in ")).clone())?;
+                s = IOStream::append(s, (Expression::toString(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?)?).clone())?;
             }
-            s = IOStream::append(s.clone(), (literal!(" loop\n")).clone())?;
-            s = toStreamList(var_field!((*eq).body, NFEquation::FOR).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end for")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!(" loop\n")).clone())?;
+            s = toStreamList(var_field!((*eq).body, NFEquation::FOR).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end for")).clone())?;
+            s
         },
         Deref @ IF { .. } => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(var_field!((*eq).branches, NFEquation::IF).clone()) {
@@ -1364,7 +1364,7 @@ pub(crate) fn toStream(mut eq: Arc<NFEquation>, mut indent: ArcStr, mut s: IOStr
             } };
             branch = __pa0.clone();
             branches = __pa1.clone();
-            s = Branch::toStream(listHead(var_field!((*eq).branches, NFEquation::IF).clone())?, (literal!("if ")).clone(), false, (indent.clone()).clone(), s.clone())?;
+            s = Branch::toStream(listHead(var_field!((*eq).branches, NFEquation::IF).clone())?, (literal!("if ")).clone(), false, (indent.clone()).clone(), s)?;
             while !(branches.clone().is_empty()) {
                 let (__pa2, __pa3) = ::match_deref::match_deref! { match &(branches.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
@@ -1375,47 +1375,47 @@ pub(crate) fn toStream(mut eq: Arc<NFEquation>, mut indent: ArcStr, mut s: IOStr
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 s = Branch::toStream(branch.clone(), (literal!("elseif ")).clone(), branches.clone().is_empty(), (indent.clone()).clone(), s.clone())?;
             }
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end if")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end if")).clone())?;
+            s
         },
         Deref @ WHEN { .. } => {
-            s = Branch::toStream(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?, (literal!("when ")).clone(), false, (indent.clone()).clone(), s.clone())?;
+            s = Branch::toStream(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?, (literal!("when ")).clone(), false, (indent.clone()).clone(), s)?;
             for mut b in &*listRest(var_field!((*eq).branches, NFEquation::WHEN).clone())? {
                 let mut b = b.clone();
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 s = Branch::toStream(b.clone(), (literal!("elsewhen ")).clone(), false, (indent.clone()).clone(), s.clone())?;
             }
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end when")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end when")).clone())?;
+            s
         },
         Deref @ ASSERT { .. } => {
-            s = IOStream::append(s.clone(), (literal!("assert(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).condition, NFEquation::ASSERT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).message, NFEquation::ASSERT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).level, NFEquation::ASSERT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("assert(")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).condition, NFEquation::ASSERT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).message, NFEquation::ASSERT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).level, NFEquation::ASSERT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ TERMINATE { .. } => {
-            s = IOStream::append(s.clone(), (literal!("terminate(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).message, NFEquation::TERMINATE).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("terminate(")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).message, NFEquation::TERMINATE).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ REINIT { .. } => {
-            s = IOStream::append(s.clone(), (literal!("reinit(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).cref, NFEquation::REINIT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("reinit(")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).cref, NFEquation::REINIT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toString(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
-        Deref @ NORETCALL { .. } => IOStream::append(s.clone(), (Expression::toString(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?).clone())?,
-        _ => IOStream::append(s.clone(), (literal!("#UNKNOWN EQUATION#")).clone())?,
+        Deref @ NORETCALL { .. } => IOStream::append(s, (Expression::toString(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?).clone())?,
+        _ => IOStream::append(s, (literal!("#UNKNOWN EQUATION#")).clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(s)
@@ -1426,15 +1426,15 @@ pub(crate) fn toStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mu
     let mut prev_multi_line: bool = false;
     let mut multi_line: bool;
     let mut first: bool = true;
-    for mut eq in &*eql.clone() {
+    for mut eq in &*eql {
         let mut eq = eq.clone();
         multi_line = isMultiLine(eq.clone());
-        if first.clone() {
+        if first {
             first = false;
-        } else if prev_multi_line.clone() || multi_line.clone() {
+        } else if prev_multi_line || multi_line {
             s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
         }
-        prev_multi_line = multi_line.clone();
+        prev_multi_line = multi_line;
         s = toStream(eq.clone(), (indent.clone()).clone(), s.clone())?;
         s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
     }
@@ -1445,34 +1445,34 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
     let mut s: IOStream::IOStream = s;
     let mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
     let mut branch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
-    s = IOStream::append(s.clone(), (indent.clone()).clone())?;
+    s = IOStream::append(s, (indent.clone()).clone())?;
     s = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::EQUALITY).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).rhs, NFEquation::EQUALITY).clone(), format.clone())?).clone())?;
-            s.clone()
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::EQUALITY).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (literal!(" = ")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).rhs, NFEquation::EQUALITY).clone(), format)?).clone())?;
+            s
         },
         Deref @ CONNECT { .. } => {
-            s = IOStream::append(s.clone(), (literal!("connect(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::CONNECT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).rhs, NFEquation::CONNECT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("connect(")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).lhs, NFEquation::CONNECT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).rhs, NFEquation::CONNECT).clone(), format)?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ FOR { .. } => {
-            s = IOStream::append(s.clone(), (literal!("for ")).clone())?;
-            s = IOStream::append(s.clone(), (Util::makeQuotedIdentifier((InstNode::name(var_field!((*eq).iterator, NFEquation::FOR).clone())?).clone())?).clone())?;
+            s = IOStream::append(s, (literal!("for ")).clone())?;
+            s = IOStream::append(s, (Util::makeQuotedIdentifier((InstNode::name(var_field!((*eq).iterator, NFEquation::FOR).clone())?).clone())?).clone())?;
             if isSome(var_field!((*eq).range, NFEquation::FOR).clone()) {
-                s = IOStream::append(s.clone(), (literal!(" in ")).clone())?;
-                s = IOStream::append(s.clone(), (Expression::toFlatString(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?, format.clone())?).clone())?;
+                s = IOStream::append(s, (literal!(" in ")).clone())?;
+                s = IOStream::append(s, (Expression::toFlatString(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?, format.clone())?).clone())?;
             }
-            s = IOStream::append(s.clone(), (literal!(" loop\n")).clone())?;
-            s = toFlatStreamList(var_field!((*eq).body, NFEquation::FOR).clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone())?;
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end for")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!(" loop\n")).clone())?;
+            s = toFlatStreamList(var_field!((*eq).body, NFEquation::FOR).clone(), format, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s)?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end for")).clone())?;
+            s
         },
         Deref @ IF { .. } => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(var_field!((*eq).branches, NFEquation::IF).clone()) {
@@ -1481,7 +1481,7 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
             } };
             branch = __pa0.clone();
             branches = __pa1.clone();
-            s = Branch::toFlatStream(branch.clone(), (literal!("if ")).clone(), format.clone(), false, (indent.clone()).clone(), s.clone())?;
+            s = Branch::toFlatStream(branch.clone(), (literal!("if ")).clone(), format.clone(), false, (indent.clone()).clone(), s)?;
             while !(branches.clone().is_empty()) {
                 let (__pa2, __pa3) = ::match_deref::match_deref! { match &(branches.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
@@ -1492,50 +1492,50 @@ pub(crate) fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::Ou
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 s = Branch::toFlatStream(branch.clone(), (literal!("elseif ")).clone(), format.clone(), branches.clone().is_empty(), (indent.clone()).clone(), s.clone())?;
             }
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end if")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end if")).clone())?;
+            s
         },
         Deref @ WHEN { .. } => {
-            s = Branch::toFlatStream(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?, (literal!("when ")).clone(), format.clone(), false, (indent.clone()).clone(), s.clone())?;
+            s = Branch::toFlatStream(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?, (literal!("when ")).clone(), format.clone(), false, (indent.clone()).clone(), s)?;
             for mut b in &*listRest(var_field!((*eq).branches, NFEquation::WHEN).clone())? {
                 let mut b = b.clone();
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
                 s = Branch::toFlatStream(b.clone(), (literal!("elsewhen ")).clone(), format.clone(), false, (indent.clone()).clone(), s.clone())?;
             }
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end when")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end when")).clone())?;
+            s
         },
         Deref @ ASSERT { .. } => {
-            s = IOStream::append(s.clone(), (literal!("assert(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).condition, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).message, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).level, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("assert(")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).condition, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).message, NFEquation::ASSERT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).level, NFEquation::ASSERT).clone(), format)?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ TERMINATE { .. } => {
-            s = IOStream::append(s.clone(), (literal!("terminate(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).message, NFEquation::TERMINATE).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("terminate(")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).message, NFEquation::TERMINATE).clone(), format)?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ REINIT { .. } => {
-            s = IOStream::append(s.clone(), (literal!("reinit(")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).cref, NFEquation::REINIT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).reinitExp, NFEquation::REINIT).clone(), format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (literal!("reinit(")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).cref, NFEquation::REINIT).clone(), format.clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, (Expression::toFlatString(var_field!((*eq).reinitExp, NFEquation::REINIT).clone(), format)?).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
-        Deref @ NORETCALL { .. } => IOStream::append(s.clone(), (Expression::toFlatString(var_field!((*eq).exp, NFEquation::NORETCALL).clone(), format.clone())?).clone())?,
-        _ => IOStream::append(s.clone(), (literal!("#UNKNOWN EQUATION#")).clone())?,
+        Deref @ NORETCALL { .. } => IOStream::append(s, (Expression::toFlatString(var_field!((*eq).exp, NFEquation::NORETCALL).clone(), format)?).clone())?,
+        _ => IOStream::append(s, (literal!("#UNKNOWN EQUATION#")).clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    s = FlatModelicaUtil::appendElementSourceComment(source(eq.clone())?, FlatModelicaUtil::ElementType::EQUATION.clone(), s.clone())?;
+    s = FlatModelicaUtil::appendElementSourceComment(source(eq)?, FlatModelicaUtil::ElementType::EQUATION.clone(), s)?;
     Ok(s)
 }
 
@@ -1544,15 +1544,15 @@ pub(crate) fn toFlatStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>
     let mut prev_multi_line: bool = false;
     let mut multi_line: bool;
     let mut first: bool = true;
-    for mut eq in &*eql.clone() {
+    for mut eq in &*eql {
         let mut eq = eq.clone();
         multi_line = isMultiLine(eq.clone());
-        if first.clone() {
+        if first {
             first = false;
-        } else if prev_multi_line.clone() || multi_line.clone() {
+        } else if prev_multi_line || multi_line {
             s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
         }
-        prev_multi_line = multi_line.clone();
+        prev_multi_line = multi_line;
         s = toFlatStream(eq.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
         s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
     }
@@ -1561,7 +1561,7 @@ pub(crate) fn toFlatStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>
 
 pub(crate) fn isMultiLine(mut eq: Arc<NFEquation>) -> bool {
     let mut singleLine: bool;
-    singleLine = (::match_deref::match_deref! { match &(eq.clone()) {
+    singleLine = (::match_deref::match_deref! { match &(eq) {
         Deref @ FOR { .. } => true,
         Deref @ IF { .. } => true,
         Deref @ WHEN { .. } => true,
@@ -1573,11 +1573,11 @@ pub(crate) fn isMultiLine(mut eq: Arc<NFEquation>) -> bool {
 
 pub(crate) fn splitRecordEquations(mut equations: Arc<metamodelica::List<Arc<NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<NFEquation>>>> {
     let mut outEquations: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
-    for mut eq in &*equations.clone() {
+    for mut eq in &*equations {
         let mut eq = eq.clone();
         outEquations = splitRecordEquation(eq.clone(), outEquations.clone())?;
     }
-    outEquations = metamodelica::Dangerous::listReverseInPlace(outEquations.clone());
+    outEquations = metamodelica::Dangerous::listReverseInPlace(outEquations);
     Ok(outEquations)
 }
 
@@ -1596,11 +1596,11 @@ pub(crate) fn splitRecordEquation(mut eq: Arc<NFEquation>, mut equations: Arc<me
                 rhs = Expression::nthRecordElement(i.clone(), var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
                 equations = metamodelica::cons(Arc::new(NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: Expression::typeOf(lhs.clone()), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() }), equations.clone());
             }
-            equations.clone()
+            equations
         },
         Deref @ FOR { .. } => {
             assign_variant_field!(eq => NFEquation::FOR; body = splitRecordEquations(var_field!((*eq).body, NFEquation::FOR).clone())?);
-            metamodelica::cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations)
         },
         Deref @ IF { .. } => {
             assign_variant_field!(eq => NFEquation::IF; branches = ({
@@ -1611,7 +1611,7 @@ pub(crate) fn splitRecordEquation(mut eq: Arc<NFEquation>, mut equations: Arc<me
         }
         __acc.reverse()
     }));
-            metamodelica::cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations)
         },
         Deref @ WHEN { .. } => {
             assign_variant_field!(eq => NFEquation::WHEN; branches = ({
@@ -1622,9 +1622,9 @@ pub(crate) fn splitRecordEquation(mut eq: Arc<NFEquation>, mut equations: Arc<me
         }
         __acc.reverse()
     }));
-            metamodelica::cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations)
         },
-        _ => metamodelica::cons(eq.clone(), equations.clone()),
+        _ => metamodelica::cons(eq.clone(), equations),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(equations)

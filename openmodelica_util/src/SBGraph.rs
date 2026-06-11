@@ -83,7 +83,7 @@ impl metamodelica::gc::MMTrace for SetType {
 }
 
 pub(crate) fn edge_finder<EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut e: EdgeT, mut edges: Arc<Vector::Vector<EdgeT>>, mut eqFn: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>) -> Result<bool> {
-    let mut matching: bool = eqFn(e.clone(), Vector::get(edges.clone(), index.clone())?)?;
+    let mut matching: bool = eqFn(e.clone(), Vector::get(edges.clone(), index)?)?;
     Ok(matching)
 }
 
@@ -152,13 +152,13 @@ pub mod IncidenceList {
 
     pub(crate) fn getRow<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<Arc<metamodelica::List<i32>>> {
         let mut row: Arc<metamodelica::List<i32>>;
-        row = Vector::get(il.graph.clone(), d.clone())?;
+        row = Vector::get(il.graph.clone(), d)?;
         Ok(row)
     }
 
     pub fn addVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut v: VertexT) -> i32 {
         let mut d: i32;
-        Vector::push(il.vertices.clone(), v.clone());
+        Vector::push(il.vertices.clone(), v);
         Vector::push(il.graph.clone(), metamodelica::nil());
         d = Vector::size(il.vertices.clone());
         d
@@ -170,13 +170,13 @@ pub mod IncidenceList {
         let mut od: Option<i32>;
         let mut index: i32;
         (_, index) = Vector::find(il.vertices.clone(), predFn.clone())?;
-        od = if (index.clone() > 0) {Some(index.clone())} else {None};
+        od = if (index > 0) {Some(index)} else {None};
         Ok(od)
     }
 
     pub fn getVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<VertexT> {
         let mut v: VertexT;
-        v = Vector::get(il.vertices.clone(), d.clone())?;
+        v = Vector::get(il.vertices.clone(), d)?;
         Ok(v)
     }
 
@@ -184,7 +184,7 @@ pub mod IncidenceList {
         pub type getSetFn<VertexT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>;
 
         let mut set_vertices: Arc<metamodelica::List<VertexT>> = metamodelica::nil();
-        for mut v in &*vertices(il.clone()) {
+        for mut v in &*vertices(il) {
             let mut v = v.clone();
             if !(SBSet::isEmpty(SBSet::intersection(getSet(v.clone())?, set.clone())?)) {
                 set_vertices = metamodelica::cons(v.clone(), set_vertices.clone());
@@ -196,22 +196,22 @@ pub mod IncidenceList {
     pub fn addEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
         let mut ei: i32;
         let mut eil: Arc<metamodelica::List<i32>>;
-        eil = Vector::get(il.graph.clone(), d1.clone())?;
+        eil = Vector::get(il.graph.clone(), d1)?;
         ei = List::positionOnTrue(eil.clone(), (std::sync::Arc::new({ let __pe_b1 = e.clone(); let __pe_b2 = il.edges.clone(); let __pe_b3 = il.edgeEqFn.clone(); move |__pe_a0| edge_finder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-        if ei.clone() == -1 {
-            Vector::push(il.edges.clone(), e.clone());
+        if ei == -1 {
+            Vector::push(il.edges.clone(), e);
             ei = Vector::size(il.edges.clone());
-            Vector::update(il.graph.clone(), d1.clone(), metamodelica::cons(ei.clone(), eil.clone()))?;
-            Vector::update(il.graph.clone(), d2.clone(), metamodelica::cons(ei.clone(), Vector::get(il.graph.clone(), d2.clone())?))?;
+            Vector::update(il.graph.clone(), d1, metamodelica::cons(ei, eil))?;
+            Vector::update(il.graph.clone(), d2, metamodelica::cons(ei, Vector::get(il.graph.clone(), d2)?))?;
         } else {
-            Vector::update(il.edges.clone(), ei.clone(), e.clone())?;
+            Vector::update(il.edges.clone(), ei, e)?;
         }
         Ok(ei)
     }
 
     pub(crate) fn getEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<EdgeT> {
         let mut e: EdgeT;
-        e = Vector::get(il.edges.clone(), d.clone())?;
+        e = Vector::get(il.edges.clone(), d)?;
         Ok(e)
     }
 
@@ -245,7 +245,7 @@ pub mod IncidenceList {
         let mut vertToString: VertexStr<VertexT> = il.vertToString.clone();
         let mut edgeToString: EdgeStr<EdgeT> = il.edgeToString.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Set-Based Graph")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*stringDelimitList(({
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (Vector::toList(il.vertices.clone())).into_iter().cloned() {
             let __x = vertToString(v.clone())?;
@@ -253,7 +253,7 @@ pub mod IncidenceList {
         }
         __acc.reverse()
     }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*stringDelimitList(({
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (Vector::toList(il.edges.clone())).into_iter().cloned() {
             let __x = edgeToString(e.clone())?;
@@ -333,25 +333,25 @@ pub mod BipartiteIncidenceList {
     }
 
     pub(crate) fn getRow<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<Arc<metamodelica::List<i32>>> {
-        let mut row: Arc<metamodelica::List<i32>> = Vector::get(il.graph.clone(), d.clone())?;
+        let mut row: Arc<metamodelica::List<i32>> = Vector::get(il.graph.clone(), d)?;
         Ok(row)
     }
 
     pub(crate) fn addVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut v: VertexT, mut ST: SetType) -> Result<i32> {
         let mut d: i32;
-        d = (match ST.clone() {
+        d = (match ST {
         SetType::F => {
-            Vector::push(il.F_vertices.clone(), v.clone());
+            Vector::push(il.F_vertices.clone(), v);
             Vector::push(il.graph.clone(), metamodelica::nil());
             Vector::size(il.F_vertices.clone())
         },
         SetType::U => {
-            Vector::push(il.U_vertices.clone(), v.clone());
+            Vector::push(il.U_vertices.clone(), v);
             Vector::push(il.graph.clone(), metamodelica::nil());
             Vector::size(il.U_vertices.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.addVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.addVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST)); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -363,31 +363,31 @@ pub mod BipartiteIncidenceList {
 
         let mut od: Option<i32>;
         let mut index: i32 = 0;
-        index = (match ST.clone() {
+        index = (match ST {
         SetType::F => {
             (_, index) = Vector::find(il.F_vertices.clone(), predFn.clone())?;
-            index.clone()
+            index
         },
         SetType::U => {
             (_, index) = Vector::find(il.U_vertices.clone(), predFn.clone())?;
-            index.clone()
+            index
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.findVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.findVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST)); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
-        od = if (index.clone() > 0) {Some(index.clone())} else {None};
+        od = if (index > 0) {Some(index)} else {None};
         Ok(od)
     }
 
     pub(crate) fn getVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32, mut ST: SetType) -> Result<VertexT> {
         let mut v: VertexT;
-        v = (match ST.clone() {
-        SetType::F => Vector::get(il.F_vertices.clone(), d.clone())?,
-        SetType::U => Vector::get(il.U_vertices.clone(), d.clone())?,
+        v = (match ST {
+        SetType::F => Vector::get(il.F_vertices.clone(), d)?,
+        SetType::U => Vector::get(il.U_vertices.clone(), d)?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.getVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.getVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST)); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -398,7 +398,7 @@ pub mod BipartiteIncidenceList {
         pub type getSetFn<VertexT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>;
 
         let mut set_vertices: Arc<metamodelica::List<VertexT>> = metamodelica::nil();
-        for mut v in &*vertices(il.clone(), ST.clone())? {
+        for mut v in &*vertices(il, ST)? {
             let mut v = v.clone();
             if !(SBSet::isEmpty(SBSet::intersection(getSet(v.clone())?, set.clone())?)) {
                 set_vertices = metamodelica::cons(v.clone(), set_vertices.clone());
@@ -410,15 +410,15 @@ pub mod BipartiteIncidenceList {
     pub(crate) fn addEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
         let mut ei: i32;
         let mut eil: Arc<metamodelica::List<i32>>;
-        eil = getRow(il.clone(), d1.clone())?;
+        eil = getRow(il.clone(), d1)?;
         ei = List::positionOnTrue(eil.clone(), (std::sync::Arc::new({ let __pe_b1 = e.clone(); let __pe_b2 = il.edges.clone(); let __pe_b3 = il.edgeEqFn.clone(); move |__pe_a0| edge_finder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-        if ei.clone() == -1 {
-            Vector::push(il.edges.clone(), e.clone());
+        if ei == -1 {
+            Vector::push(il.edges.clone(), e);
             ei = Vector::size(il.edges.clone());
-            Vector::update(il.graph.clone(), d1.clone(), metamodelica::cons(ei.clone(), eil.clone()))?;
-            Vector::update(il.graph.clone(), d2.clone(), metamodelica::cons(ei.clone(), Vector::get(il.graph.clone(), d2.clone())?))?;
+            Vector::update(il.graph.clone(), d1, metamodelica::cons(ei, eil))?;
+            Vector::update(il.graph.clone(), d2, metamodelica::cons(ei, Vector::get(il.graph.clone(), d2)?))?;
         } else {
-            Vector::update(il.edges.clone(), ei.clone(), e.clone())?;
+            Vector::update(il.edges.clone(), ei, e)?;
         }
         Ok(ei)
     }
@@ -427,7 +427,7 @@ pub mod BipartiteIncidenceList {
         pub type getSetFn<EdgeT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(EdgeT) -> Result<Arc<SBSet::SBSet>> + 'static>;
 
         let mut set_edges: Arc<metamodelica::List<EdgeT>> = metamodelica::nil();
-        for mut e in &*edges(il.clone()) {
+        for mut e in &*edges(il) {
             let mut e = e.clone();
             if !(SBSet::isEmpty(SBSet::intersection(getSet(e.clone())?, set.clone())?)) {
                 set_edges = metamodelica::cons(e.clone(), set_edges.clone());
@@ -437,7 +437,7 @@ pub mod BipartiteIncidenceList {
     }
 
     pub(crate) fn getEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<EdgeT> {
-        let mut e: EdgeT = Vector::get(il.edges.clone(), d.clone())?;
+        let mut e: EdgeT = Vector::get(il.edges.clone(), d)?;
         Ok(e)
     }
 
@@ -448,12 +448,12 @@ pub mod BipartiteIncidenceList {
 
     pub(crate) fn vertexCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType) -> Result<i32> {
         let mut count: i32;
-        count = (match ST.clone() {
+        count = (match ST {
         SetType::V { .. } => Vector::size(il.F_vertices.clone()) + Vector::size(il.U_vertices.clone()),
         SetType::F => Vector::size(il.F_vertices.clone()),
         SetType::U => Vector::size(il.U_vertices.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertexCount")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertexCount")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST)); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -467,12 +467,12 @@ pub mod BipartiteIncidenceList {
 
     pub(crate) fn vertices<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType) -> Result<Arc<metamodelica::List<VertexT>>> {
         let mut vl: Arc<metamodelica::List<VertexT>>;
-        vl = (match ST.clone() {
+        vl = (match ST {
         SetType::V { .. } => listAppend(Vector::toList(il.F_vertices.clone()), Vector::toList(il.U_vertices.clone())),
         SetType::F => Vector::toList(il.F_vertices.clone()),
         SetType::U => Vector::toList(il.U_vertices.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertices")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertices")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST)); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -521,7 +521,7 @@ pub mod BipartiteIncidenceList {
 
     pub(crate) fn setTypeString(mut ST: SetType) -> ArcStr {
         let mut r#str: ArcStr;
-        r#str = ((match ST.clone() {
+        r#str = ((match ST {
         SetType::V { .. } => literal!("V (generic vertex set)"),
         SetType::F => literal!("F (function vertex set)"),
         SetType::U => literal!("U (unknown vertex set)"),

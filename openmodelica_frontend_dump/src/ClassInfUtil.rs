@@ -57,7 +57,7 @@ use openmodelica_util::Print;
 
 pub fn printStateStr(mut inState: ClassInf::State) -> ArcStr {
     let mut outString: ArcStr;
-    outString = ((match inState.clone() {
+    outString = ((match inState {
         ClassInf::State::UNKNOWN { .. } => {
             literal!("unknown")
         },
@@ -220,7 +220,7 @@ pub(crate) fn printState(mut inState: ClassInf::State) -> Result<()> {
         ClassInf::State::HAS_RESTRICTIONS { path: ref p, .. } => {
             Print::printBuf((literal!("HAS_RESTRICTIONS ")).clone())?;
             Print::printBuf((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone())?;
-            Print::printBuf((printStateStr(inState.clone())).clone())?;
+            Print::printBuf((printStateStr(inState)).clone())?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -230,7 +230,7 @@ pub(crate) fn printState(mut inState: ClassInf::State) -> Result<()> {
 
 pub fn getStateName(mut inState: ClassInf::State) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;
-    outPath = (match inState.clone() {
+    outPath = (match inState {
         ClassInf::State::UNKNOWN { path: ref p } => {
             p.clone()
         },
@@ -315,7 +315,7 @@ pub fn getStateName(mut inState: ClassInf::State) -> Arc<Absyn::Path> {
 
 fn printEventStr(mut inEvent: ClassInf::Event) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match inEvent.clone() {
+    r#str = ((match inEvent {
         ClassInf::Event::FOUND_EQUATION { .. } => {
             literal!("equation")
         },
@@ -340,14 +340,14 @@ fn printEventStr(mut inEvent: ClassInf::Event) -> ArcStr {
 
 pub fn start(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
     let mut outState: ClassInf::State;
-    outState = start_dispatch(inRestriction.clone(), AbsynUtil::makeFullyQualified(inPath.clone()))?;
+    outState = start_dispatch(inRestriction, AbsynUtil::makeFullyQualified(inPath))?;
     Ok(outState)
 }
 
 // Transitions
 fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
     let mut outState: ClassInf::State;
-    outState = (::match_deref::match_deref! { match &((inRestriction.clone(), inPath.clone())) {
+    outState = (::match_deref::match_deref! { match &((inRestriction.clone(), inPath)) {
         (SCode::Restriction::R_CLASS { .. }, p) => {
             ClassInf::State::UNKNOWN { path: p.clone() }
         },
@@ -373,7 +373,7 @@ fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::
             ClassInf::State::PACKAGE { path: p.clone() }
         },
         (SCode::Restriction::R_FUNCTION { .. }, p) => {
-            ClassInf::State::FUNCTION { path: p.clone(), isImpure: SCodeUtil::isRestrictionImpure(inRestriction.clone(), true) }
+            ClassInf::State::FUNCTION { path: p.clone(), isImpure: SCodeUtil::isRestrictionImpure(inRestriction, true) }
         },
         (SCode::Restriction::R_OPERATOR { .. }, p) => {
             ClassInf::State::FUNCTION { path: p.clone(), isImpure: false }
@@ -413,24 +413,24 @@ fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::
 
 pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Result<ClassInf::State> {
     let mut outState: ClassInf::State;
-    outState = (match (inState.clone(), inEvent.clone()) {
+    outState = (match (inState.clone(), inEvent) {
         (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: false, hasAlgorithms: false, hasConstraints: false }
         },
         (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::MODEL { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::RECORD { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::BLOCK { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::CONNECTOR { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::TYPE { path: p.clone() }
@@ -439,52 +439,52 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
             ClassInf::State::PACKAGE { path: p.clone() }
         },
         (ClassInf::State::FUNCTION { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::ENUMERATION { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_INTEGER { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_REAL { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_STRING { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_BOOL { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_CLOCK { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_ENUM { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::META_UNIONTYPE { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::META_RECORD { .. }, ClassInf::Event::NEWDEF { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: false, hasAlgorithms: false, hasConstraints: false }
         },
         (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::RECORD { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::CONNECTOR { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE { path: ref p }, ClassInf::Event::FOUND_COMPONENT { name: mut s }) => {
             if !(isBasicTypeComponentName((s.clone()).clone())) {
@@ -494,67 +494,67 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
             ClassInf::State::TYPE { path: p.clone() }
         },
         (ClassInf::State::PACKAGE { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::ENUMERATION { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::HAS_RESTRICTIONS { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_INTEGER { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_REAL { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_STRING { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_BOOL { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_CLOCK { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::TYPE_ENUM { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::META_RECORD { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::META_UNIONTYPE { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: true, hasAlgorithms: false, hasConstraints: false }
         },
         (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_CONSTRAINT { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
-            inState.clone()
+            inState
         },
         (ClassInf::State::HAS_RESTRICTIONS { path: ref p, hasAlgorithms: mut b2, hasConstraints: mut b3, .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: true, hasAlgorithms: b2.clone(), hasConstraints: b3.clone() }
@@ -566,7 +566,7 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: b1.clone(), hasAlgorithms: true, hasConstraints: b3.clone() }
         },
         (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_EXT_DECL { .. }) => {
-            inState.clone()
+            inState
         },
         (_, ClassInf::Event::FOUND_EXT_DECL { .. }) => {
             bail!("fail")
@@ -587,7 +587,7 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
 }
 
 pub fn valid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction) -> Result<()> {
-    let () = (match (inState.clone(), inRestriction.clone()) {
+    let () = (match (inState, inRestriction) {
         (ClassInf::State::UNKNOWN { .. }, _) => (),
         (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_CLASS { .. }) => (),
         (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_MODEL { .. }) => (),
@@ -635,7 +635,7 @@ pub fn valid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction
 
 pub fn assertValid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction, mut info: SourceInfo) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inState.clone(), inRestriction.clone());
+        let __mc_input = (inState, inRestriction);
         if let Ok(__v) = (|| -> Result<_> {
             let (mut st, mut re) = __mc_input.clone() else { bail!("nomatch") };
             valid(st.clone(), re.clone())?;
@@ -660,7 +660,7 @@ pub fn assertValid(mut inState: ClassInf::State, mut inRestriction: SCode::Restr
 pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut info: SourceInfo) -> Result<ClassInf::State> {
     let mut outState: ClassInf::State;
     outState = 'mc: {
-        let __mc_input = inState.clone();
+        let __mc_input = inState;
         if let Ok(__v) = (|| -> Result<_> {
             let mut st = __mc_input.clone() else { bail!("nomatch") };
             Ok(trans(st.clone(), event.clone())?)
@@ -683,7 +683,7 @@ pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut
 
 pub(crate) fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodelica::List<ClassInf::State>>) -> Result<bool> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inState.clone(), inStateLst.clone())) {
+        ::match_deref::match_deref! { match &((inState.clone(), inStateLst)) {
         (_, Deref @ metamodelica::List::Nil) => {
             return Ok(false)
         },
@@ -734,7 +734,7 @@ pub(crate) fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<me
         },
         (_, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
             let mut res: bool;
-            { (inState, inStateLst) = (inState.clone(), rest.clone()); continue '__tco; }
+            { (inState, inStateLst) = (inState, rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -743,7 +743,7 @@ pub(crate) fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<me
 
 pub fn isFunction(mut inState: ClassInf::State) -> bool {
     let mut b: bool;
-    b = (match inState.clone() {
+    b = (match inState {
         ClassInf::State::FUNCTION { .. } => true,
         _ => false,
     });
@@ -752,7 +752,7 @@ pub fn isFunction(mut inState: ClassInf::State) -> bool {
 
 pub fn isFunctionOrRecord(mut inState: ClassInf::State) -> bool {
     let mut b: bool;
-    b = (match inState.clone() {
+    b = (match inState {
         ClassInf::State::FUNCTION { .. } => true,
         ClassInf::State::RECORD { .. } => true,
         _ => false,
@@ -761,7 +761,7 @@ pub fn isFunctionOrRecord(mut inState: ClassInf::State) -> bool {
 }
 
 pub fn isConnector(mut inState: ClassInf::State) -> Result<()> {
-    let () = (match inState.clone() {
+    let () = (match inState {
         ClassInf::State::CONNECTOR { .. } => (),
         _ => bail!("match: no arm matched"),
     });
@@ -772,13 +772,13 @@ pub(crate) static basicTypeMods: std::sync::LazyLock<Arc<metamodelica::List<ArcS
 
 pub fn isBasicTypeComponentName(mut name: ArcStr) -> bool {
     let mut res: bool;
-    res = listMember((name.clone()).clone(), basicTypeMods.clone());
+    res = listMember((name).clone(), basicTypeMods.clone());
     res
 }
 
 pub fn isTypeOrRecord(mut inState: ClassInf::State) -> bool {
     let mut outIsTypeOrRecord: bool;
-    outIsTypeOrRecord = (match inState.clone() {
+    outIsTypeOrRecord = (match inState {
         ClassInf::State::TYPE { .. } => true,
         ClassInf::State::RECORD { .. } => true,
         _ => false,
@@ -788,7 +788,7 @@ pub fn isTypeOrRecord(mut inState: ClassInf::State) -> bool {
 
 pub fn isRecord(mut inState: ClassInf::State) -> bool {
     let mut outIsRecord: bool;
-    outIsRecord = (match inState.clone() {
+    outIsRecord = (match inState {
         ClassInf::State::RECORD { .. } => true,
         _ => false,
     });
@@ -797,7 +797,7 @@ pub fn isRecord(mut inState: ClassInf::State) -> bool {
 
 pub(crate) fn isMetaRecord(mut inState: ClassInf::State) -> bool {
     let mut outIsRecord: bool;
-    outIsRecord = (match inState.clone() {
+    outIsRecord = (match inState {
         ClassInf::State::META_RECORD { .. } => true,
         _ => false,
     });

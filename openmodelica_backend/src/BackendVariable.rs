@@ -90,7 +90,7 @@ pub(crate) fn setVarFixed(mut inVar: BackendDAE::Var, mut inBoolean: bool) -> Re
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setFixedAttr(oattr.clone(), Some(Arc::new(DAE::Exp::BCONST { bool: inBoolean.clone() })))?;
+    outVar.values = DAEUtil::setFixedAttr(oattr, Some(Arc::new(DAE::Exp::BCONST { bool: inBoolean })))?;
     Ok(outVar)
 }
 
@@ -112,7 +112,7 @@ pub(crate) fn removeStartAttribute(mut var: BackendDAE::Var) -> Result<BackendDA
 
 pub(crate) fn varFixed(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { fixed: Some(Deref @ DAE::Exp::BCONST { bool: fixed }), .. }), .. } => {
             fixed.clone()
         },
@@ -146,7 +146,7 @@ pub(crate) fn setVarStartValue(mut inVar: BackendDAE::Var, mut inExp: Arc<DAE::E
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setStartAttr(oattr.clone(), inExp.clone())?;
+    outVar.values = DAEUtil::setStartAttr(oattr, inExp)?;
     Ok(outVar)
 }
 
@@ -154,7 +154,7 @@ pub(crate) fn setVarStartValueOption(mut inVar: BackendDAE::Var, mut inExp: Opti
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setStartAttrOption(oattr.clone(), inExp.clone())?;
+    outVar.values = DAEUtil::setStartAttrOption(oattr, inExp)?;
     Ok(outVar)
 }
 
@@ -162,13 +162,13 @@ pub(crate) fn setVarStartOrigin(mut inVar: BackendDAE::Var, mut startOrigin: Opt
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setStartOrigin(oattr.clone(), startOrigin.clone())?;
+    outVar.values = DAEUtil::setStartOrigin(oattr, startOrigin)?;
     Ok(outVar)
 }
 
 pub(crate) fn setVarAttributes(mut inVar: BackendDAE::Var, mut inAttr: Option<Arc<DAE::VariableAttributes>>) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.values = inAttr.clone();
+    outVar.values = inAttr;
     outVar
 }
 
@@ -185,49 +185,49 @@ pub(crate) fn varUnreplaceable(mut inVar: BackendDAE::Var) -> bool {
 
 pub fn setVarUnreplaceable(mut inVar: BackendDAE::Var, mut value: bool) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.unreplaceable = value.clone();
+    outVar.unreplaceable = value;
     outVar
 }
 
 pub(crate) fn setVarInitNonlinear(mut var: BackendDAE::Var, mut value: bool) -> BackendDAE::Var {
     let mut var: BackendDAE::Var = var;
-    var.initNonlinear = value.clone();
+    var.initNonlinear = value;
     var
 }
 
 pub(crate) fn varStartValueFail(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
     let mut sv: Arc<DAE::Exp>;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
-    let BackendDAE::VAR { values: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, .. } = (v) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
-    sv = DAEUtil::getStartAttrFail(attr.clone())?;
+    sv = DAEUtil::getStartAttrFail(attr)?;
     Ok(sv)
 }
 
 pub(crate) fn varNominalValueFail(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
     let mut sv: Arc<DAE::Exp>;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
-    let BackendDAE::VAR { values: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, .. } = (v) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
-    sv = DAEUtil::getNominalAttrFail(attr.clone())?;
+    sv = DAEUtil::getNominalAttrFail(attr)?;
     Ok(sv)
 }
 
 pub(crate) fn varMinValueFail(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
     let mut sv: Arc<DAE::Exp>;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
-    let BackendDAE::VAR { values: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, .. } = (v) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
-    sv = DAEUtil::getMinAttrFail(attr.clone())?;
+    sv = DAEUtil::getMinAttrFail(attr)?;
     Ok(sv)
 }
 
 pub(crate) fn varMaxValueFail(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
     let mut sv: Arc<DAE::Exp>;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
-    let BackendDAE::VAR { values: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, .. } = (v) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
-    sv = DAEUtil::getMaxAttrFail(attr.clone())?;
+    sv = DAEUtil::getMaxAttrFail(attr)?;
     Ok(sv)
 }
 
@@ -235,17 +235,17 @@ pub(crate) fn varStartValueType(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>>
     let mut sv: Arc<DAE::Exp>;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
     let mut ty: Arc<DAE::Type>;
-    let BackendDAE::VAR { values: __pa0, varType: __pa1, .. } = (v.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, varType: __pa1, .. } = (v) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
     ty = __pa1.clone();
-    sv = DAEUtil::getStartAttr(attr.clone(), ty.clone())?;
+    sv = DAEUtil::getStartAttr(attr, ty)?;
     Ok(sv)
 }
 
 pub(crate) fn varStartValueOption(mut v: BackendDAE::Var) -> Option<Arc<DAE::Exp>> {
     let mut sv: Option<Arc<DAE::Exp>>;
     sv = 'mc: {
-        let __mc_input = v.clone();
+        let __mc_input = v;
         if let Ok(__v) = (|| -> Result<_> {
             let BackendDAE::Var { values: mut attr, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut exp: Arc<DAE::Exp>;
@@ -264,30 +264,30 @@ pub(crate) fn varStartValueOption(mut v: BackendDAE::Var) -> Option<Arc<DAE::Exp
 pub(crate) fn varHasStartValue(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outHasStartValue: bool;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
-    let BackendDAE::VAR { values: __pa0, .. } = (inVar.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, .. } = (inVar) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
-    outHasStartValue = DAEUtil::hasStartAttr(attr.clone());
+    outHasStartValue = DAEUtil::hasStartAttr(attr);
     Ok(outHasStartValue)
 }
 
 pub(crate) fn varHasNoStartValue(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outHasNoStartValue: bool;
-    outHasNoStartValue = !(varHasStartValue(inVar.clone())?);
+    outHasNoStartValue = !(varHasStartValue(inVar)?);
     Ok(outHasNoStartValue)
 }
 
 pub(crate) fn varStartOrigin(mut v: BackendDAE::Var) -> Result<Option<Arc<DAE::Exp>>> {
     let mut so: Option<Arc<DAE::Exp>>;
     let mut attr: Option<Arc<DAE::VariableAttributes>>;
-    let BackendDAE::VAR { values: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { values: __pa0, .. } = (v) else { bail!("pattern mismatch") };
     attr = __pa0.clone();
-    so = DAEUtil::getStartOrigin(attr.clone())?;
+    so = DAEUtil::getStartOrigin(attr)?;
     Ok(so)
 }
 
 pub(crate) fn varBindExp(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
     let mut sv: Arc<DAE::Exp>;
-    let __pa0 = ::match_deref::match_deref! { match &(v.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(v) {
         BackendDAE::Var { bindExp: Some(__pa0), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -297,7 +297,7 @@ pub(crate) fn varBindExp(mut v: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
 
 pub(crate) fn varHasConstantBindExp(mut v: BackendDAE::Var) -> Result<bool> {
     let mut out: bool;
-    out = (::match_deref::match_deref! { match &(v.clone()) {
+    out = (::match_deref::match_deref! { match &(v) {
         BackendDAE::Var { bindExp: Some(e), .. } => {
             Expression::isConst(e.clone())?
         },
@@ -316,7 +316,7 @@ pub(crate) fn varHasNonConstantBindExpOrStartValue(mut v: BackendDAE::Var) -> Re
             !(Expression::isConstValue(e.clone())?)
         },
         _ => {
-            !(varHasConstantStartExp(v.clone()))
+            !(varHasConstantStartExp(v))
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -343,7 +343,7 @@ pub(crate) fn varHasConstantStartExp(mut v: BackendDAE::Var) -> bool {
 
 pub(crate) fn varHasBindExp(mut v: BackendDAE::Var) -> bool {
     let mut out: bool;
-    out = (::match_deref::match_deref! { match &(v.clone()) {
+    out = (::match_deref::match_deref! { match &(v) {
         BackendDAE::Var { bindExp: Some(_), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -358,7 +358,7 @@ pub(crate) fn varBindExpStartValue(mut v: BackendDAE::Var) -> Result<Arc<DAE::Ex
             e.clone()
         },
         _ => {
-            varStartValueFail(v.clone())?
+            varStartValueFail(v)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -372,7 +372,7 @@ pub(crate) fn varBindExpStartValueNoFail(mut v: BackendDAE::Var) -> Result<Arc<D
             e.clone()
         },
         _ => {
-            varStartValue(v.clone())?
+            varStartValue(v)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -381,7 +381,7 @@ pub(crate) fn varBindExpStartValueNoFail(mut v: BackendDAE::Var) -> Result<Arc<D
 
 pub(crate) fn varStateSelect(mut inVar: BackendDAE::Var) -> DAE::StateSelect {
     let mut outStateSelect: DAE::StateSelect;
-    outStateSelect = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outStateSelect = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(stateselect), .. }), .. } => {
             stateselect.clone()
         },
@@ -395,7 +395,7 @@ pub(crate) fn varStateSelect(mut inVar: BackendDAE::Var) -> DAE::StateSelect {
 
 pub(crate) fn varHasStateSelect(mut inVar: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(inVar.clone()) {
+    b = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(_), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -405,7 +405,7 @@ pub(crate) fn varHasStateSelect(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn varStateSelectAlways(mut v: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(v.clone()) {
+    b = (::match_deref::match_deref! { match &(v) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS { .. }), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -417,7 +417,7 @@ pub(crate) fn notVarStateSelectAlways(mut v: BackendDAE::Var, mut level: i32) ->
     let mut b: bool;
     b = (match v.clone() {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { index: mut diffcount, .. }, .. } => {
-            !(varStateSelectAlways(v.clone()) && (diffcount.clone() == level.clone() || diffcount.clone() == 1))
+            !(varStateSelectAlways(v) && (diffcount.clone() == level || diffcount.clone() == 1))
         },
         _ => {
             true
@@ -428,7 +428,7 @@ pub(crate) fn notVarStateSelectAlways(mut v: BackendDAE::Var, mut level: i32) ->
 
 pub(crate) fn varStateSelectNever(mut inVar: BackendDAE::Var) -> bool {
     let mut isNever: bool;
-    isNever = (match varStateSelect(inVar.clone()) {
+    isNever = (match varStateSelect(inVar) {
         DAE::StateSelect::NEVER { .. } => true,
         _ => false,
     });
@@ -437,7 +437,7 @@ pub(crate) fn varStateSelectNever(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn varStateSelectAvoid(mut inVar: BackendDAE::Var) -> bool {
     let mut isAvoid: bool;
-    isAvoid = (match varStateSelect(inVar.clone()) {
+    isAvoid = (match varStateSelect(inVar) {
         DAE::StateSelect::AVOID { .. } => true,
         _ => false,
     });
@@ -446,7 +446,7 @@ pub(crate) fn varStateSelectAvoid(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn varStateSelectPrefer(mut inVar: BackendDAE::Var) -> bool {
     let mut isPrefer: bool;
-    isPrefer = (match varStateSelect(inVar.clone()) {
+    isPrefer = (match varStateSelect(inVar) {
         DAE::StateSelect::PREFER { .. } => true,
         _ => false,
     });
@@ -457,13 +457,13 @@ pub(crate) fn setVarStateSelect(mut inVar: BackendDAE::Var, mut stateSelect: DAE
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setStateSelect(oattr.clone(), stateSelect.clone())?;
+    outVar.values = DAEUtil::setStateSelect(oattr, stateSelect)?;
     Ok(outVar)
 }
 
 pub(crate) fn varStateSelectForced(mut inVar: BackendDAE::Var) -> bool {
     let mut isForced: bool;
-    isForced = (::match_deref::match_deref! { match &(inVar.clone()) {
+    isForced = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS { .. }), .. }), .. } => true,
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::PREFER { .. }), .. }), .. } => true,
         _ => false,
@@ -474,7 +474,7 @@ pub(crate) fn varStateSelectForced(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isNaturalState(mut var: BackendDAE::Var) -> bool {
     let mut natural: bool;
-    natural = (match var.clone() {
+    natural = (match var {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { natural: mut n, .. }, .. } => {
             n.clone()
         },
@@ -487,7 +487,7 @@ pub(crate) fn isNaturalState(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn isArtificialState(mut var: BackendDAE::Var) -> bool {
     let mut artificial: bool;
-    artificial = (match var.clone() {
+    artificial = (match var {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { natural: mut n, .. }, .. } => {
             !(n.clone())
         },
@@ -500,7 +500,7 @@ pub(crate) fn isArtificialState(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn varStateDerivative(mut inVar: BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> {
     let mut dcr: Arc<DAE::ComponentRef>;
-    let __pa0 = ::match_deref::match_deref! { match &(inVar.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { derName: Some(__pa0), .. }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -510,7 +510,7 @@ pub(crate) fn varStateDerivative(mut inVar: BackendDAE::Var) -> Result<Arc<DAE::
 
 pub(crate) fn varHasStateDerivative(mut inVar: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(inVar.clone()) {
+    b = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { derName: Some(_), .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -525,13 +525,13 @@ pub(crate) fn setStateDerivative(mut var: BackendDAE::Var, mut derName: Option<A
     let BackendDAE::STATE { index: __pa0, natural: __pa1, .. } = (var.varKind.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
     natural = __pa1.clone();
-    var.varKind = BackendDAE::VarKind::STATE { index: index.clone(), derName: derName.clone(), natural: natural.clone() };
+    var.varKind = BackendDAE::VarKind::STATE { index: index, derName: derName, natural: natural };
     Ok(var)
 }
 
 pub(crate) fn getVariableAttributefromType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::VariableAttributes>> {
     let mut attr: Arc<DAE::VariableAttributes>;
-    attr = (::match_deref::match_deref! { match &(inType.clone()) {
+    attr = (::match_deref::match_deref! { match &(inType) {
         Deref @ DAE::Type::T_REAL { .. } => Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: None, unit: None, displayUnit: None, min: None, max: None, start: None, fixed: None, nominal: None, stateSelectOption: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None }),
         Deref @ DAE::Type::T_INTEGER { .. } => Arc::new(DAE::VariableAttributes::VAR_ATTR_INT { quantity: None, min: None, max: None, start: None, fixed: None, uncertainOption: None, distributionOption: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None }),
         Deref @ DAE::Type::T_BOOL { .. } => Arc::new(DAE::VariableAttributes::VAR_ATTR_BOOL { quantity: None, start: None, fixed: None, equationBound: None, isProtected: None, finalPrefix: None, startOrigin: None }),
@@ -552,7 +552,7 @@ pub(crate) fn setVarFinal(mut inVar: BackendDAE::Var, mut finalPrefix: bool) -> 
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setFinalAttr(oattr.clone(), finalPrefix.clone())?;
+    outVar.values = DAEUtil::setFinalAttr(oattr, finalPrefix)?;
     Ok(outVar)
 }
 
@@ -561,14 +561,14 @@ pub(crate) fn setVarMinMax(mut inVar: BackendDAE::Var, mut inMin: Option<Arc<DAE
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     if isSome(inMin.clone()) || isSome(inMax.clone()) {
         oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-        outVar.values = DAEUtil::setMinMax(oattr.clone(), inMin.clone(), inMax.clone())?;
+        outVar.values = DAEUtil::setMinMax(oattr, inMin, inMax)?;
     }
     Ok(outVar)
 }
 
 pub(crate) fn varNominalValue(mut inVar: BackendDAE::Var) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
-    let __pa0 = ::match_deref::match_deref! { match &(inVar.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { nominal: Some(__pa0), .. }), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -580,27 +580,27 @@ pub(crate) fn setVarNominalValue(mut inVar: BackendDAE::Var, mut inExp: Arc<DAE:
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut oattr: Option<Arc<DAE::VariableAttributes>>;
     oattr = if (isSome(inVar.values.clone())) {inVar.values.clone()} else {Some(getVariableAttributefromType(inVar.varType.clone())?)};
-    outVar.values = DAEUtil::setNominalAttr(oattr.clone(), inExp.clone())?;
+    outVar.values = DAEUtil::setNominalAttr(oattr, inExp)?;
     Ok(outVar)
 }
 
 pub(crate) fn varType(mut inVar: BackendDAE::Var) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
-    let BackendDAE::VAR { varType: __pa0, .. } = (inVar.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { varType: __pa0, .. } = (inVar) else { bail!("pattern mismatch") };
     outType = __pa0.clone();
     Ok(outType)
 }
 
 pub(crate) fn varKind(mut inVar: BackendDAE::Var) -> Result<BackendDAE::VarKind> {
     let mut outVarKind: BackendDAE::VarKind;
-    let BackendDAE::VAR { varKind: __pa0, .. } = (inVar.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { varKind: __pa0, .. } = (inVar) else { bail!("pattern mismatch") };
     outVarKind = __pa0.clone();
     Ok(outVarKind)
 }
 
 pub(crate) fn varNominal(mut inVar: BackendDAE::Var) -> Result<metamodelica::Real> {
     let mut outReal: metamodelica::Real;
-    let __pa0 = ::match_deref::match_deref! { match &(inVar.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { nominal: Some(Deref @ DAE::Exp::RCONST { real: __pa0 }), .. }), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -630,14 +630,14 @@ pub(crate) fn varHasNominalValue(mut inVar: BackendDAE::Var) -> bool {
 
 pub fn varCref(mut inVar: BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    let BackendDAE::VAR { varName: __pa0, .. } = (inVar.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VAR { varName: __pa0, .. } = (inVar) else { bail!("pattern mismatch") };
     outComponentRef = __pa0.clone();
     Ok(outComponentRef)
 }
 
 pub fn isStateVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. } => true,
         _ => false,
     });
@@ -667,7 +667,7 @@ pub(crate) fn isState(mut inCref: Arc<DAE::ComponentRef>, mut inVars: BackendDAE
 
 pub(crate) fn isNonStateVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. } => true,
@@ -689,7 +689,7 @@ pub(crate) fn isNonStateVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isClockedStateVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBool: bool;
-    outBool = (match inVar.clone() {
+    outBool = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::CLOCKED_STATE { .. }, .. } => true,
         _ => false,
     });
@@ -719,7 +719,7 @@ pub(crate) fn isClockedState(mut inCref: Arc<DAE::ComponentRef>, mut inVars: Bac
 
 pub fn varHasUncertainValueRefine(mut var: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(var.clone()) {
+    b = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(DAE::Uncertainty::REFINE { .. }), .. }), .. } => true,
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { uncertainOption: Some(DAE::Uncertainty::REFINE { .. }), .. }), .. } => true,
         _ => false,
@@ -730,7 +730,7 @@ pub fn varHasUncertainValueRefine(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn varHasUncertainValuePropagate(mut var: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(var.clone()) {
+    b = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(DAE::Uncertainty::PROPAGATE { .. }), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -740,7 +740,7 @@ pub(crate) fn varHasUncertainValuePropagate(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn varDistribution(mut var: BackendDAE::Var) -> Result<Arc<DAE::Distribution>> {
     let mut d: Arc<DAE::Distribution> = Arc::new(<DAE::Distribution as ::std::default::Default>::default());
-    d = (::match_deref::match_deref! { match &(var.clone()) {
+    d = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { distributionOption: Some(__esc_d), .. }), .. } => {
             d = (*__esc_d).clone();
             d.clone()
@@ -757,7 +757,7 @@ pub(crate) fn varDistribution(mut var: BackendDAE::Var) -> Result<Arc<DAE::Distr
 pub fn varTryGetDistribution(mut var: BackendDAE::Var) -> Option<Arc<DAE::Distribution>> {
     let mut dout: Option<Arc<DAE::Distribution>>;
     let mut d: Option<Arc<DAE::Distribution>> = None;
-    dout = (::match_deref::match_deref! { match &(var.clone()) {
+    dout = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { distributionOption: __esc_d @ Some(_), .. }), .. } => {
             d = (*__esc_d).clone();
             d.clone()
@@ -774,7 +774,7 @@ pub fn varTryGetDistribution(mut var: BackendDAE::Var) -> Option<Arc<DAE::Distri
 
 pub(crate) fn varUncertainty(mut var: BackendDAE::Var) -> Result<DAE::Uncertainty> {
     let mut u: DAE::Uncertainty = DAE::Uncertainty::GIVEN;
-    u = (::match_deref::match_deref! { match &(var.clone()) {
+    u = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(__esc_u), .. }), .. } => {
             u = (*__esc_u).clone();
             u.clone()
@@ -790,7 +790,7 @@ pub(crate) fn varUncertainty(mut var: BackendDAE::Var) -> Result<DAE::Uncertaint
 
 pub(crate) fn varHasDistributionAttribute(mut var: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(var.clone()) {
+    b = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { distributionOption: Some(_), .. }), .. } => true,
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { distributionOption: Some(_), .. }), .. } => true,
         _ => false,
@@ -801,7 +801,7 @@ pub(crate) fn varHasDistributionAttribute(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn varHasUncertaintyAttribute(mut var: BackendDAE::Var) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(var.clone()) {
+    b = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(_), .. }), .. } => true,
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { uncertainOption: Some(_), .. }), .. } => true,
         _ => false,
@@ -812,7 +812,7 @@ pub(crate) fn varHasUncertaintyAttribute(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn isDummyStateVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. } => true,
         _ => false,
     });
@@ -821,7 +821,7 @@ pub(crate) fn isDummyStateVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isDummyDerVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. } => true,
         _ => false,
     });
@@ -830,7 +830,7 @@ pub(crate) fn isDummyDerVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isStateDerVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. } => true,
         _ => false,
     });
@@ -839,7 +839,7 @@ pub(crate) fn isStateDerVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isStateorStateDerVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. } => true,
         _ => false,
@@ -849,7 +849,7 @@ pub(crate) fn isStateorStateDerVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isVarDiscrete(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::CONST { .. }, .. } => true,
@@ -864,7 +864,7 @@ pub(crate) fn isVarDiscrete(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isVarNonDifferentiable(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_INTEGER { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_BOOL { .. }, .. } => true,
@@ -878,7 +878,7 @@ pub(crate) fn isVarNonDifferentiable(mut inVar: BackendDAE::Var) -> bool {
 pub(crate) fn isVarClockedState(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
     let mut test: ArcStr;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::CLOCKED_STATE { .. }, .. } => true,
         _ => false,
     });
@@ -889,23 +889,23 @@ pub(crate) fn isVarClockedState(mut inVar: BackendDAE::Var) -> bool {
 pub(crate) fn isDiscrete(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables) -> Result<bool> {
     let mut outBoolean: bool;
     let mut v: BackendDAE::Var;
-    (v, _) = getVarSingle(cr.clone(), vars.clone())?;
-    outBoolean = isVarDiscrete(v.clone());
+    (v, _) = getVarSingle(cr, vars)?;
+    outBoolean = isVarDiscrete(v);
     Ok(outBoolean)
 }
 
 pub(crate) fn isVarNonDiscrete(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = !(isVarDiscrete(inVar.clone()));
+    outBoolean = !(isVarDiscrete(inVar));
     outBoolean
 }
 
 pub(crate) fn hasDiscreteVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> bool {
     let mut outBoolean: bool = false;
-    for mut v in &*inBackendDAEVarLst.clone() {
+    for mut v in &*inBackendDAEVarLst {
         let mut v = v.clone();
         outBoolean = isVarDiscrete(v.clone());
-        if outBoolean.clone() {
+        if outBoolean {
             break;
         }
     }
@@ -914,7 +914,7 @@ pub(crate) fn hasDiscreteVar(mut inBackendDAEVarLst: Arc<metamodelica::List<Back
 
 pub(crate) fn hasContinuousVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> bool {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inBackendDAEVarLst.clone()) {
+        ::match_deref::match_deref! { match &(inBackendDAEVarLst) {
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, varType: Deref @ DAE::Type::T_REAL { .. }, .. }, tail: _ } => {
             return true
         },
@@ -968,7 +968,7 @@ pub(crate) fn hasContinuousVar(mut inBackendDAEVarLst: Arc<metamodelica::List<Ba
 pub(crate) fn isVarNonDiscreteAlg(mut var: BackendDAE::Var) -> bool {
     let mut result: bool;
     result = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, .. } => isVarAlg(var.clone()) && !(isVarDiscreteRealAlg(var.clone())) || isOptInputVar(var.clone()),
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, .. } => isVarAlg(var.clone()) && !(isVarDiscreteRealAlg(var.clone())) || isOptInputVar(var),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -988,7 +988,7 @@ pub(crate) fn isOptInputVar(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn isVarDiscreteRealAlg(mut var: BackendDAE::Var) -> bool {
     let mut result: bool;
-    result = (::match_deref::match_deref! { match &(var.clone()) {
+    result = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, varType: Deref @ DAE::Type::T_REAL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1102,7 +1102,7 @@ pub(crate) fn isVarBoolParam(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn isVarConnector(mut var: BackendDAE::Var) -> bool {
     let mut result: bool;
-    result = (::match_deref::match_deref! { match &(var.clone()) {
+    result = (::match_deref::match_deref! { match &(var) {
         BackendDAE::Var { connectorType: Deref @ DAE::ConnectorType::NON_CONNECTOR { .. }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1112,7 +1112,7 @@ pub(crate) fn isVarConnector(mut var: BackendDAE::Var) -> bool {
 
 pub(crate) fn isFlowVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1122,7 +1122,7 @@ pub(crate) fn isFlowVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isConst(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::CONST { .. }, .. } => true,
         _ => false,
     });
@@ -1131,7 +1131,7 @@ pub(crate) fn isConst(mut inVar: BackendDAE::Var) -> bool {
 
 pub fn isParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID { .. }, .. } => true,
         _ => false,
@@ -1149,23 +1149,23 @@ pub(crate) fn makeParamOutputsOnly(mut var: BackendDAE::Var, mut fixed: bool) ->
     let mut var: BackendDAE::Var = var;
     let mut fixed: bool = fixed;
     var.varKind = openmodelica_backend_types::BackendDAE::VarKind::PARAM;
-    var = setHideResult(var.clone(), Some(Arc::new(DAE::Exp::BCONST { bool: true })));
+    var = setHideResult(var, Some(Arc::new(DAE::Exp::BCONST { bool: true })));
     var.values = if (isSome(var.values.clone())) {var.values.clone()} else {Some(getVariableAttributefromType(var.varType.clone())?)};
     if isNone(DAEUtil::getFixedAttr(var.values.clone())) {
-        var.values = DAEUtil::setFixedAttr(var.values.clone(), Some(Arc::new(DAE::Exp::BCONST { bool: fixed.clone() })))?;
+        var.values = DAEUtil::setFixedAttr(var.values.clone(), Some(Arc::new(DAE::Exp::BCONST { bool: fixed })))?;
     }
     Ok((var, fixed))
 }
 
 pub(crate) fn isParamOrConstant(mut invar: BackendDAE::Var) -> bool {
     let mut outbool: bool = false;
-    outbool = isParam(invar.clone()) || isConst(invar.clone());
+    outbool = isParam(invar.clone()) || isConst(invar);
     outbool
 }
 
 pub(crate) fn isIntParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, varType: Deref @ DAE::Type::T_INTEGER { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, varType: Deref @ DAE::Type::T_ENUMERATION { .. }, .. } => true,
         _ => false,
@@ -1176,7 +1176,7 @@ pub(crate) fn isIntParam(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isBoolParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, varType: Deref @ DAE::Type::T_BOOL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1186,7 +1186,7 @@ pub(crate) fn isBoolParam(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isStringParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, varType: Deref @ DAE::Type::T_STRING { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1196,7 +1196,7 @@ pub(crate) fn isStringParam(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isExtObj(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::EXTOBJ { fullClassName: _ }, .. } => true,
         _ => false,
     });
@@ -1205,7 +1205,7 @@ pub(crate) fn isExtObj(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isAlgState(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE { .. }, .. } => true,
         _ => false,
     });
@@ -1214,7 +1214,7 @@ pub(crate) fn isAlgState(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isRealParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, varType: Deref @ DAE::Type::T_REAL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1224,7 +1224,7 @@ pub(crate) fn isRealParam(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isRealOptimizeConstraintsVars(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR { .. }, .. } => true,
         _ => false,
     });
@@ -1233,7 +1233,7 @@ pub(crate) fn isRealOptimizeConstraintsVars(mut inVar: BackendDAE::Var) -> bool 
 
 pub(crate) fn isDAEmodeVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_AUX_VAR { .. }, .. } => true,
         _ => false,
@@ -1243,7 +1243,7 @@ pub(crate) fn isDAEmodeVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub fn isDAEmodeResVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }, .. } => true,
         _ => false,
     });
@@ -1252,7 +1252,7 @@ pub fn isDAEmodeResVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub fn isDAEmodeAuxVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_AUX_VAR { .. }, .. } => true,
         _ => false,
     });
@@ -1261,7 +1261,7 @@ pub fn isDAEmodeAuxVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isRealOptimizeFinalConstraintsVars(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR { .. }, .. } => true,
         _ => false,
     });
@@ -1270,7 +1270,7 @@ pub(crate) fn isRealOptimizeFinalConstraintsVars(mut inVar: BackendDAE::Var) -> 
 
 pub(crate) fn isRealOptimizeDerInput(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER { .. }, .. } => true,
         _ => false,
     });
@@ -1279,7 +1279,7 @@ pub(crate) fn isRealOptimizeDerInput(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isAlgebraicOldState(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE_OLD { .. }, .. } => true,
         _ => false,
     });
@@ -1314,7 +1314,7 @@ pub(crate) fn isRESVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn hasMayerTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(comm), .. } => {
             SCodeUtil::commentHasBooleanNamedAnnotation(comm.clone(), (literal!("isMayer")).clone())?
         },
@@ -1328,7 +1328,7 @@ pub(crate) fn hasMayerTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
 
 pub(crate) fn hasOpenModelicaBoundaryConditionAnnotation(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(comm), .. } => {
             SCodeUtil::commentHasBooleanNamedAnnotation(comm.clone(), (literal!("__OpenModelica_BoundaryCondition")).clone())?
         },
@@ -1342,7 +1342,7 @@ pub(crate) fn hasOpenModelicaBoundaryConditionAnnotation(mut inVar: BackendDAE::
 
 pub(crate) fn hasLagrangeTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(comm), .. } => {
             SCodeUtil::commentHasBooleanNamedAnnotation(comm.clone(), (literal!("isLagrange")).clone())?
         },
@@ -1356,7 +1356,7 @@ pub(crate) fn hasLagrangeTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
 
 pub(crate) fn hasConTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(comm), .. } => {
             SCodeUtil::commentHasBooleanNamedAnnotation(comm.clone(), (literal!("isConstraint")).clone())?
         },
@@ -1370,7 +1370,7 @@ pub(crate) fn hasConTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
 
 pub(crate) fn hasFinalConTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(comm), .. } => {
             SCodeUtil::commentHasBooleanNamedAnnotation(comm.clone(), (literal!("isFinalConstraint")).clone())?
         },
@@ -1384,7 +1384,7 @@ pub(crate) fn hasFinalConTermAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
 
 pub(crate) fn hasTimeGridAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(comm), .. } => {
             SCodeUtil::commentHasBooleanNamedAnnotation(comm.clone(), (literal!("isTimeGrid")).clone())?
         },
@@ -1398,13 +1398,13 @@ pub(crate) fn hasTimeGridAnno(mut inVar: BackendDAE::Var) -> Result<bool> {
 
 pub(crate) fn isNonRealParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = !(isRealParam(inVar.clone()));
+    outBoolean = !(isRealParam(inVar));
     outBoolean
 }
 
 pub fn isInput(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varDirection: DAE::VarDirection::INPUT { .. }, .. } => true,
         _ => false,
     });
@@ -1413,7 +1413,7 @@ pub fn isInput(mut inVar: BackendDAE::Var) -> bool {
 
 pub fn isOutputVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (match inVar.clone() {
+    outBoolean = (match inVar {
         BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT { .. }, .. } => true,
         _ => false,
     });
@@ -1423,7 +1423,7 @@ pub fn isOutputVar(mut inVar: BackendDAE::Var) -> bool {
 pub(crate) fn isOutputAliasVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
     let mut s: ArcStr = arcstr::literal!("");
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varName: Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_s, .. }, .. } => {
             s = (*__esc_s).clone();
             if (StringUtil::startsWith((s.clone()).clone(), (literal!("$outputAlias")).clone())) {true} else {false}
@@ -1436,7 +1436,7 @@ pub(crate) fn isOutputAliasVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isRealVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1446,7 +1446,7 @@ pub(crate) fn isRealVar(mut inVar: BackendDAE::Var) -> bool {
 
 pub(crate) fn isRealOutputVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool;
-    outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outBoolean = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT { .. }, varType: Deref @ DAE::Type::T_REAL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1511,25 +1511,25 @@ pub(crate) fn isProtected(mut v: BackendDAE::Var) -> bool {
 
 pub(crate) fn hasVarEvaluateAnnotationTrueOrFinal(mut inVar: BackendDAE::Var) -> bool {
     let mut select: bool;
-    select = isFinalVar(inVar.clone()) || hasVarEvaluateAnnotationTrue(inVar.clone());
+    select = isFinalVar(inVar.clone()) || hasVarEvaluateAnnotationTrue(inVar);
     select
 }
 
 pub(crate) fn hasVarEvaluateAnnotationTrueOrProtected(mut inVar: BackendDAE::Var) -> bool {
     let mut select: bool;
-    select = isProtectedVar(inVar.clone()) || hasVarEvaluateAnnotationTrue(inVar.clone());
+    select = isProtectedVar(inVar.clone()) || hasVarEvaluateAnnotationTrue(inVar);
     select
 }
 
 pub(crate) fn hasVarEvaluateAnnotationTrueOrFinalOrProtected(mut inVar: BackendDAE::Var) -> bool {
     let mut select: bool;
-    select = isFinalOrProtectedVar(inVar.clone()) || hasVarEvaluateAnnotationTrue(inVar.clone());
+    select = isFinalOrProtectedVar(inVar.clone()) || hasVarEvaluateAnnotationTrue(inVar);
     select
 }
 
 pub(crate) fn hasVarEvaluateAnnotation(mut inVar: BackendDAE::Var) -> Result<bool> {
     let mut select: bool;
-    select = (::match_deref::match_deref! { match &(inVar.clone()) {
+    select = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(Deref @ SCode::Comment { annotation_: Some(anno), .. }), .. } => {
             SCodeUtil::hasBooleanNamedAnnotation(anno.clone(), (literal!("Evaluate")).clone())?
         },
@@ -1599,7 +1599,7 @@ pub(crate) fn hasVarEvaluateAnnotationFalse(mut inVar: BackendDAE::Var) -> bool 
 
 pub(crate) fn hasAnnotation(mut inVar: BackendDAE::Var) -> bool {
     let mut hasAnnot: bool;
-    hasAnnot = (::match_deref::match_deref! { match &(inVar.clone()) {
+    hasAnnot = (::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(Deref @ SCode::Comment { annotation_: Some(_), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1610,12 +1610,12 @@ pub(crate) fn hasAnnotation(mut inVar: BackendDAE::Var) -> bool {
 pub(crate) fn getNamedAnnotation(mut inVar: BackendDAE::Var, mut inName: ArcStr) -> Result<Arc<Absyn::Exp>> {
     let mut outValue: Arc<Absyn::Exp>;
     let mut ann: Arc<SCode::Annotation>;
-    let __pa0 = ::match_deref::match_deref! { match &(inVar.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inVar) {
         BackendDAE::Var { comment: Some(Deref @ SCode::Comment { annotation_: Some(__pa0), .. }), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     ann = __pa0.clone();
-    let __pa1 = ::match_deref::match_deref! { match &(SCodeUtil::lookupAnnotationBinding(ann.clone(), (inName.clone()).clone())?) {
+    let __pa1 = ::match_deref::match_deref! { match &(SCodeUtil::lookupAnnotationBinding(ann, (inName).clone())?) {
         Some(__pa1) => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1625,7 +1625,7 @@ pub(crate) fn getNamedAnnotation(mut inVar: BackendDAE::Var, mut inName: ArcStr)
 
 pub(crate) fn getAnnotationComment(mut inVar: BackendDAE::Var) -> Result<Option<Arc<SCode::Comment>>> {
     let mut comment: Option<Arc<SCode::Comment>>;
-    comment = (match inVar.clone() {
+    comment = (match inVar {
         BackendDAE::Var { comment: mut com, .. } => {
             com.clone()
         },
@@ -1640,9 +1640,9 @@ pub(crate) fn createpDerVar(mut inVar: BackendDAE::Var) -> Result<BackendDAE::Va
     let mut outVar: BackendDAE::Var;
     let mut cr: Arc<DAE::ComponentRef>;
     cr = varCref(inVar.clone())?;
-    cr = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(BackendDAE::partialDerivativeNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), cr.clone());
-    outVar = copyVarNewName(cr.clone(), inVar.clone());
-    outVar = setVarKind(outVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
+    cr = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(BackendDAE::partialDerivativeNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), cr);
+    outVar = copyVarNewName(cr, inVar);
+    outVar = setVarKind(outVar, openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
     Ok(outVar)
 }
 
@@ -1650,30 +1650,30 @@ pub(crate) fn createClockedState(mut inVar: BackendDAE::Var) -> Result<BackendDA
     let mut outVar: BackendDAE::Var;
     let mut cr: Arc<DAE::ComponentRef>;
     cr = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::previousNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), inVar.varName.clone());
-    outVar = copyVarNewName(cr.clone(), inVar.clone());
-    outVar = setVarKind(outVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
+    outVar = copyVarNewName(cr, inVar);
+    outVar = setVarKind(outVar, openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
     Ok(outVar)
 }
 
 pub(crate) fn createAliasDerVar(mut inCref: Arc<DAE::ComponentRef>) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
     let mut cr: Arc<DAE::ComponentRef>;
-    cr = ComponentReference::prependStringCref((arcstr::literal!(BackendDAE::derivativeNamePrefix)).clone(), inCref.clone())?;
-    outVar = BackendDAE::Var { varName: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+    cr = ComponentReference::prependStringCref((arcstr::literal!(BackendDAE::derivativeNamePrefix)).clone(), inCref)?;
+    outVar = BackendDAE::Var { varName: cr, varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
     Ok(outVar)
 }
 
 pub(crate) fn createVar(mut inCref: Arc<DAE::ComponentRef>, mut prependStringCref: ArcStr) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
     let mut cr: Arc<DAE::ComponentRef>;
-    cr = ComponentReference::appendStringLastIdent((prependStringCref.clone()).clone(), inCref.clone())?;
-    outVar = makeVar(cr.clone())?;
+    cr = ComponentReference::appendStringLastIdent((prependStringCref).clone(), inCref)?;
+    outVar = makeVar(cr)?;
     Ok(outVar)
 }
 
 pub(crate) fn createTmpVar(mut inCref: Arc<DAE::ComponentRef>, mut prependStringCref: ArcStr) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
-    outVar = createVar(inCref.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prependStringCref.clone()); __mm_s.push_str(&*intString(System::tmpTickIndex(Global::tmpVariableIndex.clone()))); ArcStr::from(__mm_s) }).clone())?;
+    outVar = createVar(inCref, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prependStringCref); __mm_s.push_str(&*intString(System::tmpTickIndex(Global::tmpVariableIndex.clone()))); ArcStr::from(__mm_s) }).clone())?;
     Ok(outVar)
 }
 
@@ -1691,14 +1691,14 @@ pub(crate) fn createCSEVar(mut inCref: Arc<DAE::ComponentRef>, mut inType: Arc<D
             path = __pa0.clone();
             source = Arc::new(DAE::ElementSource { info: Absyn::dummyInfo.clone(), partOfLst: metamodelica::nil(), instance: openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(), connectEquationOptLst: metamodelica::nil(), typeLst: list![path.clone()], operations: metamodelica::nil(), comment: metamodelica::nil() });
             varKind = if (Types::isDiscreteType(inType.clone())) {openmodelica_backend_types::BackendDAE::VarKind::DISCRETE} else {openmodelica_backend_types::BackendDAE::VarKind::VARIABLE};
-            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType.clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: source.clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            outVar.clone()
+            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType, bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: source.clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+            outVar
         },
         _ => {
             let mut varKind: BackendDAE::VarKind;
             varKind = if (Types::isDiscreteType(inType.clone())) {openmodelica_backend_types::BackendDAE::VarKind::DISCRETE} else {openmodelica_backend_types::BackendDAE::VarKind::VARIABLE};
-            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType.clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            outVar.clone()
+            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType, bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+            outVar
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1707,7 +1707,7 @@ pub(crate) fn createCSEVar(mut inCref: Arc<DAE::ComponentRef>, mut inType: Arc<D
 
 pub(crate) fn generateVar(mut cr: Arc<DAE::ComponentRef>, mut varKind: BackendDAE::VarKind, mut varType: Arc<DAE::Type>, mut subs: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut attr: Option<Arc<DAE::VariableAttributes>>) -> BackendDAE::Var {
     let mut var: BackendDAE::Var;
-    var = BackendDAE::Var { varName: cr.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: varType.clone(), bindExp: None, tplExp: None, arryDim: subs.clone(), source: DAE::emptyElementSource().clone(), values: attr.clone(), tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+    var = BackendDAE::Var { varName: cr, varKind: varKind, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: varType, bindExp: None, tplExp: None, arryDim: subs, source: DAE::emptyElementSource().clone(), values: attr, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
     var
 }
 
@@ -1717,13 +1717,13 @@ pub(crate) fn generateArrayVar(mut name: Arc<DAE::ComponentRef>, mut varKind: Ba
         Deref @ DAE::Type::T_ARRAY { ty: tp, dims } => {
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
-            crlst = ComponentReference::expandCref(name.clone(), false);
-            vars = List::map4(crlst.clone(), (std::sync::Arc::new(fnptr!(generateVar, Arc<DAE::ComponentRef>, BackendDAE::VarKind, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>, Option<Arc<DAE::VariableAttributes>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::VarKind, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>, Option<Arc<DAE::VariableAttributes>>) -> Result<BackendDAE::Var> + 'static>), varKind.clone(), tp.clone(), dims.clone(), None)?;
+            crlst = ComponentReference::expandCref(name, false);
+            vars = List::map4(crlst.clone(), (std::sync::Arc::new(fnptr!(generateVar, Arc<DAE::ComponentRef>, BackendDAE::VarKind, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>, Option<Arc<DAE::VariableAttributes>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::VarKind, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>, Option<Arc<DAE::VariableAttributes>>) -> Result<BackendDAE::Var> + 'static>), varKind, tp.clone(), dims.clone(), None)?;
             vars.clone()
         },
         _ => {
             let mut var: BackendDAE::Var;
-            var = BackendDAE::Var { varName: name.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: varType.clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: attr.clone(), tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            var = BackendDAE::Var { varName: name, varKind: varKind, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: varType, bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: attr, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             list![var.clone()]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1745,14 +1745,14 @@ pub(crate) fn createCSEArrayVar(mut inCref: Arc<DAE::ComponentRef>, mut inType: 
             path = __pa0.clone();
             source = Arc::new(DAE::ElementSource { info: Absyn::dummyInfo.clone(), partOfLst: metamodelica::nil(), instance: openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(), connectEquationOptLst: metamodelica::nil(), typeLst: list![path.clone()], operations: metamodelica::nil(), comment: metamodelica::nil() });
             varKind = if (Types::isDiscreteType(inType.clone())) {openmodelica_backend_types::BackendDAE::VarKind::DISCRETE} else {openmodelica_backend_types::BackendDAE::VarKind::VARIABLE};
-            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType.clone(), bindExp: None, tplExp: None, arryDim: inArryDim.clone(), source: source.clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            outVar.clone()
+            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType, bindExp: None, tplExp: None, arryDim: inArryDim, source: source.clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+            outVar
         },
         _ => {
             let mut varKind: BackendDAE::VarKind;
             varKind = if (Types::isDiscreteType(inType.clone())) {openmodelica_backend_types::BackendDAE::VarKind::DISCRETE} else {openmodelica_backend_types::BackendDAE::VarKind::VARIABLE};
-            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType.clone(), bindExp: None, tplExp: None, arryDim: inArryDim.clone(), source: DAE::emptyElementSource().clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
-            outVar.clone()
+            outVar = BackendDAE::Var { varName: inCref.clone(), varKind: varKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: inType, bindExp: None, tplExp: None, arryDim: inArryDim, source: DAE::emptyElementSource().clone(), values: DAEUtil::setProtectedAttr(None, true)?, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::NEVER), hideResult: Some(Arc::new(DAE::Exp::BCONST { bool: true })), comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+            outVar
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1761,28 +1761,28 @@ pub(crate) fn createCSEArrayVar(mut inCref: Arc<DAE::ComponentRef>, mut inType: 
 
 pub(crate) fn copyVarNewName(mut cr: Arc<DAE::ComponentRef>, mut inVar: BackendDAE::Var) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.varName = cr.clone();
+    outVar.varName = cr;
     outVar
 }
 
 pub(crate) fn setVarKindForVar(mut idx: i32, mut kind: BackendDAE::VarKind, mut varsIn: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut varsOut: BackendDAE::Variables;
     let mut var: BackendDAE::Var;
-    var = getVarAt(varsIn.clone(), idx.clone())?;
-    var = setVarKind(var.clone(), kind.clone())?;
-    varsOut = setVarAt(varsIn.clone(), idx.clone(), var.clone())?;
+    var = getVarAt(varsIn.clone(), idx)?;
+    var = setVarKind(var, kind)?;
+    varsOut = setVarAt(varsIn, idx, var)?;
     Ok(varsOut)
 }
 
 pub(crate) fn setVarsKind(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inVarKind: BackendDAE::VarKind) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
-    outVars = List::map1(inVars.clone(), (std::sync::Arc::new(setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), inVarKind.clone())?;
+    outVars = List::map1(inVars, (std::sync::Arc::new(setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), inVarKind)?;
     Ok(outVars)
 }
 
 pub(crate) fn setVarKind(mut inVar: BackendDAE::Var, mut inVarKind: BackendDAE::VarKind) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.varKind = inVarKind.clone();
+    outVar.varKind = inVarKind;
     if isDummyStateVar(outVar.clone()) && varStateSelectAlways(outVar.clone()) {
         Error::addMessage(Error::NON_STATE_STATESELECT_ALWAYS.clone(), list![(ComponentReference::crefStr(varCref(outVar.clone())?)?).clone()])?;
     }
@@ -1791,19 +1791,19 @@ pub(crate) fn setVarKind(mut inVar: BackendDAE::Var, mut inVarKind: BackendDAE::
 
 pub(crate) fn setVarTS(mut inVar: BackendDAE::Var, mut inTS: Option<BackendDAE::TearingSelect>) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.tearingSelectOption = inTS.clone();
+    outVar.tearingSelectOption = inTS;
     outVar
 }
 
 pub(crate) fn setBindExp(mut inVar: BackendDAE::Var, mut inBindExp: Option<Arc<DAE::Exp>>) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.bindExp = inBindExp.clone();
+    outVar.bindExp = inBindExp;
     outVar
 }
 
 pub(crate) fn setHideResult(mut varIn: BackendDAE::Var, mut hideResultB: Option<Arc<DAE::Exp>>) -> BackendDAE::Var {
     let mut varOut: BackendDAE::Var = varIn.clone();
-    varOut.hideResult = hideResultB.clone();
+    varOut.hideResult = hideResultB;
     varOut
 }
 
@@ -1816,7 +1816,7 @@ pub(crate) fn setVarDirectionTpl(mut var: BackendDAE::Var, mut dir: DAE::VarDire
 
 pub fn setVarDirection(mut inVar: BackendDAE::Var, mut inVarDirection: DAE::VarDirection) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
-    outVar.varDirection = inVarDirection.clone();
+    outVar.varDirection = inVarDirection;
     outVar
 }
 
@@ -1838,8 +1838,8 @@ pub(crate) fn getVarKind(mut inVar: BackendDAE::Var) -> BackendDAE::VarKind {
 pub(crate) fn getVarKindForVar(mut idx: i32, mut varsIn: BackendDAE::Variables) -> Result<BackendDAE::VarKind> {
     let mut kind: BackendDAE::VarKind;
     let mut var: BackendDAE::Var;
-    var = getVarAt(varsIn.clone(), idx.clone())?;
-    kind = getVarKind(var.clone());
+    var = getVarAt(varsIn, idx)?;
+    kind = getVarKind(var);
     Ok(kind)
 }
 
@@ -1892,7 +1892,7 @@ pub(crate) fn getMinMaxAsserts(mut inVar: BackendDAE::Var, mut inAsserts: Arc<me
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut outAsserts: Arc<metamodelica::List<Arc<DAE::Algorithm>>>;
     outAsserts = 'mc: {
-        let __mc_input = inVar.clone();
+        let __mc_input = inVar;
         if let Ok(__v) = (|| -> Result<_> {
             let BackendDAE::Var { varKind: BackendDAE::VarKind::CONST { .. }, .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok(inAsserts.clone())
@@ -1939,15 +1939,15 @@ pub(crate) fn getMinMaxAsserts(mut inVar: BackendDAE::Var, mut inAsserts: Arc<me
 
 fn getMinMaxAsserts1(mut omin: Option<Arc<DAE::Exp>>, mut omax: Option<Arc<DAE::Exp>>, mut e: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut cond: Arc<DAE::Exp>;
-    cond = (::match_deref::match_deref! { match &((omin.clone(), omax.clone())) {
+    cond = (::match_deref::match_deref! { match &((omin, omax)) {
         (Some(min), Some(max)) => {
-            Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATEREQ { ty: tp.clone() }, exp2: min.clone(), index: -1, optionExpisASUB: None }), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp.clone() }, exp2: max.clone(), index: -1, optionExpisASUB: None }) })
+            Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATEREQ { ty: tp.clone() }, exp2: min.clone(), index: -1, optionExpisASUB: None }), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RELATION { exp1: e, operator: DAE::Operator::LESSEQ { ty: tp }, exp2: max.clone(), index: -1, optionExpisASUB: None }) })
         },
         (Some(min), None) => {
-            Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATEREQ { ty: tp.clone() }, exp2: min.clone(), index: -1, optionExpisASUB: None })
+            Arc::new(DAE::Exp::RELATION { exp1: e, operator: DAE::Operator::GREATEREQ { ty: tp }, exp2: min.clone(), index: -1, optionExpisASUB: None })
         },
         (None, Some(max)) => {
-            Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp.clone() }, exp2: max.clone(), index: -1, optionExpisASUB: None })
+            Arc::new(DAE::Exp::RELATION { exp1: e, operator: DAE::Operator::LESSEQ { ty: tp }, exp2: max.clone(), index: -1, optionExpisASUB: None })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1956,15 +1956,15 @@ fn getMinMaxAsserts1(mut omin: Option<Arc<DAE::Exp>>, mut omax: Option<Arc<DAE::
 
 fn getMinMaxAsserts1Str(mut omin: Option<Arc<DAE::Exp>>, mut omax: Option<Arc<DAE::Exp>>, mut varStr: ArcStr) -> Result<ArcStr> {
     let mut msg: ArcStr;
-    msg = ((::match_deref::match_deref! { match &((omin.clone(), omax.clone())) {
+    msg = ((::match_deref::match_deref! { match &((omin, omax)) {
         (Some(min), Some(max)) => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable violating min/max constraint: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(min.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*varStr.clone()); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(max.clone())?); __mm_s.push_str(&*literal!(", has value: ")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable violating min/max constraint: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(min.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*varStr); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(max.clone())?); __mm_s.push_str(&*literal!(", has value: ")); ArcStr::from(__mm_s) }
         },
         (Some(min), None) => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable violating min constraint: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(min.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*varStr.clone()); __mm_s.push_str(&*literal!(", has value: ")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable violating min constraint: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(min.clone())?); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*varStr); __mm_s.push_str(&*literal!(", has value: ")); ArcStr::from(__mm_s) }
         },
         (None, Some(max)) => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable violating max constraint: ")); __mm_s.push_str(&*varStr.clone()); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(max.clone())?); __mm_s.push_str(&*literal!(", has value: ")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable violating max constraint: ")); __mm_s.push_str(&*varStr); __mm_s.push_str(&*literal!(" <= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(max.clone())?); __mm_s.push_str(&*literal!(", has value: ")); ArcStr::from(__mm_s) }
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
@@ -1973,7 +1973,7 @@ fn getMinMaxAsserts1Str(mut omin: Option<Arc<DAE::Exp>>, mut omax: Option<Arc<DA
 
 pub(crate) fn varSortFunc(mut v1: BackendDAE::Var, mut v2: BackendDAE::Var) -> Result<bool> {
     let mut greaterThan: bool;
-    greaterThan = ComponentReferenceBasics::crefSortFunc(varCref(v1.clone())?, varCref(v2.clone())?)?;
+    greaterThan = ComponentReferenceBasics::crefSortFunc(varCref(v1)?, varCref(v2)?)?;
     Ok(greaterThan)
 }
 
@@ -1983,11 +1983,11 @@ pub(crate) fn sortInitialVars(mut vars: BackendDAE::Variables, mut fixableVars: 
     let mut fixable_start: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut fixable: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut non_fixable: Arc<metamodelica::List<BackendDAE::Var>>;
-    var_lst = varList(vars.clone())?;
-    (fixable, non_fixable) = List::splitOnTrue(var_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = fixableVars.clone(); move |__pe_a0| Ok(containsVar(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
-    (fixable_start, fixable) = List::splitOnTrue(fixable.clone(), (std::sync::Arc::new(varHasStartValue) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
-    var_lst = listAppend(listAppend(fixable_start.clone(), fixable.clone().reverse()), non_fixable.clone().reverse());
-    vars = listVar(var_lst.clone())?;
+    var_lst = varList(vars)?;
+    (fixable, non_fixable) = List::splitOnTrue(var_lst, (std::sync::Arc::new({ let __pe_b1 = fixableVars; move |__pe_a0| Ok(containsVar(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+    (fixable_start, fixable) = List::splitOnTrue(fixable, (std::sync::Arc::new(varHasStartValue) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+    var_lst = listAppend(listAppend(fixable_start, fixable.reverse()), non_fixable.reverse());
+    vars = listVar(var_lst)?;
     Ok(vars)
 }
 
@@ -1995,15 +1995,15 @@ pub(crate) fn getAlias(mut inVar: BackendDAE::Var) -> Result<(Arc<DAE::Component
     let mut outCr: Arc<DAE::ComponentRef>;
     let mut negated: bool;
     let mut e: Arc<DAE::Exp>;
-    e = varBindExp(inVar.clone())?;
-    (outCr, negated) = getAlias1(e.clone())?;
+    e = varBindExp(inVar)?;
+    (outCr, negated) = getAlias1(e)?;
     Ok((outCr, negated))
 }
 
 fn getAlias1(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::ComponentRef>, bool)> {
     let mut outCr: Arc<DAE::ComponentRef>;
     let mut negated: bool;
-    (outCr, negated) = (::match_deref::match_deref! { match &(inExp.clone()) {
+    (outCr, negated) = (::match_deref::match_deref! { match &(inExp) {
         Deref @ DAE::Exp::CREF { componentRef: name, .. } => {
             (name.clone(), false)
         },
@@ -2039,8 +2039,8 @@ fn getAlias1(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::ComponentRef>, bool)>
 pub(crate) fn daenumVariables(mut syst: Arc<BackendDAE::EqSystem>) -> i32 {
     let mut n: i32;
     let mut vars: BackendDAE::Variables;
-    vars = daeVars(syst.clone());
-    n = varsSize(vars.clone());
+    vars = daeVars(syst);
+    n = varsSize(vars);
     n
 }
 
@@ -2059,7 +2059,7 @@ fn copyArray(mut inVariableArray: BackendDAE::VariableArray) -> BackendDAE::Vari
 fn vararrayEmpty(mut inSize: i32) -> BackendDAE::VariableArray {
     let mut outArray: BackendDAE::VariableArray;
     let mut arr: metamodelica::Array<Option<BackendDAE::Var>>;
-    arr = arrayCreate(inSize.clone(), None);
+    arr = arrayCreate(inSize, None);
     outArray = BackendDAE::VariableArray { numberOfElements: 0, varOptArr: arr.clone() };
     outArray
 }
@@ -2068,27 +2068,27 @@ fn vararrayAdd(mut inVariableArray: BackendDAE::VariableArray, mut inVar: Backen
     let mut outVariableArray: BackendDAE::VariableArray;
     let mut num_elems: i32;
     let mut arr: metamodelica::Array<Option<BackendDAE::Var>>;
-    let BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 } = (inVariableArray.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 } = (inVariableArray) else { bail!("pattern mismatch") };
     num_elems = __pa0.clone();
     arr = __pa1.clone();
-    num_elems = num_elems.clone() + 1;
-    arr = Array::expandOnDemand(num_elems.clone(), arr.clone(), metamodelica::OrderedFloat(1.4_f64), None)?;
-    metamodelica::arrayUpdate(arr.clone(), num_elems.clone(), Some(inVar.clone()))?;
-    outVariableArray = BackendDAE::VariableArray { numberOfElements: num_elems.clone(), varOptArr: arr.clone() };
+    num_elems = num_elems + 1;
+    arr = Array::expandOnDemand(num_elems, arr.clone(), metamodelica::OrderedFloat(1.4_f64), None)?;
+    metamodelica::arrayUpdate(arr.clone(), num_elems, Some(inVar))?;
+    outVariableArray = BackendDAE::VariableArray { numberOfElements: num_elems, varOptArr: arr.clone() };
     Ok(outVariableArray)
 }
 
 fn vararraySetnth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32, mut inVar: BackendDAE::Var) -> Result<BackendDAE::VariableArray> {
     let mut outVariableArray: BackendDAE::VariableArray = inVariableArray.clone();
-    let true = (inIndex.clone() <= inVariableArray.numberOfElements.clone()) else { bail!("pattern mismatch") };
-    metamodelica::arrayUpdate(inVariableArray.varOptArr.clone(), inIndex.clone(), Some(inVar.clone()))?;
+    let true = (inIndex <= inVariableArray.numberOfElements.clone()) else { bail!("pattern mismatch") };
+    metamodelica::arrayUpdate(inVariableArray.varOptArr.clone(), inIndex, Some(inVar))?;
     Ok(outVariableArray)
 }
 
 fn vararrayNth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
-    let true = (inIndex.clone() <= inVariableArray.numberOfElements.clone()) else { bail!("pattern mismatch") };
-    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(inVariableArray.varOptArr.clone(), inIndex.clone())?) {
+    let true = (inIndex <= inVariableArray.numberOfElements.clone()) else { bail!("pattern mismatch") };
+    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(inVariableArray.varOptArr.clone(), inIndex)?) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -2099,19 +2099,19 @@ fn vararrayNth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32)
 fn vararrayDelete(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32) -> Result<(BackendDAE::VariableArray, BackendDAE::Var)> {
     let mut outVariableArray: BackendDAE::VariableArray = inVariableArray.clone();
     let mut outVar: BackendDAE::Var;
-    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(outVariableArray.varOptArr.clone(), inIndex.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(outVariableArray.varOptArr.clone(), inIndex)?) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     outVar = __pa0.clone();
-    metamodelica::arrayUpdate(outVariableArray.varOptArr.clone(), inIndex.clone(), None)?;
+    metamodelica::arrayUpdate(outVariableArray.varOptArr.clone(), inIndex, None)?;
     Ok((outVariableArray, outVar))
 }
 
 fn vararrayList(mut inArray: BackendDAE::VariableArray) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut varOptArr: metamodelica::Array<Option<BackendDAE::Var>>;
-    let BackendDAE::VARIABLE_ARRAY { varOptArr: __pa0, .. } = (inArray.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLE_ARRAY { varOptArr: __pa0, .. } = (inArray) else { bail!("pattern mismatch") };
     varOptArr = __pa0.clone();
     outVars = metamodelica::nil();
     for mut i in ({let __s=metamodelica::arrayLength(varOptArr.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
@@ -2142,22 +2142,22 @@ pub fn emptyVars(mut inSize: i32) -> BackendDAE::Variables {
     let mut buckets: i32;
     let mut arr_size: i32;
     let mut arr: BackendDAE::VariableArray;
-    arr_size = std::cmp::max(inSize.clone(), BaseHashTable::lowBucketSize.clone());
-    buckets = ((intReal(arr_size.clone()) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32);
-    indices = arrayCreate(buckets.clone(), metamodelica::nil());
-    arr = vararrayEmpty(arr_size.clone());
-    outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: arr.clone(), bucketSize: buckets.clone(), numberOfVars: 0 };
+    arr_size = std::cmp::max(inSize, BaseHashTable::lowBucketSize.clone());
+    buckets = ((intReal(arr_size) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32);
+    indices = arrayCreate(buckets, metamodelica::nil());
+    arr = vararrayEmpty(arr_size);
+    outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: arr, bucketSize: buckets, numberOfVars: 0 };
     outVariables
 }
 
 pub(crate) fn emptyVarsSized(mut size: i32) -> BackendDAE::Variables {
-    let mut outVariables: BackendDAE::Variables = emptyVars(size.clone());
+    let mut outVariables: BackendDAE::Variables = emptyVars(size);
     outVariables
 }
 
 pub(crate) fn isCrefInVarList(mut inCref: Arc<DAE::ComponentRef>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<bool> {
     let mut isInList: bool = false;
-    for mut v in &*inVars.clone() {
+    for mut v in &*inVars {
         let mut v = v.clone();
         if ComponentReferenceBasics::crefEqual(varCref(v.clone())?, inCref.clone())? {
             isInList = true;
@@ -2169,7 +2169,7 @@ pub(crate) fn isCrefInVarList(mut inCref: Arc<DAE::ComponentRef>, mut inVars: Ar
 
 pub(crate) fn areAllCrefsInVarList(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<bool> {
     let mut isInList: bool = true;
-    for mut cref in &*inCrefs.clone() {
+    for mut cref in &*inCrefs {
         let mut cref = cref.clone();
         if !(isCrefInVarList(cref.clone(), inVars.clone())?) {
             isInList = false;
@@ -2182,7 +2182,7 @@ pub(crate) fn areAllCrefsInVarList(mut inCrefs: Arc<metamodelica::List<Arc<DAE::
 pub(crate) fn areAllCrefsPrimaryParameters(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVars: BackendDAE::Variables) -> bool {
     let mut isPrimary: bool = true;
     let mut v: BackendDAE::Var;
-    for mut cref in &*inCrefs.clone() {
+    for mut cref in &*inCrefs {
         let mut cref = cref.clone();
         match '__try0: {
             (v, _) = unwrap_break_err!(getVar2(cref.clone(), inVars.clone()), '__try0);
@@ -2211,14 +2211,14 @@ pub fn listVar(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> Result
     let mut outVariables: BackendDAE::Variables;
     let mut size: i32;
     size = (inVarLst.clone().len() as i32);
-    outVariables = emptyVarsSized(size.clone());
-    outVariables = addVars(inVarLst.clone().reverse(), outVariables.clone())?;
+    outVariables = emptyVarsSized(size);
+    outVariables = addVars(inVarLst.reverse(), outVariables)?;
     Ok(outVariables)
 }
 
 pub(crate) fn listVarSized(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut size: i32) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables;
-    outVariables = List::fold(inVarLst.clone(), (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), emptyVarsSized(size.clone()))?;
+    outVariables = List::fold(inVarLst, (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), emptyVarsSized(size))?;
     Ok(outVariables)
 }
 
@@ -2226,7 +2226,7 @@ pub fn listVar1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> Resul
     let mut outVariables: BackendDAE::Variables;
     let mut size: i32;
     size = (inVarLst.clone().len() as i32);
-    outVariables = List::fold(inVarLst.clone(), (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), emptyVarsSized(size.clone()))?;
+    outVariables = List::fold(inVarLst, (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), emptyVarsSized(size))?;
     Ok(outVariables)
 }
 
@@ -2234,7 +2234,7 @@ pub(crate) fn listVar2(mut inVarLst1: Arc<metamodelica::List<BackendDAE::Var>>, 
     let mut outVariables: BackendDAE::Variables;
     let mut size: i32;
     size = (inVarLst1.clone().len() as i32) + (inVarLst2.clone().len() as i32);
-    outVariables = List::fold(inVarLst2.clone(), (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), List::fold(inVarLst1.clone(), (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), emptyVarsSized(size.clone()))?)?;
+    outVariables = List::fold(inVarLst2, (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), List::fold(inVarLst1, (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), emptyVarsSized(size))?)?;
     Ok(outVariables)
 }
 
@@ -2242,7 +2242,7 @@ pub fn equationSystemsVarsLst(mut systs: Arc<metamodelica::List<Arc<BackendDAE::
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut v: BackendDAE::Variables;
-    for mut es in &*systs.clone() {
+    for mut es in &*systs {
         let mut es = es.clone();
         let __pa0 = ::match_deref::match_deref! { match &(es.clone()) {
             Deref @ BackendDAE::EqSystem { orderedVars: __pa0, .. } => __pa0.clone(),
@@ -2252,7 +2252,7 @@ pub fn equationSystemsVarsLst(mut systs: Arc<metamodelica::List<Arc<BackendDAE::
         vars = varList(v.clone())?;
         outVars = List::append_reverse(vars.clone(), outVars.clone());
     }
-    outVars = metamodelica::Dangerous::listReverseInPlace(outVars.clone());
+    outVars = metamodelica::Dangerous::listReverseInPlace(outVars);
     Ok(outVars)
 }
 
@@ -2296,13 +2296,13 @@ end varDim;
 */
 fn varsLoadFactor(mut inVariables: BackendDAE::Variables, mut inIncrease: i32) -> metamodelica::Real {
     let mut outLoadFactor: metamodelica::Real;
-    outLoadFactor = intReal(inVariables.numberOfVars.clone() + inIncrease.clone()) / intReal(inVariables.bucketSize.clone());
+    outLoadFactor = intReal(inVariables.numberOfVars.clone() + inIncrease) / intReal(inVariables.bucketSize.clone());
     outLoadFactor
 }
 
 pub(crate) fn isVariable(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inVariables2: BackendDAE::Variables, mut inVariables3: BackendDAE::Variables) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inComponentRef1.clone(), inVariables2.clone(), inVariables3.clone());
+        let __mc_input = (inComponentRef1, inVariables2, inVariables3);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cr, vars, _) => {
@@ -2339,7 +2339,7 @@ pub(crate) fn isVariable(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inVari
 }
 
 pub(crate) fn isVarKindVariable(mut inVarKind: BackendDAE::VarKind) -> Result<()> {
-    let () = (match inVarKind.clone() {
+    let () = (match inVarKind {
         BackendDAE::VarKind::VARIABLE { .. } => (),
         BackendDAE::VarKind::STATE { .. } => (),
         BackendDAE::VarKind::DUMMY_STATE { .. } => (),
@@ -2352,7 +2352,7 @@ pub(crate) fn isVarKindVariable(mut inVarKind: BackendDAE::VarKind) -> Result<()
 
 pub(crate) fn isVarKindState(mut inVarKind: BackendDAE::VarKind) -> bool {
     let mut result: bool;
-    result = (match inVarKind.clone() {
+    result = (match inVarKind {
         BackendDAE::VarKind::STATE { .. } => true,
         _ => false,
     });
@@ -2406,8 +2406,8 @@ pub(crate) fn isTopLevelInputOrOutput(mut inComponentRef: Arc<DAE::ComponentRef>
 
 pub(crate) fn deleteCrefs(mut varlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut vars: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut vars_1: BackendDAE::Variables;
-    vars_1 = List::fold(varlst.clone(), (std::sync::Arc::new(fnptr!(removeCref, Arc<DAE::ComponentRef>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), vars.clone())?;
-    vars_1 = listVar1(varList(vars_1.clone())?)?;
+    vars_1 = List::fold(varlst, (std::sync::Arc::new(fnptr!(removeCref, Arc<DAE::ComponentRef>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), vars)?;
+    vars_1 = listVar1(varList(vars_1)?)?;
     Ok(vars_1)
 }
 
@@ -2435,18 +2435,18 @@ pub(crate) fn deleteVars(mut inDelVars: BackendDAE::Variables, mut inVariables: 
 fn deleteVars1(mut inVar: BackendDAE::Var, mut inVars: BackendDAE::Variables) -> (BackendDAE::Var, BackendDAE::Variables) {
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut outVars: BackendDAE::Variables;
-    outVars = removeCref(inVar.varName.clone(), inVars.clone());
+    outVars = removeCref(inVar.varName.clone(), inVars);
     (outVar, outVars)
 }
 
 pub(crate) fn deleteVar(mut inComponentRef: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables;
-    outVariables = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outVariables = (::match_deref::match_deref! { match &(inComponentRef) {
         cr => {
             let mut vars: BackendDAE::Variables;
             let mut ilst: Arc<metamodelica::List<i32>>;
             (_, ilst) = getVar(cr.clone(), inVariables.clone())?;
-            (vars, _) = removeVars(ilst.clone(), inVariables.clone(), metamodelica::nil());
+            (vars, _) = removeVars(ilst.clone(), inVariables, metamodelica::nil());
             vars = listVar1(varList(vars.clone())?)?;
             vars.clone()
         },
@@ -2471,14 +2471,14 @@ pub(crate) fn deleteVarIfExistsAndReturn(mut inComponentRef: Arc<DAE::ComponentR
 
 pub(crate) fn removeCrefs(mut varlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut vars: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut vars_1: BackendDAE::Variables;
-    vars_1 = List::fold(varlst.clone(), (std::sync::Arc::new(fnptr!(removeCref, Arc<DAE::ComponentRef>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), vars.clone())?;
+    vars_1 = List::fold(varlst, (std::sync::Arc::new(fnptr!(removeCref, Arc<DAE::ComponentRef>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), vars)?;
     Ok(vars_1)
 }
 
 pub(crate) fn removeCref(mut inComponentRef: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables) -> BackendDAE::Variables {
     let mut outVariables: BackendDAE::Variables;
     outVariables = 'mc: {
-        let __mc_input = inComponentRef.clone();
+        let __mc_input = inComponentRef;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 cr => {
@@ -2508,7 +2508,7 @@ pub(crate) fn removeVars(mut inVarPos: Arc<metamodelica::List<i32>>, mut inVaria
     let mut outVariables: BackendDAE::Variables;
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
     (outVariables, outVars) = 'mc: {
-        let __mc_input = inVarPos.clone();
+        let __mc_input = inVarPos;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -2550,14 +2550,14 @@ pub(crate) fn removeVarDAE(mut inVarPos: i32, mut inEqSystem: Arc<BackendDAE::Eq
     let mut outEqSystem: Arc<BackendDAE::EqSystem>;
     let mut outVar: BackendDAE::Var;
     let mut vars: BackendDAE::Variables;
-    (vars, outVar) = removeVar(inVarPos.clone(), inEqSystem.orderedVars.clone())?;
-    outEqSystem = BackendDAEUtil::setEqSystVars(inEqSystem.clone(), vars.clone())?;
+    (vars, outVar) = removeVar(inVarPos, inEqSystem.orderedVars.clone())?;
+    outEqSystem = BackendDAEUtil::setEqSystVars(inEqSystem, vars)?;
     Ok((outEqSystem, outVar))
 }
 
 pub(crate) fn removeAliasVars(mut inShared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> {
     let mut outShared: Arc<BackendDAE::Shared>;
-    outShared = BackendDAEUtil::setSharedAliasVars(inShared.clone(), emptyVars(BaseHashTable::bigBucketSize.clone()))?;
+    outShared = BackendDAEUtil::setSharedAliasVars(inShared, emptyVars(BaseHashTable::bigBucketSize.clone()))?;
     Ok(outShared)
 }
 
@@ -2571,20 +2571,20 @@ pub(crate) fn removeVar(mut inIndex: i32, mut inVariables: BackendDAE::Variables
     let mut num_vars: i32;
     let mut hash_idx: i32;
     let mut cr: Arc<DAE::ComponentRef>;
-    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: __pa1, bucketSize: __pa2, numberOfVars: __pa3 } = (inVariables.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: __pa1, bucketSize: __pa2, numberOfVars: __pa3 } = (inVariables) else { bail!("pattern mismatch") };
     indices = __pa0.clone();
     arr = __pa1.clone();
     buckets = __pa2.clone();
     num_vars = __pa3.clone();
-    let (__pa4, ref __pa6 @ BackendDAE::VAR { varName: ref __pa5, .. }) = (vararrayDelete(arr.clone(), inIndex.clone())?) else { bail!("pattern mismatch") };
+    let (__pa4, ref __pa6 @ BackendDAE::VAR { varName: ref __pa5, .. }) = (vararrayDelete(arr, inIndex)?) else { bail!("pattern mismatch") };
     arr = __pa4.clone();
     cr = __pa5.clone();
     outVar = __pa6.clone();
-    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(cr.clone())?, buckets.clone()) + 1;
-    cr_indices = ({let __elt = indices.borrow()[(hash_idx.clone()-1) as usize].clone(); __elt});
-    (cr_indices, _) = List::deleteMemberOnTrue(BackendDAE::CrefIndex { cref: cr.clone(), index: inIndex.clone() - 1 }, cr_indices.clone(), (std::sync::Arc::new(fnptr!(removeVar2, BackendDAE::CrefIndex, BackendDAE::CrefIndex)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::CrefIndex, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?;
-    metamodelica::arrayUpdate(indices.clone(), hash_idx.clone(), cr_indices.clone())?;
-    outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: arr.clone(), bucketSize: buckets.clone(), numberOfVars: num_vars.clone() - 1 };
+    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(cr.clone())?, buckets) + 1;
+    cr_indices = ({let __elt = indices.borrow()[(hash_idx-1) as usize].clone(); __elt});
+    (cr_indices, _) = List::deleteMemberOnTrue(BackendDAE::CrefIndex { cref: cr, index: inIndex - 1 }, cr_indices, (std::sync::Arc::new(fnptr!(removeVar2, BackendDAE::CrefIndex, BackendDAE::CrefIndex)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::CrefIndex, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?;
+    metamodelica::arrayUpdate(indices.clone(), hash_idx, cr_indices)?;
+    outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: arr, bucketSize: buckets, numberOfVars: num_vars - 1 };
     Ok((outVariables, outVar))
 }
 
@@ -2597,7 +2597,7 @@ fn removeVar2(mut inCrefIndex1: BackendDAE::CrefIndex, mut inCrefIndex2: Backend
 pub(crate) fn isKnownAndParam(mut inExp: Arc<DAE::Exp>, mut knownVars: BackendDAE::Variables) -> Result<bool> {
     let mut outBoolean: bool;
     let mut tpl: (bool, BackendDAE::Variables) = (true, knownVars.clone());
-    let (_, (__pa0, _)) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(fnptr!(isKnownAndParamWork, Arc<DAE::Exp>, (bool, BackendDAE::Variables))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, (bool, BackendDAE::Variables))> + 'static>), tpl.clone())?;
+    let (_, (__pa0, _)) = Expression::traverseExpBottomUp(inExp, (std::sync::Arc::new(fnptr!(isKnownAndParamWork, Arc<DAE::Exp>, (bool, BackendDAE::Variables))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, (bool, BackendDAE::Variables))> + 'static>), tpl)?;
     outBoolean = __pa0.clone();
     Ok(outBoolean)
 }
@@ -2607,16 +2607,16 @@ fn isKnownAndParamWork(mut inExp: Arc<DAE::Exp>, mut tpl: (bool, BackendDAE::Var
     let mut tpl: (bool, BackendDAE::Variables) = tpl;
     let mut outBoolean: bool;
     let mut knownVars: BackendDAE::Variables;
-    (outBoolean, knownVars) = tpl.clone();
-    tpl = (::match_deref::match_deref! { match &((inExp.clone(), outBoolean.clone())) {
+    (outBoolean, knownVars) = tpl;
+    tpl = (::match_deref::match_deref! { match &((inExp.clone(), outBoolean)) {
         (_, false) => {
-            (false, knownVars.clone())
+            (false, knownVars)
         },
         (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, _) => {
-            (crefIsParam(cr.clone(), knownVars.clone()), knownVars.clone())
+            (crefIsParam(cr.clone(), knownVars.clone()), knownVars)
         },
         _ => {
-            (true, knownVars.clone())
+            (true, knownVars)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2631,7 +2631,7 @@ pub(crate) fn crefIsParam(mut inComponentRef: Arc<DAE::ComponentRef>, mut inVari
         for mut var in &*varlst.clone() {
             let mut var = var.clone();
             outBool = isParam(var.clone());
-            if !(outBool.clone()) {
+            if !(outBool) {
                 return outBool.clone();
             }
         }
@@ -2647,7 +2647,7 @@ pub(crate) fn existsVar(mut inComponentRef: Arc<DAE::ComponentRef>, mut inVariab
     let mut varlst: Arc<metamodelica::List<BackendDAE::Var>>;
     match '__try0: {
         (varlst, _) = unwrap_break_err!(getVar(inComponentRef.clone(), inVariables.clone()), '__try0);
-        varlst = if (skipDiscrete.clone()) {unwrap_break_err!(List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(isVarNonDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), '__try0)} else {varlst.clone()};
+        varlst = if (skipDiscrete) {unwrap_break_err!(List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(isVarNonDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), '__try0)} else {varlst.clone()};
         outExists = !(varlst.clone().is_empty());
         Ok::<_, anyhow::Error>((outExists.clone(),))
     } {
@@ -2663,9 +2663,9 @@ pub(crate) fn existsVar(mut inComponentRef: Arc<DAE::ComponentRef>, mut inVariab
 
 pub(crate) fn existsAnyVar(mut inComponentRefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVariables: BackendDAE::Variables, mut skipDiscrete: bool) -> bool {
     let mut outExists: bool = false;
-    for mut cref in &*inComponentRefs.clone() {
+    for mut cref in &*inComponentRefs {
         let mut cref = cref.clone();
-        if existsVar(cref.clone(), inVariables.clone(), skipDiscrete.clone()) && !(isState(cref.clone(), inVariables.clone())) {
+        if existsVar(cref.clone(), inVariables.clone(), skipDiscrete) && !(isState(cref.clone(), inVariables.clone())) {
             outExists = true;
             break;
         }
@@ -2677,43 +2677,43 @@ pub fn makeVar(mut cr: Arc<DAE::ComponentRef>) -> Result<BackendDAE::Var> {
     let mut v: BackendDAE::Var;
     let mut tp: Arc<DAE::Type> = ComponentReference::crefLastType(cr.clone())?;
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = Expression::arrayDimension(tp.clone());
-    v = BackendDAE::Var { varName: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: Types::arrayElementType(tp.clone()), bindExp: None, tplExp: None, arryDim: dims.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+    v = BackendDAE::Var { varName: cr, varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: Types::arrayElementType(tp), bindExp: None, tplExp: None, arryDim: dims, source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
     Ok(v)
 }
 
 pub(crate) fn addVarDAE(mut inVar: BackendDAE::Var, mut inEqSystem: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem>;
-    outEqSystem = BackendDAEUtil::setEqSystVars(inEqSystem.clone(), addVar(inVar.clone(), inEqSystem.orderedVars.clone())?)?;
+    outEqSystem = BackendDAEUtil::setEqSystVars(inEqSystem.clone(), addVar(inVar, inEqSystem.orderedVars.clone())?)?;
     Ok(outEqSystem)
 }
 
 pub(crate) fn addVarsDAE(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inEqSystem: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = inEqSystem.clone();
-    outEqSystem = List::fold(inVars.clone(), (std::sync::Arc::new(addVarDAE) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), outEqSystem.clone())?;
+    outEqSystem = List::fold(inVars, (std::sync::Arc::new(addVarDAE) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), outEqSystem)?;
     Ok(outEqSystem)
 }
 
 pub(crate) fn addGlobalKnownVarDAE(mut inGlobalKnownVar: BackendDAE::Var, mut inShared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> {
     let mut outShared: Arc<BackendDAE::Shared>;
-    outShared = BackendDAEUtil::setSharedGlobalKnownVars(inShared.clone(), addVar(inGlobalKnownVar.clone(), inShared.globalKnownVars.clone())?);
+    outShared = BackendDAEUtil::setSharedGlobalKnownVars(inShared.clone(), addVar(inGlobalKnownVar, inShared.globalKnownVars.clone())?);
     Ok(outShared)
 }
 
 pub(crate) fn addNewGlobalKnownVarDAE(mut inGlobalKnownVar: BackendDAE::Var, mut inShared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> {
     let mut outShared: Arc<BackendDAE::Shared>;
-    outShared = BackendDAEUtil::setSharedGlobalKnownVars(inShared.clone(), addNewVar(inGlobalKnownVar.clone(), inShared.globalKnownVars.clone())?);
+    outShared = BackendDAEUtil::setSharedGlobalKnownVars(inShared.clone(), addNewVar(inGlobalKnownVar, inShared.globalKnownVars.clone())?);
     Ok(outShared)
 }
 
 pub(crate) fn addAliasVarDAE(mut inVar: BackendDAE::Var, mut inShared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> {
     let mut outShared: Arc<BackendDAE::Shared>;
-    outShared = BackendDAEUtil::setSharedAliasVars(inShared.clone(), addVar(inVar.clone(), inShared.aliasVars.clone())?)?;
+    outShared = BackendDAEUtil::setSharedAliasVars(inShared.clone(), addVar(inVar, inShared.aliasVars.clone())?)?;
     Ok(outShared)
 }
 
 pub(crate) fn addNewAliasVarDAE(mut inVar: BackendDAE::Var, mut inShared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> {
     let mut outShared: Arc<BackendDAE::Shared>;
-    outShared = BackendDAEUtil::setSharedAliasVars(inShared.clone(), addNewVar(inVar.clone(), inShared.aliasVars.clone())?)?;
+    outShared = BackendDAEUtil::setSharedAliasVars(inShared.clone(), addNewVar(inVar, inShared.aliasVars.clone())?)?;
     Ok(outShared)
 }
 
@@ -2723,11 +2723,11 @@ pub(crate) fn addVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Va
     let mut arr_idx: i32;
     let mut indices: Arc<metamodelica::List<BackendDAE::CrefIndex>>;
     hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, inVariables.bucketSize.clone()) + 1;
-    indices = metamodelica::arrayGet(inVariables.crefIndices.clone(), hash_idx.clone())?;
+    indices = metamodelica::arrayGet(inVariables.crefIndices.clone(), hash_idx)?;
     match '__try0: {
         let BackendDAE::CREFINDEX { index: __pa1, .. } = (unwrap_break_err!(List::getMemberOnTrue(inVar.varName.clone(), indices.clone(), (std::sync::Arc::new(crefIndexEqualCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::CrefIndex) -> Result<bool> + 'static>)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         arr_idx = __pa1.clone();
-        outVariables.varArr = unwrap_break_err!(vararraySetnth(inVariables.varArr.clone(), arr_idx.clone() + 1, inVar.clone()), '__try0);
+        outVariables.varArr = unwrap_break_err!(vararraySetnth(inVariables.varArr.clone(), arr_idx + 1, inVar.clone()), '__try0);
         Ok::<_, anyhow::Error>((outVariables.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -2735,7 +2735,7 @@ pub(crate) fn addVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Va
         }
         Err(_) => {
             outVariables.varArr = vararrayAdd(outVariables.varArr.clone(), inVar.clone())?;
-            metamodelica::arrayUpdate(outVariables.crefIndices.clone(), hash_idx.clone(), metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: outVariables.numberOfVars.clone() }, indices.clone()))?;
+            metamodelica::arrayUpdate(outVariables.crefIndices.clone(), hash_idx, metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: outVariables.numberOfVars.clone() }, indices.clone()))?;
             outVariables.numberOfVars = outVariables.numberOfVars.clone() + 1;
         }
     }
@@ -2744,13 +2744,13 @@ pub(crate) fn addVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Va
 
 pub fn addVars(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inVariables: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables;
-    outVariables = List::fold(inVars.clone(), (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), inVariables.clone())?;
+    outVariables = List::fold(inVars, (std::sync::Arc::new(addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), inVariables)?;
     Ok(outVariables)
 }
 
 pub(crate) fn addNewVars(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inVariables: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables;
-    outVariables = List::fold(inVars.clone(), (std::sync::Arc::new(addNewVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), inVariables.clone())?;
+    outVariables = List::fold(inVars, (std::sync::Arc::new(addNewVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), inVariables)?;
     Ok(outVariables)
 }
 
@@ -2762,16 +2762,16 @@ pub(crate) fn addNewVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE:
     let mut num_vars: i32;
     let mut idx: i32;
     let mut indices: Arc<metamodelica::List<BackendDAE::CrefIndex>>;
-    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: __pa1, bucketSize: __pa2, numberOfVars: __pa3 } = (inVariables.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: __pa1, bucketSize: __pa2, numberOfVars: __pa3 } = (inVariables) else { bail!("pattern mismatch") };
     hashvec = __pa0.clone();
     varr = __pa1.clone();
     bsize = __pa2.clone();
     num_vars = __pa3.clone();
-    idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, bsize.clone()) + 1;
-    varr = vararrayAdd(varr.clone(), inVar.clone())?;
-    indices = ({let __elt = hashvec.borrow()[(idx.clone()-1) as usize].clone(); __elt});
-    metamodelica::arrayUpdate(hashvec.clone(), idx.clone(), metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: num_vars.clone() }, indices.clone()))?;
-    outVariables = BackendDAE::Variables { crefIndices: hashvec.clone(), varArr: varr.clone(), bucketSize: bsize.clone(), numberOfVars: num_vars.clone() + 1 };
+    idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, bsize) + 1;
+    varr = vararrayAdd(varr, inVar.clone())?;
+    indices = ({let __elt = hashvec.borrow()[(idx-1) as usize].clone(); __elt});
+    metamodelica::arrayUpdate(hashvec.clone(), idx, metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: num_vars }, indices))?;
+    outVariables = BackendDAE::Variables { crefIndices: hashvec.clone(), varArr: varr, bucketSize: bsize, numberOfVars: num_vars + 1 };
     Ok(outVariables)
 }
 
@@ -2781,10 +2781,10 @@ pub(crate) fn addVariables(mut inSrcVars: BackendDAE::Variables, mut inDestVars:
     let mut num_vars: i32;
     let mut var: BackendDAE::Var;
     let mut ovar: Option<BackendDAE::Var>;
-    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 }, .. } = (inSrcVars.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 }, .. } = (inSrcVars) else { bail!("pattern mismatch") };
     num_vars = __pa0.clone();
     vars = __pa1.clone();
-    for mut i in 1..=num_vars.clone() {
+    for mut i in 1..=num_vars {
         ovar = ({let __elt = vars.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if isSome(ovar.clone()) {
             let __pa2 = ::match_deref::match_deref! { match &(ovar.clone()) {
@@ -2800,39 +2800,39 @@ pub(crate) fn addVariables(mut inSrcVars: BackendDAE::Variables, mut inDestVars:
 
 pub fn getVarAt(mut inVariables: BackendDAE::Variables, mut inIndex: i32) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
-    outVar = vararrayNth(inVariables.varArr.clone(), inIndex.clone())?;
+    outVar = vararrayNth(inVariables.varArr.clone(), inIndex)?;
     Ok(outVar)
 }
 
 pub(crate) fn setVarAt(mut inVariables: BackendDAE::Variables, mut inIndex: i32, mut inVar: BackendDAE::Var) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables = inVariables.clone();
-    vararraySetnth(inVariables.varArr.clone(), inIndex.clone(), inVar.clone())?;
+    vararraySetnth(inVariables.varArr.clone(), inIndex, inVar)?;
     Ok(outVariables)
 }
 
 pub(crate) fn getVarAtIndexFirst(mut inIndex: i32, mut inVariables: BackendDAE::Variables) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
-    outVar = getVarAt(inVariables.clone(), inIndex.clone())?;
+    outVar = getVarAt(inVariables, inIndex)?;
     Ok(outVar)
 }
 
 pub(crate) fn getVarSharedAt(mut inInteger: i32, mut inShared: Arc<BackendDAE::Shared>) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
-    outVar = getVarAt(inShared.globalKnownVars.clone(), inInteger.clone())?;
+    outVar = getVarAt(inShared.globalKnownVars.clone(), inInteger)?;
     Ok(outVar)
 }
 
 pub(crate) fn getVarDAE(mut inComponentRef: Arc<DAE::ComponentRef>, mut inEqSystem: Arc<BackendDAE::EqSystem>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>)> {
     let mut outVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut outIntegerLst: Arc<metamodelica::List<i32>>;
-    (outVarLst, outIntegerLst) = getVar(inComponentRef.clone(), inEqSystem.orderedVars.clone())?;
+    (outVarLst, outIntegerLst) = getVar(inComponentRef, inEqSystem.orderedVars.clone())?;
     Ok((outVarLst, outIntegerLst))
 }
 
 pub(crate) fn getVarShared(mut inComponentRef: Arc<DAE::ComponentRef>, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>)> {
     let mut outVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut outIntegerLst: Arc<metamodelica::List<i32>>;
-    (outVarLst, outIntegerLst) = getVar(inComponentRef.clone(), inShared.globalKnownVars.clone())?;
+    (outVarLst, outIntegerLst) = getVar(inComponentRef, inShared.globalKnownVars.clone())?;
     Ok((outVarLst, outIntegerLst))
 }
 
@@ -3047,21 +3047,21 @@ fn replaceVarWithWholeDim(mut inCref: Arc<DAE::ComponentRef>, mut iPerformed: bo
             let mut cr_1: Arc<DAE::ComponentRef>;
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut b: bool;
-            (subs_1, b) = replaceVarWithWholeDimSubs(subs.clone(), iPerformed.clone())?;
+            (subs_1, b) = replaceVarWithWholeDimSubs(subs.clone(), iPerformed)?;
             (cr_1, b) = replaceVarWithWholeDim(cr.clone(), b.clone())?;
-            (if (metamodelica::ReferenceEq::reference_eq(&*(subs_1.clone()), &*(subs.clone())) && referenceEq(&*(cr_1.clone()),&*(cr.clone()))) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone(), componentRef: cr_1.clone() })}, b.clone())
+            (if (metamodelica::ReferenceEq::reference_eq(&*(subs_1.clone()), &*(subs.clone())) && referenceEq(&*(cr_1.clone()),&*(cr.clone()))) {inCref} else {Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone(), componentRef: cr_1.clone() })}, b.clone())
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, identType: ty, subscriptLst: subs } => {
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut b: bool;
-            (subs_1, b) = replaceVarWithWholeDimSubs(subs.clone(), iPerformed.clone())?;
-            (if (metamodelica::ReferenceEq::reference_eq(&*(subs_1.clone()), &*(subs.clone()))) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone() })}, b.clone())
+            (subs_1, b) = replaceVarWithWholeDimSubs(subs.clone(), iPerformed)?;
+            (if (metamodelica::ReferenceEq::reference_eq(&*(subs_1.clone()), &*(subs.clone()))) {inCref} else {Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone() })}, b.clone())
         },
         Deref @ DAE::ComponentRef::OPTIMICA_ATTR_INST_CREF { .. } => {
-            (inCref.clone(), iPerformed.clone())
+            (inCref, iPerformed)
         },
         Deref @ DAE::ComponentRef::WILD { .. } => {
-            (inCref.clone(), iPerformed.clone())
+            (inCref, iPerformed)
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("BackendVariable.replaceVarWithWholeDim: Unknown cref")).clone()])?;
@@ -3077,18 +3077,18 @@ fn replaceVarWithWholeDimSubs(mut inSubscript: Arc<metamodelica::List<Arc<DAE::S
     let mut oPerformed: bool;
     (outSubscript, oPerformed) = (::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inSubscript.clone(), iPerformed.clone())
+            (inSubscript, iPerformed)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest } => {
             let mut b: bool;
-            (_, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed.clone())?;
+            (_, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed)?;
             (metamodelica::cons(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), rest.clone()), b.clone())
         },
         Deref @ metamodelica::List::Cons { head: sub @ Deref @ DAE::Subscript::SLICE { exp: sub_exp }, tail: rest } => {
             let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut b: bool;
             let mut r#const: bool;
-            (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed.clone())?;
+            (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed)?;
             r#const = Expression::isConst(sub_exp.clone())?;
             res = if (r#const.clone()) {metamodelica::cons(sub.clone(), rest.clone())} else {metamodelica::cons(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), rest.clone())};
             (res.clone(), b.clone() || !(r#const.clone()))
@@ -3100,7 +3100,7 @@ fn replaceVarWithWholeDimSubs(mut inSubscript: Arc<metamodelica::List<Arc<DAE::S
             let mut r#const: bool;
             let mut calcRange: bool;
             (sub_exp_, calcRange) = computeRangeExps(sub_exp.clone());
-            (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed.clone())?;
+            (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed)?;
             r#const = Expression::isConst(sub_exp_.clone())?;
             res = metamodelica::cons(if (r#const.clone()) {if (referenceEq(&*(sub_exp.clone()),&*(sub_exp_.clone()))) {sub.clone()} else {Arc::new(DAE::Subscript::INDEX { exp: sub_exp_.clone() })}} else {openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM()}, rest.clone());
             (res.clone(), b.clone() || !(r#const.clone()) || calcRange.clone())
@@ -3109,7 +3109,7 @@ fn replaceVarWithWholeDimSubs(mut inSubscript: Arc<metamodelica::List<Arc<DAE::S
             let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut b: bool;
             let mut r#const: bool;
-            (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed.clone())?;
+            (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed)?;
             r#const = Expression::isConst(sub_exp.clone())?;
             res = if (r#const.clone()) {metamodelica::cons(sub.clone(), rest.clone())} else {metamodelica::cons(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), rest.clone())};
             (res.clone(), b.clone() || !(r#const.clone()))
@@ -3131,7 +3131,7 @@ fn computeRangeExps(mut inExp: Arc<DAE::Exp>) -> (Arc<DAE::Exp>, bool) {
             (exp.clone(), true)
         },
         _ => {
-            (inExp.clone(), false)
+            (inExp, false)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3144,18 +3144,18 @@ pub(crate) fn getVarLst(mut inComponentRefLst: Arc<metamodelica::List<Arc<DAE::C
     let mut v: BackendDAE::Var;
     let mut indx: i32;
     if true /* isPresent not implemented in Rust */ {
-        for mut cr in &*inComponentRefLst.clone() {
+        for mut cr in &*inComponentRefLst {
             let mut cr = cr.clone();
             if '__try0: {
                 (v, indx) = unwrap_break_err!(getVar2(cr.clone(), inVariables.clone()), '__try0);
                 outVarLst = metamodelica::cons(v.clone(), outVarLst.clone());
-                outIntegerLst = metamodelica::cons(indx.clone(), outIntegerLst.clone());
+                outIntegerLst = metamodelica::cons(indx, outIntegerLst.clone());
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
             }
         }
     } else {
-        for mut cr in &*inComponentRefLst.clone() {
+        for mut cr in &*inComponentRefLst {
             let mut cr = cr.clone();
             if '__try1: {
                 (v, indx) = unwrap_break_err!(getVar2(cr.clone(), inVariables.clone()), '__try1);
@@ -3177,44 +3177,44 @@ pub(crate) fn getVar2(mut inCref: Arc<DAE::ComponentRef>, mut inVariables: Backe
     let mut hash_idx: i32;
     let mut cr_indices: Arc<metamodelica::List<BackendDAE::CrefIndex>>;
     let mut cr: Arc<DAE::ComponentRef>;
-    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: __pa1, bucketSize: __pa2, .. } = (inVariables.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: __pa1, bucketSize: __pa2, .. } = (inVariables) else { bail!("pattern mismatch") };
     indices = __pa0.clone();
     arr = __pa1.clone();
     buckets = __pa2.clone();
-    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(inCref.clone())?, buckets.clone()) + 1;
-    cr_indices = ({let __elt = indices.borrow()[(hash_idx.clone()-1) as usize].clone(); __elt});
-    let BackendDAE::CREFINDEX { index: __pa3, .. } = (List::getMemberOnTrue(inCref.clone(), cr_indices.clone(), (std::sync::Arc::new(crefIndexEqualCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
+    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(inCref.clone())?, buckets) + 1;
+    cr_indices = ({let __elt = indices.borrow()[(hash_idx-1) as usize].clone(); __elt});
+    let BackendDAE::CREFINDEX { index: __pa3, .. } = (List::getMemberOnTrue(inCref.clone(), cr_indices, (std::sync::Arc::new(crefIndexEqualCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
     outIndex = __pa3.clone();
-    outIndex = outIndex.clone() + 1;
-    let ref __pa5 @ BackendDAE::VAR { varName: ref __pa4, .. } = (vararrayNth(arr.clone(), outIndex.clone())?) else { bail!("pattern mismatch") };
+    outIndex = outIndex + 1;
+    let ref __pa5 @ BackendDAE::VAR { varName: ref __pa4, .. } = (vararrayNth(arr, outIndex)?) else { bail!("pattern mismatch") };
     cr = __pa4.clone();
     outVar = __pa5.clone();
-    let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), inCref.clone())?) else { bail!("pattern mismatch") };
+    let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr, inCref)?) else { bail!("pattern mismatch") };
     Ok((outVar, outIndex))
 }
 
 fn crefIndexEqualCref(mut inCref: Arc<DAE::ComponentRef>, mut inIndex: BackendDAE::CrefIndex) -> Result<bool> {
     let mut outMatch: bool;
     let mut cr: Arc<DAE::ComponentRef>;
-    let BackendDAE::CREFINDEX { cref: __pa0, .. } = (inIndex.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::CREFINDEX { cref: __pa0, .. } = (inIndex) else { bail!("pattern mismatch") };
     cr = __pa0.clone();
-    outMatch = ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), inCref.clone())?;
+    outMatch = ComponentReferenceBasics::crefEqualNoStringCompare(cr, inCref)?;
     Ok(outMatch)
 }
 
 pub(crate) fn getVarIndexFromVars(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inVariables: BackendDAE::Variables) -> Arc<metamodelica::List<i32>> {
     let mut outIndices: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    for mut var in &*inVars.clone() {
+    for mut var in &*inVars {
         let mut var = var.clone();
         (_, outIndices) = traversingVarIndexFinder(var.clone(), inVariables.clone(), outIndices.clone());
     }
-    outIndices = outIndices.clone().reverse();
+    outIndices = outIndices.reverse();
     outIndices
 }
 
 pub(crate) fn getVarIndexFromVariables(mut inVariables: BackendDAE::Variables, mut inVariables2: BackendDAE::Variables) -> Result<Arc<metamodelica::List<i32>>> {
     let mut v_lst: Arc<metamodelica::List<i32>>;
-    v_lst = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = inVariables2.clone(); move |__pe_a0, __pe_a2| Ok(traversingVarIndexFinder(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<i32>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<i32>>)> + 'static>), metamodelica::nil())?.reverse();
+    v_lst = traverseBackendDAEVars(inVariables, (std::sync::Arc::new({ let __pe_b1 = inVariables2; move |__pe_a0, __pe_a2| Ok(traversingVarIndexFinder(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<i32>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<i32>>)> + 'static>), metamodelica::nil())?.reverse();
     Ok(v_lst)
 }
 
@@ -3242,8 +3242,8 @@ fn traversingVarIndexFinder(mut inVar: BackendDAE::Var, mut inVars: BackendDAE::
 pub(crate) fn getVarIndexFromVariablesIndexInFirstSet(mut inVariables: BackendDAE::Variables, mut inVariables2: BackendDAE::Variables) -> Result<Arc<metamodelica::List<i32>>> {
     let mut v_lst: Arc<metamodelica::List<i32>>;
     let mut a: Mutable::Mutable<Arc<metamodelica::List<i32>>>;
-    (_, a, _) = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new(fnptr!(traversingVarIndexInFirstSetFinder, BackendDAE::Var, (BackendDAE::Variables, Mutable::Mutable<Arc<metamodelica::List<i32>>>, Mutable::Mutable<i32>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendDAE::Variables, Mutable::Mutable<Arc<metamodelica::List<i32>>>, Mutable::Mutable<i32>)) -> Result<(BackendDAE::Var, (BackendDAE::Variables, Mutable::Mutable<Arc<metamodelica::List<i32>>>, Mutable::Mutable<i32>))> + 'static>), (inVariables2.clone(), Mutable::create(metamodelica::nil()), Mutable::create(1)))?;
-    v_lst = Mutable::access(a.clone()).reverse();
+    (_, a, _) = traverseBackendDAEVars(inVariables, (std::sync::Arc::new(fnptr!(traversingVarIndexInFirstSetFinder, BackendDAE::Var, (BackendDAE::Variables, Mutable::Mutable<Arc<metamodelica::List<i32>>>, Mutable::Mutable<i32>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendDAE::Variables, Mutable::Mutable<Arc<metamodelica::List<i32>>>, Mutable::Mutable<i32>)) -> Result<(BackendDAE::Var, (BackendDAE::Variables, Mutable::Mutable<Arc<metamodelica::List<i32>>>, Mutable::Mutable<i32>))> + 'static>), (inVariables2, Mutable::create(metamodelica::nil()), Mutable::create(1)))?;
+    v_lst = Mutable::access(a).reverse();
     Ok(v_lst)
 }
 
@@ -3262,7 +3262,7 @@ fn traversingVarIndexInFirstSetFinder(mut var: BackendDAE::Var, mut data: (Backe
         Ok::<(), anyhow::Error>(())
     }.is_err() {
     }
-    Mutable::update(i.clone(), Mutable::access(i.clone()) + 1);
+    Mutable::update(i.clone(), Mutable::access(i) + 1);
     (var, data)
 }
 
@@ -3270,26 +3270,26 @@ pub fn mergeVariables(mut inVariables1: BackendDAE::Variables, mut inVariables2:
     let mut outVariables: BackendDAE::Variables;
     let mut num_vars: i32;
     num_vars = varsSize(inVariables2.clone());
-    if varsLoadFactor(inVariables1.clone(), num_vars.clone()) > metamodelica::OrderedFloat((1) as f64) {
-        outVariables = emptyVarsSized(varsSize(inVariables1.clone()) + num_vars.clone());
-        outVariables = addVariables(inVariables1.clone(), outVariables.clone())?;
-    } else if copy.clone() {
-        outVariables = copyVariables(inVariables1.clone());
+    if varsLoadFactor(inVariables1.clone(), num_vars) > metamodelica::OrderedFloat((1) as f64) {
+        outVariables = emptyVarsSized(varsSize(inVariables1.clone()) + num_vars);
+        outVariables = addVariables(inVariables1, outVariables)?;
+    } else if copy {
+        outVariables = copyVariables(inVariables1);
     } else {
-        outVariables = inVariables1.clone();
+        outVariables = inVariables1;
     }
-    outVariables = addVariables(inVariables2.clone(), outVariables.clone())?;
+    outVariables = addVariables(inVariables2, outVariables)?;
     Ok(outVariables)
 }
 
 pub(crate) fn rehashVariables(mut inVariables: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables;
     let mut load: metamodelica::Real = varsLoadFactor(inVariables.clone(), 0);
-    if load.clone() < metamodelica::OrderedFloat(0.5_f64) || load.clone() > metamodelica::OrderedFloat(1.0_f64) {
+    if load < metamodelica::OrderedFloat(0.5_f64) || load > metamodelica::OrderedFloat(1.0_f64) {
         outVariables = emptyVarsSized(varsSize(inVariables.clone()));
-        outVariables = addVariables(inVariables.clone(), outVariables.clone())?;
+        outVariables = addVariables(inVariables, outVariables)?;
     } else {
-        outVariables = inVariables.clone();
+        outVariables = inVariables;
     }
     Ok(outVariables)
 }
@@ -3300,10 +3300,10 @@ pub fn traverseBackendDAEVars<ArgT: Clone + 'static + metamodelica::gc::MMTrace>
     let mut outArg: ArgT;
     let mut num_vars: i32;
     let mut vars: metamodelica::Array<Option<BackendDAE::Var>>;
-    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 }, .. } = (inVariables.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 }, .. } = (inVariables) else { bail!("pattern mismatch") };
     num_vars = __pa0.clone();
     vars = __pa1.clone();
-    outArg = BackendDAEUtil::traverseArrayNoCopy(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVars2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg.clone(), num_vars.clone())?;
+    outArg = BackendDAEUtil::traverseArrayNoCopy(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVars2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg, num_vars)?;
     Ok(outArg)
 }
 
@@ -3311,7 +3311,7 @@ pub type filterFunc = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Resu
 
 pub(crate) fn filterCrefs(mut variables: BackendDAE::Variables, mut func: Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = acc;
-    acc = traverseBackendDAEVars(variables.clone(), (std::sync::Arc::new({ let __pe_b1 = func.clone(); move |__pe_a0, __pe_a2| filterTraverse(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), acc.clone())?;
+    acc = traverseBackendDAEVars(variables, (std::sync::Arc::new({ let __pe_b1 = func.clone(); move |__pe_a0, __pe_a2| filterTraverse(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), acc)?;
     Ok(acc)
 }
 
@@ -3319,7 +3319,7 @@ fn filterTraverse(mut var: BackendDAE::Var, mut func: Arc<dyn ::std::ops::Fn(Bac
     let mut var: BackendDAE::Var = var;
     let mut acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = acc;
     if func(var.clone())? {
-        acc = metamodelica::cons(var.varName.clone(), acc.clone());
+        acc = metamodelica::cons(var.varName.clone(), acc);
     }
     Ok((var, acc))
 }
@@ -3328,14 +3328,14 @@ fn traverseBackendDAEVars2<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mu
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>;
 
     let mut outArg: ArgT;
-    outArg = (match inVar.clone() {
+    outArg = (match inVar {
         Some(mut v) => {
             let mut arg: ArgT;
-            (_, arg) = inFunc(v.clone(), inArg.clone())?;
+            (_, arg) = inFunc(v.clone(), inArg)?;
             arg.clone()
         },
         _ => {
-            inArg.clone()
+            inArg
         },
     });
     Ok(outArg)
@@ -3347,10 +3347,10 @@ pub(crate) fn traverseBackendDAEVarsWithStop<ArgT: Clone + 'static + metamodelic
     let mut outArg: ArgT;
     let mut num_vars: i32;
     let mut vars: metamodelica::Array<Option<BackendDAE::Var>>;
-    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 }, .. } = (inVariables.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, varOptArr: __pa1 }, .. } = (inVariables) else { bail!("pattern mismatch") };
     num_vars = __pa0.clone();
     vars = __pa1.clone();
-    outArg = BackendDAEUtil::traverseArrayNoCopyWithStop(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVarsWithStop2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg.clone(), num_vars.clone())?;
+    outArg = BackendDAEUtil::traverseArrayNoCopyWithStop(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVarsWithStop2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg, num_vars)?;
     Ok(outArg)
 }
 
@@ -3359,14 +3359,14 @@ fn traverseBackendDAEVarsWithStop2<ArgT: Clone + 'static + metamodelica::gc::MMT
 
     let mut outContinue: bool;
     let mut outArg: ArgT;
-    (outContinue, outArg) = (match inVar.clone() {
+    (outContinue, outArg) = (match inVar {
         None => {
-            (true, inArg.clone())
+            (true, inArg)
         },
         Some(mut v) => {
             let mut arg: ArgT;
             let mut cont: bool;
-            (_, cont, arg) = inFunc(v.clone(), inArg.clone())?;
+            (_, cont, arg) = inFunc(v.clone(), inArg)?;
             (cont.clone(), arg.clone())
         },
     });
@@ -3382,10 +3382,10 @@ pub(crate) fn traverseBackendDAE<ArgT: Clone + 'static + metamodelica::gc::MMTra
         let mut syst = syst.clone();
         (_, arg) = traverseBackendDAEVarsWithUpdate(syst.orderedVars.clone(), inFunc.clone(), arg.clone())?;
     }
-    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.globalKnownVars.clone(), inFunc.clone(), arg.clone())?;
-    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.localKnownVars.clone(), inFunc.clone(), arg.clone())?;
-    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.externalObjects.clone(), inFunc.clone(), arg.clone())?;
-    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.aliasVars.clone(), inFunc.clone(), arg.clone())?;
+    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.globalKnownVars.clone(), inFunc.clone(), arg)?;
+    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.localKnownVars.clone(), inFunc.clone(), arg)?;
+    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.externalObjects.clone(), inFunc.clone(), arg)?;
+    (_, arg) = traverseBackendDAEVarsWithUpdate(dae.shared.aliasVars.clone(), inFunc.clone(), arg)?;
     Ok((dae, arg))
 }
 
@@ -3399,18 +3399,18 @@ pub(crate) fn traverseBackendDAEVarsWithUpdate<ArgT: Clone + 'static + metamodel
     let mut num_vars1: i32;
     let mut num_vars2: i32;
     let mut vars: metamodelica::Array<Option<BackendDAE::Var>>;
-    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa1, varOptArr: __pa2 }, bucketSize: __pa3, numberOfVars: __pa4 } = (inVariables.clone()) else { bail!("pattern mismatch") };
+    let BackendDAE::VARIABLES { crefIndices: __pa0, varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa1, varOptArr: __pa2 }, bucketSize: __pa3, numberOfVars: __pa4 } = (inVariables) else { bail!("pattern mismatch") };
     indices = __pa0.clone();
     num_vars1 = __pa1.clone();
     vars = __pa2.clone();
     buckets = __pa3.clone();
     num_vars2 = __pa4.clone();
-    if num_vars1.clone() != num_vars2.clone() {
+    if num_vars1 != num_vars2 {
         Error::addInternalError((literal!("function traverseBackendDAEVarsWithUpdate failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendVariable.mo"))?;
         bail!("fail");
     }
-    (vars, outArg) = BackendDAEUtil::traverseArrayNoCopyWithUpdate(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVarsWithUpdate2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg.clone(), num_vars1.clone())?;
-    outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: BackendDAE::VariableArray { numberOfElements: num_vars1.clone(), varOptArr: vars.clone() }, bucketSize: buckets.clone(), numberOfVars: num_vars2.clone() };
+    (vars, outArg) = BackendDAEUtil::traverseArrayNoCopyWithUpdate(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVarsWithUpdate2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg, num_vars1)?;
+    outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: BackendDAE::VariableArray { numberOfElements: num_vars1, varOptArr: vars.clone() }, bucketSize: buckets, numberOfVars: num_vars2 };
     Ok((outVariables, outArg))
 }
 
@@ -3421,14 +3421,14 @@ fn traverseBackendDAEVarsWithUpdate2<ArgT: Clone + 'static + metamodelica::gc::M
     let mut outArg: ArgT;
     (outVar, outArg) = (match inVar.clone() {
         None => {
-            (inVar.clone(), inArg.clone())
+            (inVar, inArg)
         },
         Some(mut v) => {
             let mut ov: Option<BackendDAE::Var>;
             let mut new_v: BackendDAE::Var;
             let mut arg: ArgT;
-            (new_v, arg) = inFunc(v.clone(), inArg.clone())?;
-            ov = if ({ let __refeq_sl = &(v.clone()); let __refeq_sr = &(new_v.clone()); referenceEq(&*(__refeq_sl.varName),&*(__refeq_sr.varName)) && (match (&(__refeq_sl.varKind), &(__refeq_sr.varKind)) { (BackendDAE::VarKind::ALG_STATE, BackendDAE::VarKind::ALG_STATE) => true, (BackendDAE::VarKind::ALG_STATE_OLD, BackendDAE::VarKind::ALG_STATE_OLD) => true, (BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0l, isStartFixed: __refeq_v1l }, BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0r, isStartFixed: __refeq_v1r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && ((*__refeq_v1l) == (*__refeq_v1r)), (BackendDAE::VarKind::CONST, BackendDAE::VarKind::CONST) => true, (BackendDAE::VarKind::DAE_AUX_VAR, BackendDAE::VarKind::DAE_AUX_VAR) => true, (BackendDAE::VarKind::DAE_RESIDUAL_VAR, BackendDAE::VarKind::DAE_RESIDUAL_VAR) => true, (BackendDAE::VarKind::DISCRETE, BackendDAE::VarKind::DISCRETE) => true, (BackendDAE::VarKind::DUMMY_DER, BackendDAE::VarKind::DUMMY_DER) => true, (BackendDAE::VarKind::DUMMY_STATE, BackendDAE::VarKind::DUMMY_STATE) => true, (BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0l }, BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::JAC_TMP_VAR, BackendDAE::VarKind::JAC_TMP_VAR) => true, (BackendDAE::VarKind::JAC_VAR, BackendDAE::VarKind::JAC_VAR) => true, (BackendDAE::VarKind::LOOP_ITERATION, BackendDAE::VarKind::LOOP_ITERATION) => true, (BackendDAE::VarKind::LOOP_SOLVED, BackendDAE::VarKind::LOOP_SOLVED) => true, (BackendDAE::VarKind::OPT_CONSTR, BackendDAE::VarKind::OPT_CONSTR) => true, (BackendDAE::VarKind::OPT_FCONSTR, BackendDAE::VarKind::OPT_FCONSTR) => true, (BackendDAE::VarKind::OPT_INPUT_DER, BackendDAE::VarKind::OPT_INPUT_DER) => true, (BackendDAE::VarKind::OPT_INPUT_WITH_DER, BackendDAE::VarKind::OPT_INPUT_WITH_DER) => true, (BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0l }, BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::OPT_TGRID, BackendDAE::VarKind::OPT_TGRID) => true, (BackendDAE::VarKind::PARAM, BackendDAE::VarKind::PARAM) => true, (BackendDAE::VarKind::SEED_VAR, BackendDAE::VarKind::SEED_VAR) => true, (BackendDAE::VarKind::STATE { index: __refeq_v0l, derName: __refeq_v1l, natural: __refeq_v2l }, BackendDAE::VarKind::STATE { index: __refeq_v0r, derName: __refeq_v1r, natural: __refeq_v2r }) => ((*__refeq_v0l) == (*__refeq_v0r)) && (match (&(*__refeq_v1l), &(*__refeq_v1r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && ((*__refeq_v2l) == (*__refeq_v2r)), (BackendDAE::VarKind::STATE_DER, BackendDAE::VarKind::STATE_DER) => true, (BackendDAE::VarKind::VARIABLE, BackendDAE::VarKind::VARIABLE) => true, _ => false }) && (match (&(__refeq_sl.varDirection), &(__refeq_sr.varDirection)) { (DAE::VarDirection::BIDIR, DAE::VarDirection::BIDIR) => true, (DAE::VarDirection::INPUT, DAE::VarDirection::INPUT) => true, (DAE::VarDirection::OUTPUT, DAE::VarDirection::OUTPUT) => true, _ => false }) && (match (&(__refeq_sl.varParallelism), &(__refeq_sr.varParallelism)) { (DAE::VarParallelism::NON_PARALLEL, DAE::VarParallelism::NON_PARALLEL) => true, (DAE::VarParallelism::PARGLOBAL, DAE::VarParallelism::PARGLOBAL) => true, (DAE::VarParallelism::PARLOCAL, DAE::VarParallelism::PARLOCAL) => true, _ => false }) && referenceEq(&*(__refeq_sl.varType),&*(__refeq_sr.varType)) && (match (&(__refeq_sl.bindExp), &(__refeq_sr.bindExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tplExp), &(__refeq_sr.tplExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.arryDim), &*(__refeq_sr.arryDim)) && referenceEq(&*(__refeq_sl.source),&*(__refeq_sr.source)) && (match (&(__refeq_sl.values), &(__refeq_sr.values)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tearingSelectOption), &(__refeq_sr.tearingSelectOption)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => (match (&(*__refeq_l), &(*__refeq_r)) { (BackendDAE::TearingSelect::ALWAYS, BackendDAE::TearingSelect::ALWAYS) => true, (BackendDAE::TearingSelect::AVOID, BackendDAE::TearingSelect::AVOID) => true, (BackendDAE::TearingSelect::DEFAULT, BackendDAE::TearingSelect::DEFAULT) => true, (BackendDAE::TearingSelect::NEVER, BackendDAE::TearingSelect::NEVER) => true, (BackendDAE::TearingSelect::PREFER, BackendDAE::TearingSelect::PREFER) => true, _ => false }), _ => false }) && (match (&(__refeq_sl.hideResult), &(__refeq_sr.hideResult)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.comment), &(__refeq_sr.comment)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(__refeq_sl.connectorType),&*(__refeq_sr.connectorType)) && (match (&(__refeq_sl.innerOuter), &(__refeq_sr.innerOuter)) { (DAE::VarInnerOuter::INNER, DAE::VarInnerOuter::INNER) => true, (DAE::VarInnerOuter::INNER_OUTER, DAE::VarInnerOuter::INNER_OUTER) => true, (DAE::VarInnerOuter::NOT_INNER_OUTER, DAE::VarInnerOuter::NOT_INNER_OUTER) => true, (DAE::VarInnerOuter::OUTER, DAE::VarInnerOuter::OUTER) => true, _ => false }) && ((__refeq_sl.unreplaceable) == (__refeq_sr.unreplaceable)) && ((__refeq_sl.initNonlinear) == (__refeq_sr.initNonlinear)) && ((__refeq_sl.encrypted) == (__refeq_sr.encrypted)) }) {inVar.clone()} else {Some(new_v.clone())};
+            (new_v, arg) = inFunc(v.clone(), inArg)?;
+            ov = if ({ let __refeq_sl = &(v.clone()); let __refeq_sr = &(new_v.clone()); referenceEq(&*(__refeq_sl.varName),&*(__refeq_sr.varName)) && (match (&(__refeq_sl.varKind), &(__refeq_sr.varKind)) { (BackendDAE::VarKind::ALG_STATE, BackendDAE::VarKind::ALG_STATE) => true, (BackendDAE::VarKind::ALG_STATE_OLD, BackendDAE::VarKind::ALG_STATE_OLD) => true, (BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0l, isStartFixed: __refeq_v1l }, BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0r, isStartFixed: __refeq_v1r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && ((*__refeq_v1l) == (*__refeq_v1r)), (BackendDAE::VarKind::CONST, BackendDAE::VarKind::CONST) => true, (BackendDAE::VarKind::DAE_AUX_VAR, BackendDAE::VarKind::DAE_AUX_VAR) => true, (BackendDAE::VarKind::DAE_RESIDUAL_VAR, BackendDAE::VarKind::DAE_RESIDUAL_VAR) => true, (BackendDAE::VarKind::DISCRETE, BackendDAE::VarKind::DISCRETE) => true, (BackendDAE::VarKind::DUMMY_DER, BackendDAE::VarKind::DUMMY_DER) => true, (BackendDAE::VarKind::DUMMY_STATE, BackendDAE::VarKind::DUMMY_STATE) => true, (BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0l }, BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::JAC_TMP_VAR, BackendDAE::VarKind::JAC_TMP_VAR) => true, (BackendDAE::VarKind::JAC_VAR, BackendDAE::VarKind::JAC_VAR) => true, (BackendDAE::VarKind::LOOP_ITERATION, BackendDAE::VarKind::LOOP_ITERATION) => true, (BackendDAE::VarKind::LOOP_SOLVED, BackendDAE::VarKind::LOOP_SOLVED) => true, (BackendDAE::VarKind::OPT_CONSTR, BackendDAE::VarKind::OPT_CONSTR) => true, (BackendDAE::VarKind::OPT_FCONSTR, BackendDAE::VarKind::OPT_FCONSTR) => true, (BackendDAE::VarKind::OPT_INPUT_DER, BackendDAE::VarKind::OPT_INPUT_DER) => true, (BackendDAE::VarKind::OPT_INPUT_WITH_DER, BackendDAE::VarKind::OPT_INPUT_WITH_DER) => true, (BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0l }, BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::OPT_TGRID, BackendDAE::VarKind::OPT_TGRID) => true, (BackendDAE::VarKind::PARAM, BackendDAE::VarKind::PARAM) => true, (BackendDAE::VarKind::SEED_VAR, BackendDAE::VarKind::SEED_VAR) => true, (BackendDAE::VarKind::STATE { index: __refeq_v0l, derName: __refeq_v1l, natural: __refeq_v2l }, BackendDAE::VarKind::STATE { index: __refeq_v0r, derName: __refeq_v1r, natural: __refeq_v2r }) => ((*__refeq_v0l) == (*__refeq_v0r)) && (match (&(*__refeq_v1l), &(*__refeq_v1r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && ((*__refeq_v2l) == (*__refeq_v2r)), (BackendDAE::VarKind::STATE_DER, BackendDAE::VarKind::STATE_DER) => true, (BackendDAE::VarKind::VARIABLE, BackendDAE::VarKind::VARIABLE) => true, _ => false }) && (match (&(__refeq_sl.varDirection), &(__refeq_sr.varDirection)) { (DAE::VarDirection::BIDIR, DAE::VarDirection::BIDIR) => true, (DAE::VarDirection::INPUT, DAE::VarDirection::INPUT) => true, (DAE::VarDirection::OUTPUT, DAE::VarDirection::OUTPUT) => true, _ => false }) && (match (&(__refeq_sl.varParallelism), &(__refeq_sr.varParallelism)) { (DAE::VarParallelism::NON_PARALLEL, DAE::VarParallelism::NON_PARALLEL) => true, (DAE::VarParallelism::PARGLOBAL, DAE::VarParallelism::PARGLOBAL) => true, (DAE::VarParallelism::PARLOCAL, DAE::VarParallelism::PARLOCAL) => true, _ => false }) && referenceEq(&*(__refeq_sl.varType),&*(__refeq_sr.varType)) && (match (&(__refeq_sl.bindExp), &(__refeq_sr.bindExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tplExp), &(__refeq_sr.tplExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.arryDim), &*(__refeq_sr.arryDim)) && referenceEq(&*(__refeq_sl.source),&*(__refeq_sr.source)) && (match (&(__refeq_sl.values), &(__refeq_sr.values)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tearingSelectOption), &(__refeq_sr.tearingSelectOption)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => (match (&(*__refeq_l), &(*__refeq_r)) { (BackendDAE::TearingSelect::ALWAYS, BackendDAE::TearingSelect::ALWAYS) => true, (BackendDAE::TearingSelect::AVOID, BackendDAE::TearingSelect::AVOID) => true, (BackendDAE::TearingSelect::DEFAULT, BackendDAE::TearingSelect::DEFAULT) => true, (BackendDAE::TearingSelect::NEVER, BackendDAE::TearingSelect::NEVER) => true, (BackendDAE::TearingSelect::PREFER, BackendDAE::TearingSelect::PREFER) => true, _ => false }), _ => false }) && (match (&(__refeq_sl.hideResult), &(__refeq_sr.hideResult)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.comment), &(__refeq_sr.comment)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(__refeq_sl.connectorType),&*(__refeq_sr.connectorType)) && (match (&(__refeq_sl.innerOuter), &(__refeq_sr.innerOuter)) { (DAE::VarInnerOuter::INNER, DAE::VarInnerOuter::INNER) => true, (DAE::VarInnerOuter::INNER_OUTER, DAE::VarInnerOuter::INNER_OUTER) => true, (DAE::VarInnerOuter::NOT_INNER_OUTER, DAE::VarInnerOuter::NOT_INNER_OUTER) => true, (DAE::VarInnerOuter::OUTER, DAE::VarInnerOuter::OUTER) => true, _ => false }) && ((__refeq_sl.unreplaceable) == (__refeq_sr.unreplaceable)) && ((__refeq_sl.initNonlinear) == (__refeq_sr.initNonlinear)) && ((__refeq_sl.encrypted) == (__refeq_sr.encrypted)) }) {inVar} else {Some(new_v.clone())};
             (ov.clone(), arg.clone())
         },
     });
@@ -3437,7 +3437,7 @@ fn traverseBackendDAEVarsWithUpdate2<ArgT: Clone + 'static + metamodelica::gc::M
 
 pub(crate) fn getAllCrefFromVariables(mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut cr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    cr_lst = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new(fnptr!(traversingVarCrefFinder, BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
+    cr_lst = traverseBackendDAEVars(inVariables, (std::sync::Arc::new(fnptr!(traversingVarCrefFinder, BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
     Ok(cr_lst)
 }
 
@@ -3476,62 +3476,62 @@ pub fn collectVarKindVarinVariables(mut inVar: BackendDAE::Var, mut inVarArrays:
     let mut outVarArrays: (Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>, BackendDAE::Variables) = inVarArrays.clone();
     let mut vararray: BackendDAE::Variables;
     let mut checkVarKind: Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>;
-    (checkVarKind, vararray) = inVarArrays.clone();
+    (checkVarKind, vararray) = inVarArrays;
     outVarArrays = (match inVar.clone() {
         _ if (checkVarKind(inVar.clone())?) => {
-            vararray = addVar(inVar.clone(), vararray.clone())?;
-            (checkVarKind.clone(), vararray.clone())
+            vararray = addVar(inVar.clone(), vararray)?;
+            (checkVarKind.clone(), vararray)
         },
-        _ => outVarArrays.clone(),
+        _ => outVarArrays,
     });
     Ok((outVar, outVarArrays))
 }
 
 pub(crate) fn getAllDiscreteVarFromVariables(mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut v_lst: Arc<metamodelica::List<BackendDAE::Var>>;
-    v_lst = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new(fnptr!(traversingisisVarDiscreteFinder, BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), metamodelica::nil())?;
+    v_lst = traverseBackendDAEVars(inVariables, (std::sync::Arc::new(fnptr!(traversingisisVarDiscreteFinder, BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), metamodelica::nil())?;
     Ok(v_lst)
 }
 
 fn traversingisisVarDiscreteFinder(mut inVar: BackendDAE::Var, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> (BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) {
     let mut v: BackendDAE::Var;
     let mut v_lst: Arc<metamodelica::List<BackendDAE::Var>>;
-    v = inVar.clone();
-    v_lst = List::consOnTrue(isVarDiscrete(v.clone()), v.clone(), inVars.clone());
+    v = inVar;
+    v_lst = List::consOnTrue(isVarDiscrete(v.clone()), v.clone(), inVars);
     (v, v_lst)
 }
 
 pub(crate) fn getAllStateVarFromVariables(mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut v_lst: Arc<metamodelica::List<BackendDAE::Var>>;
-    v_lst = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new(fnptr!(traversingisStateVarFinder, BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), metamodelica::nil())?;
+    v_lst = traverseBackendDAEVars(inVariables, (std::sync::Arc::new(fnptr!(traversingisStateVarFinder, BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), metamodelica::nil())?;
     Ok(v_lst)
 }
 
 pub(crate) fn getAllClockedStatesFromVariables(mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut v_lst: Arc<metamodelica::List<BackendDAE::Var>>;
-    v_lst = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new(fnptr!(traversingisClockedStateVarFinder, BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), metamodelica::nil())?;
+    v_lst = traverseBackendDAEVars(inVariables, (std::sync::Arc::new(fnptr!(traversingisClockedStateVarFinder, BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), metamodelica::nil())?;
     Ok(v_lst)
 }
 
 pub(crate) fn getNumStateVarFromVariables(mut inVariables: BackendDAE::Variables) -> Result<i32> {
     let mut count: i32;
-    count = traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new(fnptr!(traversingisStateCount, BackendDAE::Var, i32)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32) -> Result<(BackendDAE::Var, i32)> + 'static>), 0)?;
+    count = traverseBackendDAEVars(inVariables, (std::sync::Arc::new(fnptr!(traversingisStateCount, BackendDAE::Var, i32)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32) -> Result<(BackendDAE::Var, i32)> + 'static>), 0)?;
     Ok(count)
 }
 
 fn traversingisStateVarFinder(mut inVar: BackendDAE::Var, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> (BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) {
     let mut v: BackendDAE::Var;
     let mut v_lst: Arc<metamodelica::List<BackendDAE::Var>>;
-    v = inVar.clone();
-    v_lst = List::consOnTrue(isStateVar(v.clone()), v.clone(), inVars.clone());
+    v = inVar;
+    v_lst = List::consOnTrue(isStateVar(v.clone()), v.clone(), inVars);
     (v, v_lst)
 }
 
 fn traversingisClockedStateVarFinder(mut inVar: BackendDAE::Var, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> (BackendDAE::Var, Arc<metamodelica::List<BackendDAE::Var>>) {
     let mut v: BackendDAE::Var;
     let mut v_lst: Arc<metamodelica::List<BackendDAE::Var>>;
-    v = inVar.clone();
-    v_lst = List::consOnTrue(isClockedStateVar(v.clone()), v.clone(), inVars.clone());
+    v = inVar;
+    v_lst = List::consOnTrue(isClockedStateVar(v.clone()), v.clone(), inVars);
     (v, v_lst)
 }
 
@@ -3539,7 +3539,7 @@ fn traversingisStateCount(mut v: BackendDAE::Var, mut count: i32) -> (BackendDAE
     let mut v: BackendDAE::Var = v;
     let mut count: i32 = count;
     if isStateVar(v.clone()) {
-        count = count.clone() + 1;
+        count = count + 1;
     }
     (v, count)
 }
@@ -3553,7 +3553,7 @@ pub(crate) fn getAllVarIndicesFromVariables(mut inVariables: BackendDAE::Variabl
     let mut i_a: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     v_a = arrayCreate(1, metamodelica::nil());
     i_a = arrayCreate(1, metamodelica::nil());
-    traverseBackendDAEVars(inVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = v_a.clone(); let __pe_b2 = i_a.clone(); let __pe_b3: Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static> = isFunc.clone(); move |__pe_a0, __pe_a4| traversingisXXXFinder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, metamodelica::Array<i32>) -> Result<(BackendDAE::Var, metamodelica::Array<i32>)> + 'static>), arrayCreate(1, 1))?;
+    traverseBackendDAEVars(inVariables, (std::sync::Arc::new({ let __pe_b1 = v_a.clone(); let __pe_b2 = i_a.clone(); let __pe_b3: Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static> = isFunc.clone(); move |__pe_a0, __pe_a4| traversingisXXXFinder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, metamodelica::Array<i32>) -> Result<(BackendDAE::Var, metamodelica::Array<i32>)> + 'static>), arrayCreate(1, 1))?;
     v_lst = ({let __elt = v_a.borrow()[(1-1) as usize].clone(); __elt});
     i_lst = ({let __elt = i_a.borrow()[(1-1) as usize].clone(); __elt});
     Ok((v_lst, i_lst))
@@ -3579,8 +3579,8 @@ fn traversingisXXXFinder(mut inVar: BackendDAE::Var, mut v_lst: metamodelica::Ar
 pub(crate) fn mergeVariableOperations(mut inVar: BackendDAE::Var, mut inOps: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>;
-    ops = inOps.clone().reverse();
-    outVar.source = List::foldr(ops.clone(), (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), inVar.source.clone())?;
+    ops = inOps.reverse();
+    outVar.source = List::foldr(ops, (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), inVar.source.clone())?;
     Ok(outVar)
 }
 
@@ -3600,16 +3600,16 @@ pub(crate) fn mergeAliasVars(mut inVar: BackendDAE::Var, mut inAVar: BackendDAE:
     sva = varStartValueOption(inAVar.clone());
     so = varStartOrigin(inVar.clone())?;
     soa = varStartOrigin(inAVar.clone())?;
-    v1 = mergeStartFixed(inVar.clone(), fixed.clone(), sv.clone(), so.clone(), inAVar.clone(), fixeda.clone(), sva.clone(), soa.clone(), negate.clone(), globalKnownVars.clone())?;
-    v2 = mergeNominalAttribute(inAVar.clone(), v1.clone(), negate.clone());
-    outVar = mergeMinMaxAttribute(inAVar.clone(), v2.clone(), negate.clone());
+    v1 = mergeStartFixed(inVar, fixed, sv, so, inAVar.clone(), fixeda, sva, soa, negate, globalKnownVars)?;
+    v2 = mergeNominalAttribute(inAVar.clone(), v1, negate);
+    outVar = mergeMinMaxAttribute(inAVar, v2, negate);
     Ok(outVar)
 }
 
 fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<Arc<DAE::Exp>>, mut so: Option<Arc<DAE::Exp>>, mut inAVar: BackendDAE::Var, mut fixeda: bool, mut sva: Option<Arc<DAE::Exp>>, mut soa: Option<Arc<DAE::Exp>>, mut negate: bool, mut globalKnownVars: BackendDAE::Variables) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
     outVar = 'mc: {
-        let __mc_input = (inVar.clone(), fixed.clone(), sv.clone(), inAVar.clone(), fixeda.clone(), sva.clone());
+        let __mc_input = (inVar, fixed, sv.clone(), inAVar, fixeda, sva.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (v, true, _, _, false, _) => {
@@ -3624,7 +3624,7 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
                     let mut v1: BackendDAE::Var;
                     let mut v2: BackendDAE::Var;
                     let mut e: Arc<DAE::Exp>;
-                    e = if (negate.clone()) {Expression::negate(sb.clone())?} else {sb.clone()};
+                    e = if (negate) {Expression::negate(sb.clone())?} else {sb.clone()};
                     v1 = setVarStartValue(v.clone(), e.clone())?;
                     v2 = setVarFixed(v1.clone(), true)?;
                     Ok(v2.clone())
@@ -3674,7 +3674,7 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
                 (v, false, None, _, false, Some(sb)) => {
                     let mut v1: BackendDAE::Var;
                     let mut e: Arc<DAE::Exp>;
-                    e = if (negate.clone()) {Expression::negate(sb.clone())?} else {sb.clone()};
+                    e = if (negate) {Expression::negate(sb.clone())?} else {sb.clone()};
                     v1 = setVarStartValue(v.clone(), e.clone())?;
                     Ok(v1.clone())
                 }
@@ -3691,7 +3691,7 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
                     let mut origin: Option<Arc<DAE::Exp>>;
                     sa = startValueType(sv.clone(), ty.clone())?;
                     sb = startValueType(sva.clone(), tya.clone())?;
-                    e = if (negate.clone()) {Expression::negate(sb.clone())?} else {sb.clone()};
+                    e = if (negate) {Expression::negate(sb.clone())?} else {sb.clone()};
                     (e, origin) = getNonZeroStart(false, sa.clone(), so.clone(), e.clone(), soa.clone(), globalKnownVars.clone())?;
                     setVarStartValue(v.clone(), e.clone())?;
                     v1 = setVarStartOrigin(v.clone(), origin.clone())?;
@@ -3710,10 +3710,10 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
                     let mut ia: i32;
                     sa = startValueType(sv.clone(), ty.clone())?;
                     sb = startValueType(sva.clone(), tya.clone())?;
-                    e = if (negate.clone()) {Expression::negate(sb.clone())?} else {sb.clone()};
+                    e = if (negate) {Expression::negate(sb.clone())?} else {sb.clone()};
                     i = ComponentReference::crefDepth(cr.clone())?;
                     ia = ComponentReference::crefDepth(cra.clone())?;
-                    Ok(mergeStartFixed1(intLt(ia.clone(), i.clone()), v.clone(), cr.clone(), sa.clone(), cra.clone(), e.clone(), soa.clone(), negate.clone(), (literal!(" have start values ")).clone())?)
+                    Ok(mergeStartFixed1(intLt(ia.clone(), i.clone()), v.clone(), cr.clone(), sa.clone(), cra.clone(), e.clone(), soa.clone(), negate, (literal!(" have start values ")).clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3736,7 +3736,7 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
                     let mut origin: Option<Arc<DAE::Exp>>;
                     sa = startValueType(sv.clone(), ty.clone())?;
                     sb = startValueType(sva.clone(), tya.clone())?;
-                    e = if (negate.clone()) {Expression::negate(sb.clone())?} else {sb.clone()};
+                    e = if (negate) {Expression::negate(sb.clone())?} else {sb.clone()};
                     (e, origin) = getNonZeroStart(true, sa.clone(), so.clone(), e.clone(), soa.clone(), globalKnownVars.clone())?;
                     setVarStartValue(v.clone(), e.clone())?;
                     v1 = setVarStartOrigin(v.clone(), origin.clone())?;
@@ -3755,10 +3755,10 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
                     let mut ia: i32;
                     sa = startValueType(sv.clone(), ty.clone())?;
                     sb = startValueType(sva.clone(), tya.clone())?;
-                    e = if (negate.clone()) {Expression::negate(sb.clone())?} else {sb.clone()};
+                    e = if (negate) {Expression::negate(sb.clone())?} else {sb.clone()};
                     i = ComponentReference::crefDepth(cr.clone())?;
                     ia = ComponentReference::crefDepth(cra.clone())?;
-                    Ok(mergeStartFixed1(intLt(ia.clone(), i.clone()), v.clone(), cr.clone(), sa.clone(), cra.clone(), e.clone(), soa.clone(), negate.clone(), (literal!(" both fixed and have start values ")).clone())?)
+                    Ok(mergeStartFixed1(intLt(ia.clone(), i.clone()), v.clone(), cr.clone(), sa.clone(), cra.clone(), e.clone(), soa.clone(), negate, (literal!(" both fixed and have start values ")).clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3770,7 +3770,7 @@ fn mergeStartFixed(mut inVar: BackendDAE::Var, mut fixed: bool, mut sv: Option<A
 
 fn startValueType(mut iExp: Option<Arc<DAE::Exp>>, mut iTy: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut oExp: Arc<DAE::Exp>;
-    oExp = (::match_deref::match_deref! { match &(iExp.clone()) {
+    oExp = (::match_deref::match_deref! { match &(iExp) {
         Some(e) => {
             e.clone()
         },
@@ -3799,7 +3799,7 @@ fn startValueType(mut iExp: Option<Arc<DAE::Exp>>, mut iTy: Arc<DAE::Type>) -> R
 
 fn mergeStartFixed1(mut b: bool, mut inVar: BackendDAE::Var, mut cr: Arc<DAE::ComponentRef>, mut sv: Arc<DAE::Exp>, mut cra: Arc<DAE::ComponentRef>, mut sva: Arc<DAE::Exp>, mut soa: Option<Arc<DAE::Exp>>, mut negate: bool, mut s4: ArcStr) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var;
-    outVar = (match b.clone() {
+    outVar = (match b {
         false => {
             let mut s: ArcStr;
             let mut s1: ArcStr;
@@ -3807,14 +3807,14 @@ fn mergeStartFixed1(mut b: bool, mut inVar: BackendDAE::Var, mut cr: Arc<DAE::Co
             let mut s3: ArcStr;
             let mut s5: ArcStr;
             let mut s6: ArcStr;
-            s1 = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
-            s2 = (if (negate.clone()) {literal!(" = -")} else {literal!(" = ")}).clone();
-            s3 = (ComponentReferenceBasics::printComponentRefStr(cra.clone())?).clone();
-            s5 = (ExpressionBasics::printExpStr(sv.clone())?).clone();
-            s6 = (ExpressionBasics::printExpStr(sva.clone())?).clone();
-            s = stringAppendList(list![(literal!("Alias variables ")).clone(), (s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone(), (s4.clone()).clone(), (s5.clone()).clone(), (literal!(" != ")).clone(), (s6.clone()).clone(), (literal!(". Use value from ")).clone(), (s1.clone()).clone(), (literal!(".")).clone()]);
+            s1 = (ComponentReferenceBasics::printComponentRefStr(cr)?).clone();
+            s2 = (if (negate) {literal!(" = -")} else {literal!(" = ")}).clone();
+            s3 = (ComponentReferenceBasics::printComponentRefStr(cra)?).clone();
+            s5 = (ExpressionBasics::printExpStr(sv)?).clone();
+            s6 = (ExpressionBasics::printExpStr(sva)?).clone();
+            s = stringAppendList(list![(literal!("Alias variables ")).clone(), (s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone(), (s4).clone(), (s5.clone()).clone(), (literal!(" != ")).clone(), (s6.clone()).clone(), (literal!(". Use value from ")).clone(), (s1.clone()).clone(), (literal!(".")).clone()]);
             Error::addMessage(Error::COMPILER_WARNING.clone(), list![(s.clone()).clone()])?;
-            inVar.clone()
+            inVar
         },
         true => {
             let mut s: ArcStr;
@@ -3824,15 +3824,15 @@ fn mergeStartFixed1(mut b: bool, mut inVar: BackendDAE::Var, mut cr: Arc<DAE::Co
             let mut s5: ArcStr;
             let mut s6: ArcStr;
             let mut v: BackendDAE::Var;
-            s1 = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
-            s2 = (if (negate.clone()) {literal!(" = -")} else {literal!(" = ")}).clone();
-            s3 = (ComponentReferenceBasics::printComponentRefStr(cra.clone())?).clone();
-            s5 = (ExpressionBasics::printExpStr(sv.clone())?).clone();
+            s1 = (ComponentReferenceBasics::printComponentRefStr(cr)?).clone();
+            s2 = (if (negate) {literal!(" = -")} else {literal!(" = ")}).clone();
+            s3 = (ComponentReferenceBasics::printComponentRefStr(cra)?).clone();
+            s5 = (ExpressionBasics::printExpStr(sv)?).clone();
             s6 = (ExpressionBasics::printExpStr(sva.clone())?).clone();
-            s = stringAppendList(list![(literal!("Alias variables ")).clone(), (s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone(), (s4.clone()).clone(), (s5.clone()).clone(), (literal!(" != ")).clone(), (s6.clone()).clone(), (literal!(". Use value from ")).clone(), (s3.clone()).clone(), (literal!(".")).clone()]);
+            s = stringAppendList(list![(literal!("Alias variables ")).clone(), (s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone(), (s4).clone(), (s5.clone()).clone(), (literal!(" != ")).clone(), (s6.clone()).clone(), (literal!(". Use value from ")).clone(), (s3.clone()).clone(), (literal!(".")).clone()]);
             Error::addMessage(Error::COMPILER_WARNING.clone(), list![(s.clone()).clone()])?;
-            v = setVarStartValue(inVar.clone(), sva.clone())?;
-            v = setVarStartOrigin(v.clone(), soa.clone())?;
+            v = setVarStartValue(inVar, sva)?;
+            v = setVarStartOrigin(v.clone(), soa)?;
             v.clone()
         },
     });
@@ -3889,7 +3889,7 @@ fn getNonZeroStart(mut mustBeEqual: bool, mut exp1: Arc<DAE::Exp>, mut so: Optio
     let mut outExp: Arc<DAE::Exp>;
     let mut outStartOrigin: Option<Arc<DAE::Exp>>;
     (outExp, outStartOrigin) = 'mc: {
-        let __mc_input = mustBeEqual.clone();
+        let __mc_input = mustBeEqual;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut i: i32;
@@ -3944,7 +3944,7 @@ fn getNonZeroStart(mut mustBeEqual: bool, mut exp1: Arc<DAE::Exp>, mut so: Optio
 
 pub(crate) fn startOriginToValue(mut startOrigin: Option<Arc<DAE::Exp>>) -> Result<i32> {
     let mut i: i32;
-    i = (::match_deref::match_deref! { match &(startOrigin.clone()) {
+    i = (::match_deref::match_deref! { match &(startOrigin) {
         None => 0,
         Some(Deref @ DAE::Exp::SCONST { string: Deref @ "undefined" }) => 1,
         Some(Deref @ DAE::Exp::SCONST { string: Deref @ "type" }) => 2,
@@ -3957,7 +3957,7 @@ pub(crate) fn startOriginToValue(mut startOrigin: Option<Arc<DAE::Exp>>) -> Resu
 pub(crate) fn mergeNominalAttribute(mut inAVar: BackendDAE::Var, mut inVar: BackendDAE::Var, mut negate: bool) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var;
     outVar = 'mc: {
-        let __mc_input = (inAVar.clone(), inVar.clone());
+        let __mc_input = (inAVar, inVar.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut v, mut var) = __mc_input.clone() else { bail!("nomatch") };
             let mut var1: BackendDAE::Var;
@@ -3968,7 +3968,7 @@ pub(crate) fn mergeNominalAttribute(mut inAVar: BackendDAE::Var, mut inVar: Back
             let mut eaverage: Arc<DAE::Exp>;
             e = varNominalValue(v.clone())?;
             e1 = varNominalValue(var.clone())?;
-            e_1 = if (negate.clone()) {Expression::negate(e.clone())?} else {e.clone()};
+            e_1 = if (negate) {Expression::negate(e.clone())?} else {e.clone()};
             esum = Expression::makeSum(list![e_1.clone(), e1.clone()])?;
             eaverage = Expression::expDiv(esum.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }))?;
             (eaverage, _) = ExpressionSimplify::simplify(eaverage.clone())?;
@@ -3981,7 +3981,7 @@ pub(crate) fn mergeNominalAttribute(mut inAVar: BackendDAE::Var, mut inVar: Back
             let mut e: Arc<DAE::Exp>;
             let mut e_1: Arc<DAE::Exp>;
             e = varNominalValue(v.clone())?;
-            e_1 = if (negate.clone()) {Expression::negate(e.clone())?} else {e.clone()};
+            e_1 = if (negate) {Expression::negate(e.clone())?} else {e.clone()};
             var1 = setVarNominalValue(var.clone(), e_1.clone())?;
             Ok(var1.clone())
         })() { break 'mc __v; }
@@ -3997,7 +3997,7 @@ pub(crate) fn mergeNominalAttribute(mut inAVar: BackendDAE::Var, mut inVar: Back
 pub(crate) fn mergeMinMaxAttribute(mut inAVar: BackendDAE::Var, mut inVar: BackendDAE::Var, mut negate: bool) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var;
     outVar = 'mc: {
-        let __mc_input = (inAVar.clone(), inVar.clone());
+        let __mc_input = (inAVar, inVar.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { values: ref attr, .. }, ref var @ BackendDAE::Var { values: ref attr1, .. }) = __mc_input.clone() else { bail!("nomatch") };
             let mut var1: BackendDAE::Var;
@@ -4011,7 +4011,7 @@ pub(crate) fn mergeMinMaxAttribute(mut inAVar: BackendDAE::Var, mut inVar: Backe
             (min2, max2) = DAEUtil::getMinMaxValues(attr1.clone());
             cr = varCref(v.clone())?;
             cr1 = varCref(var.clone())?;
-            (min1, max1) = mergeMinMax(negate.clone(), min1.clone(), min2.clone(), max1.clone(), max2.clone(), cr.clone(), cr1.clone())?;
+            (min1, max1) = mergeMinMax(negate, min1.clone(), min2.clone(), max1.clone(), max2.clone(), cr.clone(), cr1.clone())?;
             var1 = setVarMinMax(var.clone(), min1.clone(), max1.clone())?;
             Ok(var1.clone())
         })() { break 'mc __v; }
@@ -4034,17 +4034,17 @@ pub(crate) fn getMinMaxAttribute(mut inVar: BackendDAE::Var) -> (Option<Arc<DAE:
 fn mergeMinMax(mut negate: bool, mut inMin1: Option<Arc<DAE::Exp>>, mut inMin2: Option<Arc<DAE::Exp>>, mut inMax1: Option<Arc<DAE::Exp>>, mut inMax2: Option<Arc<DAE::Exp>>, mut cr: Arc<DAE::ComponentRef>, mut cr1: Arc<DAE::ComponentRef>) -> Result<(Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>)> {
     let mut outMin: Option<Arc<DAE::Exp>>;
     let mut outMax: Option<Arc<DAE::Exp>>;
-    outMin = if (negate.clone()) {Util::applyOption(inMin1.clone(), (std::sync::Arc::new(Expression::negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?} else {inMin1.clone()};
-    outMax = if (negate.clone()) {Util::applyOption(inMax1.clone(), (std::sync::Arc::new(Expression::negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?} else {inMax1.clone()};
-    outMin = mergeMin(outMin.clone(), inMin2.clone())?;
-    outMax = mergeMax(outMax.clone(), inMax2.clone())?;
-    checkMinMax(outMin.clone(), outMax.clone(), cr.clone(), cr1.clone(), negate.clone());
+    outMin = if (negate) {Util::applyOption(inMin1, (std::sync::Arc::new(Expression::negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?} else {inMin1};
+    outMax = if (negate) {Util::applyOption(inMax1, (std::sync::Arc::new(Expression::negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?} else {inMax1};
+    outMin = mergeMin(outMin, inMin2)?;
+    outMax = mergeMax(outMax, inMax2)?;
+    checkMinMax(outMin.clone(), outMax.clone(), cr, cr1, negate);
     Ok((outMin, outMax))
 }
 
 fn checkMinMax(mut inMin: Option<Arc<DAE::Exp>>, mut inMax: Option<Arc<DAE::Exp>>, mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>, mut negate: bool) -> () {
     let () = 'mc: {
-        let __mc_input = (inMin.clone(), inMax.clone());
+        let __mc_input = (inMin, inMax);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Some(min), Some(max)) => {
@@ -4060,7 +4060,7 @@ fn checkMinMax(mut inMin: Option<Arc<DAE::Exp>>, mut inMax: Option<Arc<DAE::Exp>
                     rmax = Expression::toReal(max.clone())?;
                     let true = (realGt(rmin.clone(), rmax.clone())) else { bail!("pattern mismatch") };
                     s1 = (ComponentReferenceBasics::printComponentRefStr(cr1.clone())?).clone();
-                    s2 = (if (negate.clone()) {literal!(" = -")} else {literal!(" = ")}).clone();
+                    s2 = (if (negate) {literal!(" = -")} else {literal!(" = ")}).clone();
                     s3 = (ComponentReferenceBasics::printComponentRefStr(cr2.clone())?).clone();
                     s4 = (ExpressionBasics::printExpStr(min.clone())?).clone();
                     s5 = (ExpressionBasics::printExpStr(max.clone())?).clone();
@@ -4091,16 +4091,16 @@ fn mergeMin(mut inMin1: Option<Arc<DAE::Exp>>, mut inMin2: Option<Arc<DAE::Exp>>
             let mut min: Arc<DAE::Exp>;
             min = Expression::expMaxScalar(min1.clone(), min2.clone())?;
             (min, _) = ExpressionSimplify::simplify(min.clone())?;
-            if (referenceEq(&*(min.clone()),&*(min1.clone()))) {inMin1.clone()} else if (referenceEq(&*(min.clone()),&*(min2.clone()))) {inMin2.clone()} else {Some(min.clone())}
+            if (referenceEq(&*(min.clone()),&*(min1.clone()))) {inMin1} else if (referenceEq(&*(min.clone()),&*(min2.clone()))) {inMin2} else {Some(min.clone())}
         },
         (None, _) => {
-            inMin2.clone()
+            inMin2
         },
         (_, None) => {
-            inMin1.clone()
+            inMin1
         },
         _ => {
-            inMin1.clone()
+            inMin1
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4114,16 +4114,16 @@ fn mergeMax(mut inMax1: Option<Arc<DAE::Exp>>, mut inMax2: Option<Arc<DAE::Exp>>
             let mut max: Arc<DAE::Exp>;
             max = Expression::expMinScalar(max1.clone(), max2.clone())?;
             (max, _) = ExpressionSimplify::simplify(max.clone())?;
-            if (referenceEq(&*(max.clone()),&*(max1.clone()))) {inMax1.clone()} else if (referenceEq(&*(max.clone()),&*(max2.clone()))) {inMax2.clone()} else {Some(max.clone())}
+            if (referenceEq(&*(max.clone()),&*(max1.clone()))) {inMax1} else if (referenceEq(&*(max.clone()),&*(max2.clone()))) {inMax2} else {Some(max.clone())}
         },
         (None, _) => {
-            inMax2.clone()
+            inMax2
         },
         (_, None) => {
-            inMax1.clone()
+            inMax1
         },
         _ => {
-            inMax1.clone()
+            inMax1
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4135,19 +4135,19 @@ pub(crate) fn calcAliasKey(mut inVar: BackendDAE::Var) -> Result<i32> {
     let mut b: bool;
     let mut d: i32;
     b = ComponentReference::isRecord(inVar.varName.clone());
-    i = if (b.clone()) {-1} else {0};
+    i = if (b) {-1} else {0};
     b = ComponentReference::isArrayElement(inVar.varName.clone());
-    i = intAdd(i.clone(), if (b.clone()) {-1} else {0});
+    i = intAdd(i, if (b) {-1} else {0});
     b = isProtectedVar(inVar.clone());
-    i = intAdd(i.clone(), if (b.clone()) {5} else {0});
+    i = intAdd(i, if (b) {5} else {0});
     b = isVarConnector(inVar.clone());
-    i = intAdd(i.clone(), if (b.clone()) {1} else {0});
+    i = intAdd(i, if (b) {1} else {0});
     b = isDummyDerVar(inVar.clone());
-    i = intAdd(i.clone(), if (b.clone()) {10} else {0});
+    i = intAdd(i, if (b) {10} else {0});
     b = selfGeneratedVar(inVar.varName.clone())?;
-    i = intAdd(i.clone(), if (b.clone()) {100} else {0});
+    i = intAdd(i, if (b) {100} else {0});
     d = ComponentReference::crefDepth(inVar.varName.clone())?;
-    i = i.clone() + d.clone();
+    i = i + d;
     Ok(i)
 }
 
@@ -4161,16 +4161,16 @@ pub(crate) fn varStateSelectPrioAlias(mut v: BackendDAE::Var) -> Result<i32> {
     let mut ss: DAE::StateSelect;
     let mut knownDer: bool;
     ss = varStateSelect(v.clone());
-    prio = stateSelectToInteger(ss.clone())?;
-    knownDer = varHasStateDerivative(v.clone());
-    prio = prio.clone() * 2;
-    prio = if (knownDer.clone()) {prio.clone() + 1} else {prio.clone()};
+    prio = stateSelectToInteger(ss)?;
+    knownDer = varHasStateDerivative(v);
+    prio = prio * 2;
+    prio = if (knownDer) {prio + 1} else {prio};
     Ok(prio)
 }
 
 pub(crate) fn stateSelectToInteger(mut inStateSelect: DAE::StateSelect) -> Result<i32> {
     let mut prio: i32;
-    prio = (match inStateSelect.clone() {
+    prio = (match inStateSelect {
         DAE::StateSelect::NEVER { .. } => -1,
         DAE::StateSelect::AVOID { .. } => 0,
         DAE::StateSelect::DEFAULT { .. } => 1,
@@ -4187,9 +4187,9 @@ pub(crate) fn transformXToXd(mut inVar: BackendDAE::Var) -> BackendDAE::Var {
             outVar = inVar.clone();
             outVar.varName = ComponentReference::crefPrefixDer(inVar.varName.clone());
             outVar.varKind = openmodelica_backend_types::BackendDAE::VarKind::STATE_DER;
-            outVar.clone()
+            outVar
         },
-        _ => inVar.clone(),
+        _ => inVar,
     });
     outVar
 }
@@ -4202,7 +4202,7 @@ pub(crate) fn setStateIndex(mut v1: BackendDAE::Var, mut idx: i32) -> Result<Bac
         let BackendDAE::STATE { index: _, derName: __pa0, natural: __pa1 } = (getVarKind(v1.clone())) else { bail!("pattern mismatch") };
         derName = __pa0.clone();
         natural = __pa1.clone();
-        v2 = setVarKind(v1.clone(), BackendDAE::VarKind::STATE { index: idx.clone(), derName: derName.clone(), natural: natural.clone() })?;
+        v2 = setVarKind(v1, BackendDAE::VarKind::STATE { index: idx, derName: derName, natural: natural })?;
     }
     Ok(v2)
 }
@@ -4237,12 +4237,12 @@ pub(crate) fn scalarizeVariables(mut vars: BackendDAE::Variables) -> Result<Back
     let mut vars: BackendDAE::Variables = vars;
     let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut new_var_lst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    var_lst = varList(vars.clone())?;
-    for mut var in &*var_lst.clone() {
+    var_lst = varList(vars)?;
+    for mut var in &*var_lst {
         let mut var = var.clone();
         new_var_lst = scalarizeVar(var.clone(), new_var_lst.clone())?;
     }
-    vars = listVar(new_var_lst.clone().reverse())?;
+    vars = listVar(new_var_lst.reverse())?;
     Ok(vars)
 }
 
@@ -4252,14 +4252,14 @@ pub(crate) fn scalarizeVar(mut var: BackendDAE::Var, mut scalar_vars: Arc<metamo
     let mut scalar_var: BackendDAE::Var;
     if Types::isArray(var.varType.clone()) {
         scalar_crefs = ComponentReference::expandCref(var.varName.clone(), false);
-        for mut cref in &*scalar_crefs.clone() {
+        for mut cref in &*scalar_crefs {
             let mut cref = cref.clone();
             scalar_var = copyVarNewName(cref.clone(), var.clone());
             scalar_var.varType = ComponentReference::crefTypeFull(cref.clone())?;
             scalar_vars = metamodelica::cons(scalar_var.clone(), scalar_vars.clone());
         }
     } else {
-        scalar_vars = metamodelica::cons(var.clone(), scalar_vars.clone());
+        scalar_vars = metamodelica::cons(var, scalar_vars);
     }
     Ok(scalar_vars)
 }

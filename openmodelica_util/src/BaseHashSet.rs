@@ -92,7 +92,7 @@ pub type FuncKeyString<Key: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn
 
 pub(crate) fn bucketToValuesSize(mut szBucket: i32) -> i32 {
     let mut szArr: i32;
-    szArr = (((intReal(szBucket.clone())) * (metamodelica::OrderedFloat(0.6_f64))).0.floor() as i32);
+    szArr = (((intReal(szBucket)) * (metamodelica::OrderedFloat(0.6_f64))).0.floor() as i32);
     szArr
 }
 
@@ -101,22 +101,22 @@ pub fn emptyHashSetWork<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut sz
     let mut arr: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
     let mut emptyarr: metamodelica::Array<Option<Key>>;
     let mut szArr: i32;
-    arr = arrayCreate(szBucket.clone(), metamodelica::nil());
-    szArr = bucketToValuesSize(szBucket.clone());
-    emptyarr = arrayCreate(szArr.clone(), None);
-    hashSet = (arr.clone(), (0, szArr.clone(), emptyarr.clone()), szBucket.clone(), 0, fntpl.clone());
+    arr = arrayCreate(szBucket, metamodelica::nil());
+    szArr = bucketToValuesSize(szBucket);
+    emptyarr = arrayCreate(szArr, None);
+    hashSet = (arr.clone(), (0, szArr, emptyarr.clone()), szBucket, 0, fntpl);
     hashSet
 }
 
 pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
-    outHashSet = (match (entry.clone(), hashSet.clone()) {
+    outHashSet = (match (entry, hashSet.clone()) {
         (mut key, (mut hashvec, mut varr, mut bsize, mut n, ref fntpl @ (ref hashFunc, _, _))) => {
             let mut indx: i32;
             let mut newpos: i32;
             let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
             let mut fkey: Option<Key>;
-            (fkey, indx) = get1(key.clone(), hashSet.clone())?;
+            (fkey, indx) = get1(key.clone(), hashSet)?;
             if isSome(fkey.clone()) {
                 varr = valueArraySetnth(varr.clone(), indx.clone(), key.clone())?;
             } else {
@@ -149,7 +149,7 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut
 
 pub(crate) fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
-    outHashSet = (match (entry.clone(), hashSet.clone()) {
+    outHashSet = (match (entry, hashSet) {
         (mut key, (mut hashvec, mut varr, mut bsize, _, ref fntpl @ (ref hashFunc, _, _))) => {
             let mut indx: i32;
             let mut newpos: i32;
@@ -202,13 +202,13 @@ pub fn delete<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mu
     let mut hashvec: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
     let mut fntpl: FuncsTuple<Key>;
     (hashvec, varr, bsize, n, fntpl) = hashSet.clone();
-    let __pa0 = ::match_deref::match_deref! { match &(get1(key.clone(), hashSet.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(get1(key, hashSet)?) {
         (Some(_), __pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     indx = __pa0.clone();
-    varr_1 = valueArrayClearnth(varr.clone(), indx.clone())?;
-    outHashSet = (hashvec.clone(), varr_1.clone(), bsize.clone(), n.clone(), fntpl.clone());
+    varr_1 = valueArrayClearnth(varr, indx)?;
+    outHashSet = (hashvec.clone(), varr_1, bsize, n, fntpl);
     Ok(outHashSet)
 }
 
@@ -220,7 +220,7 @@ pub fn has<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut h
         },
         _ => {
             let mut oKey: Option<Key>;
-            (oKey, _) = get1(key.clone(), hashSet.clone())?;
+            (oKey, _) = get1(key, hashSet)?;
             isSome(oKey.clone())
         },
     });
@@ -229,10 +229,10 @@ pub fn has<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut h
 
 pub fn hasAll<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<Key>>, mut hashSet: HashSet<Key>) -> Result<bool> {
     let mut b: bool = true;
-    for mut key in &*keys.clone() {
+    for mut key in &*keys {
         let mut key = key.clone();
         b = has(key.clone(), hashSet.clone())?;
-        if !(b.clone()) {
+        if !(b) {
             return Ok(b.clone());
         }
     }
@@ -241,14 +241,14 @@ pub fn hasAll<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<me
 
 pub(crate) fn get<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<Option<Key>> {
     let mut okey: Option<Key>;
-    (okey, _) = get1(key.clone(), hashSet.clone())?;
+    (okey, _) = get1(key, hashSet)?;
     Ok(okey)
 }
 
 fn get1<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<(Option<Key>, i32)> {
     let mut okey: Option<Key>;
     let mut indx: i32 = 0;
-    (okey, indx) = (match hashSet.clone() {
+    (okey, indx) = (match hashSet {
         (mut hashvec, mut varr, mut bsize, _, (mut hashFunc, mut keyEqual, _)) => {
             let mut hashindx: i32;
             let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
@@ -256,9 +256,9 @@ fn get1<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hash
             let mut b: bool;
             hashindx = intMod(hashFunc(key.clone())?, bsize.clone());
             indexes = ({let __elt = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone(); __elt});
-            (indx, b) = get2(key.clone(), indexes.clone(), keyEqual.clone())?;
-            k = if (b.clone()) {valueArrayNthT(varr.clone(), indx.clone())?} else {None};
-            (k.clone(), indx.clone())
+            (indx, b) = get2(key, indexes.clone(), keyEqual.clone())?;
+            k = if (b.clone()) {valueArrayNthT(varr.clone(), indx)?} else {None};
+            (k.clone(), indx)
         },
     });
     Ok((okey, indx))
@@ -268,7 +268,7 @@ fn get2<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut keyI
     let mut index: i32 = -1;
     let mut found: bool = true;
     let mut key2: Key;
-    for mut t in &*keyIndices.clone() {
+    for mut t in &*keyIndices {
         let mut t = t.clone();
         (key2, index) = t.clone();
         if keyEqual(key.clone(), key2.clone())? {
@@ -285,7 +285,7 @@ pub fn printHashSet<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSe
     printKey = __pa0.clone();
     metamodelica::print(stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut e in (hashSetList(hashSet.clone())?).into_iter().cloned() {
+        for mut e in (hashSetList(hashSet)?).into_iter().cloned() {
             let __x = printKey(e.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -296,14 +296,14 @@ pub fn printHashSet<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSe
 
 pub fn dumpHashSet<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> Result<()> {
     metamodelica::print((literal!("HashSet:\n")).clone());
-    printHashSet(hashSet.clone())?;
+    printHashSet(hashSet)?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
 pub fn hashSetList<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> Result<Arc<metamodelica::List<Key>>> {
     let mut lst: Arc<metamodelica::List<Key>>;
-    lst = (match hashSet.clone() {
+    lst = (match hashSet {
         (_, mut varr, _, _, _) => {
             valueArrayList(varr.clone())?
         },
@@ -316,8 +316,8 @@ pub(crate) fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace>(m
     let mut arr: metamodelica::Array<Option<Key>>;
     let mut size: i32;
     let mut e: Key;
-    (size, _, arr) = inValueArray.clone();
-    for mut i in 1..=size.clone() {
+    (size, _, arr) = inValueArray;
+    for mut i in 1..=size {
         if isSome(({let __elt = arr.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
             let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
@@ -327,21 +327,21 @@ pub(crate) fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace>(m
             outList = metamodelica::cons(e.clone(), outList.clone());
         }
     }
-    outList = outList.clone().reverse();
+    outList = outList.reverse();
     Ok(outList)
 }
 
 pub fn currentSize<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> i32 {
     let mut sz: i32;
     let mut va: ValueArray<Key>;
-    (_, va, _, _, _) = hashSet.clone();
-    sz = valueArrayLength(va.clone());
+    (_, va, _, _, _) = hashSet;
+    sz = valueArrayLength(va);
     sz
 }
 
 pub(crate) fn valueArrayLength<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>) -> i32 {
     let mut sz: i32;
-    (sz, _, _) = valueArray.clone();
+    (sz, _, _) = valueArray;
     sz
 }
 
@@ -354,17 +354,17 @@ pub(crate) fn valueArrayAdd<Key: Clone + 'static + metamodelica::gc::MMTrace>(mu
     let mut arr: metamodelica::Array<Option<Key>>;
     let mut rsize: metamodelica::Real;
     let mut rexpandsize: metamodelica::Real;
-    (n, size, arr) = valueArray.clone();
-    if n.clone() >= size.clone() {
-        rsize = intReal(size.clone());
-        rexpandsize = rsize.clone() * metamodelica::OrderedFloat(0.4_f64);
-        expandsize = ((rexpandsize.clone()).0.floor() as i32);
-        expandsize_1 = intMax(expandsize.clone(), 1);
-        size = expandsize_1.clone() + size.clone();
-        arr = Array::expand(expandsize_1.clone(), arr.clone(), None)?;
+    (n, size, arr) = valueArray;
+    if n >= size {
+        rsize = intReal(size);
+        rexpandsize = rsize * metamodelica::OrderedFloat(0.4_f64);
+        expandsize = ((rexpandsize).0.floor() as i32);
+        expandsize_1 = intMax(expandsize, 1);
+        size = expandsize_1 + size;
+        arr = Array::expand(expandsize_1, arr.clone(), None)?;
     }
-    arr = metamodelica::arrayUpdate(arr.clone(), n.clone() + 1, Some(entry.clone()))?;
-    outValueArray = (n.clone() + 1, size.clone(), arr.clone());
+    arr = metamodelica::arrayUpdate(arr.clone(), n + 1, Some(entry))?;
+    outValueArray = (n + 1, size, arr.clone());
     Ok(outValueArray)
 }
 
@@ -374,10 +374,10 @@ pub(crate) fn valueArraySetnth<Key: Clone + 'static + metamodelica::gc::MMTrace>
     let mut arr: metamodelica::Array<Option<Key>>;
     let mut n: i32;
     let mut size: i32;
-    (n, size, arr) = valueArray.clone();
-    let true = (pos.clone() < size.clone()) else { bail!("pattern mismatch") };
-    arr_1 = metamodelica::arrayUpdate(arr.clone(), pos.clone() + 1, Some(entry.clone()))?;
-    outValueArray = (n.clone(), size.clone(), arr_1.clone());
+    (n, size, arr) = valueArray;
+    let true = (pos < size) else { bail!("pattern mismatch") };
+    arr_1 = metamodelica::arrayUpdate(arr.clone(), pos + 1, Some(entry))?;
+    outValueArray = (n, size, arr_1.clone());
     Ok(outValueArray)
 }
 
@@ -387,19 +387,19 @@ pub(crate) fn valueArrayClearnth<Key: Clone + 'static + metamodelica::gc::MMTrac
     let mut arr: metamodelica::Array<Option<Key>>;
     let mut n: i32;
     let mut size: i32;
-    (n, size, arr) = valueArray.clone();
-    let true = (pos.clone() < size.clone()) else { bail!("pattern mismatch") };
-    arr_1 = metamodelica::arrayUpdate(arr.clone(), pos.clone() + 1, None)?;
-    outValueArray = (n.clone(), size.clone(), arr_1.clone());
+    (n, size, arr) = valueArray;
+    let true = (pos < size) else { bail!("pattern mismatch") };
+    arr_1 = metamodelica::arrayUpdate(arr.clone(), pos + 1, None)?;
+    outValueArray = (n, size, arr_1.clone());
     Ok(outValueArray)
 }
 
 pub(crate) fn valueArrayNth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Key> {
     let mut key: Key;
-    key = (match valueArray.clone() {
-        (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {
+    key = (match valueArray {
+        (mut n, _, mut arr) if (pos <= n.clone()) => {
             let mut k: Key;
-            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos + 1-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -413,9 +413,9 @@ pub(crate) fn valueArrayNth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mu
 
 fn valueArrayNthT<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Option<Key>> {
     let mut key: Option<Key>;
-    key = (match valueArray.clone() {
-        (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {
-            ({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})
+    key = (match valueArray {
+        (mut n, _, mut arr) if (pos <= n.clone()) => {
+            ({let __elt = arr.borrow()[(pos + 1-1) as usize].clone(); __elt})
         },
         _ => bail!("match: no arm matched"),
     });

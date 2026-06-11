@@ -83,10 +83,10 @@ pub(crate) const appostrophStr: &'static str = "$a";
 
 pub(crate) fn modelicaStringToCStr(mut r#str: ArcStr, mut changeDerCall: bool) -> Result<ArcStr> {
     let mut res_str: ArcStr = arcstr::literal!("");
-    res_str = ((match (r#str.clone(), changeDerCall.clone()) {
+    res_str = ((match (r#str.clone(), changeDerCall) {
         (_, false) => {
-            res_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*modelicaStringToCStr1((r#str.clone()).clone(), replaceStringPatterns.clone())?); ArcStr::from(__mm_s) }).clone();
-            res_str.clone()
+            res_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*modelicaStringToCStr1((r#str).clone(), replaceStringPatterns.clone())?); ArcStr::from(__mm_s) }).clone();
+            res_str
         },
         (mut s, true) => {
             s = (modelicaStringToCStr2((s.clone()).clone())?).clone();
@@ -100,7 +100,7 @@ pub(crate) fn modelicaStringToCStr(mut r#str: ArcStr, mut changeDerCall: bool) -
 fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<metamodelica::List<ReplacePattern>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ('mc: {
-        let __mc_input = (inString.clone(), inReplacePatternLst.clone());
+        let __mc_input = (inString.clone(), inReplacePatternLst);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (r#str, Deref @ metamodelica::List::Nil) => {
@@ -138,7 +138,7 @@ fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<meta
 fn modelicaStringToCStr2(mut inDerName: ArcStr) -> Result<ArcStr> {
     let mut outDerName: ArcStr;
     outDerName = ('mc: {
-        let __mc_input = inDerName.clone();
+        let __mc_input = inDerName;
         if let Ok(__v) = (|| -> Result<_> {
             let mut derName = __mc_input.clone() else { bail!("nomatch") };
             let mut name: ArcStr;

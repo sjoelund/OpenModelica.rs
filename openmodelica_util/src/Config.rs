@@ -100,9 +100,9 @@ pub fn noProc() -> Result<i32> {
 
 fn noProcWork(mut inProc: i32) -> i32 {
     let mut outInteger: i32;
-    outInteger = (match inProc.clone() {
+    outInteger = (match inProc {
         0 => System::numProcessors(),
-        _ => inProc.clone(),
+        _ => inProc,
     });
     outInteger
 }
@@ -186,7 +186,7 @@ pub fn getAnnotationVersion() -> Result<ArcStr> {
 }
 
 pub(crate) fn setAnnotationVersion(mut annotationVersion: ArcStr) -> Result<()> {
-    FlagsUtil::setConfigString(Flags::ANNOTATION_VERSION.clone(), (annotationVersion.clone()).clone())?;
+    FlagsUtil::setConfigString(Flags::ANNOTATION_VERSION.clone(), (annotationVersion).clone())?;
     Ok(())
 }
 
@@ -197,7 +197,7 @@ pub fn getNoSimplify() -> Result<bool> {
 }
 
 pub fn setNoSimplify(mut noSimplify: bool) -> Result<()> {
-    FlagsUtil::setConfigBool(Flags::NO_SIMPLIFY.clone(), noSimplify.clone())?;
+    FlagsUtil::setConfigBool(Flags::NO_SIMPLIFY.clone(), noSimplify)?;
     Ok(())
 }
 
@@ -208,7 +208,7 @@ pub fn vectorizationLimit() -> Result<i32> {
 }
 
 pub(crate) fn setVectorizationLimit(mut limit: i32) -> Result<()> {
-    FlagsUtil::setConfigInt(Flags::VECTORIZATION_LIMIT.clone(), limit.clone())?;
+    FlagsUtil::setConfigInt(Flags::VECTORIZATION_LIMIT.clone(), limit)?;
     Ok(())
 }
 
@@ -219,7 +219,7 @@ pub fn getDefaultOpenCLDevice() -> Result<i32> {
 }
 
 pub(crate) fn setDefaultOpenCLDevice(mut defdevid: i32) -> Result<()> {
-    FlagsUtil::setConfigInt(Flags::DEFAULT_OPENCL_DEVICE.clone(), defdevid.clone())?;
+    FlagsUtil::setConfigInt(Flags::DEFAULT_OPENCL_DEVICE.clone(), defdevid)?;
     Ok(())
 }
 
@@ -230,7 +230,7 @@ pub fn showAnnotations() -> Result<bool> {
 }
 
 pub fn setShowAnnotations(mut show: bool) -> Result<()> {
-    FlagsUtil::setConfigBool(Flags::SHOW_ANNOTATIONS.clone(), show.clone())?;
+    FlagsUtil::setConfigBool(Flags::SHOW_ANNOTATIONS.clone(), show)?;
     Ok(())
 }
 
@@ -253,7 +253,7 @@ pub fn getEvaluateParametersInAnnotations() -> Result<bool> {
 }
 
 pub fn setEvaluateParametersInAnnotations(mut shouldEvaluate: bool) -> Result<()> {
-    FlagsUtil::setConfigBool(Flags::EVAL_PARAMS_IN_ANNOTATIONS.clone(), shouldEvaluate.clone())?;
+    FlagsUtil::setConfigBool(Flags::EVAL_PARAMS_IN_ANNOTATIONS.clone(), shouldEvaluate)?;
     Ok(())
 }
 
@@ -264,7 +264,7 @@ pub fn getGraphicsExpMode() -> Result<bool> {
 }
 
 pub fn setGraphicsExpMode(mut graphicsExpMode: bool) -> Result<()> {
-    FlagsUtil::setConfigBool(Flags::GRAPHICS_EXP_MODE.clone(), graphicsExpMode.clone())?;
+    FlagsUtil::setConfigBool(Flags::GRAPHICS_EXP_MODE.clone(), graphicsExpMode)?;
     Ok(())
 }
 
@@ -275,7 +275,7 @@ pub fn orderConnections() -> Result<bool> {
 }
 
 pub(crate) fn setOrderConnections(mut show: bool) -> Result<()> {
-    FlagsUtil::setConfigBool(Flags::ORDER_CONNECTIONS.clone(), show.clone())?;
+    FlagsUtil::setConfigBool(Flags::ORDER_CONNECTIONS.clone(), show)?;
     Ok(())
 }
 
@@ -304,12 +304,12 @@ pub fn getInitOptModules() -> Result<Arc<metamodelica::List<ArcStr>>> {
 }
 
 pub(crate) fn setPreOptModules(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    FlagsUtil::setConfigStringList(Flags::PRE_OPT_MODULES.clone(), inStringLst.clone())?;
+    FlagsUtil::setConfigStringList(Flags::PRE_OPT_MODULES.clone(), inStringLst)?;
     Ok(())
 }
 
 pub(crate) fn setPostOptModules(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    FlagsUtil::setConfigStringList(Flags::POST_OPT_MODULES.clone(), inStringLst.clone())?;
+    FlagsUtil::setConfigStringList(Flags::POST_OPT_MODULES.clone(), inStringLst)?;
     Ok(())
 }
 
@@ -320,7 +320,7 @@ pub fn getIndexReductionMethod() -> Result<ArcStr> {
 }
 
 pub(crate) fn setIndexReductionMethod(mut inString: ArcStr) -> Result<()> {
-    FlagsUtil::setConfigString(Flags::INDEX_REDUCTION_METHOD.clone(), (inString.clone()).clone())?;
+    FlagsUtil::setConfigString(Flags::INDEX_REDUCTION_METHOD.clone(), (inString).clone())?;
     Ok(())
 }
 
@@ -331,7 +331,7 @@ pub fn getCheapMatchingAlgorithm() -> Result<i32> {
 }
 
 pub(crate) fn setCheapMatchingAlgorithm(mut inInteger: i32) -> Result<()> {
-    FlagsUtil::setConfigInt(Flags::CHEAPMATCHING_ALGORITHM.clone(), inInteger.clone())?;
+    FlagsUtil::setConfigInt(Flags::CHEAPMATCHING_ALGORITHM.clone(), inInteger)?;
     Ok(())
 }
 
@@ -342,7 +342,7 @@ pub fn getMatchingAlgorithm() -> Result<ArcStr> {
 }
 
 pub(crate) fn setMatchingAlgorithm(mut inString: ArcStr) -> Result<()> {
-    FlagsUtil::setConfigString(Flags::MATCHING_ALGORITHM.clone(), (inString.clone()).clone())?;
+    FlagsUtil::setConfigString(Flags::MATCHING_ALGORITHM.clone(), (inString).clone())?;
     Ok(())
 }
 
@@ -353,7 +353,7 @@ pub fn getTearingMethod() -> Result<ArcStr> {
 }
 
 pub(crate) fn setTearingMethod(mut inString: ArcStr) -> Result<()> {
-    FlagsUtil::setConfigString(Flags::TEARING_METHOD.clone(), (inString.clone()).clone())?;
+    FlagsUtil::setConfigString(Flags::TEARING_METHOD.clone(), (inString).clone())?;
     Ok(())
 }
 
@@ -364,7 +364,7 @@ pub fn getTearingHeuristic() -> Result<ArcStr> {
 }
 
 pub(crate) fn setTearingHeuristic(mut inString: ArcStr) -> Result<()> {
-    FlagsUtil::setConfigString(Flags::TEARING_HEURISTIC.clone(), (inString.clone()).clone())?;
+    FlagsUtil::setConfigString(Flags::TEARING_HEURISTIC.clone(), (inString).clone())?;
     Ok(())
 }
 
@@ -375,7 +375,7 @@ pub fn simCodeTarget() -> Result<ArcStr> {
 }
 
 pub(crate) fn setsimCodeTarget(mut inString: ArcStr) -> Result<()> {
-    FlagsUtil::setConfigString(Flags::SIMCODE_TARGET.clone(), (inString.clone()).clone())?;
+    FlagsUtil::setConfigString(Flags::SIMCODE_TARGET.clone(), (inString).clone())?;
     Ok(())
 }
 
@@ -386,7 +386,7 @@ pub fn getLanguageStandard() -> Result<LanguageStandard> {
 }
 
 pub fn setLanguageStandard(mut inStandard: LanguageStandard) -> Result<()> {
-    FlagsUtil::setConfigEnum(Flags::LANGUAGE_STANDARD.clone(), languageStandardInt(inStandard.clone())?)?;
+    FlagsUtil::setConfigEnum(Flags::LANGUAGE_STANDARD.clone(), languageStandardInt(inStandard)?)?;
     Ok(())
 }
 
@@ -394,7 +394,7 @@ pub fn languageStandardAtLeast(mut inStandard: LanguageStandard) -> Result<bool>
     let mut outRes: bool;
     let mut std: LanguageStandard;
     std = getLanguageStandard()?;
-    outRes = intGe(languageStandardInt(std.clone())?, languageStandardInt(inStandard.clone())?);
+    outRes = intGe(languageStandardInt(std)?, languageStandardInt(inStandard)?);
     Ok(outRes)
 }
 
@@ -402,20 +402,20 @@ pub fn languageStandardAtMost(mut inStandard: LanguageStandard) -> Result<bool> 
     let mut outRes: bool;
     let mut std: LanguageStandard;
     std = getLanguageStandard()?;
-    outRes = intLe(languageStandardInt(std.clone())?, languageStandardInt(inStandard.clone())?);
+    outRes = intLe(languageStandardInt(std)?, languageStandardInt(inStandard)?);
     Ok(outRes)
 }
 
 fn languageStandardInt(mut inStandard: LanguageStandard) -> Result<i32> {
     let mut outValue: i32;
     let lookup: metamodelica::Array<i32> = metamodelica::Dangerous::listArray(list![10, 20, 30, 31, 32, 33, 34, 35, 36, 1000, 9999]);
-    outValue = metamodelica::arrayGet(lookup.clone(), ((inStandard.clone()) as i32))?;
+    outValue = metamodelica::arrayGet(lookup.clone(), ((inStandard) as i32))?;
     Ok(outValue)
 }
 
 fn intLanguageStandard(mut inValue: i32) -> Result<LanguageStandard> {
     let mut outStandard: LanguageStandard;
-    outStandard = (match inValue.clone() {
+    outStandard = (match inValue {
         10 => LanguageStandard::_1_x.clone(),
         20 => LanguageStandard::_2_x.clone(),
         30 => LanguageStandard::_3_0.clone(),
@@ -435,14 +435,14 @@ fn intLanguageStandard(mut inValue: i32) -> Result<LanguageStandard> {
 pub fn languageStandardString(mut inStandard: LanguageStandard) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let lookup: metamodelica::Array<ArcStr> = metamodelica::Dangerous::listArray(list![(literal!("1.x")).clone(), (literal!("2.x")).clone(), (literal!("3.0")).clone(), (literal!("3.1")).clone(), (literal!("3.2")).clone(), (literal!("3.3")).clone(), (literal!("3.4")).clone(), (literal!("3.5")).clone(), (literal!("3.6")).clone(), (literal!("3.6")).clone(), (literal!("experimental")).clone()]);
-    outString = (metamodelica::arrayGet(lookup.clone(), ((inStandard.clone()) as i32))?).clone();
+    outString = (metamodelica::arrayGet(lookup.clone(), ((inStandard) as i32))?).clone();
     Ok(outString)
 }
 
 pub fn setLanguageStandardFromMSL(mut inLibraryName: ArcStr, mut force: bool) -> Result<()> {
     let mut current_std: LanguageStandard;
     current_std = getLanguageStandard()?;
-    if !(force.clone()) && current_std.clone() != LanguageStandard::latest.clone() {
+    if !(force) && current_std != LanguageStandard::latest.clone() {
         return Ok(());
     }
     let () = 'mc: {
@@ -457,9 +457,9 @@ pub fn setLanguageStandardFromMSL(mut inLibraryName: ArcStr, mut force: bool) ->
             } };
             version = __pa0.clone();
             new_std = versionStringToStd((version.clone()).clone());
-            if new_std.clone() != current_std.clone() {
+            if new_std.clone() != current_std {
                 setLanguageStandard(new_std.clone())?;
-                if hasLanguageStandardChanged(current_std.clone())? {
+                if hasLanguageStandardChanged(current_std)? {
                     Error::addMessage(Error::CHANGED_STD_VERSION.clone(), list![(languageStandardString(new_std.clone())?).clone(), (version.clone()).clone()])?;
                 }
             }
@@ -483,14 +483,14 @@ fn hasLanguageStandardChanged(mut inOldStandard: LanguageStandard) -> Result<boo
 pub fn versionStringToStd(mut inVersion: ArcStr) -> LanguageStandard {
     let mut outStandard: LanguageStandard;
     let mut version: Arc<metamodelica::List<ArcStr>>;
-    version = System::strtok((inVersion.clone()).clone(), (literal!(".")).clone());
-    outStandard = versionStringToStd2(version.clone());
+    version = System::strtok((inVersion).clone(), (literal!(".")).clone());
+    outStandard = versionStringToStd2(version);
     outStandard
 }
 
 fn versionStringToStd2(mut inVersion: Arc<metamodelica::List<ArcStr>>) -> LanguageStandard {
     let mut outStandard: LanguageStandard;
-    outStandard = (::match_deref::match_deref! { match &(inVersion.clone()) {
+    outStandard = (::match_deref::match_deref! { match &(inVersion) {
         Deref @ metamodelica::List::Cons { head: Deref @ "1", tail: _ } => LanguageStandard::_1_x.clone(),
         Deref @ metamodelica::List::Cons { head: Deref @ "2", tail: _ } => LanguageStandard::_2_x.clone(),
         Deref @ metamodelica::List::Cons { head: Deref @ "3", tail: Deref @ metamodelica::List::Cons { head: Deref @ "0", tail: _ } } => LanguageStandard::_3_0.clone(),
@@ -592,7 +592,7 @@ pub fn replacedHomotopy() -> Result<bool> {
     let mut outBoolean: bool;
     let mut replaceHomotopy: ArcStr;
     replaceHomotopy = (Flags::getConfigString(Flags::REPLACE_HOMOTOPY.clone())?).clone();
-    outBoolean = replaceHomotopy.clone() == literal!("actual") || replaceHomotopy.clone() == literal!("simplified");
+    outBoolean = replaceHomotopy.clone() == literal!("actual") || replaceHomotopy == literal!("simplified");
     Ok(outBoolean)
 }
 
@@ -604,7 +604,7 @@ pub fn synchronousFeaturesAllowed() -> Result<bool> {
 pub fn flatModelica() -> Result<bool> {
     let mut value: bool;
     value = Flags::getConfigBool(Flags::BASE_MODELICA.clone())?;
-    if value.clone() && !(Flags::isSet(Flags::SCODE_INST.clone())?) {
+    if value && !(Flags::isSet(Flags::SCODE_INST.clone())?) {
         Error::addMessage(Error::INVALID_FLAG_CONDITION.clone(), list![(literal!("-f")).clone(), (literal!("flat modelica requires flag -d=newInst to be set")).clone()])?;
         value = false;
     }

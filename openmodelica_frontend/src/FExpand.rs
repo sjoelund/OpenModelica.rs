@@ -90,7 +90,7 @@ pub type Msg = Option<SourceInfo>;
 pub(crate) fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
-    (outGraph, outRef) = (match inGraph.clone() {
+    (outGraph, outRef) = (match inGraph {
         mut g => {
             let mut r: Ref;
             let mut t: Ref;
@@ -104,7 +104,7 @@ pub(crate) fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(
 
 pub(crate) fn all(mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
-    outGraph = (match inGraph.clone() {
+    outGraph = (match inGraph {
         mut g => {
             let mut lst: Arc<metamodelica::List<metamodelica::Real>>;
             lst = metamodelica::nil();

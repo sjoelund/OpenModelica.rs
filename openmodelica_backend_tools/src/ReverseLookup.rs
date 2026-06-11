@@ -87,7 +87,7 @@ pub mod PathTree {
 
     pub(crate) fn keyStr(mut inKey: Key) -> ArcStr {
         let mut outString: ArcStr;
-        outString = (inKey.clone()).clone();
+        outString = (inKey).clone();
         outString
     }
 
@@ -99,7 +99,7 @@ pub mod PathTree {
 
     pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
         let mut outResult: i32;
-        outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
+        outResult = stringCompare((inKey1).clone(), (inKey2).clone());
         outResult
     }
 
@@ -164,23 +164,23 @@ pub mod PathTree {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
-            Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() })
+            Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue })
         },
         Deref @ Tree::NODE { key, .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
             if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::NODE).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
@@ -188,15 +188,15 @@ pub mod PathTree {
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::ReverseLookup::PathTree::Tree::interned_EMPTY() });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }), right: crate::ReverseLookup::PathTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::ReverseLookup::PathTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::ReverseLookup::PathTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }) });
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
-                outTree = tree.clone();
+                outTree = tree;
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
@@ -227,7 +227,7 @@ pub mod PathTree {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), (key.clone()).clone(), value.clone(), conflictFunc.clone())?;
@@ -242,29 +242,29 @@ pub mod PathTree {
         let mut key_comp: i32 = 0;
         let mut new_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }),
+        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }),
         Deref @ Tree::NODE { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::NODE).clone()).clone());
-            if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone(), r#fn.clone())?);
-            } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone(), r#fn.clone())?);
+            if key_comp == -1 {
+                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), (key).clone(), r#fn.clone())?);
+            } else if key_comp == 1 {
+                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), (key).clone(), r#fn.clone())?);
             } else {
                 assign_variant_field!(tree => Tree::NODE; value = r#fn(Some(var_field!((*tree).value, Tree::NODE).clone()))?);
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
-            if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::ReverseLookup::PathTree::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::ReverseLookup::PathTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+            if key_comp == -1 {
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }), right: crate::ReverseLookup::PathTree::Tree::interned_EMPTY() });
+            } else if key_comp == 1 {
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::ReverseLookup::PathTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
-                new_tree = tree.clone();
+                new_tree = tree;
             }
-            if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
+            if (key_comp == 0) {new_tree} else {balance(new_tree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -275,7 +275,7 @@ pub mod PathTree {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::LEAF { .. } => {
-            inTree.clone()
+            inTree
         },
         Deref @ Tree::NODE { .. } => {
             let mut lh: i32;
@@ -286,14 +286,14 @@ pub mod PathTree {
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
             if diff.clone() < -1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
             } else if diff.clone() > 1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
             } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
                 assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             } else {
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             }
             balanced_tree.clone()
         },
@@ -319,17 +319,17 @@ pub mod PathTree {
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult
         },
         Deref @ Tree::LEAF { key, value } => {
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            outResult
         },
         _ => {
-            outResult.clone()
+            outResult
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -343,20 +343,20 @@ pub mod PathTree {
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
-            value.clone()
+            value
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
-            value.clone()
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value)?;
+            value
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -370,13 +370,13 @@ pub mod PathTree {
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1, foldArg2)?;
             ()
         },
         _ => (),
@@ -409,7 +409,7 @@ pub mod PathTree {
         let mut tree: Arc<Tree> = crate::ReverseLookup::PathTree::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), (key.clone()).clone(), value.clone(), conflictFunc.clone())?;
@@ -425,11 +425,11 @@ pub mod PathTree {
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => bail!("match: no arm matched"),
     } })).clone();
-        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k).clone()), tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => var_field!((*tree).value, Tree::LEAF).clone(),
         (0, Deref @ Tree::NODE { .. }) => var_field!((*tree).value, Tree::NODE).clone(),
-        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone())?,
-        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone())?,
+        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), (key).clone())?,
+        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), (key).clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(value)
@@ -444,11 +444,11 @@ pub mod PathTree {
         _ => key.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } })).clone();
-            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k).clone()), tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => return Some(var_field!((*tree).value, Tree::LEAF).clone()),
         (0, Deref @ Tree::NODE { .. }) => return Some(var_field!((*tree).value, Tree::NODE).clone()),
-        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
-        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key).clone()); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key).clone()); continue '__tco; },
         _ => return None,
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -469,16 +469,16 @@ pub mod PathTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-        key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
-        comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
+        key_comp = keyCompare((inKey.clone()).clone(), (key).clone());
+        comp = (::match_deref::match_deref! { match &((key_comp, inTree)) {
         (0, _) => true,
         (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), (inKey.clone()).clone())?
+            hasKey(tree.clone(), (inKey).clone())?
         },
         ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), (inKey.clone()).clone())?
+            hasKey(tree.clone(), (inKey).clone())?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -504,7 +504,7 @@ pub mod PathTree {
 
     pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -515,14 +515,14 @@ pub mod PathTree {
     pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<PathEntry>, Arc<PathEntry>, ArcStr) -> Result<Arc<PathEntry>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
-        Deref @ Tree::EMPTY { .. } => tree.clone(),
+        Deref @ Tree::EMPTY { .. } => tree,
         Deref @ Tree::NODE { .. } => {
-            tree = add(tree.clone(), (var_field!((*treeToJoin).key, Tree::NODE).clone()).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree.clone()
+            tree = add(tree, (var_field!((*treeToJoin).key, Tree::NODE).clone()).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree
         },
-        Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
+        Deref @ Tree::LEAF { .. } => add(tree, (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
@@ -532,16 +532,16 @@ pub mod PathTree {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
-            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
-            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone()).clone(), lst);
+            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, .. } => {
-            metamodelica::cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -551,14 +551,14 @@ pub mod PathTree {
     pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst),
         Deref @ Tree::NODE { .. } => {
-            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
-            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst);
+            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst
         },
-        _ => lst.clone(),
+        _ => lst,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         lst
@@ -568,16 +568,16 @@ pub mod PathTree {
         let mut lst: Arc<metamodelica::List<Arc<PathEntry>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
-            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(value.clone(), lst.clone());
-            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(value.clone(), lst);
+            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { value, .. } => {
-            metamodelica::cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -599,7 +599,7 @@ pub mod PathTree {
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
@@ -607,10 +607,10 @@ pub mod PathTree {
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -627,24 +627,24 @@ pub mod PathTree {
             let mut new_value: Value;
             let mut new_left: Arc<Tree>;
             let mut new_right: Arc<Tree>;
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&*(value.clone()),&*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -672,11 +672,11 @@ pub mod PathTree {
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
-        Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
+        Deref @ Tree::LEAF { .. } => printNodeStr(inTree)?,
         Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
             left = (*__esc_left).clone();
             right = (*__esc_right).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -688,8 +688,8 @@ pub mod PathTree {
         let mut left: Option<Arc<Tree>>;
         let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -700,7 +700,7 @@ pub mod PathTree {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
+        _ => referenceEq(&*(t1),&*(t2)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -720,7 +720,7 @@ pub mod PathTree {
             setTreeLeftRight(child.clone(), node.clone(), crate::ReverseLookup::PathTree::Tree::interned_EMPTY())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -741,7 +741,7 @@ pub mod PathTree {
             setTreeLeftRight(child.clone(), crate::ReverseLookup::PathTree::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -752,9 +752,9 @@ pub mod PathTree {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
-        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
-        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig.clone()} else {Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() })},
-        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::LEAF).clone()).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() }),
+        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig,
+        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig} else {Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right })},
+        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::LEAF).clone()).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(res)
@@ -775,16 +775,16 @@ pub mod PathTree {
         let mut lst: Arc<metamodelica::List<(ArcStr, Arc<PathEntry>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
-            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone(), value.clone()), lst);
+            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, value } => {
-            metamodelica::cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -876,16 +876,16 @@ pub fn lookup(mut path: Arc<Absyn::Path>, mut scope: Arc<Absyn::Path>, mut progr
     ExecStat::execStatReset()?;
     if AbsynUtil::pathEqual(scope.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("AllLoadedClasses")).clone() })) {
         tree = addPath(path.clone(), PathTree::new())?;
-        paths = Arc::new(Paths::Paths { tree: tree.clone(), relativePath: AbsynUtil::pathToStringList(path.clone())?, currentPath: metamodelica::nil() });
-        matches = lookupInProgram(program.clone(), paths.clone(), exactMatch.clone())?;
+        paths = Arc::new(Paths::Paths { tree: tree, relativePath: AbsynUtil::pathToStringList(path.clone())?, currentPath: metamodelica::nil() });
+        matches = lookupInProgram(program, paths, exactMatch)?;
     } else {
         opt_path = AbsynUtil::pathStripSamePrefix(path.clone(), scope.clone())?;
-        relative_path = Util::getOptionOrDefault(opt_path.clone(), path.clone());
+        relative_path = Util::getOptionOrDefault(opt_path, path.clone());
         tree = addPath(relative_path.clone(), PathTree::new())?;
-        paths = Arc::new(Paths::Paths { tree: tree.clone(), relativePath: AbsynUtil::pathToStringList(relative_path.clone())?, currentPath: metamodelica::nil() });
+        paths = Arc::new(Paths::Paths { tree: tree, relativePath: AbsynUtil::pathToStringList(relative_path)?, currentPath: metamodelica::nil() });
         match '__try0: {
             cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(scope.clone(), program.clone(), false, false), '__try0);
-            matches = unwrap_break_err!(lookupInClass(cls.clone(), paths.clone(), exactMatch.clone(), metamodelica::nil()), '__try0);
+            matches = unwrap_break_err!(lookupInClass(cls.clone(), paths.clone(), exactMatch, metamodelica::nil()), '__try0);
             Ok::<_, anyhow::Error>((matches.clone(),))
         } {
             Ok((__try0_o0,)) => {
@@ -896,9 +896,9 @@ pub fn lookup(mut path: Arc<Absyn::Path>, mut scope: Arc<Absyn::Path>, mut progr
             }
         }
     }
-    grouped_matches = groupMatches(matches.clone())?;
-    result = (serializeMatches(grouped_matches.clone(), prettyPrint.clone())?).clone();
-    ExecStat::execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ReverseLookup.lookup(")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+    grouped_matches = groupMatches(matches)?;
+    result = (serializeMatches(grouped_matches, prettyPrint)?).clone();
+    ExecStat::execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ReverseLookup.lookup(")); __mm_s.push_str(&*AbsynUtil::pathString(path, (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     Ok(result)
 }
 
@@ -907,18 +907,18 @@ fn addPath(mut path: Arc<Absyn::Path>, mut tree: Arc<PathTree::Tree>) -> Result<
     let mut opt_entry: Option<Arc<PathEntry>> = None;
     let mut entry: Arc<PathEntry> = Arc::new(<PathEntry as ::std::default::Default>::default());
     tree = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::IDENT { .. } => PathTree::add(tree.clone(), (var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), Arc::new(PathEntry { tree: PathTree::new(), shadowed: false }), (std::sync::Arc::new(fnptr!(PathTree::addConflictKeep, Arc<PathEntry>, Arc<PathEntry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<PathEntry>, Arc<PathEntry>, ArcStr) -> Result<Arc<PathEntry>> + 'static>))?,
+        Deref @ Absyn::Path::IDENT { .. } => PathTree::add(tree, (var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), Arc::new(PathEntry { tree: PathTree::new(), shadowed: false }), (std::sync::Arc::new(fnptr!(PathTree::addConflictKeep, Arc<PathEntry>, Arc<PathEntry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<PathEntry>, Arc<PathEntry>, ArcStr) -> Result<Arc<PathEntry>> + 'static>))?,
         Deref @ Absyn::Path::QUALIFIED { .. } => {
             opt_entry = PathTree::getOpt(tree.clone(), (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone());
             if isSome(opt_entry.clone()) {
-                entry = Util::getOption(opt_entry.clone())?;
+                entry = Util::getOption(opt_entry)?;
                 assign_field!(entry.tree = addPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), entry.tree.clone())?);
             } else {
                 entry = Arc::new(PathEntry { tree: addPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), PathTree::new())?, shadowed: false });
             }
-            PathTree::add(tree.clone(), (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), entry.clone(), (std::sync::Arc::new(fnptr!(PathTree::addConflictReplace, Arc<PathEntry>, Arc<PathEntry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<PathEntry>, Arc<PathEntry>, ArcStr) -> Result<Arc<PathEntry>> + 'static>))?
+            PathTree::add(tree, (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), entry, (std::sync::Arc::new(fnptr!(PathTree::addConflictReplace, Arc<PathEntry>, Arc<PathEntry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<PathEntry>, Arc<PathEntry>, ArcStr) -> Result<Arc<PathEntry>> + 'static>))?
         },
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => addPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), tree.clone())?,
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => addPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), tree)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tree)
@@ -934,7 +934,7 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
                 Deref @ Absyn::Path::IDENT { .. } => {
                     let mut entry: Arc<PathEntry> = entry.clone();
                     entry = PathTree::get(paths.clone(), (var_field!((*path).name, Absyn::Path::IDENT).clone()).clone())?;
-                    Ok(((fullyQualified.clone() || !(entry.shadowed.clone())) && PathTree::isEmpty(entry.tree.clone()), entry.clone()))
+                    Ok(((fullyQualified || !(entry.shadowed.clone())) && PathTree::isEmpty(entry.tree.clone()), entry.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -945,14 +945,14 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
                     let mut entry: Arc<PathEntry> = entry.clone();
                     let mut found: bool = found.clone();
                     entry = PathTree::get(paths.clone(), (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone())?;
-                    if entry.shadowed.clone() && !(fullyQualified.clone()) {
+                    if entry.shadowed.clone() && !(fullyQualified) {
                         found = false;
-                    } else if PathTree::isEmpty(entry.tree.clone()) && !(exactMatch.clone()) {
+                    } else if PathTree::isEmpty(entry.tree.clone()) && !(exactMatch) {
                         found = true;
                     } else {
-                        found = lookupPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone());
+                        found = lookupPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), entry.tree.clone(), exactMatch, fullyQualified);
                     }
-                    Ok((found.clone(), entry.clone(), found.clone()))
+                    Ok((found, entry.clone(), found.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -960,7 +960,7 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
-                    Ok(lookupPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), true))
+                    Ok(lookupPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), paths.clone(), exactMatch, true))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -980,8 +980,8 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
 
 fn matchPath(mut path: Arc<Absyn::Path>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    if lookupPath(path.clone(), paths.tree.clone(), exactMatch.clone(), false) {
-        matches = metamodelica::cons(Match { name: AbsynUtil::pathToCref(path.clone())?, scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
+    if lookupPath(path.clone(), paths.tree.clone(), exactMatch, false) {
+        matches = metamodelica::cons(Match { name: AbsynUtil::pathToCref(path)?, scope: (Paths::currentPathStr(paths)).clone(), info: info }, matches);
     }
     Ok(matches)
 }
@@ -996,7 +996,7 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
                 Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => {
                     let mut entry: Arc<PathEntry> = entry.clone();
                     entry = PathTree::get(paths.clone(), (var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone())?;
-                    Ok(((fullyQualified.clone() || !(entry.shadowed.clone())) && PathTree::isEmpty(entry.tree.clone()), entry.clone()))
+                    Ok(((fullyQualified || !(entry.shadowed.clone())) && PathTree::isEmpty(entry.tree.clone()), entry.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1007,14 +1007,14 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
                     let mut entry: Arc<PathEntry> = entry.clone();
                     let mut found: bool = found.clone();
                     entry = PathTree::get(paths.clone(), (var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone())?;
-                    if entry.shadowed.clone() && !(fullyQualified.clone()) {
+                    if entry.shadowed.clone() && !(fullyQualified) {
                         found = false;
-                    } else if PathTree::isEmpty(entry.tree.clone()) && !(exactMatch.clone()) {
+                    } else if PathTree::isEmpty(entry.tree.clone()) && !(exactMatch) {
                         found = true;
                     } else {
-                        found = lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone());
+                        found = lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), entry.tree.clone(), exactMatch, fullyQualified);
                     }
-                    Ok((found.clone(), entry.clone(), found.clone()))
+                    Ok((found, entry.clone(), found.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1022,7 +1022,7 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => {
-                    Ok(lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), true))
+                    Ok(lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), paths.clone(), exactMatch, true))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1042,8 +1042,8 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
 
 fn matchCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Matches {
     let mut matches: Matches = matches;
-    if lookupCref(cref.clone(), paths.tree.clone(), exactMatch.clone(), false) {
-        matches = metamodelica::cons(Match { name: cref.clone(), scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
+    if lookupCref(cref.clone(), paths.tree.clone(), exactMatch, false) {
+        matches = metamodelica::cons(Match { name: cref, scope: (Paths::currentPathStr(paths)).clone(), info: info }, matches);
     }
     matches
 }
@@ -1063,12 +1063,12 @@ fn shadowLocalNames(mut cls: Arc<Absyn::Class>, mut paths: Arc<Paths::Paths>) ->
 fn shadowLocalNamesInElementItem(mut item: Arc<Absyn::ElementItem>, mut paths: Arc<Paths::Paths>) -> Result<Arc<Paths::Paths>> {
     let mut paths: Arc<Paths::Paths> = paths;
     let mut spec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
-    paths = (::match_deref::match_deref! { match &(item.clone()) {
+    paths = (::match_deref::match_deref! { match &(item) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: __esc_spec, .. } } => {
             spec = (*__esc_spec).clone();
-            shadowLocalNamesInElementSpec(spec.clone(), paths.clone())?
+            shadowLocalNamesInElementSpec(spec.clone(), paths)?
         },
-        _ => paths.clone(),
+        _ => paths,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(paths)
@@ -1077,15 +1077,15 @@ fn shadowLocalNamesInElementItem(mut item: Arc<Absyn::ElementItem>, mut paths: A
 fn shadowLocalNamesInElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut paths: Arc<Paths::Paths>) -> Result<Arc<Paths::Paths>> {
     let mut paths: Arc<Paths::Paths> = paths;
     paths = (::match_deref::match_deref! { match &(spec.clone()) {
-        Deref @ Absyn::ElementSpec::CLASSDEF { .. } => shadowLocalName((AbsynUtil::className(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone())?).clone(), paths.clone())?,
+        Deref @ Absyn::ElementSpec::CLASSDEF { .. } => shadowLocalName((AbsynUtil::className(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone())?).clone(), paths)?,
         Deref @ Absyn::ElementSpec::COMPONENTS { .. } => {
             for mut comp in &*var_field!((*spec).components, Absyn::ElementSpec::COMPONENTS).clone() {
                 let mut comp = comp.clone();
                 paths = shadowLocalName((AbsynUtil::componentName(comp.clone())?).clone(), paths.clone())?;
             }
-            paths.clone()
+            paths
         },
-        _ => paths.clone(),
+        _ => paths,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(paths)
@@ -1098,7 +1098,7 @@ fn shadowLocalName(mut name: ArcStr, mut paths: Arc<Paths::Paths>) -> Result<Arc
         entry = PathTree::get(paths.tree.clone(), (name.clone()).clone())?;
         if !(entry.shadowed.clone()) {
             assign_field!(entry.shadowed = true);
-            assign_field!(paths.tree = PathTree::update(paths.tree.clone(), (name.clone()).clone(), entry.clone())?);
+            assign_field!(paths.tree = PathTree::update(paths.tree.clone(), (name).clone(), entry)?);
         }
     }
     Ok(paths)
@@ -1108,7 +1108,7 @@ fn lookupInProgram(mut program: Absyn::Program, mut paths: Arc<Paths::Paths>, mu
     let mut matches: Matches = metamodelica::nil();
     for mut cls in &*program.classes.clone() {
         let mut cls = cls.clone();
-        matches = lookupInClass(cls.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInClass(cls.clone(), paths.clone(), exactMatch, matches.clone())?;
     }
     Ok(matches)
 }
@@ -1117,15 +1117,15 @@ fn lookupInClass(mut cls: Arc<Absyn::Class>, mut paths: Arc<Paths::Paths>, mut e
     let mut matches: Matches = matches;
     let mut relative_path: Arc<metamodelica::List<ArcStr>> = paths.relativePath.clone();
     let mut local_paths: Arc<Paths::Paths>;
-    local_paths = shadowLocalNames(cls.clone(), paths.clone())?;
+    local_paths = shadowLocalNames(cls.clone(), paths)?;
     if !(relative_path.clone().is_empty()) && cls.name.clone() == listHead(relative_path.clone())? {
-        relative_path = listRest(relative_path.clone())?;
+        relative_path = listRest(relative_path)?;
         assign_field!(local_paths.relativePath = relative_path.clone());
         if !(relative_path.clone().is_empty()) {
-            assign_field!(local_paths.tree = addPath(AbsynUtil::stringListPath(relative_path.clone())?, local_paths.tree.clone())?);
+            assign_field!(local_paths.tree = addPath(AbsynUtil::stringListPath(relative_path)?, local_paths.tree.clone())?);
         }
     }
-    matches = lookupInClassDef(cls.body.clone(), (cls.name.clone()).clone(), local_paths.clone(), exactMatch.clone(), cls.info.clone(), matches.clone())?;
+    matches = lookupInClassDef(cls.body.clone(), (cls.name.clone()).clone(), local_paths, exactMatch, cls.info.clone(), matches)?;
     Ok(matches)
 }
 
@@ -1134,51 +1134,51 @@ fn lookupInClassDef(mut cdef: Arc<Absyn::ClassDef>, mut name: ArcStr, mut paths:
     let mut local_paths: Arc<Paths::Paths> = paths.clone();
     matches = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ Absyn::ClassDef::PARTS { .. } => {
-            assign_field!(local_paths.currentPath = metamodelica::cons((name.clone()).clone(), local_paths.currentPath.clone()));
+            assign_field!(local_paths.currentPath = metamodelica::cons((name).clone(), local_paths.currentPath.clone()));
             for mut part in &*var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone() {
                 let mut part = part.clone();
-                matches = lookupInClassPart(part.clone(), local_paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInClassPart(part.clone(), local_paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
             for mut ann in &*var_field!((*cdef).ann, Absyn::ClassDef::PARTS).clone() {
                 let mut ann = ann.clone();
-                matches = lookupInAnnotation(ann.clone(), local_paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInAnnotation(ann.clone(), local_paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassDef::DERIVED { .. } => {
-            matches = lookupInTypeSpec(var_field!((*cdef).typeSpec, Absyn::ClassDef::DERIVED).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInTypeSpec(var_field!((*cdef).typeSpec, Absyn::ClassDef::DERIVED).clone(), paths.clone(), exactMatch, info, matches)?;
             for mut arg in &*var_field!((*cdef).arguments, Absyn::ClassDef::DERIVED).clone() {
                 let mut arg = arg.clone();
-                matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::DERIVED).clone(), paths.clone(), exactMatch.clone(), matches.clone())?
+            lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::DERIVED).clone(), paths, exactMatch, matches)?
         },
         Deref @ Absyn::ClassDef::ENUMERATION { .. } => {
-            matches = lookupInEnumDef(var_field!((*cdef).enumLiterals, Absyn::ClassDef::ENUMERATION).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
-            lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::ENUMERATION).clone(), paths.clone(), exactMatch.clone(), matches.clone())?
+            matches = lookupInEnumDef(var_field!((*cdef).enumLiterals, Absyn::ClassDef::ENUMERATION).clone(), paths.clone(), exactMatch, matches)?;
+            lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::ENUMERATION).clone(), paths, exactMatch, matches)?
         },
-        Deref @ Absyn::ClassDef::OVERLOAD { .. } => lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::OVERLOAD).clone(), paths.clone(), exactMatch.clone(), matches.clone())?,
+        Deref @ Absyn::ClassDef::OVERLOAD { .. } => lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::OVERLOAD).clone(), paths, exactMatch, matches)?,
         Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. } => {
-            assign_field!(local_paths.currentPath = metamodelica::cons((name.clone()).clone(), local_paths.currentPath.clone()));
+            assign_field!(local_paths.currentPath = metamodelica::cons((name).clone(), local_paths.currentPath.clone()));
             for mut arg in &*var_field!((*cdef).modifications, Absyn::ClassDef::CLASS_EXTENDS).clone() {
                 let mut arg = arg.clone();
-                matches = lookupInElementArg(arg.clone(), local_paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInElementArg(arg.clone(), local_paths.clone(), exactMatch, matches.clone())?;
             }
             for mut part in &*var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone() {
                 let mut part = part.clone();
-                matches = lookupInClassPart(part.clone(), local_paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInClassPart(part.clone(), local_paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
             for mut ann in &*var_field!((*cdef).ann, Absyn::ClassDef::CLASS_EXTENDS).clone() {
                 let mut ann = ann.clone();
-                matches = lookupInAnnotation(ann.clone(), local_paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInAnnotation(ann.clone(), local_paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassDef::PDER { .. } => {
-            matches = matchPath(var_field!((*cdef).functionName, Absyn::ClassDef::PDER).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::PDER).clone(), paths.clone(), exactMatch.clone(), matches.clone())?
+            matches = matchPath(var_field!((*cdef).functionName, Absyn::ClassDef::PDER).clone(), paths.clone(), exactMatch, info, matches)?;
+            lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::PDER).clone(), paths, exactMatch, matches)?
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1190,53 +1190,53 @@ fn lookupInClassPart(mut part: Arc<Absyn::ClassPart>, mut paths: Arc<Paths::Path
         Deref @ Absyn::ClassPart::PUBLIC { .. } => {
             for mut e in &*var_field!((*part).contents, Absyn::ClassPart::PUBLIC).clone() {
                 let mut e = e.clone();
-                matches = lookupInElementItem(e.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInElementItem(e.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassPart::PROTECTED { .. } => {
             for mut e in &*var_field!((*part).contents, Absyn::ClassPart::PROTECTED).clone() {
                 let mut e = e.clone();
-                matches = lookupInElementItem(e.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInElementItem(e.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassPart::EQUATIONS { .. } => {
             for mut e in &*var_field!((*part).contents, Absyn::ClassPart::EQUATIONS).clone() {
                 let mut e = e.clone();
-                matches = lookupInEquationItem(e.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInEquationItem(e.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassPart::INITIALEQUATIONS { .. } => {
             for mut e in &*var_field!((*part).contents, Absyn::ClassPart::INITIALEQUATIONS).clone() {
                 let mut e = e.clone();
-                matches = lookupInEquationItem(e.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInEquationItem(e.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassPart::ALGORITHMS { .. } => {
             for mut alg in &*var_field!((*part).contents, Absyn::ClassPart::ALGORITHMS).clone() {
                 let mut alg = alg.clone();
-                matches = lookupInAlgorithmItem(alg.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInAlgorithmItem(alg.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassPart::INITIALALGORITHMS { .. } => {
             for mut alg in &*var_field!((*part).contents, Absyn::ClassPart::INITIALALGORITHMS).clone() {
                 let mut alg = alg.clone();
-                matches = lookupInAlgorithmItem(alg.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInAlgorithmItem(alg.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ClassPart::EXTERNAL { .. } => {
-            matches = lookupInExternalDecl(var_field!((*part).externalDecl, Absyn::ClassPart::EXTERNAL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExternalDecl(var_field!((*part).externalDecl, Absyn::ClassPart::EXTERNAL).clone(), paths.clone(), exactMatch, info, matches)?;
             if isSome(var_field!((*part).annotation_, Absyn::ClassPart::EXTERNAL).clone()) {
-                matches = lookupInAnnotation(Util::getOption(var_field!((*part).annotation_, Absyn::ClassPart::EXTERNAL).clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInAnnotation(Util::getOption(var_field!((*part).annotation_, Absyn::ClassPart::EXTERNAL).clone())?, paths, exactMatch, matches)?;
             }
-            matches.clone()
+            matches
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1248,11 +1248,11 @@ fn lookupInEnumDef(mut enumDef: Arc<Absyn::EnumDef>, mut paths: Arc<Paths::Paths
         Deref @ Absyn::EnumDef::ENUMLITERALS { .. } => {
             for mut lit in &*var_field!((*enumDef).enumLiterals, Absyn::EnumDef::ENUMLITERALS).clone() {
                 let mut lit = lit.clone();
-                matches = lookupInCommentOpt(lit.comment.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInCommentOpt(lit.comment.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches.clone()
+            matches
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1261,7 +1261,7 @@ fn lookupInEnumDef(mut enumDef: Arc<Absyn::EnumDef>, mut paths: Arc<Paths::Paths
 fn lookupInCommentOpt(mut cmt: Option<Arc<Absyn::Comment>>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     if isSome(cmt.clone()) {
-        matches = lookupInComment(Util::getOption(cmt.clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInComment(Util::getOption(cmt)?, paths, exactMatch, matches)?;
     }
     Ok(matches)
 }
@@ -1269,7 +1269,7 @@ fn lookupInCommentOpt(mut cmt: Option<Arc<Absyn::Comment>>, mut paths: Arc<Paths
 fn lookupInComment(mut cmt: Arc<Absyn::Comment>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     if isSome(cmt.annotation_.clone()) {
-        matches = lookupInAnnotation(Util::getOption(cmt.annotation_.clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInAnnotation(Util::getOption(cmt.annotation_.clone())?, paths, exactMatch, matches)?;
     }
     Ok(matches)
 }
@@ -1278,7 +1278,7 @@ fn lookupInAnnotation(mut ann: Arc<Absyn::Annotation>, mut paths: Arc<Paths::Pat
     let mut matches: Matches = matches;
     for mut arg in &*ann.elementArgs.clone() {
         let mut arg = arg.clone();
-        matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch, matches.clone())?;
     }
     Ok(matches)
 }
@@ -1288,18 +1288,18 @@ fn lookupInElementArg(mut arg: Arc<Absyn::ElementArg>, mut paths: Arc<Paths::Pat
     matches = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Absyn::ElementArg::MODIFICATION { .. } => {
             if isSome(var_field!((*arg).modification, Absyn::ElementArg::MODIFICATION).clone()) {
-                matches = lookupInModification(Util::getOption(var_field!((*arg).modification, Absyn::ElementArg::MODIFICATION).clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInModification(Util::getOption(var_field!((*arg).modification, Absyn::ElementArg::MODIFICATION).clone())?, paths, exactMatch, matches)?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ElementArg::REDECLARATION { .. } => {
-            matches = lookupInElementSpec(var_field!((*arg).elementSpec, Absyn::ElementArg::REDECLARATION).clone(), paths.clone(), exactMatch.clone(), var_field!((*arg).info, Absyn::ElementArg::REDECLARATION).clone(), matches.clone())?;
+            matches = lookupInElementSpec(var_field!((*arg).elementSpec, Absyn::ElementArg::REDECLARATION).clone(), paths.clone(), exactMatch, var_field!((*arg).info, Absyn::ElementArg::REDECLARATION).clone(), matches)?;
             if isSome(var_field!((*arg).constrainClass, Absyn::ElementArg::REDECLARATION).clone()) {
-                matches = lookupInConstrainClass(Util::getOption(var_field!((*arg).constrainClass, Absyn::ElementArg::REDECLARATION).clone())?, paths.clone(), exactMatch.clone(), var_field!((*arg).info, Absyn::ElementArg::REDECLARATION).clone(), matches.clone())?;
+                matches = lookupInConstrainClass(Util::getOption(var_field!((*arg).constrainClass, Absyn::ElementArg::REDECLARATION).clone())?, paths, exactMatch, var_field!((*arg).info, Absyn::ElementArg::REDECLARATION).clone(), matches)?;
             }
-            matches.clone()
+            matches
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1309,17 +1309,17 @@ fn lookupInModification(mut r#mod: Arc<Absyn::Modification>, mut paths: Arc<Path
     let mut matches: Matches = matches;
     for mut arg in &*r#mod.elementArgLst.clone() {
         let mut arg = arg.clone();
-        matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch, matches.clone())?;
     }
-    matches = lookupInEqMod(r#mod.eqMod.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+    matches = lookupInEqMod(r#mod.eqMod.clone(), paths, exactMatch, matches)?;
     Ok(matches)
 }
 
 fn lookupInEqMod(mut eqMod: Arc<Absyn::EqMod>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(eqMod.clone()) {
-        Deref @ Absyn::EqMod::EQMOD { .. } => lookupInExp(var_field!((*eqMod).exp, Absyn::EqMod::EQMOD).clone(), paths.clone(), exactMatch.clone(), var_field!((*eqMod).info, Absyn::EqMod::EQMOD).clone(), matches.clone())?,
-        _ => matches.clone(),
+        Deref @ Absyn::EqMod::EQMOD { .. } => lookupInExp(var_field!((*eqMod).exp, Absyn::EqMod::EQMOD).clone(), paths, exactMatch, var_field!((*eqMod).info, Absyn::EqMod::EQMOD).clone(), matches)?,
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1328,73 +1328,73 @@ fn lookupInEqMod(mut eqMod: Arc<Absyn::EqMod>, mut paths: Arc<Paths::Paths>, mut
 fn lookupInExp(mut exp: Arc<Absyn::Exp>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::CREF { .. } => matchCref(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone()),
+        Deref @ Absyn::Exp::CREF { .. } => matchCref(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone(), paths, exactMatch, info, matches),
         Deref @ Absyn::Exp::BINARY { .. } => {
-            matches = lookupInExp(var_field!((*exp).exp1, Absyn::Exp::BINARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            lookupInExp(var_field!((*exp).exp2, Absyn::Exp::BINARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            matches = lookupInExp(var_field!((*exp).exp1, Absyn::Exp::BINARY).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            lookupInExp(var_field!((*exp).exp2, Absyn::Exp::BINARY).clone(), paths, exactMatch, info, matches)?
         },
-        Deref @ Absyn::Exp::UNARY { .. } => lookupInExp(var_field!((*exp).exp, Absyn::Exp::UNARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
+        Deref @ Absyn::Exp::UNARY { .. } => lookupInExp(var_field!((*exp).exp, Absyn::Exp::UNARY).clone(), paths, exactMatch, info, matches)?,
         Deref @ Absyn::Exp::LBINARY { .. } => {
-            matches = lookupInExp(var_field!((*exp).exp1, Absyn::Exp::LBINARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            lookupInExp(var_field!((*exp).exp2, Absyn::Exp::LBINARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            matches = lookupInExp(var_field!((*exp).exp1, Absyn::Exp::LBINARY).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            lookupInExp(var_field!((*exp).exp2, Absyn::Exp::LBINARY).clone(), paths, exactMatch, info, matches)?
         },
-        Deref @ Absyn::Exp::LUNARY { .. } => lookupInExp(var_field!((*exp).exp, Absyn::Exp::LUNARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
+        Deref @ Absyn::Exp::LUNARY { .. } => lookupInExp(var_field!((*exp).exp, Absyn::Exp::LUNARY).clone(), paths, exactMatch, info, matches)?,
         Deref @ Absyn::Exp::IFEXP { .. } => {
-            matches = lookupInExp(var_field!((*exp).ifExp, Absyn::Exp::IFEXP).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInExp(var_field!((*exp).trueBranch, Absyn::Exp::IFEXP).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInExp(var_field!((*exp).elseBranch, Absyn::Exp::IFEXP).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*exp).ifExp, Absyn::Exp::IFEXP).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInExp(var_field!((*exp).trueBranch, Absyn::Exp::IFEXP).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInExp(var_field!((*exp).elseBranch, Absyn::Exp::IFEXP).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
             for mut branch in &*var_field!((*exp).elseIfBranch, Absyn::Exp::IFEXP).clone() {
                 let mut branch = branch.clone();
-                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-                matches = lookupInExp(Util::tuple22(branch.clone()), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch, info.clone(), matches.clone())?;
+                matches = lookupInExp(Util::tuple22(branch.clone()), paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::Exp::CALL { .. } => {
-            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::CALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone());
-            lookupInFunctionArgs(var_field!((*exp).functionArgs, Absyn::Exp::CALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::CALL).clone(), paths.clone(), exactMatch, info.clone(), matches);
+            lookupInFunctionArgs(var_field!((*exp).functionArgs, Absyn::Exp::CALL).clone(), paths, exactMatch, info, matches)?
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { .. } => {
-            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::PARTEVALFUNCTION).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone());
-            lookupInFunctionArgs(var_field!((*exp).functionArgs, Absyn::Exp::PARTEVALFUNCTION).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::PARTEVALFUNCTION).clone(), paths.clone(), exactMatch, info.clone(), matches);
+            lookupInFunctionArgs(var_field!((*exp).functionArgs, Absyn::Exp::PARTEVALFUNCTION).clone(), paths, exactMatch, info, matches)?
         },
         Deref @ Absyn::Exp::ARRAY { .. } => {
             for mut e in &*var_field!((*exp).arrayExp, Absyn::Exp::ARRAY).clone() {
                 let mut e = e.clone();
-                matches = lookupInExp(e.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInExp(e.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::Exp::MATRIX { .. } => {
             for mut row in &*var_field!((*exp).matrix, Absyn::Exp::MATRIX).clone() {
                 let mut row = row.clone();
                 for mut e in &*row.clone() {
                     let mut e = e.clone();
-                    matches = lookupInExp(e.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                    matches = lookupInExp(e.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
                 }
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::Exp::RANGE { .. } => {
-            matches = lookupInExp(var_field!((*exp).start, Absyn::Exp::RANGE).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*exp).start, Absyn::Exp::RANGE).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
             if isSome(var_field!((*exp).step, Absyn::Exp::RANGE).clone()) {
-                matches = lookupInExp(Util::getOption(var_field!((*exp).step, Absyn::Exp::RANGE).clone())?, paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInExp(Util::getOption(var_field!((*exp).step, Absyn::Exp::RANGE).clone())?, paths.clone(), exactMatch, info.clone(), matches)?;
             }
-            lookupInExp(var_field!((*exp).stop, Absyn::Exp::RANGE).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            lookupInExp(var_field!((*exp).stop, Absyn::Exp::RANGE).clone(), paths, exactMatch, info, matches)?
         },
         Deref @ Absyn::Exp::TUPLE { .. } => {
             for mut e in &*var_field!((*exp).expressions, Absyn::Exp::TUPLE).clone() {
                 let mut e = e.clone();
-                matches = lookupInExp(e.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInExp(e.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
-            matches.clone()
+            matches
         },
-        Deref @ Absyn::Exp::EXPRESSIONCOMMENT { .. } => lookupInExp(var_field!((*exp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
+        Deref @ Absyn::Exp::EXPRESSIONCOMMENT { .. } => lookupInExp(var_field!((*exp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), paths, exactMatch, info, matches)?,
         Deref @ Absyn::Exp::SUBSCRIPTED_EXP { .. } => {
-            matches = lookupInExp(var_field!((*exp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            lookupInSubscripts(var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            matches = lookupInExp(var_field!((*exp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            lookupInSubscripts(var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone(), paths, exactMatch, info, matches)?
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1402,21 +1402,21 @@ fn lookupInExp(mut exp: Arc<Absyn::Exp>, mut paths: Arc<Paths::Paths>, mut exact
 
 fn lookupInCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    matches = matchCref(cref.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone());
-    matches = lookupInCrefSubs(cref.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+    matches = matchCref(cref.clone(), paths.clone(), exactMatch, info.clone(), matches);
+    matches = lookupInCrefSubs(cref, paths, exactMatch, info, matches)?;
     Ok(matches)
 }
 
 fn lookupInCrefSubs(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => lookupInSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => lookupInSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), paths, exactMatch, info, matches)?,
         Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => {
-            matches = lookupInSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            lookupInCrefSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
+            matches = lookupInSubscripts(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            lookupInCrefSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), paths, exactMatch, info, matches)?
         },
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => lookupInCrefSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
-        _ => matches.clone(),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => lookupInCrefSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), paths, exactMatch, info, matches)?,
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1424,9 +1424,9 @@ fn lookupInCrefSubs(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Pa
 
 fn lookupInSubscripts(mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    for mut sub in &*subs.clone() {
+    for mut sub in &*subs {
         let mut sub = sub.clone();
-        matches = lookupInSubscript(sub.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+        matches = lookupInSubscript(sub.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
     }
     Ok(matches)
 }
@@ -1434,8 +1434,8 @@ fn lookupInSubscripts(mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, 
 fn lookupInSubscript(mut sub: Arc<Absyn::Subscript>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ Absyn::Subscript::SUBSCRIPT { .. } => lookupInExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
-        _ => matches.clone(),
+        Deref @ Absyn::Subscript::SUBSCRIPT { .. } => lookupInExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone(), paths, exactMatch, info, matches)?,
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1447,18 +1447,18 @@ fn lookupInFunctionArgs(mut args: Arc<Absyn::FunctionArgs>, mut paths: Arc<Paths
         Deref @ Absyn::FunctionArgs::FUNCTIONARGS { .. } => {
             for mut arg in &*var_field!((*args).args, Absyn::FunctionArgs::FUNCTIONARGS).clone() {
                 let mut arg = arg.clone();
-                matches = lookupInExp(arg.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInExp(arg.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
             for mut named_arg in &*var_field!((*args).argNames, Absyn::FunctionArgs::FUNCTIONARGS).clone() {
                 let mut named_arg = named_arg.clone();
-                matches = lookupInExp(named_arg.argValue.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInExp(named_arg.argValue.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { .. } => {
-            matches = lookupInExp(var_field!((*args).exp, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInForIterators(var_field!((*args).iterators, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches.clone()
+            matches = lookupInExp(var_field!((*args).exp, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInForIterators(var_field!((*args).iterators, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), paths, exactMatch, info, matches)?;
+            matches
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1467,10 +1467,10 @@ fn lookupInFunctionArgs(mut args: Arc<Absyn::FunctionArgs>, mut paths: Arc<Paths
 
 fn lookupInForIterators(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    for mut i in &*iterators.clone() {
+    for mut i in &*iterators {
         let mut i = i.clone();
         if isSome(i.range.clone()) {
-            matches = lookupInExp(Util::getOption(i.range.clone())?, paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExp(Util::getOption(i.range.clone())?, paths.clone(), exactMatch, info.clone(), matches.clone())?;
         }
     }
     Ok(matches)
@@ -1479,8 +1479,8 @@ fn lookupInForIterators(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIter
 fn lookupInElementItem(mut item: Arc<Absyn::ElementItem>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(item.clone()) {
-        Deref @ Absyn::ElementItem::ELEMENTITEM { .. } => lookupInElement(var_field!((*item).element, Absyn::ElementItem::ELEMENTITEM).clone(), paths.clone(), exactMatch.clone(), matches.clone())?,
-        _ => matches.clone(),
+        Deref @ Absyn::ElementItem::ELEMENTITEM { .. } => lookupInElement(var_field!((*item).element, Absyn::ElementItem::ELEMENTITEM).clone(), paths, exactMatch, matches)?,
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1490,13 +1490,13 @@ fn lookupInElement(mut element: Arc<Absyn::Element>, mut paths: Arc<Paths::Paths
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ Absyn::Element::ELEMENT { .. } => {
-            matches = lookupInElementSpec(var_field!((*element).specification, Absyn::Element::ELEMENT).clone(), paths.clone(), exactMatch.clone(), var_field!((*element).info, Absyn::Element::ELEMENT).clone(), matches.clone())?;
+            matches = lookupInElementSpec(var_field!((*element).specification, Absyn::Element::ELEMENT).clone(), paths.clone(), exactMatch, var_field!((*element).info, Absyn::Element::ELEMENT).clone(), matches)?;
             if isSome(var_field!((*element).constrainClass, Absyn::Element::ELEMENT).clone()) {
-                matches = lookupInConstrainClass(Util::getOption(var_field!((*element).constrainClass, Absyn::Element::ELEMENT).clone())?, paths.clone(), exactMatch.clone(), var_field!((*element).info, Absyn::Element::ELEMENT).clone(), matches.clone())?;
+                matches = lookupInConstrainClass(Util::getOption(var_field!((*element).constrainClass, Absyn::Element::ELEMENT).clone())?, paths, exactMatch, var_field!((*element).info, Absyn::Element::ELEMENT).clone(), matches)?;
             }
-            matches.clone()
+            matches
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1505,29 +1505,29 @@ fn lookupInElement(mut element: Arc<Absyn::Element>, mut paths: Arc<Paths::Paths
 fn lookupInElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(spec.clone()) {
-        Deref @ Absyn::ElementSpec::CLASSDEF { .. } => lookupInClass(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone(), paths.clone(), exactMatch.clone(), matches.clone())?,
+        Deref @ Absyn::ElementSpec::CLASSDEF { .. } => lookupInClass(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone(), paths, exactMatch, matches)?,
         Deref @ Absyn::ElementSpec::EXTENDS { .. } => {
-            matches = matchPath(var_field!((*spec).path, Absyn::ElementSpec::EXTENDS).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = matchPath(var_field!((*spec).path, Absyn::ElementSpec::EXTENDS).clone(), paths.clone(), exactMatch, info, matches)?;
             for mut arg in &*var_field!((*spec).elementArg, Absyn::ElementSpec::EXTENDS).clone() {
                 let mut arg = arg.clone();
-                matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInElementArg(arg.clone(), paths.clone(), exactMatch, matches.clone())?;
             }
             if isSome(var_field!((*spec).annotationOpt, Absyn::ElementSpec::EXTENDS).clone()) {
-                matches = lookupInAnnotation(Util::getOption(var_field!((*spec).annotationOpt, Absyn::ElementSpec::EXTENDS).clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInAnnotation(Util::getOption(var_field!((*spec).annotationOpt, Absyn::ElementSpec::EXTENDS).clone())?, paths, exactMatch, matches)?;
             }
-            matches.clone()
+            matches
         },
         Deref @ Absyn::ElementSpec::IMPORT { .. } => {
-            matches = lookupInImport(var_field!((*spec).import_, Absyn::ElementSpec::IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches.clone()
+            matches = lookupInImport(var_field!((*spec).import_, Absyn::ElementSpec::IMPORT).clone(), paths, exactMatch, info, matches)?;
+            matches
         },
         Deref @ Absyn::ElementSpec::COMPONENTS { .. } => {
-            matches = lookupInTypeSpec(var_field!((*spec).typeSpec, Absyn::ElementSpec::COMPONENTS).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInTypeSpec(var_field!((*spec).typeSpec, Absyn::ElementSpec::COMPONENTS).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
             for mut c in &*var_field!((*spec).components, Absyn::ElementSpec::COMPONENTS).clone() {
                 let mut c = c.clone();
-                matches = lookupInComponentItem(c.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInComponentItem(c.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
             }
-            matches.clone()
+            matches
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1536,35 +1536,35 @@ fn lookupInElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut paths: Arc<Paths::
 
 fn lookupInConstrainClass(mut constrainClass: Arc<Absyn::ConstrainClass>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    matches = lookupInElementSpec(constrainClass.elementSpec.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+    matches = lookupInElementSpec(constrainClass.elementSpec.clone(), paths, exactMatch, info, matches)?;
     Ok(matches)
 }
 
 fn lookupInImport(mut imp: Absyn::Import, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (match imp.clone() {
-        Absyn::Import::NAMED_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::NAMED_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
-        Absyn::Import::QUAL_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::QUAL_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
-        Absyn::Import::UNQUAL_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::UNQUAL_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
-        Absyn::Import::GROUP_IMPORT { .. } => matchPath(var_field!(imp.prefix, Absyn::Import::GROUP_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
+        Absyn::Import::NAMED_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::NAMED_IMPORT).clone(), paths, exactMatch, info, matches)?,
+        Absyn::Import::QUAL_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::QUAL_IMPORT).clone(), paths, exactMatch, info, matches)?,
+        Absyn::Import::UNQUAL_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::UNQUAL_IMPORT).clone(), paths, exactMatch, info, matches)?,
+        Absyn::Import::GROUP_IMPORT { .. } => matchPath(var_field!(imp.prefix, Absyn::Import::GROUP_IMPORT).clone(), paths, exactMatch, info, matches)?,
     });
     Ok(matches)
 }
 
 fn lookupInComponentItem(mut item: Arc<Absyn::ComponentItem>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    matches = lookupInComponent(item.component.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+    matches = lookupInComponent(item.component.clone(), paths.clone(), exactMatch, info.clone(), matches)?;
     if isSome(item.condition.clone()) {
-        matches = lookupInExp(Util::getOption(item.condition.clone())?, paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+        matches = lookupInExp(Util::getOption(item.condition.clone())?, paths, exactMatch, info, matches)?;
     }
     Ok(matches)
 }
 
 fn lookupInComponent(mut component: Absyn::Component, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    matches = lookupInSubscripts(component.arrayDim.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+    matches = lookupInSubscripts(component.arrayDim.clone(), paths.clone(), exactMatch, info, matches)?;
     if isSome(component.modification.clone()) {
-        matches = lookupInModification(Util::getOption(component.modification.clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInModification(Util::getOption(component.modification.clone())?, paths, exactMatch, matches)?;
     }
     Ok(matches)
 }
@@ -1573,13 +1573,13 @@ fn lookupInTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>, mut paths: Arc<Paths::Pa
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(typeSpec.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { .. } => {
-            matches = matchPath(var_field!((*typeSpec).path, Absyn::TypeSpec::TPATH).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = matchPath(var_field!((*typeSpec).path, Absyn::TypeSpec::TPATH).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
             if isSome(var_field!((*typeSpec).arrayDim, Absyn::TypeSpec::TPATH).clone()) {
-                matches = lookupInSubscripts(Util::getOption(var_field!((*typeSpec).arrayDim, Absyn::TypeSpec::TPATH).clone())?, paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+                matches = lookupInSubscripts(Util::getOption(var_field!((*typeSpec).arrayDim, Absyn::TypeSpec::TPATH).clone())?, paths, exactMatch, info, matches)?;
             }
-            matches.clone()
+            matches
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1587,9 +1587,9 @@ fn lookupInTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>, mut paths: Arc<Paths::Pa
 
 fn lookupInEquationItems(mut items: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    for mut item in &*items.clone() {
+    for mut item in &*items {
         let mut item = item.clone();
-        matches = lookupInEquationItem(item.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInEquationItem(item.clone(), paths.clone(), exactMatch, matches.clone())?;
     }
     Ok(matches)
 }
@@ -1598,10 +1598,10 @@ fn lookupInEquationItem(mut item: Arc<Absyn::EquationItem>, mut paths: Arc<Paths
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(item.clone()) {
         Deref @ Absyn::EquationItem::EQUATIONITEM { .. } => {
-            matches = lookupInEquation(var_field!((*item).equation_, Absyn::EquationItem::EQUATIONITEM).clone(), paths.clone(), exactMatch.clone(), var_field!((*item).info, Absyn::EquationItem::EQUATIONITEM).clone(), matches.clone())?;
-            lookupInCommentOpt(var_field!((*item).comment, Absyn::EquationItem::EQUATIONITEM).clone(), paths.clone(), exactMatch.clone(), matches.clone())?
+            matches = lookupInEquation(var_field!((*item).equation_, Absyn::EquationItem::EQUATIONITEM).clone(), paths.clone(), exactMatch, var_field!((*item).info, Absyn::EquationItem::EQUATIONITEM).clone(), matches)?;
+            lookupInCommentOpt(var_field!((*item).comment, Absyn::EquationItem::EQUATIONITEM).clone(), paths, exactMatch, matches)?
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1611,49 +1611,49 @@ fn lookupInEquation(mut eq: Arc<Absyn::Equation>, mut paths: Arc<Paths::Paths>, 
     let mut matches: Matches = matches;
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Absyn::Equation::EQ_IF { .. } => {
-            matches = lookupInExp(var_field!((*eq).ifExp, Absyn::Equation::EQ_IF).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInEquationItems(var_field!((*eq).equationTrueItems, Absyn::Equation::EQ_IF).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*eq).ifExp, Absyn::Equation::EQ_IF).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInEquationItems(var_field!((*eq).equationTrueItems, Absyn::Equation::EQ_IF).clone(), paths.clone(), exactMatch, matches)?;
             for mut branch in &*var_field!((*eq).elseIfBranches, Absyn::Equation::EQ_IF).clone() {
                 let mut branch = branch.clone();
-                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-                matches = lookupInEquationItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch, info.clone(), matches.clone())?;
+                matches = lookupInEquationItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches = lookupInEquationItems(var_field!((*eq).equationElseItems, Absyn::Equation::EQ_IF).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInEquationItems(var_field!((*eq).equationElseItems, Absyn::Equation::EQ_IF).clone(), paths, exactMatch, matches)?;
             ()
         },
         Deref @ Absyn::Equation::EQ_EQUALS { .. } => {
-            matches = lookupInExp(var_field!((*eq).leftSide, Absyn::Equation::EQ_EQUALS).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInExp(var_field!((*eq).rightSide, Absyn::Equation::EQ_EQUALS).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*eq).leftSide, Absyn::Equation::EQ_EQUALS).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInExp(var_field!((*eq).rightSide, Absyn::Equation::EQ_EQUALS).clone(), paths, exactMatch, info, matches)?;
             ()
         },
         Deref @ Absyn::Equation::EQ_PDE { .. } => {
-            matches = lookupInExp(var_field!((*eq).leftSide, Absyn::Equation::EQ_PDE).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInExp(var_field!((*eq).rightSide, Absyn::Equation::EQ_PDE).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*eq).leftSide, Absyn::Equation::EQ_PDE).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInExp(var_field!((*eq).rightSide, Absyn::Equation::EQ_PDE).clone(), paths, exactMatch, info, matches)?;
             ()
         },
         Deref @ Absyn::Equation::EQ_CONNECT { .. } => {
-            matches = lookupInCref(var_field!((*eq).connector1, Absyn::Equation::EQ_CONNECT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInCref(var_field!((*eq).connector2, Absyn::Equation::EQ_CONNECT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInCref(var_field!((*eq).connector1, Absyn::Equation::EQ_CONNECT).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInCref(var_field!((*eq).connector2, Absyn::Equation::EQ_CONNECT).clone(), paths, exactMatch, info, matches)?;
             ()
         },
         Deref @ Absyn::Equation::EQ_FOR { .. } => {
-            matches = lookupInForIterators(var_field!((*eq).iterators, Absyn::Equation::EQ_FOR).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInEquationItems(var_field!((*eq).forEquations, Absyn::Equation::EQ_FOR).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInForIterators(var_field!((*eq).iterators, Absyn::Equation::EQ_FOR).clone(), paths.clone(), exactMatch, info, matches)?;
+            matches = lookupInEquationItems(var_field!((*eq).forEquations, Absyn::Equation::EQ_FOR).clone(), paths, exactMatch, matches)?;
             ()
         },
         Deref @ Absyn::Equation::EQ_WHEN_E { .. } => {
-            matches = lookupInExp(var_field!((*eq).whenExp, Absyn::Equation::EQ_WHEN_E).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInEquationItems(var_field!((*eq).whenEquations, Absyn::Equation::EQ_WHEN_E).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*eq).whenExp, Absyn::Equation::EQ_WHEN_E).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInEquationItems(var_field!((*eq).whenEquations, Absyn::Equation::EQ_WHEN_E).clone(), paths.clone(), exactMatch, matches)?;
             for mut branch in &*var_field!((*eq).elseWhenEquations, Absyn::Equation::EQ_WHEN_E).clone() {
                 let mut branch = branch.clone();
-                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-                matches = lookupInEquationItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch, info.clone(), matches.clone())?;
+                matches = lookupInEquationItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch, matches.clone())?;
             }
             ()
         },
         Deref @ Absyn::Equation::EQ_NORETCALL { .. } => {
-            matches = lookupInCref(var_field!((*eq).functionName, Absyn::Equation::EQ_NORETCALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInFunctionArgs(var_field!((*eq).functionArgs, Absyn::Equation::EQ_NORETCALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInCref(var_field!((*eq).functionName, Absyn::Equation::EQ_NORETCALL).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInFunctionArgs(var_field!((*eq).functionArgs, Absyn::Equation::EQ_NORETCALL).clone(), paths, exactMatch, info, matches)?;
             ()
         },
         _ => (),
@@ -1664,9 +1664,9 @@ fn lookupInEquation(mut eq: Arc<Absyn::Equation>, mut paths: Arc<Paths::Paths>, 
 
 fn lookupInAlgorithmItems(mut items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    for mut item in &*items.clone() {
+    for mut item in &*items {
         let mut item = item.clone();
-        matches = lookupInAlgorithmItem(item.clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInAlgorithmItem(item.clone(), paths.clone(), exactMatch, matches.clone())?;
     }
     Ok(matches)
 }
@@ -1675,11 +1675,11 @@ fn lookupInAlgorithmItem(mut item: Arc<Absyn::AlgorithmItem>, mut paths: Arc<Pat
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(item.clone()) {
         Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { .. } => {
-            matches = lookupInAlgorithm(var_field!((*item).algorithm_, Absyn::AlgorithmItem::ALGORITHMITEM).clone(), paths.clone(), exactMatch.clone(), var_field!((*item).info, Absyn::AlgorithmItem::ALGORITHMITEM).clone(), matches.clone())?;
-            matches = lookupInCommentOpt(var_field!((*item).comment, Absyn::AlgorithmItem::ALGORITHMITEM).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
-            matches.clone()
+            matches = lookupInAlgorithm(var_field!((*item).algorithm_, Absyn::AlgorithmItem::ALGORITHMITEM).clone(), paths.clone(), exactMatch, var_field!((*item).info, Absyn::AlgorithmItem::ALGORITHMITEM).clone(), matches)?;
+            matches = lookupInCommentOpt(var_field!((*item).comment, Absyn::AlgorithmItem::ALGORITHMITEM).clone(), paths, exactMatch, matches)?;
+            matches
         },
-        _ => matches.clone(),
+        _ => matches,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
@@ -1689,49 +1689,49 @@ fn lookupInAlgorithm(mut alg: Arc<Absyn::Algorithm>, mut paths: Arc<Paths::Paths
     let mut matches: Matches = matches;
     let () = (::match_deref::match_deref! { match &(alg.clone()) {
         Deref @ Absyn::Algorithm::ALG_ASSIGN { .. } => {
-            matches = lookupInExp(var_field!((*alg).assignComponent, Absyn::Algorithm::ALG_ASSIGN).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInExp(var_field!((*alg).value, Absyn::Algorithm::ALG_ASSIGN).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*alg).assignComponent, Absyn::Algorithm::ALG_ASSIGN).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInExp(var_field!((*alg).value, Absyn::Algorithm::ALG_ASSIGN).clone(), paths, exactMatch, info, matches)?;
             ()
         },
         Deref @ Absyn::Algorithm::ALG_IF { .. } => {
-            matches = lookupInExp(var_field!((*alg).ifExp, Absyn::Algorithm::ALG_IF).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInAlgorithmItems(var_field!((*alg).trueBranch, Absyn::Algorithm::ALG_IF).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*alg).ifExp, Absyn::Algorithm::ALG_IF).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInAlgorithmItems(var_field!((*alg).trueBranch, Absyn::Algorithm::ALG_IF).clone(), paths.clone(), exactMatch, matches)?;
             for mut branch in &*var_field!((*alg).elseIfAlgorithmBranch, Absyn::Algorithm::ALG_IF).clone() {
                 let mut branch = branch.clone();
-                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-                matches = lookupInAlgorithmItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch, info.clone(), matches.clone())?;
+                matches = lookupInAlgorithmItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch, matches.clone())?;
             }
-            matches = lookupInAlgorithmItems(var_field!((*alg).elseBranch, Absyn::Algorithm::ALG_IF).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInAlgorithmItems(var_field!((*alg).elseBranch, Absyn::Algorithm::ALG_IF).clone(), paths, exactMatch, matches)?;
             ()
         },
         Deref @ Absyn::Algorithm::ALG_FOR { .. } => {
-            matches = lookupInForIterators(var_field!((*alg).iterators, Absyn::Algorithm::ALG_FOR).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInAlgorithmItems(var_field!((*alg).forBody, Absyn::Algorithm::ALG_FOR).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInForIterators(var_field!((*alg).iterators, Absyn::Algorithm::ALG_FOR).clone(), paths.clone(), exactMatch, info, matches)?;
+            matches = lookupInAlgorithmItems(var_field!((*alg).forBody, Absyn::Algorithm::ALG_FOR).clone(), paths, exactMatch, matches)?;
             ()
         },
         Deref @ Absyn::Algorithm::ALG_PARFOR { .. } => {
-            matches = lookupInForIterators(var_field!((*alg).iterators, Absyn::Algorithm::ALG_PARFOR).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInAlgorithmItems(var_field!((*alg).parforBody, Absyn::Algorithm::ALG_PARFOR).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInForIterators(var_field!((*alg).iterators, Absyn::Algorithm::ALG_PARFOR).clone(), paths.clone(), exactMatch, info, matches)?;
+            matches = lookupInAlgorithmItems(var_field!((*alg).parforBody, Absyn::Algorithm::ALG_PARFOR).clone(), paths, exactMatch, matches)?;
             ()
         },
         Deref @ Absyn::Algorithm::ALG_WHILE { .. } => {
-            matches = lookupInExp(var_field!((*alg).boolExpr, Absyn::Algorithm::ALG_WHILE).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInAlgorithmItems(var_field!((*alg).whileBody, Absyn::Algorithm::ALG_WHILE).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*alg).boolExpr, Absyn::Algorithm::ALG_WHILE).clone(), paths.clone(), exactMatch, info, matches)?;
+            matches = lookupInAlgorithmItems(var_field!((*alg).whileBody, Absyn::Algorithm::ALG_WHILE).clone(), paths, exactMatch, matches)?;
             ()
         },
         Deref @ Absyn::Algorithm::ALG_WHEN_A { .. } => {
-            matches = lookupInExp(var_field!((*alg).boolExpr, Absyn::Algorithm::ALG_WHEN_A).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInAlgorithmItems(var_field!((*alg).whenBody, Absyn::Algorithm::ALG_WHEN_A).clone(), paths.clone(), exactMatch.clone(), matches.clone())?;
+            matches = lookupInExp(var_field!((*alg).boolExpr, Absyn::Algorithm::ALG_WHEN_A).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInAlgorithmItems(var_field!((*alg).whenBody, Absyn::Algorithm::ALG_WHEN_A).clone(), paths.clone(), exactMatch, matches)?;
             for mut branch in &*var_field!((*alg).elseWhenAlgorithmBranch, Absyn::Algorithm::ALG_WHEN_A).clone() {
                 let mut branch = branch.clone();
-                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-                matches = lookupInAlgorithmItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch.clone(), matches.clone())?;
+                matches = lookupInExp(Util::tuple21(branch.clone()), paths.clone(), exactMatch, info.clone(), matches.clone())?;
+                matches = lookupInAlgorithmItems(Util::tuple22(branch.clone()), paths.clone(), exactMatch, matches.clone())?;
             }
             ()
         },
         Deref @ Absyn::Algorithm::ALG_NORETCALL { .. } => {
-            matches = lookupInCref(var_field!((*alg).functionCall, Absyn::Algorithm::ALG_NORETCALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
-            matches = lookupInFunctionArgs(var_field!((*alg).functionArgs, Absyn::Algorithm::ALG_NORETCALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = lookupInCref(var_field!((*alg).functionCall, Absyn::Algorithm::ALG_NORETCALL).clone(), paths.clone(), exactMatch, info.clone(), matches)?;
+            matches = lookupInFunctionArgs(var_field!((*alg).functionArgs, Absyn::Algorithm::ALG_NORETCALL).clone(), paths, exactMatch, info, matches)?;
             ()
         },
         _ => (),
@@ -1744,10 +1744,10 @@ fn lookupInExternalDecl(mut extDecl: Arc<Absyn::ExternalDecl>, mut paths: Arc<Pa
     let mut matches: Matches = matches;
     for mut arg in &*extDecl.args.clone() {
         let mut arg = arg.clone();
-        matches = lookupInExp(arg.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+        matches = lookupInExp(arg.clone(), paths.clone(), exactMatch, info.clone(), matches.clone())?;
     }
     if isSome(extDecl.annotation_.clone()) {
-        matches = lookupInAnnotation(Util::getOption(extDecl.annotation_.clone())?, paths.clone(), exactMatch.clone(), matches.clone())?;
+        matches = lookupInAnnotation(Util::getOption(extDecl.annotation_.clone())?, paths, exactMatch, matches)?;
     }
     Ok(matches)
 }
@@ -1759,7 +1759,7 @@ fn serializeMatches(mut groupedMatches: Arc<metamodelica::List<Arc<metamodelica:
     let mut json_group: Arc<JSON::JSON>;
     let mut json_elem: Arc<JSON::JSON>;
     let mut first_match: Match;
-    for mut group in &*groupedMatches.clone() {
+    for mut group in &*groupedMatches {
         let mut group = group.clone();
         first_match = listHead(group.clone())?;
         json_group = JSON::addPair((literal!("filename")).clone(), JSON::makeString(first_match.info.fileName.clone()), JSON::emptyListObject())?;
@@ -1774,7 +1774,7 @@ fn serializeMatches(mut groupedMatches: Arc<metamodelica::List<Arc<metamodelica:
         json_group = JSON::addPair((literal!("matches")).clone(), JSON::makeArray(json_elems.clone()), json_group.clone())?;
         json_groups = metamodelica::cons(json_group.clone(), json_groups.clone());
     }
-    r#str = (JSON::toString(JSON::makeArray(json_groups.clone()), prettyPrint.clone())?).clone();
+    r#str = (JSON::toString(JSON::makeArray(json_groups), prettyPrint)?).clone();
     Ok(r#str)
 }
 
@@ -1782,14 +1782,14 @@ fn groupMatches(mut matches: Matches) -> Result<Arc<metamodelica::List<Arc<metam
     fn add_match(mut oldMatches: Option<Arc<metamodelica::List<Match>>>, mut newMatch: Match) -> Result<Matches> {
         let mut outMatches: Matches;
         if isSome(oldMatches.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(oldMatches.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(oldMatches) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             outMatches = __pa0.clone();
-            outMatches = metamodelica::cons(newMatch.clone(), outMatches.clone());
+            outMatches = metamodelica::cons(newMatch, outMatches);
         } else {
-            outMatches = list![newMatch.clone()];
+            outMatches = list![newMatch];
         }
         Ok(outMatches)
     }
@@ -1804,7 +1804,7 @@ fn groupMatches(mut matches: Matches) -> Result<Arc<metamodelica::List<Arc<metam
     outMatches = UnorderedMap::valueList(grouped_matches.clone());
     outMatches = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for mut l in (outMatches.clone()).into_iter().cloned() {
+        for mut l in (outMatches).into_iter().cloned() {
             let __x = metamodelica::Dangerous::listReverseInPlace(l.clone());
             __acc = cons(__x, __acc);
         }

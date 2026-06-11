@@ -251,13 +251,13 @@ impl metamodelica::gc::MMTrace for Source {
 
 pub(crate) fn fromAbsyn(mut bindingExp: Option<Arc<Absyn::Exp>>, mut eachPrefix: bool, mut fromType: bool, mut scope: Arc<InstNode::InstNode>, mut instanceLevel: i32, mut info: SourceInfo) -> Arc<NFBinding> {
     let mut binding: Arc<NFBinding>;
-    binding = (::match_deref::match_deref! { match &(bindingExp.clone()) {
+    binding = (::match_deref::match_deref! { match &(bindingExp) {
         Some(exp) => {
             let mut each_ty: EachType;
             let mut source: Source;
-            each_ty = if (eachPrefix.clone()) {EachType::EACH.clone()} else {EachType::NOT_EACH.clone()};
-            source = if (fromType.clone()) {Source::TYPE.clone()} else {Source::BINDING.clone()};
-            Arc::new(NFBinding::RAW_BINDING { bindingExp: exp.clone(), scope: scope.clone(), subs: metamodelica::nil(), eachType: each_ty.clone(), source: source.clone(), confidence: instanceLevel.clone(), info: info.clone() })
+            each_ty = if (eachPrefix) {EachType::EACH.clone()} else {EachType::NOT_EACH.clone()};
+            source = if (fromType) {Source::TYPE.clone()} else {Source::BINDING.clone()};
+            Arc::new(NFBinding::RAW_BINDING { bindingExp: exp.clone(), scope: scope, subs: metamodelica::nil(), eachType: each_ty.clone(), source: source.clone(), confidence: instanceLevel, info: info })
         },
         _ => {
             EMPTY_BINDING().clone()
@@ -269,7 +269,7 @@ pub(crate) fn fromAbsyn(mut bindingExp: Option<Arc<Absyn::Exp>>, mut eachPrefix:
 
 pub fn isBound(mut binding: Arc<NFBinding>) -> bool {
     let mut isBound: bool;
-    isBound = (::match_deref::match_deref! { match &(binding.clone()) {
+    isBound = (::match_deref::match_deref! { match &(binding) {
         Deref @ UNBOUND { .. } => false,
         Deref @ INVALID_BINDING { .. } => false,
         _ => true,
@@ -280,7 +280,7 @@ pub fn isBound(mut binding: Arc<NFBinding>) -> bool {
 
 pub fn isExplicitlyBound(mut binding: Arc<NFBinding>) -> bool {
     let mut isBound: bool;
-    isBound = (::match_deref::match_deref! { match &(binding.clone()) {
+    isBound = (::match_deref::match_deref! { match &(binding) {
         Deref @ UNBOUND { .. } => false,
         Deref @ CEVAL_BINDING { .. } => false,
         Deref @ INVALID_BINDING { .. } => false,
@@ -292,7 +292,7 @@ pub fn isExplicitlyBound(mut binding: Arc<NFBinding>) -> bool {
 
 pub(crate) fn isUnbound(mut binding: Arc<NFBinding>) -> bool {
     let mut isUnbound: bool;
-    isUnbound = (::match_deref::match_deref! { match &(binding.clone()) {
+    isUnbound = (::match_deref::match_deref! { match &(binding) {
         Deref @ UNBOUND { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -302,7 +302,7 @@ pub(crate) fn isUnbound(mut binding: Arc<NFBinding>) -> bool {
 
 pub(crate) fn isInvalid(mut binding: Arc<NFBinding>) -> bool {
     let mut isInvalid: bool;
-    isInvalid = (::match_deref::match_deref! { match &(binding.clone()) {
+    isInvalid = (::match_deref::match_deref! { match &(binding) {
         Deref @ INVALID_BINDING { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -323,7 +323,7 @@ pub fn typedExp(mut binding: Arc<NFBinding>) -> Option<Arc<Expression::NFExpress
 
 pub(crate) fn getUntypedExp(mut binding: Arc<NFBinding>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
-    let __pa0 = ::match_deref::match_deref! { match &(binding.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(binding) {
         Deref @ UNTYPED_BINDING { bindingExp: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -345,11 +345,11 @@ pub(crate) fn setTypedExp(mut exp: Arc<Expression::NFExpression>, mut binding: A
     let mut binding: Arc<NFBinding> = binding;
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ TYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = exp.clone());
+            assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = exp);
             ()
         },
         Deref @ FLAT_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = exp.clone());
+            assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = exp);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -359,7 +359,7 @@ pub(crate) fn setTypedExp(mut exp: Arc<Expression::NFExpression>, mut binding: A
 
 pub(crate) fn hasExp(mut binding: Arc<NFBinding>) -> bool {
     let mut hasExp: bool;
-    hasExp = (::match_deref::match_deref! { match &(binding.clone()) {
+    hasExp = (::match_deref::match_deref! { match &(binding) {
         Deref @ UNTYPED_BINDING { .. } => true,
         Deref @ TYPED_BINDING { .. } => true,
         Deref @ FLAT_BINDING { .. } => true,
@@ -396,15 +396,15 @@ pub fn setExp(mut exp: Arc<Expression::NFExpression>, mut binding: Arc<NFBinding
     let mut binding: Arc<NFBinding> = binding;
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNTYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = exp.clone());
+            assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = exp);
             ()
         },
         Deref @ TYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = exp.clone());
+            assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = exp);
             ()
         },
         Deref @ FLAT_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = exp.clone());
+            assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = exp);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -441,24 +441,24 @@ pub(crate) fn recordFieldBinding(mut fieldNode: Arc<InstNode::InstNode>, mut rec
     let mut field_name: ArcStr = InstNode::name(fieldNode.clone())?;
     fieldBinding = (::match_deref::match_deref! { match &(fieldBinding.clone()) {
         Deref @ UNTYPED_BINDING { .. } => {
-            assign_variant_field!(fieldBinding => NFBinding::UNTYPED_BINDING; bindingExp = Expression::recordElement((field_name.clone()).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?);
-            fieldBinding.clone()
+            assign_variant_field!(fieldBinding => NFBinding::UNTYPED_BINDING; bindingExp = Expression::recordElement((field_name).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?);
+            fieldBinding
         },
         Deref @ TYPED_BINDING { .. } => {
-            exp = Expression::recordElement((field_name.clone()).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::TYPED_BINDING).clone())?;
+            exp = Expression::recordElement((field_name).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::TYPED_BINDING).clone())?;
             ty = Expression::typeOf(exp.clone());
             purity = Expression::purity(exp.clone())?;
             var = Expression::variability(exp.clone())?;
-            Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: ty.clone(), variability: var.clone(), purity: purity.clone(), eachType: var_field!((*fieldBinding).eachType, NFBinding::TYPED_BINDING).clone(), evalState: var_field!((*fieldBinding).evalState, NFBinding::TYPED_BINDING).clone(), isFlattened: var_field!((*fieldBinding).isFlattened, NFBinding::TYPED_BINDING).clone(), source: var_field!((*fieldBinding).source, NFBinding::TYPED_BINDING).clone(), confidence: var_field!((*fieldBinding).confidence, NFBinding::TYPED_BINDING).clone(), info: var_field!((*fieldBinding).info, NFBinding::TYPED_BINDING).clone() })
+            Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp, bindingType: ty, variability: var, purity: purity, eachType: var_field!((*fieldBinding).eachType, NFBinding::TYPED_BINDING).clone(), evalState: var_field!((*fieldBinding).evalState, NFBinding::TYPED_BINDING).clone(), isFlattened: var_field!((*fieldBinding).isFlattened, NFBinding::TYPED_BINDING).clone(), source: var_field!((*fieldBinding).source, NFBinding::TYPED_BINDING).clone(), confidence: var_field!((*fieldBinding).confidence, NFBinding::TYPED_BINDING).clone(), info: var_field!((*fieldBinding).info, NFBinding::TYPED_BINDING).clone() })
         },
         Deref @ FLAT_BINDING { .. } => {
-            exp = Expression::recordElement((field_name.clone()).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::FLAT_BINDING).clone())?;
+            exp = Expression::recordElement((field_name).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::FLAT_BINDING).clone())?;
             var = Expression::variability(exp.clone())?;
-            Arc::new(NFBinding::FLAT_BINDING { bindingExp: exp.clone(), variability: var.clone(), source: var_field!((*fieldBinding).source, NFBinding::FLAT_BINDING).clone(), confidence: var_field!((*fieldBinding).confidence, NFBinding::FLAT_BINDING).clone() })
+            Arc::new(NFBinding::FLAT_BINDING { bindingExp: exp, variability: var, source: var_field!((*fieldBinding).source, NFBinding::FLAT_BINDING).clone(), confidence: var_field!((*fieldBinding).confidence, NFBinding::FLAT_BINDING).clone() })
         },
         Deref @ CEVAL_BINDING { .. } => {
-            assign_variant_field!(fieldBinding => NFBinding::CEVAL_BINDING; bindingExp = Expression::recordElement((field_name.clone()).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::CEVAL_BINDING).clone())?);
-            fieldBinding.clone()
+            assign_variant_field!(fieldBinding => NFBinding::CEVAL_BINDING; bindingExp = Expression::recordElement((field_name).clone(), var_field!((*fieldBinding).bindingExp, NFBinding::CEVAL_BINDING).clone())?);
+            fieldBinding
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -483,11 +483,11 @@ pub(crate) fn setVariability(mut var: Variability, mut binding: Arc<NFBinding>) 
     let mut binding: Arc<NFBinding> = binding;
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ TYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::TYPED_BINDING; variability = var.clone());
+            assign_variant_field!(binding => NFBinding::TYPED_BINDING; variability = var);
             ()
         },
         Deref @ FLAT_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::FLAT_BINDING; variability = var.clone());
+            assign_variant_field!(binding => NFBinding::FLAT_BINDING; variability = var);
             ()
         },
         _ => (),
@@ -547,7 +547,7 @@ pub(crate) fn isEach(mut binding: Arc<NFBinding>) -> bool {
 
 pub(crate) fn isTyped(mut binding: Arc<NFBinding>) -> bool {
     let mut isTyped: bool;
-    isTyped = (::match_deref::match_deref! { match &(binding.clone()) {
+    isTyped = (::match_deref::match_deref! { match &(binding) {
         Deref @ TYPED_BINDING { .. } => true,
         Deref @ FLAT_BINDING { .. } => true,
         _ => false,
@@ -560,12 +560,12 @@ pub fn toString(mut binding: Arc<NFBinding>, mut prefix: ArcStr) -> Result<ArcSt
     '__tco: loop {
         ::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNBOUND { .. } => return Ok(literal!("")),
-        Deref @ RAW_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) }),
-        Deref @ UNTYPED_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?); ArcStr::from(__mm_s) }),
-        Deref @ TYPED_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone())?); ArcStr::from(__mm_s) }),
-        Deref @ FLAT_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone())?); ArcStr::from(__mm_s) }),
-        Deref @ CEVAL_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone())?); ArcStr::from(__mm_s) }),
-        Deref @ INVALID_BINDING { .. } => { (binding, prefix) = (var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), (prefix.clone()).clone()); continue '__tco; },
+        Deref @ RAW_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ UNTYPED_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ TYPED_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ FLAT_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ CEVAL_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ INVALID_BINDING { .. } => { (binding, prefix) = (var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), (prefix).clone()); continue '__tco; },
         _ => return Ok(literal!("")),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -576,24 +576,24 @@ pub(crate) fn toFlatString(mut binding: Arc<NFBinding>, mut format: BaseModelica
     let mut string: ArcStr;
     string = ((::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNBOUND { .. } => literal!(""),
-        Deref @ RAW_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ UNTYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ TYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ FLAT_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ CEVAL_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ INVALID_BINDING { .. } => toFlatString(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), format.clone(), (prefix.clone()).clone())?,
+        Deref @ RAW_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) },
+        Deref @ UNTYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
+        Deref @ TYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
+        Deref @ FLAT_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
+        Deref @ CEVAL_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix); __mm_s.push_str(&*Expression::toFlatString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone(), format.clone())?); ArcStr::from(__mm_s) },
+        Deref @ INVALID_BINDING { .. } => toFlatString(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), format.clone(), (prefix).clone())?,
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     if format.showConfidence.clone() {
-        string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*literal!(" /* confidence = ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", actualConfidence(binding.clone())?))); __mm_s.push_str(&*literal!("*/")); ArcStr::from(__mm_s) }).clone();
+        string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string); __mm_s.push_str(&*literal!(" /* confidence = ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", actualConfidence(binding)?))); __mm_s.push_str(&*literal!("*/")); ArcStr::from(__mm_s) }).clone();
     }
     Ok(string)
 }
 
 pub fn toDebugString(mut binding: Arc<NFBinding>) -> ArcStr {
     let mut string: ArcStr;
-    string = ((::match_deref::match_deref! { match &(binding.clone()) {
+    string = ((::match_deref::match_deref! { match &(binding) {
         Deref @ WILD { .. } => literal!("WILD"),
         Deref @ UNBOUND { .. } => literal!("UNBOUND"),
         Deref @ RAW_BINDING { .. } => literal!("RAW_BINDING"),
@@ -644,7 +644,7 @@ pub(crate) fn toDAE(mut binding: Arc<NFBinding>) -> Result<Arc<DAE::Binding>> {
 
 pub(crate) fn makeDAEBinding(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> Result<Arc<DAE::Binding>> {
     let mut binding: Arc<DAE::Binding>;
-    binding = Arc::new(DAE::Binding::EQBOUND { exp: Expression::toDAE(exp.clone(), false)?, evaluatedExp: None, constant_: NFPrefixes::variabilityToDAEConst(var.clone()), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE });
+    binding = Arc::new(DAE::Binding::EQBOUND { exp: Expression::toDAE(exp, false)?, evaluatedExp: None, constant_: NFPrefixes::variabilityToDAEConst(var), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE });
     Ok(binding)
 }
 
@@ -727,7 +727,7 @@ pub(crate) fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
             e1 = (*__esc_e1).clone();
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -735,7 +735,7 @@ pub(crate) fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
             e1 = (*__esc_e1).clone();
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -743,7 +743,7 @@ pub(crate) fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
             e1 = (*__esc_e1).clone();
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -751,7 +751,7 @@ pub(crate) fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
             e1 = (*__esc_e1).clone();
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -772,7 +772,7 @@ pub(crate) fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::st
             e1 = (*__esc_e1).clone();
             e2 = mapFn(e1.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -780,7 +780,7 @@ pub(crate) fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::st
             e1 = (*__esc_e1).clone();
             e2 = mapFn(e1.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -788,7 +788,7 @@ pub(crate) fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::st
             e1 = (*__esc_e1).clone();
             e2 = mapFn(e1.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -796,7 +796,7 @@ pub(crate) fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::st
             e1 = (*__esc_e1).clone();
             e2 = mapFn(e1.clone())?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2.clone());
+                assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2);
             }
             ()
         },
@@ -811,11 +811,11 @@ pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut bin
 
     let mut arg: ArgT = arg;
     arg = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ UNTYPED_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone(), foldFn.clone(), arg.clone())?,
-        Deref @ TYPED_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), foldFn.clone(), arg.clone())?,
-        Deref @ FLAT_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), foldFn.clone(), arg.clone())?,
-        Deref @ CEVAL_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone(), foldFn.clone(), arg.clone())?,
-        _ => arg.clone(),
+        Deref @ UNTYPED_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone(), foldFn.clone(), arg)?,
+        Deref @ TYPED_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), foldFn.clone(), arg)?,
+        Deref @ FLAT_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), foldFn.clone(), arg)?,
+        Deref @ CEVAL_BINDING { .. } => Expression::fold(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone(), foldFn.clone(), arg)?,
+        _ => arg,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(arg)
@@ -839,27 +839,27 @@ pub(crate) fn containsExp(mut binding: Arc<NFBinding>, mut predFn: Arc<dyn ::std
 pub fn update(mut binding: Arc<NFBinding>, mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFBinding>> {
     let mut binding: Arc<NFBinding> = binding;
     binding = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ WILD { .. } => Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: Expression::typeOf(exp.clone()), variability: Expression::variability(exp.clone())?, purity: Expression::purity(exp.clone())?, eachType: EachType::NOT_EACH.clone(), evalState: if (Expression::isConstNumber(exp.clone())) {Mutable::create(EvalState::EVALUATED.clone())} else {Mutable::create(EvalState::NOT_EVALUATED.clone())}, isFlattened: true, source: Source::BINDING.clone(), confidence: NO_CONFIDENCE.clone(), info: metamodelica::sourceInfo!("NFFrontEnd/NFBinding.mo") }),
-        Deref @ UNBOUND { .. } => Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: Expression::typeOf(exp.clone()), variability: Expression::variability(exp.clone())?, purity: Expression::purity(exp.clone())?, eachType: EachType::NOT_EACH.clone(), evalState: if (Expression::isConstNumber(exp.clone())) {Mutable::create(EvalState::EVALUATED.clone())} else {Mutable::create(EvalState::NOT_EVALUATED.clone())}, isFlattened: true, source: Source::BINDING.clone(), confidence: NO_CONFIDENCE.clone(), info: metamodelica::sourceInfo!("NFFrontEnd/NFBinding.mo") }),
+        Deref @ WILD { .. } => Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: Expression::typeOf(exp.clone()), variability: Expression::variability(exp.clone())?, purity: Expression::purity(exp.clone())?, eachType: EachType::NOT_EACH.clone(), evalState: if (Expression::isConstNumber(exp)) {Mutable::create(EvalState::EVALUATED.clone())} else {Mutable::create(EvalState::NOT_EVALUATED.clone())}, isFlattened: true, source: Source::BINDING.clone(), confidence: NO_CONFIDENCE.clone(), info: metamodelica::sourceInfo!("NFFrontEnd/NFBinding.mo") }),
+        Deref @ UNBOUND { .. } => Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: Expression::typeOf(exp.clone()), variability: Expression::variability(exp.clone())?, purity: Expression::purity(exp.clone())?, eachType: EachType::NOT_EACH.clone(), evalState: if (Expression::isConstNumber(exp)) {Mutable::create(EvalState::EVALUATED.clone())} else {Mutable::create(EvalState::NOT_EVALUATED.clone())}, isFlattened: true, source: Source::BINDING.clone(), confidence: NO_CONFIDENCE.clone(), info: metamodelica::sourceInfo!("NFFrontEnd/NFBinding.mo") }),
         Deref @ UNTYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = exp.clone());
-            binding.clone()
+            assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = exp);
+            binding
         },
         Deref @ TYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = exp.clone());
-            binding.clone()
+            assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = exp);
+            binding
         },
         Deref @ FLAT_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = exp.clone());
-            binding.clone()
+            assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = exp);
+            binding
         },
         Deref @ CEVAL_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = exp.clone());
-            binding.clone()
+            assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = exp);
+            binding
         },
         Deref @ INVALID_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::INVALID_BINDING; binding = update(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), exp.clone())?);
-            binding.clone()
+            assign_variant_field!(binding => NFBinding::INVALID_BINDING; binding = update(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), exp)?);
+            binding
         },
         Deref @ RAW_BINDING { .. } => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBinding.update")); __mm_s.push_str(&*literal!(" failed because a raw binding cannot be updated.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -876,15 +876,15 @@ pub fn update(mut binding: Arc<NFBinding>, mut exp: Arc<Expression::NFExpression
 
 pub(crate) fn setAttr(mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<NFBinding>)>>, mut attr_name: ArcStr, mut attr_value: Arc<NFBinding>) -> Arc<metamodelica::List<(ArcStr, Arc<NFBinding>)>> {
     let mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<NFBinding>)>> = ty_attr;
-    ty_attr = (::match_deref::match_deref! { match &(ty_attr.clone()) {
+    ty_attr = (::match_deref::match_deref! { match &(ty_attr) {
         Deref @ metamodelica::List::Cons { head: (name, _), tail: rest } if (name.clone() == attr_name.clone()) => {
-            metamodelica::cons((attr_name.clone(), attr_value.clone()), rest.clone())
+            metamodelica::cons((attr_name.clone(), attr_value), rest.clone())
         },
         Deref @ metamodelica::List::Cons { head: at, tail: rest } => {
-            metamodelica::cons(at.clone(), setAttr(rest.clone(), (attr_name.clone()).clone(), attr_value.clone()))
+            metamodelica::cons(at.clone(), setAttr(rest.clone(), (attr_name.clone()).clone(), attr_value))
         },
         Deref @ metamodelica::List::Nil => {
-            list![(attr_name.clone(), attr_value.clone())]
+            list![(attr_name.clone(), attr_value)]
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -896,7 +896,7 @@ pub(crate) fn propagate(mut binding: Arc<NFBinding>, mut subs: Arc<metamodelica:
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ RAW_BINDING { .. } => {
             assign_variant_field!(binding => NFBinding::RAW_BINDING;
-                subs = listAppend(var_field!((*binding).subs, NFBinding::RAW_BINDING).clone(), subs.clone()),
+                subs = listAppend(var_field!((*binding).subs, NFBinding::RAW_BINDING).clone(), subs),
                 source = Source::MODIFIER.clone()
             );
             ()
@@ -945,19 +945,19 @@ pub(crate) fn setSource(mut source: Source, mut binding: Arc<NFBinding>) -> Arc<
     let mut binding: Arc<NFBinding> = binding;
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ RAW_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::RAW_BINDING; source = source.clone());
+            assign_variant_field!(binding => NFBinding::RAW_BINDING; source = source);
             ()
         },
         Deref @ UNTYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; source = source.clone());
+            assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; source = source);
             ()
         },
         Deref @ TYPED_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::TYPED_BINDING; source = source.clone());
+            assign_variant_field!(binding => NFBinding::TYPED_BINDING; source = source);
             ()
         },
         Deref @ FLAT_BINDING { .. } => {
-            assign_variant_field!(binding => NFBinding::FLAT_BINDING; source = source.clone());
+            assign_variant_field!(binding => NFBinding::FLAT_BINDING; source = source);
             ()
         },
         _ => (),
@@ -968,19 +968,19 @@ pub(crate) fn setSource(mut source: Source, mut binding: Arc<NFBinding>) -> Arc<
 
 pub(crate) fn makeUntyped(mut exp: Arc<Expression::NFExpression>, mut scope: Arc<InstNode::InstNode>, mut eachType: EachType, mut source: Source, mut info: SourceInfo, mut confidence: i32) -> Arc<NFBinding> {
     let mut binding: Arc<NFBinding>;
-    binding = Arc::new(NFBinding::UNTYPED_BINDING { bindingExp: exp.clone(), isProcessing: false, scope: scope.clone(), eachType: eachType.clone(), source: source.clone(), confidence: confidence.clone(), info: info.clone() });
+    binding = Arc::new(NFBinding::UNTYPED_BINDING { bindingExp: exp, isProcessing: false, scope: scope, eachType: eachType, source: source, confidence: confidence, info: info });
     binding
 }
 
 pub(crate) fn makeTyped(mut exp: Arc<Expression::NFExpression>, mut eachType: EachType, mut source: Source, mut info: SourceInfo, mut state: EvalState, mut confidence: i32) -> Result<Arc<NFBinding>> {
     let mut binding: Arc<NFBinding>;
-    binding = Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: Expression::typeOf(exp.clone()), variability: Expression::variability(exp.clone())?, purity: Expression::purity(exp.clone())?, eachType: eachType.clone(), evalState: Mutable::create(state.clone()), isFlattened: false, source: source.clone(), confidence: confidence.clone(), info: info.clone() });
+    binding = Arc::new(NFBinding::TYPED_BINDING { bindingExp: exp.clone(), bindingType: Expression::typeOf(exp.clone()), variability: Expression::variability(exp.clone())?, purity: Expression::purity(exp)?, eachType: eachType, evalState: Mutable::create(state), isFlattened: false, source: source, confidence: confidence, info: info });
     Ok(binding)
 }
 
 pub fn makeFlat(mut exp: Arc<Expression::NFExpression>, mut var: Variability, mut source: Source, mut confidence: i32) -> Arc<NFBinding> {
     let mut binding: Arc<NFBinding>;
-    binding = Arc::new(NFBinding::FLAT_BINDING { bindingExp: exp.clone(), variability: var.clone(), source: source.clone(), confidence: confidence.clone() });
+    binding = Arc::new(NFBinding::FLAT_BINDING { bindingExp: exp, variability: var, source: source, confidence: confidence });
     binding
 }
 
@@ -1015,11 +1015,11 @@ pub(crate) fn expandEach(mut binding: Arc<NFBinding>, mut node: Arc<InstNode::In
         Deref @ RAW_BINDING { eachType: EachType::EACH, .. } => {
             node_exp = Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (InstNode::name(node.clone())?).clone(), subscripts: metamodelica::nil() }) });
             args = metamodelica::nil();
-            for mut i in ({let __s=InstNode::dimensionCount(node.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+            for mut i in ({let __s=InstNode::dimensionCount(node); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 args = metamodelica::cons(AbsynUtil::makeCall(size_name.clone(), list![node_exp.clone(), Arc::new(Absyn::Exp::INTEGER { value: i.clone() })], metamodelica::nil()), args.clone());
             }
-            args = metamodelica::cons(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone(), args.clone());
-            assign_variant_field!(binding => NFBinding::RAW_BINDING; bindingExp = AbsynUtil::makeCall(fill_name.clone(), args.clone(), metamodelica::nil()));
+            args = metamodelica::cons(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone(), args);
+            assign_variant_field!(binding => NFBinding::RAW_BINDING; bindingExp = AbsynUtil::makeCall(fill_name, args, metamodelica::nil()));
             ()
         },
         _ => (),
@@ -1030,7 +1030,7 @@ pub(crate) fn expandEach(mut binding: Arc<NFBinding>, mut node: Arc<InstNode::In
 
 pub fn isClockOrSampleFunction(mut binding: Arc<NFBinding>) -> Result<bool> {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(getExpOpt(binding.clone())) {
+    b = (::match_deref::match_deref! { match &(getExpOpt(binding)) {
         Some(exp) => {
             Expression::isClockOrSampleFunction(exp.clone())?
         },
@@ -1063,7 +1063,7 @@ pub(crate) fn actualConfidence(mut binding: Arc<NFBinding>) -> Result<i32> {
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     while hasExp(b.clone()) {
-        conf = std::cmp::min(conf.clone(), confidence(b.clone()));
+        conf = std::cmp::min(conf, confidence(b.clone()));
         exp = getExp(b.clone())?;
         b = EMPTY_BINDING().clone();
         let () = (::match_deref::match_deref! { match &(exp.clone()) {

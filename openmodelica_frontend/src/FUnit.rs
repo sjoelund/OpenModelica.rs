@@ -185,7 +185,7 @@ pub fn getKnownUnitsInverse() -> Result<(metamodelica::Array<Arc<metamodelica::L
 
 pub(crate) fn isUnit(mut inUnit: Unit) -> bool {
     let mut b: bool;
-    b = (match inUnit.clone() {
+    b = (match inUnit {
         Unit::UNIT { .. } => true,
         _ => false,
     });
@@ -195,15 +195,15 @@ pub(crate) fn isUnit(mut inUnit: Unit) -> bool {
 pub(crate) fn hashUnit(mut inKey: Unit) -> Result<i32> {
     let mut outHash: i32;
     let mut r#str: ArcStr;
-    r#str = (unit2string(inKey.clone())?).clone();
-    outHash = stringHashDjb2((r#str.clone()).clone());
+    r#str = (unit2string(inKey)?).clone();
+    outHash = stringHashDjb2((r#str).clone());
     Ok(outHash)
 }
 
 pub(crate) fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> bool {
     let mut res: bool;
     res = 'mc: {
-        let __mc_input = (inKey.clone(), inKey2.clone());
+        let __mc_input = (inKey, inKey2);
         if let Ok(__v) = (|| -> Result<_> {
             let (Unit::UNIT { factor: mut factor1, mol: mut i1, cd: mut i2, m: mut i3, s: mut i4, A: mut i5, K: mut i6, g: mut i7 }, Unit::UNIT { factor: mut factor2, mol: mut j1, cd: mut j2, m: mut j3, s: mut j4, A: mut j5, K: mut j6, g: mut j7 }) = __mc_input.clone() else { bail!("nomatch") };
             let true = (realEq(factor1.clone(), factor2.clone())) else { bail!("pattern mismatch") };
@@ -250,7 +250,7 @@ pub(crate) fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> bool {
 
 pub(crate) fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((match inUnit.clone() {
+    outString = ((match inUnit {
         Unit::UNIT { factor: mut factor1, mol: mut i1, cd: mut i2, m: mut i3, s: mut i4, A: mut i5, K: mut i6, g: mut i7 } => {
             let mut s: ArcStr;
             let mut r#str: ArcStr;
@@ -319,7 +319,7 @@ pub(crate) fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
 
 pub(crate) fn printListCr(mut inlCr: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
     let mut outS: ArcStr;
-    outS = ((::match_deref::match_deref! { match &(inlCr.clone()) {
+    outS = ((::match_deref::match_deref! { match &(inlCr) {
         Deref @ metamodelica::List::Nil => {
             literal!("")
         },
@@ -357,7 +357,7 @@ pub(crate) fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut j5: i32;
     let mut j6: i32;
     let mut j7: i32;
-    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit1.clone()) else { bail!("pattern mismatch") };
+    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit1) else { bail!("pattern mismatch") };
     factor1 = __pa0.clone();
     i1 = __pa1.clone();
     i2 = __pa2.clone();
@@ -366,7 +366,7 @@ pub(crate) fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     i5 = __pa5.clone();
     i6 = __pa6.clone();
     i7 = __pa7.clone();
-    let Unit::UNIT { factor: __pa8, mol: __pa9, cd: __pa10, m: __pa11, s: __pa12, A: __pa13, K: __pa14, g: __pa15 } = (inUnit2.clone()) else { bail!("pattern mismatch") };
+    let Unit::UNIT { factor: __pa8, mol: __pa9, cd: __pa10, m: __pa11, s: __pa12, A: __pa13, K: __pa14, g: __pa15 } = (inUnit2) else { bail!("pattern mismatch") };
     factor2 = __pa8.clone();
     j1 = __pa9.clone();
     j2 = __pa10.clone();
@@ -375,15 +375,15 @@ pub(crate) fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     j5 = __pa13.clone();
     j6 = __pa14.clone();
     j7 = __pa15.clone();
-    factor1 = factor1.clone() * factor2.clone();
-    i1 = i1.clone() + j1.clone();
-    i2 = i2.clone() + j2.clone();
-    i3 = i3.clone() + j3.clone();
-    i4 = i4.clone() + j4.clone();
-    i5 = i5.clone() + j5.clone();
-    i6 = i6.clone() + j6.clone();
-    i7 = i7.clone() + j7.clone();
-    outUnit = Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() };
+    factor1 = factor1 * factor2;
+    i1 = i1 + j1;
+    i2 = i2 + j2;
+    i3 = i3 + j3;
+    i4 = i4 + j4;
+    i5 = i5 + j5;
+    i6 = i6 + j6;
+    i7 = i7 + j7;
+    outUnit = Unit::UNIT { factor: factor1, mol: i1, cd: i2, m: i3, s: i4, A: i5, K: i6, g: i7 };
     Ok(outUnit)
 }
 
@@ -405,7 +405,7 @@ pub(crate) fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut j5: i32;
     let mut j6: i32;
     let mut j7: i32;
-    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit1.clone()) else { bail!("pattern mismatch") };
+    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit1) else { bail!("pattern mismatch") };
     factor1 = __pa0.clone();
     i1 = __pa1.clone();
     i2 = __pa2.clone();
@@ -414,7 +414,7 @@ pub(crate) fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     i5 = __pa5.clone();
     i6 = __pa6.clone();
     i7 = __pa7.clone();
-    let Unit::UNIT { factor: __pa8, mol: __pa9, cd: __pa10, m: __pa11, s: __pa12, A: __pa13, K: __pa14, g: __pa15 } = (inUnit2.clone()) else { bail!("pattern mismatch") };
+    let Unit::UNIT { factor: __pa8, mol: __pa9, cd: __pa10, m: __pa11, s: __pa12, A: __pa13, K: __pa14, g: __pa15 } = (inUnit2) else { bail!("pattern mismatch") };
     factor2 = __pa8.clone();
     j1 = __pa9.clone();
     j2 = __pa10.clone();
@@ -423,15 +423,15 @@ pub(crate) fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     j5 = __pa13.clone();
     j6 = __pa14.clone();
     j7 = __pa15.clone();
-    factor1 = factor1.clone() / factor2.clone();
-    i1 = i1.clone() - j1.clone();
-    i2 = i2.clone() - j2.clone();
-    i3 = i3.clone() - j3.clone();
-    i4 = i4.clone() - j4.clone();
-    i5 = i5.clone() - j5.clone();
-    i6 = i6.clone() - j6.clone();
-    i7 = i7.clone() - j7.clone();
-    outUnit = Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() };
+    factor1 = factor1 / factor2;
+    i1 = i1 - j1;
+    i2 = i2 - j2;
+    i3 = i3 - j3;
+    i4 = i4 - j4;
+    i5 = i5 - j5;
+    i6 = i6 - j6;
+    i7 = i7 - j7;
+    outUnit = Unit::UNIT { factor: factor1, mol: i1, cd: i2, m: i3, s: i4, A: i5, K: i6, g: i7 };
     Ok(outUnit)
 }
 
@@ -445,7 +445,7 @@ pub(crate) fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     let mut i5: i32;
     let mut i6: i32;
     let mut i7: i32;
-    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit.clone()) else { bail!("pattern mismatch") };
+    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit) else { bail!("pattern mismatch") };
     factor = __pa0.clone();
     i1 = __pa1.clone();
     i2 = __pa2.clone();
@@ -454,23 +454,23 @@ pub(crate) fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     i5 = __pa5.clone();
     i6 = __pa6.clone();
     i7 = __pa7.clone();
-    factor = realPow(factor.clone(), intReal(inExp.clone()));
-    i1 = i1.clone() * inExp.clone();
-    i2 = i2.clone() * inExp.clone();
-    i3 = i3.clone() * inExp.clone();
-    i4 = i4.clone() * inExp.clone();
-    i5 = i5.clone() * inExp.clone();
-    i6 = i6.clone() * inExp.clone();
-    i7 = i7.clone() * inExp.clone();
-    outUnit = Unit::UNIT { factor: factor.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() };
+    factor = realPow(factor, intReal(inExp));
+    i1 = i1 * inExp;
+    i2 = i2 * inExp;
+    i3 = i3 * inExp;
+    i4 = i4 * inExp;
+    i5 = i5 * inExp;
+    i6 = i6 * inExp;
+    i7 = i7 * inExp;
+    outUnit = Unit::UNIT { factor: factor, mol: i1, cd: i2, m: i3, s: i4, A: i5, K: i6, g: i7 };
     Ok(outUnit)
 }
 
 pub(crate) fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
     let mut outUnit: Unit;
-    outUnit = (match inUnit.clone() {
+    outUnit = (match inUnit {
         mut unit @ Unit::UNIT { .. } => {
-            let __owned_variant_factor_0 = var_field!(unit.factor, Unit::UNIT).clone() * inFactor.clone();
+            let __owned_variant_factor_0 = var_field!(unit.factor, Unit::UNIT).clone() * inFactor;
             if let Unit::UNIT { factor, .. } = &mut unit {
                 *factor = __owned_variant_factor_0;
             } else { panic!("owned-variant field-assign: value held a different variant than Unit::UNIT"); }
@@ -495,9 +495,9 @@ pub(crate) fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> 
     let mut i5: i32;
     let mut i6: i32;
     let mut i7: i32;
-    i = ((inExponent.clone()).0.floor() as i32);
-    r = realDiv(metamodelica::OrderedFloat(1.0_f64), inExponent.clone());
-    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit.clone()) else { bail!("pattern mismatch") };
+    i = ((inExponent).0.floor() as i32);
+    r = realDiv(metamodelica::OrderedFloat(1.0_f64), inExponent);
+    let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit) else { bail!("pattern mismatch") };
     factor = __pa0.clone();
     i1 = __pa1.clone();
     i2 = __pa2.clone();
@@ -506,29 +506,29 @@ pub(crate) fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> 
     i5 = __pa5.clone();
     i6 = __pa6.clone();
     i7 = __pa7.clone();
-    factor = realPow(factor.clone(), r.clone());
-    r = realDiv(intReal(i1.clone()), inExponent.clone());
-    i1 = intDiv(i1.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i1.clone()))) else { bail!("pattern mismatch") };
-    r = realDiv(intReal(i2.clone()), inExponent.clone());
-    i2 = intDiv(i2.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i2.clone()))) else { bail!("pattern mismatch") };
-    r = realDiv(intReal(i3.clone()), inExponent.clone());
-    i3 = intDiv(i3.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i3.clone()))) else { bail!("pattern mismatch") };
-    r = realDiv(intReal(i4.clone()), inExponent.clone());
-    i4 = intDiv(i4.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i4.clone()))) else { bail!("pattern mismatch") };
-    r = realDiv(intReal(i5.clone()), inExponent.clone());
-    i5 = intDiv(i5.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i5.clone()))) else { bail!("pattern mismatch") };
-    r = realDiv(intReal(i6.clone()), inExponent.clone());
-    i6 = intDiv(i6.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i6.clone()))) else { bail!("pattern mismatch") };
-    r = realDiv(intReal(i7.clone()), inExponent.clone());
-    i7 = intDiv(i7.clone(), i.clone());
-    let true = (realEq(r.clone(), intReal(i7.clone()))) else { bail!("pattern mismatch") };
-    outUnit = Unit::UNIT { factor: factor.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() };
+    factor = realPow(factor, r);
+    r = realDiv(intReal(i1), inExponent);
+    i1 = intDiv(i1, i);
+    let true = (realEq(r, intReal(i1))) else { bail!("pattern mismatch") };
+    r = realDiv(intReal(i2), inExponent);
+    i2 = intDiv(i2, i);
+    let true = (realEq(r, intReal(i2))) else { bail!("pattern mismatch") };
+    r = realDiv(intReal(i3), inExponent);
+    i3 = intDiv(i3, i);
+    let true = (realEq(r, intReal(i3))) else { bail!("pattern mismatch") };
+    r = realDiv(intReal(i4), inExponent);
+    i4 = intDiv(i4, i);
+    let true = (realEq(r, intReal(i4))) else { bail!("pattern mismatch") };
+    r = realDiv(intReal(i5), inExponent);
+    i5 = intDiv(i5, i);
+    let true = (realEq(r, intReal(i5))) else { bail!("pattern mismatch") };
+    r = realDiv(intReal(i6), inExponent);
+    i6 = intDiv(i6, i);
+    let true = (realEq(r, intReal(i6))) else { bail!("pattern mismatch") };
+    r = realDiv(intReal(i7), inExponent);
+    i7 = intDiv(i7, i);
+    let true = (realEq(r, intReal(i7))) else { bail!("pattern mismatch") };
+    outUnit = Unit::UNIT { factor: factor, mol: i1, cd: i2, m: i3, s: i4, A: i5, K: i6, g: i7 };
     Ok(outUnit)
 }
 
@@ -601,7 +601,7 @@ pub(crate) fn unitString(mut inUnit: Unit, mut inHtU2S: (metamodelica::Array<Arc
 
 fn prefix2String(mut inReal: metamodelica::Real) -> ArcStr {
     let mut outPrefix: ArcStr;
-    outPrefix = ((match inReal.clone() {
+    outPrefix = ((match inReal {
         __rlit_0 if __rlit_0.eq(&metamodelica::OrderedFloat((1e-24) as f64)) => literal!("y"),
         __rlit_1 if __rlit_1.eq(&metamodelica::OrderedFloat((1e-21) as f64)) => literal!("z"),
         __rlit_2 if __rlit_2.eq(&metamodelica::OrderedFloat((1e-18) as f64)) => literal!("a"),
@@ -621,7 +621,7 @@ fn prefix2String(mut inReal: metamodelica::Real) -> ArcStr {
         __rlit_16 if __rlit_16.eq(&metamodelica::OrderedFloat((1e18) as f64)) => literal!("E"),
         __rlit_17 if __rlit_17.eq(&metamodelica::OrderedFloat((1e21) as f64)) => literal!("Z"),
         __rlit_18 if __rlit_18.eq(&metamodelica::OrderedFloat((1e24) as f64)) => literal!("Y"),
-        _ => realString(inReal.clone()),
+        _ => realString(inReal),
     })).clone();
     outPrefix
 }
@@ -630,12 +630,12 @@ pub(crate) fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: (metam
     let mut outUnit: Unit;
     let mut charList: Arc<metamodelica::List<ArcStr>>;
     let mut tokenList: Arc<metamodelica::List<Token>>;
-    charList = stringListStringChar((inUnitString.clone()).clone());
+    charList = stringListStringChar((inUnitString).clone());
     if charList.clone().is_empty() {
         bail!("fail");
     }
-    tokenList = lexer(charList.clone())?;
-    outUnit = parser3(list![true, true], tokenList.clone(), Unit::UNIT { factor: metamodelica::OrderedFloat(1e0_f64), mol: 0, cd: 0, m: 0, s: 0, A: 0, K: 0, g: 0 }, inKnownUnits.clone())?;
+    tokenList = lexer(charList)?;
+    outUnit = parser3(list![true, true], tokenList, Unit::UNIT { factor: metamodelica::OrderedFloat(1e0_f64), mol: 0, cd: 0, m: 0, s: 0, A: 0, K: 0, g: 0 }, inKnownUnits)?;
     if !(isUnit(outUnit.clone())) {
         bail!("fail");
     }
@@ -645,7 +645,7 @@ pub(crate) fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: (metam
 fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamodelica::List<Token>>, mut inUnit: Unit, mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>))) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = 'mc: {
-        let __mc_input = (inMul.clone(), inTokenList.clone());
+        let __mc_input = (inMul.clone(), inTokenList);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: true, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil) => {
@@ -788,7 +788,7 @@ fn getPrefix(mut inS: ArcStr, mut inS2: ArcStr) -> Result<(metamodelica::Real, A
     let mut outR: metamodelica::Real;
     let mut outUnit: ArcStr;
     (outR, outUnit) = 'mc: {
-        let __mc_input = inS.clone();
+        let __mc_input = inS;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "y" => {
@@ -1110,7 +1110,7 @@ fn getPrefix(mut inS: ArcStr, mut inS2: ArcStr) -> Result<(metamodelica::Real, A
 fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<Token>>> {
     let mut outTokenList: Arc<metamodelica::List<Token>>;
     outTokenList = 'mc: {
-        let __mc_input = inCharList.clone();
+        let __mc_input = inCharList;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {

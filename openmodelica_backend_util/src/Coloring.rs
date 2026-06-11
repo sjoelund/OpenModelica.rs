@@ -65,9 +65,9 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
             metamodelica::print((literal!("analytical Jacobians[SPARSE] -> build sparse graph.\n")).clone());
         }
-        nodesList = List::intRange2(1, sizeVarswithDep.clone());
+        nodesList = List::intRange2(1, sizeVarswithDep);
         sparseGraph = unwrap_break_err!(Graph::buildGraph(nodesList.clone(), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArray.clone()), '__try0);
-        sparseGraphT = unwrap_break_err!(Graph::buildGraph(List::intRange2(1, sizeVars.clone()), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArrayT.clone()), '__try0);
+        sparseGraphT = unwrap_break_err!(Graph::buildGraph(List::intRange2(1, sizeVars), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArrayT.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
             metamodelica::print((literal!("sparse graph: \n")).clone());
             unwrap_break_err!(Graph::printGraphInt(sparseGraph.clone()), '__try0);
@@ -75,23 +75,23 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
             unwrap_break_err!(Graph::printGraphInt(sparseGraphT.clone()), '__try0);
             metamodelica::print((literal!("analytical Jacobians[SPARSE] -> builded graph for coloring.\n")).clone());
         }
-        forbiddenColor = arrayCreate(sizeVars.clone(), 0);
-        colored = arrayCreate(sizeVars.clone(), 0);
+        forbiddenColor = arrayCreate(sizeVars, 0);
+        colored = arrayCreate(sizeVars, 0);
         arraysparseGraph = metamodelica::arrayFromVec(sparseGraph.clone().into_iter().cloned().collect());
-        if debug.clone() {
+        if debug {
             unwrap_break_err!(execStat((literal!("generateSparsePattern -> coloring start ")).clone()), '__try0);
         }
-        if sizeVars.clone() > 0 {
+        if sizeVars > 0 {
             unwrap_break_err!(Graph::partialDistance2colorInt(sparseGraphT.clone(), forbiddenColor.clone(), nodesList.clone(), arraysparseGraph.clone(), colored.clone()), '__try0);
         }
-        if debug.clone() {
+        if debug {
             unwrap_break_err!(execStat((literal!("generateSparsePattern -> coloring end ")).clone()), '__try0);
         }
         GCExt::free(forbiddenColor.clone());
         GCExt::free(arraysparseGraph.clone());
         maxColor = unwrap_break_err!(Array::fold(colored.clone(), (std::sync::Arc::new(fnptr!(intMax, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0), '__try0);
-        coloredArray = arrayCreate(maxColor.clone(), metamodelica::nil());
-        unwrap_break_err!(mapIndexColors(colored.clone(), sizeVars.clone(), coloredArray.clone()), '__try0);
+        coloredArray = arrayCreate(maxColor, metamodelica::nil());
+        unwrap_break_err!(mapIndexColors(colored.clone(), sizeVars, coloredArray.clone()), '__try0);
         GCExt::free(colored.clone());
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
             metamodelica::print((literal!("Print Coloring Cols: \n")).clone());
@@ -119,8 +119,8 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
 
 fn createBipartiteGraph(mut inNode: i32, mut inSparsePattern: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outEdges: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    if inNode.clone() >= 1 && inNode.clone() <= metamodelica::arrayLength(inSparsePattern.clone()) {
-        outEdges = metamodelica::arrayGet(inSparsePattern.clone(), inNode.clone())?;
+    if inNode >= 1 && inNode <= metamodelica::arrayLength(inSparsePattern.clone()) {
+        outEdges = metamodelica::arrayGet(inSparsePattern.clone(), inNode)?;
     } else {
         outEdges = metamodelica::nil();
     }
@@ -130,9 +130,9 @@ fn createBipartiteGraph(mut inNode: i32, mut inSparsePattern: metamodelica::Arra
 fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, mut inArray: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut index: i32;
     match '__try0: {
-        for mut i in 1..=inMaxIndex.clone() {
+        for mut i in 1..=inMaxIndex {
             index = unwrap_break_err!(metamodelica::arrayGet(inColors.clone(), i.clone()), '__try0);
-            unwrap_break_err!(metamodelica::arrayUpdate(inArray.clone(), index.clone(), metamodelica::cons(i.clone(), unwrap_break_err!(metamodelica::arrayGet(inArray.clone(), index.clone()), '__try0))), '__try0);
+            unwrap_break_err!(metamodelica::arrayUpdate(inArray.clone(), index, metamodelica::cons(i.clone(), unwrap_break_err!(metamodelica::arrayGet(inArray.clone(), index), '__try0))), '__try0);
         }
         Ok::<(), anyhow::Error>(())
     } {
@@ -147,7 +147,7 @@ fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, m
 
 fn dumpColoring(mut pattern: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString((pattern.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    for mut row in &*pattern.clone() {
+    for mut row in &*pattern {
         let mut row = row.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(row.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone());
     }

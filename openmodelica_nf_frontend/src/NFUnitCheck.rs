@@ -166,12 +166,12 @@ fn updateVariable(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<UnorderedM
         for mut attr in &*var.typeAttributes.clone() {
             let mut attr = attr.clone();
             (name, binding) = attr.clone();
-            unit_idx = unit_idx.clone() + 1;
+            unit_idx = unit_idx + 1;
             if name.clone() == literal!("unit") {
                 if Binding::isBound(binding.clone()) {
                     return Ok(var.clone());
                 } else {
-                    assign_field!(var.typeAttributes = listDelete(var.typeAttributes.clone(), unit_idx.clone())?);
+                    assign_field!(var.typeAttributes = listDelete(var.typeAttributes.clone(), unit_idx)?);
                     break;
                 }
             }
@@ -193,10 +193,10 @@ fn updateVariable(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<UnorderedM
 fn notification(mut inHtCr2U1: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut inHtCr2U2: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut inHtU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<()> {
     let mut r#str: ArcStr;
     let mut lt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Unit::Unit)>>;
-    lt1 = UnorderedMap::toList(inHtCr2U1.clone());
-    r#str = (notification2(lt1.clone(), inHtCr2U2.clone(), inHtU2S.clone())?).clone();
+    lt1 = UnorderedMap::toList(inHtCr2U1);
+    r#str = (notification2(lt1, inHtCr2U2, inHtU2S)?).clone();
     if Flags::isSet(Flags::DUMP_UNIT.clone())? && r#str.clone() != literal!("") {
-        Error::addCompilerNotification((r#str.clone()).clone())?;
+        Error::addCompilerNotification((r#str).clone())?;
     }
     Ok(())
 }
@@ -214,7 +214,7 @@ fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponen
     let mut cd: i32 = 0;
     outS = stringAppendList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut t1 in (inLt1.clone()).into_iter().cloned() {
+        for mut t1 in (inLt1).into_iter().cloned() {
             if !((::match_deref::match_deref! { match &(t1.clone()) {
         (__esc_cr1, Unit::Unit::MASTER { .. }) => {
             cr1 = (*__esc_cr1).clone();
@@ -241,7 +241,7 @@ fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponen
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })) { continue; }
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*ComponentRef::toString(cr1.clone())?); __mm_s.push_str(&*literal!("\" has the Unit \"")); __mm_s.push_str(&*Unit::unitString(Unit::Unit::UNIT { s: s.clone(), m: m.clone(), g: g.clone(), A: A.clone(), K: K.clone(), mol: mol.clone(), cd: cd.clone(), factor: factor.clone() }, inHtU2S.clone())?); __mm_s.push_str(&*literal!("\"\n")); ArcStr::from(__mm_s) };
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*ComponentRef::toString(cr1.clone())?); __mm_s.push_str(&*literal!("\" has the Unit \"")); __mm_s.push_str(&*Unit::unitString(Unit::Unit::UNIT { s: s, m: m, g: g, A: A, K: K, mol: mol, cd: cd, factor: factor }, inHtU2S.clone())?); __mm_s.push_str(&*literal!("\"\n")); ArcStr::from(__mm_s) };
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -252,21 +252,21 @@ fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponen
 fn checkModelConsistency(mut variables: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut initialEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut fnCache: FunctionUnitCache) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>> {
     let mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>> = htCr2U;
     let mut dump_eq_unit: bool = Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())?;
-    for mut v in &*variables.clone() {
+    for mut v in &*variables {
         let mut v = v.clone();
-        foldBindingExp(v.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit.clone())?;
+        foldBindingExp(v.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit)?;
         for mut c in &*v.children.clone() {
             let mut c = c.clone();
-            foldBindingExp(c.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit.clone())?;
+            foldBindingExp(c.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit)?;
         }
     }
-    for mut eq in &*equations.clone() {
+    for mut eq in &*equations {
         let mut eq = eq.clone();
-        foldEquation(eq.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit.clone())?;
+        foldEquation(eq.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit)?;
     }
-    for mut ieq in &*initialEquations.clone() {
+    for mut ieq in &*initialEquations {
         let mut ieq = ieq.clone();
-        foldEquation(ieq.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit.clone())?;
+        foldEquation(ieq.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dump_eq_unit)?;
     }
     Ok(htCr2U)
 }
@@ -276,16 +276,16 @@ fn foldBindingExp(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<UnorderedM
     let mut eq: Arc<Equation::NFEquation>;
     if Type::isReal(var.ty.clone())? && Binding::isBound(var.binding.clone()) {
         binding_exp = Binding::getTypedExp(var.binding.clone())?;
-        eq = Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, binding_exp.clone(), var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
-        foldEquation(eq.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dumpEqInitStruct.clone())?;
+        eq = Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, binding_exp, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+        foldEquation(eq, htCr2U, htS2U, htU2S, fnCache, dumpEqInitStruct)?;
     }
     Ok(())
 }
 
 fn foldEquation(mut eq: Arc<Equation::NFEquation>, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut fnCache: FunctionUnitCache, mut dumpEqInitStruct: bool) -> Result<()> {
     let mut inconsistent_units: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
-    inconsistent_units = foldEquation2(eq.clone(), dumpEqInitStruct.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
-    for mut u in &*inconsistent_units.clone() {
+    inconsistent_units = foldEquation2(eq.clone(), dumpEqInitStruct, htCr2U, htS2U, htU2S.clone(), fnCache)?;
+    for mut u in &*inconsistent_units {
         let mut u = u.clone();
         Errorfunction(u.clone(), eq.clone(), htU2S.clone())?;
     }
@@ -304,7 +304,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             fn_name = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(Call::functionName(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?), (literal!(".")).clone(), true, false)?).clone();
             (_, out_vars, _, out_units) = getCallUnits((fn_name.clone()).clone(), var_field!((**rhs).call, Expression::NFExpression::CALL).clone(), fnCache.clone())?;
             icu1 = foldCallArg1(var_field!((**lhs).elements, Expression::NFExpression::TUPLE).clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, out_units.clone(), out_vars.clone(), (fn_name.clone()).clone())?;
-            (_, icu2) = insertUnitInEquation(rhs.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
+            (_, icu2) = insertUnitInEquation(rhs.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
             List::append_reverse(icu1.clone(), icu2.clone())
         },
         Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CALL { .. }, .. } if (!(Function::isBuiltin(Call::typedFunction(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?))) => {
@@ -330,32 +330,32 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             } else {
                 icu1 = list![list![(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), unit1.clone()), (makeNewCref((formal_var.clone()).clone(), (fn_name.clone()).clone()), unit2.clone())]];
             }
-            (_, icu2) = insertUnitInEquation(rhs.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
+            (_, icu2) = insertUnitInEquation(rhs.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
             List::append_reverse(icu1.clone(), icu2.clone())
         },
         Deref @ Equation::EQUALITY { .. } => {
             let mut temp: Arc<Expression::NFExpression>;
             temp = Arc::new(Expression::NFExpression::BINARY { exp1: var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), operator: Operator::makeSub(crate::NFType::interned_REAL()), exp2: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone() });
-            if dumpEqInitStruct.clone() {
+            if dumpEqInitStruct {
                 metamodelica::print((Expression::toString(temp.clone())?).clone());
                 metamodelica::print((literal!("--------------------\n")).clone());
             }
-            (_, inconsistentUnits) = insertUnitInEquation(temp.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
-            inconsistentUnits.clone()
+            (_, inconsistentUnits) = insertUnitInEquation(temp.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
+            inconsistentUnits
         },
         Deref @ Equation::WHEN { branches: Deref @ metamodelica::List::Cons { head: Deref @ Equation::Branch::BRANCH { body: eql, .. }, tail: _ }, .. } => {
             let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
             inconsistentUnits = metamodelica::nil();
             for mut e in &*eql.clone() {
                 let mut e = e.clone();
-                icu1 = foldEquation2(e.clone(), dumpEqInitStruct.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
+                icu1 = foldEquation2(e.clone(), dumpEqInitStruct, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                 inconsistentUnits = List::append_reverse(icu1.clone(), inconsistentUnits.clone());
             }
-            inconsistentUnits.clone()
+            inconsistentUnits
         },
         Deref @ Equation::NORETCALL { .. } => {
-            (_, inconsistentUnits) = insertUnitInEquation(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
-            inconsistentUnits.clone()
+            (_, inconsistentUnits) = insertUnitInEquation(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U, htS2U, htU2S, fnCache);
+            inconsistentUnits
         },
         _ => {
             metamodelica::nil()
@@ -367,7 +367,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
 
 fn makeNewCref(mut paramName: ArcStr, mut fnName: ArcStr) -> Arc<Expression::NFExpression> {
     let mut outExp: Arc<Expression::NFExpression>;
-    outExp = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (paramName.clone()).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fnName.clone()); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone())) });
+    outExp = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (paramName).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fnName); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone())) });
     outExp
 }
 
@@ -1092,8 +1092,8 @@ fn insertUnitInEquationCall(mut call: Arc<Call::NFCall>, mut unit: Unit::Unit, m
 fn insertUnitString(mut unit: Unit::Unit, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<()> {
     let mut unit_str: ArcStr;
     unit_str = (Unit::unitString(unit.clone(), htU2S.clone())?).clone();
-    addUnit2HtS2U((unit_str.clone()).clone(), unit.clone(), htS2U.clone())?;
-    addUnit2HtU2S((unit_str.clone()).clone(), unit.clone(), htU2S.clone())?;
+    addUnit2HtS2U((unit_str.clone()).clone(), unit.clone(), htS2U)?;
+    addUnit2HtU2S((unit_str).clone(), unit, htU2S)?;
     Ok(())
 }
 
@@ -1106,16 +1106,16 @@ fn getCallUnits(mut fnName: ArcStr, mut call: Arc<Call::NFCall>, mut fnCache: Fu
     let mut args: Functionargs;
     opt_args = UnorderedMap::get((fnName.clone()).clone(), fnCache.clone())?;
     if isSome(opt_args.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(opt_args.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(opt_args) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         args = __pa0.clone();
     } else {
-        args = parseFunctionUnits((fnName.clone()).clone(), Call::typedFunction(call.clone())?)?;
-        UnorderedMap::addUnique((fnName.clone()).clone(), args.clone(), fnCache.clone())?;
+        args = parseFunctionUnits((fnName.clone()).clone(), Call::typedFunction(call)?)?;
+        UnorderedMap::addUnique((fnName).clone(), args.clone(), fnCache)?;
     }
-    let Functionargs { name: _, invars: __pa1, outvars: __pa2, inunits: __pa3, outunits: __pa4 } = (args.clone()) else { bail!("pattern mismatch") };
+    let Functionargs { name: _, invars: __pa1, outvars: __pa2, inunits: __pa3, outunits: __pa4 } = (args) else { bail!("pattern mismatch") };
     inputVars = __pa1.clone();
     outputVars = __pa2.clone();
     inputUnits = __pa3.clone();
@@ -1161,7 +1161,7 @@ fn parseFunctionUnits(mut funcName: ArcStr, mut func: Arc<Function::Function>) -
         }
         __acc.reverse()
     });
-    outArgs = Functionargs { name: (funcName.clone()).clone(), invars: in_args.clone(), outvars: out_args.clone(), inunits: in_units.clone(), outunits: out_units.clone() };
+    outArgs = Functionargs { name: (funcName).clone(), invars: in_args, outvars: out_args, inunits: in_units, outunits: out_units };
     Ok(outArgs)
 }
 
@@ -1170,30 +1170,30 @@ fn unitTypesEqual(mut unit1: Unit::Unit, mut unit2: Unit::Unit, mut htCr2U: Arc<
     let mut outUnit: Unit::Unit;
     (isEqual, outUnit) = (match (unit1.clone(), unit2.clone()) {
         (Unit::Unit::UNIT { .. }, Unit::Unit::UNIT { .. }) => {
-            (Unit::isEqual(unit1.clone(), unit2.clone()), unit1.clone())
+            (Unit::isEqual(unit1.clone(), unit2), unit1)
         },
         (Unit::Unit::UNIT { .. }, Unit::Unit::MASTER { varList: ref vars2 }) => {
-            List::map2_0(vars2.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Unit::Unit, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>) -> Result<()> + 'static>), unit1.clone(), htCr2U.clone())?;
-            (true, unit1.clone())
+            List::map2_0(vars2.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Unit::Unit, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>) -> Result<()> + 'static>), unit1.clone(), htCr2U)?;
+            (true, unit1)
         },
         (Unit::Unit::MASTER { varList: ref vars1 }, Unit::Unit::UNIT { .. }) => {
-            List::map2_0(vars1.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Unit::Unit, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>) -> Result<()> + 'static>), unit2.clone(), htCr2U.clone())?;
-            (true, unit2.clone())
+            List::map2_0(vars1.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Unit::Unit, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>) -> Result<()> + 'static>), unit2.clone(), htCr2U)?;
+            (true, unit2)
         },
         (Unit::Unit::MASTER { varList: ref vars1 }, Unit::Unit::MASTER { varList: ref vars2 }) => {
             (true, Unit::Unit::MASTER { varList: List::append_reverse(vars1.clone(), vars2.clone()) })
         },
         (Unit::Unit::UNKNOWN { unit: mut s1 }, Unit::Unit::UNKNOWN { unit: mut s2 }) => {
-            (s1.clone() == s2.clone(), unit1.clone())
+            (s1.clone() == s2.clone(), unit1)
         },
         (Unit::Unit::UNKNOWN { .. }, _) => {
-            (true, unit1.clone())
+            (true, unit1)
         },
         (_, Unit::Unit::UNKNOWN { .. }) => {
-            (true, unit2.clone())
+            (true, unit2)
         },
         _ => {
-            (false, unit1.clone())
+            (false, unit1)
         },
     });
     Ok((isEqual, outUnit))
@@ -1201,20 +1201,20 @@ fn unitTypesEqual(mut unit1: Unit::Unit, mut unit2: Unit::Unit, mut htCr2U: Arc<
 
 fn updateHtCr2U(mut cref: Arc<ComponentRef::NFComponentRef>, mut unit: Unit::Unit, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>) -> Result<()> {
     UnorderedMap::tryAdd(Unit::UPDATECREF().clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone())?;
-    UnorderedMap::add(cref.clone(), unit.clone(), htCr2U.clone())?;
+    UnorderedMap::add(cref, unit, htCr2U)?;
     Ok(())
 }
 
 fn Errorfunction(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>, mut inEq: Arc<Equation::NFEquation>, mut inHtU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inexpList.clone()) {
+    let () = (::match_deref::match_deref! { match &(inexpList) {
         expList => {
             let mut s: ArcStr;
             let mut s1: ArcStr;
             let mut s2: ArcStr;
             let mut info: SourceInfo;
             info = Equation::info(inEq.clone())?;
-            s = (Equation::toString(inEq.clone(), (literal!("")).clone())?).clone();
-            s1 = (Errorfunction2(expList.clone(), inHtU2S.clone())?).clone();
+            s = (Equation::toString(inEq, (literal!("")).clone())?).clone();
+            s1 = (Errorfunction2(expList.clone(), inHtU2S)?).clone();
             s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The following equation is INCONSISTENT due to specified unit information: ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             Error::addSourceMessage(Error::COMPILER_WARNING.clone(), list![(s2.clone()).clone()], info.clone())?;
             Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The units of following sub-expressions need to be equal:\n")); __mm_s.push_str(&*s1.clone()); ArcStr::from(__mm_s) }).clone())?;
@@ -1227,12 +1227,12 @@ fn Errorfunction(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpres
 
 fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>, mut inHtU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<ArcStr> {
     let mut outS: ArcStr;
-    outS = ((::match_deref::match_deref! { match &(inexpList.clone()) {
+    outS = ((::match_deref::match_deref! { match &(inexpList) {
         Deref @ metamodelica::List::Cons { head: (exp, ut), tail: Deref @ metamodelica::List::Nil } => {
             let mut s: ArcStr;
             let mut s1: ArcStr;
             s = (Expression::toString(exp.clone())?).clone();
-            s1 = (Unit::unitString(ut.clone(), inHtU2S.clone())?).clone();
+            s1 = (Unit::unitString(ut.clone(), inHtU2S)?).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
             s.clone()
         },
@@ -1242,7 +1242,7 @@ fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpre
             let mut s2: ArcStr;
             s = (Expression::toString(exp.clone())?).clone();
             s1 = (Unit::unitString(ut.clone(), inHtU2S.clone())?).clone();
-            s2 = (Errorfunction2(expList.clone(), inHtU2S.clone())?).clone();
+            s2 = (Errorfunction2(expList.clone(), inHtU2S)?).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\"\n")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
             s.clone()
         },
@@ -1254,12 +1254,12 @@ fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpre
 fn foldCallArg(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut fnCache: FunctionUnitCache) -> Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> {
     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
     let mut icu: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
-    for mut exp in &*args.clone() {
+    for mut exp in &*args {
         let mut exp = exp.clone();
         (_, icu) = insertUnitInEquation(exp.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
         inconsistentUnits = List::append_reverse(icu.clone(), inconsistentUnits.clone());
     }
-    inconsistentUnits = inconsistentUnits.clone().reverse();
+    inconsistentUnits = inconsistentUnits.reverse();
     inconsistentUnits
 }
 
@@ -1274,7 +1274,7 @@ fn foldCallArg1(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>
     let mut icu: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
     let mut temp: Arc<Expression::NFExpression>;
     let mut b: bool;
-    for mut arg in &*args.clone() {
+    for mut arg in &*args {
         let mut arg = arg.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_vars.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1295,7 +1295,7 @@ fn foldCallArg1(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>
             op_unit2 = Unit::parseUnitString((unit.clone()).clone(), htS2U.clone(), Absyn::dummyInfo.clone())?;
         }
         (b, op_unit) = unitTypesEqual(op_unit.clone(), op_unit2.clone(), htCr2U.clone())?;
-        if b.clone() {
+        if b {
             icu = metamodelica::nil();
         } else {
             temp = makeNewCref((var.clone()).clone(), (fnName.clone()).clone());
@@ -1307,12 +1307,12 @@ fn foldCallArg1(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>
 }
 
 fn addUnit2HtS2U(mut name: ArcStr, mut unit: Unit::Unit, mut inHtS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>) -> Result<()> {
-    UnorderedMap::add((name.clone()).clone(), unit.clone(), inHtS2U.clone())?;
+    UnorderedMap::add((name).clone(), unit, inHtS2U)?;
     Ok(())
 }
 
 fn addUnit2HtU2S(mut name: ArcStr, mut unit: Unit::Unit, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<()> {
-    UnorderedMap::tryAdd(unit.clone(), (name.clone()).clone(), htU2S.clone())?;
+    UnorderedMap::tryAdd(unit, (name).clone(), htU2S)?;
     Ok(())
 }
 
@@ -1322,15 +1322,15 @@ fn convertUnitStringToUnit(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<U
     let mut unit_string: ArcStr;
     let mut unit: Unit::Unit;
     unit_binding = Variable::lookupTypeAttribute((literal!("unit")).clone(), var.clone());
-    unit_exp = Binding::typedExp(unit_binding.clone());
-    unit_string = (if (isSome(unit_exp.clone())) {getUnitStringFromExp(Util::getOption(unit_exp.clone())?)?} else {literal!("")}).clone();
+    unit_exp = Binding::typedExp(unit_binding);
+    unit_string = (if (isSome(unit_exp.clone())) {getUnitStringFromExp(Util::getOption(unit_exp)?)?} else {literal!("")}).clone();
     if stringEmpty((unit_string.clone()).clone()) {
-        UnorderedMap::add(var.name.clone(), Unit::Unit::MASTER { varList: list![var.name.clone()] }, htCr2U.clone())?;
-        addUnit2HtS2U((literal!("-")).clone(), Unit::Unit::MASTER { varList: list![var.name.clone()] }, htS2U.clone())?;
-        addUnit2HtU2S((literal!("-")).clone(), Unit::Unit::MASTER { varList: list![var.name.clone()] }, htU2S.clone())?;
+        UnorderedMap::add(var.name.clone(), Unit::Unit::MASTER { varList: list![var.name.clone()] }, htCr2U)?;
+        addUnit2HtS2U((literal!("-")).clone(), Unit::Unit::MASTER { varList: list![var.name.clone()] }, htS2U)?;
+        addUnit2HtU2S((literal!("-")).clone(), Unit::Unit::MASTER { varList: list![var.name.clone()] }, htU2S)?;
     } else {
-        unit = parse((unit_string.clone()).clone(), var.name.clone(), htS2U.clone(), htU2S.clone(), var.info.clone())?;
-        UnorderedMap::add(var.name.clone(), unit.clone(), htCr2U.clone())?;
+        unit = parse((unit_string).clone(), var.name.clone(), htS2U, htU2S, var.info.clone())?;
+        UnorderedMap::add(var.name.clone(), unit, htCr2U)?;
     }
     Ok(())
 }
@@ -1358,7 +1358,7 @@ fn getUnitStringFromExp(mut unitExp: Arc<Expression::NFExpression>) -> Result<Ar
 fn parse(mut unitString: ArcStr, mut cref: Arc<ComponentRef::NFComponentRef>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut info: SourceInfo) -> Result<Unit::Unit> {
     let mut unit: Unit::Unit;
     if stringEmpty((unitString.clone()).clone()) {
-        unit = Unit::Unit::MASTER { varList: list![cref.clone()] };
+        unit = Unit::Unit::MASTER { varList: list![cref] };
         return Ok(unit.clone());
     }
     match '__try0: {

@@ -81,13 +81,13 @@ pub(crate) fn emptyHashTable() -> HashTable {
 
 pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
-    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(printExpOtionStr) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>)));
+    hashTable = BaseHashTable::emptyHashTableWork(size, ((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(printExpOtionStr) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 
 fn printExpOtionStr(mut expOpt: Option<Arc<DAE::Exp>>) -> Result<ArcStr> {
     let mut outStr: ArcStr;
-    outStr = ((::match_deref::match_deref! { match &(expOpt.clone()) {
+    outStr = ((::match_deref::match_deref! { match &(expOpt) {
         Some(exp) => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOME(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },

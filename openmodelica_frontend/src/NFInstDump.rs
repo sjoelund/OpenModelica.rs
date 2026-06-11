@@ -52,37 +52,37 @@ use openmodelica_util_datatypes_basic::Array;
 //public import NFConnect2;
 pub(crate) fn modelStr(mut inName: ArcStr, mut inClass: Arc<NFInstTypes::Class>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString2((std::sync::Arc::new(NFInstDumpTpl::dumpModel) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, ArcStr, Arc<NFInstTypes::Class>) -> Result<Tpl::Text> + 'static>), (inName.clone()).clone(), inClass.clone())?).clone();
+    outString = (Tpl::tplString2((std::sync::Arc::new(NFInstDumpTpl::dumpModel) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, ArcStr, Arc<NFInstTypes::Class>) -> Result<Tpl::Text> + 'static>), (inName).clone(), inClass)?).clone();
     Ok(outString)
 }
 
 pub(crate) fn elementStr(mut inElement: Arc<NFInstTypes::Element>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpElement) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstTypes::Element>) -> Result<Tpl::Text> + 'static>), inElement.clone())?).clone();
+    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpElement) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstTypes::Element>) -> Result<Tpl::Text> + 'static>), inElement)?).clone();
     Ok(outString)
 }
 
 pub(crate) fn componentStr(mut inComponent: Arc<NFInstTypes::Component>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpComponent) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstTypes::Component>) -> Result<Tpl::Text> + 'static>), inComponent.clone())?).clone();
+    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpComponent) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstTypes::Component>) -> Result<Tpl::Text> + 'static>), inComponent)?).clone();
     Ok(outString)
 }
 
 pub(crate) fn bindingStr(mut inBinding: NFInstTypes::Binding) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpBinding) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, NFInstTypes::Binding) -> Result<Tpl::Text> + 'static>), inBinding.clone())?).clone();
+    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpBinding) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, NFInstTypes::Binding) -> Result<Tpl::Text> + 'static>), inBinding)?).clone();
     Ok(outString)
 }
 
 pub(crate) fn prefixStr(mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpPrefix) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstPrefix::Prefix>) -> Result<Tpl::Text> + 'static>), inPrefix.clone())?).clone();
+    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpPrefix) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstPrefix::Prefix>) -> Result<Tpl::Text> + 'static>), inPrefix)?).clone();
     Ok(outString)
 }
 
 pub(crate) fn equationStr(mut inEquation: Arc<NFInstTypes::Equation>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpEquation) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstTypes::Equation>) -> Result<Tpl::Text> + 'static>), inEquation.clone())?).clone();
+    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpEquation) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<NFInstTypes::Equation>) -> Result<Tpl::Text> + 'static>), inEquation)?).clone();
     Ok(outString)
 }
 
@@ -94,13 +94,13 @@ pub(crate) fn equationStr(mut inEquation: Arc<NFInstTypes::Equation>) -> Result<
 //end connectionsStr;
 pub(crate) fn dimensionStr(mut inDimension: NFInstTypes::Dimension) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpDimension) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, NFInstTypes::Dimension) -> Result<Tpl::Text> + 'static>), inDimension.clone())?).clone();
+    outString = (Tpl::tplString((std::sync::Arc::new(NFInstDumpTpl::dumpDimension) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, NFInstTypes::Dimension) -> Result<Tpl::Text> + 'static>), inDimension)?).clone();
     Ok(outString)
 }
 
 pub(crate) fn dumpUntypedComponentDims(mut inComponent: Arc<NFInstTypes::Component>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inComponent.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inComponent) {
         Deref @ NFInstTypes::Component::UNTYPED_COMPONENT { dimensions: dims, .. } => {
             let mut dims_str: ArcStr;
             dims_str = (Array::toString(dims.clone(), (std::sync::Arc::new(dimensionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFInstTypes::Dimension) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();

@@ -83,13 +83,13 @@ pub(crate) fn emptyHashTable() -> HashTable {
 
 pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
-    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(printTupleComponentRefEqListStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)));
+    hashTable = BaseHashTable::emptyHashTableWork(size, ((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(printTupleComponentRefEqListStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 
 pub(crate) fn printTupleComponentRefEqListStr(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> {
     let mut res: ArcStr;
-    res = stringDelimitList(List::map(cr_eq_lst.clone(), (std::sync::Arc::new(printTupleComponentRefEqStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+    res = stringDelimitList(List::map(cr_eq_lst, (std::sync::Arc::new(printTupleComponentRefEqStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     Ok(res)
 }
 
@@ -97,8 +97,8 @@ pub(crate) fn printTupleComponentRefEqStr(mut cr_eq: (Arc<DAE::ComponentRef>, Ar
     let mut res: ArcStr;
     let mut cr: Arc<DAE::ComponentRef>;
     let mut eq: Arc<BackendDAE::Equation>;
-    (cr, eq) = cr_eq.clone();
-    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
+    (cr, eq) = cr_eq;
+    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr)?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*BackendDump::equationString(eq)?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(res)
 }
 

@@ -54,7 +54,7 @@ use openmodelica_util_datatypes_basic::List;
 // protected imports
 pub fn crefDims(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::Dimension>>>> {
     let mut outDimensionLst: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
-    outDimensionLst = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outDimensionLst = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: idType, .. } => {
             TypesDump::getDimensions(idType.clone())
         },
@@ -73,7 +73,7 @@ pub fn crefDims(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
 
 pub fn crefSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
-    outSubscriptLst = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outSubscriptLst = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. } => {
             subs.clone()
         },
@@ -95,9 +95,9 @@ pub fn crefLastIdentEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::Com
     let mut equal: bool;
     let mut id1: ArcStr;
     let mut id2: ArcStr;
-    id1 = (crefLastIdent(cr1.clone())?).clone();
-    id2 = (crefLastIdent(cr2.clone())?).clone();
-    equal = stringEq((id1.clone()).clone(), (id2.clone()).clone());
+    id1 = (crefLastIdent(cr1)?).clone();
+    id2 = (crefLastIdent(cr2)?).clone();
+    equal = stringEq((id1).clone(), (id2).clone());
     Ok(equal)
 }
 
@@ -105,9 +105,9 @@ pub fn crefFirstCrefEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::Com
     let mut equal: bool;
     let mut pcr1: Arc<DAE::ComponentRef>;
     let mut pcr2: Arc<DAE::ComponentRef>;
-    pcr1 = crefFirstCref(cr1.clone())?;
-    pcr2 = crefFirstCref(cr2.clone())?;
-    equal = crefEqual(pcr1.clone(), pcr2.clone())?;
+    pcr1 = crefFirstCref(cr1)?;
+    pcr2 = crefFirstCref(cr2)?;
+    equal = crefEqual(pcr1, pcr2)?;
     Ok(equal)
 }
 
@@ -115,9 +115,9 @@ pub fn crefFirstCrefLastCrefEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<
     let mut equal: bool;
     let mut pcr1: Arc<DAE::ComponentRef>;
     let mut pcr2: Arc<DAE::ComponentRef>;
-    pcr1 = crefFirstCref(cr1.clone())?;
-    pcr2 = crefLastCref(cr2.clone())?;
-    equal = crefEqual(pcr1.clone(), pcr2.clone())?;
+    pcr1 = crefFirstCref(cr1)?;
+    pcr2 = crefLastCref(cr2)?;
+    equal = crefEqual(pcr1, pcr2)?;
     Ok(equal)
 }
 
@@ -128,7 +128,7 @@ pub fn crefFirstCref(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Compon
             makeCrefIdent((id.clone()).clone(), t2.clone(), subs.clone())
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ } => {
-            inCr.clone()
+            inCr
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -137,7 +137,7 @@ pub fn crefFirstCref(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Compon
 
 pub fn crefLastIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
+        ::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
             return Ok(id.clone())
         },
@@ -154,7 +154,7 @@ pub fn crefLastCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DA
     '__tco: loop {
         ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            return Ok(inComponentRef.clone())
+            return Ok(inComponentRef)
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
             let mut res: Arc<DAE::ComponentRef>;
@@ -169,15 +169,15 @@ pub fn crefFirstIdentEqual(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc
     let mut outEqual: bool;
     let mut id1: ArcStr;
     let mut id2: ArcStr;
-    id1 = (crefFirstIdent(inCref1.clone())?).clone();
-    id2 = (crefFirstIdent(inCref2.clone())?).clone();
-    outEqual = stringEq((id1.clone()).clone(), (id2.clone()).clone());
+    id1 = (crefFirstIdent(inCref1)?).clone();
+    id2 = (crefFirstIdent(inCref2)?).clone();
+    outEqual = stringEq((id1).clone(), (id2).clone());
     Ok(outEqual)
 }
 
 pub fn crefFirstIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     let mut outIdent: ArcStr;
-    outIdent = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outIdent = ((::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
             id.clone()
         },
@@ -216,19 +216,19 @@ pub mod CompareWithGenericSubscript {
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res.clone() != 0 {
+            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res != 0 {
                 return Ok(res.clone());
             }
             compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
-                if res.clone() != 0 {
+                if res != 0 {
                     return Ok(res.clone());
                 }
             }
@@ -236,26 +236,26 @@ pub mod CompareWithGenericSubscript {
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             1
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             -1
@@ -271,7 +271,7 @@ pub mod CompareWithGenericSubscript {
         let mut s2: Arc<DAE::Subscript>;
         let mut i1: i32;
         let mut i2: i32;
-        for mut s1 in &*ss1.clone() {
+        for mut s1 in &*ss1 {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
                 res = -1;
@@ -290,13 +290,13 @@ pub mod CompareWithGenericSubscript {
             } else {
                 i1 = ExpressionBasics::subscriptInt(s1.clone())?;
                 i2 = ExpressionBasics::subscriptInt(s2.clone())?;
-                res = if (i1.clone() < i2.clone()) {-1} else if (i1.clone() > i2.clone()) {1} else {0};
+                res = if (i1 < i2) {-1} else if (i1 > i2) {1} else {0};
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
         }
-        if !(ss.clone().is_empty()) {
+        if !(ss.is_empty()) {
             res = 1;
         }
         Ok(res)
@@ -311,19 +311,19 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res.clone() != 0 {
+            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res != 0 {
                 return Ok(res.clone());
             }
             compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
-                if res.clone() != 0 {
+                if res != 0 {
                     return Ok(res.clone());
                 }
             }
@@ -331,26 +331,26 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             1
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             -1
@@ -366,7 +366,7 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
         let mut s2: Arc<DAE::Subscript>;
         let mut i1: i32;
         let mut i2: i32;
-        for mut s1 in &*ss1.clone() {
+        for mut s1 in &*ss1 {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
                 res = -1;
@@ -385,13 +385,13 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
             } else {
                 i1 = ExpressionBasics::subscriptInt(s1.clone())?;
                 i2 = ExpressionBasics::subscriptInt(s2.clone())?;
-                res = if (i1.clone() < i2.clone()) {-1} else if (i1.clone() > i2.clone()) {1} else {0};
+                res = if (i1 < i2) {-1} else if (i1 > i2) {1} else {0};
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
         }
-        if !(ss.clone().is_empty()) {
+        if !(ss.is_empty()) {
             res = 1;
         }
         Ok(res)
@@ -408,19 +408,19 @@ pub mod CompareWithoutSubscripts {
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res.clone() != 0 {
+            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res != 0 {
                 return Ok(res.clone());
             }
             compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
-                if res.clone() != 0 {
+                if res != 0 {
                     return Ok(res.clone());
                 }
             }
@@ -428,26 +428,26 @@ pub mod CompareWithoutSubscripts {
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             1
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             -1
@@ -463,7 +463,7 @@ pub mod CompareWithoutSubscripts {
         let mut s2: Arc<DAE::Subscript>;
         let mut i1: i32;
         let mut i2: i32;
-        for mut s1 in &*ss1.clone() {
+        for mut s1 in &*ss1 {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
                 res = -1;
@@ -482,13 +482,13 @@ pub mod CompareWithoutSubscripts {
             } else {
                 i1 = ExpressionBasics::subscriptInt(s1.clone())?;
                 i2 = ExpressionBasics::subscriptInt(s2.clone())?;
-                res = if (i1.clone() < i2.clone()) {-1} else if (i1.clone() > i2.clone()) {1} else {0};
+                res = if (i1 < i2) {-1} else if (i1 > i2) {1} else {0};
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
         }
-        if !(ss.clone().is_empty()) {
+        if !(ss.is_empty()) {
             res = 1;
         }
         Ok(res)
@@ -505,19 +505,19 @@ pub mod CompareWithIntSubscript {
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res.clone() != 0 {
+            if compareSubscript.clone() == CompareWithSubsType::WithoutSubscripts.clone() || res != 0 {
                 return Ok(res.clone());
             }
             compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
-                if res.clone() != 0 {
+                if res != 0 {
                     return Ok(res.clone());
                 }
             }
@@ -525,26 +525,26 @@ pub mod CompareWithIntSubscript {
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             1
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
             res = stringCompare((var_field!((*cr1).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone());
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             if compareSubscript.clone() != CompareWithSubsType::WithoutSubscripts.clone() {
                 res = compareSubs(var_field!((*cr1).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), var_field!((*cr2).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())?;
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
             -1
@@ -560,7 +560,7 @@ pub mod CompareWithIntSubscript {
         let mut s2: Arc<DAE::Subscript>;
         let mut i1: i32;
         let mut i2: i32;
-        for mut s1 in &*ss1.clone() {
+        for mut s1 in &*ss1 {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
                 res = -1;
@@ -579,13 +579,13 @@ pub mod CompareWithIntSubscript {
             } else {
                 i1 = ExpressionBasics::subscriptInt(s1.clone())?;
                 i2 = ExpressionBasics::subscriptInt(s2.clone())?;
-                res = if (i1.clone() < i2.clone()) {-1} else if (i1.clone() > i2.clone()) {1} else {0};
+                res = if (i1 < i2) {-1} else if (i1 > i2) {1} else {0};
             }
-            if res.clone() != 0 {
+            if res != 0 {
                 return Ok(res.clone());
             }
         }
-        if !(ss.clone().is_empty()) {
+        if !(ss.is_empty()) {
             res = 1;
         }
         Ok(res)
@@ -597,31 +597,31 @@ pub mod CompareWithIntSubscript {
 
 pub fn crefSortFunc(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut greaterThan: bool;
-    greaterThan = CompareWithGenericSubscript::compare(cr1.clone(), cr2.clone())? > 0;
+    greaterThan = CompareWithGenericSubscript::compare(cr1, cr2)? > 0;
     Ok(greaterThan)
 }
 
 pub fn crefCompareGeneric(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut comp: i32;
-    comp = CompareWithGenericSubscript::compare(cr1.clone(), cr2.clone())?;
+    comp = CompareWithGenericSubscript::compare(cr1, cr2)?;
     Ok(comp)
 }
 
 pub fn crefCompareIntSubscript(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut comp: i32;
-    comp = CompareWithIntSubscript::compare(cr1.clone(), cr2.clone())?;
+    comp = CompareWithIntSubscript::compare(cr1, cr2)?;
     Ok(comp)
 }
 
 pub(crate) fn crefCompareGenericNotAlphabetic(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut comp: i32;
-    comp = CompareWithGenericSubscriptNotAlphabetic::compare(cr1.clone(), cr2.clone())?;
+    comp = CompareWithGenericSubscriptNotAlphabetic::compare(cr1, cr2)?;
     Ok(comp)
 }
 
 pub fn crefLexicalGreaterSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut isGreater: bool;
-    isGreater = crefLexicalCompareSubsAtEnd(cr1.clone(), cr2.clone())? > 0;
+    isGreater = crefLexicalCompareSubsAtEnd(cr1, cr2)? > 0;
     Ok(isGreater)
 }
 
@@ -630,19 +630,19 @@ pub(crate) fn crefLexicalCompareSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut c
     let mut subs1: Arc<metamodelica::List<i32>>;
     let mut subs2: Arc<metamodelica::List<i32>>;
     res = CompareWithoutSubscripts::compare(cr1.clone(), cr2.clone())?;
-    if res.clone() != 0 {
+    if res != 0 {
         return Ok(res.clone());
     }
-    subs1 = ExpressionBasics::subscriptsInt(crefSubs(cr1.clone())?)?;
-    subs2 = ExpressionBasics::subscriptsInt(crefSubs(cr2.clone())?)?;
-    res = crefLexicalCompareSubsAtEnd2(subs1.clone(), subs2.clone())?;
+    subs1 = ExpressionBasics::subscriptsInt(crefSubs(cr1)?)?;
+    subs2 = ExpressionBasics::subscriptsInt(crefSubs(cr2)?)?;
+    res = crefLexicalCompareSubsAtEnd2(subs1, subs2)?;
     Ok(res)
 }
 
 fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut inSubs2: Arc<metamodelica::List<i32>>) -> Result<i32> {
     let mut res: i32 = 0;
     let mut rest: Arc<metamodelica::List<i32>> = inSubs2.clone();
-    for mut i in &*inSubs1.clone() {
+    for mut i in &*inSubs1 {
         let mut i = i.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -650,8 +650,8 @@ fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut i
         } };
         res = __pa0.clone();
         rest = __pa1.clone();
-        res = if (i.clone() > res.clone()) {1} else if (i.clone() < res.clone()) {-1} else {0};
-        if res.clone() != 0 {
+        res = if (i.clone() > res) {1} else if (i.clone() < res) {-1} else {0};
+        if res != 0 {
             return Ok(res.clone());
         }
     }
@@ -661,7 +661,7 @@ fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut i
 pub(crate) fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
-        let __mc_input = (containerCref.clone(), containedCref.clone());
+        let __mc_input = (containerCref, containedCref);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => {
@@ -733,7 +733,7 @@ pub(crate) fn crefNotPrefixOf(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE:
     let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => true,
-        _ => !(crefPrefixOf(cr1.clone(), cr2.clone())?),
+        _ => !(crefPrefixOf(cr1, cr2)?),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outBoolean)
@@ -741,19 +741,19 @@ pub(crate) fn crefNotPrefixOf(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE:
 
 pub fn crefEqual(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut outBoolean: bool;
-    outBoolean = crefEqualNoStringCompare(inComponentRef1.clone(), inComponentRef2.clone())?;
+    outBoolean = crefEqualNoStringCompare(inComponentRef1, inComponentRef2)?;
     Ok(outBoolean)
 }
 
 pub fn crefInLst(mut cref: Arc<DAE::ComponentRef>, mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> {
     let mut b: bool;
-    b = List::isMemberOnTrue(cref.clone(), lst.clone(), (std::sync::Arc::new(crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    b = List::isMemberOnTrue(cref, lst, (std::sync::Arc::new(crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(b)
 }
 
 pub fn crefNotInLst(mut cref: Arc<DAE::ComponentRef>, mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> {
     let mut b: bool;
-    b = !(List::isMemberOnTrue(cref.clone(), lst.clone(), (std::sync::Arc::new(crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?);
+    b = !(List::isMemberOnTrue(cref, lst, (std::sync::Arc::new(crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?);
     Ok(b)
 }
 
@@ -882,26 +882,26 @@ pub fn crefEqualNoStringCompare(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2
 
 pub(crate) fn crefEqualReturn(mut cr: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut ocr: Arc<DAE::ComponentRef>;
-    let true = (crefEqualNoStringCompare(cr.clone(), cr2.clone())?) else { bail!("pattern mismatch") };
-    ocr = cr.clone();
+    let true = (crefEqualNoStringCompare(cr.clone(), cr2)?) else { bail!("pattern mismatch") };
+    ocr = cr;
     Ok(ocr)
 }
 
 pub fn crefEqualWithoutLastSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut res: bool;
-    res = crefEqualNoStringCompare(crefStripLastSubs(cr1.clone())?, crefStripLastSubs(cr2.clone())?)?;
+    res = crefEqualNoStringCompare(crefStripLastSubs(cr1)?, crefStripLastSubs(cr2)?)?;
     Ok(res)
 }
 
 pub fn crefEqualWithoutSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> bool {
     let mut res: bool;
-    res = crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone());
+    res = crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1, cr2);
     res
 }
 
 fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut icr2: Arc<DAE::ComponentRef>) -> bool {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((refEq.clone(), icr1.clone(), icr2.clone())) {
+        ::match_deref::match_deref! { match &((refEq, icr1, icr2)) {
         (true, _, _) => {
             return true
         },
@@ -923,7 +923,7 @@ fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut 
 
 pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: t2, .. } => {
             makeCrefIdent((id.clone()).clone(), t2.clone(), metamodelica::nil())
         },
@@ -939,19 +939,19 @@ pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<A
 
 pub fn makeCrefIdent(mut ident: ArcStr, mut identType: Arc<DAE::Type>, mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<DAE::ComponentRef> {
     let mut outCrefIdent: Arc<DAE::ComponentRef>;
-    outCrefIdent = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident.clone()).clone(), identType: identType.clone(), subscriptLst: subscriptLst.clone() });
+    outCrefIdent = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident).clone(), identType: identType, subscriptLst: subscriptLst });
     outCrefIdent
 }
 
 pub fn makeCrefQual(mut ident: ArcStr, mut identType: Arc<DAE::Type>, mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut componentRef: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCrefQual: Arc<DAE::ComponentRef>;
-    outCrefQual = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (ident.clone()).clone(), identType: identType.clone(), subscriptLst: subscriptLst.clone(), componentRef: componentRef.clone() });
+    outCrefQual = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (ident).clone(), identType: identType, subscriptLst: subscriptLst, componentRef: componentRef });
     outCrefQual
 }
 
 pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: s, subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
             s.clone()
         },
@@ -982,7 +982,7 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
 
 pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &((inIdent.clone(), inSubscriptLst.clone())) {
+    outString = ((::match_deref::match_deref! { match &((inIdent, inSubscriptLst)) {
         (s, Deref @ metamodelica::List::Nil) => {
             s.clone()
         },
@@ -1004,13 +1004,13 @@ pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamo
 
 pub fn printComponentRefListStr(mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
     let mut res: ArcStr;
-    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs.clone(), (std::sync::Arc::new(printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
+    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs, (std::sync::Arc::new(printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(res)
 }
 
 pub fn hashComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut hash: i32;
-    hash = (::match_deref::match_deref! { match &(cr.clone()) {
+    hash = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: tp, subscriptLst: subs } => {
             stringHashDjb2((id.clone()).clone()) + hashSubscripts(tp.clone(), subs.clone())?
         },
@@ -1029,7 +1029,7 @@ fn hashSubscripts(mut tp: Arc<DAE::Type>, mut subs: Arc<metamodelica::List<Arc<D
     let mut hash: i32;
     hash = (::match_deref::match_deref! { match &(subs.clone()) {
         Deref @ metamodelica::List::Nil => 0,
-        _ => hashSubscripts2(List::fill(1, (subs.clone().len() as i32)), subs.clone(), 1)?,
+        _ => hashSubscripts2(List::fill(1, (subs.clone().len() as i32)), subs, 1)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(hash)
@@ -1037,12 +1037,12 @@ fn hashSubscripts(mut tp: Arc<DAE::Type>, mut subs: Arc<metamodelica::List<Arc<D
 
 fn hashSubscripts2(mut dims: Arc<metamodelica::List<i32>>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut factor: i32) -> Result<i32> {
     let mut hash: i32;
-    hash = (::match_deref::match_deref! { match &((dims.clone(), subs.clone())) {
+    hash = (::match_deref::match_deref! { match &((dims, subs)) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             0
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest_dims }, Deref @ metamodelica::List::Cons { head: s, tail: rest_subs }) => {
-            hashSubscript(s.clone())? * factor.clone() + hashSubscripts2(rest_dims.clone(), rest_subs.clone(), factor.clone() * 1000)?
+            hashSubscript(s.clone())? * factor + hashSubscripts2(rest_dims.clone(), rest_subs.clone(), factor * 1000)?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1051,7 +1051,7 @@ fn hashSubscripts2(mut dims: Arc<metamodelica::List<i32>>, mut subs: Arc<metamod
 
 fn hashSubscript(mut sub: Arc<DAE::Subscript>) -> Result<i32> {
     let mut hash: i32;
-    hash = (::match_deref::match_deref! { match &(sub.clone()) {
+    hash = (::match_deref::match_deref! { match &(sub) {
         Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             0
         },

@@ -110,7 +110,7 @@ pub type BACKEND_INTERFACE_FUNCTIONS = BackendInterfaceFunctions;
 
 
 pub fn initializeBackendInterface(mut inFunctions: BackendInterfaceFunctions) -> () {
-    { let __v = inFunctions.clone(); crate::Globals::backendCevalInterface.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = inFunctions; crate::Globals::backendCevalInterface.with(|__root| *__root.borrow_mut() = __v) };
     ()
 }
 
@@ -121,7 +121,7 @@ pub(crate) fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FC
     let mut func: partialCevalInteractiveFunctions;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.cevalInteractiveFunctions.clone();
-    (outCache, outValue) = func(inCache.clone(), inEnv.clone(), inExp.clone(), inMsg.clone(), inNumIter.clone())?;
+    (outCache, outValue) = func(inCache, inEnv, inExp, inMsg, inNumIter)?;
     Ok((outCache, outValue))
 }
 
@@ -132,7 +132,7 @@ pub(crate) fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     let mut func: partialCevalCallFunction;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.cevalCallFunction.clone();
-    (outCache, outValue) = func(inCache.clone(), inEnv.clone(), inExp.clone(), inValues.clone(), inImplInst.clone(), inMsg.clone(), inNumIter.clone())?;
+    (outCache, outValue) = func(inCache, inEnv, inExp, inValues, inImplInst, inMsg, inNumIter)?;
     Ok((outCache, outValue))
 }
 
@@ -144,7 +144,7 @@ pub(crate) fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::G
     let mut func: partialElabCallInteractive;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.elabCallInteractive.clone();
-    (outCache, outExp, outProperties) = func(inCache.clone(), inEnv.clone(), inCref.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone())?;
+    (outCache, outExp, outProperties) = func(inCache, inEnv, inCref, inExps, inNamedArgs, inImplInst, inPrefix, inInfo)?;
     Ok((outCache, outExp, outProperties))
 }
 

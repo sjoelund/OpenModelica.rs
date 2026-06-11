@@ -19,15 +19,17 @@ use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 
-fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_46 in &*items.clone() {
-        let mut lstElt_46 = lstElt_46.clone();
-        txt = (match lstElt_46.clone() {
-        SimCodeVar::SimVar { name: ref i_v_name, .. } => {
+fn lm_46(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_v_name, .. }, tail: rest }) => {
             let mut x_index0: i32;
             let mut ret_1: ArcStr;
             let mut txt_0: Tpl::Text;
+            let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_index0.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(": ")).clone() }))?;
@@ -35,31 +37,32 @@ fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVa
             ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpVarsShort(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_varsString: Tpl::Text;
     l_varsString = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_varsString = lm_46(l_varsString.clone(), a_vars.clone())?;
-    l_varsString = Tpl::popIter(l_varsString.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_varsString.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    l_varsString = lm_46(l_varsString, a_vars)?;
+    l_varsString = Tpl::popIter(l_varsString)?;
+    out_txt = Tpl::writeText(txt, l_varsString)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_alias.clone()) {
+    out_txt = (match (in_txt, in_a_alias) {
         (mut txt, SimCodeVar::AliasVariable::ALIAS { varName: ref i_varName }) => {
             let mut ret_1: ArcStr;
             let mut txt_0: Tpl::Text;
@@ -93,9 +96,9 @@ pub(crate) fn printExpStrEscaped(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -
     let mut out_txt: Tpl::Text;
     let mut ret_1: ArcStr;
     let mut txt_0: Tpl::Text;
-    txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), a_exp.clone(), (literal!("\"")).clone())?;
-    ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
-    out_txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
+    txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), a_exp, (literal!("\"")).clone())?;
+    ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0)?).clone())?).clone();
+    out_txt = Tpl::writeStr(txt, (ret_1).clone())?;
     Ok(out_txt)
 }
 

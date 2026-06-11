@@ -120,7 +120,7 @@ pub(crate) fn new(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation
     if equations.clone().is_empty() && initialEquations.clone().is_empty() && algorithms.clone().is_empty() && initialAlgorithms.clone().is_empty() {
         sections = crate::NFSections::interned_EMPTY();
     } else {
-        sections = Arc::new(NFSections::SECTIONS { equations: equations.clone(), initialEquations: initialEquations.clone(), algorithms: algorithms.clone(), initialAlgorithms: initialAlgorithms.clone() });
+        sections = Arc::new(NFSections::SECTIONS { equations: equations, initialEquations: initialEquations, algorithms: algorithms, initialAlgorithms: initialAlgorithms });
     }
     sections
 }
@@ -138,8 +138,8 @@ pub fn equations(mut sections: Arc<NFSections>) -> Arc<metamodelica::List<Arc<Eq
 pub(crate) fn prepend(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut initialEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut algorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut sections: Arc<NFSections>) -> Arc<NFSections> {
     let mut sections: Arc<NFSections> = sections;
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
-        Deref @ SECTIONS { .. } => Arc::new(NFSections::SECTIONS { equations: listAppend(equations.clone(), var_field!((*sections).equations, NFSections::SECTIONS).clone()), initialEquations: listAppend(initialEquations.clone(), var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()), algorithms: listAppend(algorithms.clone(), var_field!((*sections).algorithms, NFSections::SECTIONS).clone()), initialAlgorithms: listAppend(initialAlgorithms.clone(), var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()) }),
-        _ => Arc::new(NFSections::SECTIONS { equations: equations.clone(), initialEquations: initialEquations.clone(), algorithms: algorithms.clone(), initialAlgorithms: initialAlgorithms.clone() }),
+        Deref @ SECTIONS { .. } => Arc::new(NFSections::SECTIONS { equations: listAppend(equations, var_field!((*sections).equations, NFSections::SECTIONS).clone()), initialEquations: listAppend(initialEquations, var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()), algorithms: listAppend(algorithms, var_field!((*sections).algorithms, NFSections::SECTIONS).clone()), initialAlgorithms: listAppend(initialAlgorithms, var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()) }),
+        _ => Arc::new(NFSections::SECTIONS { equations: equations, initialEquations: initialEquations, algorithms: algorithms, initialAlgorithms: initialAlgorithms }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     sections
@@ -149,14 +149,14 @@ pub(crate) fn prependEquation(mut eq: Arc<Equation::NFEquation>, mut sections: A
     let mut sections: Arc<NFSections> = sections;
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => {
-            if isInitial.clone() {
-                assign_variant_field!(sections => NFSections::SECTIONS; initialEquations = metamodelica::cons(eq.clone(), var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()));
+            if isInitial {
+                assign_variant_field!(sections => NFSections::SECTIONS; initialEquations = metamodelica::cons(eq, var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()));
             } else {
-                assign_variant_field!(sections => NFSections::SECTIONS; equations = metamodelica::cons(eq.clone(), var_field!((*sections).equations, NFSections::SECTIONS).clone()));
+                assign_variant_field!(sections => NFSections::SECTIONS; equations = metamodelica::cons(eq, var_field!((*sections).equations, NFSections::SECTIONS).clone()));
             }
-            sections.clone()
+            sections
         },
-        Deref @ EMPTY { .. } => if (isInitial.clone()) {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: list![eq.clone()], algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() })} else {Arc::new(NFSections::SECTIONS { equations: list![eq.clone()], initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() })},
+        Deref @ EMPTY { .. } => if (isInitial) {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: list![eq], algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() })} else {Arc::new(NFSections::SECTIONS { equations: list![eq], initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() })},
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSections.prependEquation")); __mm_s.push_str(&*literal!(" got invalid Sections to prepend equation to")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSections.mo"))?;
             bail!("fail")
@@ -170,14 +170,14 @@ pub(crate) fn prependAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut section
     let mut sections: Arc<NFSections> = sections;
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => {
-            if isInitial.clone() {
-                assign_variant_field!(sections => NFSections::SECTIONS; initialAlgorithms = metamodelica::cons(alg.clone(), var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()));
+            if isInitial {
+                assign_variant_field!(sections => NFSections::SECTIONS; initialAlgorithms = metamodelica::cons(alg, var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()));
             } else {
-                assign_variant_field!(sections => NFSections::SECTIONS; algorithms = metamodelica::cons(alg.clone(), var_field!((*sections).algorithms, NFSections::SECTIONS).clone()));
+                assign_variant_field!(sections => NFSections::SECTIONS; algorithms = metamodelica::cons(alg, var_field!((*sections).algorithms, NFSections::SECTIONS).clone()));
             }
-            sections.clone()
+            sections
         },
-        Deref @ EMPTY { .. } => if (isInitial.clone()) {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: list![alg.clone()] })} else {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: list![alg.clone()], initialAlgorithms: metamodelica::nil() })},
+        Deref @ EMPTY { .. } => if (isInitial) {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: list![alg] })} else {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: list![alg], initialAlgorithms: metamodelica::nil() })},
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSections.prependAlgorithm")); __mm_s.push_str(&*literal!(" got invalid Sections to prepend algorithm to")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSections.mo"))?;
             bail!("fail")
@@ -190,8 +190,8 @@ pub(crate) fn prependAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut section
 pub(crate) fn append(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut initialEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut algorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut sections: Arc<NFSections>) -> Arc<NFSections> {
     let mut sections: Arc<NFSections> = sections;
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
-        Deref @ SECTIONS { .. } => Arc::new(NFSections::SECTIONS { equations: listAppend(var_field!((*sections).equations, NFSections::SECTIONS).clone(), equations.clone()), initialEquations: listAppend(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), initialEquations.clone()), algorithms: listAppend(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), algorithms.clone()), initialAlgorithms: listAppend(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), initialAlgorithms.clone()) }),
-        _ => Arc::new(NFSections::SECTIONS { equations: equations.clone(), initialEquations: initialEquations.clone(), algorithms: algorithms.clone(), initialAlgorithms: initialAlgorithms.clone() }),
+        Deref @ SECTIONS { .. } => Arc::new(NFSections::SECTIONS { equations: listAppend(var_field!((*sections).equations, NFSections::SECTIONS).clone(), equations), initialEquations: listAppend(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), initialEquations), algorithms: listAppend(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), algorithms), initialAlgorithms: listAppend(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), initialAlgorithms) }),
+        _ => Arc::new(NFSections::SECTIONS { equations: equations, initialEquations: initialEquations, algorithms: algorithms, initialAlgorithms: initialAlgorithms }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     sections
@@ -200,8 +200,8 @@ pub(crate) fn append(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquat
 pub(crate) fn join(mut sections1: Arc<NFSections>, mut sections2: Arc<NFSections>) -> Result<Arc<NFSections>> {
     let mut sections: Arc<NFSections>;
     sections = (::match_deref::match_deref! { match &((sections1.clone(), sections2.clone())) {
-        (Deref @ EMPTY { .. }, _) => sections2.clone(),
-        (_, Deref @ EMPTY { .. }) => sections1.clone(),
+        (Deref @ EMPTY { .. }, _) => sections2,
+        (_, Deref @ EMPTY { .. }) => sections1,
         (Deref @ SECTIONS { .. }, Deref @ SECTIONS { .. }) => Arc::new(NFSections::SECTIONS { equations: listAppend(var_field!((*sections1).equations, NFSections::SECTIONS).clone(), var_field!((*sections2).equations, NFSections::SECTIONS).clone()), initialEquations: listAppend(var_field!((*sections1).initialEquations, NFSections::SECTIONS).clone(), var_field!((*sections2).initialEquations, NFSections::SECTIONS).clone()), algorithms: listAppend(var_field!((*sections1).algorithms, NFSections::SECTIONS).clone(), var_field!((*sections2).algorithms, NFSections::SECTIONS).clone()), initialAlgorithms: listAppend(var_field!((*sections1).initialAlgorithms, NFSections::SECTIONS).clone(), var_field!((*sections2).initialAlgorithms, NFSections::SECTIONS).clone()) }),
         _ => bail!("match: no arm matched"),
     } });
@@ -252,7 +252,7 @@ pub(crate) fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::F
         }
         __acc.reverse()
     });
-            sections = Arc::new(NFSections::SECTIONS { equations: eq.clone(), initialEquations: ieq.clone(), algorithms: alg.clone(), initialAlgorithms: ialg.clone() });
+            sections = Arc::new(NFSections::SECTIONS { equations: eq.clone(), initialEquations: ieq.clone(), algorithms: alg, initialAlgorithms: ialg.clone() });
             ()
         },
         _ => (),
@@ -315,7 +315,7 @@ pub(crate) fn map1<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut sectio
         }
         __acc.reverse()
     });
-            sections = Arc::new(NFSections::SECTIONS { equations: eq.clone(), initialEquations: ieq.clone(), algorithms: alg.clone(), initialAlgorithms: ialg.clone() });
+            sections = Arc::new(NFSections::SECTIONS { equations: eq, initialEquations: ieq, algorithms: alg, initialAlgorithms: ialg });
             ()
         },
         _ => (),
@@ -338,7 +338,7 @@ pub(crate) fn mapExp(mut sections: Arc<NFSections>, mut mapFn: Arc<dyn ::std::op
             ieq = Equation::mapExpList(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), mapFn.clone())?;
             alg = Algorithm::mapExpList(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), mapFn.clone())?;
             ialg = Algorithm::mapExpList(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), mapFn.clone())?;
-            Arc::new(NFSections::SECTIONS { equations: eq.clone(), initialEquations: ieq.clone(), algorithms: alg.clone(), initialAlgorithms: ialg.clone() })
+            Arc::new(NFSections::SECTIONS { equations: eq, initialEquations: ieq, algorithms: alg, initialAlgorithms: ialg })
         },
         Deref @ EXTERNAL { .. } => {
             assign_variant_field!(sections => NFSections::EXTERNAL; args = ({
@@ -349,9 +349,9 @@ pub(crate) fn mapExp(mut sections: Arc<NFSections>, mut mapFn: Arc<dyn ::std::op
         }
         __acc.reverse()
     }));
-            sections.clone()
+            sections
         },
-        _ => sections.clone(),
+        _ => sections,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(sections)
@@ -363,14 +363,14 @@ pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut sec
     let mut arg: ArgT = arg;
     arg = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => {
-            arg = Equation::foldExpList(var_field!((*sections).equations, NFSections::SECTIONS).clone(), foldFn.clone(), arg.clone())?;
-            arg = Equation::foldExpList(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), foldFn.clone(), arg.clone())?;
-            arg = Algorithm::foldExpList(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), foldFn.clone(), arg.clone())?;
-            arg = Algorithm::foldExpList(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), foldFn.clone(), arg.clone())?;
-            arg.clone()
+            arg = Equation::foldExpList(var_field!((*sections).equations, NFSections::SECTIONS).clone(), foldFn.clone(), arg)?;
+            arg = Equation::foldExpList(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), foldFn.clone(), arg)?;
+            arg = Algorithm::foldExpList(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), foldFn.clone(), arg)?;
+            arg = Algorithm::foldExpList(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), foldFn.clone(), arg)?;
+            arg
         },
-        Deref @ EXTERNAL { .. } => List::fold(var_field!((*sections).args, NFSections::EXTERNAL).clone(), foldFn.clone(), arg.clone())?,
-        _ => arg.clone(),
+        Deref @ EXTERNAL { .. } => List::fold(var_field!((*sections).args, NFSections::EXTERNAL).clone(), foldFn.clone(), arg)?,
+        _ => arg,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(arg)
@@ -409,7 +409,7 @@ pub(crate) fn apply(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops:
 
 pub(crate) fn isEmpty(mut sections: Arc<NFSections>) -> bool {
     let mut isEmpty: bool;
-    isEmpty = (::match_deref::match_deref! { match &(sections.clone()) {
+    isEmpty = (::match_deref::match_deref! { match &(sections) {
         Deref @ EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -430,20 +430,20 @@ pub(crate) fn toStream(mut sections: Arc<NFSections>, mut indent: ArcStr, mut s:
             ()
         },
         Deref @ EXTERNAL { .. } => {
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("external \"")).clone())?;
-            s = IOStream::append(s.clone(), (var_field!((*sections).language, NFSections::EXTERNAL).clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("\"")).clone())?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("external \"")).clone())?;
+            s = IOStream::append(s, (var_field!((*sections).language, NFSections::EXTERNAL).clone()).clone())?;
+            s = IOStream::append(s, (literal!("\"")).clone())?;
             if var_field!((*sections).explicit, NFSections::EXTERNAL).clone() {
                 if !(ComponentRef::isEmpty(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone())) {
-                    s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-                    s = IOStream::append(s.clone(), (ComponentRef::toString(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone())?).clone())?;
-                    s = IOStream::append(s.clone(), (literal!(" =")).clone())?;
+                    s = IOStream::append(s, (literal!(" ")).clone())?;
+                    s = IOStream::append(s, (ComponentRef::toString(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone())?).clone())?;
+                    s = IOStream::append(s, (literal!(" =")).clone())?;
                 }
-                s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-                s = IOStream::append(s.clone(), (var_field!((*sections).name, NFSections::EXTERNAL).clone()).clone())?;
-                s = IOStream::append(s.clone(), (literal!("(")).clone())?;
-                s = IOStream::append(s.clone(), stringDelimitList(({
+                s = IOStream::append(s, (literal!(" ")).clone())?;
+                s = IOStream::append(s, (var_field!((*sections).name, NFSections::EXTERNAL).clone()).clone())?;
+                s = IOStream::append(s, (literal!("(")).clone())?;
+                s = IOStream::append(s, stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (var_field!((*sections).args, NFSections::EXTERNAL).clone()).into_iter().cloned() {
             let __x = Expression::toString(e.clone())?;
@@ -451,12 +451,12 @@ pub(crate) fn toStream(mut sections: Arc<NFSections>, mut indent: ArcStr, mut s:
         }
         __acc.reverse()
     }), (literal!(", ")).clone()))?;
-                s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+                s = IOStream::append(s, (literal!(")")).clone())?;
             }
             if isSome(var_field!((*sections).ann, NFSections::EXTERNAL).clone()) {
-                s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCompAnnotationStr(Some(Arc::new(SCode::Comment { annotation_: var_field!((*sections).ann, NFSections::EXTERNAL).clone(), comment: None })))).clone())?;
+                s = IOStream::append(s, (DAEDumpTypes::dumpCompAnnotationStr(Some(Arc::new(SCode::Comment { annotation_: var_field!((*sections).ann, NFSections::EXTERNAL).clone(), comment: None })))).clone())?;
             }
-            s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
+            s = IOStream::append(s, (literal!(";\n")).clone())?;
             ()
         },
         _ => (),
@@ -484,20 +484,20 @@ pub(crate) fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Abs
             ()
         },
         Deref @ EXTERNAL { .. } => {
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("external \"")).clone())?;
-            s = IOStream::append(s.clone(), (var_field!((*sections).language, NFSections::EXTERNAL).clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("\"")).clone())?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("external \"")).clone())?;
+            s = IOStream::append(s, (var_field!((*sections).language, NFSections::EXTERNAL).clone()).clone())?;
+            s = IOStream::append(s, (literal!("\"")).clone())?;
             if var_field!((*sections).explicit, NFSections::EXTERNAL).clone() {
                 if !(ComponentRef::isEmpty(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone())) {
-                    s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-                    s = IOStream::append(s.clone(), (ComponentRef::toFlatString(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone(), format.clone())?).clone())?;
-                    s = IOStream::append(s.clone(), (literal!(" =")).clone())?;
+                    s = IOStream::append(s, (literal!(" ")).clone())?;
+                    s = IOStream::append(s, (ComponentRef::toFlatString(var_field!((*sections).outputRef, NFSections::EXTERNAL).clone(), format.clone())?).clone())?;
+                    s = IOStream::append(s, (literal!(" =")).clone())?;
                 }
-                s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-                s = IOStream::append(s.clone(), (var_field!((*sections).name, NFSections::EXTERNAL).clone()).clone())?;
-                s = IOStream::append(s.clone(), (literal!("(")).clone())?;
-                s = IOStream::append(s.clone(), stringDelimitList(({
+                s = IOStream::append(s, (literal!(" ")).clone())?;
+                s = IOStream::append(s, (var_field!((*sections).name, NFSections::EXTERNAL).clone()).clone())?;
+                s = IOStream::append(s, (literal!("(")).clone())?;
+                s = IOStream::append(s, stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (var_field!((*sections).args, NFSections::EXTERNAL).clone()).into_iter().cloned() {
             let __x = Expression::toFlatString(e.clone(), format.clone())?;
@@ -505,7 +505,7 @@ pub(crate) fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Abs
         }
         __acc.reverse()
     }), (literal!(", ")).clone()))?;
-                s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+                s = IOStream::append(s, (literal!(")")).clone())?;
             }
             if isSome(var_field!((*sections).ann, NFSections::EXTERNAL).clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(var_field!((*sections).ann, NFSections::EXTERNAL).clone()) {
@@ -527,15 +527,15 @@ pub(crate) fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Abs
                 if SCodeUtil::isEmptyMod(modInc.clone()) {
                     modIncDir = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
                 } else {
-                    modIncDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
+                    modIncDir = SCodeUtil::filterSubMods(r#mod, (std::sync::Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {
-                        modLibDir = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (literal!("IncludeDirectory")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(scopeName.clone())?); __mm_s.push_str(&*literal!("/Resources/Include")); ArcStr::from(__mm_s) }).clone() })), comment: None, info: Error::dummyInfo.clone() }) })], binding: None, comment: None, info: Error::dummyInfo.clone() });
+                        modLibDir = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (literal!("IncludeDirectory")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(scopeName)?); __mm_s.push_str(&*literal!("/Resources/Include")); ArcStr::from(__mm_s) }).clone() })), comment: None, info: Error::dummyInfo.clone() }) })], binding: None, comment: None, info: Error::dummyInfo.clone() });
                     }
                 }
-                assign_field!(ann.modification = SCodeUtil::mergeSCodeMods(SCodeUtil::mergeSCodeMods(modLib.clone(), modLibDir.clone())?, SCodeUtil::mergeSCodeMods(modInc.clone(), modIncDir.clone())?)?);
-                s = IOStream::append(s.clone(), (SCodeDump::printAnnotationStr(Arc::new(SCode::Comment { annotation_: Some(ann.clone()), comment: None }), SCodeDump::defaultOptions.clone())?).clone())?;
+                assign_field!(ann.modification = SCodeUtil::mergeSCodeMods(SCodeUtil::mergeSCodeMods(modLib, modLibDir)?, SCodeUtil::mergeSCodeMods(modInc, modIncDir)?)?);
+                s = IOStream::append(s, (SCodeDump::printAnnotationStr(Arc::new(SCode::Comment { annotation_: Some(ann), comment: None }), SCodeDump::defaultOptions.clone())?).clone())?;
             }
-            s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
+            s = IOStream::append(s, (literal!(";\n")).clone())?;
             ()
         },
         _ => (),

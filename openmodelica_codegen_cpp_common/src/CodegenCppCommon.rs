@@ -39,7 +39,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub fn cref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_simTime")).clone() }))?;
@@ -61,7 +61,7 @@ pub fn cref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a
 
 pub(crate) fn localCref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_simTime")).clone() }))?;
@@ -87,7 +87,7 @@ pub(crate) fn localCref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
 
 fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_46 in &*items.clone() {
+    for mut lstElt_46 in &*items {
         let mut lstElt_46 = lstElt_46.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_46.clone()) {
         i_s => {
@@ -103,7 +103,7 @@ fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
 
 fn lm_47(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_47 in &*items.clone() {
+    for mut lstElt_47 in &*items {
         let mut lstElt_47 = lstElt_47.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_47.clone()) {
         i_s => {
@@ -119,7 +119,7 @@ fn lm_47(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
 
 fn fun_48(mut in_txt: Tpl::Text, mut in_a_useFlatArrayNotation: bool, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_useFlatArrayNotation.clone(), in_a_subscripts.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_useFlatArrayNotation, in_a_subscripts)) {
         (txt, false, a_subscripts) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -144,7 +144,7 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_useFlatArrayNotation: bool, mut in_a_s
 
 pub(crate) fn subscriptsToCStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscripts, in_a_useFlatArrayNotation)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -160,7 +160,7 @@ pub(crate) fn subscriptsToCStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<m
 
 fn fun_50(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_i }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_i.clone())).clone())?;
@@ -186,7 +186,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Tex
 
 pub(crate) fn subscriptToCStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscript>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscript)) {
         (txt, Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ICONST { integer: i_i } }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_i.clone())).clone())?;
@@ -214,7 +214,7 @@ pub(crate) fn subscriptToCStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_subscriptLst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_subscriptLst)) {
         (txt, false, _) => {
             txt.clone()
         },
@@ -230,7 +230,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<m
 
 pub(crate) fn crefToCStrForArray(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_dims: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_dims.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_dims)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_subscriptLst, ident: i_ident, .. }, a_dims) => {
             let mut ret_1: ArcStr;
             let mut ret_0: i32;
@@ -274,7 +274,7 @@ pub(crate) fn crefToCStrForArray(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Co
 
 pub(crate) fn crefToCStr1(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }, _) => {
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
@@ -306,7 +306,7 @@ pub(crate) fn crefToCStr1(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Component
 
 fn lm_55(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_55 in &*items.clone() {
+    for mut lstElt_55 in &*items {
         let mut lstElt_55 = lstElt_55.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_55.clone()) {
         i_s => {
@@ -322,7 +322,7 @@ fn lm_55(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
 
 pub(crate) fn subscriptsToCStrForArray(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscripts)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -340,7 +340,7 @@ pub(crate) fn subscriptsToCStrForArray(mut in_txt: Tpl::Text, mut in_a_subscript
 
 pub fn crefStrForWriteOutput(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "xloc", subscriptLst: i_subscriptLst, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("__xd")).clone() }))?;
@@ -389,7 +389,7 @@ pub fn crefStrForWriteOutput(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compon
 
 pub fn crefStrForSetVariables(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", .. }, _) => {
             txt.clone()
         },
@@ -405,7 +405,7 @@ pub fn crefStrForSetVariables(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compo
 
 fn lm_59(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_59 in &*items.clone() {
+    for mut lstElt_59 in &*items {
         let mut lstElt_59 = lstElt_59.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_59.clone()) {
         i_s => {
@@ -421,7 +421,7 @@ fn lm_59(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
 
 pub(crate) fn subscriptsStrForWriteOutput(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscripts)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -441,7 +441,7 @@ pub(crate) fn subscriptsStrForWriteOutput(mut in_txt: Tpl::Text, mut in_a_subscr
 
 pub fn crefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "xloc", subscriptLst: i_subscriptLst, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("__xd")).clone() }))?;
@@ -480,7 +480,7 @@ pub fn crefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Re
 
 fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_62 in &*items.clone() {
+    for mut lstElt_62 in &*items {
         let mut lstElt_62 = lstElt_62.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_62.clone()) {
         i_s => {
@@ -496,7 +496,7 @@ fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
 
 pub(crate) fn subscriptsStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscripts)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -516,7 +516,7 @@ pub(crate) fn subscriptsStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<meta
 
 fn fun_64(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_i }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_i.clone())).clone())?;
@@ -542,7 +542,7 @@ fn fun_64(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Tex
 
 pub(crate) fn subscriptStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscript>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscript)) {
         (txt, Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ICONST { integer: i_i } }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_i.clone())).clone())?;
@@ -575,7 +575,7 @@ fn fun_66(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_varDeclsCref, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_varDeclsCref.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_varDeclsCref, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_varDeclsCref, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_cr)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, a_stateDerVectorName, a_varDeclsCref, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_cr) => {
             let mut txt = (*txt).clone();
             txt = crefStr(txt.clone(), a_cr.clone())?;
@@ -604,13 +604,13 @@ pub fn contextCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_c
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_varDeclsCref: Tpl::Text;
     l_varDeclsCref = Tpl::emptyTxt.clone();
-    (out_txt, out_a_stateDerVectorName, l_varDeclsCref, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = fun_66(txt.clone(), a_context.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), l_varDeclsCref.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_cr.clone())?;
+    (out_txt, out_a_stateDerVectorName, l_varDeclsCref, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = fun_66(txt, a_context, a_useFlatArrayNotation, a_stateDerVectorName, l_varDeclsCref, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_cr)?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_68(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_cr)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, a_cr) => {
             let mut txt = (*txt).clone();
             txt = crefStr(txt.clone(), a_cr.clone())?;
@@ -626,13 +626,13 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut
 
 pub fn contextCref2(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_68(txt.clone(), a_context.clone(), a_cr.clone())?;
+    out_txt = fun_68(txt, a_context, a_cr)?;
     Ok(out_txt)
 }
 
 fn fun_70(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_funName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_funName.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_funName) {
         (mut txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, mut a_funName) => {
             txt = Tpl::writeStr(txt.clone(), (a_funName.clone()).clone())?;
             txt.clone()
@@ -648,16 +648,16 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut
 
 pub(crate) fn contextFunName(mut txt: Tpl::Text, mut a_funName: ArcStr, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_70(txt.clone(), a_context.clone(), (a_funName.clone()).clone())?;
+    out_txt = fun_70(txt, a_context, (a_funName).clone())?;
     Ok(out_txt)
 }
 
 pub fn contextIteratorName(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: ArcStr;
-    ret_0 = (System::unquoteIdentifier((a_name.clone()).clone())).clone();
-    out_txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+    ret_0 = (System::unquoteIdentifier((a_name).clone())).clone();
+    out_txt = Tpl::writeStr(txt, (ret_0).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
     Ok(out_txt)
 }
 
@@ -668,7 +668,7 @@ pub(crate) fn crefWithIndex(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compone
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_context.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_context, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_QUAL { ident: _, .. }, a_context, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -696,7 +696,7 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_subscript
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_subscriptLst.clone(), in_a_identTmp.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_subscriptLst, in_a_identTmp, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, i_e @ Deref @ DAE::Exp::CREF { componentRef: i_componentRef, .. }, a_subscriptLst, a_identTmp, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut l_tmp: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -730,7 +730,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Subscript>, mut in_a_subs
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_subscriptLst.clone(), in_a_identTmp.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_subscriptLst, in_a_identTmp, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }, a_subscriptLst, a_identTmp, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -758,7 +758,7 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_u
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, .. }, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut ret_2: Arc<DAE::Subscript>;
             let mut ret_1: ArcStr;
@@ -797,13 +797,13 @@ pub(crate) fn crefToCStrWithIndex(mut txt: Tpl::Text, mut a_cr: Arc<DAE::Compone
     let mut l_preExp: Tpl::Text;
     l_preExp = Tpl::emptyTxt.clone();
     l_tmp = Tpl::emptyTxt.clone();
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, l_preExp) = fun_76(txt.clone(), a_cr.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), l_preExp.clone(), a_context.clone())?;
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, l_preExp) = fun_76(txt, a_cr, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, l_preExp, a_context)?;
     Ok((out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_78(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->_simTime")).clone() }))?;
             txt.clone()
@@ -823,7 +823,7 @@ pub fn cref1(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_varDecls, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_context.clone(), in_a_varDecls.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_varDecls, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_context, in_a_varDecls, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", componentRef: i_componentRef, .. }, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_context, a_varDecls, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -878,7 +878,7 @@ pub fn cref1(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_
 
 fn fun_80(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_useFlatArrayNotation: bool, mut in_a_inCref: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_useFlatArrayNotation.clone(), in_a_inCref.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_useFlatArrayNotation, in_a_inCref)) {
         (txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, genJacobian: false }, a_useFlatArrayNotation, a_inCref) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->")).clone() }))?;
@@ -909,7 +909,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut
 
 fn fun_81(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_context: SimCodeFunction::Context, mut in_a_useFlatArrayNotation: bool, mut in_a_inCref: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_context.clone(), in_a_useFlatArrayNotation.clone(), in_a_inCref.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_var, in_a_context, in_a_useFlatArrayNotation, in_a_inCref)) {
         (txt, SimCodeVar::SimVar { index: (-2), .. }, _, a_useFlatArrayNotation, a_inCref) => {
             let mut txt = (*txt).clone();
             txt = localCref(txt.clone(), a_inCref.clone(), a_useFlatArrayNotation.clone())?;
@@ -927,7 +927,7 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_cont
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_a_useFlatArrayNotation: bool, mut in_a_inCref: Arc<DAE::ComponentRef>, mut in_a_var: SimCodeVar::SimVar, mut in_a_matrixName: Option<ArcStr>, mut in_a_context: SimCodeFunction::Context, mut in_a_i: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varKind.clone(), in_a_useFlatArrayNotation.clone(), in_a_inCref.clone(), in_a_var.clone(), in_a_matrixName.clone(), in_a_context.clone(), in_a_i.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varKind, in_a_useFlatArrayNotation, in_a_inCref, in_a_var, in_a_matrixName, in_a_context, in_a_i)) {
         (txt, BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }, _, _, _, _, _, a_i) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("__daeResidual[")).clone() }))?;
@@ -989,7 +989,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_a
 
 fn smf_83(mut in_txt: Tpl::Text, mut in_it: SimCodeVar::SimVar, mut in_a_useFlatArrayNotation: bool, mut in_a_inCref: Arc<DAE::ComponentRef>, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone(), in_a_useFlatArrayNotation.clone(), in_a_inCref.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_it, in_a_useFlatArrayNotation, in_a_inCref, in_a_context)) {
         (txt, i_var @ SimCodeVar::SimVar { varKind: i_varKind, index: i_i, matrixName: i_matrixName, .. }, a_useFlatArrayNotation, a_inCref, a_context) => {
             let mut txt = (*txt).clone();
             txt = fun_82(txt.clone(), i_varKind.clone(), a_useFlatArrayNotation.clone(), a_inCref.clone(), i_var.clone(), i_matrixName.clone(), a_context.clone(), i_i.clone())?;
@@ -1005,7 +1005,7 @@ fn smf_83(mut in_txt: Tpl::Text, mut in_it: SimCodeVar::SimVar, mut in_a_useFlat
 
 fn fun_84(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_inCref: Arc<DAE::ComponentRef>, mut in_a_simCode: SimCode::SimCode, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_inCref.clone(), in_a_simCode.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_inCref, in_a_simCode, in_a_useFlatArrayNotation)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, a_inCref, _, _) => {
             let mut txt = (*txt).clone();
             txt = crefStr(txt.clone(), a_inCref.clone())?;
@@ -1032,18 +1032,18 @@ pub fn representationCref(mut txt: Tpl::Text, mut a_inCref: Arc<DAE::ComponentRe
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    out_txt = fun_84(txt.clone(), a_context.clone(), a_inCref.clone(), a_simCode.clone(), a_useFlatArrayNotation.clone())?;
-    out_a_extraFuncs = a_extraFuncs.clone();
-    out_a_extraFuncsDecl = a_extraFuncsDecl.clone();
-    out_a_extraFuncsNamespace = a_extraFuncsNamespace.clone();
-    out_a_varDecls = a_varDecls.clone();
-    out_a_stateDerVectorName = a_stateDerVectorName.clone();
+    out_txt = fun_84(txt, a_context, a_inCref, a_simCode, a_useFlatArrayNotation)?;
+    out_a_extraFuncs = a_extraFuncs;
+    out_a_extraFuncsDecl = a_extraFuncsDecl;
+    out_a_extraFuncsNamespace = a_extraFuncsNamespace;
+    out_a_varDecls = a_varDecls;
+    out_a_stateDerVectorName = a_stateDerVectorName;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_varDecls, out_a_stateDerVectorName))
 }
 
 pub fn arraycref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "xloc", .. }, _) => {
             let mut txt = (*txt).clone();
             txt = crefStr(txt.clone(), i_cr.clone())?;
@@ -1071,7 +1071,7 @@ pub fn arraycref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut
 pub fn arraycref2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_dims: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_dims: Tpl::Text;
-    (out_txt, out_a_dims) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_dims.clone())) {
+    (out_txt, out_a_dims) = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_dims)) {
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "xloc", .. }, a_dims) => {
             let mut txt = (*txt).clone();
             txt = crefStr(txt.clone(), i_cr.clone())?;
@@ -1099,7 +1099,7 @@ pub fn arraycref2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mu
 
 pub(crate) fn cref2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "xloc", .. }, _) => {
             let mut txt = (*txt).clone();
             txt = crefStr(txt.clone(), i_cr.clone())?;
@@ -1126,7 +1126,7 @@ pub(crate) fn cref2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, 
 
 fn fun_89(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_useFlatArrayNotation: bool, mut in_a_subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_useFlatArrayNotation.clone(), in_a_subscriptLst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_useFlatArrayNotation, in_a_subscriptLst)) {
         (txt, false, _, _) => {
             txt.clone()
         },
@@ -1142,7 +1142,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_useFlatArrayNotatio
 
 fn fun_90(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_subscriptLst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_subscriptLst)) {
         (txt, false, _) => {
             txt.clone()
         },
@@ -1158,7 +1158,7 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<m
 
 pub fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_subscriptLst, ident: i_ident, .. }, a_useFlatArrayNotation) => {
             let mut ret_2: ArcStr;
             let mut ret_1: bool;
@@ -1198,7 +1198,7 @@ pub fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mu
 
 pub(crate) fn contextSystem(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->")).clone() }))?;
             txt.clone()
@@ -1218,7 +1218,7 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_cr.clone(), in_a_t.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_exp.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_cr, in_a_t, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_exp)) {
         (txt, i_context @ SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, _, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_exp) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -1254,7 +1254,7 @@ pub(crate) fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, 
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, i_exp @ Deref @ DAE::Exp::CREF { componentRef: i_cr, ty: i_t @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. } }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -1299,7 +1299,7 @@ pub(crate) fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, 
 
 fn fun_95(mut in_txt: Tpl::Text, mut in_a_isLhs: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isLhs.clone()) {
+    out_txt = (match (in_txt, in_a_isLhs) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ArraySliceConst")).clone() }))?;
             txt.clone()
@@ -1320,11 +1320,11 @@ fn lm_96(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_96 in &*items.clone() {
+    for mut lstElt_96 in &*items {
         let mut lstElt_96 = lstElt_96.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_96.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: i_exp } => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -1339,7 +1339,7 @@ fn lm_96(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscrip
 
 fn fun_97(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimsValuesStr: Tpl::Text, mut in_a_arrName: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimsValuesStr.clone(), in_a_arrName.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimsValuesStr, in_a_arrName)) {
         (txt, Deref @ "metatype_array", a_dimsValuesStr, a_arrName) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("arrayGet(")).clone() }))?;
@@ -1370,7 +1370,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_useFlatArrayNotatio
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_ty.clone(), in_a_isLhs.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_ty, in_a_isLhs, in_a_context, in_a_cr)) {
         (txt, false, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_ty, a_isLhs, a_context, a_cr) => {
             let mut ret_4: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut l_slice: Tpl::Text;
@@ -1442,7 +1442,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_useFlatArrayNotatio
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_ty.clone(), in_a_isLhs.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_ty, in_a_isLhs, in_a_context, in_a_cr)) {
         (txt, false, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_ty, a_isLhs, a_context, a_cr) => {
             let mut ret_6: bool;
             let mut ret_5: bool;
@@ -1490,7 +1490,7 @@ fn fun_100(mut in_txt: Tpl::Text, mut in_a_box: Tpl::Text, mut in_a_useFlatArray
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_box.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_ty.clone(), in_a_isLhs.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_box, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_ty, in_a_isLhs, in_a_context, in_a_cr)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_ty, a_isLhs, a_context, a_cr) => {
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
@@ -1522,7 +1522,7 @@ fn fun_101(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_isLhs: b
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ecr.clone(), in_a_isLhs.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_ecr, in_a_isLhs, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::CREF { componentRef: _, ty: Deref @ DAE::Type::T_FUNCTION { path: i_name, .. } }, _, _, a_preExp, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             let mut txt = (*txt).clone();
             txt = CodegenUtil::underscorePath(txt.clone(), i_name.clone())?;
@@ -1557,7 +1557,7 @@ pub fn daeExpCref(mut txt: Tpl::Text, mut a_isLhs: bool, mut a_ecr: Arc<DAE::Exp
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_101(txt.clone(), a_ecr.clone(), a_isLhs.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_101(txt, a_ecr, a_isLhs, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -1569,7 +1569,7 @@ fn fun_103(mut in_txt: Tpl::Text, mut in_a_step: Option<Arc<DAE::Exp>>, mut in_a
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_step.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_step, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Some(i_stepExp), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -1599,7 +1599,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_tmp__sli
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_tmp__slice.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_tmp__slice, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Deref @ DAE::Exp::RANGE { start: i_start, stop: i_stop, step: i_step, .. }, a_tmp__slice, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut l_step__exp: Tpl::Text;
             let mut l_stop__exp: Tpl::Text;
@@ -1653,7 +1653,7 @@ fn fun_105(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_tm
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_sub.clone(), in_a_tmp__slice.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_sub, in_a_tmp__slice, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }, a_tmp__slice, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut l_expPart: Tpl::Text;
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -1704,11 +1704,11 @@ fn lm_106(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscri
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_106 in &*items.clone() {
+    for mut lstElt_106 in &*items {
         let mut lstElt_106 = lstElt_106.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_106.clone()) {
         i_sub => {
-            (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = fun_105(txt.clone(), i_sub.clone(), a_tmp__slice.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
+            (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = fun_105(txt.clone(), i_sub.clone(), a_tmp__slice.clone(), a_useFlatArrayNotation, a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -1728,21 +1728,21 @@ pub(crate) fn daeExpCrefIndexSpec(mut txt: Tpl::Text, mut a_subs: Arc<metamodeli
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_0__: Tpl::Text;
     let mut l_tmp__slice: Tpl::Text;
-    (l_tmp__slice, out_a_varDecls) = tempDecl(Tpl::emptyTxt.clone(), (literal!("vector<Slice>")).clone(), a_varDecls.clone())?;
-    out_a_preExp = Tpl::writeText(a_preExp.clone(), l_tmp__slice.clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".clear();")).clone() }))?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    (l_tmp__slice, out_a_varDecls) = tempDecl(Tpl::emptyTxt.clone(), (literal!("vector<Slice>")).clone(), a_varDecls)?;
+    out_a_preExp = Tpl::writeText(a_preExp, l_tmp__slice.clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".clear();")).clone() }))?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     l_0__ = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!(" ")).clone()], lastHasNewLine: false })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    (l_0__, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_106(l_0__.clone(), a_subs.clone(), l_tmp__slice.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), out_a_varDecls.clone(), out_a_preExp.clone(), a_context.clone())?;
-    l_0__ = Tpl::popIter(l_0__.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_tmp__slice.clone())?;
+    (l_0__, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_106(l_0__, a_subs, l_tmp__slice.clone(), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, out_a_varDecls, out_a_preExp, a_context)?;
+    l_0__ = Tpl::popIter(l_0__)?;
+    out_txt = Tpl::writeText(txt, l_tmp__slice)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_108(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_preExp: Tpl::Text, mut in_a_aty: Arc<DAE::Type>, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut in_a_context: SimCodeFunction::Context) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_preExp.clone(), in_a_aty.clone(), in_a_dims.clone(), in_a_context.clone())) {
+    (out_txt, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_preExp, in_a_aty, in_a_dims, in_a_context)) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", componentRef: i_componentRef, .. }, a_preExp, a_aty, a_dims, a_context) => {
             let mut l_T: Tpl::Text;
             let mut l_dimstr: Tpl::Text;
@@ -1792,7 +1792,7 @@ fn fun_108(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_
 fn fun_109(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_preExp: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_preExp, in_a_context, in_a_cr)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty, dims: i_dims }, a_preExp, a_context, a_cr) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -1815,7 +1815,7 @@ fn fun_110(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_stateDerVectorName, out_a_varDecls, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varKind.clone(), in_a_preExp.clone(), in_a_ty.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_varDecls.clone(), in_a_context.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_preExp, out_a_stateDerVectorName, out_a_varDecls, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt, in_a_varKind, in_a_preExp, in_a_ty, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_varDecls, in_a_context, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_cr)) {
         (txt, BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }, a_preExp, a_ty, a_useFlatArrayNotation, a_stateDerVectorName, a_varDecls, a_context, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_cr) => {
             let mut l_arrdata: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -1887,7 +1887,7 @@ fn smf_111(mut in_txt: Tpl::Text, mut in_it: SimCodeVar::SimVar, mut in_a_preExp
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_stateDerVectorName, out_a_varDecls, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone(), in_a_preExp.clone(), in_a_ty.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_varDecls.clone(), in_a_context.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_cr.clone())) {
+    (out_txt, out_a_preExp, out_a_stateDerVectorName, out_a_varDecls, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt, in_it, in_a_preExp, in_a_ty, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_varDecls, in_a_context, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_cr)) {
         (txt, SimCodeVar::SimVar { index: _, matrixName: _, varKind: i_varKind, .. }, a_preExp, a_ty, a_useFlatArrayNotation, a_stateDerVectorName, a_varDecls, a_context, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_cr) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -1915,7 +1915,7 @@ fn fun_112(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_cr.clone(), in_a_ty.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_cr, in_a_ty, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, _, a_preExp, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             (txt.clone(), a_preExp.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone())
         },
@@ -1947,13 +1947,13 @@ pub(crate) fn daeExpCrefRhsArrayBox(mut txt: Tpl::Text, mut a_cr: Arc<DAE::Compo
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_112(txt.clone(), a_context.clone(), a_cr.clone(), a_ty.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_112(txt, a_context, a_cr, a_ty, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_114(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimstr: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimstr.clone(), in_a_ty.clone(), in_a_dims.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimstr, in_a_ty, in_a_dims)) {
         (txt, Deref @ "", _, a_ty, a_dims) => {
             let mut ret_0: i32;
             let mut txt = (*txt).clone();
@@ -1985,7 +1985,7 @@ fn fun_114(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimstr: Tpl::Tex
 
 fn fun_115(mut in_txt: Tpl::Text, mut in_a_isRowMajorData: bool, mut in_a_arrayData: Tpl::Text, mut in_a_arrayVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isRowMajorData.clone(), in_a_arrayData.clone(), in_a_arrayVar.clone()) {
+    out_txt = (match (in_txt, in_a_isRowMajorData, in_a_arrayData, in_a_arrayVar) {
         (mut txt, false, mut a_arrayData, mut a_arrayVar) => {
             txt = Tpl::writeText(txt.clone(), a_arrayVar.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".assign(&")).clone() }))?;
@@ -2008,7 +2008,7 @@ fn fun_115(mut in_txt: Tpl::Text, mut in_a_isRowMajorData: bool, mut in_a_arrayD
 fn fun_116(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_arrayData: Tpl::Text, mut in_a_isRowMajorData: bool, mut in_a_preExp: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_arrayData.clone(), in_a_isRowMajorData.clone(), in_a_preExp.clone())) {
+    (out_txt, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_arrayData, in_a_isRowMajorData, in_a_preExp)) {
         (txt, i_t @ Deref @ DAE::Type::T_ARRAY { ty: _, dims: i_dims }, a_arrayData, a_isRowMajorData, a_preExp) => {
             let mut l_arrayAssign: Tpl::Text;
             let mut l_arrayVar: Tpl::Text;
@@ -2052,12 +2052,12 @@ pub(crate) fn daeExpCrefRhsArrayBox2(mut txt: Tpl::Text, mut a_arrayData: Tpl::T
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
-    (out_txt, out_a_preExp) = fun_116(txt.clone(), a_ty.clone(), a_arrayData.clone(), a_isRowMajorData.clone(), a_preExp.clone())?;
-    out_a_arrayData = a_arrayData.clone();
-    out_a_varDecls = a_varDecls.clone();
-    out_a_extraFuncs = a_extraFuncs.clone();
-    out_a_extraFuncsDecl = a_extraFuncsDecl.clone();
-    out_a_extraFuncsNamespace = a_extraFuncsNamespace.clone();
+    (out_txt, out_a_preExp) = fun_116(txt, a_ty, a_arrayData.clone(), a_isRowMajorData, a_preExp)?;
+    out_a_arrayData = a_arrayData;
+    out_a_varDecls = a_varDecls;
+    out_a_extraFuncs = a_extraFuncs;
+    out_a_extraFuncsDecl = a_extraFuncsDecl;
+    out_a_extraFuncsNamespace = a_extraFuncsNamespace;
     Ok((out_txt, out_a_arrayData, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 
@@ -2069,13 +2069,13 @@ fn lm_118(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_118 in &*items.clone() {
+    for mut lstElt_118 in &*items {
         let mut lstElt_118 = lstElt_118.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_118.clone()) {
         i_v => {
             let mut ret_0: Arc<DAE::Exp>;
             ret_0 = SimCodeFunctionUtil::makeCrefRecordExp(a_cr.clone(), i_v.clone())?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), ret_0.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), ret_0.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -2093,7 +2093,7 @@ pub(crate) fn daeExpRecordCrefRhs(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::T
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_cr.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_cr, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_record__state, varLst: i_var__lst, .. }, a_cr, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_ret__var: Tpl::Text;
             let mut l_ret__type: Tpl::Text;
@@ -2135,7 +2135,7 @@ pub(crate) fn daeExpRecordCrefRhs(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::T
 
 pub fn crefST(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_simTime")).clone() }))?;
@@ -2156,7 +2156,7 @@ pub fn crefST(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in
 
 fn fun_121(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_cr)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, a_cr) => {
             let mut txt = (*txt).clone();
             txt = arrayCrefStr(txt.clone(), a_cr.clone())?;
@@ -2174,13 +2174,13 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 pub fn contextArrayCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_121(txt.clone(), a_context.clone(), a_cr.clone())?;
+    out_txt = fun_121(txt, a_context, a_cr)?;
     Ok(out_txt)
 }
 
 pub(crate) fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_simTime")).clone() }))?)
@@ -2211,7 +2211,7 @@ pub(crate) fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Componen
 
 fn fun_124(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_cr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_cr)) {
         (txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }, a_cr) => {
             let mut l_dims: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -2238,13 +2238,13 @@ fn fun_124(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 pub(crate) fn arrayCrefCStr(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_124(txt.clone(), a_context.clone(), a_cr.clone())?;
+    out_txt = fun_124(txt, a_context, a_cr)?;
     Ok(out_txt)
 }
 
 pub(crate) fn arrayCrefCStr2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
@@ -2270,7 +2270,7 @@ pub(crate) fn arrayCrefCStr2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compon
 
 pub fn crefTypeST(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
             return Ok(expTypeShortSPS(txt.clone(), i_identType.clone())?)
@@ -2290,7 +2290,7 @@ pub fn crefTypeST(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) ->
 
 pub fn crefTypeMLPI(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
             return Ok(expTypeShortMLPI(txt.clone(), i_identType.clone())?)
@@ -2310,7 +2310,7 @@ pub fn crefTypeMLPI(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) 
 
 fn fun_129(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_typeShort.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_typeShort) {
         (mut txt, false, mut a_typeShort) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ERROR:crefStartValueType ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_typeShort.clone())?;
@@ -2327,7 +2327,7 @@ fn fun_129(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Te
 
 fn fun_130(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_typeShort.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_typeShort) {
         (mut txt, false, mut a_typeShort) => {
             let mut ret_0: bool;
             ret_0 = stringEq((Tpl::textString(a_typeShort.clone())?).clone(), (literal!("void*")).clone());
@@ -2344,7 +2344,7 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Te
 
 fn fun_131(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg)) {
         (txt, Deref @ "Cpp") => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Bool")).clone() }))?;
@@ -2365,7 +2365,7 @@ fn fun_131(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 
 fn fun_132(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_typeShort.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_typeShort) {
         (mut txt, false, mut a_typeShort) => {
             let mut ret_0: bool;
             ret_0 = stringEq((Tpl::textString(a_typeShort.clone())?).clone(), (literal!("string")).clone());
@@ -2386,7 +2386,7 @@ fn fun_132(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Te
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_typeShort.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_typeShort) {
         (mut txt, false, mut a_typeShort) => {
             let mut ret_0: bool;
             ret_0 = stringEq((Tpl::textString(a_typeShort.clone())?).clone(), (literal!("bool")).clone());
@@ -2403,7 +2403,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Te
 
 fn fun_134(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_typeShort.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_typeShort) {
         (mut txt, false, mut a_typeShort) => {
             let mut ret_0: bool;
             ret_0 = stringEq((Tpl::textString(a_typeShort.clone())?).clone(), (literal!("int")).clone());
@@ -2420,7 +2420,7 @@ fn fun_134(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_typeShort: Tpl::Te
 
 pub fn crefStartValueType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut ret_2: bool;
             let mut l_typeString: Tpl::Text;
@@ -2446,7 +2446,7 @@ pub fn crefStartValueType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Component
 
 pub fn dimension(mut in_txt: Tpl::Text, mut in_a_d: Arc<DAE::Dimension>, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_d.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_d, in_a_context)) {
         (txt, Deref @ DAE::Dimension::DIM_BOOLEAN { .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("2")).clone() }))?;
@@ -2484,7 +2484,7 @@ pub fn dimension(mut in_txt: Tpl::Text, mut in_a_d: Arc<DAE::Dimension>, mut in_
 
 fn lm_137(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_137 in &*items.clone() {
+    for mut lstElt_137 in &*items {
         let mut lstElt_137 = lstElt_137.clone();
         txt = (match lstElt_137.clone() {
         mut i_dim => {
@@ -2499,7 +2499,7 @@ fn lm_137(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result
 
 fn fun_138(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_dimstr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_dimstr.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_dimstr) {
         (mut txt, false, _) => {
             txt.clone()
         },
@@ -2517,19 +2517,19 @@ pub fn checkDimension(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc
     let mut ret_2: i32;
     let mut ret_1: Arc<metamodelica::List<i32>>;
     let mut l_dimstr: Tpl::Text;
-    ret_1 = Expression::dimensionsList(a_dims.clone());
+    ret_1 = Expression::dimensionsList(a_dims);
     l_dimstr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_dimstr = lm_137(l_dimstr.clone(), ret_1.clone())?;
-    l_dimstr = Tpl::popIter(l_dimstr.clone())?;
+    l_dimstr = lm_137(l_dimstr, ret_1)?;
+    l_dimstr = Tpl::popIter(l_dimstr)?;
     ret_2 = System::stringFind((Tpl::textString(l_dimstr.clone())?).clone(), (literal!("-")).clone())?;
-    ret_3 = intEq(-1, ret_2.clone());
-    out_txt = fun_138(txt.clone(), ret_3.clone(), l_dimstr.clone())?;
+    ret_3 = intEq(-1, ret_2);
+    out_txt = fun_138(txt, ret_3, l_dimstr)?;
     Ok(out_txt)
 }
 
 fn lm_140(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_140 in &*items.clone() {
+    for mut lstElt_140 in &*items {
         let mut lstElt_140 = lstElt_140.clone();
         txt = (match lstElt_140.clone() {
         mut i_dim => {
@@ -2545,16 +2545,16 @@ fn lm_140(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result
 pub(crate) fn checkExpDimension(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<i32>>;
-    ret_0 = Expression::expDimensionsList(a_dims.clone());
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_140(out_txt.clone(), ret_0.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    ret_0 = Expression::expDimensionsList(a_dims);
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_140(out_txt, ret_0)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 fn fun_142(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_subdimstr: Tpl::Text, mut in_a_dimstr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_subdimstr.clone(), in_a_dimstr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_subdimstr, in_a_dimstr)) {
         (txt, Deref @ "", _, _) => {
             txt.clone()
         },
@@ -2572,7 +2572,7 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_subdimstr: Tpl::
 
 fn fun_143(mut in_txt: Tpl::Text, mut in_a_elty: Arc<DAE::Type>, mut in_a_dimstr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elty.clone(), in_a_dimstr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_elty, in_a_dimstr)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_subdims, ty: i_subty }, a_dimstr) => {
             let mut str_1: ArcStr;
             let mut l_subdimstr: Tpl::Text;
@@ -2594,7 +2594,7 @@ fn fun_143(mut in_txt: Tpl::Text, mut in_a_elty: Arc<DAE::Type>, mut in_a_dimstr
 
 fn fun_144(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimstr: Tpl::Text, mut in_a_elty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimstr.clone(), in_a_elty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimstr, in_a_elty)) {
         (txt, Deref @ "", _, _) => {
             txt.clone()
         },
@@ -2612,15 +2612,15 @@ pub(crate) fn listDimsFlat(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::Lis
     let mut out_txt: Tpl::Text;
     let mut str_1: ArcStr;
     let mut l_dimstr: Tpl::Text;
-    l_dimstr = checkDimension(Tpl::emptyTxt.clone(), a_dims.clone())?;
+    l_dimstr = checkDimension(Tpl::emptyTxt.clone(), a_dims)?;
     str_1 = (Tpl::textString(l_dimstr.clone())?).clone();
-    out_txt = fun_144(txt.clone(), (str_1.clone()).clone(), l_dimstr.clone(), a_elty.clone())?;
+    out_txt = fun_144(txt, (str_1).clone(), l_dimstr, a_elty)?;
     Ok(out_txt)
 }
 
 fn fun_146(mut in_txt: Tpl::Text, mut in_a_elty: Arc<DAE::Type>, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut in_a_offset: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elty.clone(), in_a_dims.clone(), in_a_offset.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_elty, in_a_dims, in_a_offset)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims @ i_subdims, ty: i_subty }, _, a_offset) => {
             let mut ret_1: i32;
             let mut ret_0: i32;
@@ -2646,13 +2646,13 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_a_elty: Arc<DAE::Type>, mut in_a_dims: 
 
 pub(crate) fn nDimsFlat(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_elty: Arc<DAE::Type>, mut a_offset: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_146(txt.clone(), a_elty.clone(), a_dims.clone(), a_offset.clone())?;
+    out_txt = fun_146(txt, a_elty, a_dims, a_offset)?;
     Ok(out_txt)
 }
 
 fn fun_148(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
             txt.clone()
@@ -2667,7 +2667,7 @@ fn fun_148(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_type)) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?)
@@ -2752,7 +2752,7 @@ pub fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Res
 
 fn fun_150(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
             let mut ret_0: Arc<Absyn::Path>;
             let mut txt = (*txt).clone();
@@ -2772,7 +2772,7 @@ fn fun_150(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_151(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: i_rname }, .. }) => {
             let mut txt = (*txt).clone();
             txt = CodegenUtil::underscorePath(txt.clone(), i_rname.clone())?;
@@ -2791,7 +2791,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_152(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, i_ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: _ }, .. }) => {
             let mut txt = (*txt).clone();
             txt = expTypeShort(txt.clone(), i_ty.clone())?;
@@ -2809,7 +2809,7 @@ fn fun_152(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_153(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_elty, dims: i_dims }) => {
             let mut txt = (*txt).clone();
             txt = expTypeArrayDims(txt.clone(), i_elty.clone(), i_dims.clone())?;
@@ -2827,7 +2827,7 @@ fn fun_153(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_154(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_elty, dims: i_dims }) => {
             let mut txt = (*txt).clone();
             txt = expTypeArrayDims(txt.clone(), i_elty.clone(), i_dims.clone())?;
@@ -2845,7 +2845,7 @@ fn fun_154(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_155(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimstr: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimstr.clone(), in_a_ty.clone(), in_a_dims.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimstr, in_a_ty, in_a_dims)) {
         (txt, Deref @ "", _, a_ty, a_dims) => {
             let mut ret_0: i32;
             let mut txt = (*txt).clone();
@@ -2877,7 +2877,7 @@ fn fun_155(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimstr: Tpl::Tex
 
 fn fun_156(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, i_ty @ Deref @ DAE::Type::T_ARRAY { dims: i_dims, .. }) => {
             let mut str_1: ArcStr;
             let mut l_dimstr: Tpl::Text;
@@ -2899,7 +2899,7 @@ fn fun_156(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_157(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, ty: i_ty }) => {
             let mut ret_0: i32;
             let mut txt = (*txt).clone();
@@ -2921,7 +2921,7 @@ fn fun_157(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_158(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: _, ty: i_ty }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("const BaseArray<")).clone() }))?;
@@ -2941,7 +2941,7 @@ fn fun_158(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_159(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
             let mut ret_0: Arc<Absyn::Path>;
             let mut txt = (*txt).clone();
@@ -2963,7 +2963,7 @@ fn fun_159(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_160(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: i_rname }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("const ")).clone() }))?;
@@ -2983,7 +2983,7 @@ fn fun_160(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_161(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, i_ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: _ }, .. }) => {
             let mut txt = (*txt).clone();
             txt = expTypeShort(txt.clone(), i_ty.clone())?;
@@ -3001,7 +3001,7 @@ fn fun_161(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_162(mut in_txt: Tpl::Text, mut in_a_flag: i32, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_flag.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_flag, in_a_ty)) {
         (txt, 1, a_ty) => {
             let mut txt = (*txt).clone();
             txt = expTypeShort(txt.clone(), a_ty.clone())?;
@@ -3057,13 +3057,13 @@ fn fun_162(mut in_txt: Tpl::Text, mut in_a_flag: i32, mut in_a_ty: Arc<DAE::Type
 
 pub fn expTypeFlag(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_162(txt.clone(), a_flag.clone(), a_ty.clone())?;
+    out_txt = fun_162(txt, a_flag, a_ty)?;
     Ok(out_txt)
 }
 
 pub(crate) fn crefType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
             return Ok(expTypeArrayIf(txt.clone(), i_identType.clone())?)
@@ -3083,25 +3083,25 @@ pub(crate) fn crefType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef
 
 pub fn expTypeFromExpShort(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = expTypeFromExpFlag(txt.clone(), a_exp.clone(), 1)?;
+    out_txt = expTypeFromExpFlag(txt, a_exp, 1)?;
     Ok(out_txt)
 }
 
 pub(crate) fn expTypeFromExpModelica(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = expTypeFromExpFlag(txt.clone(), a_exp.clone(), 2)?;
+    out_txt = expTypeFromExpFlag(txt, a_exp, 2)?;
     Ok(out_txt)
 }
 
 pub(crate) fn expTypeFromExpArray(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = expTypeFromExpFlag(txt.clone(), a_exp.clone(), 4)?;
+    out_txt = expTypeFromExpFlag(txt, a_exp, 4)?;
     Ok(out_txt)
 }
 
 fn fun_168(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
             txt.clone()
@@ -3116,7 +3116,7 @@ fn fun_168(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub(crate) fn expTypeShortSPS(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_type)) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("INT")).clone() }))?)
@@ -3193,7 +3193,7 @@ pub(crate) fn expTypeShortSPS(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Typ
 
 fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
             txt.clone()
@@ -3208,7 +3208,7 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub(crate) fn expTypeShortMLPI(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_type)) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MLPI_IEC_INT")).clone() }))?;
@@ -3301,7 +3301,7 @@ pub(crate) fn expTypeShortMLPI(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Ty
 
 fn fun_172(mut in_txt: Tpl::Text, mut in_a_isArray: bool, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_isArray.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_isArray, in_a_ty)) {
         (txt, false, a_ty) => {
             let mut txt = (*txt).clone();
             txt = expTypeShort(txt.clone(), a_ty.clone())?;
@@ -3321,41 +3321,41 @@ fn fun_172(mut in_txt: Tpl::Text, mut in_a_isArray: bool, mut in_a_ty: Arc<DAE::
 
 pub fn expType(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_isArray: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_172(txt.clone(), a_isArray.clone(), a_ty.clone())?;
+    out_txt = fun_172(txt, a_isArray, a_ty)?;
     Ok(out_txt)
 }
 
 pub fn expTypeModelica(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = expTypeFlag(txt.clone(), a_ty.clone(), 2)?;
+    out_txt = expTypeFlag(txt, a_ty, 2)?;
     Ok(out_txt)
 }
 
 pub(crate) fn expTypeArray(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = expTypeFlag(txt.clone(), a_ty.clone(), 3)?;
+    out_txt = expTypeFlag(txt, a_ty, 3)?;
     Ok(out_txt)
 }
 
 pub fn expTypeArrayIf(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = expTypeFlag(txt.clone(), a_ty.clone(), 4)?;
+    out_txt = expTypeFlag(txt, a_ty, 4)?;
     Ok(out_txt)
 }
 
 pub(crate) fn expTypeArray1(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_dims: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SimArray")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (intString(a_dims.clone())).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<")).clone() }))?;
-    out_txt = expTypeShort(out_txt.clone(), a_ty.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">")).clone() }))?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SimArray")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (intString(a_dims)).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<")).clone() }))?;
+    out_txt = expTypeShort(out_txt, a_ty)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">")).clone() }))?;
     Ok(out_txt)
 }
 
 fn fun_178(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimstr: Tpl::Text, mut in_a_typeShort: Tpl::Text, mut in_a_elty: Arc<DAE::Type>, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimstr.clone(), in_a_typeShort.clone(), in_a_elty.clone(), in_a_dims.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimstr, in_a_typeShort, in_a_elty, in_a_dims)) {
         (txt, Deref @ "", _, a_typeShort, a_elty, a_dims) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DynArrayDim")).clone() }))?;
@@ -3389,13 +3389,13 @@ pub(crate) fn expTypeArrayDims(mut txt: Tpl::Text, mut a_elty: Arc<DAE::Type>, m
     l_typeShort = expTypeShort(Tpl::emptyTxt.clone(), a_elty.clone())?;
     l_dimstr = listDimsFlat(Tpl::emptyTxt.clone(), a_dims.clone(), a_elty.clone())?;
     str_2 = (Tpl::textString(l_dimstr.clone())?).clone();
-    out_txt = fun_178(txt.clone(), (str_2.clone()).clone(), l_dimstr.clone(), l_typeShort.clone(), a_elty.clone(), a_dims.clone())?;
+    out_txt = fun_178(txt, (str_2).clone(), l_dimstr, l_typeShort, a_elty, a_dims)?;
     Ok(out_txt)
 }
 
 fn lm_180(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_180 in &*items.clone() {
+    for mut lstElt_180 in &*items {
         let mut lstElt_180 = lstElt_180.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_180.clone()) {
         i_dim => {
@@ -3411,7 +3411,7 @@ fn lm_180(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimensi
 
 pub(crate) fn allocateDimensions(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_context)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, .. }, a_context) => {
             let mut l_dimstr: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -3436,13 +3436,13 @@ pub fn tempDecl(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_varDecls: Tpl::Text)
     let mut l_newVar: Tpl::Text;
     l_newVar = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmp")).clone() }))?;
     ret_1 = System::tmpTick();
-    l_newVar = Tpl::writeStr(l_newVar.clone(), (intString(ret_1.clone())).clone())?;
-    out_a_varDecls = Tpl::writeStr(a_varDecls.clone(), (a_ty.clone()).clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_a_varDecls = Tpl::writeText(out_a_varDecls.clone(), l_newVar.clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::writeText(txt.clone(), l_newVar.clone())?;
+    l_newVar = Tpl::writeStr(l_newVar, (intString(ret_1)).clone())?;
+    out_a_varDecls = Tpl::writeStr(a_varDecls, (a_ty).clone())?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_a_varDecls = Tpl::writeText(out_a_varDecls, l_newVar.clone())?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeText(txt, l_newVar)?;
     Ok((out_txt, out_a_varDecls))
 }
 
@@ -3453,15 +3453,15 @@ pub(crate) fn tempDeclAssign(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_varDecl
     let mut l_newVar: Tpl::Text;
     l_newVar = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmp")).clone() }))?;
     ret_1 = System::tmpTick();
-    l_newVar = Tpl::writeStr(l_newVar.clone(), (intString(ret_1.clone())).clone())?;
-    out_a_varDecls = Tpl::writeStr(a_varDecls.clone(), (a_ty.clone()).clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_a_varDecls = Tpl::writeText(out_a_varDecls.clone(), l_newVar.clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
-    out_a_varDecls = Tpl::writeStr(out_a_varDecls.clone(), (a_assign.clone()).clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::writeText(txt.clone(), l_newVar.clone())?;
+    l_newVar = Tpl::writeStr(l_newVar, (intString(ret_1)).clone())?;
+    out_a_varDecls = Tpl::writeStr(a_varDecls, (a_ty).clone())?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_a_varDecls = Tpl::writeText(out_a_varDecls, l_newVar.clone())?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
+    out_a_varDecls = Tpl::writeStr(out_a_varDecls, (a_assign).clone())?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeText(txt, l_newVar)?;
     Ok((out_txt, out_a_varDecls))
 }
 
@@ -3473,23 +3473,23 @@ pub(crate) fn tempDecl1(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_exp: ArcStr,
     let mut l_newVar: Tpl::Text;
     l_newVar = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmp")).clone() }))?;
     ret_1 = System::tmpTick();
-    l_newVar = Tpl::writeStr(l_newVar.clone(), (intString(ret_1.clone())).clone())?;
+    l_newVar = Tpl::writeStr(l_newVar, (intString(ret_1)).clone())?;
     l_newVar1 = Tpl::writeText(Tpl::emptyTxt.clone(), l_newVar.clone())?;
-    l_newVar1 = Tpl::writeTok(l_newVar1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
-    l_newVar1 = Tpl::writeStr(l_newVar1.clone(), (a_exp.clone()).clone())?;
-    l_newVar1 = Tpl::writeTok(l_newVar1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-    out_a_varDecls = Tpl::writeStr(a_varDecls.clone(), (a_ty.clone()).clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_a_varDecls = Tpl::writeText(out_a_varDecls.clone(), l_newVar1.clone())?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-    out_a_varDecls = Tpl::writeTok(out_a_varDecls.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::writeText(txt.clone(), l_newVar.clone())?;
+    l_newVar1 = Tpl::writeTok(l_newVar1, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
+    l_newVar1 = Tpl::writeStr(l_newVar1, (a_exp).clone())?;
+    l_newVar1 = Tpl::writeTok(l_newVar1, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
+    out_a_varDecls = Tpl::writeStr(a_varDecls, (a_ty).clone())?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_a_varDecls = Tpl::writeText(out_a_varDecls, l_newVar1)?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
+    out_a_varDecls = Tpl::writeTok(out_a_varDecls, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeText(txt, l_newVar)?;
     Ok((out_txt, out_a_varDecls))
 }
 
 fn fun_185(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_useFlatArrayNotation: bool, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_useFlatArrayNotation.clone(), in_a_cr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_useFlatArrayNotation, in_a_cr)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, a_cr) => {
             let mut ret_1: ArcStr;
             let mut txt_0: Tpl::Text;
@@ -3511,7 +3511,7 @@ fn fun_185(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 pub(crate) fn dimensionExp(mut in_txt: Tpl::Text, mut in_a_dimExp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dimExp.clone(), in_a_context.clone(), in_a_useFlatArrayNotation.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_dimExp, in_a_context, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::CREF { componentRef: i_cr, .. }, a_context, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             txt = fun_185(txt.clone(), a_context.clone(), a_useFlatArrayNotation.clone(), i_cr.clone())?;
@@ -3531,7 +3531,7 @@ pub(crate) fn dimensionExp(mut in_txt: Tpl::Text, mut in_a_dimExp: Arc<DAE::Exp>
 
 pub(crate) fn daeDimensionExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_integer }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_integer.clone())).clone())?;
@@ -3549,7 +3549,7 @@ pub(crate) fn daeDimensionExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>
 
 fn fun_188(mut in_txt: Tpl::Text, mut in_a_bool: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_bool.clone()) {
+    out_txt = (match (in_txt, in_a_bool) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("false")).clone() }))?;
             txt.clone()
@@ -3570,7 +3570,7 @@ pub fn daeExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_conte
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_integer }, _, a_preExp, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_integer.clone())).clone())?;
@@ -3920,7 +3920,7 @@ pub(crate) fn daeExpRSub(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::RSUB { ix: (-1), exp: i_exp, fieldName: i_fieldName, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_res: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -3961,7 +3961,7 @@ fn fun_191(mut in_txt: Tpl::Text, mut in_a_step: Option<Arc<DAE::Exp>>, mut in_a
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_step.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_step, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Some(i_stepExp), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -3991,7 +3991,7 @@ pub(crate) fn daeExpRange(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::RANGE { ty: i_ty, start: i_start, stop: i_stop, step: i_step }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_step__exp: Tpl::Text;
             let mut txt_4: Tpl::Text;
@@ -4062,7 +4062,7 @@ pub(crate) fn daeExpRange(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
 fn fun_193(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_tmpVarDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_tmpVarDecls)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, a_tmpVarDecls) => {
             let mut txt = (*txt).clone();
             let mut a_tmpVarDecls = (*a_tmpVarDecls).clone();
@@ -4080,7 +4080,7 @@ fn fun_193(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_t
 fn fun_194(mut in_txt: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::Value>>, mut in_a_tmpVarDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_defaultValue.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_defaultValue, in_a_tmpVarDecls)) {
         (txt, None, a_tmpVarDecls) => {
             let mut txt = (*txt).clone();
             let mut a_tmpVarDecls = (*a_tmpVarDecls).clone();
@@ -4098,7 +4098,7 @@ fn fun_194(mut in_txt: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::V
 fn fun_195(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_tmpVarDecls: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::Value>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_tmpVarDecls.clone(), in_a_ri_defaultValue.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_tmpVarDecls, in_a_ri_defaultValue)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, a_tmpVarDecls, _) => {
             (txt.clone(), a_tmpVarDecls.clone())
         },
@@ -4116,7 +4116,7 @@ fn fun_195(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_t
 fn fun_196(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_tmpVarDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_tmpVarDecls)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, a_tmpVarDecls) => {
             let mut txt = (*txt).clone();
             let mut a_tmpVarDecls = (*a_tmpVarDecls).clone();
@@ -4139,7 +4139,7 @@ fn fun_197(mut in_txt: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::V
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_preDefault: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_defaultValue.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_preDefault.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_defaultValue, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_preDefault, in_a_context)) {
         (txt, Some(i_v), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_tmpVarDecls, a_preDefault, a_context) => {
             let mut ret_0: Arc<DAE::Exp>;
             let mut txt = (*txt).clone();
@@ -4169,7 +4169,7 @@ fn fun_198(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_u
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_preDefault: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_preDefault.clone(), in_a_context.clone(), in_a_ri_defaultValue.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_preDefault, in_a_context, in_a_ri_defaultValue)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_tmpVarDecls, a_preDefault, _, _) => {
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_tmpVarDecls.clone(), a_preDefault.clone())
         },
@@ -4192,7 +4192,7 @@ fn fun_198(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_u
 fn fun_199(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_reductionBodyExpr: Tpl::Text, mut in_a_res: Tpl::Text, mut in_a_arrIndex: Tpl::Text, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_reductionBodyExpr.clone(), in_a_res.clone(), in_a_arrIndex.clone(), in_a_varDecls.clone())) {
+    (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_reductionBodyExpr, in_a_res, in_a_arrIndex, in_a_varDecls)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, .. }, a_reductionBodyExpr, a_res, a_arrIndex, a_varDecls) => {
             let mut l_tmp__slice: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -4231,7 +4231,7 @@ fn fun_199(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_reductio
 
 fn fun_200(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text, mut in_a_reductionBodyExpr: Tpl::Text, mut in_a_foldExpPre: Tpl::Text, mut in_a_fExpStr: Tpl::Text, mut in_a_res: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_foundFirst.clone(), in_a_reductionBodyExpr.clone(), in_a_foldExpPre.clone(), in_a_fExpStr.clone(), in_a_res.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_foundFirst, in_a_reductionBodyExpr, in_a_foldExpPre, in_a_fExpStr, in_a_res)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _, _, a_fExpStr, a_res) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_res.clone())?;
@@ -4277,7 +4277,7 @@ fn fun_201(mut in_txt: Tpl::Text, mut in_a_ri_foldExp: Option<Arc<DAE::Exp>>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_foldExp.clone(), in_a_reductionBodyExpr.clone(), in_a_res.clone(), in_a_foundFirst.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_foldExp, in_a_reductionBodyExpr, in_a_res, in_a_foundFirst, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_context)) {
         (txt, Some(i_fExp), a_reductionBodyExpr, a_res, a_foundFirst, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_tmpVarDecls, a_context) => {
             let mut l_fExpStr: Tpl::Text;
             let mut l_foldExpPre: Tpl::Text;
@@ -4308,7 +4308,7 @@ fn fun_202(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_f
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_foundFirst.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_context.clone(), in_a_ri_foldExp.clone(), in_a_arrIndex.clone(), in_a_varDecls.clone(), in_a_r_expr.clone(), in_a_res.clone(), in_a_reductionBodyExpr.clone(), in_a_resTail.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_foundFirst, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_context, in_a_ri_foldExp, in_a_arrIndex, in_a_varDecls, in_a_r_expr, in_a_res, in_a_reductionBodyExpr, in_a_resTail)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, _, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_tmpVarDecls, _, _, _, a_varDecls, _, _, a_reductionBodyExpr, a_resTail) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("*")).clone() }))?;
@@ -4357,7 +4357,7 @@ fn fun_202(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_f
 
 fn fun_203(mut in_txt: Tpl::Text, mut in_a_firstIndex: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_firstIndex.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_firstIndex)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -4381,7 +4381,7 @@ fn fun_204(mut in_txt: Tpl::Text, mut in_a_iter_guardExp: Option<Arc<DAE::Exp>>,
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_guardExpPre: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_guardExpPre) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iter_guardExp.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_guardExpPre.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_guardExpPre) = (::match_deref::match_deref! { match &((in_txt, in_a_iter_guardExp, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_guardExpPre, in_a_context)) {
         (txt, Some(i_grd), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_tmpVarDecls, a_guardExpPre, a_context) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -4405,7 +4405,7 @@ fn fun_204(mut in_txt: Tpl::Text, mut in_a_iter_guardExp: Option<Arc<DAE::Exp>>,
 
 fn fun_205(mut in_txt: Tpl::Text, mut in_a_iter_ty: Arc<DAE::Type>, mut in_a_firstIndex: Tpl::Text, mut in_a_loopVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iter_ty.clone(), in_a_firstIndex.clone(), in_a_loopVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iter_ty, in_a_firstIndex, in_a_loopVar)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: i_record__state, .. }, .. }, a_firstIndex, a_loopVar) => {
             let mut ret_1: Arc<Absyn::Path>;
             let mut l_rec__name: Tpl::Text;
@@ -4441,7 +4441,7 @@ fn lm_206(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Reducti
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_rangeExpPre: Tpl::Text = a_rangeExpPre;
     let mut a_tmpVarDecls: Tpl::Text = a_tmpVarDecls;
-    for mut lstElt_206 in &*items.clone() {
+    for mut lstElt_206 in &*items {
         let mut lstElt_206 = lstElt_206.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_rangeExpPre, a_tmpVarDecls) = (::match_deref::match_deref! { match &(lstElt_206.clone()) {
         Deref @ DAE::ReductionIterator { exp: i_iter_exp, ty: i_iter_ty @ i_ty, id: i_iter_id, guardExp: i_iter_guardExp } => {
@@ -4471,14 +4471,14 @@ fn lm_206(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Reducti
             a_tmpVarDecls = Tpl::writeTok(a_tmpVarDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";/*testloopvar*/")).clone() }))?;
             a_tmpVarDecls = Tpl::writeTok(a_tmpVarDecls.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (l_firstIndex, a_tmpVarDecls) = tempDecl(Tpl::emptyTxt.clone(), (literal!("int")).clone(), a_tmpVarDecls.clone())?;
-            (l_rangeExp, a_rangeExpPre, a_tmpVarDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_iter_exp.clone(), a_context.clone(), a_rangeExpPre.clone(), a_tmpVarDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_rangeExp, a_rangeExpPre, a_tmpVarDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_iter_exp.clone(), a_context.clone(), a_rangeExpPre.clone(), a_tmpVarDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             a_rangeExpPre = Tpl::writeText(a_rangeExpPre.clone(), l_loopVar.clone())?;
             a_rangeExpPre = Tpl::writeTok(a_rangeExpPre.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             a_rangeExpPre = Tpl::writeText(a_rangeExpPre.clone(), l_rangeExp.clone())?;
             a_rangeExpPre = Tpl::writeTok(a_rangeExpPre.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/*testloopvar2*/;")).clone() }))?;
             a_rangeExpPre = Tpl::writeTok(a_rangeExpPre.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_rangeExpPre = fun_203(a_rangeExpPre.clone(), l_firstIndex.clone())?;
-            (l_guardCond, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, l_guardExpPre) = fun_204(Tpl::emptyTxt.clone(), i_iter_guardExp.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), l_guardExpPre.clone(), a_context.clone())?;
+            (l_guardCond, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, l_guardExpPre) = fun_204(Tpl::emptyTxt.clone(), i_iter_guardExp.clone(), a_useFlatArrayNotation, a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), l_guardExpPre.clone(), a_context.clone())?;
             l_empty = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0 == (")).clone() }))?;
             l_empty = Tpl::writeText(l_empty.clone(), l_loopVar.clone())?;
             l_empty = Tpl::writeTok(l_empty.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".getDim(2))")).clone() }))?;
@@ -4527,7 +4527,7 @@ fn lm_206(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Reducti
 fn lm_207(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut a_length: Tpl::Text, mut a_rangeExpPre: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut txt: Tpl::Text = txt;
     let mut a_rangeExpPre: Tpl::Text = a_rangeExpPre;
-    for mut lstElt_207 in &*items.clone() {
+    for mut lstElt_207 in &*items {
         let mut lstElt_207 = lstElt_207.clone();
         (txt, a_rangeExpPre) = (::match_deref::match_deref! { match &(lstElt_207.clone()) {
         Deref @ DAE::ReductionIterator { id: i_iter_id, .. } => {
@@ -4560,7 +4560,7 @@ fn fun_208(mut in_txt: Tpl::Text, mut in_a_dim: Arc<DAE::Dimension>, mut in_a_r_
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_rangeExpPre: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_rangeExpPre) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dim.clone(), in_a_r_expr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_rangeExpPre.clone(), in_a_context.clone(), in_a_dim__vec.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_rangeExpPre) = (::match_deref::match_deref! { match &((in_txt, in_a_dim, in_a_r_expr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_rangeExpPre, in_a_context, in_a_dim__vec)) {
         (txt, Deref @ DAE::Dimension::DIM_INTEGER { integer: i_integer }, _, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_tmpVarDecls, a_rangeExpPre, _, a_dim__vec) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_dim__vec.clone())?;
@@ -4626,11 +4626,11 @@ fn lm_209(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimensi
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_tmpVarDecls: Tpl::Text = a_tmpVarDecls;
     let mut a_rangeExpPre: Tpl::Text = a_rangeExpPre;
-    for mut lstElt_209 in &*items.clone() {
+    for mut lstElt_209 in &*items {
         let mut lstElt_209 = lstElt_209.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, a_rangeExpPre) = (::match_deref::match_deref! { match &(lstElt_209.clone()) {
         i_dim => {
-            (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, a_rangeExpPre) = fun_208(txt.clone(), i_dim.clone(), a_r_expr.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), a_rangeExpPre.clone(), a_context.clone(), a_dim__vec.clone())?;
+            (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, a_rangeExpPre) = fun_208(txt.clone(), i_dim.clone(), a_r_expr.clone(), a_useFlatArrayNotation, a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), a_rangeExpPre.clone(), a_context.clone(), a_dim__vec.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_tmpVarDecls.clone(), a_rangeExpPre.clone())
         },
@@ -4648,7 +4648,7 @@ fn fun_210(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_res: Tpl
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_rangeExpPre: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_res.clone(), in_a_length.clone(), in_a_r_expr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_rangeExpPre.clone(), in_a_context.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_res, in_a_length, in_a_r_expr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_rangeExpPre, in_a_context, in_a_tmpVarDecls)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, .. }, a_res, a_length, a_r_expr, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_rangeExpPre, a_context, a_tmpVarDecls) => {
             let mut l_dimSizes: Tpl::Text;
             let mut l_dim__vec: Tpl::Text;
@@ -4690,7 +4690,7 @@ fn fun_210(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_res: Tpl
 
 fn fun_211(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_defaultValue: Tpl::Text, mut in_a_res: Tpl::Text, mut in_a_preDefault: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_foundFirst.clone(), in_a_ri_path.clone(), in_a_defaultValue.clone(), in_a_res.clone(), in_a_preDefault.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_foundFirst, in_a_ri_path, in_a_defaultValue, in_a_res, in_a_preDefault)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _, a_defaultValue, a_res, a_preDefault) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_preDefault.clone())?;
@@ -4722,7 +4722,7 @@ fn fun_212(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_d
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_rangeExpPre: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_defaultValue.clone(), in_a_preDefault.clone(), in_a_foundFirst.clone(), in_a_res.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_context.clone(), in_a_r_expr.clone(), in_a_arrIndex.clone(), in_a_iterators.clone(), in_a_rangeExpPre.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_defaultValue, in_a_preDefault, in_a_foundFirst, in_a_res, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_context, in_a_r_expr, in_a_arrIndex, in_a_iterators, in_a_rangeExpPre, in_a_tmpVarDecls)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, _, _, _, a_res, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_context, a_r_expr, a_arrIndex, a_iterators, a_rangeExpPre, a_tmpVarDecls) => {
             let mut ret_2: Arc<DAE::Type>;
             let mut l_0__: Tpl::Text;
@@ -4757,7 +4757,7 @@ fn fun_212(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_d
 
 fn fun_213(mut in_txt: Tpl::Text, mut in_a_iterators: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut in_a_endLoop: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterators.clone(), in_a_endLoop.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iterators, in_a_endLoop)) {
         (txt, i_iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, a_endLoop) => {
             let mut ret_0: i32;
             let mut txt = (*txt).clone();
@@ -4779,7 +4779,7 @@ fn fun_213(mut in_txt: Tpl::Text, mut in_a_iterators: Arc<metamodelica::List<Arc
 
 fn fun_214(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text, mut in_a_res: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_resTail.clone(), in_a_res.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_resTail, in_a_res)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -4798,7 +4798,7 @@ fn fun_214(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text, mut in_a_res: Tpl
 
 fn fun_215(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_foundFirst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_foundFirst)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -4816,7 +4816,7 @@ fn fun_215(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text) -> Result<Tpl:
 
 fn fun_216(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_resTail.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_resTail)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -4835,7 +4835,7 @@ fn fun_216(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text) -> Result<Tpl::Te
 fn fun_217(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_tmpVarDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_tmpVarDecls)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, a_tmpVarDecls) => {
             let mut txt = (*txt).clone();
             let mut a_tmpVarDecls = (*a_tmpVarDecls).clone();
@@ -4853,7 +4853,7 @@ fn fun_217(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_t
 fn fun_218(mut in_txt: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::Value>>, mut in_a_tmpVarDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_defaultValue.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_defaultValue, in_a_tmpVarDecls)) {
         (txt, None, a_tmpVarDecls) => {
             let mut txt = (*txt).clone();
             let mut a_tmpVarDecls = (*a_tmpVarDecls).clone();
@@ -4871,7 +4871,7 @@ fn fun_218(mut in_txt: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::V
 fn fun_219(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_tmpVarDecls: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::Value>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_tmpVarDecls.clone(), in_a_ri_defaultValue.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_tmpVarDecls, in_a_ri_defaultValue)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, a_tmpVarDecls, _) => {
             (txt.clone(), a_tmpVarDecls.clone())
         },
@@ -4889,7 +4889,7 @@ fn fun_219(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_t
 fn fun_220(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_tmpVarDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_tmpVarDecls)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, a_tmpVarDecls) => {
             let mut txt = (*txt).clone();
             let mut a_tmpVarDecls = (*a_tmpVarDecls).clone();
@@ -4912,7 +4912,7 @@ fn fun_221(mut in_txt: Tpl::Text, mut in_a_ri_defaultValue: Option<Arc<Values::V
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_preDefault: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_defaultValue.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_preDefault.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_defaultValue, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_preDefault, in_a_context)) {
         (txt, Some(i_v), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_tmpVarDecls, a_preDefault, a_context) => {
             let mut ret_0: Arc<DAE::Exp>;
             let mut txt = (*txt).clone();
@@ -4942,7 +4942,7 @@ fn fun_222(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_u
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_preDefault: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_preDefault.clone(), in_a_context.clone(), in_a_ri_defaultValue.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_preDefault) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_preDefault, in_a_context, in_a_ri_defaultValue)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_tmpVarDecls, a_preDefault, _, _) => {
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_tmpVarDecls.clone(), a_preDefault.clone())
         },
@@ -4965,7 +4965,7 @@ fn fun_222(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_u
 fn fun_223(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_reductionBodyExpr: Tpl::Text, mut in_a_res: Tpl::Text, mut in_a_arrIndex: Tpl::Text, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_reductionBodyExpr.clone(), in_a_res.clone(), in_a_arrIndex.clone(), in_a_varDecls.clone())) {
+    (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_reductionBodyExpr, in_a_res, in_a_arrIndex, in_a_varDecls)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, .. }, a_reductionBodyExpr, a_res, a_arrIndex, a_varDecls) => {
             let mut l_tmp__slice: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -5004,7 +5004,7 @@ fn fun_223(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_reductio
 
 fn fun_224(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text, mut in_a_reductionBodyExpr: Tpl::Text, mut in_a_foldExpPre: Tpl::Text, mut in_a_fExpStr: Tpl::Text, mut in_a_res: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_foundFirst.clone(), in_a_reductionBodyExpr.clone(), in_a_foldExpPre.clone(), in_a_fExpStr.clone(), in_a_res.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_foundFirst, in_a_reductionBodyExpr, in_a_foldExpPre, in_a_fExpStr, in_a_res)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _, _, a_fExpStr, a_res) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_res.clone())?;
@@ -5050,7 +5050,7 @@ fn fun_225(mut in_txt: Tpl::Text, mut in_a_ri_foldExp: Option<Arc<DAE::Exp>>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_foldExp.clone(), in_a_reductionBodyExpr.clone(), in_a_res.clone(), in_a_foundFirst.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_foldExp, in_a_reductionBodyExpr, in_a_res, in_a_foundFirst, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_context)) {
         (txt, Some(i_fExp), a_reductionBodyExpr, a_res, a_foundFirst, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_tmpVarDecls, a_context) => {
             let mut l_fExpStr: Tpl::Text;
             let mut l_foldExpPre: Tpl::Text;
@@ -5081,7 +5081,7 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_f
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_foundFirst.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_context.clone(), in_a_ri_foldExp.clone(), in_a_arrIndex.clone(), in_a_varDecls.clone(), in_a_r_expr.clone(), in_a_res.clone(), in_a_reductionBodyExpr.clone(), in_a_resTail.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_foundFirst, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_context, in_a_ri_foldExp, in_a_arrIndex, in_a_varDecls, in_a_r_expr, in_a_res, in_a_reductionBodyExpr, in_a_resTail)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, _, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_tmpVarDecls, _, _, _, a_varDecls, _, _, a_reductionBodyExpr, a_resTail) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("*")).clone() }))?;
@@ -5130,7 +5130,7 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_f
 
 fn fun_227(mut in_txt: Tpl::Text, mut in_a_firstIndex: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_firstIndex.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_firstIndex)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -5154,7 +5154,7 @@ fn fun_228(mut in_txt: Tpl::Text, mut in_a_iter_guardExp: Option<Arc<DAE::Exp>>,
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_guardExpPre: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_guardExpPre) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iter_guardExp.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_guardExpPre.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_guardExpPre) = (::match_deref::match_deref! { match &((in_txt, in_a_iter_guardExp, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_guardExpPre, in_a_context)) {
         (txt, Some(i_grd), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_tmpVarDecls, a_guardExpPre, a_context) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -5178,7 +5178,7 @@ fn fun_228(mut in_txt: Tpl::Text, mut in_a_iter_guardExp: Option<Arc<DAE::Exp>>,
 
 fn fun_229(mut in_txt: Tpl::Text, mut in_a_iter_ty: Arc<DAE::Type>, mut in_a_firstIndex: Tpl::Text, mut in_a_loopVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iter_ty.clone(), in_a_firstIndex.clone(), in_a_loopVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iter_ty, in_a_firstIndex, in_a_loopVar)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: i_record__state, .. }, .. }, a_firstIndex, a_loopVar) => {
             let mut ret_1: Arc<Absyn::Path>;
             let mut l_rec__name: Tpl::Text;
@@ -5214,7 +5214,7 @@ fn lm_230(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Reducti
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_rangeExpPre: Tpl::Text = a_rangeExpPre;
     let mut a_tmpVarDecls: Tpl::Text = a_tmpVarDecls;
-    for mut lstElt_230 in &*items.clone() {
+    for mut lstElt_230 in &*items {
         let mut lstElt_230 = lstElt_230.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_rangeExpPre, a_tmpVarDecls) = (::match_deref::match_deref! { match &(lstElt_230.clone()) {
         Deref @ DAE::ReductionIterator { exp: i_iter_exp, ty: i_iter_ty @ i_ty, id: i_iter_id, guardExp: i_iter_guardExp } => {
@@ -5244,14 +5244,14 @@ fn lm_230(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Reducti
             a_tmpVarDecls = Tpl::writeTok(a_tmpVarDecls.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";/*testloopvar*/")).clone() }))?;
             a_tmpVarDecls = Tpl::writeTok(a_tmpVarDecls.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (l_firstIndex, a_tmpVarDecls) = tempDecl(Tpl::emptyTxt.clone(), (literal!("int")).clone(), a_tmpVarDecls.clone())?;
-            (l_rangeExp, a_rangeExpPre, a_tmpVarDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_iter_exp.clone(), a_context.clone(), a_rangeExpPre.clone(), a_tmpVarDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_rangeExp, a_rangeExpPre, a_tmpVarDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_iter_exp.clone(), a_context.clone(), a_rangeExpPre.clone(), a_tmpVarDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             a_rangeExpPre = Tpl::writeText(a_rangeExpPre.clone(), l_loopVar.clone())?;
             a_rangeExpPre = Tpl::writeTok(a_rangeExpPre.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             a_rangeExpPre = Tpl::writeText(a_rangeExpPre.clone(), l_rangeExp.clone())?;
             a_rangeExpPre = Tpl::writeTok(a_rangeExpPre.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/*testloopvar2*/;")).clone() }))?;
             a_rangeExpPre = Tpl::writeTok(a_rangeExpPre.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             a_rangeExpPre = fun_227(a_rangeExpPre.clone(), l_firstIndex.clone())?;
-            (l_guardCond, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, l_guardExpPre) = fun_228(Tpl::emptyTxt.clone(), i_iter_guardExp.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), l_guardExpPre.clone(), a_context.clone())?;
+            (l_guardCond, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, l_guardExpPre) = fun_228(Tpl::emptyTxt.clone(), i_iter_guardExp.clone(), a_useFlatArrayNotation, a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), l_guardExpPre.clone(), a_context.clone())?;
             l_empty = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0 == (")).clone() }))?;
             l_empty = Tpl::writeText(l_empty.clone(), l_loopVar.clone())?;
             l_empty = Tpl::writeTok(l_empty.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".getDim(2))")).clone() }))?;
@@ -5300,7 +5300,7 @@ fn lm_230(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Reducti
 fn lm_231(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut a_length: Tpl::Text, mut a_rangeExpPre: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut txt: Tpl::Text = txt;
     let mut a_rangeExpPre: Tpl::Text = a_rangeExpPre;
-    for mut lstElt_231 in &*items.clone() {
+    for mut lstElt_231 in &*items {
         let mut lstElt_231 = lstElt_231.clone();
         (txt, a_rangeExpPre) = (::match_deref::match_deref! { match &(lstElt_231.clone()) {
         Deref @ DAE::ReductionIterator { id: i_iter_id, .. } => {
@@ -5333,7 +5333,7 @@ fn fun_232(mut in_txt: Tpl::Text, mut in_a_dim: Arc<DAE::Dimension>, mut in_a_r_
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
     let mut out_a_rangeExpPre: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_rangeExpPre) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dim.clone(), in_a_r_expr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_tmpVarDecls.clone(), in_a_rangeExpPre.clone(), in_a_context.clone(), in_a_dim__vec.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_tmpVarDecls, out_a_rangeExpPre) = (::match_deref::match_deref! { match &((in_txt, in_a_dim, in_a_r_expr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_tmpVarDecls, in_a_rangeExpPre, in_a_context, in_a_dim__vec)) {
         (txt, Deref @ DAE::Dimension::DIM_INTEGER { integer: i_integer }, _, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_tmpVarDecls, a_rangeExpPre, _, a_dim__vec) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_dim__vec.clone())?;
@@ -5399,11 +5399,11 @@ fn lm_233(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimensi
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_tmpVarDecls: Tpl::Text = a_tmpVarDecls;
     let mut a_rangeExpPre: Tpl::Text = a_rangeExpPre;
-    for mut lstElt_233 in &*items.clone() {
+    for mut lstElt_233 in &*items {
         let mut lstElt_233 = lstElt_233.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, a_rangeExpPre) = (::match_deref::match_deref! { match &(lstElt_233.clone()) {
         i_dim => {
-            (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, a_rangeExpPre) = fun_232(txt.clone(), i_dim.clone(), a_r_expr.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), a_rangeExpPre.clone(), a_context.clone(), a_dim__vec.clone())?;
+            (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_tmpVarDecls, a_rangeExpPre) = fun_232(txt.clone(), i_dim.clone(), a_r_expr.clone(), a_useFlatArrayNotation, a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_tmpVarDecls.clone(), a_rangeExpPre.clone(), a_context.clone(), a_dim__vec.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_tmpVarDecls.clone(), a_rangeExpPre.clone())
         },
@@ -5421,7 +5421,7 @@ fn fun_234(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_res: Tpl
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_rangeExpPre: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_res.clone(), in_a_length.clone(), in_a_r_expr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_rangeExpPre.clone(), in_a_context.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_res, in_a_length, in_a_r_expr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_rangeExpPre, in_a_context, in_a_tmpVarDecls)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, .. }, a_res, a_length, a_r_expr, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_rangeExpPre, a_context, a_tmpVarDecls) => {
             let mut l_dimSizes: Tpl::Text;
             let mut l_dim__vec: Tpl::Text;
@@ -5463,7 +5463,7 @@ fn fun_234(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_res: Tpl
 
 fn fun_235(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_defaultValue: Tpl::Text, mut in_a_res: Tpl::Text, mut in_a_preDefault: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_foundFirst.clone(), in_a_ri_path.clone(), in_a_defaultValue.clone(), in_a_res.clone(), in_a_preDefault.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_foundFirst, in_a_ri_path, in_a_defaultValue, in_a_res, in_a_preDefault)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _, a_defaultValue, a_res, a_preDefault) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_preDefault.clone())?;
@@ -5495,7 +5495,7 @@ fn fun_236(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_d
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_rangeExpPre: Tpl::Text;
     let mut out_a_tmpVarDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ri_path.clone(), in_a_defaultValue.clone(), in_a_preDefault.clone(), in_a_foundFirst.clone(), in_a_res.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_context.clone(), in_a_r_expr.clone(), in_a_arrIndex.clone(), in_a_iterators.clone(), in_a_rangeExpPre.clone(), in_a_tmpVarDecls.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_rangeExpPre, out_a_tmpVarDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ri_path, in_a_defaultValue, in_a_preDefault, in_a_foundFirst, in_a_res, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_context, in_a_r_expr, in_a_arrIndex, in_a_iterators, in_a_rangeExpPre, in_a_tmpVarDecls)) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, _, _, _, a_res, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_context, a_r_expr, a_arrIndex, a_iterators, a_rangeExpPre, a_tmpVarDecls) => {
             let mut ret_2: Arc<DAE::Type>;
             let mut l_0__: Tpl::Text;
@@ -5530,7 +5530,7 @@ fn fun_236(mut in_txt: Tpl::Text, mut in_a_ri_path: Arc<Absyn::Path>, mut in_a_d
 
 fn fun_237(mut in_txt: Tpl::Text, mut in_a_iterators: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut in_a_endLoop: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterators.clone(), in_a_endLoop.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iterators, in_a_endLoop)) {
         (txt, i_iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, a_endLoop) => {
             let mut ret_0: i32;
             let mut txt = (*txt).clone();
@@ -5552,7 +5552,7 @@ fn fun_237(mut in_txt: Tpl::Text, mut in_a_iterators: Arc<metamodelica::List<Arc
 
 fn fun_238(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text, mut in_a_res: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_resTail.clone(), in_a_res.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_resTail, in_a_res)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -5571,7 +5571,7 @@ fn fun_238(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text, mut in_a_res: Tpl
 
 fn fun_239(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_foundFirst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_foundFirst)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -5589,7 +5589,7 @@ fn fun_239(mut in_txt: Tpl::Text, mut in_a_foundFirst: Tpl::Text) -> Result<Tpl:
 
 fn fun_240(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_resTail.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_resTail)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -5613,7 +5613,7 @@ pub(crate) fn daeExpReduction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, i_r @ Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { iterType: Absyn::ReductionIterType::THREAD { .. }, path: i_ri_path, defaultValue: i_ri_defaultValue, resultName: i_ri_resultName, foldName: i_ri_foldName, foldExp: i_ri_foldExp, .. }, iterators: i_iterators, expr: i_r_expr }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut ret_24: i32;
             let mut l_loop: Tpl::Text;
@@ -5875,7 +5875,7 @@ pub(crate) fn daeExpSize(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::SIZE { sz: Some(i_dim), exp: i_exp }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_dimPart: Tpl::Text;
             let mut l_expPart: Tpl::Text;
@@ -5958,12 +5958,12 @@ fn lm_243(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_preExp: Tpl::Text = a_preExp;
     let mut a_varDecls: Tpl::Text = a_varDecls;
-    for mut lstElt_243 in &*items.clone() {
+    for mut lstElt_243 in &*items {
         let mut lstElt_243 = lstElt_243.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_preExp, a_varDecls) = (::match_deref::match_deref! { match &(lstElt_243.clone()) {
         i_row => {
             let mut l_vars: Tpl::Text;
-            (l_vars, a_varDecls, a_preExp, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExpMatrixRow2(Tpl::emptyTxt.clone(), i_row.clone(), a_context.clone(), a_varDecls.clone(), a_preExp.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_vars, a_varDecls, a_preExp, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExpMatrixRow2(Tpl::emptyTxt.clone(), i_row.clone(), a_context.clone(), a_varDecls.clone(), a_preExp.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeText(txt.clone(), l_vars.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_preExp.clone(), a_varDecls.clone())
@@ -5982,7 +5982,7 @@ fn fun_244(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_vars: Tpl::Text,
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_vars.clone(), in_a_arrayTypeStr.clone(), in_a_arrayVar.clone(), in_a_StatArrayDim.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_context.clone(), in_a_m_matrix.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_vars, in_a_arrayTypeStr, in_a_arrayVar, in_a_StatArrayDim, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_preExp, in_a_varDecls, in_a_context, in_a_m_matrix)) {
         (txt, Deref @ "NO_ASSIGN", _, a_arrayTypeStr, a_arrayVar, a_StatArrayDim, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_preExp, a_varDecls, a_context, a_m_matrix) => {
             let mut l_params: Tpl::Text;
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -6039,7 +6039,7 @@ fn fun_245(mut in_txt: Tpl::Text, mut in_a_m_matrix: Arc<metamodelica::List<Arc<
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_m_matrix.clone(), in_a_arrayTypeStr.clone(), in_a_arrayVar.clone(), in_a_StatArrayDim.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_m_matrix, in_a_arrayTypeStr, in_a_arrayVar, in_a_StatArrayDim, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_preExp, in_a_varDecls, in_a_context)) {
         (txt, i_m_matrix @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, a_arrayTypeStr, a_arrayVar, a_StatArrayDim, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_preExp, a_varDecls, a_context) => {
             let mut str_1: ArcStr;
             let mut l_vars: Tpl::Text;
@@ -6071,7 +6071,7 @@ pub(crate) fn daeExpMatrix(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, m
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Nil, tail: Deref @ metamodelica::List::Nil }, ty: i_ty, .. }, _, a_preExp, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             let mut l_tmp: Tpl::Text;
             let mut l_arrayTypeStr: Tpl::Text;
@@ -6143,12 +6143,12 @@ fn lm_247(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_247 in &*items.clone() {
+    for mut lstElt_247 in &*items {
         let mut lstElt_247 = lstElt_247.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_247.clone()) {
         i_e => {
             let mut l_expVar: Tpl::Text;
-            (l_expVar, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_expVar, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeText(txt.clone(), l_expVar.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
@@ -6169,9 +6169,9 @@ pub(crate) fn daeExpMatrixRow2(mut txt: Tpl::Text, mut a_row: Arc<metamodelica::
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_varLstStr: Tpl::Text;
     l_varLstStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    (l_varLstStr, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_247(l_varLstStr.clone(), a_row.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
-    l_varLstStr = Tpl::popIter(l_varLstStr.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_varLstStr.clone())?;
+    (l_varLstStr, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_247(l_varLstStr, a_row, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context)?;
+    l_varLstStr = Tpl::popIter(l_varLstStr)?;
+    out_txt = Tpl::writeText(txt, l_varLstStr)?;
     Ok((out_txt, out_a_varDecls, out_a_preExp, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -6181,7 +6181,7 @@ fn fun_249(mut in_txt: Tpl::Text, mut in_a_matrix: Arc<metamodelica::List<Arc<me
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matrix.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt, in_a_matrix, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_context)) {
         (txt, Deref @ metamodelica::List::Cons { head: i_row, tail: _ }, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_context) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -6207,7 +6207,7 @@ fn fun_250(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_matrix: Arc<metamo
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_matrix.clone(), in_a_context.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone())) {
+    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_matrix, in_a_context, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName)) {
         (txt, false, _, _, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NO_ASSIGN")).clone() }))?;
@@ -6236,8 +6236,8 @@ pub(crate) fn daeExpMatrixRow(mut txt: Tpl::Text, mut a_matrix: Arc<metamodelica
     let mut ret_1: bool;
     let mut ret_0: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     ret_0 = List::flatten(a_matrix.clone())?;
-    ret_1 = Expression::isCrefListWithEqualIdents(ret_0.clone());
-    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_250(txt.clone(), ret_1.clone(), a_matrix.clone(), a_context.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone())?;
+    ret_1 = Expression::isCrefListWithEqualIdents(ret_0);
+    (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_250(txt, ret_1, a_matrix, a_context, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName)?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -6247,7 +6247,7 @@ fn fun_252(mut in_txt: Tpl::Text, mut in_a_row: Arc<metamodelica::List<Arc<DAE::
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_row.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt, in_a_row, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_context)) {
         (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: i_cr, .. }, tail: _ }, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_context) => {
             let mut ret_0: Arc<DAE::ComponentRef>;
             let mut txt = (*txt).clone();
@@ -6277,13 +6277,13 @@ pub(crate) fn daeExpMatrixName(mut txt: Tpl::Text, mut a_row: Arc<metamodelica::
     let mut l_varDecls: Tpl::Text;
     l_varDecls = Tpl::emptyTxt.clone();
     l_preExp = Tpl::emptyTxt.clone();
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = fun_252(txt.clone(), a_row.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_context.clone())?;
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = fun_252(txt, a_row, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_context)?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_stateDerVectorName, out_a_extraFuncsNamespace))
 }
 
 pub(crate) fn daeExpMatrixName2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
@@ -6320,7 +6320,7 @@ fn fun_255(mut in_txt: Tpl::Text, mut in_a_scalar: bool, mut in_a_arrayTypeStr: 
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_scalar.clone(), in_a_arrayTypeStr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_array.clone(), in_a_arrayVar.clone(), in_a_ArrayType.clone(), in_a_varDecls.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_scalar, in_a_arrayTypeStr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_preExp, in_a_context, in_a_array, in_a_arrayVar, in_a_ArrayType, in_a_varDecls)) {
         (txt, false, _, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_preExp, a_context, a_array, a_arrayVar, a_ArrayType, a_varDecls) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -6361,7 +6361,7 @@ pub(crate) fn daeExpArray(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::ARRAY { array: i_array @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, ty: i_ty, scalar: i_scalar }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_arrayassign: Tpl::Text;
             let mut l_arrayVar: Tpl::Text;
@@ -6422,7 +6422,7 @@ fn lm_257(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_257 in &*items.clone() {
+    for mut lstElt_257 in &*items {
         let mut lstElt_257 = lstElt_257.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_257.clone()) {
         i_e => {
@@ -6430,7 +6430,7 @@ fn lm_257(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
             let mut ret_1: i32;
             let mut l_subArraycall: Tpl::Text;
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
-            (l_subArraycall, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_subArraycall, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeStr(txt.clone(), (a_arrayVar.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_i0.clone())).clone())?;
@@ -6459,14 +6459,14 @@ pub(crate) fn daeExpArray3(mut txt: Tpl::Text, mut a_array: Arc<metamodelica::Li
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_arraycreate: Tpl::Text;
     l_arraycreate = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    (l_arraycreate, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_257(l_arraycreate.clone(), a_array.clone(), a_array.clone(), (a_arrayVar.clone()).clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
-    l_arraycreate = Tpl::popIter(l_arraycreate.clone())?;
-    out_a_preExp = Tpl::pushBlock(out_a_preExp.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_a_preExp = Tpl::writeText(out_a_preExp.clone(), l_arraycreate.clone())?;
-    out_a_preExp = Tpl::softNewLine(out_a_preExp.clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_a_preExp = Tpl::popBlock(out_a_preExp.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_arraycreate.clone())?;
+    (l_arraycreate, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_257(l_arraycreate, a_array.clone(), a_array, (a_arrayVar).clone(), a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context)?;
+    l_arraycreate = Tpl::popIter(l_arraycreate)?;
+    out_a_preExp = Tpl::pushBlock(out_a_preExp, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_a_preExp = Tpl::writeText(out_a_preExp, l_arraycreate.clone())?;
+    out_a_preExp = Tpl::softNewLine(out_a_preExp)?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_a_preExp = Tpl::popBlock(out_a_preExp)?;
+    out_txt = Tpl::writeText(txt, l_arraycreate)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -6478,11 +6478,11 @@ fn lm_259(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_259 in &*items.clone() {
+    for mut lstElt_259 in &*items {
         let mut lstElt_259 = lstElt_259.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_259.clone()) {
         i_e => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -6502,22 +6502,22 @@ pub(crate) fn daeExpArray2(mut txt: Tpl::Text, mut a_array: Arc<metamodelica::Li
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_params: Tpl::Text;
     l_params = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    (l_params, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_259(l_params.clone(), a_array.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
-    l_params = Tpl::popIter(l_params.clone())?;
-    out_a_preExp = Tpl::writeStr(out_a_preExp.clone(), (a_arrayTypeStr.clone()).clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_a_preExp = Tpl::writeStr(out_a_preExp.clone(), (a_arrayVar.clone()).clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_data[]={")).clone() }))?;
-    out_a_preExp = Tpl::writeText(out_a_preExp.clone(), l_params.clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("};\n")).clone() }))?;
-    out_a_preExp = Tpl::writeStr(out_a_preExp.clone(), (a_ArrayType.clone()).clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_a_preExp = Tpl::writeStr(out_a_preExp.clone(), (a_arrayVar.clone()).clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
-    out_a_preExp = Tpl::writeStr(out_a_preExp.clone(), (a_arrayVar.clone()).clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_data);")).clone() }))?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::writeText(txt.clone(), l_params.clone())?;
+    (l_params, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_259(l_params, a_array, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context)?;
+    l_params = Tpl::popIter(l_params)?;
+    out_a_preExp = Tpl::writeStr(out_a_preExp, (a_arrayTypeStr).clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_a_preExp = Tpl::writeStr(out_a_preExp, (a_arrayVar.clone()).clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_data[]={")).clone() }))?;
+    out_a_preExp = Tpl::writeText(out_a_preExp, l_params.clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("};\n")).clone() }))?;
+    out_a_preExp = Tpl::writeStr(out_a_preExp, (a_ArrayType).clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_a_preExp = Tpl::writeStr(out_a_preExp, (a_arrayVar.clone()).clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
+    out_a_preExp = Tpl::writeStr(out_a_preExp, (a_arrayVar).clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_data);")).clone() }))?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeText(txt, l_params)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -6529,7 +6529,7 @@ pub fn daeSubscript(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_sub.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_sub, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6559,7 +6559,7 @@ fn fun_262(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_useFla
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_inExp.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_inExp, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context)) {
         (txt, Deref @ DAE::Exp::ASUB { exp: i_e, sub: Deref @ metamodelica::List::Cons { head: i_idx, tail: Deref @ metamodelica::List::Nil } }, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut l_idx1: Tpl::Text;
             let mut l_e1: Tpl::Text;
@@ -6593,7 +6593,7 @@ fn lm_263(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncsNamespace: Tpl::Text = a_extraFuncsNamespace;
     let mut a_extraFuncsDecl: Tpl::Text = a_extraFuncsDecl;
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
-    for mut lstElt_263 in &*items.clone() {
+    for mut lstElt_263 in &*items {
         let mut lstElt_263 = lstElt_263.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs) = (::match_deref::match_deref! { match &(lstElt_263.clone()) {
         i_e => {
@@ -6604,7 +6604,7 @@ fn lm_263(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             l_caseVarDecls = Tpl::emptyTxt.clone();
             l_casePreExp = Tpl::emptyTxt.clone();
-            (l_v, l_casePreExp, l_caseVarDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), l_casePreExp.clone(), l_caseVarDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_v, l_casePreExp, l_caseVarDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), l_casePreExp.clone(), l_caseVarDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_i1.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(": {\n")).clone() }))?;
@@ -6636,7 +6636,7 @@ fn fun_264(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_subs.clone(), in_a_ecr_ty.clone(), in_a_arrName.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_subs, in_a_ecr_ty, in_a_arrName)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _, _, a_arrName) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_arrName.clone())?;
@@ -6666,11 +6666,11 @@ fn lm_265(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscri
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_265 in &*items.clone() {
+    for mut lstElt_265 in &*items {
         let mut lstElt_265 = lstElt_265.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_265.clone()) {
         i_index => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeSubscriptASubIndex(txt.clone(), i_index.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeSubscriptASubIndex(txt.clone(), i_index.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -6688,7 +6688,7 @@ fn fun_266(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_useFla
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_inExp.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_inExp, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_preExp, in_a_context, in_a_varDecls)) {
         (txt, Deref @ DAE::Exp::ASUB { exp: i_exp @ Deref @ DAE::Exp::ASUB { exp: _, .. }, .. }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_preExp, _, a_varDecls) => {
             let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -6781,7 +6781,7 @@ fn fun_267(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_inExp: Arc<DAE::
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_inExp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_inExp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ "metatype", a_inExp, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6820,8 +6820,8 @@ pub fn daeExpAsub(mut txt: Tpl::Text, mut a_inExp: Arc<DAE::Exp>, mut a_context:
     let mut str_1: ArcStr;
     let mut txt_0: Tpl::Text;
     txt_0 = expTypeFromExpShort(Tpl::emptyTxt.clone(), a_inExp.clone())?;
-    str_1 = (Tpl::textString(txt_0.clone())?).clone();
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_267(txt.clone(), (str_1.clone()).clone(), a_inExp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+    str_1 = (Tpl::textString(txt_0)?).clone();
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_267(txt, (str_1).clone(), a_inExp, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -6833,7 +6833,7 @@ pub(crate) fn daeSubscriptASubIndex(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_sub.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_sub, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6869,7 +6869,7 @@ pub(crate) fn daeExpASubIndex(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_integer }, _, a_preExp, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_integer.clone())).clone())?;
@@ -6904,11 +6904,11 @@ fn lm_271(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscri
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_271 in &*items.clone() {
+    for mut lstElt_271 in &*items {
         let mut lstElt_271 = lstElt_271.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_271.clone()) {
         i_sub => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeSubscript(txt.clone(), i_sub.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeSubscript(txt.clone(), i_sub.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -6920,7 +6920,7 @@ fn lm_271(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscri
 
 fn fun_272(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimsValuesStr: Tpl::Text, mut in_a_arrName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimsValuesStr.clone(), in_a_arrName.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimsValuesStr, in_a_arrName)) {
         (txt, Deref @ "metatype_array", a_dimsValuesStr, a_arrName) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("arrayGet(")).clone() }))?;
@@ -6958,14 +6958,14 @@ pub(crate) fn arrayScalarRhs(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a
     let mut ret_2: i32;
     let mut l_dimsLenStr: Tpl::Text;
     let mut l_arrayType: Tpl::Text;
-    l_arrayType = expTypeShort(Tpl::emptyTxt.clone(), a_ty.clone())?;
+    l_arrayType = expTypeShort(Tpl::emptyTxt.clone(), a_ty)?;
     ret_2 = (a_subs.clone().len() as i32);
-    l_dimsLenStr = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
+    l_dimsLenStr = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2)).clone())?;
     l_dimsValuesStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    (l_dimsValuesStr, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_271(l_dimsValuesStr.clone(), a_subs.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
-    l_dimsValuesStr = Tpl::popIter(l_dimsValuesStr.clone())?;
-    str_4 = (Tpl::textString(l_arrayType.clone())?).clone();
-    out_txt = fun_272(txt.clone(), (str_4.clone()).clone(), l_dimsValuesStr.clone(), (a_arrName.clone()).clone())?;
+    (l_dimsValuesStr, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_271(l_dimsValuesStr, a_subs, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context)?;
+    l_dimsValuesStr = Tpl::popIter(l_dimsValuesStr)?;
+    str_4 = (Tpl::textString(l_arrayType)?).clone();
+    out_txt = fun_272(txt, (str_4).clone(), l_dimsValuesStr, (a_arrName).clone())?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -6973,7 +6973,7 @@ fn fun_274(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_preExp: 
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_exp.clone(), in_a_expVar.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_preExp, in_a_varDecls, in_a_exp, in_a_expVar)) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_preExp, a_varDecls, _, a_expVar) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("((int)")).clone() }))?;
@@ -7061,7 +7061,7 @@ pub(crate) fn daeExpCast(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::CAST { exp: i_exp, ty: i_ty }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_expVar: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -7085,7 +7085,7 @@ pub(crate) fn daeExpCast(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut
 
 fn fun_276(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Var>, mut in_a_structName: ArcStr, mut in_a_varName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_e.clone(), in_a_structName.clone(), in_a_varName.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_e, in_a_structName, in_a_varName)) {
         (txt, Deref @ DAE::Var { name: i_name, .. }, a_structName, a_varName) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_varName.clone()).clone())?;
@@ -7108,7 +7108,7 @@ fn fun_276(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Var>, mut in_a_structName
 
 fn lm_277(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>, mut a_structName: ArcStr, mut a_varName: ArcStr) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_277 in &*items.clone() {
+    for mut lstElt_277 in &*items {
         let mut lstElt_277 = lstElt_277.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_277.clone()) {
         i_e => {
@@ -7126,9 +7126,9 @@ pub(crate) fn structParams(mut txt: Tpl::Text, mut a_structName: ArcStr, mut a_v
     let mut out_txt: Tpl::Text;
     let mut l_params: Tpl::Text;
     l_params = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_params = lm_277(l_params.clone(), a_exps.clone(), (a_structName.clone()).clone(), (a_varName.clone()).clone())?;
-    l_params = Tpl::popIter(l_params.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_params.clone())?;
+    l_params = lm_277(l_params, a_exps, (a_structName).clone(), (a_varName).clone())?;
+    l_params = Tpl::popIter(l_params)?;
+    out_txt = Tpl::writeText(txt, l_params)?;
     Ok(out_txt)
 }
 
@@ -7140,7 +7140,7 @@ fn lm_279(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_279 in &*items.clone() {
+    for mut lstElt_279 in &*items {
         let mut lstElt_279 = lstElt_279.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_279.clone()) {
         (i_exp, i_compn) => {
@@ -7152,7 +7152,7 @@ fn lm_279(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_compnStr.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
@@ -7171,7 +7171,7 @@ pub(crate) fn daeExpRecord(mut in_txt: Tpl::Text, mut in_a_rec: Arc<DAE::Exp>, m
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rec.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_rec, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::RECORD { path: i_path, exps: i_exps, comp: i_comp, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut ret_3: Arc<metamodelica::List<(Arc<DAE::Exp>, ArcStr)>>;
             let mut l_ass: Tpl::Text;
@@ -7209,7 +7209,7 @@ fn lm_281(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_281 in &*items.clone() {
+    for mut lstElt_281 in &*items {
         let mut lstElt_281 = lstElt_281.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_281.clone()) {
         (i_exp, i_compn) => {
@@ -7221,7 +7221,7 @@ fn lm_281(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_compnStr.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
@@ -7240,7 +7240,7 @@ pub(crate) fn daeExpRecordCall(mut in_txt: Tpl::Text, mut in_a_rec: Arc<DAE::Exp
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rec.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_rec, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::METARECORDCALL { path: i_path, args: i_exps, fieldNames: i_comp, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut ret_3: Arc<metamodelica::List<(Arc<DAE::Exp>, ArcStr)>>;
             let mut l_ass: Tpl::Text;
@@ -7272,7 +7272,7 @@ pub(crate) fn daeExpRecordCall(mut in_txt: Tpl::Text, mut in_a_rec: Arc<DAE::Exp
 
 fn fun_283(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, mut i_context @ SimCodeFunction::Context::SIMULATION_CONTEXT { genDiscrete: _ }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = contextSystem(txt.clone(), i_context.clone())?;
@@ -7293,7 +7293,7 @@ fn fun_283(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) ->
 
 fn fun_284(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_index.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_index) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }, mut a_index) => {
             let mut ret_0: i32;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->_time_conditions[")).clone() }))?;
@@ -7316,7 +7316,7 @@ fn fun_284(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 fn fun_285(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->_initial")).clone() }))?;
             txt.clone()
@@ -7331,7 +7331,7 @@ fn fun_285(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) ->
 
 fn fun_286(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->_terminal")).clone() }))?;
             txt.clone()
@@ -7346,7 +7346,7 @@ fn fun_286(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) ->
 
 fn fun_287(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_var3: Tpl::Text, mut in_a_var2: Tpl::Text, mut in_a_var1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_var3.clone(), in_a_var2.clone(), in_a_var1.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_var3, in_a_var2, in_a_var1) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }, mut a_var3, mut a_var2, mut a_var1) => {
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("division(")).clone() }))?;
@@ -7377,7 +7377,7 @@ fn fun_287(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 fn fun_288(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_INTEGER { varLst: _ }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?;
@@ -7400,7 +7400,7 @@ fn fun_288(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn smf_289(mut in_txt: Tpl::Text, mut in_it: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_it.clone()) {
+    out_txt = (match (in_txt, in_it) {
         (mut txt, SimCodeVar::SimVar { index: mut i_i, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("__zDot[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_i.clone())).clone())?;
@@ -7416,7 +7416,7 @@ fn smf_289(mut in_txt: Tpl::Text, mut in_it: SimCodeVar::SimVar) -> Result<Tpl::
 
 fn fun_290(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_var1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_var1.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_var1) {
         (mut txt, false, mut a_var1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("puts(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_var1.clone())?;
@@ -7441,11 +7441,11 @@ fn lm_291(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_291 in &*items.clone() {
+    for mut lstElt_291 in &*items {
         let mut lstElt_291 = lstElt_291.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_291.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7459,7 +7459,7 @@ fn fun_292(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_attr_ty: Arc<DAE::
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_attr_ty.clone(), in_a_context.clone(), in_a_argStr.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_e1.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_attr_ty, in_a_context, in_a_argStr, in_a_preExp, in_a_varDecls, in_a_e1)) {
         (txt, false, _, a_context, a_argStr, a_preExp, a_varDecls, a_e1) => {
             let mut txt_4: Tpl::Text;
             let mut ret_4: ArcStr;
@@ -7518,11 +7518,11 @@ fn lm_293(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_293 in &*items.clone() {
+    for mut lstElt_293 in &*items {
         let mut lstElt_293 = lstElt_293.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_293.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7540,11 +7540,11 @@ fn lm_294(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_294 in &*items.clone() {
+    for mut lstElt_294 in &*items {
         let mut lstElt_294 = lstElt_294.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_294.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7562,11 +7562,11 @@ fn lm_295(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_295 in &*items.clone() {
+    for mut lstElt_295 in &*items {
         let mut lstElt_295 = lstElt_295.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_295.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7584,11 +7584,11 @@ fn lm_296(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_296 in &*items.clone() {
+    for mut lstElt_296 in &*items {
         let mut lstElt_296 = lstElt_296.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_296.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7606,11 +7606,11 @@ fn lm_297(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_297 in &*items.clone() {
+    for mut lstElt_297 in &*items {
         let mut lstElt_297 = lstElt_297.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_297.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7628,11 +7628,11 @@ fn lm_298(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_298 in &*items.clone() {
+    for mut lstElt_298 in &*items {
         let mut lstElt_298 = lstElt_298.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_298.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7650,11 +7650,11 @@ fn lm_299(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_299 in &*items.clone() {
+    for mut lstElt_299 in &*items {
         let mut lstElt_299 = lstElt_299.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_299.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7672,11 +7672,11 @@ fn lm_300(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_300 in &*items.clone() {
+    for mut lstElt_300 in &*items {
         let mut lstElt_300 = lstElt_300.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_300.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7694,11 +7694,11 @@ fn lm_301(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_301 in &*items.clone() {
+    for mut lstElt_301 in &*items {
         let mut lstElt_301 = lstElt_301.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_301.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7716,11 +7716,11 @@ fn lm_302(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_302 in &*items.clone() {
+    for mut lstElt_302 in &*items {
         let mut lstElt_302 = lstElt_302.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_302.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7738,11 +7738,11 @@ fn lm_303(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_303 in &*items.clone() {
+    for mut lstElt_303 in &*items {
         let mut lstElt_303 = lstElt_303.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_303.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7760,11 +7760,11 @@ fn lm_304(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_304 in &*items.clone() {
+    for mut lstElt_304 in &*items {
         let mut lstElt_304 = lstElt_304.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_304.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7782,11 +7782,11 @@ fn lm_305(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_305 in &*items.clone() {
+    for mut lstElt_305 in &*items {
         let mut lstElt_305 = lstElt_305.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_305.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7798,7 +7798,7 @@ fn lm_305(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 
 fn fun_306(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_expVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_expVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_expVar)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_elty, .. }, a_expVar) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DynArrayDim1<")).clone() }))?;
@@ -7832,11 +7832,11 @@ fn lm_307(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_307 in &*items.clone() {
+    for mut lstElt_307 in &*items {
         let mut lstElt_307 = lstElt_307.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_307.clone()) {
         i_dim => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_dim.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_dim.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7849,7 +7849,7 @@ fn lm_307(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 fn fun_308(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_dimstr: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_dimstr: Tpl::Text;
-    (out_txt, out_a_dimstr) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimstr.clone())) {
+    (out_txt, out_a_dimstr) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimstr)) {
         (txt, i_ty @ Deref @ DAE::Type::T_ARRAY { dims: i_dims, .. }, a_dimstr) => {
             let mut ret_1: i32;
             let mut ret_0: i32;
@@ -7885,13 +7885,13 @@ fn lm_309(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_309 in &*items.clone() {
+    for mut lstElt_309 in &*items {
         let mut lstElt_309 = lstElt_309.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_309.clone()) {
         i_array => {
             txt = Tpl::writeText(txt.clone(), a_tvar.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_list.push_back(&")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_array.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_array.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
@@ -7904,7 +7904,7 @@ fn lm_309(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 
 fn fun_310(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_INTEGER { varLst: _ }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?;
@@ -7933,11 +7933,11 @@ fn lm_311(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_311 in &*items.clone() {
+    for mut lstElt_311 in &*items {
         let mut lstElt_311 = lstElt_311.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_311.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7955,11 +7955,11 @@ fn lm_312(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_312 in &*items.clone() {
+    for mut lstElt_312 in &*items {
         let mut lstElt_312 = lstElt_312.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_312.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -7971,7 +7971,7 @@ fn lm_312(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 
 fn fun_313(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_retVar)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -7987,7 +7987,7 @@ fn fun_313(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Tex
 
 fn fun_314(mut in_txt: Tpl::Text, mut in_a_expLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_expLst.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_expLst, in_a_retVar)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -8009,11 +8009,11 @@ fn lm_315(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_315 in &*items.clone() {
+    for mut lstElt_315 in &*items {
         let mut lstElt_315 = lstElt_315.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_315.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -8025,7 +8025,7 @@ fn lm_315(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 
 fn fun_316(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_retVar)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -8041,7 +8041,7 @@ fn fun_316(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Tex
 
 fn fun_317(mut in_txt: Tpl::Text, mut in_a_explist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_explist.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_explist, in_a_retVar)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -8057,7 +8057,7 @@ fn fun_317(mut in_txt: Tpl::Text, mut in_a_explist: Arc<metamodelica::List<Arc<D
 
 fn fun_318(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_retVar)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -8073,7 +8073,7 @@ fn fun_318(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Tex
 
 fn fun_319(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_retVar)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -8089,7 +8089,7 @@ fn fun_319(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Tex
 
 fn fun_320(mut in_txt: Tpl::Text, mut in_a_explist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_explist.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_explist, in_a_retVar)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -8105,7 +8105,7 @@ fn fun_320(mut in_txt: Tpl::Text, mut in_a_explist: Arc<metamodelica::List<Arc<D
 
 fn fun_321(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_retVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_retVar)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -8121,7 +8121,7 @@ fn fun_321(mut in_txt: Tpl::Text, mut in_a_retVar: Tpl::Text) -> Result<Tpl::Tex
 
 fn fun_322(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_retVar: Tpl::Text, mut in_a_explist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_argStr: Tpl::Text, mut in_a_funName: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_retVar.clone(), in_a_explist.clone(), in_a_argStr.clone(), in_a_funName.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_retVar, in_a_explist, in_a_argStr, in_a_funName)) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, a_retVar, a_explist, a_argStr, a_funName) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_funName.clone())?;
@@ -8158,7 +8158,7 @@ fn fun_323(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_funName: Tpl::Te
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_funName.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_explist.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_funName, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context, in_a_explist)) {
         (txt, Deref @ "Modelica_Utilities_Files_loadResource", _, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"noName\"")).clone() }))?;
@@ -8198,7 +8198,7 @@ pub(crate) fn daeExpCall(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_call.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_call, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -9687,7 +9687,7 @@ pub(crate) fn daeExpCall(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mu
 
 fn fun_325(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_e: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_operator.clone(), in_a_e.clone()) {
+    out_txt = (match (in_txt, in_a_operator, in_a_e) {
         (mut txt, DAE::Operator::NOT { ty: _ }, mut a_e) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(!")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_e.clone())?;
@@ -9709,7 +9709,7 @@ pub(crate) fn daeExpLunary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, m
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::LUNARY { exp: i_exp, operator: i_operator }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_e: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -9733,7 +9733,7 @@ pub(crate) fn daeExpLunary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, m
 
 fn fun_327(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_operator.clone(), in_a_e2.clone(), in_a_e1.clone()) {
+    out_txt = (match (in_txt, in_a_operator, in_a_e2, in_a_e1) {
         (mut txt, DAE::Operator::AND { ty: _ }, mut a_e2, mut a_e1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_e1.clone())?;
@@ -9766,7 +9766,7 @@ pub(crate) fn daeExpLbinary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, 
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::LBINARY { exp1: i_exp1, exp2: i_exp2, operator: i_operator }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_e2: Tpl::Text;
             let mut l_e1: Tpl::Text;
@@ -9792,7 +9792,7 @@ pub(crate) fn daeExpLbinary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, 
 
 fn fun_329(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 8) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?;
             txt.clone()
@@ -9811,7 +9811,7 @@ fn fun_329(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_330(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("double")).clone() }))?;
             txt.clone()
@@ -9826,7 +9826,7 @@ fn fun_330(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_331(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
             txt.clone()
@@ -9841,7 +9841,7 @@ fn fun_331(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_332(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bool")).clone() }))?;
             txt.clone()
@@ -9856,7 +9856,7 @@ fn fun_332(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_333(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 8) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?;
             txt.clone()
@@ -9875,7 +9875,7 @@ fn fun_333(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_334(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
             txt.clone()
@@ -9890,7 +9890,7 @@ fn fun_334(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_335(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
             txt.clone()
@@ -9905,7 +9905,7 @@ fn fun_335(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_336(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
             txt.clone()
@@ -9920,7 +9920,7 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_337(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
             txt.clone()
@@ -9935,7 +9935,7 @@ fn fun_337(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_338(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
             txt.clone()
@@ -9950,7 +9950,7 @@ fn fun_338(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_339(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
             txt.clone()
@@ -9965,7 +9965,7 @@ fn fun_339(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 pub(crate) fn expTypeFromExpFlag(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_flag: i32) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_flag.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_flag)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: _ }, a_flag) => {
             let mut txt = (*txt).clone();
             return Ok(fun_329(txt.clone(), a_flag.clone())?)
@@ -10128,7 +10128,7 @@ pub(crate) fn expTypeFromExpFlag(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::E
 
 fn fun_341(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bool")).clone() }))?;
             txt.clone()
@@ -10143,7 +10143,7 @@ fn fun_341(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_342(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bool")).clone() }))?;
             txt.clone()
@@ -10158,7 +10158,7 @@ fn fun_342(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 fn fun_343(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_flag) {
         (mut txt, 1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bool")).clone() }))?;
             txt.clone()
@@ -10173,7 +10173,7 @@ fn fun_343(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
 
 pub(crate) fn expTypeFromOpFlag(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_op.clone(), in_a_flag.clone()) {
+    out_txt = (match (in_txt, in_a_op, in_a_flag) {
         (mut txt, DAE::Operator::ADD { ty: ref i_o_ty }, mut a_flag) => {
             txt = expTypeFlag(txt.clone(), i_o_ty.clone(), a_flag.clone())?;
             txt.clone()
@@ -10308,7 +10308,7 @@ pub(crate) fn expTypeFromOpFlag(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operato
 
 fn fun_345(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_e2str: Tpl::Text, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_e2str.clone(), in_a_e2.clone(), in_a_e1.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_e2str, in_a_e2, in_a_e1) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }, mut a_e2str, mut a_e2, mut a_e1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("division(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_e1.clone())?;
@@ -10335,7 +10335,7 @@ fn fun_345(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 fn fun_346(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_tvar: Tpl::Text, mut in_a_e1: Tpl::Text, mut in_a_e2: Tpl::Text, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_tvar.clone(), in_a_e1.clone(), in_a_e2.clone(), in_a_type.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_tvar, in_a_e1, in_a_e2, in_a_type) {
         (mut txt, false, mut a_tvar, mut a_e1, mut a_e2, mut a_type) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("add_array_scalar<")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_type.clone())?;
@@ -10370,7 +10370,7 @@ fn fun_347(mut in_txt: Tpl::Text, mut in_a_it: DAE::Operator, mut in_a_exp1: Arc
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone(), in_a_exp1.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_context.clone(), in_a_exp2.clone(), in_a_e2.clone(), in_a_e1.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_it, in_a_exp1, in_a_preExp, in_a_varDecls, in_a_context, in_a_exp2, in_a_e2, in_a_e1)) {
         (txt, DAE::Operator::ADD { ty: _ }, _, a_preExp, a_varDecls, _, _, a_e2, a_e1) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -10785,9 +10785,9 @@ pub(crate) fn daeExpBinary(mut txt: Tpl::Text, mut a_it: DAE::Operator, mut a_ex
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_e2: Tpl::Text;
     let mut l_e1: Tpl::Text;
-    (l_e1, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp1.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    (l_e2, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp2.clone(), a_context.clone(), out_a_preExp.clone(), out_a_varDecls.clone(), a_simCode.clone(), out_a_extraFuncs.clone(), out_a_extraFuncsDecl.clone(), out_a_extraFuncsNamespace.clone(), out_a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    (out_txt, out_a_preExp, out_a_varDecls) = fun_347(txt.clone(), a_it.clone(), a_exp1.clone(), out_a_preExp.clone(), out_a_varDecls.clone(), a_context.clone(), a_exp2.clone(), l_e2.clone(), l_e1.clone())?;
+    (l_e1, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp1.clone(), a_context.clone(), a_preExp, a_varDecls, a_simCode.clone(), a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
+    (l_e2, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp2.clone(), a_context.clone(), out_a_preExp, out_a_varDecls, a_simCode, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName, a_useFlatArrayNotation)?;
+    (out_txt, out_a_preExp, out_a_varDecls) = fun_347(txt, a_it, a_exp1, out_a_preExp, out_a_varDecls, a_context, a_exp2, l_e2, l_e1)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -10800,22 +10800,22 @@ pub(crate) fn daeExpSconst(mut txt: Tpl::Text, mut a_string: ArcStr, mut a_conte
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut ret_0: ArcStr;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-    ret_0 = (Util::escapeModelicaStringToCString((a_string.clone()).clone())).clone();
-    out_txt = Tpl::writeStr(out_txt.clone(), (ret_0.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-    out_a_preExp = a_preExp.clone();
-    out_a_varDecls = a_varDecls.clone();
-    out_a_extraFuncs = a_extraFuncs.clone();
-    out_a_extraFuncsDecl = a_extraFuncsDecl.clone();
-    out_a_extraFuncsNamespace = a_extraFuncsNamespace.clone();
-    out_a_stateDerVectorName = a_stateDerVectorName.clone();
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+    ret_0 = (Util::escapeModelicaStringToCString((a_string).clone())).clone();
+    out_txt = Tpl::writeStr(out_txt, (ret_0).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+    out_a_preExp = a_preExp;
+    out_a_varDecls = a_varDecls;
+    out_a_extraFuncs = a_extraFuncs;
+    out_a_extraFuncsDecl = a_extraFuncsDecl;
+    out_a_extraFuncsNamespace = a_extraFuncsNamespace;
+    out_a_stateDerVectorName = a_stateDerVectorName;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn lm_350(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_350 in &*items.clone() {
+    for mut lstElt_350 in &*items {
         let mut lstElt_350 = lstElt_350.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_350.clone()) {
         Deref @ DAE::Dimension::DIM_INTEGER { integer: i_i } => {
@@ -10834,7 +10834,7 @@ fn lm_350(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimensi
 
 fn fun_351(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_dimensions: Tpl::Text, mut in_a_listlength: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_dimensions.clone(), in_a_listlength.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_dimensions, in_a_listlength)) {
         (txt, Deref @ "", _, a_listlength) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DynArrayDim")).clone() }))?;
@@ -10860,7 +10860,7 @@ fn fun_352(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_pre
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_operator.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_e.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_a_operator, in_a_preExp, in_a_varDecls, in_a_e)) {
         (txt, DAE::Operator::UMINUS { ty: _ }, a_preExp, a_varDecls, a_e) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(-")).clone() }))?;
@@ -10939,7 +10939,7 @@ pub(crate) fn daeExpUnary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::UNARY { exp: i_exp, operator: i_operator }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_e: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -10963,7 +10963,7 @@ pub(crate) fn daeExpUnary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
 
 fn fun_354(mut in_txt: Tpl::Text, mut in_a_rel_operator: DAE::Operator, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text, mut in_a_rel_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_rel_operator.clone(), in_a_e2.clone(), in_a_e1.clone(), in_a_rel_index.clone()) {
+    out_txt = (match (in_txt, in_a_rel_operator, in_a_e2, in_a_e1, in_a_rel_index) {
         (mut txt, DAE::Operator::LESS { ty: _ }, mut a_e2, mut a_e1, mut a_rel_index) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->getCondition(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_rel_index.clone())).clone())?;
@@ -11013,7 +11013,7 @@ fn fun_354(mut in_txt: Tpl::Text, mut in_a_rel_operator: DAE::Operator, mut in_a
 
 fn fun_355(mut in_txt: Tpl::Text, mut in_a_rel_operator: DAE::Operator, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_rel_operator.clone(), in_a_e2.clone(), in_a_e1.clone()) {
+    out_txt = (match (in_txt, in_a_rel_operator, in_a_e2, in_a_e1) {
         (mut txt, DAE::Operator::LESS { ty: _ }, mut a_e2, mut a_e1) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_e1.clone())?;
@@ -11055,7 +11055,7 @@ fn fun_355(mut in_txt: Tpl::Text, mut in_a_rel_operator: DAE::Operator, mut in_a
 
 fn fun_356(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text, mut in_a_rel_index: i32, mut in_a_rel_operator: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_e2.clone(), in_a_e1.clone(), in_a_rel_index.clone(), in_a_rel_operator.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_e2, in_a_e1, in_a_rel_index, in_a_rel_operator) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }, mut a_e2, mut a_e1, mut a_rel_index, mut a_rel_operator) => {
             txt = fun_354(txt.clone(), a_rel_operator.clone(), a_e2.clone(), a_e1.clone(), a_rel_index.clone())?;
             txt.clone()
@@ -11076,7 +11076,7 @@ fn fun_357(mut in_txt: Tpl::Text, mut in_a_rel_optionExpisASUB: Option<(Arc<DAE:
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rel_optionExpisASUB.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_rel_exp2.clone(), in_a_rel_exp1.clone(), in_a_rel_index.clone(), in_a_rel_operator.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_rel_optionExpisASUB, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context, in_a_rel_exp2, in_a_rel_exp1, in_a_rel_index, in_a_rel_operator)) {
         (txt, None, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context, a_rel_exp2, a_rel_exp1, a_rel_index, a_rel_operator) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -11119,7 +11119,7 @@ pub(crate) fn daeExpRelation(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>,
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::RELATION { optionExpisASUB: i_rel_optionExpisASUB, operator: i_rel_operator, index: i_rel_index, exp1: i_rel_exp1, exp2: i_rel_exp2 }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -11141,7 +11141,7 @@ pub(crate) fn daeExpRelation(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>,
 
 pub(crate) fn daeExpRelation3(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_index.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_index) {
         (mut txt, SimCodeFunction::Context::ALGLOOP_CONTEXT { genInitialisation: false, .. }, mut a_index) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_system->getCondition(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_index.clone())).clone())?;
@@ -11160,7 +11160,7 @@ pub(crate) fn daeExpRelation3(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFu
 
 fn fun_360(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_op.clone(), in_a_e2.clone(), in_a_e1.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_op, in_a_e2, in_a_e1)) {
         (txt, DAE::Operator::LESS { ty: Deref @ DAE::Type::T_BOOL { varLst: _ } }, a_e2, a_e1) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(!")).clone() }))?;
@@ -11435,7 +11435,7 @@ fn fun_360(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_e2: Tpl::
 
 fn fun_361(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_index: i32, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_op.clone(), in_a_index.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_op, in_a_index, in_a_context)) {
         (txt, DAE::Operator::LESS { ty: Deref @ DAE::Type::T_BOOL { varLst: _ } }, a_index, a_context) => {
             let mut txt = (*txt).clone();
             txt = daeExpRelation3(txt.clone(), a_context.clone(), a_index.clone())?;
@@ -11568,7 +11568,7 @@ fn fun_361(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_index: i3
 
 fn fun_362(mut in_txt: Tpl::Text, mut in_a_index: i32, mut in_a_context: SimCodeFunction::Context, mut in_a_e2: Tpl::Text, mut in_a_e1: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_index.clone(), in_a_context.clone(), in_a_e2.clone(), in_a_e1.clone(), in_a_op.clone()) {
+    out_txt = (match (in_txt, in_a_index, in_a_context, in_a_e2, in_a_e1, in_a_op) {
         (mut txt, (-1), _, mut a_e2, mut a_e1, mut a_op) => {
             txt = fun_360(txt.clone(), a_op.clone(), a_e2.clone(), a_e1.clone())?;
             txt.clone()
@@ -11591,15 +11591,15 @@ pub(crate) fn daeExpRelation2(mut txt: Tpl::Text, mut a_op: DAE::Operator, mut a
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut l_e2: Tpl::Text;
     let mut l_e1: Tpl::Text;
-    (l_e1, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp1.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    (l_e2, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp2.clone(), a_context.clone(), out_a_preExp.clone(), out_a_varDecls.clone(), a_simCode.clone(), out_a_extraFuncs.clone(), out_a_extraFuncsDecl.clone(), out_a_extraFuncsNamespace.clone(), out_a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    out_txt = fun_362(txt.clone(), a_index.clone(), a_context.clone(), l_e2.clone(), l_e1.clone(), a_op.clone())?;
+    (l_e1, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp1, a_context.clone(), a_preExp, a_varDecls, a_simCode.clone(), a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
+    (l_e2, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_exp2, a_context.clone(), out_a_preExp, out_a_varDecls, a_simCode, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName, a_useFlatArrayNotation)?;
+    out_txt = fun_362(txt, a_index, a_context, l_e2, l_e1, a_op)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_364(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_eThen: Tpl::Text, mut in_a_resVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_eThen.clone(), in_a_resVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_eThen, in_a_resVar)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: _, .. }, a_eThen, a_resVar) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_resVar.clone())?;
@@ -11623,7 +11623,7 @@ fn fun_364(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_eThen: T
 
 fn fun_365(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_eElse: Tpl::Text, mut in_a_resVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_eElse.clone(), in_a_resVar.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_eElse, in_a_resVar)) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: _, .. }, a_eElse, a_resVar) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_resVar.clone())?;
@@ -11661,33 +11661,33 @@ pub(crate) fn daeExpIf(mut txt: Tpl::Text, mut a_cond: Arc<DAE::Exp>, mut a_then
     let mut l_eThen: Tpl::Text;
     let mut l_preExpThen: Tpl::Text;
     let mut l_condExp: Tpl::Text;
-    (l_condExp, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_cond.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+    (l_condExp, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_cond, a_context.clone(), a_preExp, a_varDecls, a_simCode.clone(), a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
     l_preExpThen = Tpl::emptyTxt.clone();
-    (l_eThen, l_preExpThen, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_then__.clone(), a_context.clone(), l_preExpThen.clone(), out_a_varDecls.clone(), a_simCode.clone(), out_a_extraFuncs.clone(), out_a_extraFuncsDecl.clone(), out_a_extraFuncsNamespace.clone(), out_a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+    (l_eThen, l_preExpThen, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_then__.clone(), a_context.clone(), l_preExpThen, out_a_varDecls, a_simCode.clone(), out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName, a_useFlatArrayNotation)?;
     l_preExpElse = Tpl::emptyTxt.clone();
-    (l_eElse, l_preExpElse, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_else__.clone(), a_context.clone(), l_preExpElse.clone(), out_a_varDecls.clone(), a_simCode.clone(), out_a_extraFuncs.clone(), out_a_extraFuncsDecl.clone(), out_a_extraFuncsNamespace.clone(), out_a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    (l_resVar, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = expTypeFromExpArrayIf(Tpl::emptyTxt.clone(), a_else__.clone(), a_context.clone(), out_a_preExp.clone(), out_a_varDecls.clone(), a_simCode.clone(), out_a_extraFuncs.clone(), out_a_extraFuncsDecl.clone(), out_a_extraFuncsNamespace.clone(), out_a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if ")).clone() }))?;
-    out_a_preExp = encloseInParantheses(out_a_preExp.clone(), (Tpl::textString(l_condExp.clone())?).clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
-    out_a_preExp = Tpl::pushBlock(out_a_preExp.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_a_preExp = Tpl::writeText(out_a_preExp.clone(), l_preExpThen.clone())?;
-    out_a_preExp = Tpl::softNewLine(out_a_preExp.clone())?;
-    ret_6 = Expression::r#typeof(a_then__.clone())?;
-    out_a_preExp = fun_364(out_a_preExp.clone(), ret_6.clone(), l_eThen.clone(), l_resVar.clone())?;
-    out_a_preExp = Tpl::softNewLine(out_a_preExp.clone())?;
-    out_a_preExp = Tpl::popBlock(out_a_preExp.clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("} else {\n")).clone() }))?;
-    out_a_preExp = Tpl::pushBlock(out_a_preExp.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_a_preExp = Tpl::writeText(out_a_preExp.clone(), l_preExpElse.clone())?;
-    out_a_preExp = Tpl::softNewLine(out_a_preExp.clone())?;
-    ret_7 = Expression::r#typeof(a_else__.clone())?;
-    out_a_preExp = fun_365(out_a_preExp.clone(), ret_7.clone(), l_eElse.clone(), l_resVar.clone())?;
-    out_a_preExp = Tpl::softNewLine(out_a_preExp.clone())?;
-    out_a_preExp = Tpl::popBlock(out_a_preExp.clone())?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
-    out_a_preExp = Tpl::writeTok(out_a_preExp.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::writeText(txt.clone(), l_resVar.clone())?;
+    (l_eElse, l_preExpElse, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = daeExp(Tpl::emptyTxt.clone(), a_else__.clone(), a_context.clone(), l_preExpElse, out_a_varDecls, a_simCode.clone(), out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName, a_useFlatArrayNotation)?;
+    (l_resVar, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = expTypeFromExpArrayIf(Tpl::emptyTxt.clone(), a_else__.clone(), a_context, out_a_preExp, out_a_varDecls, a_simCode, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName, a_useFlatArrayNotation)?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if ")).clone() }))?;
+    out_a_preExp = encloseInParantheses(out_a_preExp, (Tpl::textString(l_condExp)?).clone())?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
+    out_a_preExp = Tpl::pushBlock(out_a_preExp, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_a_preExp = Tpl::writeText(out_a_preExp, l_preExpThen)?;
+    out_a_preExp = Tpl::softNewLine(out_a_preExp)?;
+    ret_6 = Expression::r#typeof(a_then__)?;
+    out_a_preExp = fun_364(out_a_preExp, ret_6, l_eThen, l_resVar.clone())?;
+    out_a_preExp = Tpl::softNewLine(out_a_preExp)?;
+    out_a_preExp = Tpl::popBlock(out_a_preExp)?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("} else {\n")).clone() }))?;
+    out_a_preExp = Tpl::pushBlock(out_a_preExp, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_a_preExp = Tpl::writeText(out_a_preExp, l_preExpElse)?;
+    out_a_preExp = Tpl::softNewLine(out_a_preExp)?;
+    ret_7 = Expression::r#typeof(a_else__)?;
+    out_a_preExp = fun_365(out_a_preExp, ret_7, l_eElse, l_resVar.clone())?;
+    out_a_preExp = Tpl::softNewLine(out_a_preExp)?;
+    out_a_preExp = Tpl::popBlock(out_a_preExp)?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
+    out_a_preExp = Tpl::writeTok(out_a_preExp, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeText(txt, l_resVar)?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
@@ -11699,11 +11699,11 @@ fn lm_367(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_367 in &*items.clone() {
+    for mut lstElt_367 in &*items {
         let mut lstElt_367 = lstElt_367.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_367.clone()) {
         i_e => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -11716,7 +11716,7 @@ fn lm_367(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 fn fun_368(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_exp: Arc<DAE::Exp>, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_exp.clone(), in_a_varDecls.clone())) {
+    (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_exp, in_a_varDecls)) {
         (txt, i_ty @ Deref @ DAE::Type::T_ARRAY { dims: i_dims, .. }, _, a_varDecls) => {
             let mut l_resVar: Tpl::Text;
             let mut ret_1: i32;
@@ -11758,7 +11758,7 @@ pub(crate) fn expTypeFromExpArrayIf(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::ARRAY { ty: i_ty, array: i_array, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_params: Tpl::Text;
             let mut l_tmpVar: Tpl::Text;
@@ -11806,7 +11806,7 @@ pub(crate) fn expTypeFromExpArrayIf(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE
 
 pub(crate) fn expTypeFromExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_it)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: _ }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?)
@@ -11950,7 +11950,7 @@ pub(crate) fn expTypeFromExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<DAE::Exp>) 
 
 pub(crate) fn expTypeFromOp(mut in_txt: Tpl::Text, mut in_a_it: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_it.clone()) {
+    out_txt = (match (in_txt, in_a_it) {
         (mut txt, DAE::Operator::ADD { ty: ref i_ty }) => {
             txt = expTypeShort(txt.clone(), i_ty.clone())?;
             txt.clone()
@@ -12085,7 +12085,7 @@ pub(crate) fn expTypeFromOp(mut in_txt: Tpl::Text, mut in_a_it: DAE::Operator) -
 
 fn lm_372(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_372 in &*items.clone() {
+    for mut lstElt_372 in &*items {
         let mut lstElt_372 = lstElt_372.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_372.clone()) {
         i_e => {
@@ -12107,7 +12107,7 @@ fn lm_373(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_373 in &*items.clone() {
+    for mut lstElt_373 in &*items {
         let mut lstElt_373 = lstElt_373.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_373.clone()) {
         i_cr => {
@@ -12119,7 +12119,7 @@ fn lm_373(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
             l_rhsStr = Tpl::writeTok(l_rhsStr.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">(")).clone() }))?;
             l_rhsStr = Tpl::writeText(l_rhsStr.clone(), a_retStruct.clone())?;
             l_rhsStr = Tpl::writeTok(l_rhsStr.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".data)")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeLhsCref(txt.clone(), i_cr.clone(), (Tpl::textString(l_rhsStr.clone())?).clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeLhsCref(txt.clone(), i_cr.clone(), (Tpl::textString(l_rhsStr.clone())?).clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -12136,7 +12136,7 @@ pub fn algStmtTupleAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Stateme
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_stmt, in_a_context, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { exp: i_exp @ Deref @ DAE::Exp::CALL { path: _, .. }, expExpLst: i_expExpLst, .. }, a_context, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_lhsCrefs: Tpl::Text;
             let mut l_retStruct: Tpl::Text;
@@ -12184,29 +12184,29 @@ pub fn error(mut txt: Tpl::Text, mut a_srcInfo: SourceInfo, mut a_errMessage: Ar
     let mut out_txt: Tpl::Text;
     let mut ret_0: ArcStr;
     Tpl::addSourceTemplateError((a_errMessage.clone()).clone(), a_srcInfo.clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#error \"")).clone() }))?;
-    ret_0 = (Error::infoStr(a_srcInfo.clone())?).clone();
-    out_txt = Tpl::writeStr(out_txt.clone(), (ret_0.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_errMessage.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#error \"")).clone() }))?;
+    ret_0 = (Error::infoStr(a_srcInfo)?).clone();
+    out_txt = Tpl::writeStr(out_txt, (ret_0).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_errMessage).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
 pub(crate) fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     Tpl::addTemplateError((a_errMessage.clone()).clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#error \"")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_errMessage.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#error \"")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_errMessage).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
 fn fun_377(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_expStr: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_expStr.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_expStr) {
         (mut txt, false, mut a_expStr) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_expStr.clone()).clone())?;
@@ -12228,14 +12228,14 @@ pub fn encloseInParantheses(mut txt: Tpl::Text, mut a_expStr: ArcStr) -> Result<
     let mut ret_0: i32;
     ret_0 = stringGet((a_expStr.clone()).clone(),1)?;
     ret_1 = stringGet((literal!("(")).clone(),1)?;
-    ret_2 = intEq(ret_0.clone(), ret_1.clone());
-    out_txt = fun_377(txt.clone(), ret_2.clone(), (a_expStr.clone()).clone())?;
+    ret_2 = intEq(ret_0, ret_1);
+    out_txt = fun_377(txt, ret_2, (a_expStr).clone())?;
     Ok(out_txt)
 }
 
 fn fun_379(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_lhsStr: ArcStr, mut in_a_rhsStr: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_lhsStr.clone(), in_a_rhsStr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_lhsStr, in_a_rhsStr)) {
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_elty, dims: i_dims }, a_lhsStr, a_rhsStr) => {
             let mut ret_2: i32;
             let mut l_arrayWrapper: Tpl::Text;
@@ -12272,13 +12272,13 @@ fn fun_379(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_lhsStr: 
 
 pub fn assignJacArray(mut txt: Tpl::Text, mut a_lhsStr: ArcStr, mut a_rhsStr: ArcStr, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_379(txt.clone(), a_ty.clone(), (a_lhsStr.clone()).clone(), (a_rhsStr.clone()).clone())?;
+    out_txt = fun_379(txt, a_ty, (a_lhsStr).clone(), (a_rhsStr).clone())?;
     Ok(out_txt)
 }
 
 fn fun_381(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_a_ty: Arc<DAE::Type>, mut in_a_rhsStr: ArcStr, mut in_a_lhsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varKind.clone(), in_a_ty.clone(), in_a_rhsStr.clone(), in_a_lhsStr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varKind, in_a_ty, in_a_rhsStr, in_a_lhsStr)) {
         (txt, BackendDAE::VarKind::JAC_VAR { .. }, a_ty, a_rhsStr, a_lhsStr) => {
             let mut txt = (*txt).clone();
             txt = assignJacArray(txt.clone(), (Tpl::textString(a_lhsStr.clone())?).clone(), (a_rhsStr.clone()).clone(), a_ty.clone())?;
@@ -12309,7 +12309,7 @@ fn fun_381(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_
 
 fn fun_382(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_ty: Arc<DAE::Type>, mut in_a_rhsStr: ArcStr, mut in_a_lhsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ty.clone(), in_a_rhsStr.clone(), in_a_lhsStr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_ty, in_a_rhsStr, in_a_lhsStr)) {
         (txt, SimCodeVar::SimVar { varKind: i_varKind, .. }, a_ty, a_rhsStr, a_lhsStr) => {
             let mut txt = (*txt).clone();
             txt = fun_381(txt.clone(), i_varKind.clone(), a_ty.clone(), (a_rhsStr.clone()).clone(), a_lhsStr.clone())?;
@@ -12325,7 +12325,7 @@ fn fun_382(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_ty: 
 
 fn fun_383(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_lhsStr: Tpl::Text, mut in_a_rhsStr: ArcStr, mut in_a_t: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_lhsStr.clone(), in_a_rhsStr.clone(), in_a_t.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_lhsStr, in_a_rhsStr, in_a_t)) {
         (txt, SimCodeFunction::Context::SIMULATION_CONTEXT { genDiscrete: _ }, a_lhsStr, a_rhsStr, a_t) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("usub_")).clone() }))?;
@@ -12357,7 +12357,7 @@ fn fun_383(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 fn lm_384(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>, mut a_rhsStr: ArcStr, mut a_lhsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_384 in &*items.clone() {
+    for mut lstElt_384 in &*items {
         let mut lstElt_384 = lstElt_384.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_384.clone()) {
         Deref @ DAE::Var { name: i_var_name, .. } => {
@@ -12390,7 +12390,7 @@ fn fun_385(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_varLst.clone(), in_a_cr.clone(), in_a_rhsStr.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_exp.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_context, in_a_varLst, in_a_cr, in_a_rhsStr, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_exp)) {
         (txt, i_context @ SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, _, a_rhsStr, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_exp) => {
             let mut l_lhsStr: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -12429,7 +12429,7 @@ fn fun_385(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
 
 fn lm_386(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_386 in &*items.clone() {
+    for mut lstElt_386 in &*items {
         let mut lstElt_386 = lstElt_386.clone();
         txt = (match lstElt_386.clone() {
         mut i_i => {
@@ -12450,13 +12450,13 @@ fn lm_387(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_387 in &*items.clone() {
+    for mut lstElt_387 in &*items {
         let mut lstElt_387 = lstElt_387.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_387.clone()) {
         (i_lhs, i_indxs) => {
             let mut l_indexStr: Tpl::Text;
             let mut l_lhsStr: Tpl::Text;
-            (l_lhsStr, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExpCref(Tpl::emptyTxt.clone(), true, i_lhs.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_lhsStr, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExpCref(Tpl::emptyTxt.clone(), true, i_lhs.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             l_indexStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_indexStr = lm_386(l_indexStr.clone(), i_indxs.clone())?;
             l_indexStr = Tpl::popIter(l_indexStr.clone())?;
@@ -12483,14 +12483,14 @@ fn lm_388(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_388 in &*items.clone() {
+    for mut lstElt_388 in &*items {
         let mut lstElt_388 = lstElt_388.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_388.clone()) {
         (i_exp, i_compn) => {
             let mut ret_2: Arc<DAE::ComponentRef>;
             let mut l_compnStr: Tpl::Text;
             let mut l_lhsStr: Tpl::Text;
-            (l_lhsStr, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExpCref(Tpl::emptyTxt.clone(), true, i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (l_lhsStr, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExpCref(Tpl::emptyTxt.clone(), true, i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             ret_2 = ComponentReference::makeUntypedCrefIdent((i_compn.clone()).clone());
             l_compnStr = crefStr(Tpl::emptyTxt.clone(), ret_2.clone())?;
             txt = Tpl::writeText(txt.clone(), l_lhsStr.clone())?;
@@ -12516,7 +12516,7 @@ pub fn writeLhsCref(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_rhsStr.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_rhsStr, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, _, _, a_preExp, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             (txt.clone(), a_preExp.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone())
         },
@@ -12665,7 +12665,7 @@ pub(crate) fn daeExpTsub(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, m
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_inExp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_inExp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::TSUB { ix: 1, exp: i_exp, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_tuple__val: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -12732,11 +12732,11 @@ fn lm_391(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_391 in &*items.clone() {
+    for mut lstElt_391 in &*items {
         let mut lstElt_391 = lstElt_391.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_391.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -12754,11 +12754,11 @@ fn lm_392(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_392 in &*items.clone() {
+    for mut lstElt_392 in &*items {
         let mut lstElt_392 = lstElt_392.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_392.clone()) {
         i_exp => {
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             txt = Tpl::nextIter(txt.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -12776,7 +12776,7 @@ fn fun_393(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_useFlatArrayNotati
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_expLst.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_context, in_a_expLst)) {
         (txt, false, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context, a_expLst) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -12816,12 +12816,12 @@ fn lm_394(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_394 in &*items.clone() {
+    for mut lstElt_394 in &*items {
         let mut lstElt_394 = lstElt_394.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_394.clone()) {
         i_exp => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_exp.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -12838,7 +12838,7 @@ fn fun_395(mut in_txt: Tpl::Text, mut in_a_attr_isFunctionPointerCall: bool, mut
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_attr_isFunctionPointerCall.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_expLst.clone(), in_a_attr_ty.clone(), in_a_additionalOutputs.clone(), in_a_argStr.clone(), in_a_context.clone(), in_a_path.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt, in_a_attr_isFunctionPointerCall, in_a_useFlatArrayNotation, in_a_stateDerVectorName, in_a_extraFuncsNamespace, in_a_extraFuncsDecl, in_a_extraFuncs, in_a_simCode, in_a_varDecls, in_a_preExp, in_a_expLst, in_a_attr_ty, in_a_additionalOutputs, in_a_argStr, in_a_context, in_a_path)) {
         (txt, false, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _, _, a_additionalOutputs, a_argStr, a_context, a_path) => {
             let mut l_name: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -12910,7 +12910,7 @@ fn fun_396(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in_a_additio
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_call.clone(), in_a_additionalOutputs.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_call, in_a_additionalOutputs, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: i_attr_builtin, isFunctionPointerCall: i_attr_isFunctionPointerCall, ty: i_attr_ty, .. }, expLst: i_expLst, path: i_path }, a_additionalOutputs, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut ret_2: bool;
             let mut ret_1: bool;
@@ -12945,14 +12945,14 @@ pub(crate) fn daeExpCallTuple(mut txt: Tpl::Text, mut a_call: Arc<DAE::Exp>, mut
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_396(txt.clone(), a_call.clone(), a_additionalOutputs.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
-    out_a_additionalOutputs = a_additionalOutputs.clone();
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_396(txt, a_call, a_additionalOutputs.clone(), a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation)?;
+    out_a_additionalOutputs = a_additionalOutputs;
     Ok((out_txt, out_a_additionalOutputs, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_398(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_NORETCALL { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void")).clone() }))?;
@@ -12976,12 +12976,12 @@ fn lm_399(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_399 in &*items.clone() {
+    for mut lstElt_399 in &*items {
         let mut lstElt_399 = lstElt_399.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_399.clone()) {
         i_e => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = expTypeFromExpArrayIf(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = expTypeFromExpArrayIf(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -12992,7 +12992,7 @@ fn lm_399(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 
 fn lm_400(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_400 in &*items.clone() {
+    for mut lstElt_400 in &*items {
         let mut lstElt_400 = lstElt_400.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_400.clone()) {
         i_t => {
@@ -13008,7 +13008,7 @@ fn lm_400(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>
 
 fn fun_401(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_TUPLE { types: Deref @ metamodelica::List::Cons { head: _, tail: i_tys }, .. }) => {
             let mut txt = (*txt).clone();
             txt = lm_400(txt.clone(), i_tys.clone())?;
@@ -13024,7 +13024,7 @@ fn fun_401(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_402(mut in_txt: Tpl::Text, mut in_a_isClosure: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isClosure.clone()) {
+    out_txt = (match (in_txt, in_a_isClosure) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -13048,21 +13048,21 @@ pub(crate) fn generateTypeCast(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut
     let mut l_inputs: Tpl::Text;
     let mut l_ret: Tpl::Text;
     l_ret = fun_398(Tpl::emptyTxt.clone(), a_ty.clone())?;
-    (l_inputs, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_399(Tpl::emptyTxt.clone(), a_es.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
-    l_outputs = fun_401(Tpl::emptyTxt.clone(), a_ty.clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_ret.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*)(threadData_t*")).clone() }))?;
-    out_txt = fun_402(out_txt.clone(), a_isClosure.clone())?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_inputs.clone())?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_outputs.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("))")).clone() }))?;
+    (l_inputs, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = lm_399(Tpl::emptyTxt.clone(), a_es, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context)?;
+    l_outputs = fun_401(Tpl::emptyTxt.clone(), a_ty)?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_ret)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*)(threadData_t*")).clone() }))?;
+    out_txt = fun_402(out_txt, a_isClosure)?;
+    out_txt = Tpl::writeText(out_txt, l_inputs)?;
+    out_txt = Tpl::writeText(out_txt, l_outputs)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("))")).clone() }))?;
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_404(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context)) {
         (txt, Deref @ DAE::Exp::SHARED_LITERAL { index: i_exp_index, .. }, a_context) => {
             let mut l_lit: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -13083,9 +13083,9 @@ pub(crate) fn daeExpSharedLiteral(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, 
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    out_txt = fun_404(txt.clone(), a_exp.clone(), a_context.clone())?;
-    out_a_preExp = a_preExp.clone();
-    out_a_varDecls = a_varDecls.clone();
+    out_txt = fun_404(txt, a_exp, a_context)?;
+    out_a_preExp = a_preExp;
+    out_a_varDecls = a_varDecls;
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
@@ -13097,12 +13097,12 @@ fn lm_406(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     let mut a_extraFuncs: Tpl::Text = a_extraFuncs;
     let mut a_varDecls: Tpl::Text = a_varDecls;
     let mut a_preExp: Tpl::Text = a_preExp;
-    for mut lstElt_406 in &*items.clone() {
+    for mut lstElt_406 in &*items {
         let mut lstElt_406 = lstElt_406.clone();
         (txt, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_406.clone()) {
         i_e => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
-            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
+            (txt, a_preExp, a_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = daeExp(txt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation)?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -13119,7 +13119,7 @@ pub(crate) fn daeExpPartEvalFunction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DA
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::PARTEVALFUNCTION { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: i_t }, origType: Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: i_t__orig @ Deref @ DAE::Type::T_FUNCTION { path: i_name, .. } }, expList: i_expList, .. }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_closureArgs: Tpl::Text;
             let mut l_funcName: Tpl::Text;
@@ -13161,7 +13161,7 @@ pub(crate) fn daeExpPartEvalFunction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DA
 
 fn fun_408(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("this")).clone() }))?;
             txt.clone()
@@ -13176,7 +13176,7 @@ fn fun_408(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context) ->
 
 fn lm_409(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_409 in &*items.clone() {
+    for mut lstElt_409 in &*items {
         let mut lstElt_409 = lstElt_409.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_409.clone()) {
         Deref @ DAE::FuncArg { ty: i_a_ty, name: i_a_name, .. } => {
@@ -13197,7 +13197,7 @@ fn lm_409(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg
 
 fn lm_410(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_410 in &*items.clone() {
+    for mut lstElt_410 in &*items {
         let mut lstElt_410 = lstElt_410.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_410.clone()) {
         Deref @ DAE::FuncArg { ty: i_a_ty, name: i_a_name, .. } => {
@@ -13218,7 +13218,7 @@ fn lm_410(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg
 
 fn lm_411(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_411 in &*items.clone() {
+    for mut lstElt_411 in &*items {
         let mut lstElt_411 = lstElt_411.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_411.clone()) {
         Deref @ DAE::FuncArg { name: i_a_name, .. } => {
@@ -13237,7 +13237,7 @@ fn lm_411(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg
 
 fn lm_412(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_412 in &*items.clone() {
+    for mut lstElt_412 in &*items {
         let mut lstElt_412 = lstElt_412.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_412.clone()) {
         Deref @ DAE::FuncArg { ty: i_a_ty, name: i_a_name, .. } => {
@@ -13259,7 +13259,7 @@ fn lm_412(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg
 
 fn lm_413(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_413 in &*items.clone() {
+    for mut lstElt_413 in &*items {
         let mut lstElt_413 = lstElt_413.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_413.clone()) {
         Deref @ DAE::FuncArg { name: i_a_name, .. } => {
@@ -13283,7 +13283,7 @@ fn lm_413(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg
 fn fun_414(mut in_txt: Tpl::Text, mut in_a_t__orig: Arc<DAE::Type>, mut in_a_closureArgs: ArcStr, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_funcArgs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut in_a_context: SimCodeFunction::Context, mut in_a_funcName: ArcStr) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
-    (out_txt, out_a_extraFuncsDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_t__orig.clone(), in_a_closureArgs.clone(), in_a_extraFuncsDecl.clone(), in_a_funcArgs.clone(), in_a_context.clone(), in_a_funcName.clone())) {
+    (out_txt, out_a_extraFuncsDecl) = (::match_deref::match_deref! { match &((in_txt, in_a_t__orig, in_a_closureArgs, in_a_extraFuncsDecl, in_a_funcArgs, in_a_context, in_a_funcName)) {
         (txt, Deref @ DAE::Type::T_FUNCTION { funcArg: i_funcArgsOrig, .. }, a_closureArgs, a_extraFuncsDecl, a_funcArgs, a_context, a_funcName) => {
             let mut ret_8: Arc<metamodelica::List<Arc<DAE::FuncArg>>>;
             let mut ret_7: Arc<metamodelica::List<Arc<DAE::FuncArg>>>;
@@ -13359,7 +13359,7 @@ fn fun_414(mut in_txt: Tpl::Text, mut in_a_t__orig: Arc<DAE::Type>, mut in_a_clo
 fn fun_415(mut in_txt: Tpl::Text, mut in_a_t: Arc<DAE::Type>, mut in_a_funcName: ArcStr, mut in_a_closureArgs: ArcStr, mut in_a_t__orig: Arc<DAE::Type>, mut in_a_context: SimCodeFunction::Context, mut in_a_extraFuncsDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
-    (out_txt, out_a_extraFuncsDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_t.clone(), in_a_funcName.clone(), in_a_closureArgs.clone(), in_a_t__orig.clone(), in_a_context.clone(), in_a_extraFuncsDecl.clone())) {
+    (out_txt, out_a_extraFuncsDecl) = (::match_deref::match_deref! { match &((in_txt, in_a_t, in_a_funcName, in_a_closureArgs, in_a_t__orig, in_a_context, in_a_extraFuncsDecl)) {
         (txt, Deref @ DAE::Type::T_FUNCTION { funcArg: i_funcArgs, .. }, a_funcName, a_closureArgs, a_t__orig, a_context, a_extraFuncsDecl) => {
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -13377,13 +13377,13 @@ fn fun_415(mut in_txt: Tpl::Text, mut in_a_t: Arc<DAE::Type>, mut in_a_funcName:
 pub(crate) fn functionClosure(mut txt: Tpl::Text, mut a_funcName: ArcStr, mut a_closureArgs: ArcStr, mut a_t: Arc<DAE::Type>, mut a_t__orig: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_extraFuncsDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;
-    (out_txt, out_a_extraFuncsDecl) = fun_415(txt.clone(), a_t.clone(), (a_funcName.clone()).clone(), (a_closureArgs.clone()).clone(), a_t__orig.clone(), a_context.clone(), a_extraFuncsDecl.clone())?;
+    (out_txt, out_a_extraFuncsDecl) = fun_415(txt, a_t, (a_funcName).clone(), (a_closureArgs).clone(), a_t__orig, a_context, a_extraFuncsDecl)?;
     Ok((out_txt, out_a_extraFuncsDecl))
 }
 
 fn fun_417(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_condVar: Tpl::Text, mut in_a_msgVar: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_condVar.clone(), in_a_msgVar.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_condVar, in_a_msgVar) {
         (mut txt, SimCodeFunction::Context::FUNCTION_CONTEXT { is_parallel: true, .. }, mut a_condVar, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if(!(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_condVar.clone())?;
@@ -13423,16 +13423,16 @@ pub(crate) fn assertCommonVar(mut txt: Tpl::Text, mut a_condVar: Tpl::Text, mut 
     let mut out_a_condVar: Tpl::Text;
     let mut out_a_msgVar: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
-    out_txt = fun_417(txt.clone(), a_context.clone(), a_condVar.clone(), a_msgVar.clone())?;
-    out_a_condVar = a_condVar.clone();
-    out_a_msgVar = a_msgVar.clone();
-    out_a_varDecls = a_varDecls.clone();
+    out_txt = fun_417(txt, a_context, a_condVar.clone(), a_msgVar.clone())?;
+    out_a_condVar = a_condVar;
+    out_a_msgVar = a_msgVar;
+    out_a_varDecls = a_varDecls;
     Ok((out_txt, out_a_condVar, out_a_msgVar, out_a_varDecls))
 }
 
 pub(crate) fn expTypeUnboxed(mut in_txt: Tpl::Text, mut in_a_t: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_t.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_t)) {
         (txt, i_t @ Deref @ DAE::Type::T_METABOXED { ty: _ }) => {
             let mut ret_0: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
@@ -13452,7 +13452,7 @@ pub(crate) fn expTypeUnboxed(mut in_txt: Tpl::Text, mut in_a_t: Arc<DAE::Type>) 
 
 fn fun_420(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_elty: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_elty.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_elty) {
         (mut txt, false, mut a_elty) => {
             txt = Tpl::writeText(txt.clone(), a_elty.clone())?;
             txt.clone()
@@ -13475,7 +13475,7 @@ pub(crate) fn daeExpBox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut 
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::BOX { exp: i_exp }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_res: Tpl::Text;
             let mut ret_3: bool;
@@ -13516,7 +13516,7 @@ pub(crate) fn daeExpUnbox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
+    (out_txt, out_a_preExp, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_preExp, in_a_varDecls, in_a_simCode, in_a_extraFuncs, in_a_extraFuncsDecl, in_a_extraFuncsNamespace, in_a_stateDerVectorName, in_a_useFlatArrayNotation)) {
         (txt, Deref @ DAE::Exp::UNBOX { ty: i_exp_ty, exp: i_exp_exp }, a_context, a_preExp, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_res: Tpl::Text;
             let mut l_ty: Tpl::Text;
@@ -13545,7 +13545,7 @@ pub(crate) fn daeExpUnbox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
 
 pub fn zeroCrossLength(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
+    out_txt = (match (in_txt, in_a_simCode) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numTimeEvents: mut i_vi_numTimeEvents, .. }, .. }, zeroCrossings: ref i_zeroCrossings, .. }) => {
             let mut ret_3: i32;
             let mut ret_2: i32;
@@ -13567,7 +13567,7 @@ pub fn zeroCrossLength(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode
 
 pub fn timeEventLength(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
+    out_txt = (match (in_txt, in_a_simCode) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numTimeEvents: mut i_vi_numTimeEvents, .. }, .. }, .. }) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_vi_numTimeEvents.clone())).clone())?;
             txt.clone()

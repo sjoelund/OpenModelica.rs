@@ -1039,24 +1039,24 @@ pub fn isSet(mut inFlag: DebugFlag) -> Result<bool> {
     let mut debug_flags: metamodelica::Array<bool>;
     let mut flags: Flag;
     let mut index: i32;
-    let DebugFlag { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
+    let DebugFlag { index: __pa0, .. } = (inFlag) else { bail!("pattern mismatch") };
     index = __pa0.clone();
     flags = getFlags(true);
-    let Flag::FLAGS { debugFlags: __pa1, .. } = (flags.clone()) else { bail!("pattern mismatch") };
+    let Flag::FLAGS { debugFlags: __pa1, .. } = (flags) else { bail!("pattern mismatch") };
     debug_flags = __pa1.clone();
-    outValue = metamodelica::arrayGet(debug_flags.clone(), index.clone())?;
+    outValue = metamodelica::arrayGet(debug_flags.clone(), index)?;
     Ok(outValue)
 }
 
 pub fn isConfigFlagSet(mut inFlag: ConfigFlag, mut hasMember: ArcStr) -> Result<bool> {
     let mut isMember: bool;
-    isMember = listMember((hasMember.clone()).clone(), getConfigStringList(inFlag.clone())?);
+    isMember = listMember((hasMember).clone(), getConfigStringList(inFlag)?);
     Ok(isMember)
 }
 
 pub fn getConfigName(mut inFlag: ConfigFlag) -> Result<ArcStr> {
     let mut name: ArcStr;
-    let ConfigFlag { name: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
+    let ConfigFlag { name: __pa0, .. } = (inFlag) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     Ok(name)
 }
@@ -1067,61 +1067,61 @@ pub fn getConfigValue(mut inFlag: ConfigFlag) -> Result<FlagData> {
     let mut index: i32;
     let mut flags: Flag;
     let mut name: ArcStr;
-    let ConfigFlag { name: __pa0, index: __pa1, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
+    let ConfigFlag { name: __pa0, index: __pa1, .. } = (inFlag) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     index = __pa1.clone();
     flags = getFlags(true);
-    let Flag::FLAGS { configFlags: __pa2, .. } = (flags.clone()) else { bail!("pattern mismatch") };
+    let Flag::FLAGS { configFlags: __pa2, .. } = (flags) else { bail!("pattern mismatch") };
     config_flags = __pa2.clone();
-    outValue = metamodelica::arrayGet(config_flags.clone(), index.clone())?;
+    outValue = metamodelica::arrayGet(config_flags.clone(), index)?;
     Ok(outValue)
 }
 
 pub fn getConfigBool(mut inFlag: ConfigFlag) -> Result<bool> {
     let mut outValue: bool;
-    let FlagData::BOOL_FLAG { data: __pa0 } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::BOOL_FLAG { data: __pa0 } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }
 
 pub fn getConfigInt(mut inFlag: ConfigFlag) -> Result<i32> {
     let mut outValue: i32;
-    let FlagData::INT_FLAG { data: __pa0 } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::INT_FLAG { data: __pa0 } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }
 
 pub fn getConfigIntList(mut inFlag: ConfigFlag) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outValue: Arc<metamodelica::List<i32>>;
-    let FlagData::INT_LIST_FLAG { data: __pa0 } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::INT_LIST_FLAG { data: __pa0 } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }
 
 pub fn getConfigReal(mut inFlag: ConfigFlag) -> Result<metamodelica::Real> {
     let mut outValue: metamodelica::Real;
-    let FlagData::REAL_FLAG { data: __pa0 } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::REAL_FLAG { data: __pa0 } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }
 
 pub fn getConfigString(mut inFlag: ConfigFlag) -> Result<ArcStr> {
     let mut outValue: ArcStr;
-    let FlagData::STRING_FLAG { data: __pa0 } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::STRING_FLAG { data: __pa0 } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }
 
 pub fn getConfigStringList(mut inFlag: ConfigFlag) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outValue: Arc<metamodelica::List<ArcStr>>;
-    let FlagData::STRING_LIST_FLAG { data: __pa0 } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::STRING_LIST_FLAG { data: __pa0 } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }
 
 pub fn getConfigEnum(mut inFlag: ConfigFlag) -> Result<i32> {
     let mut outValue: i32;
-    let FlagData::ENUM_FLAG { data: __pa0, .. } = (getConfigValue(inFlag.clone())?) else { bail!("pattern mismatch") };
+    let FlagData::ENUM_FLAG { data: __pa0, .. } = (getConfigValue(inFlag)?) else { bail!("pattern mismatch") };
     outValue = __pa0.clone();
     Ok(outValue)
 }

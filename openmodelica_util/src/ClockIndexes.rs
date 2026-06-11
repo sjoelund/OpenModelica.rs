@@ -89,7 +89,7 @@ pub static buildModelClocks: std::sync::LazyLock<Arc<metamodelica::List<i32>>> =
 
 pub fn toString(mut clockIndex: i32) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match clockIndex.clone() {
+    r#str = ((match clockIndex {
         RT_NO_CLOCK => literal!("NON"),
         RT_CLOCK_SIMULATE_TOTAL => literal!("STO"),
         RT_CLOCK_SIMULATE_SIMULATION => literal!("SSI"),

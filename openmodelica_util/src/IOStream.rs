@@ -153,15 +153,15 @@ pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IO
         IOStreamType::FILE { name: mut fileName } => {
             let mut fileID: i32;
             fileID = IOStreamExt::createFile((fileName.clone()).clone())?;
-            IOStream { name: (streamName.clone()).clone(), ty: streamType.clone(), data: IOStreamData::FILE_DATA { data: fileID.clone() } }
+            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::FILE_DATA { data: fileID.clone() } }
         },
         IOStreamType::LIST { .. } => {
-            IOStream { name: (streamName.clone()).clone(), ty: streamType.clone(), data: IOStreamData::LIST_DATA { data: metamodelica::nil() } }
+            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::LIST_DATA { data: metamodelica::nil() } }
         },
         IOStreamType::BUFFER { .. } => {
             let mut bufferID: i32;
             bufferID = IOStreamExt::createBuffer()?;
-            IOStream { name: (streamName.clone()).clone(), ty: streamType.clone(), data: IOStreamData::BUFFER_DATA { data: bufferID.clone() } }
+            IOStream { name: (streamName).clone(), ty: streamType, data: IOStreamData::BUFFER_DATA { data: bufferID.clone() } }
         },
     });
     Ok(outStream)
@@ -169,16 +169,16 @@ pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IO
 
 pub fn append(mut inStream: IOStream, mut inString: ArcStr) -> Result<IOStream> {
     let mut outStream: IOStream;
-    outStream = (match inStream.clone() {
+    outStream = (match inStream {
         ref fStream @ IOStream { data: IOStreamData::FILE_DATA { data: ref fileID }, .. } => {
-            IOStreamExt::appendFile(fileID.clone(), (inString.clone()).clone())?;
+            IOStreamExt::appendFile(fileID.clone(), (inString).clone())?;
             fStream.clone()
         },
         IOStream { name: mut streamName, ty: mut streamType, data: IOStreamData::LIST_DATA { data: ref listData } } => {
-            IOStream { name: (streamName.clone()).clone(), ty: streamType.clone(), data: IOStreamData::LIST_DATA { data: metamodelica::cons((inString.clone()).clone(), listData.clone()) } }
+            IOStream { name: (streamName.clone()).clone(), ty: streamType.clone(), data: IOStreamData::LIST_DATA { data: metamodelica::cons((inString).clone(), listData.clone()) } }
         },
         ref bStream @ IOStream { data: IOStreamData::BUFFER_DATA { data: ref bufferID }, .. } => {
-            IOStreamExt::appendBuffer(bufferID.clone(), (inString.clone()).clone())?;
+            IOStreamExt::appendBuffer(bufferID.clone(), (inString).clone())?;
             bStream.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -188,7 +188,7 @@ pub fn append(mut inStream: IOStream, mut inString: ArcStr) -> Result<IOStream> 
 
 pub fn appendList(mut inStream: IOStream, mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<IOStream> {
     let mut outStream: IOStream;
-    outStream = List::foldr(inStringList.clone(), (std::sync::Arc::new(append) as std::sync::Arc<dyn ::std::ops::Fn(IOStream, ArcStr) -> Result<IOStream> + 'static>), inStream.clone())?;
+    outStream = List::foldr(inStringList, (std::sync::Arc::new(append) as std::sync::Arc<dyn ::std::ops::Fn(IOStream, ArcStr) -> Result<IOStream> + 'static>), inStream)?;
     Ok(outStream)
 }
 
@@ -197,22 +197,22 @@ pub(crate) fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::Lis
     let mut s_data: IOStreamData = s.data.clone();
     let () = (match s_data.clone() {
         IOStreamData::FILE_DATA { .. } => {
-            for mut r#str in &*data.clone() {
+            for mut r#str in &*data {
                 let mut r#str = r#str.clone();
                 IOStreamExt::appendFile(var_field!(s_data.data, IOStreamData::FILE_DATA).clone(), (r#str.clone()).clone())?;
             }
             ()
         },
         IOStreamData::LIST_DATA { .. } => {
-            let __owned_variant_data_0 = listAppend(data.clone(), var_field!(s_data.data, IOStreamData::LIST_DATA).clone());
+            let __owned_variant_data_0 = listAppend(data, var_field!(s_data.data, IOStreamData::LIST_DATA).clone());
             if let IOStreamData::LIST_DATA { data, .. } = &mut s_data {
                 *data = __owned_variant_data_0;
             } else { panic!("owned-variant field-assign: value held a different variant than IOStreamData::LIST_DATA"); }
-            s.data = s_data.clone();
+            s.data = s_data;
             ()
         },
         IOStreamData::BUFFER_DATA { .. } => {
-            for mut r#str in &*data.clone() {
+            for mut r#str in &*data {
                 let mut r#str = r#str.clone();
                 IOStreamExt::appendBuffer(var_field!(s_data.data, IOStreamData::BUFFER_DATA).clone(), (r#str.clone()).clone())?;
             }
@@ -225,9 +225,9 @@ pub(crate) fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::Lis
 pub fn appendListStream(mut srcStream: IOStream, mut dstStream: IOStream) -> Result<IOStream> {
     let mut dstStream: IOStream = dstStream;
     let mut data: Arc<metamodelica::List<ArcStr>>;
-    let IOSTREAM { data: IOStreamData::LIST_DATA { data: __pa0 }, .. } = (srcStream.clone()) else { bail!("pattern mismatch") };
+    let IOSTREAM { data: IOStreamData::LIST_DATA { data: __pa0 }, .. } = (srcStream) else { bail!("pattern mismatch") };
     data = __pa0.clone();
-    dstStream = appendListReverse(dstStream.clone(), data.clone())?;
+    dstStream = appendListReverse(dstStream, data)?;
     Ok(dstStream)
 }
 
@@ -250,7 +250,7 @@ pub(crate) fn close(mut inStream: IOStream) -> IOStream {
 }
 
 pub fn delete(mut inStream: IOStream) -> Result<()> {
-    let () = (match inStream.clone() {
+    let () = (match inStream {
         IOStream { data: IOStreamData::FILE_DATA { data: mut fileID }, .. } => {
             IOStreamExt::deleteFile(fileID.clone())?;
             ()
@@ -270,7 +270,7 @@ pub fn delete(mut inStream: IOStream) -> Result<()> {
 pub(crate) fn clear(mut inStream: IOStream) -> Result<IOStream> {
     let mut outStream: IOStream;
     outStream = 'mc: {
-        let __mc_input = inStream.clone();
+        let __mc_input = inStream;
         if let Ok(__v) = (|| -> Result<_> {
             let ref fStream @ IOStream { data: IOStreamData::FILE_DATA { data: ref fileID }, .. } = __mc_input.clone() else { bail!("nomatch") };
             IOStreamExt::clearFile(fileID.clone())?;
@@ -302,7 +302,7 @@ pub fn empty(mut inStream: IOStream) -> Result<bool> {
 
 pub fn string(mut inStream: IOStream) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = ((match inStream.clone() {
+    string = ((match inStream {
         IOStream { data: IOStreamData::FILE_DATA { data: mut fileID }, .. } => {
             let mut r#str: ArcStr;
             r#str = (IOStreamExt::readFile(fileID.clone())?).clone();
@@ -324,17 +324,17 @@ pub fn string(mut inStream: IOStream) -> Result<ArcStr> {
 }
 
 pub fn print(mut inStream: IOStream, mut whereToPrint: i32) -> Result<()> {
-    let () = (match inStream.clone() {
+    let () = (match inStream {
         IOStream { data: IOStreamData::FILE_DATA { data: mut fileID }, .. } => {
-            IOStreamExt::printFile(fileID.clone(), whereToPrint.clone())?;
+            IOStreamExt::printFile(fileID.clone(), whereToPrint)?;
             ()
         },
         IOStream { data: IOStreamData::BUFFER_DATA { data: mut bufferID }, .. } => {
-            IOStreamExt::printBuffer(bufferID.clone(), whereToPrint.clone())?;
+            IOStreamExt::printBuffer(bufferID.clone(), whereToPrint)?;
             ()
         },
         IOStream { data: IOStreamData::LIST_DATA { data: ref listData }, .. } => {
-            IOStreamExt::printReversedList(listData.clone(), whereToPrint.clone())?;
+            IOStreamExt::printReversedList(listData.clone(), whereToPrint)?;
             ()
         },
         _ => bail!("match: no arm matched"),

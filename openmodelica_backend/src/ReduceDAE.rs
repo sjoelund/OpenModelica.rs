@@ -69,7 +69,7 @@ pub(crate) fn buildLabels(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode:
     let mut outEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
     let mut outModelInfo: SimCode::ModelInfo;
     (outEquationLst, outModelInfo) = 'mc: {
-        let __mc_input = (inEquationLst.clone(), inModelInfo.clone(), inArgs.clone());
+        let __mc_input = (inEquationLst, inModelInfo, inArgs);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (eqns, modelInfo @ SimCode::ModelInfo { varInfo: varInfo @ SimCode::VarInfo { .. }, .. }, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: _ }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::ARRAY { arrayExp: exp_list }, tail: Deref @ metamodelica::List::Nil } }, .. }) => {
@@ -142,7 +142,7 @@ pub(crate) fn reduceTerms(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode:
     let mut outModelInfo: SimCode::ModelInfo;
     (outEquationLst, outModelInfo) = ({
         let mut reduceListStr: ArcStr = literal!("");
-        (::match_deref::match_deref! { match &((inEquationLst.clone(), inModelInfo.clone(), inArgs.clone())) {
+        (::match_deref::match_deref! { match &((inEquationLst, inModelInfo, inArgs)) {
         (eqns, modelInfo, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: inExpArgList, argNames: inNamedArgList }) => {
             let mut reduceList: Arc<metamodelica::List<i32>>;
             let mut outExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
@@ -162,7 +162,7 @@ pub(crate) fn reduceTerms(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode:
 
 fn meanValueReplacements(mut inVarLst: SimCodeVar::SimVars, mut exp_list: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<BackendVarTransform::VariableReplacements> {
     let mut outVarRepl: BackendVarTransform::VariableReplacements;
-    outVarRepl = (match inVarLst.clone() {
+    outVarRepl = (match inVarLst {
         SimCodeVar::SimVars { algVars: ref alg, intAlgVars: ref intAlg, boolAlgVars: ref boolAlg, stateVars: ref states, .. } => {
             let mut listVars: Arc<metamodelica::List<SimCodeVar::SimVar>>;
             let mut listVars1: Arc<metamodelica::List<SimCodeVar::SimVar>>;
@@ -172,7 +172,7 @@ fn meanValueReplacements(mut inVarLst: SimCodeVar::SimVars, mut exp_list: Arc<me
             listVars1 = listAppend(alg.clone(), intAlg.clone());
             listVars2 = listAppend(listVars1.clone(), boolAlg.clone());
             listVars = listAppend(listVars2.clone(), states.clone());
-            repl = meanValueReplacements2(repl.clone(), listVars.clone(), exp_list.clone())?;
+            repl = meanValueReplacements2(repl.clone(), listVars.clone(), exp_list)?;
             repl.clone()
         },
     });
@@ -182,7 +182,7 @@ fn meanValueReplacements(mut inVarLst: SimCodeVar::SimVars, mut exp_list: Arc<me
 fn meanValueReplacements2(mut inVarRepl: BackendVarTransform::VariableReplacements, mut inVarList: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut inValuesList: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<BackendVarTransform::VariableReplacements> {
     let mut outVarRepl: BackendVarTransform::VariableReplacements;
     outVarRepl = 'mc: {
-        let __mc_input = (inVarRepl.clone(), inVarList.clone(), inValuesList.clone());
+        let __mc_input = (inVarRepl, inVarList, inValuesList);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (repl, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
@@ -296,7 +296,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
     let mut outIndex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     (outEquationLst, outVarLst, outIndex, outStringList) = 'mc: {
-        let __mc_input = (inEquationLst1.clone(), inVarLst.clone(), inIndex.clone());
+        let __mc_input = (inEquationLst1, inVarLst, inIndex);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, vars, idx) => {
@@ -525,7 +525,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
     let mut outIndex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     (outStatements, outVarLst, outIndex, outStringList) = 'mc: {
-        let __mc_input = (inStatements.clone(), inVarLst.clone(), inIndex.clone());
+        let __mc_input = (inStatements, inVarLst, inIndex);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, vars, idx) => {
@@ -755,7 +755,7 @@ fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i3
     let mut outVarLst: SimCodeVar::SimVars;
     let mut outIndex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
-    (outLinear, outVarLst, outIndex, outStringList) = (::match_deref::match_deref! { match &((inLinear.clone(), inVarLst.clone(), inIndex.clone())) {
+    (outLinear, outVarLst, outIndex, outStringList) = (::match_deref::match_deref! { match &((inLinear, inVarLst, inIndex)) {
         (Deref @ metamodelica::List::Nil, vars, idx) => {
             (metamodelica::nil(), vars.clone(), idx.clone(), metamodelica::nil())
         },
@@ -777,7 +777,7 @@ fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i3
             vars_1 = __pa1.clone();
             idx2 = __pa2.clone();
             labels = __pa3.clone();
-            (rest2, vars_2, idx3, labels2) = addLabelToLinearEquationSystems(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
+            (rest2, vars_2, idx3, labels2) = addLabelToLinearEquationSystems(rest.clone(), vars_1.clone(), idx2.clone(), reduceList, inVarRepl)?;
             labels3 = listAppend(labels.clone(), labels2.clone());
             (metamodelica::cons((i.clone(), j.clone(), el2.clone()), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone())
         },
@@ -803,7 +803,7 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
                 Deref @ "deletion" => (),
                 _ => bail!("pattern mismatch"),
             } };
-            (e, vars, idx, labels) = addLabelToExpForDeletion(inExp1.clone(), inVarLst.clone(), inIntdex.clone(), add.clone(), reduceList.clone())?;
+            (e, vars, idx, labels) = addLabelToExpForDeletion(inExp1.clone(), inVarLst.clone(), inIntdex.clone(), add, reduceList.clone())?;
             Ok((e.clone(), vars.clone(), idx.clone(), labels.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -843,7 +843,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
     let mut outIntdex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     (outExp, outVarLst, outIntdex, outStringList) = 'mc: {
-        let __mc_input = (inExp1.clone(), inVarLst.clone(), inIntdex.clone());
+        let __mc_input = (inExp1, inVarLst, inIntdex);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: op @ DAE::Operator::ADD { .. }, exp2: e2 }, vars, idx) => {
@@ -869,7 +869,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::getConfigBool(Flags::DISABLE_EXTRA_LABELING.clone())? {
                         (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), false, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     } else {
-                        (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add.clone(), idx3.clone(), vars_2.clone(), reduceList.clone())?;
+                        (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     }
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
@@ -903,7 +903,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::getConfigBool(Flags::DISABLE_EXTRA_LABELING.clone())? {
                         (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), false, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     } else {
-                        (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add.clone(), idx3.clone(), vars_2.clone(), reduceList.clone())?;
+                        (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     }
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
@@ -934,7 +934,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     }
                     (e1_1, vars_1, idx2, labels) = addLabelToExpForDeletion(e1.clone(), vars.clone(), idx.clone(), false, reduceList.clone())?;
                     (e2_1, vars_2, idx3, labels2) = addLabelToExpForDeletion(e2.clone(), vars_1.clone(), idx2.clone(), false, reduceList.clone())?;
-                    (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add.clone(), idx3.clone(), vars_2.clone(), reduceList.clone())?;
+                    (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
                     Ok((e3.clone(), vars_3.clone(), idx4.clone(), labels5.clone()))
@@ -983,7 +983,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::getConfigBool(Flags::DISABLE_EXTRA_LABELING.clone())? {
                         (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), false, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     } else {
-                        (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add.clone(), idx3.clone(), vars_2.clone(), reduceList.clone())?;
+                        (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op.clone(), exp2: e2_1.clone() }), add, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     }
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
@@ -1052,7 +1052,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to pre arguments\n")).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1068,7 +1068,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to edge arguments\n")).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1084,7 +1084,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to change arguments\n")).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1100,7 +1100,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to sample arguments\n")).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1116,7 +1116,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label for no event arguments\n")).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1144,7 +1144,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     }
                     (e1_1, vars_1, idx2, labels) = addLabelToExpForDeletion(e1.clone(), vars.clone(), idx.clone(), true, reduceList.clone())?;
                     (e2_1, vars_2, idx3, labels2) = addLabelToExpForDeletion(e2.clone(), vars_1.clone(), idx2.clone(), true, reduceList.clone())?;
-                    (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), expLst: list![e1_1.clone(), e2_1.clone()], attr: attr.clone() }), add.clone(), idx3.clone(), vars_2.clone(), reduceList.clone())?;
+                    (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), expLst: list![e1_1.clone(), e2_1.clone()], attr: attr.clone() }), add, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
                     Ok((e3.clone(), vars_3.clone(), idx4.clone(), labels5.clone()))
@@ -1174,7 +1174,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     }
                     (e1_1, vars_1, idx2, labels) = addLabelToExpForDeletion(e1.clone(), vars.clone(), idx.clone(), true, reduceList.clone())?;
                     (e2_1, vars_2, idx3, labels2) = addLabelToExpForDeletion(e2.clone(), vars_1.clone(), idx2.clone(), true, reduceList.clone())?;
-                    (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("min")).clone() }), expLst: list![e1_1.clone(), e2_1.clone()], attr: attr.clone() }), add.clone(), idx3.clone(), vars_2.clone(), reduceList.clone())?;
+                    (e3, vars_3, idx4, labels3) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("min")).clone() }), expLst: list![e1_1.clone(), e2_1.clone()], attr: attr.clone() }), add, idx3.clone(), vars_2.clone(), reduceList.clone())?;
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
                     Ok((e3.clone(), vars_3.clone(), idx4.clone(), labels5.clone()))
@@ -1201,7 +1201,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::getConfigBool(Flags::DISABLE_EXTRA_LABELING.clone())? {
                         (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), false, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     } else {
-                        (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add.clone(), idx2.clone(), vars_1.clone(), reduceList.clone())?;
+                        (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     }
                     labels3 = listAppend(labels.clone(), labels2.clone());
                     Ok((e3.clone(), vars_2.clone(), idx3.clone(), labels3.clone()))
@@ -1228,7 +1228,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::getConfigBool(Flags::DISABLE_EXTRA_LABELING.clone())? {
                         (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("sqrt")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), false, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     } else {
-                        (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("sqrt")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add.clone(), idx2.clone(), vars_1.clone(), reduceList.clone())?;
+                        (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("sqrt")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     }
                     labels3 = listAppend(labels.clone(), labels2.clone());
                     Ok((e3.clone(), vars_2.clone(), idx3.clone(), labels3.clone()))
@@ -1268,7 +1268,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to cos exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
                     (e2, vars_1, idx2, labels) = addLabelToExpForDeletion(e1.clone(), vars.clone(), idx.clone(), true, reduceList.clone())?;
-                    (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("cos")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add.clone(), idx2.clone(), vars_1.clone(), reduceList.clone())?;
+                    (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("cos")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
                     Ok((e3.clone(), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
@@ -1307,7 +1307,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to cos exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
                     (e2, vars_1, idx2, labels) = addLabelToExpForDeletion(e1.clone(), vars.clone(), idx.clone(), true, reduceList.clone())?;
-                    (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("acos")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add.clone(), idx2.clone(), vars_1.clone(), reduceList.clone())?;
+                    (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("acos")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
                     Ok((e3.clone(), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
@@ -1362,7 +1362,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to exp exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
                     (e2, vars_1, idx2, labels) = addLabelToExpForDeletion(e1.clone(), vars.clone(), idx.clone(), true, reduceList.clone())?;
-                    (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("exp")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add.clone(), idx2.clone(), vars_1.clone(), reduceList.clone())?;
+                    (e3, vars_2, idx3, labels2) = addOneLabel(Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("exp")).clone() }), expLst: list![e2.clone()], attr: attr.clone() }), add, idx2.clone(), vars_1.clone(), reduceList.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
                     Ok((e3.clone(), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
@@ -1418,7 +1418,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to real const variable ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1446,7 +1446,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to integer const variable ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1506,7 +1506,7 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to variable ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
-                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add.clone(), idx.clone(), vars.clone(), reduceList.clone())?;
+                    (e2, vars_1, idx1, labels) = addOneLabel(e.clone(), add, idx.clone(), vars.clone(), reduceList.clone())?;
                     Ok((e2.clone(), vars_1.clone(), idx1.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1567,7 +1567,7 @@ fn addOneLabel(mut inExp1: Arc<DAE::Exp>, mut add: bool, mut inIndex: (i32, i32)
     let mut outIndex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     (outExp, outVarLst, outIndex, outStringList) = 'mc: {
-        let __mc_input = (inExp1.clone(), add.clone(), inIndex.clone(), inVarLst.clone());
+        let __mc_input = (inExp1, add, inIndex, inVarLst);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, true, (i, p), vars) => {
@@ -1633,7 +1633,7 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
     let mut outIndex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     (outExp, outVarLst, outIndex, outStringList) = 'mc: {
-        let __mc_input = (inExp1.clone(), inVarLst.clone(), inIndex.clone());
+        let __mc_input = (inExp1, inVarLst, inIndex);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: tp }, exp2: e2 }, vars, idx) => {
@@ -2014,7 +2014,7 @@ fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label:
     let mut outIndex: (i32, i32);
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     (outExp, outVarLst, outIndex, outStringList) = 'mc: {
-        let __mc_input = (inExp1.clone(), inExp2.clone(), label.clone(), inVarLst.clone(), inIndex.clone());
+        let __mc_input = (inExp1, inExp2, label, inVarLst, inIndex);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, e2, true, vars, (i, p)) => {
@@ -2090,7 +2090,7 @@ fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label:
 
 fn linearizeExp(mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
-    outExp = (::match_deref::match_deref! { match &((inExp.clone(), source.clone(), inVarRepl.clone())) {
+    outExp = (::match_deref::match_deref! { match &((inExp, source, inVarRepl)) {
         (e1, e2, repl) => {
             let mut e: Arc<DAE::Exp>;
             let mut e3: Arc<DAE::Exp>;
@@ -2122,7 +2122,7 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     let mut substitute: bool;
     (outExp, outVarLst, outIndex, outStringList, substitute) = 'mc: {
-        let __mc_input = (inExp1.clone(), inVarLst.clone(), inIndex.clone());
+        let __mc_input = (inExp1, inVarLst, inIndex);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, vars, idx) => {
@@ -2615,11 +2615,11 @@ end addLabelToExpListForSubstitution;
 fn substituteExp(mut inExp: Arc<DAE::Exp>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> (Arc<DAE::Exp>, bool) {
     let mut outExp: Arc<DAE::Exp>;
     let mut replPerformed: bool = false;
-    (outExp, replPerformed) = (::match_deref::match_deref! { match &((inExp.clone(), inVarRepl.clone())) {
+    (outExp, replPerformed) = (::match_deref::match_deref! { match &((inExp, inVarRepl)) {
         (e, repl) => {
             let mut e1: Arc<DAE::Exp>;
             (e1, replPerformed) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None);
-            (e1.clone(), replPerformed.clone())
+            (e1.clone(), replPerformed)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2628,7 +2628,7 @@ fn substituteExp(mut inExp: Arc<DAE::Exp>, mut inVarRepl: BackendVarTransform::V
 
 fn multiply(mut inExp: Arc<DAE::Exp>, mut inString: ArcStr) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
-    outExp = (::match_deref::match_deref! { match &((inExp.clone(), inString.clone())) {
+    outExp = (::match_deref::match_deref! { match &((inExp, inString)) {
         (e, name) => {
             let mut e2: Arc<DAE::Exp>;
             e2 = Expression::expMul(Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_REAL_DEFAULT().clone() }), e.clone())?;
@@ -2645,7 +2645,7 @@ fn multiply(mut inExp: Arc<DAE::Exp>, mut inString: ArcStr) -> Result<Arc<DAE::E
 fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut inInteger2: i32) -> Result<(SimCodeVar::SimVars, ArcStr)> {
     let mut outVariables: SimCodeVar::SimVars;
     let mut outString: ArcStr;
-    (outVariables, outString) = (match (inVariables.clone(), inInteger.clone(), inInteger2.clone()) {
+    (outVariables, outString) = (match (inVariables, inInteger, inInteger2) {
         (SimCodeVar::SimVars { stateVars: ref states, derivativeVars: ref derVar, algVars: ref alg, discreteAlgVars: ref disAlg, intAlgVars: ref intAlg, boolAlgVars: ref boolAlg, inputVars: ref inVar, outputVars: ref outVar, aliasVars: ref algAlias, intAliasVars: ref intAlias, boolAliasVars: ref boolAlias, paramVars: ref param, intParamVars: ref intParam, boolParamVars: ref boolParam, stringAlgVars: ref stringAlg, stringParamVars: ref stringParam, stringAliasVars: ref stringAlias, extObjVars: ref extObjVar, constVars: ref r#const, intConstVars: ref intConst, boolConstVars: ref boolConst, stringConstVars: ref stringConst, jacobianVars: ref jacobianVar, seedVars: ref seedVar, realOptimizeConstraintsVars: ref realOptConst, realOptimizeFinalConstraintsVars: ref realOptFinalConst, sensitivityVars: ref sensVar, dataReconSetcVars: ref setcVar, dataReconinputVars: ref datareconinputvar, dataReconSetBVars: ref setBVar }, mut p, mut i) => {
             let mut simVar_1: SimCodeVar::SimVar;
             let mut simVar_2: SimCodeVar::SimVar;
@@ -2675,7 +2675,7 @@ fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut 
 
 fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inList: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((expLst.clone(), inList.clone())) {
+        ::match_deref::match_deref! { match &((expLst, inList)) {
         (Deref @ metamodelica::List::Nil, lst) => {
             return Ok(lst.clone())
         },
@@ -2695,7 +2695,7 @@ fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inLi
 fn StringDelimit2Int(mut inString: ArcStr, mut inDelim: ArcStr) -> Arc<metamodelica::List<i32>> {
     let mut outList: Arc<metamodelica::List<i32>>;
     outList = 'mc: {
-        let __mc_input = (inString.clone(), inDelim.clone());
+        let __mc_input = (inString, inDelim);
         if let Ok(__v) = (|| -> Result<_> {
             let (mut v, mut delim) = __mc_input.clone() else { bail!("nomatch") };
             let mut lst: Arc<metamodelica::List<ArcStr>>;
@@ -2722,7 +2722,7 @@ fn StringDelimit2Int(mut inString: ArcStr, mut inDelim: ArcStr) -> Arc<metamodel
 
 pub(crate) fn createBackendLabelVars(mut modelInfo: SimCode::ModelInfo) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut labelList: Arc<metamodelica::List<BackendDAE::Var>>;
-    labelList = (match modelInfo.clone() {
+    labelList = (match modelInfo {
         SimCode::ModelInfo { varInfo: SimCode::VarInfo { numParams: mut numParams, .. }, labels: mut labels, .. } => {
             let mut list1: Arc<metamodelica::List<BackendDAE::Var>>;
             list1 = createBackendLabelVars2(labels.clone(), numParams.clone())?;
@@ -2735,7 +2735,7 @@ pub(crate) fn createBackendLabelVars(mut modelInfo: SimCode::ModelInfo) -> Resul
 
 fn createBackendLabelVars2(mut inLabels: Arc<metamodelica::List<ArcStr>>, mut inIndex: i32) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut outList: Arc<metamodelica::List<BackendDAE::Var>>;
-    outList = (::match_deref::match_deref! { match &((inLabels.clone(), inIndex.clone())) {
+    outList = (::match_deref::match_deref! { match &((inLabels, inIndex)) {
         (Deref @ metamodelica::List::Nil, _) => {
             metamodelica::nil()
         },

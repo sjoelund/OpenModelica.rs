@@ -59,15 +59,15 @@ pub(crate) fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
     opCosts = HpcOmBenchmarkExt::requiredTimeForOp()?;
     let true = ((opCosts.clone().len() as i32) == 2) else { bail!("pattern mismatch") };
     opCostM = (opCosts.clone()).get(1)?;
-    opCostN = (opCosts.clone()).get(2)?;
-    s1 = (intString(opCostM.clone())).clone();
-    s2 = (intString(opCostN.clone())).clone();
+    opCostN = (opCosts).get(2)?;
+    s1 = (intString(opCostM)).clone();
+    s2 = (intString(opCostN)).clone();
     comCosts = HpcOmBenchmarkExt::requiredTimeForComm()?;
     comCostM = (comCosts.clone()).get(1)?;
-    comCostN = (comCosts.clone()).get(2)?;
-    s1 = (intString(comCostM.clone())).clone();
-    s2 = (intString(comCostN.clone())).clone();
-    oTime = ((opCostM.clone(), opCostN.clone()), (comCostM.clone(), comCostN.clone()));
+    comCostN = (comCosts).get(2)?;
+    s1 = (intString(comCostM)).clone();
+    s2 = (intString(comCostN)).clone();
+    oTime = ((opCostM, opCostN), (comCostM, comCostN));
     Ok(oTime)
 }
 
@@ -115,16 +115,16 @@ pub(crate) fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<m
 fn readCalcTimesFromXml(mut fileName: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
     let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
     let mut tmpResult: Arc<metamodelica::List<metamodelica::Real>>;
-    tmpResult = HpcOmBenchmarkExt::readCalcTimesFromXml((fileName.clone()).clone())?;
-    calcTimes = expandCalcTimes(tmpResult.clone(), metamodelica::nil())?;
+    tmpResult = HpcOmBenchmarkExt::readCalcTimesFromXml((fileName).clone())?;
+    calcTimes = expandCalcTimes(tmpResult, metamodelica::nil())?;
     Ok(calcTimes)
 }
 
 fn readCalcTimesFromJson(mut fileName: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
     let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
     let mut tmpResult: Arc<metamodelica::List<metamodelica::Real>>;
-    tmpResult = HpcOmBenchmarkExt::readCalcTimesFromJson((fileName.clone()).clone())?;
-    calcTimes = expandCalcTimes(tmpResult.clone(), metamodelica::nil())?;
+    tmpResult = HpcOmBenchmarkExt::readCalcTimesFromJson((fileName).clone())?;
+    calcTimes = expandCalcTimes(tmpResult, metamodelica::nil())?;
     Ok(calcTimes)
 }
 
@@ -138,7 +138,7 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
     let mut rest: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut tmpTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
     oTuples = 'mc: {
-        let __mc_input = iList.clone();
+        let __mc_input = iList;
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: numOfCalcs, tail: Deref @ metamodelica::List::Cons { head: calcTimeSum, tail: Deref @ metamodelica::List::Cons { head: eqIdx, tail: rest } } } => {
@@ -147,7 +147,7 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
                     let mut tmpTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = tmpTuples.clone();
                     intNumOfCalcs = ((numOfCalcs.clone()).0.floor() as i32);
                     intEqIdx = ((eqIdx.clone()).0.floor() as i32);
-                    tmpTuples = expandCalcTimes(rest.clone(), metamodelica::cons((intEqIdx.clone(), intNumOfCalcs.clone(), calcTimeSum.clone()), iTuples.clone()))?;
+                    tmpTuples = expandCalcTimes(rest.clone(), metamodelica::cons((intEqIdx, intNumOfCalcs, calcTimeSum.clone()), iTuples.clone()))?;
                     Ok((tmpTuples.clone(), intEqIdx.clone(), intNumOfCalcs.clone(), tmpTuples.clone()))
                 }
                 _ => bail!("nomatch"),

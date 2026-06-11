@@ -124,7 +124,7 @@ pub type ValueStringFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V
 
 pub fn new<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut hash: Arc<dyn ::std::ops::Fn(K) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(K, K) -> Result<bool> + 'static>, mut bucketCount: i32) -> Arc<UnorderedMap<K, V>> {
     let mut map: Arc<UnorderedMap<K, V>>;
-    map = Arc::new(UnorderedMap { buckets: Vector::newFill(bucketCount.clone(), metamodelica::nil()), keys: Vector::new(0), values: Vector::new(0), hashFn: hash.clone(), eqFn: keyEq.clone() });
+    map = Arc::new(UnorderedMap { buckets: Vector::newFill(bucketCount, metamodelica::nil()), keys: Vector::new(0), values: Vector::new(0), hashFn: hash.clone(), eqFn: keyEq.clone() });
     map
 }
 
@@ -135,9 +135,9 @@ pub fn fromLists<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'sta
     let mut v: V;
     let mut rest_v: Arc<metamodelica::List<V>> = values.clone();
     key_count = (keys.clone().len() as i32);
-    bucket_count = Util::nextPrime(key_count.clone());
-    map = Arc::new(UnorderedMap { buckets: Vector::newFill(bucket_count.clone(), metamodelica::nil()), keys: Vector::new(key_count.clone()), values: Vector::new(key_count.clone()), hashFn: hash.clone(), eqFn: keyEq.clone() });
-    for mut k in &*keys.clone() {
+    bucket_count = Util::nextPrime(key_count);
+    map = Arc::new(UnorderedMap { buckets: Vector::newFill(bucket_count, metamodelica::nil()), keys: Vector::new(key_count), values: Vector::new(key_count), hashFn: hash.clone(), eqFn: keyEq.clone() });
+    for mut k in &*keys {
         let mut k = k.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_v.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -168,10 +168,10 @@ pub fn add<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + 
     let mut index: i32;
     let mut hash: i32;
     (index, hash) = find(key.clone(), map.clone())?;
-    if index.clone() > 0 {
-        Vector::update(map.values.clone(), index.clone(), value.clone())?;
+    if index > 0 {
+        Vector::update(map.values.clone(), index, value)?;
     } else {
-        addEntry(key.clone(), value.clone(), hash.clone(), map.clone())?;
+        addEntry(key, value, hash, map)?;
     }
     Ok(())
 }
@@ -179,7 +179,7 @@ pub fn add<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + 
 pub fn addNew<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut hashfn: Hash<K> = map.hashFn.clone();
     let mut hash: i32 = intMod(hashfn(key.clone())?, Vector::size(map.buckets.clone()));
-    addEntry(key.clone(), value.clone(), hash.clone(), map.clone())?;
+    addEntry(key, value, hash, map)?;
     Ok(())
 }
 
@@ -187,8 +187,8 @@ pub fn addUnique<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'sta
     let mut index: i32;
     let mut hash: i32;
     (index, hash) = find(key.clone(), map.clone())?;
-    let false = (index.clone() > 0) else { bail!("pattern mismatch") };
-    addEntry(key.clone(), value.clone(), hash.clone(), map.clone())?;
+    let false = (index > 0) else { bail!("pattern mismatch") };
+    addEntry(key, value, hash, map)?;
     Ok(())
 }
 
@@ -197,11 +197,11 @@ pub fn tryAdd<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
     let mut index: i32;
     let mut hash: i32;
     (index, hash) = find(key.clone(), map.clone())?;
-    if index.clone() > 0 {
-        outValue = Vector::getNoBounds(map.values.clone(), index.clone());
+    if index > 0 {
+        outValue = Vector::getNoBounds(map.values.clone(), index);
     } else {
         outValue = value.clone();
-        addEntry(key.clone(), value.clone(), hash.clone(), map.clone())?;
+        addEntry(key, value, hash, map)?;
     }
     Ok(outValue)
 }
@@ -210,10 +210,10 @@ pub fn tryUpdate<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'sta
     let mut updated: bool;
     let mut index: i32;
     let mut hash: i32;
-    (index, hash) = find(key.clone(), map.clone())?;
-    updated = index.clone() > 0;
-    if updated.clone() {
-        Vector::update(map.values.clone(), index.clone(), value.clone())?;
+    (index, hash) = find(key, map.clone())?;
+    updated = index > 0;
+    if updated {
+        Vector::update(map.values.clone(), index, value)?;
     }
     Ok(updated)
 }
@@ -225,12 +225,12 @@ pub fn addUpdate<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'sta
     let mut index: i32;
     let mut hash: i32;
     (index, hash) = find(key.clone(), map.clone())?;
-    if index.clone() > 0 {
-        value = r#fn(Some(Vector::getNoBounds(map.values.clone(), index.clone())))?;
-        Vector::updateNoBounds(map.values.clone(), index.clone(), value.clone());
+    if index > 0 {
+        value = r#fn(Some(Vector::getNoBounds(map.values.clone(), index)))?;
+        Vector::updateNoBounds(map.values.clone(), index, value.clone());
     } else {
         value = r#fn(None)?;
-        addEntry(key.clone(), value.clone(), hash.clone(), map.clone())?;
+        addEntry(key, value.clone(), hash, map)?;
     }
     Ok(value)
 }
@@ -242,11 +242,11 @@ pub fn tryAddUpdate<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + '
     let mut index: i32;
     let mut hash: i32;
     let mut value: V;
-    (index, hash) = find(key.clone(), map.clone())?;
-    updated = index.clone() > 0;
-    if updated.clone() {
-        value = r#fn(Some(Vector::getNoBounds(map.values.clone(), index.clone())))?;
-        Vector::updateNoBounds(map.values.clone(), index.clone(), value.clone());
+    (index, hash) = find(key, map.clone())?;
+    updated = index > 0;
+    if updated {
+        value = r#fn(Some(Vector::getNoBounds(map.values.clone(), index)))?;
+        Vector::updateNoBounds(map.values.clone(), index, value);
     }
     Ok(updated)
 }
@@ -256,8 +256,8 @@ pub fn remove<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
         let mut outBucket: Arc<metamodelica::List<i32>>;
         outBucket = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (bucket.clone()).into_iter().cloned() {
-            let __x = if (i.clone() > removedIndex.clone()) {i.clone() - 1} else {i.clone()};
+        for mut i in (bucket).into_iter().cloned() {
+            let __x = if (i.clone() > removedIndex) {i.clone() - 1} else {i.clone()};
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -275,8 +275,8 @@ pub fn remove<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
         return Ok(removed.clone());
     }
     bucket = Vector::get(map.buckets.clone(), hash.clone() + 1)?;
-    (bucket, _) = List::deleteMemberOnTrue(index.clone(), bucket.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-    Vector::updateNoBounds(map.buckets.clone(), hash.clone() + 1, bucket.clone());
+    (bucket, _) = List::deleteMemberOnTrue(index.clone(), bucket, (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+    Vector::updateNoBounds(map.buckets.clone(), hash.clone() + 1, bucket);
     Vector::remove(map.keys.clone(), index.clone())?;
     Vector::remove(map.values.clone(), index.clone())?;
     Vector::apply(map.buckets.clone(), (std::sync::Arc::new({ let __pe_b1 = index.clone(); move |__pe_a0| Ok(update_indices(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
@@ -294,17 +294,17 @@ pub fn clear<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static 
 pub fn get<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<Option<V>> {
     let mut value: Option<V>;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
-    value = if (index.clone() > 0) {Some(Vector::getNoBounds(map.values.clone(), index.clone()))} else {None};
+    value = if (index > 0) {Some(Vector::getNoBounds(map.values.clone(), index))} else {None};
     Ok(value)
 }
 
 pub fn getSafe<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>, mut info: SourceInfo) -> Result<V> {
     let mut value: V;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
-    if index.clone() > 0 {
-        value = Vector::getNoBounds(map.values.clone(), index.clone());
+    if index > 0 {
+        value = Vector::getNoBounds(map.values.clone(), index);
     } else {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UnorderedMap.getSafe")); __mm_s.push_str(&*literal!(" failed because the key did not exist.")); ArcStr::from(__mm_s) }).clone(), info.clone())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UnorderedMap.getSafe")); __mm_s.push_str(&*literal!(" failed because the key did not exist.")); ArcStr::from(__mm_s) }).clone(), info)?;
         bail!("fail");
     }
     Ok(value)
@@ -318,33 +318,33 @@ pub fn getOrFail<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'sta
 pub fn getOrDefault<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>, mut default: V) -> Result<V> {
     let mut value: V;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
-    value = if (index.clone() > 0) {Vector::getNoBounds(map.values.clone(), index.clone())} else {default.clone()};
+    value = if (index > 0) {Vector::getNoBounds(map.values.clone(), index)} else {default};
     Ok(value)
 }
 
 pub fn getList<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<K>>, mut map: Arc<UnorderedMap<K, V>>) -> Result<Arc<metamodelica::List<V>>> {
     let mut values: Arc<metamodelica::List<V>> = metamodelica::nil();
     let mut index: i32;
-    for mut key in &*keys.clone() {
+    for mut key in &*keys {
         let mut key = key.clone();
         (index, _) = find(key.clone(), map.clone())?;
-        if index.clone() > 0 {
-            values = metamodelica::cons(Vector::getNoBounds(map.values.clone(), index.clone()), values.clone());
+        if index > 0 {
+            values = metamodelica::cons(Vector::getNoBounds(map.values.clone(), index), values.clone());
         }
     }
-    values = metamodelica::Dangerous::listReverseInPlace(values.clone());
+    values = metamodelica::Dangerous::listReverseInPlace(values);
     Ok(values)
 }
 
 pub fn getKey<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<Option<K>> {
     let mut outKey: Option<K>;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
-    outKey = if (index.clone() > 0) {Some(Vector::getNoBounds(map.keys.clone(), index.clone()))} else {None};
+    outKey = if (index > 0) {Some(Vector::getNoBounds(map.keys.clone(), index))} else {None};
     Ok(outKey)
 }
 
 pub fn updateKey<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
-    Vector::update(map.keys.clone(), (find(key.clone(), map.clone())?).0, key.clone())?;
+    Vector::update(map.keys.clone(), (find(key.clone(), map)?).0, key)?;
     Ok(())
 }
 
@@ -364,12 +364,12 @@ pub fn firstKey<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'stat
 }
 
 pub fn keyAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<K> {
-    let mut key: K = Vector::get(map.keys.clone(), index.clone())?;
+    let mut key: K = Vector::get(map.keys.clone(), index)?;
     Ok(key)
 }
 
 pub(crate) fn valueAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<V> {
-    let mut value: V = Vector::get(map.values.clone(), index.clone())?;
+    let mut value: V = Vector::get(map.values.clone(), index)?;
     Ok(value)
 }
 
@@ -394,8 +394,8 @@ pub fn toArray<K: Clone + 'static + metamodelica::gc::MMTrace + Default, V: Clon
     let mut values: Arc<Vector::Vector<V>> = map.values.clone();
     let mut t: (K, V);
     let mut sz: i32 = Vector::size(keys.clone());
-    entries = metamodelica::arrayCreateDefault(sz.clone());
-    for mut i in 1..=sz.clone() {
+    entries = metamodelica::arrayCreateDefault(sz);
+    for mut i in 1..=sz {
         unsafe { metamodelica::Dangerous::arrayInitSlot(entries.clone(), i.clone(), (Vector::getNoBounds(keys.clone(), i.clone()), Vector::getNoBounds(values.clone(), i.clone()))) };
     }
     entries
@@ -418,8 +418,8 @@ pub(crate) fn toVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone 
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
     let mut values: Arc<Vector::Vector<V>> = map.values.clone();
     let mut sz: i32 = Vector::size(keys.clone());
-    entries = Vector::new(sz.clone());
-    for mut i in 1..=sz.clone() {
+    entries = Vector::new(sz);
+    for mut i in 1..=sz {
         Vector::updateNoBounds(entries.clone(), i.clone(), (Vector::getNoBounds(keys.clone(), i.clone()), Vector::getNoBounds(values.clone(), i.clone())));
     }
     entries
@@ -439,8 +439,8 @@ pub fn keySet<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
     let mut set: Arc<UnorderedSet::UnorderedSet<K>>;
     let mut bucket_count: i32 = Vector::size(map.buckets.clone());
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<K>>>;
-    buckets = arrayCreate(bucket_count.clone(), metamodelica::nil());
-    for mut h in 1..=bucket_count.clone() {
+    buckets = arrayCreate(bucket_count, metamodelica::nil());
+    for mut h in 1..=bucket_count {
         metamodelica::Dangerous::arrayUpdateNoBoundsChecking(buckets.clone(), h.clone(), ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut i in (Vector::get(map.buckets.clone(), h.clone())?).into_iter().cloned() {
@@ -458,7 +458,7 @@ pub(crate) fn fold<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 's
     pub type FoldFn<V: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>;
 
     let mut arg: FT = arg;
-    arg = Vector::fold(map.values.clone(), r#fn.clone(), arg.clone())?;
+    arg = Vector::fold(map.values.clone(), r#fn.clone(), arg)?;
     Ok(arg)
 }
 
@@ -468,7 +468,7 @@ pub(crate) fn map<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'st
     let mut outMap: Arc<UnorderedMap<K, OT>>;
     let mut new_values: Arc<Vector::Vector<OT>>;
     new_values = Vector::map(map.values.clone(), r#fn.clone(), true)?;
-    outMap = Arc::new(UnorderedMap { buckets: Vector::copy(map.buckets.clone()), keys: Vector::copy(map.keys.clone()), values: new_values.clone(), hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
+    outMap = Arc::new(UnorderedMap { buckets: Vector::copy(map.buckets.clone()), keys: Vector::copy(map.keys.clone()), values: new_values, hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
     Ok(outMap)
 }
 
@@ -485,11 +485,11 @@ pub fn merge<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static 
     let mut k: K;
     let mut v: V;
     if Vector::size(map1.keys.clone()) > Vector::size(map2.keys.clone()) {
-        result = copy(map1.clone());
-        tmp = map2.clone();
+        result = copy(map1);
+        tmp = map2;
     } else {
-        result = copy(map2.clone());
-        tmp = map1.clone();
+        result = copy(map2);
+        tmp = map1;
     }
     for mut i in 1..=Vector::size(tmp.keys.clone()) {
         k = Vector::getNoBounds(tmp.keys.clone(), i.clone());
@@ -508,8 +508,8 @@ pub fn subMap<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
     let mut sub_map: Arc<UnorderedMap<K, V>>;
     let mut len: i32;
     len = (lst.clone().len() as i32);
-    sub_map = Arc::new(UnorderedMap { buckets: Vector::newFill(Util::nextPrime(len.clone()), metamodelica::nil()), keys: Vector::new(len.clone()), values: Vector::new(len.clone()), hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
-    for mut k in &*lst.clone() {
+    sub_map = Arc::new(UnorderedMap { buckets: Vector::newFill(Util::nextPrime(len), metamodelica::nil()), keys: Vector::new(len), values: Vector::new(len), hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
+    for mut k in &*lst {
         let mut k = k.clone();
         add(k.clone(), getSafe(k.clone(), map.clone(), metamodelica::sourceInfo!("Util/UnorderedMap.mo"))?, sub_map.clone())?;
     }
@@ -568,10 +568,10 @@ pub(crate) fn rehash<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 
     let mut hashfn: Hash<K> = map.hashFn.clone();
     Vector::clear(buckets.clone());
     bucket_count = Util::nextPrime(Vector::size(keys.clone()) * 2);
-    Vector::resize(buckets.clone(), bucket_count.clone(), metamodelica::nil());
+    Vector::resize(buckets.clone(), bucket_count, metamodelica::nil());
     for mut i in 1..=Vector::size(map.keys.clone()) {
-        bucket_id = intMod(hashfn(Vector::get(keys.clone(), i.clone())?)?, bucket_count.clone()) + 1;
-        Vector::updateNoBounds(buckets.clone(), bucket_id.clone(), metamodelica::cons(i.clone(), Vector::getNoBounds(buckets.clone(), bucket_id.clone())));
+        bucket_id = intMod(hashfn(Vector::get(keys.clone(), i.clone())?)?, bucket_count) + 1;
+        Vector::updateNoBounds(buckets.clone(), bucket_id, metamodelica::cons(i.clone(), Vector::getNoBounds(buckets.clone(), bucket_id)));
     }
     Ok(())
 }
@@ -584,7 +584,7 @@ pub fn toString<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'stat
     for mut i in ({let __s=Vector::size(keys.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStringFn(Vector::get(keys.clone(), i.clone())?)?); __mm_s.push_str(&*concatinator.clone()); __mm_s.push_str(&*valueStringFn(Vector::get(values.clone(), i.clone())?)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone(), strl.clone());
     }
-    r#str = stringDelimitList(strl.clone(), (delimiter.clone()).clone());
+    r#str = stringDelimitList(strl, (delimiter).clone());
     Ok(r#str)
 }
 
@@ -595,14 +595,14 @@ pub fn toJSON<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
     let mut values: Arc<Vector::Vector<V>> = map.values.clone();
     let mut sz: i32 = Vector::size(keys.clone());
     io = IOStream::create((literal!("UnorderedMap.toJSON")).clone(), crate::IOStream::IOStreamType::LIST)?;
-    io = IOStream::append(io.clone(), (literal!("{\n")).clone())?;
-    if sz.clone() > 0 {
-        io = IOStream::append(io.clone(), (literal!("  \"")).clone())?;
-        io = IOStream::append(io.clone(), (keyStringFn(Vector::getNoBounds(keys.clone(), 1))?).clone())?;
-        io = IOStream::append(io.clone(), (literal!("\": \"")).clone())?;
-        io = IOStream::append(io.clone(), (valueStringFn(Vector::getNoBounds(values.clone(), 1))?).clone())?;
-        io = IOStream::append(io.clone(), (literal!("\"")).clone())?;
-        for mut i in 2..=sz.clone() {
+    io = IOStream::append(io, (literal!("{\n")).clone())?;
+    if sz > 0 {
+        io = IOStream::append(io, (literal!("  \"")).clone())?;
+        io = IOStream::append(io, (keyStringFn(Vector::getNoBounds(keys.clone(), 1))?).clone())?;
+        io = IOStream::append(io, (literal!("\": \"")).clone())?;
+        io = IOStream::append(io, (valueStringFn(Vector::getNoBounds(values.clone(), 1))?).clone())?;
+        io = IOStream::append(io, (literal!("\"")).clone())?;
+        for mut i in 2..=sz {
             io = IOStream::append(io.clone(), (literal!(",\n  \"")).clone())?;
             io = IOStream::append(io.clone(), (keyStringFn(Vector::getNoBounds(keys.clone(), i.clone()))?).clone())?;
             io = IOStream::append(io.clone(), (literal!("\": \"")).clone())?;
@@ -610,8 +610,8 @@ pub fn toJSON<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
             io = IOStream::append(io.clone(), (literal!("\"")).clone())?;
         }
     }
-    io = IOStream::append(io.clone(), (literal!("\n}")).clone())?;
-    r#str = (IOStream::string(io.clone())?).clone();
+    io = IOStream::append(io, (literal!("\n}")).clone())?;
+    r#str = (IOStream::string(io)?).clone();
     Ok(r#str)
 }
 
@@ -623,8 +623,8 @@ fn find<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + met
     let mut bucket: Arc<metamodelica::List<i32>>;
     if Vector::size(map.buckets.clone()) > 0 {
         hash = intMod(hashfn(key.clone())?, Vector::size(map.buckets.clone()));
-        bucket = Vector::get(map.buckets.clone(), hash.clone() + 1)?;
-        for mut i in &*bucket.clone() {
+        bucket = Vector::get(map.buckets.clone(), hash + 1)?;
+        for mut i in &*bucket {
             let mut i = i.clone();
             if eqfn(key.clone(), Vector::getNoBounds(map.keys.clone(), i.clone()))? {
                 index = i.clone();
@@ -639,12 +639,12 @@ fn find<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + met
 
 fn addEntry<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut hash: i32, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut buckets: Arc<Vector::Vector<Arc<metamodelica::List<i32>>>> = map.buckets.clone();
-    Vector::push(map.keys.clone(), key.clone());
-    Vector::push(map.values.clone(), value.clone());
+    Vector::push(map.keys.clone(), key);
+    Vector::push(map.values.clone(), value);
     if loadFactor(map.clone()) > metamodelica::OrderedFloat((1) as f64) {
-        rehash(map.clone())?;
+        rehash(map)?;
     } else {
-        Vector::update(buckets.clone(), hash.clone() + 1, metamodelica::cons(Vector::size(map.keys.clone()), Vector::get(buckets.clone(), hash.clone() + 1)?))?;
+        Vector::update(buckets.clone(), hash + 1, metamodelica::cons(Vector::size(map.keys.clone()), Vector::get(buckets, hash + 1)?))?;
     }
     Ok(())
 }

@@ -73,7 +73,7 @@ use openmodelica_util::Settings;
 use openmodelica_util::Util;
 
 pub fn simulationInitFile(mut simCode: SIMCODE, mut guid: ArcStr) -> Result<()> {
-    let true = (simulationInitFileReturnBool(simCode.clone(), (guid.clone()).clone())) else { bail!("pattern mismatch") };
+    let true = (simulationInitFileReturnBool(simCode, (guid).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
@@ -230,35 +230,35 @@ fn modelVariables(mut file: File::File, mut vars: SimCodeVar::SimVars) -> Result
         _ => 1000,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (vr, _) = scalarVariables(file.clone(), vars.stateVars.clone(), (literal!("rSta")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.derivativeVars.clone(), (literal!("rDer")).clone(), vr.clone(), 0)?;
-    (vr, ix) = scalarVariables(file.clone(), vars.algVars.clone(), (literal!("rAlg")).clone(), vr.clone(), ix.clone())?;
-    (vr, ix) = scalarVariables(file.clone(), vars.discreteAlgVars.clone(), (literal!("rAlg")).clone(), vr.clone(), ix.clone())?;
-    (vr, ix) = scalarVariables(file.clone(), vars.realOptimizeConstraintsVars.clone(), (literal!("rAlg")).clone(), vr.clone(), ix.clone())?;
-    (vr, ix) = scalarVariables(file.clone(), vars.realOptimizeFinalConstraintsVars.clone(), (literal!("rAlg")).clone(), vr.clone(), ix.clone())?;
-    (vr, _) = scalarVariables(file.clone(), vars.paramVars.clone(), (literal!("rPar")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.aliasVars.clone(), (literal!("rAli")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.intAlgVars.clone(), (literal!("iAlg")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.intParamVars.clone(), (literal!("iPar")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.intAliasVars.clone(), (literal!("iAli")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.boolAlgVars.clone(), (literal!("bAlg")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.boolParamVars.clone(), (literal!("bPar")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.boolAliasVars.clone(), (literal!("bAli")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.stringAlgVars.clone(), (literal!("sAlg")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.stringParamVars.clone(), (literal!("sPar")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.stringAliasVars.clone(), (literal!("sAli")).clone(), vr.clone(), 0)?;
-    (vr, _) = scalarVariables(file.clone(), vars.sensitivityVars.clone(), (literal!("rSen")).clone(), vr.clone(), 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.stateVars.clone(), (literal!("rSta")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.derivativeVars.clone(), (literal!("rDer")).clone(), vr, 0)?;
+    (vr, ix) = scalarVariables(file.clone(), vars.algVars.clone(), (literal!("rAlg")).clone(), vr, ix)?;
+    (vr, ix) = scalarVariables(file.clone(), vars.discreteAlgVars.clone(), (literal!("rAlg")).clone(), vr, ix)?;
+    (vr, ix) = scalarVariables(file.clone(), vars.realOptimizeConstraintsVars.clone(), (literal!("rAlg")).clone(), vr, ix)?;
+    (vr, ix) = scalarVariables(file.clone(), vars.realOptimizeFinalConstraintsVars.clone(), (literal!("rAlg")).clone(), vr, ix)?;
+    (vr, _) = scalarVariables(file.clone(), vars.paramVars.clone(), (literal!("rPar")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.aliasVars.clone(), (literal!("rAli")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.intAlgVars.clone(), (literal!("iAlg")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.intParamVars.clone(), (literal!("iPar")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.intAliasVars.clone(), (literal!("iAli")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.boolAlgVars.clone(), (literal!("bAlg")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.boolParamVars.clone(), (literal!("bPar")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.boolAliasVars.clone(), (literal!("bAli")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.stringAlgVars.clone(), (literal!("sAlg")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.stringParamVars.clone(), (literal!("sPar")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file.clone(), vars.stringAliasVars.clone(), (literal!("sAli")).clone(), vr, 0)?;
+    (vr, _) = scalarVariables(file, vars.sensitivityVars.clone(), (literal!("rSen")).clone(), vr, 0)?;
     Ok(())
 }
 
 fn scalarVariables(mut file: File::File, mut vars: Arc<metamodelica::List<SimVar>>, mut classType: ArcStr, mut valueReference: i32, mut index: i32) -> Result<(i32, i32)> {
     let mut valueReference: i32 = valueReference;
     let mut index: i32 = index;
-    for mut var in &*vars.clone() {
+    for mut var in &*vars {
         let mut var = var.clone();
-        scalarVariable(file.clone(), var.clone(), (classType.clone()).clone(), valueReference.clone(), index.clone())?;
-        index = index.clone() + 1;
-        valueReference = valueReference.clone() + 1;
+        scalarVariable(file.clone(), var.clone(), (classType.clone()).clone(), valueReference, index)?;
+        index = index + 1;
+        valueReference = valueReference + 1;
     }
     Ok((valueReference, index))
 }
@@ -266,10 +266,10 @@ fn scalarVariables(mut file: File::File, mut vars: Arc<metamodelica::List<SimVar
 fn scalarVariable(mut file: File::File, mut var: SimVar, mut classType: ArcStr, mut valueReference: i32, mut classIndex: i32) -> Result<()> {
     let mut type_name: ArcStr = if (DAEUtil::expTypeArray(var.type_.clone())) {literal!("ArrayVariable")} else {literal!("ScalarVariable")};
     File::write(file.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  <")); __mm_s.push_str(&*type_name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    scalarVariableAttribute(file.clone(), var.clone(), (classType.clone()).clone(), valueReference.clone(), classIndex.clone())?;
+    scalarVariableAttribute(file.clone(), var.clone(), (classType).clone(), valueReference, classIndex)?;
     File::write(file.clone(), (literal!("    ")).clone());
-    scalarVariableType(file.clone(), var.clone())?;
-    File::write(file.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n  </")); __mm_s.push_str(&*type_name.clone()); __mm_s.push_str(&*literal!(">\n")); ArcStr::from(__mm_s) }).clone());
+    scalarVariableType(file.clone(), var)?;
+    File::write(file, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n  </")); __mm_s.push_str(&*type_name); __mm_s.push_str(&*literal!(">\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -280,7 +280,7 @@ fn scalarVariableAttribute(mut file: File::File, mut simVar: SimVar, mut classTy
     CR::writeCref(file.clone(), simVar.name.clone(), XML.clone())?;
     File::write(file.clone(), (literal!("\"\n")).clone());
     File::write(file.clone(), (literal!("    valueReference = \"")).clone());
-    File::writeInt(file.clone(), valueReference.clone(), (literal!("%d")).clone());
+    File::writeInt(file.clone(), valueReference, (literal!("%d")).clone());
     File::write(file.clone(), (literal!("\"\n")).clone());
     if simVar.comment.clone() != literal!("") {
         File::write(file.clone(), (literal!("    description = \"")).clone());
@@ -297,18 +297,18 @@ fn scalarVariableAttribute(mut file: File::File, mut simVar: SimVar, mut classTy
     File::write(file.clone(), (literal!("\" isValueChangeable = \"")).clone());
     File::write(file.clone(), ArcStr::from(::std::format!("{}", simVar.isValueChangeable.clone())));
     File::write(file.clone(), (literal!("\"\n")).clone());
-    if inputIndex.clone() != -1 {
+    if inputIndex != -1 {
         File::write(file.clone(), (literal!("    inputIndex = \"")).clone());
-        File::writeInt(file.clone(), inputIndex.clone(), (literal!("%d")).clone());
+        File::writeInt(file.clone(), inputIndex, (literal!("%d")).clone());
         File::write(file.clone(), (literal!("\"\n")).clone());
     }
     File::write(file.clone(), (literal!("    alias = ")).clone());
     getAliasVar(file.clone(), simVar.clone())?;
     File::write(file.clone(), (literal!("\n")).clone());
     File::write(file.clone(), (literal!("    classIndex = \"")).clone());
-    File::writeInt(file.clone(), classIndex.clone(), (literal!("%d")).clone());
+    File::writeInt(file.clone(), classIndex, (literal!("%d")).clone());
     File::write(file.clone(), (literal!("\" classType = \"")).clone());
-    File::write(file.clone(), (classType.clone()).clone());
+    File::write(file.clone(), (classType).clone());
     File::write(file.clone(), (literal!("\"\n")).clone());
     File::write(file.clone(), (literal!("    isProtected = \"")).clone());
     File::write(file.clone(), ArcStr::from(::std::format!("{}", simVar.isProtected.clone())));
@@ -350,7 +350,7 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             scalarVariableTypeAttribute(file.clone(), v.maxValue.clone(), (literal!("max")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.unit.clone()).clone(), (literal!("unit")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.displayUnit.clone()).clone(), (literal!("displayUnit")).clone());
-            File::write(file.clone(), (literal!(" />")).clone());
+            File::write(file, (literal!(" />")).clone());
             ()
         },
         Deref @ Type::T_REAL { .. } => {
@@ -362,7 +362,7 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             scalarVariableTypeAttribute(file.clone(), v.maxValue.clone(), (literal!("max")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.unit.clone()).clone(), (literal!("unit")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.displayUnit.clone()).clone(), (literal!("displayUnit")).clone());
-            File::write(file.clone(), (literal!(" />")).clone());
+            File::write(file, (literal!(" />")).clone());
             ()
         },
         Deref @ Type::T_BOOL { .. } => {
@@ -371,7 +371,7 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             scalarVariableTypeFixedAttribute(file.clone(), v.isFixed.clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.unit.clone()).clone(), (literal!("unit")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.displayUnit.clone()).clone(), (literal!("displayUnit")).clone());
-            File::write(file.clone(), (literal!(" />")).clone());
+            File::write(file, (literal!(" />")).clone());
             ()
         },
         Deref @ Type::T_STRING { .. } => {
@@ -380,7 +380,7 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             scalarVariableTypeFixedAttribute(file.clone(), v.isFixed.clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.unit.clone()).clone(), (literal!("unit")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.displayUnit.clone()).clone(), (literal!("displayUnit")).clone());
-            File::write(file.clone(), (literal!(" />")).clone());
+            File::write(file, (literal!(" />")).clone());
             ()
         },
         Deref @ Type::T_ENUMERATION { .. } => {
@@ -389,14 +389,14 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             scalarVariableTypeFixedAttribute(file.clone(), v.isFixed.clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.unit.clone()).clone(), (literal!("unit")).clone());
             scalarVariableTypeStringAttribute(file.clone(), (v.displayUnit.clone()).clone(), (literal!("displayUnit")).clone());
-            File::write(file.clone(), (literal!(" />")).clone());
+            File::write(file, (literal!(" />")).clone());
             ()
         },
         Deref @ Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: __esc_path }, .. } => {
             path = (*__esc_path).clone();
             File::write(file.clone(), (literal!("<ExternalObject path=\"")).clone());
             Dump::writePath(file.clone(), path.clone(), XML.clone(), (literal!(".")).clone(), true)?;
-            File::write(file.clone(), (literal!("\" />")).clone());
+            File::write(file, (literal!("\" />")).clone());
             ()
         },
         _ => {
@@ -410,18 +410,18 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
 
 fn scalarVariableTypeUseAttribute(mut file: File::File, mut attr: Option<Arc<Exp>>, mut r#use: ArcStr, mut name: ArcStr) -> () {
     File::write(file.clone(), (literal!(" ")).clone());
-    File::write(file.clone(), (r#use.clone()).clone());
+    File::write(file.clone(), (r#use).clone());
     File::write(file.clone(), (literal!("=\"")).clone());
     File::write(file.clone(), ArcStr::from(::std::format!("{}", isSome(attr.clone()))));
     File::write(file.clone(), (literal!("\"")).clone());
-    scalarVariableTypeAttribute(file.clone(), attr.clone(), (name.clone()).clone());
+    scalarVariableTypeAttribute(file, attr, (name).clone());
     ()
 }
 
 fn scalarVariableTypeFixedAttribute(mut file: File::File, mut isFixed: bool) -> () {
     File::write(file.clone(), (literal!(" fixed=\"")).clone());
-    File::write(file.clone(), ArcStr::from(::std::format!("{}", isFixed.clone())));
-    File::write(file.clone(), (literal!("\"")).clone());
+    File::write(file.clone(), ArcStr::from(::std::format!("{}", isFixed)));
+    File::write(file, (literal!("\"")).clone());
     ()
 }
 
@@ -445,16 +445,16 @@ fn scalarVariableTypeStringAttribute(mut file: File::File, mut attr: ArcStr, mut
         return ();
     }
     File::write(file.clone(), (literal!(" ")).clone());
-    File::write(file.clone(), (name.clone()).clone());
+    File::write(file.clone(), (name).clone());
     File::write(file.clone(), (literal!("=\"")).clone());
-    File::writeEscape(file.clone(), (attr.clone()).clone(), XML.clone());
-    File::write(file.clone(), (literal!("\"")).clone());
+    File::writeEscape(file.clone(), (attr).clone(), XML.clone());
+    File::write(file, (literal!("\"")).clone());
     ()
 }
 
 fn getCausality(mut c: Option<Causality>) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match c.clone() {
+    r#str = ((match c {
         Some(SimCodeVar::Causality::NONECAUS) => literal!("none"),
         Some(SimCodeVar::Causality::OUTPUT) => literal!("output"),
         Some(SimCodeVar::Causality::INPUT) => literal!("input"),
@@ -468,7 +468,7 @@ fn getCausality(mut c: Option<Causality>) -> ArcStr {
 
 fn getVariablity(mut varKind: VarKind) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match varKind.clone() {
+    r#str = ((match varKind {
         VarKind::DISCRETE => literal!("discrete"),
         VarKind::PARAM => literal!("parameter"),
         VarKind::CONST => literal!("constant"),
@@ -483,20 +483,20 @@ fn getAliasVar(mut file: File::File, mut simVar: SimVar) -> Result<()> {
             File::write(file.clone(), (literal!("\"alias\" aliasVariable=\"")).clone());
             CR::writeCref(file.clone(), var_field!(aliasvar.varName, AliasVariable::ALIAS).clone(), XML.clone())?;
             File::write(file.clone(), (literal!("\" aliasVariableId=\"")).clone());
-            File::write(file.clone(), (SimCodeUtil::getValueReference(simVar.clone(), SimCodeUtil::getSimCode()?, true)?).clone());
-            File::write(file.clone(), (literal!("\"")).clone());
+            File::write(file.clone(), (SimCodeUtil::getValueReference(simVar, SimCodeUtil::getSimCode()?, true)?).clone());
+            File::write(file, (literal!("\"")).clone());
             ()
         },
         SimVar { aliasvar: mut aliasvar @ SimCodeVar::AliasVariable::NEGATEDALIAS { .. }, .. } => {
             File::write(file.clone(), (literal!("\"negatedAlias\" aliasVariable=\"")).clone());
             CR::writeCref(file.clone(), var_field!(aliasvar.varName, AliasVariable::NEGATEDALIAS).clone(), XML.clone())?;
             File::write(file.clone(), (literal!("\" aliasVariableId=\"")).clone());
-            File::write(file.clone(), (SimCodeUtil::getValueReference(simVar.clone(), SimCodeUtil::getSimCode()?, true)?).clone());
-            File::write(file.clone(), (literal!("\"")).clone());
+            File::write(file.clone(), (SimCodeUtil::getValueReference(simVar, SimCodeUtil::getSimCode()?, true)?).clone());
+            File::write(file, (literal!("\"")).clone());
             ()
         },
         _ => {
-            File::write(file.clone(), (literal!("\"noAlias\"")).clone());
+            File::write(file, (literal!("\"noAlias\"")).clone());
             ()
         },
     });
@@ -509,7 +509,7 @@ fn xsdateTime(mut file: File::File, mut dt: Util::DateTime) -> () {
     File::writeInt(file.clone(), dt.mday.clone(), (literal!("-%02d")).clone());
     File::writeInt(file.clone(), dt.hour.clone(), (literal!("T%02d")).clone());
     File::writeInt(file.clone(), dt.min.clone(), (literal!(":%02d")).clone());
-    File::writeInt(file.clone(), dt.sec.clone(), (literal!(":%02dZ")).clone());
+    File::writeInt(file, dt.sec.clone(), (literal!(":%02dZ")).clone());
     ()
 }
 

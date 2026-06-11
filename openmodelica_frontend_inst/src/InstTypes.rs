@@ -134,7 +134,7 @@ pub type InstDims = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimen
 
 pub fn callingScopeStr(mut inCallingScope: CallingScope) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((match inCallingScope.clone() {
+    r#str = ((match inCallingScope {
         CallingScope::TOP_CALL { .. } => literal!("topCall"),
         CallingScope::INNER_CALL { .. } => literal!("innerCall"),
         CallingScope::TYPE_CALL { .. } => literal!("typeCall"),

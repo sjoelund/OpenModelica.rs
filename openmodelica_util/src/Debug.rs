@@ -46,12 +46,12 @@ use arcstr::{ArcStr, literal, format};
 use crate::Print;
 
 pub fn trace(mut s: ArcStr) -> Result<()> {
-    Print::printErrorBuf((s.clone()).clone())?;
+    Print::printErrorBuf((s).clone())?;
     Ok(())
 }
 
 pub fn traceln(mut r#str: ArcStr) -> Result<()> {
-    Print::printErrorBuf((r#str.clone()).clone())?;
+    Print::printErrorBuf((r#str).clone())?;
     Print::printErrorBuf((literal!("\n")).clone())?;
     Ok(())
 }

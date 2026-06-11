@@ -83,7 +83,13 @@ pub enum TypedExp {
     /// A variable reference or constant path.
     /// `name` is the dotted MM name (for lookup/compat).
     /// `segments` carries the structured parts with subscripts.
-    Var { name: String, segments: Vec<CrefSegment>, ty: Ty },
+    /// `last_use` is set by [`crate::codegen::mark_last_uses`] (a backward
+    /// liveness pass run just before emission): `true` means this occurrence is
+    /// the final read of the variable on every forward path, so the code
+    /// generator may *move* an owned value here instead of cloning it. Defaults
+    /// to `false` (clone) — a freshly synthesised `Var` is always treated as a
+    /// non-final use, which is the safe choice.
+    Var { name: String, segments: Vec<CrefSegment>, ty: Ty, last_use: bool },
     BinOp { op: BinOpKind, lhs: Box<TypedExp>, rhs: Box<TypedExp>, ty: Ty },
     UnOp { op: UnOpKind, operand: Box<TypedExp>, ty: Ty },
     /// A function call. `func` is the dotted MM name (e.g. "List.map", "SOME").
@@ -1632,7 +1638,7 @@ pub fn infer_exp<'a>(
             } else {
                 ty
             };
-            TypedExp::Var { name, segments, ty }
+            TypedExp::Var { name, segments, ty, last_use: false }
         }
 
         Absyn::Exp::BINARY  { exp1, op, exp2 }
@@ -2792,6 +2798,7 @@ fn pat_to_exp(pat: &TypedPat, top_level: &BTreeMap<String, NameNode<'_>>) -> Typ
             name: name.clone(),
             segments: vec![CrefSegment { name: name.clone(), subscripts: vec![] }],
             ty: lookup_ty_in_hierarchy(name, top_level),
+            last_use: false,
         },
         TypedPat::FieldAccess { base, field } => {
             let base_exp = pat_to_exp(base, top_level);
@@ -2804,9 +2811,10 @@ fn pat_to_exp(pat: &TypedPat, top_level: &BTreeMap<String, NameNode<'_>>) -> Typ
                 name: format!("{base_name}.{field}"),
                 segments: vec![],
                 ty: Ty::Unknown,
+                last_use: false,
             }
         },
-        _ => TypedExp::Var { name: "_".into(), segments: vec![], ty: Ty::Unknown },
+        _ => TypedExp::Var { name: "_".into(), segments: vec![], ty: Ty::Unknown, last_use: false },
     }
 }
 
@@ -2908,7 +2916,7 @@ pub fn infer_pat<'a>(
                         let base_ty = env.get(&**name).cloned().unwrap_or_else(|| {
                             lookup_ty_in_hierarchy(name, top_level)
                         });
-                        let base = TypedExp::Var { name: name.to_string(), segments: vec![], ty: base_ty };
+                        let base = TypedExp::Var { name: name.to_string(), segments: vec![], ty: base_ty, last_use: false };
                         TypedPat::Index {
                             base,
                             index: infer_exp(&sub_exp, env, top_level, pkg_prefix, type_vars),
@@ -2955,7 +2963,7 @@ pub fn infer_pat<'a>(
                         let base_ty = resolve_first_segment_type(&base_dotted, &base_segs, env, top_level)
                             .unwrap_or_else(|| lookup_ty_in_hierarchy(&base_dotted, top_level));
                         TypedPat::Index {
-                            base: TypedExp::Var { name: base_dotted, segments: base_segs, ty: base_ty },
+                            base: TypedExp::Var { name: base_dotted, segments: base_segs, ty: base_ty, last_use: false },
                             index: sub_exp,
                         }
                     } else {

@@ -81,9 +81,9 @@ impl metamodelica::gc::MMTrace for ElementType {
 pub(crate) fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSource>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut opt_cmt: Option<Arc<SCode::Comment>>;
-    opt_cmt = ElementSource::getOptComment(source.clone())?;
+    opt_cmt = ElementSource::getOptComment(source)?;
     if isSome(opt_cmt.clone()) {
-        s = appendCommentString(Util::getOption(opt_cmt.clone())?, s.clone())?;
+        s = appendCommentString(Util::getOption(opt_cmt)?, s)?;
     }
     Ok(s)
 }
@@ -91,43 +91,43 @@ pub(crate) fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSourc
 pub(crate) fn appendElementSourceCommentAnnotation(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut opt_cmt: Option<Arc<SCode::Comment>>;
-    opt_cmt = ElementSource::getOptComment(source.clone())?;
+    opt_cmt = ElementSource::getOptComment(source)?;
     if isSome(opt_cmt.clone()) {
-        s = appendCommentAnnotation(Util::getOption(opt_cmt.clone())?, elementType.clone(), (indent.clone()).clone(), (ending.clone()).clone(), s.clone())?;
+        s = appendCommentAnnotation(Util::getOption(opt_cmt)?, elementType, (indent).clone(), (ending).clone(), s)?;
     }
     Ok(s)
 }
 
 pub(crate) fn appendElementSourceComment(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    s = appendCommentOpt(ElementSource::getOptComment(source.clone())?, elementType.clone(), s.clone())?;
+    s = appendCommentOpt(ElementSource::getOptComment(source)?, elementType, s)?;
     Ok(s)
 }
 
 pub(crate) fn appendCommentOpt(mut comment: Option<Arc<SCode::Comment>>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     if isSome(comment.clone()) {
-        s = appendComment(Util::getOption(comment.clone())?, elementType.clone(), s.clone())?;
+        s = appendComment(Util::getOption(comment)?, elementType, s)?;
     }
     Ok(s)
 }
 
 pub(crate) fn appendComment(mut comment: Arc<SCode::Comment>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    s = appendCommentString(comment.clone(), s.clone())?;
-    s = appendCommentAnnotation(comment.clone(), elementType.clone(), (literal!(" ")).clone(), (literal!("")).clone(), s.clone())?;
+    s = appendCommentString(comment.clone(), s)?;
+    s = appendCommentAnnotation(comment, elementType, (literal!(" ")).clone(), (literal!("")).clone(), s)?;
     Ok(s)
 }
 
 pub(crate) fn appendCommentString(mut comment: Arc<SCode::Comment>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut r#str: ArcStr = arcstr::literal!("");
-    let () = (::match_deref::match_deref! { match &(comment.clone()) {
+    let () = (::match_deref::match_deref! { match &(comment) {
         Deref @ SCode::Comment { comment: Some(__esc_str), .. } => {
             r#str = (*__esc_str).clone();
-            s = IOStream::append(s.clone(), (literal!(" \"")).clone())?;
-            s = IOStream::append(s.clone(), (System::escapedString((r#str.clone()).clone(), false)).clone())?;
-            s = IOStream::append(s.clone(), (literal!("\"")).clone())?;
+            s = IOStream::append(s, (literal!(" \"")).clone())?;
+            s = IOStream::append(s, (System::escapedString((r#str.clone()).clone(), false)).clone())?;
+            s = IOStream::append(s, (literal!("\"")).clone())?;
             ()
         },
         _ => (),
@@ -139,18 +139,18 @@ pub(crate) fn appendCommentString(mut comment: Arc<SCode::Comment>, mut s: IOStr
 pub(crate) fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-    let () = (::match_deref::match_deref! { match &(comment.clone()) {
+    let () = (::match_deref::match_deref! { match &(comment) {
         Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod }), .. } => {
             r#mod = (*__esc_mod).clone();
-            r#mod = (match elementType.clone() {
+            r#mod = (match elementType {
         ElementType::ROOT_CLASS { .. } => filterRootClassAnnotations(r#mod.clone())?,
         _ => DAEDumpTypes::filterStructuralMods(r#mod.clone())?,
     });
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
-                s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-                s = IOStream::append(s.clone(), (literal!("annotation")).clone())?;
-                s = appendAnnotationMod(r#mod.clone(), s.clone())?;
-                s = IOStream::append(s.clone(), (ending.clone()).clone())?;
+                s = IOStream::append(s, (indent).clone())?;
+                s = IOStream::append(s, (literal!("annotation")).clone())?;
+                s = appendAnnotationMod(r#mod.clone(), s)?;
+                s = IOStream::append(s, (ending).clone())?;
             }
             ()
         },
@@ -181,18 +181,18 @@ pub(crate) fn appendAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut s: IOStream::I
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
             if !(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone().is_empty()) {
-                s = IOStream::append(s.clone(), (literal!("(")).clone())?;
-                s = appendAnnotationSubMod(listHead(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone())?, s.clone())?;
+                s = IOStream::append(s, (literal!("(")).clone())?;
+                s = appendAnnotationSubMod(listHead(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone())?, s)?;
                 for mut m in &*listRest(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone())? {
                     let mut m = m.clone();
                     s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
                     s = appendAnnotationSubMod(m.clone(), s.clone())?;
                 }
-                s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+                s = IOStream::append(s, (literal!(")")).clone())?;
             }
             if isSome(var_field!((*r#mod).binding, SCode::Mod::MOD).clone()) {
-                s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-                s = appendExp(Util::getOption(var_field!((*r#mod).binding, SCode::Mod::MOD).clone())?, s.clone())?;
+                s = IOStream::append(s, (literal!(" = ")).clone())?;
+                s = appendExp(Util::getOption(var_field!((*r#mod).binding, SCode::Mod::MOD).clone())?, s)?;
             }
             ()
         },
@@ -208,13 +208,13 @@ pub(crate) fn appendAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut s: IOStr
     let () = (::match_deref::match_deref! { match &(m.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
             if SCodeUtil::finalBool(var_field!((*m).finalPrefix, SCode::Mod::MOD).clone())? {
-                s = IOStream::append(s.clone(), (literal!("final ")).clone())?;
+                s = IOStream::append(s, (literal!("final ")).clone())?;
             }
             if SCodeUtil::eachBool(var_field!((*m).eachPrefix, SCode::Mod::MOD).clone())? {
-                s = IOStream::append(s.clone(), (literal!("each ")).clone())?;
+                s = IOStream::append(s, (literal!("each ")).clone())?;
             }
-            s = IOStream::append(s.clone(), (r#mod.ident.clone()).clone())?;
-            s = appendAnnotationMod(m.clone(), s.clone())?;
+            s = IOStream::append(s, (r#mod.ident.clone()).clone())?;
+            s = appendAnnotationMod(m, s)?;
             ()
         },
         _ => (),
@@ -226,8 +226,8 @@ pub(crate) fn appendAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut s: IOStr
 pub(crate) fn appendExp(mut exp: Arc<Absyn::Exp>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut e: Arc<Absyn::Exp>;
-    (e, _) = AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(quoteCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, i32) -> Result<(Arc<Absyn::Exp>, i32)> + 'static>), 0)?;
-    s = IOStream::append(s.clone(), (Dump::printExpStr(e.clone())?).clone())?;
+    (e, _) = AbsynUtil::traverseExp(exp, (std::sync::Arc::new(quoteCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, i32) -> Result<(Arc<Absyn::Exp>, i32)> + 'static>), 0)?;
+    s = IOStream::append(s, (Dump::printExpStr(e)?).clone())?;
     Ok(s)
 }
 
@@ -239,8 +239,8 @@ pub(crate) fn quoteCref(mut exp: Arc<Absyn::Exp>, mut dummy: i32) -> Result<(Arc
         Deref @ Absyn::Exp::CREF { .. } if (!(AbsynUtil::crefIsWild(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone()))) => {
             r#str = (Dump::printComponentRefStr(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone())?).clone();
             if r#str.clone() != literal!("time") {
-                r#str = (Util::makeQuotedIdentifier((r#str.clone()).clone())?).clone();
-                assign_variant_field!(exp => Absyn::Exp::CREF; componentRef = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (r#str.clone()).clone(), subscripts: metamodelica::nil() }));
+                r#str = (Util::makeQuotedIdentifier((r#str).clone())?).clone();
+                assign_variant_field!(exp => Absyn::Exp::CREF; componentRef = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (r#str).clone(), subscripts: metamodelica::nil() }));
             }
             ()
         },

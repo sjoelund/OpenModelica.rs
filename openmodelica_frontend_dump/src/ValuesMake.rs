@@ -50,7 +50,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub fn makeZero(mut ty: Arc<DAE::Type>) -> Result<Arc<Values::Value>> {
     let mut zero: Arc<Values::Value>;
-    zero = (::match_deref::match_deref! { match &(ty.clone()) {
+    zero = (::match_deref::match_deref! { match &(ty) {
         Deref @ DAE::Type::T_REAL { .. } => Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) }),
         Deref @ DAE::Type::T_INTEGER { .. } => Arc::new(Values::Value::INTEGER { integer: 0 }),
         _ => bail!("match: no arm matched"),
@@ -60,44 +60,44 @@ pub fn makeZero(mut ty: Arc<DAE::Type>) -> Result<Arc<Values::Value>> {
 
 pub fn makeBoolean(mut b: bool) -> Arc<Values::Value> {
     let mut v: Arc<Values::Value>;
-    v = Arc::new(Values::Value::BOOL { boolean: b.clone() });
+    v = Arc::new(Values::Value::BOOL { boolean: b });
     v
 }
 
 pub fn makeReal(mut r: metamodelica::Real) -> Arc<Values::Value> {
     let mut v: Arc<Values::Value>;
-    v = Arc::new(Values::Value::REAL { real: r.clone() });
+    v = Arc::new(Values::Value::REAL { real: r });
     v
 }
 
 pub fn makeInteger(mut i: i32) -> Arc<Values::Value> {
     let mut v: Arc<Values::Value>;
-    v = Arc::new(Values::Value::INTEGER { integer: i.clone() });
+    v = Arc::new(Values::Value::INTEGER { integer: i });
     v
 }
 
 pub fn makeString(mut s: ArcStr) -> Arc<Values::Value> {
     let mut v: Arc<Values::Value>;
-    v = Arc::new(Values::Value::STRING { string: (s.clone()).clone() });
+    v = Arc::new(Values::Value::STRING { string: (s).clone() });
     v
 }
 
 pub fn makeTuple(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
-    outValue = Arc::new(Values::Value::TUPLE { valueLst: inValueLst.clone() });
+    outValue = Arc::new(Values::Value::TUPLE { valueLst: inValueLst });
     outValue
 }
 
 pub fn makeList(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
-    outValue = Arc::new(Values::Value::LIST { valueLst: inValueLst.clone() });
+    outValue = Arc::new(Values::Value::LIST { valueLst: inValueLst });
     outValue
 }
 
 pub fn makeArray(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
-        let __mc_input = inValueLst.clone();
+        let __mc_input = inValueLst;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: il, .. }, tail: _ } => {
@@ -130,37 +130,37 @@ pub fn makeEmptyArray() -> Arc<Values::Value> {
 
 pub fn makeStringArray(mut inReals: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(fnptr!(makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?);
+    outArray = makeArray(List::map(inReals, (std::sync::Arc::new(fnptr!(makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeIntArray(mut inInts: Arc<metamodelica::List<i32>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inInts.clone(), (std::sync::Arc::new(fnptr!(makeInteger, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<Values::Value>> + 'static>))?);
+    outArray = makeArray(List::map(inInts, (std::sync::Arc::new(fnptr!(makeInteger, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeRealArray(mut inReals: Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(fnptr!(makeReal, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<Values::Value>> + 'static>))?);
+    outArray = makeArray(List::map(inReals, (std::sync::Arc::new(fnptr!(makeReal, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeRealMatrix(mut inReals: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(makeRealArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<Values::Value>> + 'static>))?);
+    outArray = makeArray(List::map(inReals, (std::sync::Arc::new(makeRealArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeCodeTypeName(mut path: Arc<Absyn::Path>) -> Arc<Values::Value> {
     let mut val: Arc<Values::Value>;
-    val = Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: path.clone() }) });
+    val = Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: path }) });
     val
 }
 
 pub fn makeCodeTypeNameStr(mut r#str: ArcStr) -> Arc<Values::Value> {
     let mut val: Arc<Values::Value>;
-    val = Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Arc::new(Absyn::Path::IDENT { name: (r#str.clone()).clone() }) }) });
+    val = Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Arc::new(Absyn::Path::IDENT { name: (r#str).clone() }) }) });
     val
 }
 
@@ -168,7 +168,7 @@ pub fn makeCodeTypeNameArray(mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>
     let mut val: Arc<Values::Value>;
     val = makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for mut p in (paths.clone()).into_iter().cloned() {
+        for mut p in (paths).into_iter().cloned() {
             let __x = makeCodeTypeName(p.clone());
             __acc = cons(__x, __acc);
         }

@@ -22,15 +22,15 @@ use openmodelica_util::Util;
 
 pub(crate) fn dumpProgram(mut txt: Tpl::Text, mut a_program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = dumpElements(txt.clone(), a_program.clone(), false, a_options.clone())?;
+    out_txt = dumpElements(txt, a_program, false, a_options)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpElements(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_indent: bool, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<Arc<SCode::Element>>>;
-    ret_0 = SCodeDump::filterElements(a_elements.clone(), a_options.clone())?;
-    out_txt = dumpElements2(txt.clone(), ret_0.clone(), a_indent.clone(), a_options.clone())?;
+    ret_0 = SCodeDump::filterElements(a_elements, a_options.clone())?;
+    out_txt = dumpElements2(txt, ret_0, a_indent, a_options)?;
     Ok(out_txt)
 }
 
@@ -42,13 +42,13 @@ pub(crate) fn dumpElements2(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica
     ret_0 = (a_elements.clone().len() as i32);
     ret_1 = Util::makeStatefulBoolean(false);
     ret_2 = Util::makeStatefulBoolean(true);
-    out_txt = dumpElements3(txt.clone(), a_elements.clone(), ret_0.clone(), ret_1.clone(), a_indent.clone(), ret_2.clone(), a_options.clone())?;
+    out_txt = dumpElements3(txt, a_elements, ret_0, ret_1.clone(), a_indent, ret_2.clone(), a_options)?;
     Ok(out_txt)
 }
 
 fn fun_14(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_prevSpacing: metamodelica::Array<bool>, mut in_a_spacing: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_prevSpacing.clone(), in_a_spacing.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_prevSpacing.clone(), in_a_spacing) {
         (mut txt, false, _, _) => {
             txt.clone()
         },
@@ -64,7 +64,7 @@ fn fun_14(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_prevSpacing: metamo
 
 fn fun_15(mut in_txt: Tpl::Text, mut in_a_vis__str: Tpl::Text, mut in_a_inPublicSection: metamodelica::Array<bool>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_vis__str.clone(), in_a_inPublicSection.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_vis__str, in_a_inPublicSection.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -83,7 +83,7 @@ fn fun_15(mut in_txt: Tpl::Text, mut in_a_vis__str: Tpl::Text, mut in_a_inPublic
 
 fn fun_16(mut in_txt: Tpl::Text, mut in_a_spacing: Tpl::Text, mut in_a_prevSpacing: metamodelica::Array<bool>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_spacing.clone(), in_a_prevSpacing.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_spacing, in_a_prevSpacing.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_prevSpacing) => {
             Util::setStatefulBoolean(a_prevSpacing.clone(), false)?;
             txt.clone()
@@ -101,7 +101,7 @@ fn fun_16(mut in_txt: Tpl::Text, mut in_a_spacing: Tpl::Text, mut in_a_prevSpaci
 
 fn fun_17(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_spacing: Tpl::Text, mut in_a_prevSpacing: metamodelica::Array<bool>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_spacing.clone(), in_a_prevSpacing.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_spacing, in_a_prevSpacing.clone()) {
         (mut txt, false, _, mut a_prevSpacing) => {
             Util::setStatefulBoolean(a_prevSpacing.clone(), false)?;
             txt.clone()
@@ -116,7 +116,7 @@ fn fun_17(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_spacing: Tpl::Text,
 
 fn fun_18(mut in_txt: Tpl::Text, mut in_a_indent: bool, mut in_a_post__spacing: Tpl::Text, mut in_a_el__str: Tpl::Text, mut in_a_vis__str: Tpl::Text, mut in_a_pre__spacing: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_indent.clone(), in_a_post__spacing.clone(), in_a_el__str.clone(), in_a_vis__str.clone(), in_a_pre__spacing.clone()) {
+    out_txt = (match (in_txt, in_a_indent, in_a_post__spacing, in_a_el__str, in_a_vis__str, in_a_pre__spacing) {
         (mut txt, false, mut a_post__spacing, mut a_el__str, mut a_vis__str, mut a_pre__spacing) => {
             txt = Tpl::writeText(txt.clone(), a_pre__spacing.clone())?;
             txt = Tpl::writeText(txt.clone(), a_vis__str.clone())?;
@@ -145,7 +145,7 @@ fn fun_18(mut in_txt: Tpl::Text, mut in_a_indent: bool, mut in_a_post__spacing: 
 
 fn lm_19(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_indent: bool, mut a_numElements: i32, mut a_inPublicSection: metamodelica::Array<bool>, mut a_options: SCodeDump::SCodeDumpOptions, mut a_prevSpacing: metamodelica::Array<bool>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_19 in &*items.clone() {
+    for mut lstElt_19 in &*items {
         let mut lstElt_19 = lstElt_19.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_19.clone()) {
         i_el => {
@@ -170,10 +170,10 @@ fn lm_19(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
             ret_6 = Util::getStatefulBoolean(a_inPublicSection.clone());
             l_vis__str = dumpElementVisibility(Tpl::emptyTxt.clone(), i_el.clone(), ret_6.clone())?;
             l_dummyTxt = fun_15(Tpl::emptyTxt.clone(), l_vis__str.clone(), a_inPublicSection.clone())?;
-            ret_9 = intEq(x_i1.clone(), a_numElements.clone());
+            ret_9 = intEq(x_i1.clone(), a_numElements);
             ret_10 = boolNot(ret_9.clone());
             l_post__spacing = fun_17(Tpl::emptyTxt.clone(), ret_10.clone(), l_spacing.clone(), a_prevSpacing.clone())?;
-            txt = fun_18(txt.clone(), a_indent.clone(), l_post__spacing.clone(), l_el__str.clone(), l_vis__str.clone(), l_pre__spacing.clone())?;
+            txt = fun_18(txt.clone(), a_indent, l_post__spacing.clone(), l_el__str.clone(), l_vis__str.clone(), l_pre__spacing.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt.clone()
         },
@@ -185,15 +185,15 @@ fn lm_19(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Elemen
 
 pub(crate) fn dumpElements3(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_numElements: i32, mut a_prevSpacing: metamodelica::Array<bool>, mut a_indent: bool, mut a_inPublicSection: metamodelica::Array<bool>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_19(out_txt.clone(), a_elements.clone(), a_indent.clone(), a_numElements.clone(), a_inPublicSection.clone(), a_options.clone(), a_prevSpacing.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_19(out_txt, a_elements, a_indent, a_numElements, a_inPublicSection.clone(), a_options, a_prevSpacing.clone())?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 fn fun_21(mut in_txt: Tpl::Text, mut in_a_prevSpacing: bool, mut in_a_curSpacing: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_prevSpacing.clone(), in_a_curSpacing.clone()) {
+    out_txt = (match (in_txt, in_a_prevSpacing, in_a_curSpacing) {
         (mut txt, false, mut a_curSpacing) => {
             txt = Tpl::writeStr(txt.clone(), (a_curSpacing.clone()).clone())?;
             txt.clone()
@@ -207,13 +207,13 @@ fn fun_21(mut in_txt: Tpl::Text, mut in_a_prevSpacing: bool, mut in_a_curSpacing
 
 pub(crate) fn dumpPreElementSpacing(mut txt: Tpl::Text, mut a_curSpacing: ArcStr, mut a_prevSpacing: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_21(txt.clone(), a_prevSpacing.clone(), (a_curSpacing.clone()).clone())?;
+    out_txt = fun_21(txt, a_prevSpacing, (a_curSpacing).clone())?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpElementSpacing(mut in_txt: Tpl::Text, mut in_a_element: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_element.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_element)) {
         (txt, Deref @ SCode::Element::CLASS { classDef: i_classDef, .. }) => {
             let mut txt = (*txt).clone();
             txt = dumpClassDefSpacing(txt.clone(), i_classDef.clone())?;
@@ -229,7 +229,7 @@ pub(crate) fn dumpElementSpacing(mut in_txt: Tpl::Text, mut in_a_element: Arc<SC
 
 pub(crate) fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::ClassDef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_classDef)) {
         (txt, Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: i_composition, .. }) => {
             let mut txt = (*txt).clone();
             { (in_txt, in_a_classDef) = (txt.clone(), i_composition.clone()); continue '__tco; }
@@ -248,7 +248,7 @@ pub(crate) fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<
 
 fn fun_25(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_element: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_options.clone(), in_a_element.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_options, in_a_element)) {
         (txt, SCodeDump::SCodeDumpOptions { stripProtectedImports: true, .. }, _) => {
             txt.clone()
         },
@@ -264,7 +264,7 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, 
 
 fn fun_26(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in_a_element: Arc<SCode::Element>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_visibility.clone(), in_a_element.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_visibility, in_a_element, in_a_options)) {
         (txt, SCode::Visibility::PROTECTED { .. }, a_element, a_options) => {
             let mut txt = (*txt).clone();
             txt = fun_25(txt.clone(), a_options.clone(), a_element.clone())?;
@@ -282,7 +282,7 @@ fn fun_26(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in_
 
 pub(crate) fn dumpElement(mut in_txt: Tpl::Text, mut in_a_element: Arc<SCode::Element>, mut in_a_each: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_element.clone(), in_a_each.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_element, in_a_each, in_a_options)) {
         (txt, i_element @ Deref @ SCode::Element::IMPORT { visibility: i_visibility, .. }, _, a_options) => {
             let mut txt = (*txt).clone();
             txt = fun_26(txt.clone(), i_visibility.clone(), i_element.clone(), a_options.clone())?;
@@ -320,7 +320,7 @@ pub(crate) fn dumpElement(mut in_txt: Tpl::Text, mut in_a_element: Arc<SCode::El
 
 pub(crate) fn dumpElementVisibility(mut in_txt: Tpl::Text, mut in_a_element: Arc<SCode::Element>, mut in_a_inPublicSection: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_element.clone(), in_a_inPublicSection.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_element, in_a_inPublicSection)) {
         (txt, Deref @ SCode::Element::IMPORT { visibility: i_visibility, .. }, a_inPublicSection) => {
             let mut txt = (*txt).clone();
             txt = dumpSectionVisibility(txt.clone(), i_visibility.clone(), a_inPublicSection.clone())?;
@@ -356,7 +356,7 @@ pub(crate) fn dumpElementVisibility(mut in_txt: Tpl::Text, mut in_a_element: Arc
 
 fn fun_29(mut in_txt: Tpl::Text, mut in_a_inPublicSection: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_inPublicSection.clone()) {
+    out_txt = (match (in_txt, in_a_inPublicSection) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("public")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -371,7 +371,7 @@ fn fun_29(mut in_txt: Tpl::Text, mut in_a_inPublicSection: bool) -> Result<Tpl::
 
 fn fun_30(mut in_txt: Tpl::Text, mut in_a_inPublicSection: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_inPublicSection.clone()) {
+    out_txt = (match (in_txt, in_a_inPublicSection) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -386,7 +386,7 @@ fn fun_30(mut in_txt: Tpl::Text, mut in_a_inPublicSection: bool) -> Result<Tpl::
 
 pub(crate) fn dumpSectionVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in_a_inPublicSection: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_visibility.clone(), in_a_inPublicSection.clone()) {
+    out_txt = (match (in_txt, in_a_visibility, in_a_inPublicSection) {
         (mut txt, SCode::Visibility::PUBLIC { .. }, mut a_inPublicSection) => {
             txt = fun_29(txt.clone(), a_inPublicSection.clone())?;
             txt.clone()
@@ -404,7 +404,7 @@ pub(crate) fn dumpSectionVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: 
 
 fn fun_32(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_imp.clone()) {
+    out_txt = (match (in_txt, in_a_imp) {
         (mut txt, Absyn::Import::NAMED_IMPORT { name: mut i_name, path: ref i_path }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("import ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -433,7 +433,7 @@ fn fun_32(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Tex
 
 pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_import: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_import.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_import)) {
         (txt, Deref @ SCode::Element::IMPORT { visibility: i_visibility, imp: i_imp, .. }) => {
             let mut l_import__str: Tpl::Text;
             let mut l_visibility__str: Tpl::Text;
@@ -454,7 +454,7 @@ pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_import: Arc<SCode::Elem
 
 pub(crate) fn dumpExtends(mut in_txt: Tpl::Text, mut in_a_extends: Arc<SCode::Element>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_extends.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_extends, in_a_options)) {
         (txt, Deref @ SCode::Element::EXTENDS { baseClassPath: i_baseClassPath, visibility: i_visibility, modifications: i_modifications, ann: i_ann, .. }, a_options) => {
             let mut l_ann__str: Tpl::Text;
             let mut l_mod__str: Tpl::Text;
@@ -482,7 +482,7 @@ pub(crate) fn dumpExtends(mut in_txt: Tpl::Text, mut in_a_extends: Arc<SCode::El
 
 pub(crate) fn dumpClass(mut in_txt: Tpl::Text, mut in_a_class: Arc<SCode::Element>, mut in_a_each: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_class.clone(), in_a_each.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_class, in_a_each, in_a_options)) {
         (txt, Deref @ SCode::Element::CLASS { prefixes: i_prefixes, encapsulatedPrefix: i_encapsulatedPrefix, partialPrefix: i_partialPrefix, restriction: i_restriction, classDef: i_classDef, cmt: i_cmt, name: i_name, .. }, a_each, a_options) => {
             let mut l_footer__str: Tpl::Text;
             let mut l_header__str: Tpl::Text;
@@ -526,7 +526,7 @@ pub(crate) fn dumpClass(mut in_txt: Tpl::Text, mut in_a_class: Arc<SCode::Elemen
 
 pub(crate) fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::ClassDef>, mut in_a_name: ArcStr, mut in_a_restr: SCode::Restriction, mut in_a_cmt: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone(), in_a_name.clone(), in_a_restr.clone(), in_a_cmt.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_classDef, in_a_name, in_a_restr, in_a_cmt, in_a_options)) {
         (txt, Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: i_modifications, .. }, a_name, _, a_cmt, a_options) => {
             let mut l_mod__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -556,7 +556,7 @@ pub(crate) fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCod
 
 fn fun_37(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_p_normalAlgorithmLst: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_options.clone(), in_a_p_normalAlgorithmLst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_options, in_a_p_normalAlgorithmLst)) {
         (txt, i_options @ SCodeDump::SCodeDumpOptions { stripAlgorithmSections: false, .. }, a_p_normalAlgorithmLst) => {
             let mut txt = (*txt).clone();
             txt = dumpAlgorithmSections(txt.clone(), a_p_normalAlgorithmLst.clone(), (literal!("algorithm")).clone(), i_options.clone())?;
@@ -572,7 +572,7 @@ fn fun_37(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, 
 
 fn fun_38(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_p_initialAlgorithmLst: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_options.clone(), in_a_p_initialAlgorithmLst.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_options, in_a_p_initialAlgorithmLst)) {
         (txt, i_options @ SCodeDump::SCodeDumpOptions { stripAlgorithmSections: false, .. }, a_p_initialAlgorithmLst) => {
             let mut txt = (*txt).clone();
             txt = dumpAlgorithmSections(txt.clone(), a_p_initialAlgorithmLst.clone(), (literal!("initial algorithm")).clone(), i_options.clone())?;
@@ -588,7 +588,7 @@ fn fun_38(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, 
 
 fn lm_39(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_39 in &*items.clone() {
+    for mut lstElt_39 in &*items {
         let mut lstElt_39 = lstElt_39.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_39.clone()) {
         i_enum => {
@@ -604,7 +604,7 @@ fn lm_39(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Enum>>
 
 fn fun_40(mut in_txt: Tpl::Text, mut in_a_enumLst: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_enumLst.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_enumLst, in_a_options)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
@@ -624,7 +624,7 @@ fn fun_40(mut in_txt: Tpl::Text, mut in_a_enumLst: Arc<metamodelica::List<Arc<SC
 
 fn lm_41(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_41 in &*items.clone() {
+    for mut lstElt_41 in &*items {
         let mut lstElt_41 = lstElt_41.clone();
         txt = (match lstElt_41.clone() {
         mut i_it => {
@@ -639,7 +639,7 @@ fn lm_41(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Resu
 
 fn lm_42(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_42 in &*items.clone() {
+    for mut lstElt_42 in &*items {
         let mut lstElt_42 = lstElt_42.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_42.clone()) {
         i_path => {
@@ -655,7 +655,7 @@ fn lm_42(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Path>>
 
 pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::ClassDef>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_classDef, in_a_options)) {
         (txt, Deref @ SCode::ClassDef::PARTS { elementLst: i_elementLst, normalEquationLst: i_normalEquationLst, initialEquationLst: i_initialEquationLst, normalAlgorithmLst: i_p_normalAlgorithmLst, initialAlgorithmLst: i_p_initialAlgorithmLst, externalDecl: i_p_externalDecl, .. }, a_options) => {
             let mut l_cdef__str: Tpl::Text;
             let mut l_extdecl__str: Tpl::Text;
@@ -761,7 +761,7 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
 
 fn fun_44(mut in_txt: Tpl::Text, mut in_a_ann: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ann.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ann)) {
         (txt, Deref @ "") => {
             txt.clone()
         },
@@ -778,7 +778,7 @@ fn fun_44(mut in_txt: Tpl::Text, mut in_a_ann: ArcStr) -> Result<Tpl::Text> {
 
 fn fun_45(mut in_txt: Tpl::Text, mut in_a_annstr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annstr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_annstr)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -794,7 +794,7 @@ fn fun_45(mut in_txt: Tpl::Text, mut in_a_annstr: Tpl::Text) -> Result<Tpl::Text
 
 fn fun_46(mut in_txt: Tpl::Text, mut in_a_cdefStr: ArcStr, mut in_a_cc__str: ArcStr, mut in_a_name: ArcStr, mut in_a_annstr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdefStr.clone(), in_a_cc__str.clone(), in_a_name.clone(), in_a_annstr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cdefStr, in_a_cc__str, in_a_name, in_a_annstr)) {
         (txt, Deref @ "", a_cc__str, a_name, a_annstr) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_annstr.clone())?;
@@ -823,7 +823,7 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_cdefStr: ArcStr, mut in_a_cc__str: Arc
 
 pub(crate) fn dumpClassFooter(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::ClassDef>, mut in_a_cdefStr: ArcStr, mut in_a_name: ArcStr, mut in_a_cmt: ArcStr, mut in_a_ann: ArcStr, mut in_a_cc__str: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone(), in_a_cdefStr.clone(), in_a_name.clone(), in_a_cmt.clone(), in_a_ann.clone(), in_a_cc__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_classDef, in_a_cdefStr, in_a_name, in_a_cmt, in_a_ann, in_a_cc__str)) {
         (txt, Deref @ SCode::ClassDef::DERIVED { typeSpec: _, .. }, a_cdefStr, _, a_cmt, a_ann, a_cc__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_cdefStr.clone()).clone())?;
@@ -859,7 +859,7 @@ pub(crate) fn dumpClassFooter(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCod
 
 pub(crate) fn dumpClassComment(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCode::Comment>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comment.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comment, in_a_options)) {
         (txt, Deref @ SCode::Comment { comment: i_comment, .. }, a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpCommentStr(txt.clone(), i_comment.clone(), a_options.clone())?;
@@ -875,7 +875,7 @@ pub(crate) fn dumpClassComment(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCod
 
 pub(crate) fn dumpClassAnnotation(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCode::Comment>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comment.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comment, in_a_options)) {
         (txt, Deref @ SCode::Comment { annotation_: i_annotation__, .. }, a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpAnnotationOpt(txt.clone(), i_annotation__.clone(), a_options.clone())?;
@@ -891,7 +891,7 @@ pub(crate) fn dumpClassAnnotation(mut in_txt: Tpl::Text, mut in_a_comment: Arc<S
 
 fn fun_50(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::Attributes, mut in_a_mod__str1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_attributes.clone(), in_a_mod__str1.clone()) {
+    out_txt = (match (in_txt, in_a_attributes, in_a_mod__str1) {
         (mut txt, SCode::Attributes { direction: Absyn::Direction::OUTPUT { .. }, .. }, _) => {
             txt.clone()
         },
@@ -905,7 +905,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::Attributes, mut in_
 
 fn fun_51(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_attributes: SCode::Attributes, mut in_a_mod__str1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_options.clone(), in_a_attributes.clone(), in_a_mod__str1.clone()) {
+    out_txt = (match (in_txt, in_a_options, in_a_attributes, in_a_mod__str1) {
         (mut txt, SCodeDump::SCodeDumpOptions { stripOutputBindings: false, .. }, _, mut a_mod__str1) => {
             txt = Tpl::writeText(txt.clone(), a_mod__str1.clone())?;
             txt.clone()
@@ -920,7 +920,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, 
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_a_condition: Option<Arc<Absyn::Exp>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_condition.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_condition)) {
         (txt, Some(i_cond)) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -939,7 +939,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_condition: Option<Arc<Absyn::Exp>>) ->
 
 pub(crate) fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_component: Arc<SCode::Element>, mut in_a_each: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_component.clone(), in_a_each.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_component, in_a_each, in_a_options)) {
         (txt, Deref @ SCode::Element::COMPONENT { prefixes: i_prefixes, attributes: i_attributes, typeSpec: i_typeSpec, modifications: i_modifications, condition: i_condition, comment: i_comment, name: i_name, .. }, a_each, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_cond__str: Tpl::Text;
@@ -982,7 +982,7 @@ pub(crate) fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_component: Arc<SCode
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_a_exp: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_exp.clone()) {
+    out_txt = (match (in_txt, in_a_exp) {
         (mut txt, Some(mut i_e)) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("exp = \"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_e.clone()).clone())?;
@@ -998,7 +998,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_exp: Option<ArcStr>) -> Result<Tpl::Te
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_a_weight: Option<metamodelica::Real>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_weight.clone()) {
+    out_txt = (match (in_txt, in_a_weight) {
         (mut txt, Some(mut i_w)) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("weight = ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (realString(i_w.clone())).clone())?;
@@ -1013,7 +1013,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_weight: Option<metamodelica::Real>) ->
 
 fn smf_56(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_it.clone()) {
+    out_txt = (match (in_txt, in_it) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -1025,7 +1025,7 @@ fn smf_56(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 
 fn smf_57(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_it.clone()) {
+    out_txt = (match (in_txt, in_it) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -1037,7 +1037,7 @@ fn smf_57(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -1053,7 +1053,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text) -> Result<Tpl::T
 
 fn fun_59(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -1069,7 +1069,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text) -> Result<Tpl::T
 
 pub(crate) fn dumpDefineUnit(mut in_txt: Tpl::Text, mut in_a_defineUnit: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_defineUnit.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_defineUnit)) {
         (txt, Deref @ SCode::Element::DEFINEUNIT { visibility: i_visibility, exp: i_exp, weight: i_weight, name: i_name, .. }) => {
             let mut l_pe: Tpl::Text;
             let mut l_pb: Tpl::Text;
@@ -1104,7 +1104,7 @@ pub(crate) fn dumpDefineUnit(mut in_txt: Tpl::Text, mut in_a_defineUnit: Arc<SCo
 
 pub(crate) fn dumpEnumLiteral(mut in_txt: Tpl::Text, mut in_a_enum: Arc<SCode::Enum>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_enum.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_enum, in_a_options)) {
         (txt, Deref @ SCode::Enum { comment: i_comment, literal: i_literal }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -1123,7 +1123,7 @@ pub(crate) fn dumpEnumLiteral(mut in_txt: Tpl::Text, mut in_a_enum: Arc<SCode::E
 
 fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_62 in &*items.clone() {
+    for mut lstElt_62 in &*items {
         let mut lstElt_62 = lstElt_62.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_62.clone()) {
         i_eq => {
@@ -1139,7 +1139,7 @@ fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 pub(crate) fn dumpEquations(mut in_txt: Tpl::Text, mut in_a_equations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut in_a_label: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equations.clone(), in_a_label.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_equations, in_a_label, in_a_options)) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
         },
@@ -1161,7 +1161,7 @@ pub(crate) fn dumpEquations(mut in_txt: Tpl::Text, mut in_a_equations: Arc<metam
 
 pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::Equation>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equation.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_equation, in_a_options)) {
         (txt, i_equation @ Deref @ SCode::Equation::EQ_IF { condition: _, .. }, a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpIfEquation(txt.clone(), i_equation.clone(), a_options.clone())?;
@@ -1282,7 +1282,7 @@ pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<SCode::
 
 fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_65 in &*items.clone() {
+    for mut lstElt_65 in &*items {
         let mut lstElt_65 = lstElt_65.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_65.clone()) {
         i_e => {
@@ -1298,7 +1298,7 @@ fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_66 in &*items.clone() {
+    for mut lstElt_66 in &*items {
         let mut lstElt_66 = lstElt_66.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_66.clone()) {
         i_e => {
@@ -1314,7 +1314,7 @@ fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 fn fun_67(mut in_txt: Tpl::Text, mut in_a_elseBranch: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elseBranch.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_elseBranch, in_a_options)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -1335,7 +1335,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_elseBranch: Arc<metamodelica::List<Arc
 
 pub(crate) fn dumpIfEquation(mut in_txt: Tpl::Text, mut in_a_ifequation: Arc<SCode::Equation>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ifequation.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ifequation, in_a_options)) {
         (txt, Deref @ SCode::Equation::EQ_IF { condition: Deref @ metamodelica::List::Cons { head: i_if__cond, tail: i_elseif__conds }, thenBranch: Deref @ metamodelica::List::Cons { head: i_if__branch, tail: i_elseif__branches }, elseBranch: i_elseBranch, comment: i_comment, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_else__str: Tpl::Text;
@@ -1376,7 +1376,7 @@ pub(crate) fn dumpIfEquation(mut in_txt: Tpl::Text, mut in_a_ifequation: Arc<SCo
 
 fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_69 in &*items.clone() {
+    for mut lstElt_69 in &*items {
         let mut lstElt_69 = lstElt_69.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_69.clone()) {
         i_e => {
@@ -1392,7 +1392,7 @@ fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 fn fun_70(mut in_txt: Tpl::Text, mut in_a_branches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>>, mut in_a_rest__conds: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_cond: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_branches.clone(), in_a_rest__conds.clone(), in_a_options.clone(), in_a_cond.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_branches, in_a_rest__conds, in_a_options, in_a_cond)) {
         (txt, Deref @ metamodelica::List::Cons { head: i_branch, tail: i_rest__branches }, a_rest__conds, a_options, a_cond) => {
             let mut l_rest__str: Tpl::Text;
             let mut l_branch__str: Tpl::Text;
@@ -1423,7 +1423,7 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_a_branches: Arc<metamodelica::List<Arc<m
 
 pub(crate) fn dumpElseIfEquation(mut in_txt: Tpl::Text, mut in_a_condition: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_branches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_condition.clone(), in_a_branches.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_condition, in_a_branches, in_a_options)) {
         (txt, Deref @ metamodelica::List::Cons { head: i_cond, tail: i_rest__conds }, a_branches, a_options) => {
             let mut txt = (*txt).clone();
             txt = fun_70(txt.clone(), a_branches.clone(), i_rest__conds.clone(), a_options.clone(), i_cond.clone())?;
@@ -1439,7 +1439,7 @@ pub(crate) fn dumpElseIfEquation(mut in_txt: Tpl::Text, mut in_a_condition: Arc<
 
 fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_72 in &*items.clone() {
+    for mut lstElt_72 in &*items {
         let mut lstElt_72 = lstElt_72.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_72.clone()) {
         i_e => {
@@ -1455,7 +1455,7 @@ fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 fn lm_73(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_73 in &*items.clone() {
+    for mut lstElt_73 in &*items {
         let mut lstElt_73 = lstElt_73.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_73.clone()) {
         i_e => {
@@ -1471,7 +1471,7 @@ fn lm_73(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 pub(crate) fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_for__equation: Arc<SCode::Equation>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_for__equation.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_for__equation, in_a_options)) {
         (txt, Deref @ SCode::Equation::EQ_FOR { range: Some(i_range), eEquationLst: i_eEquationLst, comment: i_comment, index: i_index, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_eq__str: Tpl::Text;
@@ -1526,7 +1526,7 @@ pub(crate) fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_for__equation: Arc
 
 fn lm_75(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_75 in &*items.clone() {
+    for mut lstElt_75 in &*items {
         let mut lstElt_75 = lstElt_75.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_75.clone()) {
         i_e => {
@@ -1542,7 +1542,7 @@ fn lm_75(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_76 in &*items.clone() {
+    for mut lstElt_76 in &*items {
         let mut lstElt_76 = lstElt_76.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_76.clone()) {
         i_e => {
@@ -1558,7 +1558,7 @@ fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Equati
 
 fn lm_77(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>)>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_77 in &*items.clone() {
+    for mut lstElt_77 in &*items {
         let mut lstElt_77 = lstElt_77.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_77.clone()) {
         (i_else__cond, i_else__body) => {
@@ -1585,7 +1585,7 @@ fn lm_77(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>,
 
 pub(crate) fn dumpWhenEquation(mut in_txt: Tpl::Text, mut in_a_when__equation: Arc<SCode::Equation>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_when__equation.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_when__equation, in_a_options)) {
         (txt, Deref @ SCode::Equation::EQ_WHEN { condition: i_condition, eEquationLst: i_eEquationLst, elseBranches: i_elseBranches, comment: i_comment, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_else__str: Tpl::Text;
@@ -1624,7 +1624,7 @@ pub(crate) fn dumpWhenEquation(mut in_txt: Tpl::Text, mut in_a_when__equation: A
 
 pub(crate) fn dumpAssertionLevel(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { name: Deref @ "AssertionLevel", componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "error", .. }, .. } } }) => {
             txt.clone()
         },
@@ -1644,7 +1644,7 @@ pub(crate) fn dumpAssertionLevel(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn:
 
 fn lm_80(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_80 in &*items.clone() {
+    for mut lstElt_80 in &*items {
         let mut lstElt_80 = lstElt_80.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_80.clone()) {
         i_al => {
@@ -1660,7 +1660,7 @@ fn lm_80(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Algori
 
 pub(crate) fn dumpAlgorithmSections(mut in_txt: Tpl::Text, mut in_a_algorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut in_a_label: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_algorithms.clone(), in_a_label.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_algorithms, in_a_label, in_a_options)) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
         },
@@ -1682,7 +1682,7 @@ pub(crate) fn dumpAlgorithmSections(mut in_txt: Tpl::Text, mut in_a_algorithms: 
 
 pub(crate) fn dumpAlgorithmSection(mut in_txt: Tpl::Text, mut in_a_algorithm: Arc<SCode::AlgorithmSection>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_algorithm.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_algorithm, in_a_options)) {
         (txt, Deref @ SCode::AlgorithmSection { statements: i_statements }, a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpStatements(txt.clone(), i_statements.clone(), a_options.clone())?;
@@ -1698,7 +1698,7 @@ pub(crate) fn dumpAlgorithmSection(mut in_txt: Tpl::Text, mut in_a_algorithm: Ar
 
 fn lm_83(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_83 in &*items.clone() {
+    for mut lstElt_83 in &*items {
         let mut lstElt_83 = lstElt_83.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_83.clone()) {
         i_s => {
@@ -1714,15 +1714,15 @@ fn lm_83(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Statem
 
 pub(crate) fn dumpStatements(mut txt: Tpl::Text, mut a_statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_83(out_txt.clone(), a_statements.clone(), a_options.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_83(out_txt, a_statements, a_options)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode::Statement>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_statement.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_statement, in_a_options)) {
         (txt, Deref @ SCode::Statement::ALG_ASSIGN { assignComponent: i_assignComponent, value: i_value, comment: i_comment, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_rhs__str: Tpl::Text;
@@ -1862,7 +1862,7 @@ pub(crate) fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_statement: Arc<SCode
 
 pub(crate) fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_if__statement: Arc<SCode::Statement>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_if__statement.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_if__statement, in_a_options)) {
         (txt, Deref @ SCode::Statement::ALG_IF { boolExpr: i_boolExpr, trueBranch: i_trueBranch, elseIfBranch: i_elseIfBranch, elseBranch: i_elseBranch, comment: i_comment, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_else__branch__str: Tpl::Text;
@@ -1904,7 +1904,7 @@ pub(crate) fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_if__statement: Arc
 
 fn lm_87(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_87 in &*items.clone() {
+    for mut lstElt_87 in &*items {
         let mut lstElt_87 = lstElt_87.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_87.clone()) {
         (i_cond, i_body) => {
@@ -1929,15 +1929,15 @@ fn lm_87(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>,
 
 pub(crate) fn dumpElseIfStatements(mut txt: Tpl::Text, mut a_else__if: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_87(out_txt.clone(), a_else__if.clone(), a_options.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_87(out_txt, a_else__if, a_options)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_for__statement: Arc<SCode::Statement>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_for__statement.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_for__statement, in_a_options)) {
         (txt, Deref @ SCode::Statement::ALG_FOR { range: Some(i_e), forBody: i_forBody, comment: i_comment, index: i_index, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_body__str: Tpl::Text;
@@ -1988,7 +1988,7 @@ pub(crate) fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_for__statement: A
 
 pub(crate) fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_while__statement: Arc<SCode::Statement>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_while__statement.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_while__statement, in_a_options)) {
         (txt, Deref @ SCode::Statement::ALG_WHILE { boolExpr: i_boolExpr, whileBody: i_whileBody, comment: i_comment, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_body__str: Tpl::Text;
@@ -2019,7 +2019,7 @@ pub(crate) fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_while__statemen
 
 fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_91 in &*items.clone() {
+    for mut lstElt_91 in &*items {
         let mut lstElt_91 = lstElt_91.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_91.clone()) {
         (i_ew__cond, i_ew__body) => {
@@ -2044,7 +2044,7 @@ fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>,
 
 pub(crate) fn dumpWhenStatement(mut in_txt: Tpl::Text, mut in_a_when__statement: Arc<SCode::Statement>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_when__statement.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_when__statement, in_a_options)) {
         (txt, Deref @ SCode::Statement::ALG_WHEN_A { branches: Deref @ metamodelica::List::Cons { head: (i_when__cond, i_when__body), tail: i_elsewhens }, comment: i_comment, .. }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_elsewhen__str: Tpl::Text;
@@ -2081,7 +2081,7 @@ pub(crate) fn dumpWhenStatement(mut in_txt: Tpl::Text, mut in_a_when__statement:
 
 pub(crate) fn dumpTryStatement(mut in_txt: Tpl::Text, mut in_a_try__statement: Arc<SCode::Statement>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_try__statement.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_try__statement, in_a_options)) {
         (txt, Deref @ SCode::Statement::ALG_TRY { comment: i_comment, body: i_body, elseBody: i_elseBody, .. }, a_options) => {
             let mut l_algs2: Tpl::Text;
             let mut l_algs1: Tpl::Text;
@@ -2115,7 +2115,7 @@ pub(crate) fn dumpTryStatement(mut in_txt: Tpl::Text, mut in_a_try__statement: A
 
 pub(crate) fn dumpPrefixes(mut in_txt: Tpl::Text, mut in_a_prefixes: Arc<SCode::Prefixes>, mut in_a_each: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_prefixes.clone(), in_a_each.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_prefixes, in_a_each)) {
         (txt, Deref @ SCode::Prefixes { redeclarePrefix: i_redeclarePrefix, finalPrefix: i_finalPrefix, innerOuter: i_innerOuter, replaceablePrefix: i_replaceablePrefix, .. }, a_each) => {
             let mut l_replaceable__str: Tpl::Text;
             let mut l_io__str: Tpl::Text;
@@ -2143,7 +2143,7 @@ pub(crate) fn dumpPrefixes(mut in_txt: Tpl::Text, mut in_a_prefixes: Arc<SCode::
 
 pub(crate) fn dumpVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_visibility.clone()) {
+    out_txt = (match (in_txt, in_a_visibility) {
         (mut txt, SCode::Visibility::PROTECTED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("protected ")).clone() }))?;
             txt.clone()
@@ -2157,7 +2157,7 @@ pub(crate) fn dumpVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::
 
 pub(crate) fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redeclare: SCode::Redeclare) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_redeclare.clone()) {
+    out_txt = (match (in_txt, in_a_redeclare) {
         (mut txt, SCode::Redeclare::REDECLARE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("redeclare ")).clone() }))?;
             txt.clone()
@@ -2171,7 +2171,7 @@ pub(crate) fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redeclare: SCode::Re
 
 pub(crate) fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: SCode::Final) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_final.clone()) {
+    out_txt = (match (in_txt, in_a_final) {
         (mut txt, SCode::Final::FINAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("final ")).clone() }))?;
             txt.clone()
@@ -2185,7 +2185,7 @@ pub(crate) fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: SCode::Final) -> 
 
 pub(crate) fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_innerOuter: Absyn::InnerOuter) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_innerOuter.clone()) {
+    out_txt = (match (in_txt, in_a_innerOuter) {
         (mut txt, Absyn::InnerOuter::INNER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("inner ")).clone() }))?;
             txt.clone()
@@ -2207,7 +2207,7 @@ pub(crate) fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_innerOuter: Absyn::
 
 pub(crate) fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_replaceable: Arc<SCode::Replaceable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_replaceable.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_replaceable)) {
         (txt, Deref @ SCode::Replaceable::REPLACEABLE { cc: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("replaceable ")).clone() }))?;
@@ -2223,7 +2223,7 @@ pub(crate) fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_replaceable: Arc<S
 
 pub(crate) fn dumpReplaceableConstrainClass(mut in_txt: Tpl::Text, mut in_a_replaceable: Arc<SCode::Prefixes>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_replaceable.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_replaceable, in_a_options)) {
         (txt, Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: i_cc__path, modifier: i_cc__mod, .. }) }, .. }, a_options) => {
             let mut l_mod__str: Tpl::Text;
             let mut l_path__str: Tpl::Text;
@@ -2247,7 +2247,7 @@ pub(crate) fn dumpReplaceableConstrainClass(mut in_txt: Tpl::Text, mut in_a_repl
 
 pub(crate) fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: SCode::Each) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_each.clone()) {
+    out_txt = (match (in_txt, in_a_each) {
         (mut txt, SCode::Each::EACH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("each ")).clone() }))?;
             txt.clone()
@@ -2261,7 +2261,7 @@ pub(crate) fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: SCode::Each) -> Res
 
 pub(crate) fn dumpEncapsulated(mut in_txt: Tpl::Text, mut in_a_encapsulated: SCode::Encapsulated) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_encapsulated.clone()) {
+    out_txt = (match (in_txt, in_a_encapsulated) {
         (mut txt, SCode::Encapsulated::ENCAPSULATED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("encapsulated ")).clone() }))?;
             txt.clone()
@@ -2275,7 +2275,7 @@ pub(crate) fn dumpEncapsulated(mut in_txt: Tpl::Text, mut in_a_encapsulated: SCo
 
 pub(crate) fn dumpPartial(mut in_txt: Tpl::Text, mut in_a_partial: SCode::Partial) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_partial.clone()) {
+    out_txt = (match (in_txt, in_a_partial) {
         (mut txt, SCode::Partial::PARTIAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("partial ")).clone() }))?;
             txt.clone()
@@ -2289,7 +2289,7 @@ pub(crate) fn dumpPartial(mut in_txt: Tpl::Text, mut in_a_partial: SCode::Partia
 
 fn fun_104(mut in_txt: Tpl::Text, mut in_a_isOperator: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isOperator.clone()) {
+    out_txt = (match (in_txt, in_a_isOperator) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("record")).clone() }))?;
             txt.clone()
@@ -2304,7 +2304,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_isOperator: bool) -> Result<Tpl::Text
 
 fn fun_105(mut in_txt: Tpl::Text, mut in_a_isExpandable: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isExpandable.clone()) {
+    out_txt = (match (in_txt, in_a_isExpandable) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("connector")).clone() }))?;
             txt.clone()
@@ -2319,7 +2319,7 @@ fn fun_105(mut in_txt: Tpl::Text, mut in_a_isExpandable: bool) -> Result<Tpl::Te
 
 pub(crate) fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: SCode::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
+    out_txt = (match (in_txt, in_a_restriction) {
         (mut txt, SCode::Restriction::R_CLASS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("class")).clone() }))?;
             txt.clone()
@@ -2406,7 +2406,7 @@ pub(crate) fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: SCode
 
 fn lm_107(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_107 in &*items.clone() {
+    for mut lstElt_107 in &*items {
         let mut lstElt_107 = lstElt_107.clone();
         txt = (match lstElt_107.clone() {
         mut i_tv => {
@@ -2421,7 +2421,7 @@ fn lm_107(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Res
 
 fn fun_108(mut in_txt: Tpl::Text, mut in_a_typeVars: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typeVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_typeVars)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -2441,7 +2441,7 @@ fn fun_108(mut in_txt: Tpl::Text, mut in_a_typeVars: Arc<metamodelica::List<ArcS
 
 pub(crate) fn dumpRestrictionTypeVars(mut in_txt: Tpl::Text, mut in_a_restriction: SCode::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
+    out_txt = (match (in_txt, in_a_restriction) {
         (mut txt, SCode::Restriction::R_UNIONTYPE { typeVars: ref i_typeVars }) => {
             txt = fun_108(txt.clone(), i_typeVars.clone())?;
             txt.clone()
@@ -2455,7 +2455,7 @@ pub(crate) fn dumpRestrictionTypeVars(mut in_txt: Tpl::Text, mut in_a_restrictio
 
 pub(crate) fn dumpFunctionRestriction(mut in_txt: Tpl::Text, mut in_a_funcRest: SCode::FunctionRestriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_funcRest.clone()) {
+    out_txt = (match (in_txt, in_a_funcRest) {
         (mut txt, SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: mut i_purity }) => {
             txt = AbsynDumpTpl::dumpPurity(txt.clone(), i_purity.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function")).clone() }))?;
@@ -2484,7 +2484,7 @@ pub(crate) fn dumpFunctionRestriction(mut in_txt: Tpl::Text, mut in_a_funcRest: 
 
 fn lm_111(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_111 in &*items.clone() {
+    for mut lstElt_111 in &*items {
         let mut lstElt_111 = lstElt_111.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_111.clone()) {
         i_submod => {
@@ -2500,7 +2500,7 @@ fn lm_111(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::SubMo
 
 fn fun_112(mut in_txt: Tpl::Text, mut in_a_subModLst: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subModLst.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subModLst, in_a_options)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -2520,7 +2520,7 @@ fn fun_112(mut in_txt: Tpl::Text, mut in_a_subModLst: Arc<metamodelica::List<Arc
 
 pub(crate) fn dumpModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<SCode::Mod>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modifier.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modifier, in_a_options)) {
         (txt, Deref @ SCode::Mod::MOD { binding: i_binding, subModLst: i_subModLst, .. }, a_options) => {
             let mut l_submod__str: Tpl::Text;
             let mut l_binding__str: Tpl::Text;
@@ -2541,7 +2541,7 @@ pub(crate) fn dumpModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<SCode::
 
 fn lm_114(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_114 in &*items.clone() {
+    for mut lstElt_114 in &*items {
         let mut lstElt_114 = lstElt_114.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_114.clone()) {
         i_submod => {
@@ -2557,7 +2557,7 @@ fn lm_114(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::SubMo
 
 fn fun_115(mut in_txt: Tpl::Text, mut in_a_text: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_text.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_text)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -2575,7 +2575,7 @@ fn fun_115(mut in_txt: Tpl::Text, mut in_a_text: Tpl::Text) -> Result<Tpl::Text>
 
 pub(crate) fn dumpAnnotationModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<SCode::Mod>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modifier.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modifier, in_a_options)) {
         (txt, Deref @ SCode::Mod::MOD { binding: i_binding, subModLst: i_subModLst, .. }, a_options) => {
             let mut l_submod__str: Tpl::Text;
             let mut l_text: Tpl::Text;
@@ -2600,7 +2600,7 @@ pub(crate) fn dumpAnnotationModifier(mut in_txt: Tpl::Text, mut in_a_modifier: A
 
 pub(crate) fn dumpModifierPrefix(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<SCode::Mod>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modifier.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modifier)) {
         (txt, Deref @ SCode::Mod::MOD { finalPrefix: i_finalPrefix, eachPrefix: i_eachPrefix, .. }) => {
             let mut l_each__str: Tpl::Text;
             let mut l_final__str: Tpl::Text;
@@ -2631,7 +2631,7 @@ pub(crate) fn dumpModifierPrefix(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<S
 
 pub(crate) fn dumpRedeclModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<SCode::Mod>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modifier.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modifier, in_a_options)) {
         (txt, Deref @ SCode::Mod::REDECL { eachPrefix: i_eachPrefix, element: i_element, .. }, a_options) => {
             let mut l_each__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -2649,7 +2649,7 @@ pub(crate) fn dumpRedeclModifier(mut in_txt: Tpl::Text, mut in_a_modifier: Arc<S
 
 pub(crate) fn dumpModifierBinding(mut in_txt: Tpl::Text, mut in_a_binding: Option<Arc<Absyn::Exp>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_binding.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_binding)) {
         (txt, Some(i_exp)) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -2667,7 +2667,7 @@ pub(crate) fn dumpModifierBinding(mut in_txt: Tpl::Text, mut in_a_binding: Optio
 
 pub(crate) fn dumpSubModifier(mut in_txt: Tpl::Text, mut in_a_submod: Arc<SCode::SubMod>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_submod.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_submod, in_a_options)) {
         (txt, Deref @ SCode::SubMod { r#mod: i_mod @ Deref @ SCode::Mod::MOD { finalPrefix: _, .. }, ident: i_ident }, a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpModifierPrefix(txt.clone(), i_mod.clone())?;
@@ -2690,7 +2690,7 @@ pub(crate) fn dumpSubModifier(mut in_txt: Tpl::Text, mut in_a_submod: Arc<SCode:
 
 fn fun_121(mut in_txt: Tpl::Text, mut in_a_ident: ArcStr, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_nameMod: Arc<SCode::Mod>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ident.clone(), in_a_options.clone(), in_a_nameMod.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ident, in_a_options, in_a_nameMod)) {
         (txt, Deref @ "choices", _, _) => {
             txt.clone()
         },
@@ -2741,7 +2741,7 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_ident: ArcStr, mut in_a_options: SCod
 
 fn fun_122(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_mod: Arc<SCode::Mod>, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_nameMod: Arc<SCode::Mod>, mut in_a_ident: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_mod.clone(), in_a_options.clone(), in_a_nameMod.clone(), in_a_ident.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_mod, in_a_options, in_a_nameMod, in_a_ident)) {
         (txt, false, _, a_options, a_nameMod, a_ident) => {
             let mut txt = (*txt).clone();
             txt = fun_121(txt.clone(), (a_ident.clone()).clone(), a_options.clone(), a_nameMod.clone())?;
@@ -2761,7 +2761,7 @@ fn fun_122(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_mod: Arc<SCode::Mo
 
 pub(crate) fn dumpAnnotationSubModifier(mut in_txt: Tpl::Text, mut in_a_submod: Arc<SCode::SubMod>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_submod.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_submod, in_a_options)) {
         (txt, Deref @ SCode::SubMod { r#mod: i_nameMod @ i_mod @ Deref @ SCode::Mod::MOD { finalPrefix: _, .. }, ident: i_ident }, a_options) => {
             let mut ret_0: bool;
             let mut txt = (*txt).clone();
@@ -2784,7 +2784,7 @@ pub(crate) fn dumpAnnotationSubModifier(mut in_txt: Tpl::Text, mut in_a_submod: 
 
 pub(crate) fn dumpAttributes(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::Attributes) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_attributes.clone()) {
+    out_txt = (match (in_txt, in_a_attributes) {
         (mut txt, SCode::Attributes { connectorType: mut i_connectorType, parallelism: mut i_parallelism, variability: mut i_variability, direction: mut i_direction, .. }) => {
             let mut l_dir__str: Tpl::Text;
             let mut l_var__str: Tpl::Text;
@@ -2809,7 +2809,7 @@ pub(crate) fn dumpAttributes(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::
 
 pub(crate) fn dumpConnectorType(mut in_txt: Tpl::Text, mut in_a_connectorType: SCode::ConnectorType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_connectorType.clone()) {
+    out_txt = (match (in_txt, in_a_connectorType) {
         (mut txt, SCode::ConnectorType::FLOW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("flow ")).clone() }))?;
             txt.clone()
@@ -2827,7 +2827,7 @@ pub(crate) fn dumpConnectorType(mut in_txt: Tpl::Text, mut in_a_connectorType: S
 
 pub(crate) fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_parallelism: SCode::Parallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_parallelism.clone()) {
+    out_txt = (match (in_txt, in_a_parallelism) {
         (mut txt, SCode::Parallelism::PARGLOBAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parglobal ")).clone() }))?;
             txt.clone()
@@ -2845,7 +2845,7 @@ pub(crate) fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_parallelism: SCode
 
 pub(crate) fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_variability: SCode::Variability) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_variability.clone()) {
+    out_txt = (match (in_txt, in_a_variability) {
         (mut txt, SCode::Variability::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("discrete ")).clone() }))?;
             txt.clone()
@@ -2867,7 +2867,7 @@ pub(crate) fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_variability: SCode
 
 pub(crate) fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_direction: Absyn::Direction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_direction.clone()) {
+    out_txt = (match (in_txt, in_a_direction) {
         (mut txt, Absyn::Direction::INPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input ")).clone() }))?;
             txt.clone()
@@ -2889,7 +2889,7 @@ pub(crate) fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_direction: Absyn::Di
 
 pub(crate) fn dumpAttributeDim(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::Attributes) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_attributes.clone()) {
+    out_txt = (match (in_txt, in_a_attributes) {
         (mut txt, SCode::Attributes { arrayDims: ref i_arrayDims, .. }) => {
             txt = AbsynDumpTpl::dumpSubscripts(txt.clone(), i_arrayDims.clone())?;
             txt.clone()
@@ -2903,7 +2903,7 @@ pub(crate) fn dumpAttributeDim(mut in_txt: Tpl::Text, mut in_a_attributes: SCode
 
 pub(crate) fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_annotation: Option<Arc<SCode::Annotation>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annotation.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_annotation, in_a_options)) {
         (txt, Some(i_ann), a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpAnnotation(txt.clone(), i_ann.clone(), a_options.clone())?;
@@ -2919,7 +2919,7 @@ pub(crate) fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_annotation: Opti
 
 fn fun_131(mut in_txt: Tpl::Text, mut in_a_modifStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modifStr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modifStr)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -2937,7 +2937,7 @@ fn fun_131(mut in_txt: Tpl::Text, mut in_a_modifStr: Tpl::Text) -> Result<Tpl::T
 
 pub(crate) fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_annotation: Arc<SCode::Annotation>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annotation.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_annotation, in_a_options)) {
         (txt, Deref @ SCode::Annotation { modification: i_modification }, a_options) => {
             let mut l_modifStr: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -2955,7 +2955,7 @@ pub(crate) fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_annotation: Arc<SCo
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_annstr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annstr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_annstr)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -2974,14 +2974,14 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_annstr: Tpl::Text) -> Result<Tpl::Tex
 pub(crate) fn dumpAnnotationElement(mut txt: Tpl::Text, mut a_annotation: Arc<SCode::Annotation>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_annstr: Tpl::Text;
-    l_annstr = dumpAnnotation(Tpl::emptyTxt.clone(), a_annotation.clone(), a_options.clone())?;
-    out_txt = fun_133(txt.clone(), l_annstr.clone())?;
+    l_annstr = dumpAnnotation(Tpl::emptyTxt.clone(), a_annotation, a_options)?;
+    out_txt = fun_133(txt, l_annstr)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpExternalDeclOpt(mut in_txt: Tpl::Text, mut in_a_externalDecl: Option<Arc<SCode::ExternalDecl>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_externalDecl.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_externalDecl, in_a_options)) {
         (txt, Some(i_extdecl), a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpExternalDecl(txt.clone(), i_extdecl.clone(), a_options.clone())?;
@@ -2997,7 +2997,7 @@ pub(crate) fn dumpExternalDeclOpt(mut in_txt: Tpl::Text, mut in_a_externalDecl: 
 
 fn fun_136(mut in_txt: Tpl::Text, mut in_a_funcName: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_funcName.clone()) {
+    out_txt = (match (in_txt, in_a_funcName) {
         (mut txt, Some(mut i_name)) => {
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt.clone()
@@ -3011,7 +3011,7 @@ fn fun_136(mut in_txt: Tpl::Text, mut in_a_funcName: Option<ArcStr>) -> Result<T
 
 fn lm_137(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Tpl::Text> {
     let mut txt: Tpl::Text = txt;
-    for mut lstElt_137 in &*items.clone() {
+    for mut lstElt_137 in &*items {
         let mut lstElt_137 = lstElt_137.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_137.clone()) {
         i_arg => {
@@ -3027,7 +3027,7 @@ fn lm_137(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>
 
 fn fun_138(mut in_txt: Tpl::Text, mut in_a_func__name__str: Tpl::Text, mut in_a_func__args__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_func__name__str.clone(), in_a_func__args__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_func__name__str, in_a_func__args__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -3048,7 +3048,7 @@ fn fun_138(mut in_txt: Tpl::Text, mut in_a_func__name__str: Tpl::Text, mut in_a_
 
 fn fun_139(mut in_txt: Tpl::Text, mut in_a_lang: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_lang.clone()) {
+    out_txt = (match (in_txt, in_a_lang) {
         (mut txt, Some(mut i_l)) => {
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
@@ -3066,7 +3066,7 @@ fn fun_139(mut in_txt: Tpl::Text, mut in_a_lang: Option<ArcStr>) -> Result<Tpl::
 
 fn fun_140(mut in_txt: Tpl::Text, mut in_a_output__: Option<Arc<Absyn::ComponentRef>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_output__.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_output__)) {
         (txt, Some(i_name)) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -3085,7 +3085,7 @@ fn fun_140(mut in_txt: Tpl::Text, mut in_a_output__: Option<Arc<Absyn::Component
 
 fn fun_141(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<SCode::ExternalDecl>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_externalDecl.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_externalDecl, in_a_options)) {
         (txt, Deref @ SCode::ExternalDecl { funcName: i_funcName, args: i_args, lang: i_lang, annotation_: i_annotation__, output_: i_output__ }, a_options) => {
             let mut l_output__str: Tpl::Text;
             let mut l_ann__str: Tpl::Text;
@@ -3120,7 +3120,7 @@ fn fun_141(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<SCode::ExternalDecl
 
 fn fun_142(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_res: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_options.clone(), in_a_res.clone()) {
+    out_txt = (match (in_txt, in_a_options, in_a_res) {
         (mut txt, SCodeDump::SCodeDumpOptions { stripExternalDecl: false, .. }, mut a_res) => {
             txt = Tpl::writeText(txt.clone(), a_res.clone())?;
             txt.clone()
@@ -3134,7 +3134,7 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions,
 
 fn fun_143(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<SCode::ExternalDecl>, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_res: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_externalDecl.clone(), in_a_options.clone(), in_a_res.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_externalDecl, in_a_options, in_a_res)) {
         (txt, Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), .. }, _, a_res) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_res.clone())?;
@@ -3154,13 +3154,13 @@ pub(crate) fn dumpExternalDecl(mut txt: Tpl::Text, mut a_externalDecl: Arc<SCode
     let mut out_txt: Tpl::Text;
     let mut l_res: Tpl::Text;
     l_res = fun_141(Tpl::emptyTxt.clone(), a_externalDecl.clone(), a_options.clone())?;
-    out_txt = fun_143(txt.clone(), a_externalDecl.clone(), a_options.clone(), l_res.clone())?;
+    out_txt = fun_143(txt, a_externalDecl, a_options, l_res)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpCommentOpt(mut in_txt: Tpl::Text, mut in_a_comment: Option<Arc<SCode::Comment>>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comment.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comment, in_a_options)) {
         (txt, Some(i_cmt), a_options) => {
             let mut txt = (*txt).clone();
             txt = dumpComment(txt.clone(), i_cmt.clone(), a_options.clone())?;
@@ -3176,7 +3176,7 @@ pub(crate) fn dumpCommentOpt(mut in_txt: Tpl::Text, mut in_a_comment: Option<Arc
 
 pub(crate) fn dumpComment(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCode::Comment>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comment.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comment, in_a_options)) {
         (txt, Deref @ SCode::Comment { annotation_: i_annotation__, comment: i_comment }, a_options) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_ann__str: Tpl::Text;
@@ -3197,7 +3197,7 @@ pub(crate) fn dumpComment(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCode::Co
 
 fn fun_147(mut in_txt: Tpl::Text, mut in_a_comment: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_comment.clone()) {
+    out_txt = (match (in_txt, in_a_comment) {
         (mut txt, Some(mut i_cmt)) => {
             let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -3216,7 +3216,7 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_comment: Option<ArcStr>) -> Result<Tp
 
 fn fun_148(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_comment: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_options.clone(), in_a_comment.clone()) {
+    out_txt = (match (in_txt, in_a_options, in_a_comment) {
         (mut txt, SCodeDump::SCodeDumpOptions { stripStringComments: false, .. }, mut a_comment) => {
             txt = fun_147(txt.clone(), a_comment.clone())?;
             txt.clone()
@@ -3230,14 +3230,14 @@ fn fun_148(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions,
 
 pub(crate) fn dumpCommentStr(mut txt: Tpl::Text, mut a_comment: Option<ArcStr>, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_148(txt.clone(), a_options.clone(), a_comment.clone())?;
+    out_txt = fun_148(txt, a_options, a_comment)?;
     Ok(out_txt)
 }
 
 pub(crate) fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     Tpl::addTemplateError((a_errMessage.clone()).clone())?;
-    out_txt = Tpl::writeStr(txt.clone(), (a_errMessage.clone()).clone())?;
+    out_txt = Tpl::writeStr(txt, (a_errMessage).clone())?;
     Ok(out_txt)
 }
 

@@ -70,31 +70,31 @@ pub fn mapNoCopy_1<T: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone +
 
 fn downheap(mut inArray: metamodelica::Array<i32>, mut n: i32, mut vIn: i32) -> metamodelica::Array<i32> {
     let mut inArray: metamodelica::Array<i32> = inArray;
-    let mut v: i32 = vIn.clone();
-    let mut w: i32 = 2 * v.clone() + 1;
+    let mut v: i32 = vIn;
+    let mut w: i32 = 2 * v + 1;
     let mut tmp: i32;
-    while w.clone() < n.clone() {
-        if w.clone() + 1 < n.clone() {
-            if ({let __elt = inArray.borrow()[(w.clone() + 2-1) as usize].clone(); __elt}) > ({let __elt = inArray.borrow()[(w.clone() + 1-1) as usize].clone(); __elt}) {
-                w = w.clone() + 1;
+    while w < n {
+        if w + 1 < n {
+            if ({let __elt = inArray.borrow()[(w + 2-1) as usize].clone(); __elt}) > ({let __elt = inArray.borrow()[(w + 1-1) as usize].clone(); __elt}) {
+                w = w + 1;
             }
         }
-        if ({let __elt = inArray.borrow()[(v.clone() + 1-1) as usize].clone(); __elt}) >= ({let __elt = inArray.borrow()[(w.clone() + 1-1) as usize].clone(); __elt}) {
+        if ({let __elt = inArray.borrow()[(v + 1-1) as usize].clone(); __elt}) >= ({let __elt = inArray.borrow()[(w + 1-1) as usize].clone(); __elt}) {
             return inArray.clone();
         }
-        tmp = ({let __elt = inArray.borrow()[(v.clone() + 1-1) as usize].clone(); __elt});
+        tmp = ({let __elt = inArray.borrow()[(v + 1-1) as usize].clone(); __elt});
         {
-            let __cell0 = ({let __elt = inArray.borrow()[(w.clone() + 1-1) as usize].clone(); __elt});
-            let __idx0 = v.clone() + 1;
+            let __cell0 = ({let __elt = inArray.borrow()[(w + 1-1) as usize].clone(); __elt});
+            let __idx0 = v + 1;
             inArray.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         {
-            let __cell1 = tmp.clone();
-            let __idx1 = w.clone() + 1;
+            let __cell1 = tmp;
+            let __idx1 = w + 1;
             inArray.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
-        v = w.clone();
-        w = 2 * v.clone() + 1;
+        v = w;
+        w = 2 * v + 1;
     }
     inArray
 }
@@ -103,10 +103,10 @@ pub(crate) fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::A
     let mut inArray: metamodelica::Array<i32> = inArray;
     let mut n: i32 = metamodelica::arrayLength(inArray.clone());
     let mut tmp: i32;
-    for mut v in ({let __s=intDiv(n.clone(), 2) - 1; let __e=0; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
-        inArray = downheap(inArray.clone(), n.clone(), v.clone());
+    for mut v in ({let __s=intDiv(n, 2) - 1; let __e=0; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+        inArray = downheap(inArray.clone(), n, v.clone());
     }
-    for mut v in ({let __s=n.clone(); let __e=2; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+    for mut v in ({let __s=n; let __e=2; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         tmp = ({let __elt = inArray.borrow()[(1-1) as usize].clone(); __elt});
         {
             let __cell0 = ({let __elt = inArray.borrow()[(v.clone()-1) as usize].clone(); __elt});
@@ -114,7 +114,7 @@ pub(crate) fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::A
             inArray.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         {
-            let __cell1 = tmp.clone();
+            let __cell1 = tmp;
             let __idx1 = v.clone();
             inArray.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
@@ -148,11 +148,11 @@ pub fn findFirstOnTrueWithIdx<T: Clone + 'static + metamodelica::gc::MMTrace>(mu
     let __range0 = inArray.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut e in __range0 {
         if inPredicate(e.clone())? {
-            idxOut = idx.clone();
+            idxOut = idx;
             outElement = Some(e.clone());
             break;
         }
-        idx = idx.clone() + 1;
+        idx = idx + 1;
     }
     Ok((outElement, idxOut))
 }
@@ -161,10 +161,10 @@ pub fn select<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metam
     let mut outArray: metamodelica::Array<T>;
     let mut i: i32 = 1;
     outArray = metamodelica::arrayCreate((inIndices.clone().len() as i32), ({let __elt = inArray.borrow()[(1-1) as usize].clone(); __elt}));
-    for mut e in &*inIndices.clone() {
+    for mut e in &*inIndices {
         let mut e = e.clone();
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), metamodelica::arrayGet(inArray.clone(), e.clone())?) };
-        i = i.clone() + 1;
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i, metamodelica::arrayGet(inArray.clone(), e.clone())?) };
+        i = i + 1;
     }
     Ok(outArray)
 }
@@ -175,13 +175,13 @@ pub fn map<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static 
     let mut outArray: metamodelica::Array<TO>;
     let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     let mut res: TO;
-    if len.clone() == 0 {
+    if len == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
         res = inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), 1))?;
-        outArray = metamodelica::arrayCreate(len.clone(), res.clone());
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
-        for mut i in 2..=len.clone() {
+        outArray = metamodelica::arrayCreate(len, res.clone());
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res) };
+        for mut i in 2..=len {
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()))?) };
         }
     }
@@ -194,13 +194,13 @@ pub fn map1<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'stat
     let mut outArray: metamodelica::Array<TO>;
     let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     let mut res: TO;
-    if len.clone() == 0 {
+    if len == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
         res = inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), 1), inArg.clone())?;
-        outArray = metamodelica::arrayCreate(len.clone(), res.clone());
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
-        for mut i in 2..=len.clone() {
+        outArray = metamodelica::arrayCreate(len, res.clone());
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res) };
+        for mut i in 2..=len {
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()), inArg.clone())?) };
         }
     }
@@ -213,13 +213,13 @@ pub fn map1Ind<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 's
     let mut outArray: metamodelica::Array<TO>;
     let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     let mut res: TO;
-    if len.clone() == 0 {
+    if len == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
         res = inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), 1), 1, inArg.clone())?;
-        outArray = metamodelica::arrayCreate(len.clone(), res.clone());
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
-        for mut i in 2..=len.clone() {
+        outArray = metamodelica::arrayCreate(len, res.clone());
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res) };
+        for mut i in 2..=len {
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()), i.clone(), inArg.clone())?) };
         }
     }
@@ -233,16 +233,16 @@ pub fn mapList<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'sta
     let mut i: i32 = 2;
     let mut len: i32 = (inList.clone().len() as i32);
     let mut res: TO;
-    if len.clone() == 0 {
+    if len == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
         res = inFunc(listHead(inList.clone())?)?;
-        outArray = metamodelica::arrayCreate(len.clone(), res.clone());
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
-        for mut e in &*listRest(inList.clone())? {
+        outArray = metamodelica::arrayCreate(len, res.clone());
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res) };
+        for mut e in &*listRest(inList)? {
             let mut e = e.clone();
-            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(e.clone())?) };
-            i = i.clone() + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i, inFunc(e.clone())?) };
+            i = i + 1;
         }
     }
     Ok(outArray)
@@ -283,28 +283,28 @@ pub fn reduce<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metam
 }
 
 pub fn updateIndexFirst<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inIndex: i32, mut inValue: T, mut inArray: metamodelica::Array<T>) -> Result<()> {
-    metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), inValue.clone())?;
+    metamodelica::arrayUpdate(inArray.clone(), inIndex, inValue)?;
     Ok(())
 }
 
 pub fn getIndexFirst<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inIndex: i32, mut inArray: metamodelica::Array<T>) -> Result<T> {
-    let mut outElement: T = metamodelica::arrayGet(inArray.clone(), inIndex.clone())?;
+    let mut outElement: T = metamodelica::arrayGet(inArray.clone(), inIndex)?;
     Ok(outElement)
 }
 
 pub fn replaceAtWithFill<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inPos: i32, mut inTypeReplace: T, mut inTypeFill: T, mut inArray: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T>;
-    outArray = expandToSize(inPos.clone(), inArray.clone(), inTypeFill.clone())?;
-    metamodelica::arrayUpdate(outArray.clone(), inPos.clone(), inTypeReplace.clone())?;
+    outArray = expandToSize(inPos, inArray.clone(), inTypeFill)?;
+    metamodelica::arrayUpdate(outArray.clone(), inPos, inTypeReplace)?;
     Ok(outArray)
 }
 
 pub fn expandToSize<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inNewSize: i32, mut inArray: metamodelica::Array<T>, mut inFill: T) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T>;
-    if inNewSize.clone() <= metamodelica::arrayLength(inArray.clone()) {
+    if inNewSize <= metamodelica::arrayLength(inArray.clone()) {
         outArray = inArray.clone();
     } else {
-        outArray = arrayCreate(inNewSize.clone(), inFill.clone());
+        outArray = arrayCreate(inNewSize, inFill);
         copy(inArray.clone(), outArray.clone())?;
     }
     Ok(outArray)
@@ -313,13 +313,13 @@ pub fn expandToSize<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inNewSiz
 pub fn expand<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inN: i32, mut inArray: metamodelica::Array<T>, mut inFill: T) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T>;
     let mut len: i32;
-    if inN.clone() < 1 {
+    if inN < 1 {
         outArray = inArray.clone();
     } else {
         len = metamodelica::arrayLength(inArray.clone());
-        outArray = metamodelica::arrayCreate(len.clone() + inN.clone(), inFill.clone());
+        outArray = metamodelica::arrayCreate(len + inN, inFill.clone());
         copy(inArray.clone(), outArray.clone())?;
-        setRange(len.clone() + 1, len.clone() + inN.clone(), outArray.clone(), inFill.clone())?;
+        setRange(len + 1, len + inN, outArray.clone(), inFill)?;
     }
     Ok(outArray)
 }
@@ -328,26 +328,26 @@ pub fn expandOnDemand<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inNewS
     let mut outArray: metamodelica::Array<T>;
     let mut new_size: i32;
     let mut len: i32 = metamodelica::arrayLength(inArray.clone());
-    if inNewSize.clone() <= len.clone() {
+    if inNewSize <= len {
         outArray = inArray.clone();
     } else {
-        new_size = ((intReal(len.clone()) * inExpansionFactor.clone()).0.floor() as i32);
-        outArray = metamodelica::arrayCreate(new_size.clone(), inFillValue.clone());
+        new_size = ((intReal(len) * inExpansionFactor).0.floor() as i32);
+        outArray = metamodelica::arrayCreate(new_size, inFillValue.clone());
         copy(inArray.clone(), outArray.clone())?;
-        setRange(len.clone() + 1, new_size.clone(), outArray.clone(), inFillValue.clone())?;
+        setRange(len + 1, new_size, outArray.clone(), inFillValue)?;
     }
     Ok(outArray)
 }
 
 pub fn consToElement<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inIndex: i32, mut inElement: T, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
     let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>>;
-    outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), metamodelica::cons(inElement.clone(), ({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt})))?;
+    outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex, metamodelica::cons(inElement, ({let __elt = inArray.borrow()[(inIndex-1) as usize].clone(); __elt})))?;
     Ok(outArray)
 }
 
 pub fn appendToElement<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
     let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>>;
-    outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), listAppend(({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), inElements.clone()))?;
+    outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex, listAppend(({let __elt = inArray.borrow()[(inIndex-1) as usize].clone(); __elt}), inElements))?;
     Ok(outArray)
 }
 
@@ -359,14 +359,14 @@ pub fn appendList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metam
     let mut rest: Arc<metamodelica::List<T>>;
     if lst.clone().is_empty() {
         outArray = arr.clone();
-    } else if arr_len.clone() == 0 {
-        outArray = metamodelica::arrayFromVec(lst.clone().into_iter().cloned().collect());
+    } else if arr_len == 0 {
+        outArray = metamodelica::arrayFromVec(lst.into_iter().cloned().collect());
     } else {
         lst_len = (lst.clone().len() as i32);
-        outArray = metamodelica::arrayCreate(arr_len.clone() + lst_len.clone(), ({let __elt = arr.borrow()[(1-1) as usize].clone(); __elt}));
+        outArray = metamodelica::arrayCreate(arr_len + lst_len, ({let __elt = arr.borrow()[(1-1) as usize].clone(); __elt}));
         copy(arr.clone(), outArray.clone())?;
-        rest = lst.clone();
-        for mut i in arr_len.clone() + 1..=arr_len.clone() + lst_len.clone() {
+        rest = lst;
+        for mut i in arr_len + 1..=arr_len + lst_len {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -383,14 +383,14 @@ pub fn join<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodeli
     let mut outArray: metamodelica::Array<T>;
     let mut len1: i32 = metamodelica::arrayLength(arr1.clone());
     let mut len2: i32 = metamodelica::arrayLength(arr2.clone());
-    if len1.clone() == 0 {
+    if len1 == 0 {
         outArray = metamodelica::arrayFromVec(arr2.clone().borrow().clone());
-    } else if len2.clone() == 0 {
+    } else if len2 == 0 {
         outArray = metamodelica::arrayFromVec(arr1.clone().borrow().clone());
     } else {
-        outArray = metamodelica::arrayCreate(len1.clone() + len2.clone(), ({let __elt = arr1.borrow()[(1-1) as usize].clone(); __elt}));
-        copyRange(arr1.clone(), outArray.clone(), 1, len1.clone(), 1)?;
-        copyRange(arr2.clone(), outArray.clone(), 1, len2.clone(), len1.clone() + 1)?;
+        outArray = metamodelica::arrayCreate(len1 + len2, ({let __elt = arr1.borrow()[(1-1) as usize].clone(); __elt}));
+        copyRange(arr1.clone(), outArray.clone(), 1, len1, 1)?;
+        copyRange(arr2.clone(), outArray.clone(), 1, len2, len1 + 1)?;
     }
     Ok(outArray)
 }
@@ -408,30 +408,30 @@ pub fn copy<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArraySrc: meta
 
 pub fn copyN<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArraySrc: metamodelica::Array<T>, mut inArrayDest: metamodelica::Array<T>, mut inN: i32, mut srcOffset: i32, mut dstOffset: i32) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = inArrayDest.clone();
-    if inN.clone() + dstOffset.clone() > metamodelica::arrayLength(inArrayDest.clone()) || inN.clone() + srcOffset.clone() > metamodelica::arrayLength(inArraySrc.clone()) {
+    if inN + dstOffset > metamodelica::arrayLength(inArrayDest.clone()) || inN + srcOffset > metamodelica::arrayLength(inArraySrc.clone()) {
         bail!("fail");
     }
-    for mut i in 1..=inN.clone() {
-        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outArray.clone(), i.clone() + dstOffset.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(inArraySrc.clone(), i.clone() + srcOffset.clone()));
+    for mut i in 1..=inN {
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outArray.clone(), i.clone() + dstOffset, metamodelica::Dangerous::arrayGetNoBoundsChecking(inArraySrc.clone(), i.clone() + srcOffset));
     }
     Ok(outArray)
 }
 
 pub fn copyRange<T: Clone + 'static + metamodelica::gc::MMTrace>(mut srcArray: metamodelica::Array<T>, mut dstArray: metamodelica::Array<T>, mut srcFirst: i32, mut srcLast: i32, mut dstPos: i32) -> Result<()> {
-    let mut offset: i32 = dstPos.clone() - srcFirst.clone();
-    if srcFirst.clone() > srcLast.clone() || srcLast.clone() > metamodelica::arrayLength(srcArray.clone()) || offset.clone() + srcLast.clone() > metamodelica::arrayLength(dstArray.clone()) {
+    let mut offset: i32 = dstPos - srcFirst;
+    if srcFirst > srcLast || srcLast > metamodelica::arrayLength(srcArray.clone()) || offset + srcLast > metamodelica::arrayLength(dstArray.clone()) {
         bail!("fail");
     }
-    for mut i in srcFirst.clone()..=srcLast.clone() {
-        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(dstArray.clone(), offset.clone() + i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(srcArray.clone(), i.clone()));
+    for mut i in srcFirst..=srcLast {
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(dstArray.clone(), offset + i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(srcArray.clone(), i.clone()));
     }
     Ok(())
 }
 
 pub fn createIntRange(mut inLen: i32) -> metamodelica::Array<i32> {
     let mut outArray: metamodelica::Array<i32>;
-    outArray = metamodelica::arrayCreate(inLen.clone(), 0);
-    for mut i in 1..=inLen.clone() {
+    outArray = metamodelica::arrayCreate(inLen, 0);
+    for mut i in 1..=inLen {
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), i.clone()) };
     }
     outArray
@@ -439,10 +439,10 @@ pub fn createIntRange(mut inLen: i32) -> metamodelica::Array<i32> {
 
 pub fn setRange<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inStart: i32, mut inEnd: i32, mut inArray: metamodelica::Array<T>, mut inValue: T) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = inArray.clone();
-    if inStart.clone() > metamodelica::arrayLength(inArray.clone()) {
+    if inStart > metamodelica::arrayLength(inArray.clone()) {
         bail!("fail");
     }
-    for mut i in inStart.clone()..=inEnd.clone() {
+    for mut i in inStart..=inEnd {
         metamodelica::arrayUpdate(inArray.clone(), i.clone(), inValue.clone())?;
     }
     Ok(outArray)
@@ -451,10 +451,10 @@ pub fn setRange<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inStart: i32
 pub fn getRange<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inStart: i32, mut inEnd: i32, mut inArray: metamodelica::Array<T>) -> Result<Arc<metamodelica::List<T>>> {
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut value: T;
-    if inStart.clone() > metamodelica::arrayLength(inArray.clone()) {
+    if inStart > metamodelica::arrayLength(inArray.clone()) {
         bail!("fail");
     }
-    for mut i in inStart.clone()..=inEnd.clone() {
+    for mut i in inStart..=inEnd {
         value = metamodelica::arrayGet(inArray.clone(), i.clone())?;
         outList = metamodelica::cons(value.clone(), outList.clone());
     }
@@ -463,7 +463,7 @@ pub fn getRange<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inStart: i32
 
 pub fn position<T: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inArray: metamodelica::Array<T>, mut inElement: T, mut inFilledSize: i32) -> i32 {
     let mut outIndex: i32;
-    for mut i in 1..=inFilledSize.clone() {
+    for mut i in 1..=inFilledSize {
         if inElement.clone() == ({let __elt = inArray.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
             outIndex = i.clone();
             return outIndex.clone();
@@ -497,11 +497,11 @@ pub fn reverse<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: meta
     let mut elem2: T;
     outArray = inArray.clone();
     size = metamodelica::arrayLength(inArray.clone());
-    for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
-        elem1 = metamodelica::arrayGet(inArray.clone(), i.clone())?;
-        elem2 = metamodelica::arrayGet(inArray.clone(), size.clone() - i.clone() + 1)?;
-        outArray = metamodelica::arrayUpdate(outArray.clone(), i.clone(), elem2.clone())?;
-        outArray = metamodelica::arrayUpdate(outArray.clone(), size.clone() - i.clone() + 1, elem1.clone())?;
+    for mut i in 1..=((metamodelica::OrderedFloat((size) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
+        elem1 = metamodelica::arrayGet(inArray.clone(), i)?;
+        elem2 = metamodelica::arrayGet(inArray.clone(), size - i + 1)?;
+        outArray = metamodelica::arrayUpdate(outArray.clone(), i, elem2.clone())?;
+        outArray = metamodelica::arrayUpdate(outArray.clone(), size - i + 1, elem1.clone())?;
     }
     Ok(outArray)
 }
@@ -512,23 +512,23 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: met
     let mut outString: ArcStr;
     let mut lst: Arc<metamodelica::List<T>>;
     let mut endStr: ArcStr = inEndStr.clone();
-    if maxLength.clone() > 0 && metamodelica::arrayLength(inArray.clone()) > maxLength.clone() {
-        lst = List::firstN(Arc::new(inArray.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), maxLength.clone())?;
+    if maxLength > 0 && metamodelica::arrayLength(inArray.clone()) > maxLength {
+        lst = List::firstN(Arc::new(inArray.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), maxLength)?;
         endStr = stringAppendList(list![(inDelimitStr.clone()).clone(), (literal!("...")).clone(), (inEndStr.clone()).clone()]);
     } else {
         lst = Arc::new(inArray.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     }
-    outString = ((::match_deref::match_deref! { match &((lst.clone(), inPrintEmpty.clone())) {
+    outString = ((::match_deref::match_deref! { match &((lst.clone(), inPrintEmpty)) {
         (Deref @ metamodelica::List::Nil, true) => {
-            stringAppendList(list![(inNameStr.clone()).clone(), (inBeginStr.clone()).clone(), (inEndStr.clone()).clone()])
+            stringAppendList(list![(inNameStr).clone(), (inBeginStr).clone(), (inEndStr).clone()])
         },
         (Deref @ metamodelica::List::Nil, false) => {
-            inNameStr.clone()
+            inNameStr
         },
         _ => {
             let mut r#str: ArcStr;
-            r#str = stringDelimitList(List::map(lst.clone(), inPrintFunc.clone())?, (inDelimitStr.clone()).clone());
-            r#str = stringAppendList(list![(inNameStr.clone()).clone(), (inBeginStr.clone()).clone(), (r#str.clone()).clone(), (endStr.clone()).clone()]);
+            r#str = stringDelimitList(List::map(lst, inPrintFunc.clone())?, (inDelimitStr).clone());
+            r#str = stringAppendList(list![(inNameStr).clone(), (inBeginStr).clone(), (r#str.clone()).clone(), (endStr).clone()]);
             r#str.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -539,7 +539,7 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: met
 pub fn hashIntArray(mut arr: metamodelica::Array<i32>) -> i32 {
     let mut hash: i32 = 5381;
     for mut i in 1..=metamodelica::arrayLength(arr.clone()) {
-        hash = intMod(hash.clone() * 31 + metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone()), 536870911);
+        hash = intMod(hash * 31 + metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone()), 536870911);
     }
     hash
 }
@@ -548,10 +548,10 @@ pub fn isEqual<T: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut i
     let mut outIsEqual: bool = true;
     let mut arrLength: i32;
     arrLength = metamodelica::arrayLength(inArr1.clone());
-    if !(intEq(arrLength.clone(), metamodelica::arrayLength(inArr2.clone()))) {
+    if !(intEq(arrLength, metamodelica::arrayLength(inArr2.clone()))) {
         bail!("fail");
     }
-    for mut i in 1..=arrLength.clone() {
+    for mut i in 1..=arrLength {
         if !(({let __elt = inArr1.borrow()[(i.clone()-1) as usize].clone(); __elt}) == ({let __elt = inArr2.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
             outIsEqual = false;
             break;
@@ -565,7 +565,7 @@ pub fn isEqualOnTrue<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone 
 
     let mut equal: bool;
     equal = metamodelica::arrayLength(arr1.clone()) == metamodelica::arrayLength(arr2.clone());
-    if !(equal.clone()) {
+    if !(equal) {
         return Ok(equal.clone());
     }
     for mut i in 1..=metamodelica::arrayLength(arr1.clone()) {
@@ -603,7 +603,7 @@ pub fn isLess<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamode
     let mut e2: T;
     len1 = metamodelica::arrayLength(arr1.clone());
     len2 = metamodelica::arrayLength(arr2.clone());
-    for mut i in 1..=std::cmp::min(len1.clone(), len2.clone()) {
+    for mut i in 1..=std::cmp::min(len1, len2) {
         e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());
         e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone());
         if lessFn(e1.clone(), e2.clone())? {
@@ -614,21 +614,21 @@ pub fn isLess<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamode
             return Ok(res.clone());
         }
     }
-    res = len1.clone() < len2.clone();
+    res = len1 < len2;
     Ok(res)
 }
 
 pub(crate) fn insertList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut lst: Arc<metamodelica::List<T>>, mut startPos: i32) -> metamodelica::Array<T> {
     let mut arr: metamodelica::Array<T> = arr;
-    let mut i: i32 = startPos.clone();
-    for mut e in &*lst.clone() {
+    let mut i: i32 = startPos;
+    for mut e in &*lst {
         let mut e = e.clone();
         {
             let __cell0 = e.clone();
-            let __idx0 = i.clone();
+            let __idx0 = i;
             arr.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
-        i = i.clone() + 1;
+        i = i + 1;
     }
     arr
 }
@@ -636,15 +636,15 @@ pub(crate) fn insertList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr
 pub(crate) fn remove<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut index: i32) -> Result<metamodelica::Array<T>> {
     let mut outArr: metamodelica::Array<T>;
     let mut len: i32 = metamodelica::arrayLength(arr.clone());
-    let true = (index.clone() <= len.clone() && index.clone() >= 1) else { bail!("pattern mismatch") };
-    if len.clone() <= 1 {
+    let true = (index <= len && index >= 1) else { bail!("pattern mismatch") };
+    if len <= 1 {
         outArr = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
-        outArr = metamodelica::arrayCreate(len.clone() - 1, ({let __elt = arr.borrow()[(1-1) as usize].clone(); __elt}));
-        for mut i in 1..=index.clone() - 1 {
+        outArr = metamodelica::arrayCreate(len - 1, ({let __elt = arr.borrow()[(1-1) as usize].clone(); __elt}));
+        for mut i in 1..=index - 1 {
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArr.clone(), i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone())) };
         }
-        for mut i in index.clone() + 1..=len.clone() {
+        for mut i in index + 1..=len {
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArr.clone(), i.clone() - 1, metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone())) };
         }
     }
@@ -719,13 +719,13 @@ pub fn compare<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'sta
     let mut l2: i32;
     l1 = metamodelica::arrayLength(arr1.clone());
     l2 = metamodelica::arrayLength(arr2.clone());
-    res = if (l1.clone() == l2.clone()) {0} else if (l1.clone() > l2.clone()) {1} else {-1};
-    if res.clone() != 0 {
+    res = if (l1 == l2) {0} else if (l1 > l2) {1} else {-1};
+    if res != 0 {
         return Ok(res.clone());
     }
-    for mut i in 1..=l1.clone() {
+    for mut i in 1..=l1 {
         res = compFn(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone()))?;
-        if res.clone() != 0 {
+        if res != 0 {
             return Ok(res.clone());
         }
     }
@@ -739,13 +739,13 @@ pub fn mapFold<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 's
     let mut outArg: ArgT = arg.clone();
     let mut len: i32 = metamodelica::arrayLength(arr.clone());
     let mut res: TO;
-    if len.clone() == 0 {
+    if len == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
-        (res, outArg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), 1), outArg.clone())?;
-        outArray = metamodelica::arrayCreate(len.clone(), res.clone());
+        (res, outArg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), 1), outArg)?;
+        outArray = metamodelica::arrayCreate(len, res.clone());
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
-        for mut i in 2..=len.clone() {
+        for mut i in 2..=len {
             (res, outArg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone()), outArg.clone())?;
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), res.clone()) };
         }
@@ -771,12 +771,12 @@ pub fn transpose<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamo
     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(row.clone(), 1);
     c_len = metamodelica::arrayLength(arr.clone());
     r_len = metamodelica::arrayLength(row.clone());
-    outArray = metamodelica::arrayCreate(r_len.clone(), row.clone());
-    for mut i in 1..=r_len.clone() {
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), metamodelica::arrayCreate(c_len.clone(), val.clone())) };
+    outArray = metamodelica::arrayCreate(r_len, row.clone());
+    for mut i in 1..=r_len {
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), metamodelica::arrayCreate(c_len, val.clone())) };
     }
-    for mut r in 1..=r_len.clone() {
-        for mut c in 1..=c_len.clone() {
+    for mut r in 1..=r_len {
+        for mut c in 1..=c_len {
             val = metamodelica::Dangerous::arrayGetNoBoundsChecking(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), c.clone()), r.clone());
             metamodelica::Dangerous::arrayUpdateNoBoundsChecking(metamodelica::Dangerous::arrayGetNoBoundsChecking(outArray.clone(), r.clone()), c.clone(), val.clone());
         }
@@ -797,13 +797,13 @@ pub fn threadMap<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 's
     }
     len1 = metamodelica::arrayLength(arr1.clone());
     len2 = metamodelica::arrayLength(arr2.clone());
-    if len1.clone() != len2.clone() {
+    if len1 != len2 {
         bail!("fail");
     }
     res = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), 1), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), 1))?;
-    outArray = metamodelica::arrayCreate(len1.clone(), res.clone());
-    unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
-    for mut i in 2..=len1.clone() {
+    outArray = metamodelica::arrayCreate(len1, res.clone());
+    unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res) };
+    for mut i in 2..=len1 {
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone()))?) };
     }
     Ok(outArray)
@@ -814,13 +814,13 @@ pub fn generate<T: Clone + 'static + metamodelica::gc::MMTrace>(mut n: i32, mut 
 
     let mut arr: metamodelica::Array<T>;
     let mut e: T;
-    if n.clone() <= 0 {
+    if n <= 0 {
         arr = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
         e = generator()?;
-        arr = metamodelica::arrayCreate(n.clone(), e.clone());
-        unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), 1, e.clone()) };
-        for mut i in 2..=n.clone() {
+        arr = metamodelica::arrayCreate(n, e.clone());
+        unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), 1, e) };
+        for mut i in 2..=n {
             unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), generator()?) };
         }
     }
@@ -843,12 +843,12 @@ pub fn filter<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut arr:
         }
         __acc
     });
-    new_arr = metamodelica::arrayCreateDefault(new_size.clone());
+    new_arr = metamodelica::arrayCreateDefault(new_size);
     let __range0 = arr.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut e in __range0 {
         if !(fun(e.clone())?) {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(new_arr.clone(), index.clone(), e.clone()) };
-            index = index.clone() + 1;
+            unsafe { metamodelica::Dangerous::arrayInitSlot(new_arr.clone(), index, e.clone()) };
+            index = index + 1;
         }
     }
     Ok(new_arr)

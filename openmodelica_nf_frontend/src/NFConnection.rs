@@ -78,8 +78,8 @@ pub(crate) fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::Lis
     let mut cr: Arc<Connector::NFConnector>;
     cls = Connector::split(conn.lhs.clone())?;
     crs = Connector::split(conn.rhs.clone())?;
-    checkBalance(cls.clone(), crs.clone(), conn.clone())?;
-    for mut cl in &*cls.clone() {
+    checkBalance(cls.clone(), crs.clone(), conn)?;
+    for mut cl in &*cls {
         let mut cl = cl.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crs.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -91,7 +91,7 @@ pub(crate) fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::Lis
             conns = metamodelica::cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
         }
     }
-    conns = metamodelica::Dangerous::listReverseInPlace(conns.clone());
+    conns = metamodelica::Dangerous::listReverseInPlace(conns);
     Ok(conns)
 }
 
@@ -101,13 +101,13 @@ pub(crate) fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica:
     let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     let mut cr: Arc<Connector::NFConnector>;
     if !(Connector::isArray(conn.lhs.clone())) {
-        conns = list![conn.clone()];
+        conns = list![conn];
         return Ok(conns.clone());
     }
     cls = Connector::scalarize(conn.lhs.clone())?;
     crs = Connector::scalarize(conn.rhs.clone())?;
-    checkBalance(cls.clone(), crs.clone(), conn.clone())?;
-    for mut cl in &*cls.clone() {
+    checkBalance(cls.clone(), crs.clone(), conn)?;
+    for mut cl in &*cls {
         let mut cl = cl.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crs.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -117,7 +117,7 @@ pub(crate) fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica:
         crs = __pa1.clone();
         conns = metamodelica::cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
     }
-    conns = metamodelica::Dangerous::listReverseInPlace(conns.clone());
+    conns = metamodelica::Dangerous::listReverseInPlace(conns);
     Ok(conns)
 }
 
@@ -127,13 +127,13 @@ pub(crate) fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamod
     let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     let mut cr: Arc<Connector::NFConnector>;
     if !(Connector::isArray(conn.lhs.clone())) {
-        conns = list![conn.clone()];
+        conns = list![conn];
         return Ok(conns.clone());
     }
     cls = Connector::scalarizePrefix(conn.lhs.clone())?;
     crs = Connector::scalarizePrefix(conn.rhs.clone())?;
-    checkBalance(cls.clone(), crs.clone(), conn.clone())?;
-    for mut cl in &*cls.clone() {
+    checkBalance(cls.clone(), crs.clone(), conn)?;
+    for mut cl in &*cls {
         let mut cl = cl.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crs.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -143,7 +143,7 @@ pub(crate) fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamod
         crs = __pa1.clone();
         conns = metamodelica::cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
     }
-    conns = metamodelica::Dangerous::listReverseInPlace(conns.clone());
+    conns = metamodelica::Dangerous::listReverseInPlace(conns);
     Ok(conns)
 }
 
@@ -155,7 +155,7 @@ pub(crate) fn toString(mut conn: Arc<NFConnection>) -> Result<ArcStr> {
 
 fn checkBalance(mut leftConnectors: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut rightConnectors: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut conn: Arc<NFConnection>) -> Result<()> {
     if (leftConnectors.clone().len() as i32) != (rightConnectors.clone().len() as i32) {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnection.checkBalance")); __mm_s.push_str(&*literal!(" got unbalanced connection ")); __mm_s.push_str(&*toString(conn.clone())?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*List::toString(leftConnectors.clone(), (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("\n  lhs: ")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*List::toString(rightConnectors.clone(), (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("\n  rhs: ")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConnection.mo"))?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnection.checkBalance")); __mm_s.push_str(&*literal!(" got unbalanced connection ")); __mm_s.push_str(&*toString(conn)?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*List::toString(leftConnectors, (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("\n  lhs: ")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*List::toString(rightConnectors, (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("\n  rhs: ")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConnection.mo"))?;
         bail!("fail");
     }
     Ok(())

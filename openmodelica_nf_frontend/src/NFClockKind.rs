@@ -120,7 +120,7 @@ impl Default for NFClockKind {
 pub use self::NFClockKind::{INFERRED_CLOCK,RATIONAL_CLOCK,REAL_CLOCK,EVENT_CLOCK,SOLVER_CLOCK};
 pub fn isInferred(mut ck: Arc<NFClockKind>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(ck.clone()) {
+    b = (::match_deref::match_deref! { match &(ck) {
         Deref @ INFERRED_CLOCK { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -131,7 +131,7 @@ pub fn isInferred(mut ck: Arc<NFClockKind>) -> bool {
 pub fn compare(mut ck1: Arc<NFClockKind>, mut ck2: Arc<NFClockKind>) -> Result<i32> {
     fn compareInt(mut kind: Arc<NFClockKind>) -> i32 {
         let mut i: i32;
-        i = (::match_deref::match_deref! { match &(kind.clone()) {
+        i = (::match_deref::match_deref! { match &(kind) {
         Deref @ INFERRED_CLOCK { .. } => 0,
         Deref @ RATIONAL_CLOCK { .. } => 1,
         Deref @ REAL_CLOCK { .. } => 2,
@@ -274,19 +274,19 @@ pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ck:
     let mut result: ArgT;
     result = (::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ RATIONAL_CLOCK { .. } => {
-            result = Expression::fold(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone(), func.clone(), arg.clone())?;
-            Expression::fold(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone(), func.clone(), result.clone())?
+            result = Expression::fold(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone(), func.clone(), arg)?;
+            Expression::fold(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone(), func.clone(), result)?
         },
-        Deref @ REAL_CLOCK { .. } => Expression::fold(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone(), func.clone(), arg.clone())?,
+        Deref @ REAL_CLOCK { .. } => Expression::fold(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone(), func.clone(), arg)?,
         Deref @ EVENT_CLOCK { .. } => {
-            result = Expression::fold(var_field!((*ck).condition, NFClockKind::EVENT_CLOCK).clone(), func.clone(), arg.clone())?;
-            Expression::fold(var_field!((*ck).startInterval, NFClockKind::EVENT_CLOCK).clone(), func.clone(), result.clone())?
+            result = Expression::fold(var_field!((*ck).condition, NFClockKind::EVENT_CLOCK).clone(), func.clone(), arg)?;
+            Expression::fold(var_field!((*ck).startInterval, NFClockKind::EVENT_CLOCK).clone(), func.clone(), result)?
         },
         Deref @ SOLVER_CLOCK { .. } => {
-            result = Expression::fold(var_field!((*ck).c, NFClockKind::SOLVER_CLOCK).clone(), func.clone(), arg.clone())?;
-            Expression::fold(var_field!((*ck).solverMethod, NFClockKind::SOLVER_CLOCK).clone(), func.clone(), result.clone())?
+            result = Expression::fold(var_field!((*ck).c, NFClockKind::SOLVER_CLOCK).clone(), func.clone(), arg)?;
+            Expression::fold(var_field!((*ck).solverMethod, NFClockKind::SOLVER_CLOCK).clone(), func.clone(), result)?
         },
-        _ => arg.clone(),
+        _ => arg,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -306,28 +306,28 @@ pub(crate) fn mapExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(
             e2 = (*__esc_e2).clone();
             e3 = Expression::map(e1.clone(), func.clone())?;
             e4 = Expression::map(e2.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3.clone(), resolution: e4.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3, resolution: e4 })}
         },
         Deref @ REAL_CLOCK { interval: __esc_e1 } => {
             e1 = (*__esc_e1).clone();
             e3 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck.clone()} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3 })}
         },
         Deref @ EVENT_CLOCK { condition: __esc_e1, startInterval: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
             e3 = Expression::map(e1.clone(), func.clone())?;
             e4 = Expression::map(e2.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3.clone(), startInterval: e4.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3, startInterval: e4 })}
         },
         Deref @ SOLVER_CLOCK { c: __esc_e1, solverMethod: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
             e3 = Expression::map(e1.clone(), func.clone())?;
             e4 = Expression::map(e2.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3.clone(), solverMethod: e4.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3, solverMethod: e4 })}
         },
-        _ => ck.clone(),
+        _ => ck,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCk)
@@ -347,28 +347,28 @@ pub(crate) fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::o
             e2 = (*__esc_e2).clone();
             e3 = func(e1.clone())?;
             e4 = func(e2.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3.clone(), resolution: e4.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3, resolution: e4 })}
         },
         Deref @ REAL_CLOCK { interval: __esc_e1 } => {
             e1 = (*__esc_e1).clone();
             e3 = func(e1.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck.clone()} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3 })}
         },
         Deref @ EVENT_CLOCK { condition: __esc_e1, startInterval: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
             e3 = func(e1.clone())?;
             e4 = func(e2.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3.clone(), startInterval: e4.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3, startInterval: e4 })}
         },
         Deref @ SOLVER_CLOCK { c: __esc_e1, solverMethod: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
             e3 = func(e1.clone())?;
             e4 = func(e2.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3.clone(), solverMethod: e4.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3, solverMethod: e4 })}
         },
-        _ => ck.clone(),
+        _ => ck,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCk)
@@ -387,30 +387,30 @@ pub(crate) fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
         Deref @ RATIONAL_CLOCK { intervalCounter: __esc_e1, resolution: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
-            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg.clone())?;
-            (e4, arg) = Expression::mapFold(e2.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3.clone(), resolution: e4.clone() })}
+            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg)?;
+            (e4, arg) = Expression::mapFold(e2.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3, resolution: e4 })}
         },
         Deref @ REAL_CLOCK { interval: __esc_e1 } => {
             e1 = (*__esc_e1).clone();
-            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck.clone()} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3.clone() })}
+            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3 })}
         },
         Deref @ EVENT_CLOCK { condition: __esc_e1, startInterval: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
-            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg.clone())?;
-            (e4, arg) = Expression::mapFold(e2.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3.clone(), startInterval: e4.clone() })}
+            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg)?;
+            (e4, arg) = Expression::mapFold(e2.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3, startInterval: e4 })}
         },
         Deref @ SOLVER_CLOCK { c: __esc_e1, solverMethod: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
-            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg.clone())?;
-            (e4, arg) = Expression::mapFold(e2.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3.clone(), solverMethod: e4.clone() })}
+            (e3, arg) = Expression::mapFold(e1.clone(), func.clone(), arg)?;
+            (e4, arg) = Expression::mapFold(e2.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3, solverMethod: e4 })}
         },
-        _ => ck.clone(),
+        _ => ck,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outCk, arg))
@@ -429,30 +429,30 @@ pub(crate) fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrac
         Deref @ RATIONAL_CLOCK { intervalCounter: __esc_e1, resolution: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
-            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg.clone())?;
-            (e4, arg) = Expression::mapFoldShallow(e2.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3.clone(), resolution: e4.clone() })}
+            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg)?;
+            (e4, arg) = Expression::mapFoldShallow(e2.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3, resolution: e4 })}
         },
         Deref @ REAL_CLOCK { interval: __esc_e1 } => {
             e1 = (*__esc_e1).clone();
-            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck.clone()} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3.clone() })}
+            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone()))) {ck} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3 })}
         },
         Deref @ EVENT_CLOCK { condition: __esc_e1, startInterval: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
-            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg.clone())?;
-            (e4, arg) = Expression::mapFoldShallow(e2.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3.clone(), startInterval: e4.clone() })}
+            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg)?;
+            (e4, arg) = Expression::mapFoldShallow(e2.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3, startInterval: e4 })}
         },
         Deref @ SOLVER_CLOCK { c: __esc_e1, solverMethod: __esc_e2 } => {
             e1 = (*__esc_e1).clone();
             e2 = (*__esc_e2).clone();
-            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg.clone())?;
-            (e4, arg) = Expression::mapFoldShallow(e2.clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck.clone()} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3.clone(), solverMethod: e4.clone() })}
+            (e3, arg) = Expression::mapFoldShallow(e1.clone(), func.clone(), arg)?;
+            (e4, arg) = Expression::mapFoldShallow(e2.clone(), func.clone(), arg)?;
+            if (referenceEq(&*(e1.clone()),&*(e3.clone())) && referenceEq(&*(e2.clone()),&*(e4.clone()))) {ck} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3, solverMethod: e4 })}
         },
-        _ => ck.clone(),
+        _ => ck,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outCk, arg))
@@ -469,13 +469,13 @@ pub(crate) fn toAbsyn(mut clk: Arc<NFClockKind>) -> Result<Arc<Absyn::Exp>> {
         Deref @ SOLVER_CLOCK { .. } => list![Expression::toAbsyn(var_field!((*clk).c, NFClockKind::SOLVER_CLOCK).clone())?, Expression::toAbsyn(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    exp = AbsynUtil::makeCall(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Clock")).clone(), subscripts: metamodelica::nil() }), args.clone(), metamodelica::nil());
+    exp = AbsynUtil::makeCall(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Clock")).clone(), subscripts: metamodelica::nil() }), args, metamodelica::nil());
     Ok(exp)
 }
 
 pub fn toDAE(mut ick: Arc<NFClockKind>) -> Result<Arc<DAE::ClockKind>> {
     let mut ock: Arc<DAE::ClockKind>;
-    ock = (::match_deref::match_deref! { match &(ick.clone()) {
+    ock = (::match_deref::match_deref! { match &(ick) {
         Deref @ INFERRED_CLOCK { .. } => {
             openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK()
         },
@@ -521,7 +521,7 @@ pub fn toDebugString(mut ick: Arc<NFClockKind>) -> Result<ArcStr> {
 
 pub(crate) fn toString(mut ck: Arc<NFClockKind>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((::match_deref::match_deref! { match &(ck.clone()) {
+    r#str = ((::match_deref::match_deref! { match &(ck) {
         Deref @ INFERRED_CLOCK { .. } => {
             literal!("")
         },
@@ -539,63 +539,63 @@ pub(crate) fn toString(mut ck: Arc<NFClockKind>) -> Result<ArcStr> {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 pub(crate) fn toFlatString(mut ck: Arc<NFClockKind>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((::match_deref::match_deref! { match &(ck.clone()) {
+    r#str = ((::match_deref::match_deref! { match &(ck) {
         Deref @ INFERRED_CLOCK { .. } => {
             literal!("")
         },
         Deref @ RATIONAL_CLOCK { intervalCounter: e1, resolution: e2 } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format.clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         Deref @ REAL_CLOCK { interval: e1 } => {
-            Expression::toFlatString(e1.clone(), format.clone())?
+            Expression::toFlatString(e1.clone(), format)?
         },
         Deref @ EVENT_CLOCK { condition: e1, startInterval: e2 } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format.clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         Deref @ SOLVER_CLOCK { c: e1, solverMethod: e2 } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format.clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format)?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 pub(crate) fn toJSON(mut clk: Arc<NFClockKind>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = JSON::emptyListObject();
-    json = JSON::addPair((literal!("kind")).clone(), JSON::makeString((literal!("clock")).clone()), json.clone())?;
+    json = JSON::addPair((literal!("kind")).clone(), JSON::makeString((literal!("clock")).clone()), json)?;
     let () = (::match_deref::match_deref! { match &(clk.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
-            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("inferred")).clone()), json.clone())?;
+            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("inferred")).clone()), json)?;
             ()
         },
         Deref @ RATIONAL_CLOCK { .. } => {
-            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("rational")).clone()), json.clone())?;
-            json = JSON::addPair((literal!("intervalCounter")).clone(), Expression::toJSON(var_field!((*clk).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone())?, json.clone())?;
-            json = JSON::addPair((literal!("resolution")).clone(), Expression::toJSON(var_field!((*clk).resolution, NFClockKind::RATIONAL_CLOCK).clone())?, json.clone())?;
+            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("rational")).clone()), json)?;
+            json = JSON::addPair((literal!("intervalCounter")).clone(), Expression::toJSON(var_field!((*clk).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone())?, json)?;
+            json = JSON::addPair((literal!("resolution")).clone(), Expression::toJSON(var_field!((*clk).resolution, NFClockKind::RATIONAL_CLOCK).clone())?, json)?;
             ()
         },
         Deref @ REAL_CLOCK { .. } => {
-            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("real")).clone()), json.clone())?;
-            json = JSON::addPair((literal!("interval")).clone(), Expression::toJSON(var_field!((*clk).interval, NFClockKind::REAL_CLOCK).clone())?, json.clone())?;
+            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("real")).clone()), json)?;
+            json = JSON::addPair((literal!("interval")).clone(), Expression::toJSON(var_field!((*clk).interval, NFClockKind::REAL_CLOCK).clone())?, json)?;
             ()
         },
         Deref @ EVENT_CLOCK { .. } => {
-            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("event")).clone()), json.clone())?;
-            json = JSON::addPair((literal!("condition")).clone(), Expression::toJSON(var_field!((*clk).condition, NFClockKind::EVENT_CLOCK).clone())?, json.clone())?;
-            json = JSON::addPair((literal!("startInterval")).clone(), Expression::toJSON(var_field!((*clk).startInterval, NFClockKind::EVENT_CLOCK).clone())?, json.clone())?;
+            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("event")).clone()), json)?;
+            json = JSON::addPair((literal!("condition")).clone(), Expression::toJSON(var_field!((*clk).condition, NFClockKind::EVENT_CLOCK).clone())?, json)?;
+            json = JSON::addPair((literal!("startInterval")).clone(), Expression::toJSON(var_field!((*clk).startInterval, NFClockKind::EVENT_CLOCK).clone())?, json)?;
             ()
         },
         Deref @ SOLVER_CLOCK { .. } => {
-            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("solver")).clone()), json.clone())?;
-            json = JSON::addPair((literal!("c")).clone(), Expression::toJSON(var_field!((*clk).c, NFClockKind::SOLVER_CLOCK).clone())?, json.clone())?;
-            json = JSON::addPair((literal!("solverMethod")).clone(), Expression::toJSON(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?, json.clone())?;
+            json = JSON::addPair((literal!("type")).clone(), JSON::makeString((literal!("solver")).clone()), json)?;
+            json = JSON::addPair((literal!("c")).clone(), Expression::toJSON(var_field!((*clk).c, NFClockKind::SOLVER_CLOCK).clone())?, json)?;
+            json = JSON::addPair((literal!("solverMethod")).clone(), Expression::toJSON(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?, json)?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -605,31 +605,31 @@ pub(crate) fn toJSON(mut clk: Arc<NFClockKind>) -> Result<Arc<JSON::JSON>> {
 
 pub(crate) fn hashContinue(mut clk: Arc<NFClockKind>, mut hash: i32) -> Result<i32> {
     let mut hash: i32 = hash;
-    hash = stringHashDjb2Continue((literal!("Clock(")).clone(), hash.clone());
+    hash = stringHashDjb2Continue((literal!("Clock(")).clone(), hash);
     hash = (::match_deref::match_deref! { match &(clk.clone()) {
-        Deref @ INFERRED_CLOCK { .. } => hash.clone() + var_field!((*clk).idx, NFClockKind::INFERRED_CLOCK).clone(),
+        Deref @ INFERRED_CLOCK { .. } => hash + var_field!((*clk).idx, NFClockKind::INFERRED_CLOCK).clone(),
         Deref @ RATIONAL_CLOCK { .. } => {
-            hash = Expression::hashContinue(var_field!((*clk).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone(), hash.clone())?;
-            hash = stringHashDjb2Continue((literal!(", ")).clone(), hash.clone());
-            hash = Expression::hashContinue(var_field!((*clk).resolution, NFClockKind::RATIONAL_CLOCK).clone(), hash.clone())?;
-            hash.clone()
+            hash = Expression::hashContinue(var_field!((*clk).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone(), hash)?;
+            hash = stringHashDjb2Continue((literal!(", ")).clone(), hash);
+            hash = Expression::hashContinue(var_field!((*clk).resolution, NFClockKind::RATIONAL_CLOCK).clone(), hash)?;
+            hash
         },
-        Deref @ REAL_CLOCK { .. } => Expression::hashContinue(var_field!((*clk).interval, NFClockKind::REAL_CLOCK).clone(), hash.clone())?,
+        Deref @ REAL_CLOCK { .. } => Expression::hashContinue(var_field!((*clk).interval, NFClockKind::REAL_CLOCK).clone(), hash)?,
         Deref @ EVENT_CLOCK { .. } => {
-            hash = Expression::hashContinue(var_field!((*clk).condition, NFClockKind::EVENT_CLOCK).clone(), hash.clone())?;
-            hash = stringHashDjb2Continue((literal!(", ")).clone(), hash.clone());
-            hash = Expression::hashContinue(var_field!((*clk).startInterval, NFClockKind::EVENT_CLOCK).clone(), hash.clone())?;
-            hash.clone()
+            hash = Expression::hashContinue(var_field!((*clk).condition, NFClockKind::EVENT_CLOCK).clone(), hash)?;
+            hash = stringHashDjb2Continue((literal!(", ")).clone(), hash);
+            hash = Expression::hashContinue(var_field!((*clk).startInterval, NFClockKind::EVENT_CLOCK).clone(), hash)?;
+            hash
         },
         Deref @ SOLVER_CLOCK { .. } => {
-            hash = Expression::hashContinue(var_field!((*clk).c, NFClockKind::SOLVER_CLOCK).clone(), hash.clone())?;
-            hash = stringHashDjb2Continue((literal!(", ")).clone(), hash.clone());
-            hash = Expression::hashContinue(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone(), hash.clone())?;
-            hash.clone()
+            hash = Expression::hashContinue(var_field!((*clk).c, NFClockKind::SOLVER_CLOCK).clone(), hash)?;
+            hash = stringHashDjb2Continue((literal!(", ")).clone(), hash);
+            hash = Expression::hashContinue(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone(), hash)?;
+            hash
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hash = stringHashDjb2Continue((literal!(")")).clone(), hash.clone());
+    hash = stringHashDjb2Continue((literal!(")")).clone(), hash);
     Ok(hash)
 }
 

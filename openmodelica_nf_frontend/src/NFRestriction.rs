@@ -189,19 +189,19 @@ pub(crate) fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
 pub(crate) fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassInf::State {
     let mut state: ClassInf::State;
     state = (::match_deref::match_deref! { match &(res.clone()) {
-        Deref @ BLOCK { .. } => ClassInf::State::BLOCK { path: path.clone() },
-        Deref @ CLOCK { .. } => ClassInf::State::TYPE_CLOCK { path: path.clone() },
-        Deref @ CONNECTOR { .. } => ClassInf::State::CONNECTOR { path: path.clone(), isExpandable: var_field!((*res).isExpandable, NFRestriction::CONNECTOR).clone() },
-        Deref @ ENUMERATION { .. } => ClassInf::State::ENUMERATION { path: path.clone() },
-        Deref @ EXTERNAL_OBJECT { .. } => ClassInf::State::EXTERNAL_OBJ { path: path.clone() },
-        Deref @ FUNCTION { .. } => ClassInf::State::FUNCTION { path: path.clone(), isImpure: false },
-        Deref @ MODEL { .. } => ClassInf::State::MODEL { path: path.clone() },
-        Deref @ OPERATOR { .. } => ClassInf::State::FUNCTION { path: path.clone(), isImpure: false },
-        Deref @ PACKAGE { .. } => ClassInf::State::PACKAGE { path: path.clone() },
-        Deref @ RECORD { .. } => ClassInf::State::RECORD { path: path.clone() },
-        Deref @ RECORD_CONSTRUCTOR { .. } => ClassInf::State::RECORD { path: path.clone() },
-        Deref @ TYPE { .. } => ClassInf::State::TYPE { path: path.clone() },
-        _ => ClassInf::State::UNKNOWN { path: path.clone() },
+        Deref @ BLOCK { .. } => ClassInf::State::BLOCK { path: path },
+        Deref @ CLOCK { .. } => ClassInf::State::TYPE_CLOCK { path: path },
+        Deref @ CONNECTOR { .. } => ClassInf::State::CONNECTOR { path: path, isExpandable: var_field!((*res).isExpandable, NFRestriction::CONNECTOR).clone() },
+        Deref @ ENUMERATION { .. } => ClassInf::State::ENUMERATION { path: path },
+        Deref @ EXTERNAL_OBJECT { .. } => ClassInf::State::EXTERNAL_OBJ { path: path },
+        Deref @ FUNCTION { .. } => ClassInf::State::FUNCTION { path: path, isImpure: false },
+        Deref @ MODEL { .. } => ClassInf::State::MODEL { path: path },
+        Deref @ OPERATOR { .. } => ClassInf::State::FUNCTION { path: path, isImpure: false },
+        Deref @ PACKAGE { .. } => ClassInf::State::PACKAGE { path: path },
+        Deref @ RECORD { .. } => ClassInf::State::RECORD { path: path },
+        Deref @ RECORD_CONSTRUCTOR { .. } => ClassInf::State::RECORD { path: path },
+        Deref @ TYPE { .. } => ClassInf::State::TYPE { path: path },
+        _ => ClassInf::State::UNKNOWN { path: path },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     state
@@ -209,7 +209,7 @@ pub(crate) fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> 
 
 pub(crate) fn isConnector(mut res: Arc<NFRestriction>) -> bool {
     let mut isConnector: bool;
-    isConnector = (::match_deref::match_deref! { match &(res.clone()) {
+    isConnector = (::match_deref::match_deref! { match &(res) {
         Deref @ CONNECTOR { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -239,7 +239,7 @@ pub(crate) fn isNonexpandableConnector(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
     let mut isExternalObject: bool;
-    isExternalObject = (::match_deref::match_deref! { match &(res.clone()) {
+    isExternalObject = (::match_deref::match_deref! { match &(res) {
         Deref @ EXTERNAL_OBJECT { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -249,7 +249,7 @@ pub(crate) fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isFunction(mut res: Arc<NFRestriction>) -> bool {
     let mut isFunction: bool;
-    isFunction = (::match_deref::match_deref! { match &(res.clone()) {
+    isFunction = (::match_deref::match_deref! { match &(res) {
         Deref @ FUNCTION { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -259,7 +259,7 @@ pub(crate) fn isFunction(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
     let mut isConstructor: bool;
-    isConstructor = (::match_deref::match_deref! { match &(res.clone()) {
+    isConstructor = (::match_deref::match_deref! { match &(res) {
         Deref @ RECORD_CONSTRUCTOR { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -269,7 +269,7 @@ pub(crate) fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isRecord(mut res: Arc<NFRestriction>) -> bool {
     let mut isRecord: bool;
-    isRecord = (::match_deref::match_deref! { match &(res.clone()) {
+    isRecord = (::match_deref::match_deref! { match &(res) {
         Deref @ RECORD { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -312,7 +312,7 @@ pub(crate) fn isOperatorRecord(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isOperator(mut res: Arc<NFRestriction>) -> bool {
     let mut isOperator: bool;
-    isOperator = (::match_deref::match_deref! { match &(res.clone()) {
+    isOperator = (::match_deref::match_deref! { match &(res) {
         Deref @ OPERATOR { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -322,7 +322,7 @@ pub(crate) fn isOperator(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isType(mut res: Arc<NFRestriction>) -> bool {
     let mut isType: bool;
-    isType = (::match_deref::match_deref! { match &(res.clone()) {
+    isType = (::match_deref::match_deref! { match &(res) {
         Deref @ TYPE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -332,7 +332,7 @@ pub(crate) fn isType(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isClock(mut res: Arc<NFRestriction>) -> bool {
     let mut isClock: bool;
-    isClock = (::match_deref::match_deref! { match &(res.clone()) {
+    isClock = (::match_deref::match_deref! { match &(res) {
         Deref @ CLOCK { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -342,7 +342,7 @@ pub(crate) fn isClock(mut res: Arc<NFRestriction>) -> bool {
 
 pub(crate) fn isModel(mut res: Arc<NFRestriction>) -> bool {
     let mut isModel: bool;
-    isModel = (::match_deref::match_deref! { match &(res.clone()) {
+    isModel = (::match_deref::match_deref! { match &(res) {
         Deref @ MODEL { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -377,11 +377,11 @@ pub(crate) fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode:
     if equations.clone().is_empty() && initialEquations.clone().is_empty() {
         return Ok(());
     }
-    eq = listHead(if (equations.clone().is_empty()) {initialEquations.clone()} else {equations.clone()})?;
-    if onlyDeprecated.clone() {
-        Error::addSourceMessage(Error::DEPRECATED_TRANSITION_FAILURE.clone(), list![(literal!("Equation sections")).clone(), (toString(res.clone())).clone()], SCodeUtil::getEquationInfo(eq.clone())?)?;
+    eq = listHead(if (equations.clone().is_empty()) {initialEquations} else {equations})?;
+    if onlyDeprecated {
+        Error::addSourceMessage(Error::DEPRECATED_TRANSITION_FAILURE.clone(), list![(literal!("Equation sections")).clone(), (toString(res)).clone()], SCodeUtil::getEquationInfo(eq)?)?;
     } else {
-        Error::addSourceMessage(Error::EQUATION_TRANSITION_FAILURE.clone(), list![(toString(res.clone())).clone()], SCodeUtil::getEquationInfo(eq.clone())?)?;
+        Error::addSourceMessage(Error::EQUATION_TRANSITION_FAILURE.clone(), list![(toString(res)).clone()], SCodeUtil::getEquationInfo(eq)?)?;
         bail!("fail");
     }
     Ok(())
@@ -391,22 +391,22 @@ pub(crate) fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCod
     let mut alg_opt: Option<Arc<SCode::AlgorithmSection>> = None;
     let mut alg: Arc<SCode::AlgorithmSection>;
     let mut info: SourceInfo;
-    alg_opt = List::findOption(algorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
+    alg_opt = List::findOption(algorithms, (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
     if isNone(alg_opt.clone()) {
-        alg_opt = List::findOption(initialAlgorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
+        alg_opt = List::findOption(initialAlgorithms, (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
     }
     if isSome(alg_opt.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(alg_opt.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(alg_opt) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         alg = __pa0.clone();
         info = SCodeUtil::getStatementInfo(listHead(alg.statements.clone())?)?;
-        if onlyDeprecated.clone() {
-            Error::addSourceMessage(Error::DEPRECATED_TRANSITION_FAILURE.clone(), list![(literal!("Algorithm sections")).clone(), (toString(res.clone())).clone()], info.clone())?;
+        if onlyDeprecated {
+            Error::addSourceMessage(Error::DEPRECATED_TRANSITION_FAILURE.clone(), list![(literal!("Algorithm sections")).clone(), (toString(res)).clone()], info)?;
             return Ok(());
         } else {
-            Error::addSourceMessage(Error::ALGORITHM_TRANSITION_FAILURE.clone(), list![(toString(res.clone())).clone()], info.clone())?;
+            Error::addSourceMessage(Error::ALGORITHM_TRANSITION_FAILURE.clone(), list![(toString(res)).clone()], info)?;
             bail!("fail");
         }
     }
@@ -414,7 +414,7 @@ pub(crate) fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCod
 }
 
 pub(crate) fn assertNoInitialAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut res: Arc<NFRestriction>) -> Result<()> {
-    for mut alg in &*algs.clone() {
+    for mut alg in &*algs {
         let mut alg = alg.clone();
         if !(alg.statements.clone().is_empty()) {
             Error::addSourceMessage(Error::INITIAL_ALGORITHM_TRANSITION_FAILURE.clone(), list![(toString(res.clone())).clone()], SCodeUtil::getStatementInfo(listHead(alg.statements.clone())?)?)?;
@@ -425,7 +425,7 @@ pub(crate) fn assertNoInitialAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCo
 }
 
 pub(crate) fn assertNoProtected(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> Result<()> {
-    for mut e in &*elements.clone() {
+    for mut e in &*elements {
         let mut e = e.clone();
         if SCodeUtil::isElementProtected(e.clone())? {
             Error::addSourceMessage(Error::PROTECTED_TRANSITION_FAILURE.clone(), list![(toString(res.clone())).clone()], SCodeUtil::elementInfo(e.clone()))?;
@@ -436,7 +436,7 @@ pub(crate) fn assertNoProtected(mut elements: Arc<metamodelica::List<Arc<SCode::
 }
 
 pub(crate) fn assertNoComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> Result<()> {
-    for mut e in &*elements.clone() {
+    for mut e in &*elements {
         let mut e = e.clone();
         if SCodeUtil::isComponent(e.clone()) {
             Error::addSourceMessage(Error::DEPRECATED_TRANSITION_FAILURE.clone(), list![(literal!("Components")).clone(), (toString(res.clone())).clone()], SCodeUtil::elementInfo(e.clone()))?;
@@ -446,7 +446,7 @@ pub(crate) fn assertNoComponents(mut elements: Arc<metamodelica::List<Arc<SCode:
 }
 
 pub(crate) fn assertOnlyConstantComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut clsNode: Arc<InstNode::InstNode>) -> Result<()> {
-    for mut e in &*elements.clone() {
+    for mut e in &*elements {
         let mut e = e.clone();
         let () = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ SCode::Element::COMPONENT { .. } if (!(SCodeUtil::isConstant(SCodeUtil::attrVariability(var_field!((*e).attributes, SCode::Element::COMPONENT).clone())?))) => {
@@ -461,7 +461,7 @@ pub(crate) fn assertOnlyConstantComponents(mut elements: Arc<metamodelica::List<
 }
 
 pub(crate) fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> () {
-    for mut e in &*elements.clone() {
+    for mut e in &*elements {
         let mut e = e.clone();
         if !(SCodeUtil::isFunction(e.clone())) {
         }
@@ -471,7 +471,7 @@ pub(crate) fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode
 
 pub(crate) fn checkClass(mut node: Arc<InstNode::InstNode>, mut restriction: Arc<NFRestriction>, mut context: i32) -> Result<()> {
     let mut cdef: Arc<SCode::ClassDef>;
-    if InstContext::inRelaxed(context.clone()) {
+    if InstContext::inRelaxed(context) {
         return Ok(());
     }
     cdef = SCodeUtil::getClassBody(InstNode::definition(node.clone())?)?;
@@ -481,42 +481,42 @@ pub(crate) fn checkClass(mut node: Arc<InstNode::InstNode>, mut restriction: Arc
         Deref @ CLASS => {
             assertNoComponents(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), restriction.clone())?;
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), true)?;
-            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), true)?;
+            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction, true)?;
             ()
         },
         Deref @ RECORD { .. } => {
             assertNoProtected(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), restriction.clone())?;
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
-            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
+            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction, false)?;
             ()
         },
         Deref @ TYPE => {
             assertNoProtected(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), restriction.clone())?;
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
-            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
+            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction, false)?;
             ()
         },
         Deref @ BLOCK => (),
         Deref @ FUNCTION => {
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
-            assertNoInitialAlgorithms(var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone())?;
+            assertNoInitialAlgorithms(var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction)?;
             ()
         },
         Deref @ CONNECTOR { .. } => {
             assertNoProtected(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), restriction.clone())?;
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
-            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
+            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction, false)?;
             ()
         },
         Deref @ PACKAGE => {
-            assertOnlyConstantComponents(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), node.clone())?;
+            assertOnlyConstantComponents(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), node)?;
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
-            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
+            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction, false)?;
             ()
         },
         Deref @ OPERATOR => {
             assertNoEquations(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
-            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction.clone(), false)?;
+            assertNoAlgorithms(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), restriction, false)?;
             ()
         },
         _ => (),

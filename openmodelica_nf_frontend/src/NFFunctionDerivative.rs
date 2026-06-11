@@ -125,7 +125,7 @@ pub(crate) fn instDerivatives(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc
     let mut scope: Arc<InstNode::InstNode>;
     der_mods = getDerivativeAnnotations(InstNode::definition(fnNode.clone())?)?;
     scope = InstNode::parent(fnNode.clone());
-    for mut m in &*der_mods.clone() {
+    for mut m in &*der_mods {
         let mut m = m.clone();
         ders = instDerivativeMod(m.clone(), fnNode.clone(), r#fn.clone(), scope.clone(), ders.clone())?;
     }
@@ -141,16 +141,16 @@ pub(crate) fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()>
     Function::typeNodeCache(fnDer.derivativeFn.clone(), InstContext::FUNCTION.clone())?;
     info = InstNode::info(fnDer.derivedFn.clone());
     (order, order_ty, var, _) = Typing::typeExp(fnDer.order.clone(), InstContext::FUNCTION.clone(), info.clone(), false)?;
-    (order, _, mk) = TypeCheck::matchTypes(order_ty.clone(), crate::NFType::interned_INTEGER(), order.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
-    if TypeCheck::isIncompatibleMatch(mk.clone()) {
-        Error::addSourceMessage(Error::VARIABLE_BINDING_TYPE_MISMATCH.clone(), list![(literal!("order")).clone(), (Expression::toString(order.clone())?).clone(), (literal!("Integer")).clone(), (Type::toString(order_ty.clone())?).clone()], info.clone())?;
+    (order, _, mk) = TypeCheck::matchTypes(order_ty.clone(), crate::NFType::interned_INTEGER(), order, TypeCheck::DEFAULT_OPTIONS.clone())?;
+    if TypeCheck::isIncompatibleMatch(mk) {
+        Error::addSourceMessage(Error::VARIABLE_BINDING_TYPE_MISMATCH.clone(), list![(literal!("order")).clone(), (Expression::toString(order.clone())?).clone(), (literal!("Integer")).clone(), (Type::toString(order_ty)?).clone()], info.clone())?;
         bail!("fail");
     }
-    if var.clone() > Variability::CONSTANT.clone() {
-        Error::addSourceMessage(Error::HIGHER_VARIABILITY_BINDING.clone(), list![(literal!("order")).clone(), (Prefixes::variabilityString(Variability::CONSTANT.clone())?).clone(), (Expression::toString(order.clone())?).clone(), (Prefixes::variabilityString(var.clone())?).clone()], info.clone())?;
+    if var > Variability::CONSTANT.clone() {
+        Error::addSourceMessage(Error::HIGHER_VARIABILITY_BINDING.clone(), list![(literal!("order")).clone(), (Prefixes::variabilityString(Variability::CONSTANT.clone())?).clone(), (Expression::toString(order.clone())?).clone(), (Prefixes::variabilityString(var)?).clone()], info.clone())?;
         bail!("fail");
     }
-    order = Ceval::evalExp(order.clone(), Ceval::EvalTarget::new(info.clone(), InstContext::NO_CONTEXT.clone(), None))?;
+    order = Ceval::evalExp(order, Ceval::EvalTarget::new(info, InstContext::NO_CONTEXT.clone(), None))?;
     Ok(())
 }
 
@@ -162,7 +162,7 @@ pub(crate) fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::Functio
         _ => bail!("pattern mismatch"),
     } };
     order = __pa0.clone();
-    derDef = DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivedFunction: Function::name(listHead(Function::getCachedFuncs(fnDer.derivedFn.clone())?)?), derivativeFunction: Function::name(listHead(Function::getCachedFuncs(fnDer.derivativeFn.clone())?)?), derivativeOrder: order.clone(), conditionRefs: ({
+    derDef = DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivedFunction: Function::name(listHead(Function::getCachedFuncs(fnDer.derivedFn.clone())?)?), derivativeFunction: Function::name(listHead(Function::getCachedFuncs(fnDer.derivativeFn.clone())?)?), derivativeOrder: order, conditionRefs: ({
         let mut __acc: Arc<metamodelica::List<(i32, DAE::derivativeCond)>> = metamodelica::nil();
         for mut c in (fnDer.conditions.clone()).into_iter().cloned() {
             let __x = conditionToDAE(c.clone())?;
@@ -184,10 +184,10 @@ pub(crate) fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32,
     let mut daeCond: (i32, DAE::derivativeCond);
     let mut idx: i32;
     let mut c: Condition;
-    (idx, _, c) = cond.clone();
-    daeCond = (match c.clone() {
-        Condition::ZERO_DERIVATIVE => (idx.clone(), openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE),
-        Condition::NO_DERIVATIVE { .. } => (idx.clone(), DAE::derivativeCond::NO_DERIVATIVE { binding: Arc::new(DAE::Exp::ICONST { integer: 99 }) }),
+    (idx, _, c) = cond;
+    daeCond = (match c {
+        Condition::ZERO_DERIVATIVE => (idx, openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE),
+        Condition::NO_DERIVATIVE { .. } => (idx, DAE::derivativeCond::NO_DERIVATIVE { binding: Arc::new(DAE::Exp::ICONST { integer: 99 }) }),
     });
     Ok(daeCond)
 }
@@ -209,16 +209,16 @@ pub(crate) fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode
         _ => bail!("pattern mismatch"),
     } };
     order = __pa0.clone();
-    orderMod = Arc::new(SCode::SubMod { ident: (literal!("order")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::INTEGER { value: order.clone() })), comment: None, info: info.clone() }) });
+    orderMod = Arc::new(SCode::SubMod { ident: (literal!("order")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::INTEGER { value: order })), comment: None, info: info.clone() }) });
     subMods = metamodelica::nil();
     for mut tpl in &*fnDer.conditions.clone() {
         let mut tpl = tpl.clone();
         (_, id, condition) = tpl.clone();
-        subMods = metamodelica::cons(Arc::new(SCode::SubMod { ident: (conditionToString(condition.clone())).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (id.clone()).clone(), subscripts: metamodelica::nil() }) })), comment: None, info: info.clone() }) }), subMods.clone());
+        subMods = metamodelica::cons(Arc::new(SCode::SubMod { ident: (conditionToString(condition)).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (id.clone()).clone(), subscripts: metamodelica::nil() }) })), comment: None, info: info.clone() }) }), subMods.clone());
     }
     func = listHead(Function::getCachedFuncs(fnDer.derivativeFn.clone())?)?;
-    r#mod = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::cons(orderMod.clone(), subMods.clone()), binding: Some(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (AbsynUtil::pathString(func.path.clone(), (literal!(".")).clone(), true, false)?).clone(), subscripts: metamodelica::nil() }) })), comment: None, info: info.clone() });
-    subMod = Arc::new(SCode::SubMod { ident: (literal!("derivative")).clone(), r#mod: r#mod.clone() });
+    r#mod = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::cons(orderMod, subMods), binding: Some(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (AbsynUtil::pathString(func.path.clone(), (literal!(".")).clone(), true, false)?).clone(), subscripts: metamodelica::nil() }) })), comment: None, info: info });
+    subMod = Arc::new(SCode::SubMod { ident: (literal!("derivative")).clone(), r#mod: r#mod });
     Ok(subMod)
 }
 
@@ -229,7 +229,7 @@ pub(crate) fn perfectFit(mut fnDer: Arc<NFFunctionDerivative>, mut interface_map
     for mut condition in &*fnDer.conditions.clone() {
         let mut condition = condition.clone();
         (_, name, cond) = condition.clone();
-        if cond.clone() == Condition::ZERO_DERIVATIVE.clone() && !(UnorderedMap::contains((name.clone()).clone(), interface_map.clone())?) {
+        if cond == Condition::ZERO_DERIVATIVE.clone() && !(UnorderedMap::contains((name.clone()).clone(), interface_map.clone())?) {
             b = false;
             return Ok(b.clone());
         }
@@ -246,10 +246,10 @@ pub fn conditionsFromMap(mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcSt
     let mut conditions: Arc<metamodelica::List<(i32, ArcStr, Condition)>> = metamodelica::nil();
     let mut name: ArcStr;
     let mut isZeroDer: bool;
-    for mut tpl in &*UnorderedMap::toList(interface_map.clone()) {
+    for mut tpl in &*UnorderedMap::toList(interface_map) {
         let mut tpl = tpl.clone();
         (name, isZeroDer) = tpl.clone();
-        if isZeroDer.clone() {
+        if isZeroDer {
             conditions = metamodelica::cons((0, name.clone(), Condition::ZERO_DERIVATIVE.clone()), conditions.clone());
         }
     }
@@ -258,17 +258,17 @@ pub fn conditionsFromMap(mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcSt
 
 fn conditionToString(mut condition: Condition) -> ArcStr {
     let mut r#str: ArcStr;
-    r#str = ((match condition.clone() {
+    r#str = ((match condition {
         Condition::NO_DERIVATIVE { .. } => literal!("noDerivative"),
         Condition::ZERO_DERIVATIVE => literal!("zeroDerivative"),
-        _ => ArcStr::from(::std::format!("{:?}", condition.clone())),
+        _ => ArcStr::from(::std::format!("{:?}", condition)),
     })).clone();
     r#str
 }
 
 fn getDerivativeAnnotations(mut definition: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Mod>>>> {
     let mut derMods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
-    derMods = (::match_deref::match_deref! { match &(definition.clone()) {
+    derMods = (::match_deref::match_deref! { match &(definition) {
         Deref @ SCode::Element::CLASS { cmt: Deref @ SCode::Comment { annotation_: Some(ann), .. }, .. } => {
             SCodeUtil::lookupAnnotations(ann.clone(), (literal!("derivative")).clone())?
         },
@@ -287,14 +287,14 @@ fn instDerivativeMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstN
             let mut der_node: Arc<InstNode::InstNode>;
             let mut order: Arc<Expression::NFExpression>;
             let mut conds: Arc<metamodelica::List<(i32, ArcStr, Condition)>>;
-            (_, der_node, _) = Function::instFunction(acref.clone(), scope.clone(), InstContext::NO_CONTEXT.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
+            (_, der_node, _) = Function::instFunction(acref.clone(), scope, InstContext::NO_CONTEXT.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
             addLowerOrderDerivative(der_node.clone(), fnNode.clone())?;
-            (order, conds) = getDerivativeAttributes(attrs.clone(), r#fn.clone(), fnNode.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
-            metamodelica::cons(Arc::new(NFFunctionDerivative { derivativeFn: der_node.clone(), derivedFn: fnNode.clone(), order: order.clone(), conditions: conds.clone(), lowerOrderDerivatives: metamodelica::nil() }), fnDers.clone())
+            (order, conds) = getDerivativeAttributes(attrs.clone(), r#fn, fnNode.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
+            metamodelica::cons(Arc::new(NFFunctionDerivative { derivativeFn: der_node.clone(), derivedFn: fnNode, order: order.clone(), conditions: conds.clone(), lowerOrderDerivatives: metamodelica::nil() }), fnDers)
         },
         Deref @ SCode::Mod::MOD { .. } => {
-            Error::addStrictMessage(Error::MISSING_FUNCTION_DERIVATIVE_NAME.clone(), list![(AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone()], var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
-            fnDers.clone()
+            Error::addStrictMessage(Error::MISSING_FUNCTION_DERIVATIVE_NAME.clone(), list![(AbsynUtil::pathString(Function::name(r#fn), (literal!(".")).clone(), true, false)?).clone()], var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
+            fnDers
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunctionDerivative.instDerivativeMod")); __mm_s.push_str(&*literal!(" got invalid modifier")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunctionDerivative.mo"))?;
@@ -312,7 +312,7 @@ fn getDerivativeAttributes(mut attrs: Arc<metamodelica::List<Arc<SCode::SubMod>>
     let mut r#mod: Arc<SCode::Mod>;
     let mut aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut index: i32 = 0;
-    for mut attr in &*attrs.clone() {
+    for mut attr in &*attrs {
         let mut attr = attr.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(attr.clone()) {
             Deref @ SCode::SubMod { ident: __pa0, r#mod: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -332,13 +332,13 @@ fn getDerivativeAttributes(mut attrs: Arc<metamodelica::List<Arc<SCode::SubMod>>
         (Deref @ "noDerivative", Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_id, .. } }), .. }) => {
             id = (*__esc_id).clone();
             index = getInputIndex((id.clone()).clone(), r#fn.clone(), info.clone())?;
-            conditions = metamodelica::cons((index.clone(), id.clone(), Condition::NO_DERIVATIVE.clone()), conditions.clone());
+            conditions = metamodelica::cons((index, id.clone(), Condition::NO_DERIVATIVE.clone()), conditions.clone());
             ()
         },
         (Deref @ "zeroDerivative", Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_id, .. } }), .. }) => {
             id = (*__esc_id).clone();
             index = getInputIndex((id.clone()).clone(), r#fn.clone(), info.clone())?;
-            conditions = metamodelica::cons((index.clone(), id.clone(), Condition::ZERO_DERIVATIVE.clone()), conditions.clone());
+            conditions = metamodelica::cons((index, id.clone(), Condition::ZERO_DERIVATIVE.clone()), conditions.clone());
             ()
         },
         _ => {
@@ -361,15 +361,15 @@ fn getInputIndex(mut name: ArcStr, mut r#fn: Arc<Function::Function>, mut info: 
         if InstNode::name(i.clone())? == name.clone() {
             return Ok(index.clone());
         }
-        index = index.clone() + 1;
+        index = index + 1;
     }
-    Error::addSourceMessage(Error::INVALID_FUNCTION_ANNOTATION_INPUT.clone(), list![(name.clone()).clone(), (AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone()], info.clone())?;
+    Error::addSourceMessage(Error::INVALID_FUNCTION_ANNOTATION_INPUT.clone(), list![(name).clone(), (AbsynUtil::pathString(Function::name(r#fn), (literal!(".")).clone(), true, false)?).clone()], info)?;
     bail!("fail");
     Ok(index)
 }
 
 fn addLowerOrderDerivative(mut fnNode: Arc<InstNode::InstNode>, mut lowerDerNode: Arc<InstNode::InstNode>) -> Result<()> {
-    Function::mapCachedFuncs(fnNode.clone(), (std::sync::Arc::new({ let __pe_b1 = lowerDerNode.clone(); move |__pe_a0| addLowerOrderDerivative2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
+    Function::mapCachedFuncs(fnNode, (std::sync::Arc::new({ let __pe_b1 = lowerDerNode; move |__pe_a0| addLowerOrderDerivative2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
     Ok(())
 }
 

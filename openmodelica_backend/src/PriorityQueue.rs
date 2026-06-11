@@ -57,9 +57,9 @@ pub(crate) fn compareElement(mut el1: Element, mut el2: Element) -> bool {
     let mut b: bool;
     let mut p1: Priority;
     let mut p2: Priority;
-    (p1, _) = el1.clone();
-    (p2, _) = el2.clone();
-    b = p1.clone() <= p2.clone();
+    (p1, _) = el1;
+    (p2, _) = el2;
+    b = p1 <= p2;
     b
 }
 
@@ -75,19 +75,19 @@ function isEmpty = listEmpty;
 */
 pub(crate) fn isEmpty(mut ts: T) -> bool {
     let mut isEmpty: bool;
-    isEmpty = ts.clone().is_empty();
+    isEmpty = ts.is_empty();
     isEmpty
 }
 
 pub(crate) fn insert(mut elt: Element, mut ts: T) -> Result<T> {
     let mut ots: T;
-    ots = ins(Arc::new(Tree { elt: elt.clone(), rank: 0, trees: metamodelica::nil() }), ts.clone())?;
+    ots = ins(Arc::new(Tree { elt: elt, rank: 0, trees: metamodelica::nil() }), ts)?;
     Ok(ots)
 }
 
 pub(crate) fn meld(mut its1: T, mut its2: T) -> Result<T> {
     let mut ts: T;
-    ts = (::match_deref::match_deref! { match &((its1.clone(), its2.clone())) {
+    ts = (::match_deref::match_deref! { match &((its1, its2)) {
         (ts1, Deref @ metamodelica::List::Nil) => {
             ts1.clone()
         },
@@ -104,17 +104,17 @@ pub(crate) fn meld(mut its1: T, mut its2: T) -> Result<T> {
 
 pub(crate) fn meld2(mut b1: bool, mut b2: bool, mut t1: Arc<Tree>, mut inTs1: T, mut t2: Arc<Tree>, mut inTs2: T) -> Result<T> {
     let mut ts: T = metamodelica::nil();
-    ts = (::match_deref::match_deref! { match &((b1.clone(), b2.clone(), inTs1.clone(), inTs2.clone())) {
+    ts = (::match_deref::match_deref! { match &((b1, b2, inTs1.clone(), inTs2.clone())) {
         (true, _, ts1, ts2) => {
-            ts = meld(ts1.clone(), metamodelica::cons(t2.clone(), ts2.clone()))?;
-            metamodelica::cons(t1.clone(), ts.clone())
+            ts = meld(ts1.clone(), metamodelica::cons(t2, ts2.clone()))?;
+            metamodelica::cons(t1, ts)
         },
         (_, true, ts1, ts2) => {
-            ts = meld(metamodelica::cons(t1.clone(), ts1.clone()), ts2.clone())?;
-            metamodelica::cons(t2.clone(), ts.clone())
+            ts = meld(metamodelica::cons(t1, ts1.clone()), ts2.clone())?;
+            metamodelica::cons(t2, ts)
         },
         _ => {
-            ins(link(t1.clone(), t2.clone())?, meld(inTs1.clone(), inTs2.clone())?)?
+            ins(link(t1, t2)?, meld(inTs1, inTs2)?)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -123,7 +123,7 @@ pub(crate) fn meld2(mut b1: bool, mut b2: bool, mut t1: Arc<Tree>, mut inTs1: T,
 
 pub(crate) fn findMin(mut inTs: T) -> Result<Element> {
     let mut elt: Element;
-    elt = (::match_deref::match_deref! { match &(inTs.clone()) {
+    elt = (::match_deref::match_deref! { match &(inTs) {
         Deref @ metamodelica::List::Cons { head: t, tail: Deref @ metamodelica::List::Nil } => {
             root(t.clone())?
         },
@@ -143,13 +143,13 @@ pub(crate) fn deleteMin(mut ts: T) -> Result<T> {
     let mut ots: T;
     let mut ts1: T;
     let mut ts2: T;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getMin(ts.clone())?) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getMin(ts)?) {
         (Deref @ Tree { trees: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     ts1 = __pa0.clone();
     ts2 = __pa1.clone();
-    ots = meld(ts1.clone().reverse(), ts2.clone())?;
+    ots = meld(ts1.reverse(), ts2)?;
     Ok(ots)
 }
 
@@ -158,34 +158,34 @@ pub(crate) fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
     let mut elt: Element;
     let mut ts1: T;
     let mut ts2: T;
-    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(getMin(ts.clone())?) {
+    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(getMin(ts)?) {
         (Deref @ Tree { elt: __pa0, trees: __pa1, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
     elt = __pa0.clone();
     ts1 = __pa1.clone();
     ts2 = __pa2.clone();
-    ots = meld(ts1.clone().reverse(), ts2.clone())?;
+    ots = meld(ts1.reverse(), ts2)?;
     Ok((ots, elt))
 }
 
 pub(crate) fn elements(mut ts: T) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
     let mut elts: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>;
-    elts = elements2(ts.clone(), metamodelica::nil())?;
+    elts = elements2(ts, metamodelica::nil())?;
     Ok(elts)
 }
 
 pub(crate) fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(its.clone()) {
+        ::match_deref::match_deref! { match &(its) {
         Deref @ metamodelica::List::Nil => {
-            return Ok(acc.clone().reverse())
+            return Ok(acc.reverse())
         },
         ts => {
             let mut elt: Element;
             let mut ts = (*ts).clone();
             (ts, elt) = deleteAndReturnMin(ts.clone())?;
-            { (its, acc) = (ts.clone(), metamodelica::cons(elt.clone(), acc.clone())); continue '__tco; }
+            { (its, acc) = (ts.clone(), metamodelica::cons(elt.clone(), acc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -225,7 +225,7 @@ pub type NODE = Tree;
 
 fn root(mut tree: Arc<Tree>) -> Result<Element> {
     let mut elt: Element;
-    let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(tree) {
         Deref @ Tree { elt: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -235,7 +235,7 @@ fn root(mut tree: Arc<Tree>) -> Result<Element> {
 
 fn rank(mut tree: Arc<Tree>) -> Result<Rank> {
     let mut rank: Rank;
-    let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(tree) {
         Deref @ Tree { rank: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -255,7 +255,7 @@ fn link(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> Result<Arc<Tree>> {
             r2 = r2.clone() + 1;
             ts1 = metamodelica::cons(t2.clone(), ts1.clone());
             ts2 = metamodelica::cons(t1.clone(), ts2.clone());
-            if (compareElement(root(t1.clone())?, root(t2.clone())?)) {Arc::new(Tree { elt: e1.clone(), rank: r1.clone(), trees: ts1.clone() })} else {Arc::new(Tree { elt: e2.clone(), rank: r2.clone(), trees: ts2.clone() })}
+            if (compareElement(root(t1)?, root(t2)?)) {Arc::new(Tree { elt: e1.clone(), rank: r1.clone(), trees: ts1.clone() })} else {Arc::new(Tree { elt: e2.clone(), rank: r2.clone(), trees: ts2.clone() })}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -264,9 +264,9 @@ fn link(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> Result<Arc<Tree>> {
 
 fn ins(mut t: Arc<Tree>, mut its: T) -> Result<T> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((t.clone(), its.clone())) {
+        ::match_deref::match_deref! { match &((t.clone(), its)) {
         (_, Deref @ metamodelica::List::Nil) => {
-            return Ok(list![t.clone()])
+            return Ok(list![t])
         },
         (t1, Deref @ metamodelica::List::Cons { head: t2, tail: ts }) => {
             if (rank(t1.clone())? < rank(t2.clone())?) {return Ok(metamodelica::cons(t1.clone(), metamodelica::cons(t2.clone(), ts.clone())))} else {{ (t, its) = (link(t1.clone(), t2.clone())?, ts.clone()); continue '__tco; }}
@@ -279,7 +279,7 @@ fn ins(mut t: Arc<Tree>, mut its: T) -> Result<T> {
 fn getMin(mut ts: T) -> Result<(Arc<Tree>, T)> {
     let mut min: Arc<Tree>;
     let mut ots: T;
-    (min, ots) = (::match_deref::match_deref! { match &(ts.clone()) {
+    (min, ots) = (::match_deref::match_deref! { match &(ts) {
         Deref @ metamodelica::List::Cons { head: t, tail: Deref @ metamodelica::List::Nil } => {
             (t.clone(), metamodelica::nil())
         },

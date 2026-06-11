@@ -56,14 +56,14 @@ pub(crate) fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token
     let mut errorTokens: Arc<metamodelica::List<Token>>;
     let mut contents: ArcStr;
     contents = (System::readFile((fileName.clone()).clone())?).clone();
-    (tokens, errorTokens) = lex((fileName.clone()).clone(), (contents.clone()).clone())?;
+    (tokens, errorTokens) = lex((fileName).clone(), (contents).clone())?;
     Ok((tokens, errorTokens))
 }
 
 pub(crate) fn scanString(mut fileSource: ArcStr, mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errorTokens: Arc<metamodelica::List<Token>>;
-    (tokens, errorTokens) = lex((fileName.clone()).clone(), (fileSource.clone()).clone())?;
+    (tokens, errorTokens) = lex((fileName).clone(), (fileSource).clone())?;
     Ok((tokens, errorTokens))
 }
 
@@ -73,77 +73,77 @@ pub(crate) fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_
     let mut mm_startSt: i32;
     let mut bufferRet: i32;
     let mut errorTokens: Arc<metamodelica::List<Token>> = inErrorTokens.clone();
-    mm_startSt = startSt.clone();
+    mm_startSt = startSt;
     bufferRet = 0;
-    token = (match act.clone() {
+    token = (match act {
         1 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::STRING.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::STRING.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         2 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::STRING.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::STRING.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         3 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::NUMBER.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::NUMBER.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         4 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::NUMBER.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::NUMBER.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         5 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::INTEGER.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::INTEGER.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         6 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::TRUE.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::TRUE.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         7 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::FALSE.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::FALSE.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         8 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::NULL.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::NULL.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         9 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::OBJECTBEGIN.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::OBJECTBEGIN.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         10 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::OBJECTEND.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::OBJECTEND.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         11 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::ARRAYBEGIN.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::ARRAYBEGIN.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         12 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::ARRAYEND.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::ARRAYEND.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         13 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::COMMA.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::COMMA.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         14 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::COLON.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::COLON.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             tok.clone()
         },
         15 => {
@@ -151,14 +151,14 @@ pub(crate) fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_
         },
         16 => {
             let mut tok: Token;
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
-            errorTokens = metamodelica::cons(tok.clone(), errorTokens.clone());
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
+            errorTokens = metamodelica::cons(tok.clone(), errorTokens);
             noToken.clone()
         },
         _ => {
             let mut tok: Token;
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nLexer unknown rule, action=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", act.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nLexer unknown rule, action=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", act))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            tok = Token { fileName: (fileNm).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (fileContents).clone(), byteOffset: mm_pos - buffer, length: buffer, lineNumberStart: lineNrStart, columnNumberStart: mm_ePos + 1, lineNumberEnd: mm_linenr, columnNumberEnd: mm_sPos + 1 };
             metamodelica::print((printToken(tok.clone())?).clone());
             bail!("fail")
         },
@@ -255,8 +255,8 @@ pub(crate) fn printToken(mut token: Token) -> Result<ArcStr> {
     contents = __pa1.clone();
     byteOffset = __pa2.clone();
     length = __pa3.clone();
-    contents = (if (length.clone() > 0) {substring((contents.clone()).clone(), byteOffset.clone(), byteOffset.clone() + length.clone() - 1)?} else {literal!("")}).clone();
-    strTk = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[TOKEN:")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", id.clone()))); __mm_s.push_str(&*literal!(" '")); __mm_s.push_str(&*contents.clone()); __mm_s.push_str(&*literal!("' (")); __mm_s.push_str(&*intString(token.lineNumberStart.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberStart.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(token.lineNumberEnd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberEnd.clone())); __mm_s.push_str(&*literal!(")]")); ArcStr::from(__mm_s) }).clone();
+    contents = (if (length > 0) {substring((contents).clone(), byteOffset, byteOffset + length - 1)?} else {literal!("")}).clone();
+    strTk = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[TOKEN:")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", id))); __mm_s.push_str(&*literal!(" '")); __mm_s.push_str(&*contents); __mm_s.push_str(&*literal!("' (")); __mm_s.push_str(&*intString(token.lineNumberStart.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberStart.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(token.lineNumberEnd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberEnd.clone())); __mm_s.push_str(&*literal!(")]")); ArcStr::from(__mm_s) }).clone();
     Ok(strTk)
 }
 
@@ -264,11 +264,11 @@ pub(crate) fn tokenContent(mut token: Token) -> Result<ArcStr> {
     let mut contents: ArcStr;
     let mut byteOffset: i32;
     let mut length: i32;
-    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token.clone()) else { bail!("pattern mismatch") };
+    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token) else { bail!("pattern mismatch") };
     contents = __pa0.clone();
     byteOffset = __pa1.clone();
     length = __pa2.clone();
-    contents = (if (length.clone() > 0) {substring((contents.clone()).clone(), byteOffset.clone(), byteOffset.clone() + length.clone() - 1)?} else {literal!("")}).clone();
+    contents = (if (length > 0) {substring((contents).clone(), byteOffset, byteOffset + length - 1)?} else {literal!("")}).clone();
     Ok(contents)
 }
 
@@ -280,21 +280,21 @@ pub(crate) fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<boo
     let mut length1: i32;
     let mut offset2: i32;
     let mut length2: i32;
-    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token1.clone()) else { bail!("pattern mismatch") };
+    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token1) else { bail!("pattern mismatch") };
     contents1 = __pa0.clone();
     offset1 = __pa1.clone();
     length1 = __pa2.clone();
-    let Token { fileContents: __pa3, byteOffset: __pa4, length: __pa5, .. } = (token2.clone()) else { bail!("pattern mismatch") };
+    let Token { fileContents: __pa3, byteOffset: __pa4, length: __pa5, .. } = (token2) else { bail!("pattern mismatch") };
     contents2 = __pa3.clone();
     offset2 = __pa4.clone();
     length2 = __pa5.clone();
-    b = if (length1.clone() != length2.clone()) {false} else {0 == System::strcmp_offset((contents1.clone()).clone(), offset1.clone(), length1.clone(), (contents2.clone()).clone(), offset2.clone(), length2.clone())};
+    b = if (length1 != length2) {false} else {0 == System::strcmp_offset((contents1).clone(), offset1, length1, (contents2).clone(), offset2, length2)};
     Ok(b)
 }
 
 pub(crate) fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
     let mut info: SourceInfo;
-    info = { let mut t = token.clone(); (match t.clone() {
+    info = { let mut t = token; (match t.clone() {
         Token { .. } => SourceInfo { fileName: (t.fileName.clone()).clone(), isReadOnly: false, lineNumberStart: t.lineNumberStart.clone(), columnNumberStart: t.columnNumberStart.clone(), lineNumberEnd: t.lineNumberEnd.clone(), columnNumberEnd: t.columnNumberEnd.clone(), lastModification: metamodelica::OrderedFloat(0.0_f64) },
     }) };
     Ok(info)
@@ -335,13 +335,13 @@ fn lex(mut fileName: ArcStr, mut contents: ArcStr) -> Result<(Arc<metamodelica::
     }
     contentLen = ((contents.clone()).clone().len() as i32);
     i = 1;
-    while i.clone() <= contentLen.clone() {
-        cTok = stringGet((contents.clone()).clone(),i.clone())?;
-        (tokens, numBacktrack, startSt, currSt, pos, sPos, ePos, linenr, lineNrStart, buffer, states, errorTokens) = consume(cTok.clone(), tokens.clone(), (contents.clone()).clone(), startSt.clone(), currSt.clone(), pos.clone(), sPos.clone(), ePos.clone(), linenr.clone(), lineNrStart.clone(), buffer.clone(), states.clone(), (fileName.clone()).clone(), errorTokens.clone())?;
-        i = i.clone() - numBacktrack.clone() + 1;
+    while i <= contentLen {
+        cTok = stringGet((contents.clone()).clone(),i)?;
+        (tokens, numBacktrack, startSt, currSt, pos, sPos, ePos, linenr, lineNrStart, buffer, states, errorTokens) = consume(cTok, tokens.clone(), (contents.clone()).clone(), startSt, currSt, pos, sPos, ePos, linenr, lineNrStart, buffer, states.clone(), (fileName.clone()).clone(), errorTokens.clone())?;
+        i = i - numBacktrack + 1;
     }
-    tokens = metamodelica::Dangerous::listReverseInPlace(tokens.clone());
-    errorTokens = metamodelica::Dangerous::listReverseInPlace(errorTokens.clone());
+    tokens = metamodelica::Dangerous::listReverseInPlace(tokens);
+    errorTokens = metamodelica::Dangerous::listReverseInPlace(errorTokens);
     Ok((tokens, errorTokens))
 }
 
@@ -363,77 +363,77 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
     let mut buffer2: i32;
     let mut c: i32;
     let mut baseCond: i32;
-    mm_startSt = startSt.clone();
-    mm_currSt = currSt.clone();
-    mm_pos = pos.clone();
-    mm_sPos = sPos.clone();
-    mm_ePos = ePos.clone();
-    mm_linenr = linenr.clone();
-    lineNrStart = inLineNrStart.clone();
-    buffer = inBuffer.clone();
-    states = inStates.clone();
-    baseCond = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt});
+    mm_startSt = startSt;
+    mm_currSt = currSt;
+    mm_pos = pos;
+    mm_sPos = sPos;
+    mm_ePos = ePos;
+    mm_linenr = linenr;
+    lineNrStart = inLineNrStart;
+    buffer = inBuffer;
+    states = inStates;
+    baseCond = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt-1) as usize].clone(); __elt});
     if debug.clone() == true {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPROGRAM:{")); __mm_s.push_str(&*intString(cp.clone())); __mm_s.push_str(&*literal!("} ")); ArcStr::from(__mm_s) }).clone());
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBUFFER:{")); __mm_s.push_str(&*intString(buffer.clone())); __mm_s.push_str(&*literal!("} ")); ArcStr::from(__mm_s) }).clone());
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("base:")); __mm_s.push_str(&*intString(baseCond.clone())); __mm_s.push_str(&*literal!(" st:")); __mm_s.push_str(&*intString(mm_currSt.clone())); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPROGRAM:{")); __mm_s.push_str(&*intString(cp)); __mm_s.push_str(&*literal!("} ")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBUFFER:{")); __mm_s.push_str(&*intString(buffer)); __mm_s.push_str(&*literal!("} ")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("base:")); __mm_s.push_str(&*intString(baseCond)); __mm_s.push_str(&*literal!(" st:")); __mm_s.push_str(&*intString(mm_currSt)); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone());
     }
-    buffer = buffer.clone() + 1;
-    mm_pos = mm_pos.clone() + 1;
-    if cp.clone() == 10 {
-        mm_linenr = mm_linenr.clone() + 1;
+    buffer = buffer + 1;
+    mm_pos = mm_pos + 1;
+    if cp == 10 {
+        mm_linenr = mm_linenr + 1;
         mm_sPos = 0;
     } else {
-        mm_sPos = mm_sPos.clone() + 1;
+        mm_sPos = mm_sPos + 1;
     }
     if debug.clone() == true {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[Reading:'")); __mm_s.push_str(&*intStringChar(cp.clone())); __mm_s.push_str(&*literal!("' at p:")); __mm_s.push_str(&*intString(mm_pos.clone() - 1)); __mm_s.push_str(&*literal!(" line:")); __mm_s.push_str(&*intString(mm_linenr.clone())); __mm_s.push_str(&*literal!(" rPos:")); __mm_s.push_str(&*intString(mm_sPos.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[Reading:'")); __mm_s.push_str(&*intStringChar(cp)); __mm_s.push_str(&*literal!("' at p:")); __mm_s.push_str(&*intString(mm_pos - 1)); __mm_s.push_str(&*literal!(" line:")); __mm_s.push_str(&*intString(mm_linenr)); __mm_s.push_str(&*literal!(" rPos:")); __mm_s.push_str(&*intString(mm_sPos)); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
     }
-    c = ({let __elt = LexTable::yy_ec.borrow()[(cp.clone()-1) as usize].clone(); __elt});
+    c = ({let __elt = LexTable::yy_ec.borrow()[(cp-1) as usize].clone(); __elt});
     if debug.clone() == true {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" evalState Before[c")); __mm_s.push_str(&*intString(c.clone())); __mm_s.push_str(&*literal!(",s")); __mm_s.push_str(&*intString(mm_currSt.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" evalState Before[c")); __mm_s.push_str(&*intString(c)); __mm_s.push_str(&*literal!(",s")); __mm_s.push_str(&*intString(mm_currSt)); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
     }
-    (mm_currSt, c) = evalState(mm_currSt.clone(), c.clone());
+    (mm_currSt, c) = evalState(mm_currSt, c);
     if debug.clone() == true {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" After[c")); __mm_s.push_str(&*intString(c.clone())); __mm_s.push_str(&*literal!(",s")); __mm_s.push_str(&*intString(mm_currSt.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" After[c")); __mm_s.push_str(&*intString(c)); __mm_s.push_str(&*literal!(",s")); __mm_s.push_str(&*intString(mm_currSt)); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
     }
-    if mm_currSt.clone() > 0 {
-        mm_currSt = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt});
-        mm_currSt = ({let __elt = LexTable::yy_nxt.borrow()[(mm_currSt.clone() + c.clone()-1) as usize].clone(); __elt});
+    if mm_currSt > 0 {
+        mm_currSt = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt-1) as usize].clone(); __elt});
+        mm_currSt = ({let __elt = LexTable::yy_nxt.borrow()[(mm_currSt + c-1) as usize].clone(); __elt});
     } else {
-        mm_currSt = ({let __elt = LexTable::yy_nxt.borrow()[(c.clone()-1) as usize].clone(); __elt});
+        mm_currSt = ({let __elt = LexTable::yy_nxt.borrow()[(c-1) as usize].clone(); __elt});
     }
-    states = metamodelica::cons(mm_currSt.clone(), states.clone());
-    baseCond = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt});
-    if baseCond.clone() == LexTable::yy_finish.clone() {
+    states = metamodelica::cons(mm_currSt, states);
+    baseCond = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt-1) as usize].clone(); __elt});
+    if baseCond == LexTable::yy_finish.clone() {
         if debug.clone() == true {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[RESTORE=")); __mm_s.push_str(&*intString(({let __elt = LexTable::yy_accept.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[RESTORE=")); __mm_s.push_str(&*intString(({let __elt = LexTable::yy_accept.borrow()[(mm_currSt-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
         }
-        (act, mm_currSt, mm_pos, mm_sPos, mm_linenr, buffer, bkBuffer, states) = findRule((fileContents.clone()).clone(), mm_currSt.clone(), mm_pos.clone(), mm_sPos.clone(), mm_ePos.clone(), mm_linenr.clone(), buffer.clone(), bkBuffer.clone(), states.clone())?;
+        (act, mm_currSt, mm_pos, mm_sPos, mm_linenr, buffer, bkBuffer, states) = findRule((fileContents.clone()).clone(), mm_currSt, mm_pos, mm_sPos, mm_ePos, mm_linenr, buffer, bkBuffer, states)?;
         if debug.clone() == true {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nFound rule: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", act.clone()))); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nFound rule: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", act))); ArcStr::from(__mm_s) }).clone());
         }
-        (tok, mm_startSt, buffer2, errorTokens) = action(act.clone(), mm_startSt.clone(), mm_currSt.clone(), mm_pos.clone(), mm_sPos.clone(), mm_ePos.clone(), mm_linenr.clone(), lineNrStart.clone(), buffer.clone(), (fileName.clone()).clone(), (fileContents.clone()).clone(), errorTokens.clone())?;
+        (tok, mm_startSt, buffer2, errorTokens) = action(act, mm_startSt, mm_currSt, mm_pos, mm_sPos, mm_ePos, mm_linenr, lineNrStart, buffer, (fileName).clone(), (fileContents).clone(), errorTokens)?;
         if debug.clone() == true {
             metamodelica::print((literal!("\nDid action")).clone());
         }
-        mm_currSt = mm_startSt.clone();
+        mm_currSt = mm_startSt;
         states = metamodelica::nil();
-        if buffer.clone() != buffer2.clone() {
-            mm_ePos = mm_sPos.clone();
-            lineNrStart = linenr.clone();
+        if buffer != buffer2 {
+            mm_ePos = mm_sPos;
+            lineNrStart = linenr;
         }
-        buffer = buffer2.clone();
+        buffer = buffer2;
         resToken = (match tok.clone() {
-        Token { id: TokenId::_NO_TOKEN, .. } => tokens.clone(),
-        _ => metamodelica::cons(tok.clone(), tokens.clone()),
+        Token { id: TokenId::_NO_TOKEN, .. } => tokens,
+        _ => metamodelica::cons(tok, tokens),
     });
         if debug.clone() {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n CountTokens:")); __mm_s.push_str(&*intString((resToken.clone().len() as i32))); ArcStr::from(__mm_s) }).clone());
         }
     } else {
         bkBuffer = 0;
-        resToken = tokens.clone();
+        resToken = tokens;
     }
     Ok((resToken, bkBuffer, mm_startSt, mm_currSt, mm_pos, mm_sPos, mm_ePos, mm_linenr, lineNrStart, buffer, states, errorTokens))
 }
@@ -452,41 +452,41 @@ fn findRule(mut fileContents: ArcStr, mut currSt: i32, mut pos: i32, mut sPos: i
     let mut stCmp: i32;
     let mut cp: i32;
     let mut st: bool;
-    mm_currSt = currSt.clone();
-    mm_pos = pos.clone();
-    mm_sPos = sPos.clone();
-    mm_linenr = linenr.clone();
-    buffer = inBuffer.clone();
-    bkBuffer = inBkBuffer.clone();
-    states = inStates.clone();
+    mm_currSt = currSt;
+    mm_pos = pos;
+    mm_sPos = sPos;
+    mm_linenr = linenr;
+    buffer = inBuffer;
+    bkBuffer = inBkBuffer;
+    states = inStates;
     stCmp = (states.clone()).get(1)?;
-    lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone(); __elt});
-    lp1 = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone() + 1-1) as usize].clone(); __elt});
-    st = intGt(lp.clone(), 0) && intLt(lp.clone(), lp1.clone());
-    if st.clone() {
+    lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp-1) as usize].clone(); __elt});
+    lp1 = ({let __elt = LexTable::yy_accept.borrow()[(stCmp + 1-1) as usize].clone(); __elt});
+    st = intGt(lp, 0) && intLt(lp, lp1);
+    if st {
         if debug.clone() {
-            checkArrayModelica(LexTable::yy_accept.clone(), stCmp.clone(), metamodelica::sourceInfo!("Lexers/LexerJSON.mo"))?;
-            checkArrayModelica(LexTable::yy_acclist.clone(), lp.clone(), metamodelica::sourceInfo!("Lexers/LexerJSON.mo"))?;
+            checkArrayModelica(LexTable::yy_accept.clone(), stCmp, metamodelica::sourceInfo!("Lexers/LexerJSON.mo"))?;
+            checkArrayModelica(LexTable::yy_acclist.clone(), lp, metamodelica::sourceInfo!("Lexers/LexerJSON.mo"))?;
         }
-        lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone(); __elt});
-        action = ({let __elt = LexTable::yy_acclist.borrow()[(lp.clone()-1) as usize].clone(); __elt});
+        lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp-1) as usize].clone(); __elt});
+        action = ({let __elt = LexTable::yy_acclist.borrow()[(lp-1) as usize].clone(); __elt});
     } else {
-        cp = stringGet((fileContents.clone()).clone(),mm_pos.clone() - 1)?;
-        buffer = buffer.clone() - 1;
-        bkBuffer = bkBuffer.clone() + 1;
-        mm_pos = mm_pos.clone() - 1;
-        mm_sPos = mm_sPos.clone() - 1;
-        if cp.clone() == 10 {
-            mm_sPos = mm_ePos.clone();
-            mm_linenr = mm_linenr.clone() - 1;
+        cp = stringGet((fileContents.clone()).clone(),mm_pos - 1)?;
+        buffer = buffer - 1;
+        bkBuffer = bkBuffer + 1;
+        mm_pos = mm_pos - 1;
+        mm_sPos = mm_sPos - 1;
+        if cp == 10 {
+            mm_sPos = mm_ePos;
+            mm_linenr = mm_linenr - 1;
         }
-        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(states.clone()) {
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(states) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
         mm_currSt = __pa0.clone();
         states = __pa1.clone();
-        (action, mm_currSt, mm_pos, mm_sPos, mm_linenr, buffer, bkBuffer, states) = findRule((fileContents.clone()).clone(), mm_currSt.clone(), mm_pos.clone(), mm_sPos.clone(), mm_ePos.clone(), mm_linenr.clone(), buffer.clone(), bkBuffer.clone(), states.clone())?;
+        (action, mm_currSt, mm_pos, mm_sPos, mm_linenr, buffer, bkBuffer, states) = findRule((fileContents).clone(), mm_currSt, mm_pos, mm_sPos, mm_ePos, mm_linenr, buffer, bkBuffer, states)?;
     }
     Ok((action, mm_currSt, mm_pos, mm_sPos, mm_linenr, buffer, bkBuffer, states))
 }
@@ -494,37 +494,37 @@ fn findRule(mut fileContents: ArcStr, mut currSt: i32, mut pos: i32, mut sPos: i
 fn evalState(mut cState: i32, mut c: i32) -> (i32, i32) {
     let mut new_state: i32;
     let mut new_c: i32;
-    let mut cState1: i32 = cState.clone();
-    let mut c1: i32 = c.clone();
+    let mut cState1: i32 = cState;
+    let mut c1: i32 = c;
     let mut val: i32;
     let mut val2: i32;
     let mut chk: i32;
-    chk = ({let __elt = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone(); __elt});
-    chk = chk.clone() + c1.clone();
-    val = ({let __elt = LexTable::yy_chk.borrow()[(chk.clone()-1) as usize].clone(); __elt});
-    val2 = ({let __elt = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone(); __elt}) + c1.clone();
-    if cState1.clone() != val.clone() {
-        cState1 = ({let __elt = LexTable::yy_def.borrow()[(cState1.clone()-1) as usize].clone(); __elt});
-        if cState1.clone() >= LexTable::yy_limit.clone() {
-            c1 = ({let __elt = LexTable::yy_meta.borrow()[(c1.clone()-1) as usize].clone(); __elt});
+    chk = ({let __elt = LexTable::yy_base.borrow()[(cState1-1) as usize].clone(); __elt});
+    chk = chk + c1;
+    val = ({let __elt = LexTable::yy_chk.borrow()[(chk-1) as usize].clone(); __elt});
+    val2 = ({let __elt = LexTable::yy_base.borrow()[(cState1-1) as usize].clone(); __elt}) + c1;
+    if cState1 != val {
+        cState1 = ({let __elt = LexTable::yy_def.borrow()[(cState1-1) as usize].clone(); __elt});
+        if cState1 >= LexTable::yy_limit.clone() {
+            c1 = ({let __elt = LexTable::yy_meta.borrow()[(c1-1) as usize].clone(); __elt});
         }
-        if cState1.clone() > 0 {
-            (cState1, c1) = evalState(cState1.clone(), c1.clone());
+        if cState1 > 0 {
+            (cState1, c1) = evalState(cState1, c1);
         }
     }
-    new_state = cState1.clone();
-    new_c = c1.clone();
+    new_state = cState1;
+    new_c = c1;
     (new_state, new_c)
 }
 
 fn checkArray<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut index: i32, mut info: SourceInfo) -> Result<()> {
     let mut filename: ArcStr;
     let mut lineStart: i32;
-    if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
-        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
+    if index < 1 || index > metamodelica::arrayLength(arr.clone()) {
+        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info) else { bail!("pattern mismatch") };
         filename = __pa0.clone();
         lineStart = __pa1.clone();
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
     Ok(())
@@ -533,11 +533,11 @@ fn checkArray<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodel
 fn checkArrayModelica(mut arr: metamodelica::Array<i32>, mut index: i32, mut info: SourceInfo) -> Result<()> {
     let mut filename: ArcStr;
     let mut lineStart: i32;
-    if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
-        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
+    if index < 1 || index > metamodelica::arrayLength(arr.clone()) {
+        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info) else { bail!("pattern mismatch") };
         filename = __pa0.clone();
         lineStart = __pa1.clone();
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
     Ok(())

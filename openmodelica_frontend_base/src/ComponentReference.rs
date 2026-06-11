@@ -89,7 +89,7 @@ pub fn makeDummyCref() -> Arc<DAE::ComponentRef> {
 
 pub fn makeUntypedCrefIdent(mut ident: ArcStr) -> Arc<DAE::ComponentRef> {
     let mut outCrefIdent: Arc<DAE::ComponentRef>;
-    outCrefIdent = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
+    outCrefIdent = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
     outCrefIdent
 }
 
@@ -98,7 +98,7 @@ pub fn makeUntypedCrefIdent(mut ident: ArcStr) -> Arc<DAE::ComponentRef> {
 /* **************************************************/
 pub fn crefToPath(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path>;
-    outPath = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outPath = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: i, subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
             Arc::new(Absyn::Path::IDENT { name: (i.clone()).clone() })
         },
@@ -114,7 +114,7 @@ pub fn crefToPath(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Absy
 
 pub fn crefToPathIgnoreSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path>;
-    outPath = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outPath = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: i, .. } => {
             Arc::new(Absyn::Path::IDENT { name: (i.clone()).clone() })
         },
@@ -130,7 +130,7 @@ pub fn crefToPathIgnoreSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
 
 pub fn pathToCref(mut inPath: Arc<Absyn::Path>) -> Result<Arc<DAE::ComponentRef>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inPath.clone()) {
+        ::match_deref::match_deref! { match &(inPath) {
         Deref @ Absyn::Path::IDENT { name: i } => {
             return Ok(ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))
         },
@@ -149,7 +149,7 @@ pub fn pathToCref(mut inPath: Arc<Absyn::Path>) -> Result<Arc<DAE::ComponentRef>
 
 pub fn creffromVar(mut inVar: Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &(inVar.clone()) {
+    outComponentRef = (::match_deref::match_deref! { match &(inVar) {
         Deref @ DAE::Var { name, ty, .. } => {
             ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), ty.clone(), metamodelica::nil())
         },
@@ -201,7 +201,7 @@ pub fn unelabCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Absy
 
 fn unelabSubscripts(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
     let mut outAbsynSubscriptLst: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
-    outAbsynSubscriptLst = (::match_deref::match_deref! { match &(inSubscriptLst.clone()) {
+    outAbsynSubscriptLst = (::match_deref::match_deref! { match &(inSubscriptLst) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
         },
@@ -253,7 +253,7 @@ fn toExpCrefSubs(mut absynSubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) 
     let mut daeSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     daeSubs = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-        for mut sub in (absynSubs.clone()).into_iter().cloned() {
+        for mut sub in (absynSubs).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => Arc::new(DAE::Subscript::INDEX { exp: Expression::fromAbsynExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone())? }),
         Deref @ Absyn::Subscript::NOSUB { .. } => openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(),
@@ -268,13 +268,13 @@ fn toExpCrefSubs(mut absynSubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) 
 
 pub fn crefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = stringDelimitList(toStringList(inComponentRef.clone()), (if (Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?) {literal!("__")} else {literal!(".")}).clone());
+    outString = stringDelimitList(toStringList(inComponentRef), (if (Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?) {literal!("__")} else {literal!(".")}).clone());
     Ok(outString)
 }
 
 pub(crate) fn crefListStr(mut crList: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
     let mut outString: ArcStr = literal!("");
-    for mut cr in &*crList.clone() {
+    for mut cr in &*crList {
         let mut cr = cr.clone();
         outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*outString.clone()); __mm_s.push_str(&*crefStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     }
@@ -283,13 +283,13 @@ pub(crate) fn crefListStr(mut crList: Arc<metamodelica::List<Arc<DAE::ComponentR
 
 pub fn crefModelicaStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> ArcStr {
     let mut outString: ArcStr;
-    outString = stringDelimitList(toStringList(inComponentRef.clone()), (literal!("_")).clone());
+    outString = stringDelimitList(toStringList(inComponentRef), (literal!("_")).clone());
     outString
 }
 
 pub(crate) fn printComponentRefOptStr(mut inComponentRefOpt: Option<Arc<DAE::ComponentRef>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inComponentRefOpt.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inComponentRefOpt) {
         None => {
             literal!("NONE()")
         },
@@ -311,7 +311,7 @@ pub(crate) fn printComponentRefStrFixDollarDer(mut inComponentRef: Arc<DAE::Comp
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("der(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => {
-            ComponentReferenceBasics::printComponentRefStr(inComponentRef.clone())?
+            ComponentReferenceBasics::printComponentRefStr(inComponentRef)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -320,7 +320,7 @@ pub(crate) fn printComponentRefStrFixDollarDer(mut inComponentRef: Arc<DAE::Comp
 
 pub fn debugPrintComponentRefTypeStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::WILD { .. } => {
             literal!("_")
         },
@@ -360,7 +360,7 @@ pub fn debugPrintComponentRefTypeStr(mut inComponentRef: Arc<DAE::ComponentRef>)
 
 pub fn crefIsIdent(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut res: bool;
-    res = (::match_deref::match_deref! { match &(cr.clone()) {
+    res = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -370,7 +370,7 @@ pub fn crefIsIdent(mut cr: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn crefIsNotIdent(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut res: bool;
-    res = (::match_deref::match_deref! { match &(cr.clone()) {
+    res = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -381,7 +381,7 @@ pub fn crefIsNotIdent(mut cr: Arc<DAE::ComponentRef>) -> bool {
 pub fn isInternalCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
     let mut s: ArcStr = arcstr::literal!("");
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
+    b = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", .. } => false,
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$CLKPRE", .. } => false,
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_s, .. } => {
@@ -404,7 +404,7 @@ pub fn isInternalCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn isRecord(mut cr: Arc<DAE::ComponentRef>) -> bool {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(cr.clone()) {
+        ::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, .. } => {
             return true
         },
@@ -421,7 +421,7 @@ pub fn isRecord(mut cr: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn isArrayElement(mut cr: Arc<DAE::ComponentRef>) -> bool {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(cr.clone()) {
+        ::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: Deref @ DAE::Type::T_ARRAY { .. }, .. } => {
             return true
         },
@@ -441,7 +441,7 @@ pub fn isArrayElement(mut cr: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn isPreCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
+    b = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -451,7 +451,7 @@ pub fn isPreCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn isPreviousCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
+    b = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$CLKPRE", .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -461,7 +461,7 @@ pub fn isPreviousCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn isStartCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
+    b = (::match_deref::match_deref! { match &(cr) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$START", .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -476,7 +476,7 @@ pub fn popPreCref(mut inCR: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
             cr.clone()
         },
         _ => {
-            inCR.clone()
+            inCR
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -490,7 +490,7 @@ pub fn popCref(mut inCR: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
             cr.clone()
         },
         _ => {
-            inCR.clone()
+            inCR
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -500,7 +500,7 @@ pub fn popCref(mut inCR: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
 pub(crate) fn crefIsFirstArrayElt(mut inComponentRef: Arc<DAE::ComponentRef>) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
-        let __mc_input = inComponentRef.clone();
+        let __mc_input = inComponentRef;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 cr => {
@@ -539,7 +539,7 @@ pub(crate) fn crefIsFirstArrayElt(mut inComponentRef: Arc<DAE::ComponentRef>) ->
 pub fn crefHaveSubs(mut icr: Arc<DAE::ComponentRef>) -> bool {
     let mut ob: bool;
     ob = 'mc: {
-        let __mc_input = icr.clone();
+        let __mc_input = icr;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_QUAL { subscriptLst: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. } => {
@@ -723,14 +723,14 @@ pub fn crefIsScalarWithVariableSubs(mut inCref: Arc<DAE::ComponentRef>) -> bool 
 
 pub(crate) fn containWholeDim(mut inRef: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut wholedim: bool = false;
-    wholedim = (::match_deref::match_deref! { match &(inRef.clone()) {
+    wholedim = (::match_deref::match_deref! { match &(inRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: ty, subscriptLst: ssl } => {
             wholedim = containWholeDim2(ssl.clone(), ty.clone())?;
-            wholedim.clone()
+            wholedim
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: _, identType: _, subscriptLst: _, componentRef: cr } => {
             wholedim = containWholeDim(cr.clone())?;
-            wholedim.clone()
+            wholedim
         },
         _ => {
             false
@@ -782,7 +782,7 @@ pub fn traverseCref<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut cre
 
 pub fn crefIsRec(mut cref: Arc<DAE::ComponentRef>, mut isRecIn: bool) -> Result<bool> {
     let mut isRec: bool;
-    isRec = isRecIn.clone() || Types::isRecord(crefLastType(cref.clone())?);
+    isRec = isRecIn || Types::isRecord(crefLastType(cref)?);
     Ok(isRec)
 }
 
@@ -791,7 +791,7 @@ pub fn crefGetFirstRec(mut cref: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Com
     let mut isRec: bool = false;
     (result, isRec) = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            (cref.clone(), Types::isRecord(crefType(cref.clone())?))
+            (cref.clone(), Types::isRecord(crefType(cref)?))
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
             let mut innerCref: Arc<DAE::ComponentRef>;
@@ -802,10 +802,10 @@ pub fn crefGetFirstRec(mut cref: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Com
                 (innerCref, isRec) = crefGetFirstRec(var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone())?;
                 result = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (var_field!((*cref).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), identType: var_field!((*cref).identType, DAE::ComponentRef::CREF_QUAL).clone(), subscriptLst: var_field!((*cref).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), componentRef: innerCref.clone() });
             }
-            (result.clone(), isRec.clone())
+            (result, isRec)
         },
         _ => {
-            (cref.clone(), false)
+            (cref, false)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -815,7 +815,7 @@ pub fn crefGetFirstRec(mut cref: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Com
 fn containWholeDim2(mut inRef: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inType: Arc<DAE::Type>) -> Result<bool> {
     let mut wholedim: bool = false;
     wholedim = 'mc: {
-        let __mc_input = (inRef.clone(), inType.clone());
+        let __mc_input = (inRef, inType.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _) => {
@@ -858,7 +858,7 @@ fn containWholeDim2(mut inRef: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut
                 (Deref @ metamodelica::List::Cons { head: _, tail: ssl }, _) => {
                     let mut wholedim: bool = wholedim.clone();
                     wholedim = containWholeDim2(ssl.clone(), inType.clone())?;
-                    Ok((wholedim.clone(), wholedim.clone()))
+                    Ok((wholedim, wholedim.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -871,7 +871,7 @@ fn containWholeDim2(mut inRef: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut
 fn containWholeDim3(mut inExp: Arc<DAE::Exp>, mut ad: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> bool {
     let mut ob: bool;
     ob = 'mc: {
-        let __mc_input = (inExp.clone(), ad.clone());
+        let __mc_input = (inExp, ad);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { array: expl, .. }, Deref @ metamodelica::List::Cons { head: d, tail: _ }) => {
@@ -903,7 +903,7 @@ fn containWholeDim3(mut inExp: Arc<DAE::Exp>, mut ad: Arc<metamodelica::List<Arc
 /* **************************************************/
 pub fn crefArrayGetFirstCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: i, identType: ty, subscriptLst: subs } => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             let mut newsubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
@@ -931,7 +931,7 @@ pub fn crefArrayGetFirstCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resu
 
 pub fn crefLastPath(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Absyn::Path>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
+        ::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: i, subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
             return Ok(Arc::new(Absyn::Path::IDENT { name: (i.clone()).clone() }))
         },
@@ -945,7 +945,7 @@ pub fn crefLastPath(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Ab
 
 pub fn crefRest(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    let __pa0 = ::match_deref::match_deref! { match &(inCref.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -958,9 +958,9 @@ fn crefTypeFullComputeDims(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     let mut dim: Arc<DAE::Dimension>;
     let mut slice_dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-    dims = inDims.clone();
+    dims = inDims;
     outDims = metamodelica::nil();
-    for mut sub in &*inSubs.clone() {
+    for mut sub in &*inSubs {
         let mut sub = sub.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(dims.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -986,7 +986,7 @@ fn crefTypeFullComputeDims(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension
         _ => bail!("match: no arm matched"),
     } });
     }
-    outDims = listAppend(outDims.clone(), dims.clone());
+    outDims = listAppend(outDims, dims);
     Ok(outDims)
 }
 
@@ -999,7 +999,7 @@ pub fn crefTypeFull2(mut inCref: Arc<DAE::ComponentRef>, mut accumDims: Arc<meta
             (ty, dims) = TypesDump::flattenArrayType(ty.clone());
             dims = crefTypeFullComputeDims(dims.clone(), subs.clone())?;
             if !(accumDims.clone().is_empty()) {
-                dims = List::append_reverse(dims.clone(), accumDims.clone()).reverse();
+                dims = List::append_reverse(dims.clone(), accumDims).reverse();
             }
             return Ok((ty.clone(), dims.clone()))
         },
@@ -1009,12 +1009,12 @@ pub fn crefTypeFull2(mut inCref: Arc<DAE::ComponentRef>, mut accumDims: Arc<meta
             let mut ty = (*ty).clone();
             (ty, dims) = TypesDump::flattenArrayType(ty.clone());
             dims = crefTypeFullComputeDims(dims.clone(), subs.clone())?;
-            { (inCref, accumDims) = (cr.clone(), List::append_reverse(dims.clone(), accumDims.clone())); continue '__tco; }
+            { (inCref, accumDims) = (cr.clone(), List::append_reverse(dims.clone(), accumDims)); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("ComponentReference.crefTypeFull2 failed on cref: ")).clone())?;
-            Debug::traceln((ComponentReferenceBasics::printComponentRefStr(inCref.clone())?).clone())?;
+            Debug::traceln((ComponentReferenceBasics::printComponentRefStr(inCref)?).clone())?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1026,11 +1026,11 @@ pub fn crefTypeFull(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>
     let mut outType: Arc<DAE::Type>;
     let mut ty: Arc<DAE::Type>;
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
-    (ty, dims) = crefTypeFull2(inCref.clone(), metamodelica::nil())?;
+    (ty, dims) = crefTypeFull2(inCref, metamodelica::nil())?;
     if dims.clone().is_empty() {
-        outType = ty.clone();
+        outType = ty;
     } else {
-        outType = Arc::new(DAE::Type::T_ARRAY { ty: ty.clone(), dims: dims.clone() });
+        outType = Arc::new(DAE::Type::T_ARRAY { ty: ty, dims: dims });
     }
     Ok(outType)
 }
@@ -1047,7 +1047,7 @@ pub fn crefType(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("ComponentReference.crefType failed on cref: ")).clone())?;
-            Debug::traceln((ComponentReferenceBasics::printComponentRefStr(inCref.clone())?).clone())?;
+            Debug::traceln((ComponentReferenceBasics::printComponentRefStr(inCref)?).clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1057,7 +1057,7 @@ pub fn crefType(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
 
 pub fn crefLastType(mut inRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inRef.clone()) {
+        ::match_deref::match_deref! { match &(inRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: t2, subscriptLst: _ } => {
             return Ok(t2.clone())
         },
@@ -1082,7 +1082,7 @@ pub fn crefFirstSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<metamodelica::Li
 
 pub fn crefLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
+        ::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. } => {
             return Ok(subs.clone())
         },
@@ -1096,7 +1096,7 @@ pub fn crefLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<me
 
 pub fn crefTypeConsiderSubs(mut cr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
     let mut res: Arc<DAE::Type>;
-    res = Expression::unliftArrayTypeWithSubs(crefLastSubs(cr.clone())?, crefLastType(cr.clone())?)?;
+    res = Expression::unliftArrayTypeWithSubs(crefLastSubs(cr.clone())?, crefLastType(cr)?)?;
     Ok(res)
 }
 
@@ -1203,13 +1203,13 @@ pub(crate) fn getArraySubs(mut name: Arc<DAE::ComponentRef>) -> Arc<metamodelica
 /* **************************************************/
 pub fn crefPrependIdent(mut icr: Arc<DAE::ComponentRef>, mut ident: ArcStr, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut tp: Arc<DAE::Type>) -> Result<Arc<DAE::ComponentRef>> {
     let mut newCr: Arc<DAE::ComponentRef>;
-    newCr = (::match_deref::match_deref! { match &(icr.clone()) {
+    newCr = (::match_deref::match_deref! { match &(icr) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id1, identType: tp1, subscriptLst: subs1 } => {
-            ComponentReferenceBasics::makeCrefQual((id1.clone()).clone(), tp1.clone(), subs1.clone(), ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), tp.clone(), subs.clone()))
+            ComponentReferenceBasics::makeCrefQual((id1.clone()).clone(), tp1.clone(), subs1.clone(), ComponentReferenceBasics::makeCrefIdent((ident).clone(), tp, subs))
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id1, identType: tp1, subscriptLst: subs1, componentRef: cr } => {
             let mut cr = (*cr).clone();
-            cr = crefPrependIdent(cr.clone(), (ident.clone()).clone(), subs.clone(), tp.clone())?;
+            cr = crefPrependIdent(cr.clone(), (ident).clone(), subs, tp)?;
             ComponentReferenceBasics::makeCrefQual((id1.clone()).clone(), tp1.clone(), subs1.clone(), cr.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1219,13 +1219,13 @@ pub fn crefPrependIdent(mut icr: Arc<DAE::ComponentRef>, mut ident: ArcStr, mut 
 
 pub fn crefPrefixDer(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::derivativeNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), inCref.clone());
+    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::derivativeNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), inCref);
     outCref
 }
 
 pub fn crefPrefixPre(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::preNamePrefix)).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref.clone());
+    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::preNamePrefix)).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref);
     outCref
 }
 
@@ -1233,19 +1233,19 @@ pub fn getConcealedCref() -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
     let mut ident: ArcStr;
     ident = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$concealed")); __mm_s.push_str(&*intString(System::tmpTick() + 1)); ArcStr::from(__mm_s) }).clone();
-    outCref = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
+    outCref = ComponentReferenceBasics::makeCrefIdent((ident).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
     outCref
 }
 
 pub fn crefPrefixPrevious(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::previousNamePrefix)).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref.clone());
+    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::previousNamePrefix)).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref);
     outCref
 }
 
 pub fn crefPrefixAux(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::auxNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), inCref.clone());
+    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::auxNamePrefix)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), inCref);
     outCref
 }
 
@@ -1254,7 +1254,7 @@ pub fn crefRemovePrePrefix(mut cref: Arc<DAE::ComponentRef>) -> Arc<DAE::Compone
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", .. } => var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(),
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$START", .. } => var_field!((*cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(),
-        _ => cref.clone(),
+        _ => cref,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     cref
@@ -1262,19 +1262,19 @@ pub fn crefRemovePrePrefix(mut cref: Arc<DAE::ComponentRef>) -> Arc<DAE::Compone
 
 pub fn crefPrefixStart(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::startNamePrefix)).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref.clone());
+    outCref = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::startNamePrefix)).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref);
     outCref
 }
 
 pub fn crefPrefixString(mut inString: ArcStr, mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = ComponentReferenceBasics::makeCrefQual((inString.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref.clone());
+    outCref = ComponentReferenceBasics::makeCrefQual((inString).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), inCref);
     outCref
 }
 
 pub(crate) fn crefPrefixStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>, mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = (::match_deref::match_deref! { match &((inStrings.clone(), inCref.clone())) {
+    outCref = (::match_deref::match_deref! { match &((inStrings, inCref.clone())) {
         (Deref @ metamodelica::List::Cons { head: r#str, tail: rest_str }, cref) => {
             let mut cref = (*cref).clone();
             cref = crefPrefixStringList(rest_str.clone(), cref.clone());
@@ -1282,7 +1282,7 @@ pub(crate) fn crefPrefixStringList(mut inStrings: Arc<metamodelica::List<ArcStr>
             cref.clone()
         },
         _ => {
-            inCref.clone()
+            inCref
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1291,17 +1291,17 @@ pub(crate) fn crefPrefixStringList(mut inStrings: Arc<metamodelica::List<ArcStr>
 
 pub(crate) fn prefixWithPath(mut inCref: Arc<DAE::ComponentRef>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<DAE::ComponentRef>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inPath.clone()) {
+        ::match_deref::match_deref! { match &(inPath) {
         Deref @ Absyn::Path::IDENT { name } => {
-            return Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref.clone() }))
+            return Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref }))
         },
         Deref @ Absyn::Path::QUALIFIED { name, path: rest_path } => {
             let mut cref: Arc<DAE::ComponentRef>;
-            cref = prefixWithPath(inCref.clone(), rest_path.clone())?;
+            cref = prefixWithPath(inCref, rest_path.clone())?;
             return Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: cref.clone() }))
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path: rest_path } => {
-            { (inCref, inPath) = (inCref.clone(), rest_path.clone()); continue '__tco; }
+            { (inCref, inPath) = (inCref, rest_path.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1310,7 +1310,7 @@ pub(crate) fn prefixWithPath(mut inCref: Arc<DAE::ComponentRef>, mut inPath: Arc
 
 pub fn prependStringCref(mut inString: ArcStr, mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &((inString.clone(), inComponentRef.clone())) {
+    outComponentRef = (::match_deref::match_deref! { match &((inString, inComponentRef)) {
         (p, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i, identType: t2, subscriptLst: s, componentRef: c }) => {
             let mut i_1: ArcStr;
             i_1 = (stringAppend((p.clone()).clone(), (i.clone()).clone())).clone();
@@ -1328,21 +1328,21 @@ pub fn prependStringCref(mut inString: ArcStr, mut inComponentRef: Arc<DAE::Comp
 
 pub fn appendStringCref(mut r#str: ArcStr, mut cr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut ocr: Arc<DAE::ComponentRef>;
-    ocr = joinCrefs(cr.clone(), Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (r#str.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() }))?;
+    ocr = joinCrefs(cr, Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (r#str).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() }))?;
     Ok(ocr)
 }
 
 pub fn appendStringFirstIdent(mut inString: ArcStr, mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
+    outCref = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: ty, subscriptLst: subs, componentRef: cr } => {
             let mut id = (*id).clone();
-            id = (stringAppend((id.clone()).clone(), (inString.clone()).clone())).clone();
+            id = (stringAppend((id.clone()).clone(), (inString).clone())).clone();
             Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: cr.clone() })
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: subs } => {
             let mut id = (*id).clone();
-            id = (stringAppend((id.clone()).clone(), (inString.clone()).clone())).clone();
+            id = (stringAppend((id.clone()).clone(), (inString).clone())).clone();
             Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -1352,15 +1352,15 @@ pub fn appendStringFirstIdent(mut inString: ArcStr, mut inCref: Arc<DAE::Compone
 
 pub fn appendStringLastIdent(mut inString: ArcStr, mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
+    outCref = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: ty, subscriptLst: subs, componentRef: cr } => {
             let mut cr = (*cr).clone();
-            cr = appendStringLastIdent((inString.clone()).clone(), cr.clone())?;
+            cr = appendStringLastIdent((inString).clone(), cr.clone())?;
             Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: cr.clone() })
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: subs } => {
             let mut id = (*id).clone();
-            id = (stringAppend((id.clone()).clone(), (inString.clone()).clone())).clone();
+            id = (stringAppend((id.clone()).clone(), (inString).clone())).clone();
             Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -1370,7 +1370,7 @@ pub fn appendStringLastIdent(mut inString: ArcStr, mut inCref: Arc<DAE::Componen
 
 pub fn joinCrefs(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef1.clone(), inComponentRef2.clone())) {
+    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef1, inComponentRef2)) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: t2, subscriptLst: sub }, cr2) => {
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), t2.clone(), sub.clone(), cr2.clone())
         },
@@ -1386,7 +1386,7 @@ pub fn joinCrefs(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef
 
 pub fn joinCrefsR(mut inComponentRef2: Arc<DAE::ComponentRef>, mut inComponentRef1: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef2.clone(), inComponentRef1.clone())) {
+    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef2, inComponentRef1)) {
         (cr2, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: t2, subscriptLst: sub }) => {
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), t2.clone(), sub.clone(), cr2.clone())
         },
@@ -1410,7 +1410,7 @@ pub fn joinCrefsExp(mut exp: Arc<DAE::Exp>, mut cref: Arc<DAE::ComponentRef>) ->
             Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: tp.clone() })
         },
         _ => {
-            exp.clone()
+            exp
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1419,7 +1419,7 @@ pub fn joinCrefsExp(mut exp: Arc<DAE::Exp>, mut cref: Arc<DAE::ComponentRef>) ->
 
 pub fn subscriptCref(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef.clone(), inSubscriptLst.clone())) {
+    outComponentRef = (::match_deref::match_deref! { match &((inComponentRef, inSubscriptLst)) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, subscriptLst: sub, identType: t2 }, newsub) => {
             let mut newsub_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             newsub_1 = listAppend(sub.clone(), newsub.clone());
@@ -1437,19 +1437,19 @@ pub fn subscriptCref(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSubscript
 
 pub fn subscriptCrefWithInt(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSubscript: i32) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, subscriptLst: subs, identType: ty } => {
             let mut new_sub: Arc<DAE::Subscript>;
             let mut subs = (*subs).clone();
             let mut ty = (*ty).clone();
-            new_sub = Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: inSubscript.clone() }) });
+            new_sub = Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: inSubscript }) });
             subs = List::appendElt(new_sub.clone(), subs.clone());
             ty = Expression::unliftArray(ty.clone())?;
             ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), ty.clone(), subs.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, subscriptLst: subs, componentRef: rest_cref, identType: ty } => {
             let mut rest_cref = (*rest_cref).clone();
-            rest_cref = subscriptCrefWithInt(rest_cref.clone(), inSubscript.clone())?;
+            rest_cref = subscriptCrefWithInt(rest_cref.clone(), inSubscript)?;
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty.clone(), subs.clone(), rest_cref.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1459,13 +1459,13 @@ pub fn subscriptCrefWithInt(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSu
 
 pub fn crefSetLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
-    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: tp, .. } => {
-            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), tp.clone(), inSubs.clone())
+            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), tp.clone(), inSubs)
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: tp, subscriptLst: subs, componentRef: cr } => {
             let mut cr = (*cr).clone();
-            cr = crefSetLastSubs(cr.clone(), inSubs.clone())?;
+            cr = crefSetLastSubs(cr.clone(), inSubs)?;
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), tp.clone(), subs.clone(), cr.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1478,10 +1478,10 @@ pub fn crefApplySubs(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSubs: Arc
     outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: tp @ Deref @ DAE::Type::T_ARRAY { dims, .. }, subscriptLst: subs } => {
             if (subs.clone().len() as i32) + (inSubs.clone().len() as i32) > (dims.clone().len() as i32) {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefApplySubs [")); __mm_s.push_str(&*ExpressionBasics::printListStr(inSubs.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?); __mm_s.push_str(&*literal!("] to ident ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inComponentRef.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*intString((dims.clone().len() as i32))); __mm_s.push_str(&*literal!(" dimensions\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefApplySubs [")); __mm_s.push_str(&*ExpressionBasics::printListStr(inSubs.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?); __mm_s.push_str(&*literal!("] to ident ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inComponentRef)?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*intString((dims.clone().len() as i32))); __mm_s.push_str(&*literal!(" dimensions\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
                 bail!("fail");
             }
-            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), tp.clone(), listAppend(subs.clone(), inSubs.clone()))
+            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), tp.clone(), listAppend(subs.clone(), inSubs))
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: tp @ Deref @ DAE::Type::T_ARRAY { dims, .. }, subscriptLst: subs, componentRef: cr } => {
             let mut subs1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
@@ -1494,18 +1494,18 @@ pub fn crefApplySubs(mut inComponentRef: Arc<DAE::ComponentRef>, mut inSubs: Arc
                 subs1 = inSubs.clone();
             }
             if (subs.clone().len() as i32) + (subs1.clone().len() as i32) > (dims.clone().len() as i32) {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefApplySubs [")); __mm_s.push_str(&*ExpressionBasics::printListStr(inSubs.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?); __mm_s.push_str(&*literal!("] to qual ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inComponentRef.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*intString((dims.clone().len() as i32))); __mm_s.push_str(&*literal!(" dimensions\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefApplySubs [")); __mm_s.push_str(&*ExpressionBasics::printListStr(inSubs, (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?); __mm_s.push_str(&*literal!("] to qual ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inComponentRef)?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*intString((dims.clone().len() as i32))); __mm_s.push_str(&*literal!(" dimensions\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
                 bail!("fail");
             }
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), tp.clone(), listAppend(subs.clone(), subs1.clone()), cr.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: tp, subscriptLst: subs, componentRef: cr } => {
             let mut cr = (*cr).clone();
-            cr = crefApplySubs(cr.clone(), inSubs.clone())?;
+            cr = crefApplySubs(cr.clone(), inSubs)?;
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), tp.clone(), subs.clone(), cr.clone())
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefApplySubs to non array ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inComponentRef.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefApplySubs to non array ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inComponentRef)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1517,15 +1517,15 @@ pub(crate) fn crefSetType(mut cref: Arc<DAE::ComponentRef>, mut ty: Arc<DAE::Typ
     let mut cref: Arc<DAE::ComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            assign_variant_field!(cref => DAE::ComponentRef::CREF_IDENT; identType = ty.clone());
-            cref.clone()
+            assign_variant_field!(cref => DAE::ComponentRef::CREF_IDENT; identType = ty);
+            cref
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
-            assign_variant_field!(cref => DAE::ComponentRef::CREF_QUAL; identType = ty.clone());
-            cref.clone()
+            assign_variant_field!(cref => DAE::ComponentRef::CREF_QUAL; identType = ty);
+            cref
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefSetType")); __mm_s.push_str(&*literal!(" was applied on a cref that has no type: ")); __mm_s.push_str(&*crefStr(cref.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ComponentReference.crefSetType")); __mm_s.push_str(&*literal!(" was applied on a cref that has no type: ")); __mm_s.push_str(&*crefStr(cref)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1535,13 +1535,13 @@ pub(crate) fn crefSetType(mut cref: Arc<DAE::ComponentRef>, mut ty: Arc<DAE::Typ
 
 pub fn crefSetLastType(mut inRef: Arc<DAE::ComponentRef>, mut newType: Arc<DAE::Type>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outRef: Arc<DAE::ComponentRef>;
-    outRef = (::match_deref::match_deref! { match &(inRef.clone()) {
+    outRef = (::match_deref::match_deref! { match &(inRef) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: _, subscriptLst: subs } => {
-            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), newType.clone(), subs.clone())
+            ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), newType, subs.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: ty, subscriptLst: subs, componentRef: child } => {
             let mut child = (*child).clone();
-            child = crefSetLastType(child.clone(), newType.clone())?;
+            child = crefSetLastType(child.clone(), newType)?;
             ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty.clone(), subs.clone(), child.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1635,7 +1635,7 @@ pub(crate) fn replaceCrefSliceSub(mut inCr: Arc<DAE::ComponentRef>, mut newSub: 
 fn replaceSliceSub(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSub: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut osubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     osubs = 'mc: {
-        let __mc_input = inSubs.clone();
+        let __mc_input = inSubs;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: _ }, tail: subs } => {
@@ -1673,7 +1673,7 @@ fn replaceSliceSub(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut
 
 pub(crate) fn stripCrefIdentSliceSubs(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
+    outCref = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, subscriptLst: subs, identType: ty } => {
             let mut subs = (*subs).clone();
             subs = removeSliceSubs(subs.clone());
@@ -1681,7 +1681,7 @@ pub(crate) fn stripCrefIdentSliceSubs(mut inCref: Arc<DAE::ComponentRef>) -> Res
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, identType: ty, subscriptLst: subs, ident: id } => {
             outCref = stripCrefIdentSliceSubs(cr.clone())?;
-            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty.clone(), subs.clone(), outCref.clone())
+            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty.clone(), subs.clone(), outCref)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1692,7 +1692,7 @@ pub fn stripArrayCref(mut crefIn: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Co
     let mut crefHead: Arc<DAE::ComponentRef>;
     let mut idxOut: i32;
     let mut crefTail: Option<Arc<DAE::ComponentRef>>;
-    (crefHead, idxOut, crefTail) = (::match_deref::match_deref! { match &(crefIn.clone()) {
+    (crefHead, idxOut, crefTail) = (::match_deref::match_deref! { match &(crefIn) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: idx } }, tail: Deref @ metamodelica::List::Nil }, identType: ty } => {
             (ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), ty.clone(), metamodelica::nil()), idx.clone(), None)
         },
@@ -1711,7 +1711,7 @@ pub fn stripArrayCref(mut crefIn: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Co
 
 fn removeSliceSubs(mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<metamodelica::List<Arc<DAE::Subscript>>> {
     let mut osubs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-    for mut s in &*subs.clone() {
+    for mut s in &*subs {
         let mut s = s.clone();
         osubs = (::match_deref::match_deref! { match &(s.clone()) {
         Deref @ DAE::Subscript::SLICE { .. } => osubs.clone(),
@@ -1719,19 +1719,19 @@ fn removeSliceSubs(mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Ar
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    osubs = Dangerous::listReverseInPlace(osubs.clone());
+    osubs = Dangerous::listReverseInPlace(osubs);
     osubs
 }
 
 pub fn crefStripSubs(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
+    outCref = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, .. } => {
             ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), ty.clone(), metamodelica::nil())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, identType: ty, ident: id, .. } => {
             outCref = crefStripSubs(cr.clone())?;
-            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty.clone(), metamodelica::nil(), outCref.clone())
+            ComponentReferenceBasics::makeCrefQual((id.clone()).clone(), ty.clone(), metamodelica::nil(), outCref)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1742,7 +1742,7 @@ pub fn crefStripSubsExceptModelSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<D
     fn is_model_array(mut ty: Arc<DAE::Type>) -> bool {
         let mut res: bool;
         let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-        res = (::match_deref::match_deref! { match &(ty.clone()) {
+        res = (::match_deref::match_deref! { match &(ty) {
         Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: __esc_state, .. }, .. } => {
             state = (*__esc_state).clone();
             (match state.clone() {
@@ -1785,7 +1785,7 @@ pub fn crefStripSubsExceptModelSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<D
 
 pub fn crefStripPrefix(mut cref: Arc<DAE::ComponentRef>, mut prefix: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((cref.clone(), prefix.clone())) {
+        ::match_deref::match_deref! { match &((cref, prefix)) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id1, identType: _, subscriptLst: subs1, componentRef: cr1 }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id2, identType: _, subscriptLst: subs2 }) => {
             let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
             let true = (ExpressionBasics::subscriptEqual(subs1.clone(), subs2.clone())?) else { bail!("pattern mismatch") };
@@ -1804,7 +1804,7 @@ pub fn crefStripPrefix(mut cref: Arc<DAE::ComponentRef>, mut prefix: Arc<DAE::Co
 pub fn crefStripLastIdent(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCr: Arc<DAE::ComponentRef>;
     outCr = 'mc: {
-        let __mc_input = inCr.clone();
+        let __mc_input = inCr;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: t2, subscriptLst: subs, componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ } } => {
@@ -1841,7 +1841,7 @@ pub fn crefStripIterSub(mut inComponentRef: Arc<DAE::ComponentRef>, mut iter: Ar
             ty = (*__esc_ty).clone();
             subs = (*__esc_subs).clone();
             index = (*__esc_index).clone();
-            ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), if (literal!("") == iter.clone() || index.clone() == iter.clone()) {metamodelica::nil()} else {subs.clone()})
+            ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), if (literal!("") == iter.clone() || index.clone() == iter) {metamodelica::nil()} else {subs.clone()})
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: __esc_ident, identType: __esc_ty, componentRef: __esc_cref, subscriptLst: __esc_subs @ Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_index, .. }, .. } }, tail: Deref @ metamodelica::List::Nil } } => {
             ident = (*__esc_ident).clone();
@@ -1852,7 +1852,7 @@ pub fn crefStripIterSub(mut inComponentRef: Arc<DAE::ComponentRef>, mut iter: Ar
             if literal!("") == iter.clone() || index.clone() == iter.clone() {
                 subs = metamodelica::nil();
             } else {
-                cref = crefStripIterSub(cref.clone(), (iter.clone()).clone());
+                cref = crefStripIterSub(cref.clone(), (iter).clone());
             }
             ComponentReferenceBasics::makeCrefQual((ident.clone()).clone(), ty.clone(), subs.clone(), cref.clone())
         },
@@ -1861,9 +1861,9 @@ pub fn crefStripIterSub(mut inComponentRef: Arc<DAE::ComponentRef>, mut iter: Ar
             ty = (*__esc_ty).clone();
             cref = (*__esc_cref).clone();
             subs = (*__esc_subs).clone();
-            ComponentReferenceBasics::makeCrefQual((ident.clone()).clone(), ty.clone(), subs.clone(), crefStripIterSub(cref.clone(), (iter.clone()).clone()))
+            ComponentReferenceBasics::makeCrefQual((ident.clone()).clone(), ty.clone(), subs.clone(), crefStripIterSub(cref.clone(), (iter).clone()))
         },
-        _ => inComponentRef.clone(),
+        _ => inComponentRef,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outComponentRef
@@ -1871,7 +1871,7 @@ pub fn crefStripIterSub(mut inComponentRef: Arc<DAE::ComponentRef>, mut iter: Ar
 
 pub fn crefStripFirstIdent(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCr: Arc<DAE::ComponentRef>;
-    outCr = (::match_deref::match_deref! { match &(inCr.clone()) {
+    outCr = (::match_deref::match_deref! { match &(inCr) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
             cr.clone()
         },
@@ -1883,7 +1883,7 @@ pub fn crefStripFirstIdent(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::
 pub(crate) fn crefStripLastSubsStringified(mut inComponentRef: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
     outComponentRef = 'mc: {
-        let __mc_input = inComponentRef.clone();
+        let __mc_input = inComponentRef;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: t2, subscriptLst: Deref @ metamodelica::List::Nil } => {
@@ -1919,9 +1919,9 @@ pub(crate) fn stringifyComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<Ar
     let mut ty: Arc<DAE::Type>;
     subs = crefLastSubs(cr.clone())?;
     cr_1 = ComponentReferenceBasics::crefStripLastSubs(cr.clone())?;
-    crs = (ComponentReferenceBasics::printComponentRefStr(cr_1.clone())?).clone();
-    ty = crefLastType(cr.clone())?;
-    outComponentRef = ComponentReferenceBasics::makeCrefIdent((crs.clone()).clone(), ty.clone(), subs.clone());
+    crs = (ComponentReferenceBasics::printComponentRefStr(cr_1)?).clone();
+    ty = crefLastType(cr)?;
+    outComponentRef = ComponentReferenceBasics::makeCrefIdent((crs).clone(), ty, subs);
     Ok(outComponentRef)
 }
 
@@ -1929,7 +1929,7 @@ pub(crate) fn stringifyComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<Ar
 /* Print and Dump */
 /* **************************************************/
 pub(crate) fn printComponentRef(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    let () = (::match_deref::match_deref! { match &(inComponentRef) {
         Deref @ DAE::ComponentRef::WILD { .. } => {
             Print::printBuf((literal!("_")).clone())?;
             ()
@@ -1957,7 +1957,7 @@ pub(crate) fn printComponentRef(mut inComponentRef: Arc<DAE::ComponentRef>) -> R
 
 fn printComponentRef2(mut inString: ArcStr, mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inString.clone(), inSubscriptLst.clone());
+        let __mc_input = (inString, inSubscriptLst);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (s, Deref @ metamodelica::List::Nil) => {
@@ -1993,20 +1993,20 @@ fn printComponentRef2(mut inString: ArcStr, mut inSubscriptLst: Arc<metamodelica
 
 pub fn printComponentRefList(mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<()> {
     let mut buffer: ArcStr;
-    buffer = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
-    metamodelica::print((buffer.clone()).clone());
+    buffer = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs, (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
+    metamodelica::print((buffer).clone());
     Ok(())
 }
 
 pub fn replaceWholeDimSubscript(mut icr: Arc<DAE::ComponentRef>, mut index: i32) -> Result<Arc<DAE::ComponentRef>> {
     let mut ocr: Arc<DAE::ComponentRef>;
     ocr = 'mc: {
-        let __mc_input = icr.clone();
+        let __mc_input = icr;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: et, subscriptLst: ss, componentRef: cr } => {
                     let mut ss = (*ss).clone();
-                    ss = replaceWholeDimSubscript2(ss.clone(), index.clone())?;
+                    ss = replaceWholeDimSubscript2(ss.clone(), index)?;
                     Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: et.clone(), subscriptLst: ss.clone(), componentRef: cr.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2016,7 +2016,7 @@ pub fn replaceWholeDimSubscript(mut icr: Arc<DAE::ComponentRef>, mut index: i32)
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: et, subscriptLst: ss, componentRef: cr } => {
                     let mut cr = (*cr).clone();
-                    cr = replaceWholeDimSubscript(cr.clone(), index.clone())?;
+                    cr = replaceWholeDimSubscript(cr.clone(), index)?;
                     Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: et.clone(), subscriptLst: ss.clone(), componentRef: cr.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2026,7 +2026,7 @@ pub fn replaceWholeDimSubscript(mut icr: Arc<DAE::ComponentRef>, mut index: i32)
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: et, subscriptLst: ss } => {
                     let mut ss = (*ss).clone();
-                    ss = replaceWholeDimSubscript2(ss.clone(), index.clone())?;
+                    ss = replaceWholeDimSubscript2(ss.clone(), index)?;
                     Ok(Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id.clone()).clone(), identType: et.clone(), subscriptLst: ss.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2039,15 +2039,15 @@ pub fn replaceWholeDimSubscript(mut icr: Arc<DAE::ComponentRef>, mut index: i32)
 
 pub(crate) fn replaceWholeDimSubscript2(mut isubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut index: i32) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut osubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
-    osubs = (::match_deref::match_deref! { match &(isubs.clone()) {
+    osubs = (::match_deref::match_deref! { match &(isubs) {
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: subs } => {
             let mut sub: Arc<DAE::Subscript>;
-            sub = Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: index.clone() }) });
+            sub = Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: index }) });
             metamodelica::cons(sub.clone(), subs.clone())
         },
         Deref @ metamodelica::List::Cons { head: sub, tail: subs } => {
             let mut subs = (*subs).clone();
-            subs = replaceWholeDimSubscript2(subs.clone(), index.clone())?;
+            subs = replaceWholeDimSubscript2(subs.clone(), index)?;
             metamodelica::cons(sub.clone(), subs.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -2058,7 +2058,7 @@ pub(crate) fn replaceWholeDimSubscript2(mut isubs: Arc<metamodelica::List<Arc<DA
 pub fn splitCrefLast(mut inCref: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)> {
     let mut outPrefixCref: Arc<DAE::ComponentRef>;
     let mut outLastCref: Arc<DAE::ComponentRef>;
-    (outPrefixCref, outLastCref) = (::match_deref::match_deref! { match &(inCref.clone()) {
+    (outPrefixCref, outLastCref) = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: ty, subscriptLst: subs, componentRef: last @ Deref @ DAE::ComponentRef::CREF_IDENT { .. } } => {
             (Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone() }), last.clone())
         },
@@ -2076,7 +2076,7 @@ pub fn splitCrefLast(mut inCref: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Com
 pub fn firstNCrefs(mut inCref: Arc<DAE::ComponentRef>, mut nIn: i32) -> Arc<DAE::ComponentRef> {
     let mut outFirstCrefs: Arc<DAE::ComponentRef>;
     outFirstCrefs = 'mc: {
-        let __mc_input = (inCref.clone(), nIn.clone());
+        let __mc_input = (inCref.clone(), nIn);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, 0) => {
@@ -2105,7 +2105,7 @@ pub fn firstNCrefs(mut inCref: Arc<DAE::ComponentRef>, mut nIn: i32) -> Arc<DAE:
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: ty, subscriptLst: subs, componentRef: last }, _) => {
                     let mut prefix: Arc<DAE::ComponentRef>;
-                    prefix = firstNCrefs(last.clone(), nIn.clone() - 1);
+                    prefix = firstNCrefs(last.clone(), nIn - 1);
                     Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: prefix.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2130,7 +2130,7 @@ pub(crate) fn splitCrefFirst(mut inCref: Arc<DAE::ComponentRef>) -> Result<(Arc<
     let mut id: ArcStr;
     let mut ty: Arc<DAE::Type>;
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
-    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inCref.clone()) {
+    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: __pa0, identType: __pa1, subscriptLst: __pa2, componentRef: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -2138,24 +2138,24 @@ pub(crate) fn splitCrefFirst(mut inCref: Arc<DAE::ComponentRef>) -> Result<(Arc<
     ty = __pa1.clone();
     subs = __pa2.clone();
     outCrefRest = __pa3.clone();
-    outCrefFirst = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone() });
+    outCrefFirst = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id).clone(), identType: ty, subscriptLst: subs });
     Ok((outCrefFirst, outCrefRest))
 }
 
 pub(crate) fn toStringList(mut inCref: Arc<DAE::ComponentRef>) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
-    outStringList = Dangerous::listReverseInPlace(toStringList_tail(inCref.clone(), metamodelica::nil()));
+    outStringList = Dangerous::listReverseInPlace(toStringList_tail(inCref, metamodelica::nil()));
     outStringList
 }
 
 fn toStringList_tail(mut inCref: Arc<DAE::ComponentRef>, mut inAccumStrings: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inCref.clone()) {
+        ::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, componentRef: cref, .. } => {
-            { (inCref, inAccumStrings) = (cref.clone(), metamodelica::cons((id.clone()).clone(), inAccumStrings.clone())); continue '__tco; }
+            { (inCref, inAccumStrings) = (cref.clone(), metamodelica::cons((id.clone()).clone(), inAccumStrings)); continue '__tco; }
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
-            return metamodelica::cons((id.clone()).clone(), inAccumStrings.clone())
+            return metamodelica::cons((id.clone()).clone(), inAccumStrings)
         },
         _ => {
             return metamodelica::nil()
@@ -2167,7 +2167,7 @@ fn toStringList_tail(mut inCref: Arc<DAE::ComponentRef>, mut inAccumStrings: Arc
 
 pub fn crefDepth(mut inCref: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut depth: i32;
-    depth = (::match_deref::match_deref! { match &(inCref.clone()) {
+    depth = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::WILD { .. } => {
             0
         },
@@ -2184,15 +2184,15 @@ pub fn crefDepth(mut inCref: Arc<DAE::ComponentRef>) -> Result<i32> {
 
 fn crefDepth1(mut inCref: Arc<DAE::ComponentRef>, mut iDepth: i32) -> Result<i32> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inCref.clone()) {
+        ::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::WILD { .. } => {
-            return Ok(iDepth.clone())
+            return Ok(iDepth)
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            return Ok(1 + iDepth.clone())
+            return Ok(1 + iDepth)
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: n, .. } => {
-            { (inCref, iDepth) = (n.clone(), 1 + iDepth.clone()); continue '__tco; }
+            { (inCref, iDepth) = (n.clone(), 1 + iDepth); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2202,10 +2202,10 @@ fn crefDepth1(mut inCref: Arc<DAE::ComponentRef>, mut iDepth: i32) -> Result<i32
 pub fn expandCref(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: bool) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut outCref: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     outCref = 'mc: {
-        let __mc_input = expandRecord.clone();
+        let __mc_input = expandRecord;
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok(expandCref_impl(inCref.clone(), expandRecord.clone()))
+            Ok(expandCref_impl(inCref.clone(), expandRecord))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -2221,7 +2221,7 @@ pub fn expandCref(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: bool) ->
 pub(crate) fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: bool) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut outCref: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     outCref = 'mc: {
-        let __mc_input = (inCref.clone(), expandRecord.clone());
+        let __mc_input = (inCref.clone(), expandRecord);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: Deref @ DAE::Type::T_COMPLEX { varLst, complexClassType: ClassInf::State::RECORD { path: _ }, .. }, subscriptLst: Deref @ metamodelica::List::Nil }, true) => {
@@ -2328,7 +2328,7 @@ pub(crate) fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandReco
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut cref = (*cref).clone();
-                    crefs = expandCref_impl(cref.clone(), expandRecord.clone());
+                    crefs = expandCref_impl(cref.clone(), expandRecord);
                     (basety, dims) = TypesDump::flattenArrayType(ty.clone());
                     correctTy = Arc::new(DAE::Type::T_ARRAY { ty: basety.clone(), dims: dims.clone() });
                     cref = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (id.clone()).clone(), identType: correctTy.clone(), subscriptLst: subs.clone() });
@@ -2344,7 +2344,7 @@ pub(crate) fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandReco
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: ty, subscriptLst: subs, componentRef: cref }, _) => {
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-                    crefs = expandCref_impl(cref.clone(), expandRecord.clone());
+                    crefs = expandCref_impl(cref.clone(), expandRecord);
                     crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut c in (crefs.clone()).into_iter().cloned() {
@@ -2373,15 +2373,15 @@ pub(crate) fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandReco
 
 fn expandCrefLst(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inCrefsAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inCrefs.clone()) {
+        ::match_deref::match_deref! { match &(inCrefs) {
         Deref @ metamodelica::List::Nil => {
-            return Ok(List::flatten(inCrefsAcc.clone())?)
+            return Ok(List::flatten(inCrefsAcc)?)
         },
         Deref @ metamodelica::List::Cons { head: cr, tail: rest } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             crefs = List::map(varLst.clone(), (std::sync::Arc::new(creffromVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
             crefs = List::map1r(crefs.clone(), (std::sync::Arc::new(joinCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone())?;
-            { (inCrefs, varLst, inCrefsAcc) = (rest.clone(), varLst.clone(), metamodelica::cons(crefs.clone(), inCrefsAcc.clone())); continue '__tco; }
+            { (inCrefs, varLst, inCrefsAcc) = (rest.clone(), varLst, metamodelica::cons(crefs.clone(), inCrefsAcc)); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2391,7 +2391,7 @@ fn expandCrefLst(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, m
 fn expandCrefQual(mut inHeadCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inRestCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    for mut cref in &*inHeadCrefs.clone() {
+    for mut cref in &*inHeadCrefs {
         let mut cref = cref.clone();
         crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -2409,13 +2409,13 @@ fn expandCrefQual(mut inHeadCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>
 fn expandCref2(mut inId: ArcStr, mut inType: Arc<DAE::Type>, mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut subslst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>>;
-    subslst = List::threadMap(inSubscripts.clone(), inDimensions.clone(), (std::sync::Arc::new(Expression::expandSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>, Arc<DAE::Dimension>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> + 'static>))?;
-    subslst = List::combination(subslst.clone());
-    for mut subs in &*subslst.clone() {
+    subslst = List::threadMap(inSubscripts, inDimensions, (std::sync::Arc::new(Expression::expandSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>, Arc<DAE::Dimension>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> + 'static>))?;
+    subslst = List::combination(subslst);
+    for mut subs in &*subslst {
         let mut subs = subs.clone();
         outCrefs = metamodelica::cons(ComponentReferenceBasics::makeCrefIdent((inId.clone()).clone(), inType.clone(), subs.clone()), outCrefs.clone());
     }
-    outCrefs = outCrefs.clone().reverse();
+    outCrefs = outCrefs.reverse();
     Ok(outCrefs)
 }
 
@@ -2437,7 +2437,7 @@ pub fn replaceSubsWithString(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<D
             joinCrefs(cr.clone(), cr1.clone())?
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
-            inCref.clone()
+            inCref
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident, identType, subscriptLst } => {
             let mut cr: Arc<DAE::ComponentRef>;
@@ -2447,7 +2447,7 @@ pub fn replaceSubsWithString(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<D
             cr.clone()
         },
         Deref @ DAE::ComponentRef::WILD { .. } => {
-            inCref.clone()
+            inCref
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2456,7 +2456,7 @@ pub fn replaceSubsWithString(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<D
 
 pub(crate) fn makeCrefsFromSubScriptLst(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inPreCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = inPreCref.clone();
-    for mut subScript in &*inSubscriptLst.clone() {
+    for mut subScript in &*inSubscriptLst {
         let mut subScript = subScript.clone();
         outCref = (::match_deref::match_deref! { match &(subScript.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: e } => {
@@ -2481,11 +2481,11 @@ pub(crate) fn makeCrefsFromSubScriptExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<
     outCref = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ICONST { .. } => {
             let mut r#str: ArcStr;
-            r#str = (ExpressionBasics::printExpStr(inExp.clone())?).clone();
+            r#str = (ExpressionBasics::printExpStr(inExp)?).clone();
             Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (r#str.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() })
         },
         Deref @ DAE::Exp::CREF { .. } => {
-            Expression::expCref(inExp.clone())?
+            Expression::expCref(inExp)?
         },
         Deref @ DAE::Exp::BINARY { operator: op, exp1: e1, exp2: e2 } => {
             let mut cr1: Arc<DAE::ComponentRef>;
@@ -2495,8 +2495,8 @@ pub(crate) fn makeCrefsFromSubScriptExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<
             cr1 = makeCrefsFromSubScriptExp(e1.clone())?;
             cr2 = makeCrefsFromSubScriptExp(e2.clone())?;
             outCref = prependStringCref((r#str.clone()).clone(), cr1.clone())?;
-            outCref = joinCrefs(outCref.clone(), cr2.clone())?;
-            outCref.clone()
+            outCref = joinCrefs(outCref, cr2.clone())?;
+            outCref
         },
         Deref @ DAE::Exp::ENUM_LITERAL { name: enum_lit, .. } => {
             let mut r#str: ArcStr;
@@ -2505,7 +2505,7 @@ pub(crate) fn makeCrefsFromSubScriptExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<
         },
         _ => {
             let mut r#str: ArcStr;
-            r#str = (ExpressionDump::dumpExpStr(inExp.clone(), 0)?).clone();
+            r#str = (ExpressionDump::dumpExpStr(inExp, 0)?).clone();
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function ComponentReference.makeCrefsFromSubScriptExp for:")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ComponentReference.mo"))?;
             bail!("fail")
         },
@@ -2516,14 +2516,14 @@ pub(crate) fn makeCrefsFromSubScriptExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<
 
 pub(crate) fn replaceLast(mut inCref: Arc<DAE::ComponentRef>, mut inNewLast: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
+    outCref = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst: subs, componentRef: cref } => {
             let mut cref = (*cref).clone();
-            cref = replaceLast(cref.clone(), inNewLast.clone())?;
+            cref = replaceLast(cref.clone(), inNewLast)?;
             Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (ident.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: cref.clone() })
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            inNewLast.clone()
+            inNewLast
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2535,27 +2535,27 @@ pub fn expandArrayCref(mut inCr: Arc<DAE::ComponentRef>, mut inDims: Arc<metamod
     let mut lasttype: Arc<DAE::Type>;
     let mut tmpcref: Arc<DAE::ComponentRef>;
     lasttype = crefLastType(inCr.clone())?;
-    lasttype = Types::liftTypeWithDims(lasttype.clone(), inDims.clone())?;
-    tmpcref = crefSetLastType(inCr.clone(), lasttype.clone())?;
-    outCrefs = expandCref(tmpcref.clone(), false);
+    lasttype = Types::liftTypeWithDims(lasttype, inDims)?;
+    tmpcref = crefSetLastType(inCr, lasttype)?;
+    outCrefs = expandCref(tmpcref, false);
     Ok(outCrefs)
 }
 
 fn expandArrayCref1(mut inCr: Arc<DAE::ComponentRef>, mut inSubscripts: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>>, mut inAccumSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inAccumCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inSubscripts.clone()) {
+        ::match_deref::match_deref! { match &(inSubscripts) {
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: sub, tail: subs }, tail: rest_subs } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-            crefs = expandArrayCref1(inCr.clone(), metamodelica::cons(subs.clone(), rest_subs.clone()), inAccumSubs.clone(), inAccumCrefs.clone())?;
-            { (inCr, inSubscripts, inAccumSubs, inAccumCrefs) = (inCr.clone(), rest_subs.clone(), metamodelica::cons(sub.clone(), inAccumSubs.clone()), crefs.clone()); continue '__tco; }
+            crefs = expandArrayCref1(inCr.clone(), metamodelica::cons(subs.clone(), rest_subs.clone()), inAccumSubs.clone(), inAccumCrefs)?;
+            { (inCr, inSubscripts, inAccumSubs, inAccumCrefs) = (inCr, rest_subs.clone(), metamodelica::cons(sub.clone(), inAccumSubs), crefs.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
-            return Ok(inAccumCrefs.clone())
+            return Ok(inAccumCrefs)
         },
         _ => {
             let mut cref: Arc<DAE::ComponentRef>;
-            cref = crefSetLastSubs(inCr.clone(), inAccumSubs.clone())?;
-            return Ok(metamodelica::cons(cref.clone(), inAccumCrefs.clone()))
+            cref = crefSetLastSubs(inCr, inAccumSubs)?;
+            return Ok(metamodelica::cons(cref.clone(), inAccumCrefs))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2564,7 +2564,7 @@ fn expandArrayCref1(mut inCr: Arc<DAE::ComponentRef>, mut inSubscripts: Arc<meta
 
 pub fn explode(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    outParts = Dangerous::listReverseInPlace(explode_tail(inCref.clone(), metamodelica::nil())?);
+    outParts = Dangerous::listReverseInPlace(explode_tail(inCref, metamodelica::nil())?);
     Ok(outParts)
 }
 
@@ -2573,11 +2573,11 @@ fn explode_tail(mut inCref: Arc<DAE::ComponentRef>, mut inParts: Arc<metamodelic
         ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: rest_cr, .. } => {
             let mut first_cr: Arc<DAE::ComponentRef>;
-            first_cr = ComponentReferenceBasics::crefFirstCref(inCref.clone())?;
-            { (inCref, inParts) = (rest_cr.clone(), metamodelica::cons(first_cr.clone(), inParts.clone())); continue '__tco; }
+            first_cr = ComponentReferenceBasics::crefFirstCref(inCref)?;
+            { (inCref, inParts) = (rest_cr.clone(), metamodelica::cons(first_cr.clone(), inParts)); continue '__tco; }
         },
         _ => {
-            return Ok(metamodelica::cons(inCref.clone(), inParts.clone()))
+            return Ok(metamodelica::cons(inCref, inParts))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2586,7 +2586,7 @@ fn explode_tail(mut inCref: Arc<DAE::ComponentRef>, mut inParts: Arc<metamodelic
 
 pub fn implode(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
-    outCref = implode_reverse(inParts.clone().reverse())?;
+    outCref = implode_reverse(inParts.reverse())?;
     Ok(outCref)
 }
 
@@ -2594,26 +2594,26 @@ pub fn implode_reverse(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef
     let mut outCref: Arc<DAE::ComponentRef>;
     let mut first: Arc<DAE::ComponentRef>;
     let mut rest: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inParts.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inParts) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     first = __pa0.clone();
     rest = __pa1.clone();
-    outCref = implode_tail(rest.clone(), first.clone())?;
+    outCref = implode_tail(rest, first)?;
     Ok(outCref)
 }
 
 fn implode_tail(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inAccumCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inParts.clone()) {
+        ::match_deref::match_deref! { match &(inParts) {
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: subs }, tail: rest } => {
             let mut cr: Arc<DAE::ComponentRef>;
-            cr = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: inAccumCref.clone() });
+            cr = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: inAccumCref });
             { (inParts, inAccumCref) = (rest.clone(), cr.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            return Ok(inAccumCref.clone())
+            return Ok(inAccumCref)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2622,18 +2622,18 @@ fn implode_tail(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mu
 
 pub fn identifierCount(mut inCref: Arc<DAE::ComponentRef>) -> i32 {
     let mut outIdCount: i32;
-    outIdCount = identifierCount_tail(inCref.clone(), 0);
+    outIdCount = identifierCount_tail(inCref, 0);
     outIdCount
 }
 
 fn identifierCount_tail(mut inCref: Arc<DAE::ComponentRef>, mut inAccumCount: i32) -> i32 {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inCref.clone()) {
+        ::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
-            { (inCref, inAccumCount) = (cr.clone(), inAccumCount.clone() + 1); continue '__tco; }
+            { (inCref, inAccumCount) = (cr.clone(), inAccumCount + 1); continue '__tco; }
         },
         _ => {
-            return inAccumCount.clone() + 1
+            return inAccumCount + 1
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -2641,19 +2641,19 @@ fn identifierCount_tail(mut inCref: Arc<DAE::ComponentRef>, mut inAccumCount: i3
 }
 
 pub fn checkCrefSubscriptsBounds(mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<()> {
-    checkCrefSubscriptsBounds2(inCref.clone(), inCref.clone(), inInfo.clone())?;
+    checkCrefSubscriptsBounds2(inCref.clone(), inCref, inInfo)?;
     Ok(())
 }
 
 fn checkCrefSubscriptsBounds2(mut inCref: Arc<DAE::ComponentRef>, mut inWholeCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inCref.clone()) {
+    let () = (::match_deref::match_deref! { match &(inCref) {
         Deref @ DAE::ComponentRef::CREF_QUAL { identType: ty, subscriptLst: subs, componentRef: rest_cr, .. } => {
             checkCrefSubscriptsBounds3(ty.clone(), subs.clone(), inWholeCref.clone(), inInfo.clone())?;
-            checkCrefSubscriptsBounds2(rest_cr.clone(), inWholeCref.clone(), inInfo.clone())?;
+            checkCrefSubscriptsBounds2(rest_cr.clone(), inWholeCref, inInfo)?;
             ()
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: ty, subscriptLst: subs, .. } => {
-            checkCrefSubscriptsBounds3(ty.clone(), subs.clone(), inWholeCref.clone(), inInfo.clone())?;
+            checkCrefSubscriptsBounds3(ty.clone(), subs.clone(), inWholeCref, inInfo)?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -2664,18 +2664,18 @@ fn checkCrefSubscriptsBounds2(mut inCref: Arc<DAE::ComponentRef>, mut inWholeCre
 fn checkCrefSubscriptsBounds3(mut inCrefType: Arc<DAE::Type>, mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inWholeCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<()> {
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
-    dims = TypesDump::getDimensions(inCrefType.clone());
-    dims = dims.clone().reverse();
-    subs = inSubscripts.clone().reverse();
-    checkCrefSubscriptsBounds4(subs.clone(), dims.clone(), 1, inWholeCref.clone(), inInfo.clone())?;
+    dims = TypesDump::getDimensions(inCrefType);
+    dims = dims.reverse();
+    subs = inSubscripts.reverse();
+    checkCrefSubscriptsBounds4(subs, dims, 1, inWholeCref, inInfo)?;
     Ok(())
 }
 
 fn checkCrefSubscriptsBounds4(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inIndex: i32, mut inWholeCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &((inSubscripts.clone(), inDimensions.clone())) {
+    let () = (::match_deref::match_deref! { match &((inSubscripts, inDimensions)) {
         (Deref @ metamodelica::List::Cons { head: sub, tail: rest_subs }, Deref @ metamodelica::List::Cons { head: dim, tail: rest_dims }) => {
-            let true = (checkCrefSubscriptBounds(sub.clone(), dim.clone(), inIndex.clone(), inWholeCref.clone(), inInfo.clone())) else { bail!("pattern mismatch") };
-            checkCrefSubscriptsBounds4(rest_subs.clone(), rest_dims.clone(), inIndex.clone() + 1, inWholeCref.clone(), inInfo.clone())?;
+            let true = (checkCrefSubscriptBounds(sub.clone(), dim.clone(), inIndex, inWholeCref.clone(), inInfo.clone())) else { bail!("pattern mismatch") };
+            checkCrefSubscriptsBounds4(rest_subs.clone(), rest_dims.clone(), inIndex + 1, inWholeCref, inInfo)?;
             ()
         },
         (Deref @ metamodelica::List::Nil, _) => {
@@ -2692,12 +2692,12 @@ fn checkCrefSubscriptsBounds4(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::
 fn checkCrefSubscriptBounds(mut inSubscript: Arc<DAE::Subscript>, mut inDimension: Arc<DAE::Dimension>, mut inIndex: i32, mut inWholeCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> bool {
     let mut outIsValid: bool;
     outIsValid = 'mc: {
-        let __mc_input = (inSubscript.clone(), inDimension.clone());
+        let __mc_input = (inSubscript, inDimension.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Subscript::INDEX { exp: exp @ Deref @ DAE::Exp::ICONST { integer: idx } }, Deref @ DAE::Dimension::DIM_INTEGER { integer: dim }) => {
                     let false = (idx.clone() > 0 && idx.clone() <= dim.clone()) else { bail!("pattern mismatch") };
-                    printSubscriptBoundsError(exp.clone(), inDimension.clone(), inIndex.clone(), inWholeCref.clone(), inInfo.clone())?;
+                    printSubscriptBoundsError(exp.clone(), inDimension.clone(), inIndex, inWholeCref.clone(), inInfo.clone())?;
                     Ok(false)
                 }
                 _ => bail!("nomatch"),
@@ -2708,7 +2708,7 @@ fn checkCrefSubscriptBounds(mut inSubscript: Arc<DAE::Subscript>, mut inDimensio
                 (Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ARRAY { array: expl, .. } }, Deref @ DAE::Dimension::DIM_INTEGER { integer: dim }) => {
                     let mut exp: Arc<DAE::Exp>;
                     exp = List::getMemberOnTrue(dim.clone(), expl.clone(), (std::sync::Arc::new(fnptr!(subscriptExpOutOfBounds, i32, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
-                    printSubscriptBoundsError(exp.clone(), inDimension.clone(), inIndex.clone(), inWholeCref.clone(), inInfo.clone())?;
+                    printSubscriptBoundsError(exp.clone(), inDimension.clone(), inIndex, inWholeCref.clone(), inInfo.clone())?;
                     Ok(false)
                 }
                 _ => bail!("nomatch"),
@@ -2729,9 +2729,9 @@ fn checkCrefSubscriptBounds(mut inSubscript: Arc<DAE::Subscript>, mut inDimensio
 
 fn subscriptExpOutOfBounds(mut inDimSize: i32, mut inSubscriptExp: Arc<DAE::Exp>) -> bool {
     let mut outOutOfBounds: bool;
-    outOutOfBounds = (::match_deref::match_deref! { match &(inSubscriptExp.clone()) {
+    outOutOfBounds = (::match_deref::match_deref! { match &(inSubscriptExp) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
-            i.clone() < 1 || i.clone() > inDimSize.clone()
+            i.clone() < 1 || i.clone() > inDimSize
         },
         _ => {
             false
@@ -2746,11 +2746,11 @@ fn printSubscriptBoundsError(mut inSubscriptExp: Arc<DAE::Exp>, mut inDimension:
     let mut dim_str: ArcStr;
     let mut idx_str: ArcStr;
     let mut cref_str: ArcStr;
-    sub_str = (ExpressionBasics::printExpStr(inSubscriptExp.clone())?).clone();
-    dim_str = (ExpressionBasics::dimensionString(inDimension.clone())?).clone();
-    idx_str = (intString(inIndex.clone())).clone();
-    cref_str = (ComponentReferenceBasics::printComponentRefStr(inCref.clone())?).clone();
-    Error::addSourceMessage(Error::ARRAY_INDEX_OUT_OF_BOUNDS.clone(), list![(sub_str.clone()).clone(), (idx_str.clone()).clone(), (dim_str.clone()).clone(), (cref_str.clone()).clone()], inInfo.clone())?;
+    sub_str = (ExpressionBasics::printExpStr(inSubscriptExp)?).clone();
+    dim_str = (ExpressionBasics::dimensionString(inDimension)?).clone();
+    idx_str = (intString(inIndex)).clone();
+    cref_str = (ComponentReferenceBasics::printComponentRefStr(inCref)?).clone();
+    Error::addSourceMessage(Error::ARRAY_INDEX_OUT_OF_BOUNDS.clone(), list![(sub_str).clone(), (idx_str).clone(), (dim_str).clone(), (cref_str).clone()], inInfo)?;
     Ok(())
 }
 
@@ -2759,8 +2759,8 @@ pub(crate) fn crefAppendedSubs(mut cref: Arc<DAE::ComponentRef>) -> Result<ArcSt
     let mut s1: ArcStr;
     let mut s2: ArcStr;
     s1 = stringDelimitList(toStringList(cref.clone()), (literal!("_P")).clone());
-    s2 = stringDelimitList(List::mapMap(ComponentReferenceBasics::crefSubs(cref.clone())?, (std::sync::Arc::new(Expression::getSubscriptExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
-    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+    s2 = stringDelimitList(List::mapMap(ComponentReferenceBasics::crefSubs(cref)?, (std::sync::Arc::new(Expression::getSubscriptExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s1); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*s2); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
     Ok(s)
 }
 
@@ -2769,28 +2769,28 @@ pub fn writeCref(mut file: File::File, mut cref: Arc<DAE::ComponentRef>, mut esc
     loop {
         c = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            File::writeEscape(file.clone(), (var_field!((*c).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), escape.clone());
-            writeSubscripts(file.clone(), var_field!((*c).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), escape.clone())?;
+            File::writeEscape(file.clone(), (var_field!((*c).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), escape);
+            writeSubscripts(file.clone(), var_field!((*c).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone(), escape)?;
             return Ok(());
             bail!("fail")
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", .. } => {
             File::write(file.clone(), (literal!("der(")).clone());
-            writeCref(file.clone(), var_field!((*c).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), escape.clone())?;
+            writeCref(file.clone(), var_field!((*c).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), escape)?;
             File::write(file.clone(), (literal!(")")).clone());
             return Ok(());
             bail!("fail")
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$CLKPRE", .. } => {
             File::write(file.clone(), (literal!("previous(")).clone());
-            writeCref(file.clone(), var_field!((*c).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), escape.clone())?;
+            writeCref(file.clone(), var_field!((*c).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), escape)?;
             File::write(file.clone(), (literal!(")")).clone());
             return Ok(());
             bail!("fail")
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
-            File::writeEscape(file.clone(), (var_field!((*c).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), escape.clone());
-            writeSubscripts(file.clone(), var_field!((*c).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), escape.clone())?;
+            File::writeEscape(file.clone(), (var_field!((*c).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), escape);
+            writeSubscripts(file.clone(), var_field!((*c).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), escape)?;
             File::write(file.clone(), (literal!(".")).clone());
             var_field!((*c).componentRef, DAE::ComponentRef::CREF_QUAL).clone()
         },
@@ -2808,9 +2808,9 @@ pub fn writeSubscripts(mut file: File::File, mut subs: Arc<metamodelica::List<Ar
         return Ok(());
     }
     File::write(file.clone(), (literal!("[")).clone());
-    for mut s in &*subs.clone() {
+    for mut s in &*subs {
         let mut s = s.clone();
-        if !(first.clone()) {
+        if !(first) {
             File::write(file.clone(), (literal!(",")).clone());
         } else {
             first = false;
@@ -2853,7 +2853,7 @@ pub fn writeSubscripts(mut file: File::File, mut subs: Arc<metamodelica::List<Ar
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    File::write(file.clone(), (literal!("]")).clone());
+    File::write(file, (literal!("]")).clone());
     Ok(())
 }
 
@@ -2863,18 +2863,18 @@ pub(crate) fn getConsumedMemory(mut inCref: Arc<DAE::ComponentRef>) -> (metamode
     let mut szSubs: metamodelica::Real = metamodelica::OrderedFloat((0) as f64);
     let mut cr: Arc<DAE::ComponentRef> = inCref.clone();
     let mut b: bool = true;
-    while b.clone() {
+    while b {
         (b, cr) = (::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            szIdents = szIdents.clone() + (System::getSizeOfData((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone())).0;
-            szTypes = szTypes.clone() + (System::getSizeOfData(var_field!((*cr).identType, DAE::ComponentRef::CREF_IDENT).clone())).0;
-            szSubs = szSubs.clone() + (System::getSizeOfData(var_field!((*cr).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())).0;
+            szIdents = szIdents + (System::getSizeOfData((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone())).0;
+            szTypes = szTypes + (System::getSizeOfData(var_field!((*cr).identType, DAE::ComponentRef::CREF_IDENT).clone())).0;
+            szSubs = szSubs + (System::getSizeOfData(var_field!((*cr).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())).0;
             (false, cr.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
-            szIdents = szIdents.clone() + (System::getSizeOfData((var_field!((*cr).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone())).0;
-            szTypes = szTypes.clone() + (System::getSizeOfData(var_field!((*cr).identType, DAE::ComponentRef::CREF_QUAL).clone())).0;
-            szSubs = szSubs.clone() + (System::getSizeOfData(var_field!((*cr).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())).0;
+            szIdents = szIdents + (System::getSizeOfData((var_field!((*cr).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone())).0;
+            szTypes = szTypes + (System::getSizeOfData(var_field!((*cr).identType, DAE::ComponentRef::CREF_QUAL).clone())).0;
+            szSubs = szSubs + (System::getSizeOfData(var_field!((*cr).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())).0;
             (true, var_field!((*cr).componentRef, DAE::ComponentRef::CREF_QUAL).clone())
         },
         _ => (false, cr.clone()),
@@ -2888,27 +2888,27 @@ pub fn createDifferentiatedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inX:
     let mut outCref: Arc<DAE::ComponentRef>;
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     let debug: bool = false;
-    if debug.clone() {
+    if debug {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("inCref: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     subs = crefLastSubs(inCref.clone())?;
     outCref = ComponentReferenceBasics::crefStripLastSubs(inCref.clone())?;
-    outCref = replaceSubsWithString(outCref.clone())?;
-    if debug.clone() {
+    outCref = replaceSubsWithString(outCref)?;
+    if debug {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after full type: ")); __mm_s.push_str(&*TypesDump::printTypeStr(crefTypeFull(crefStripIterSub(outCref.clone(), (literal!("")).clone()))?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    outCref = crefSetLastType(outCref.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
-    if debug.clone() {
+    outCref = crefSetLastType(outCref, DAE::T_UNKNOWN_DEFAULT().clone())?;
+    if debug {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after strip: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(expandCref(outCref.clone(), true))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    outCref = joinCrefs(outCref.clone(), ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(DAE::partialDerivativeNamePrefix)); __mm_s.push_str(&*inMatrixName.clone()); ArcStr::from(__mm_s) }).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
-    outCref = joinCrefs(outCref.clone(), inX.clone())?;
-    if debug.clone() {
+    outCref = joinCrefs(outCref, ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(DAE::partialDerivativeNamePrefix)); __mm_s.push_str(&*inMatrixName); ArcStr::from(__mm_s) }).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
+    outCref = joinCrefs(outCref, inX)?;
+    if debug {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(expandCref(outCref.clone(), true))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    outCref = crefSetLastSubs(outCref.clone(), subs.clone())?;
-    outCref = crefSetLastType(outCref.clone(), crefLastType(inCref.clone())?)?;
-    if debug.clone() {
+    outCref = crefSetLastSubs(outCref, subs)?;
+    outCref = crefSetLastType(outCref, crefLastType(inCref)?)?;
+    if debug {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("outCref: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(outCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(outCref)
@@ -2916,7 +2916,7 @@ pub fn createDifferentiatedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inX:
 
 pub fn isTime(mut cref: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(cref.clone()) {
+    b = (::match_deref::match_deref! { match &(cref) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2926,7 +2926,7 @@ pub fn isTime(mut cref: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn isWild(mut cref: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(cref.clone()) {
+    b = (::match_deref::match_deref! { match &(cref) {
         Deref @ DAE::ComponentRef::WILD { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2936,7 +2936,7 @@ pub fn isWild(mut cref: Arc<DAE::ComponentRef>) -> bool {
 
 pub(crate) fn uniqueList(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut uniqueCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
-    uniqueCrefs = UnorderedSet::unique_list(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    uniqueCrefs = UnorderedSet::unique_list(crefs, (std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(uniqueCrefs)
 }
 

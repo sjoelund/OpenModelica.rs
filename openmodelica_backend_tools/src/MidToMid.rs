@@ -96,7 +96,7 @@ pub(crate) fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode:
         jumps = __pa0.clone();
         node = __pa1.clone();
         tasks = __pa2.clone();
-        oldBlock = lookupId(oldBody.clone(), node.clone())?;
+        oldBlock = lookupId(oldBody.clone(), node)?;
         newBlock = oldBlock.clone();
         if isPushJmp(oldBlock.terminator.clone()) {
             jumps = metamodelica::cons(listHead(getSuccessors(oldBlock.clone())?)?, jumps.clone());
@@ -106,7 +106,7 @@ pub(crate) fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode:
                 _ => bail!("pattern mismatch"),
             } };
             jump = __pa3.clone();
-            newBlock = MidCode::Block { id: oldBlock.id.clone(), stmts: oldBlock.stmts.clone(), terminator: MidCode::Terminator::GOTO { next: jump.clone() } };
+            newBlock = MidCode::Block { id: oldBlock.id.clone(), stmts: oldBlock.stmts.clone(), terminator: MidCode::Terminator::GOTO { next: jump } };
         } else if isPopJmp(oldBlock.terminator.clone()) {
             let __pa4 = ::match_deref::match_deref! { match &(jumps.clone()) {
                 Deref @ metamodelica::List::Cons { head: _, tail: __pa4 } => __pa4.clone(),
@@ -127,8 +127,8 @@ pub(crate) fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode:
     });
         tasks = listAppend(tasks_tmp.clone(), tasks.clone());
     }
-    newBody = newBody.clone().reverse();
-    newFunction = MidCode::Function { name: oldFunction.name.clone(), locals: oldFunction.locals.clone(), localBufs: oldFunction.localBufs.clone(), localBufPtrs: oldFunction.localBufPtrs.clone(), inputs: oldFunction.inputs.clone(), outputs: oldFunction.outputs.clone(), body: newBody.clone(), entryId: oldFunction.entryId.clone(), exitId: oldFunction.exitId.clone() };
+    newBody = newBody.reverse();
+    newFunction = MidCode::Function { name: oldFunction.name.clone(), locals: oldFunction.locals.clone(), localBufs: oldFunction.localBufs.clone(), localBufPtrs: oldFunction.localBufPtrs.clone(), inputs: oldFunction.inputs.clone(), outputs: oldFunction.outputs.clone(), body: newBody, entryId: oldFunction.entryId.clone(), exitId: oldFunction.exitId.clone() };
     Ok(newFunction)
 }
 
@@ -136,11 +136,11 @@ pub(crate) fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut 
     '__tco: loop {
         let mut blocks_local: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();
         let mut block_local: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
-        ::match_deref::match_deref! { match &(blocks.clone()) {
-        Deref @ metamodelica::List::Cons { head: block_local, tail: _ } if (block_local.id.clone() == id.clone()) => return Ok(block_local.clone()),
+        ::match_deref::match_deref! { match &(blocks) {
+        Deref @ metamodelica::List::Cons { head: block_local, tail: _ } if (block_local.id.clone() == id) => return Ok(block_local.clone()),
         Deref @ metamodelica::List::Cons { head: _, tail: __esc_blocks_local } => {
             blocks_local = (*__esc_blocks_local).clone();
-            { (blocks, id) = (blocks_local.clone(), id.clone()); continue '__tco; }
+            { (blocks, id) = (blocks_local.clone(), id); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -155,16 +155,16 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
     neighbours = (match block_.terminator.clone() {
         MidCode::Terminator::GOTO { next: mut __esc_l0 } => {
             l0 = __esc_l0.clone();
-            list![l0.clone()]
+            list![l0]
         },
         MidCode::Terminator::BRANCH { condition: _, onTrue: mut __esc_l0, onFalse: mut __esc_l1 } => {
             l0 = __esc_l0.clone();
             l1 = __esc_l1.clone();
-            list![l0.clone(), l1.clone()]
+            list![l0, l1]
         },
         MidCode::Terminator::CALL { func: _, builtin: _, inputs: _, outputs: _, next: mut __esc_l0 } => {
             l0 = __esc_l0.clone();
-            list![l0.clone()]
+            list![l0]
         },
         MidCode::Terminator::RETURN { .. } => metamodelica::nil(),
         MidCode::Terminator::SWITCH { condition: _, cases: ref __esc_switchList } => {
@@ -181,11 +181,11 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
         MidCode::Terminator::LONGJMP { .. } => metamodelica::nil(),
         MidCode::Terminator::PUSHJMP { old_buf: _, new_buf: _, next: mut __esc_l0 } => {
             l0 = __esc_l0.clone();
-            list![l0.clone()]
+            list![l0]
         },
         MidCode::Terminator::POPJMP { old_buf: _, next: mut __esc_l0 } => {
             l0 = __esc_l0.clone();
-            list![l0.clone()]
+            list![l0]
         },
         _ => bail!("match: no arm matched"),
     });
@@ -194,13 +194,13 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
 
 fn tupleSnd(mut t: (i32, i32)) -> i32 {
     let mut i: i32;
-    (_, i) = t.clone();
+    (_, i) = t;
     i
 }
 
 fn isLongJmp(mut t: MidCode::Terminator) -> bool {
     let mut b: bool;
-    b = (match t.clone() {
+    b = (match t {
         MidCode::Terminator::LONGJMP { .. } => true,
         _ => false,
     });
@@ -209,7 +209,7 @@ fn isLongJmp(mut t: MidCode::Terminator) -> bool {
 
 fn isPushJmp(mut t: MidCode::Terminator) -> bool {
     let mut b: bool;
-    b = (match t.clone() {
+    b = (match t {
         MidCode::Terminator::PUSHJMP { old_buf: _, new_buf: _, next: _ } => true,
         _ => false,
     });
@@ -218,7 +218,7 @@ fn isPushJmp(mut t: MidCode::Terminator) -> bool {
 
 fn isPopJmp(mut t: MidCode::Terminator) -> bool {
     let mut b: bool;
-    b = (match t.clone() {
+    b = (match t {
         MidCode::Terminator::POPJMP { old_buf: _, next: _ } => true,
         _ => false,
     });

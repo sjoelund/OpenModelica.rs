@@ -65,7 +65,7 @@ use openmodelica_util_datatypes_basic::List;
 // =============================================================================
 pub(crate) fn inlineArrayEqn(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
-    (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(fnptr!(inlineArrayEqn1, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
+    (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE, (std::sync::Arc::new(fnptr!(inlineArrayEqn1, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
     Ok(outDAE)
 }
 
@@ -95,7 +95,7 @@ fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok((inEqSystem.clone(), inOptimized.clone()))
+                    Ok((inEqSystem.clone(), inOptimized))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -108,21 +108,21 @@ fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<
 pub(crate) fn getScalarArrayEqns(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     let mut outEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut outFound: bool;
-    (outEqnLst, outFound) = getScalarArrayEqns0(inEqnLst.clone(), metamodelica::nil(), false);
+    (outEqnLst, outFound) = getScalarArrayEqns0(inEqnLst, metamodelica::nil(), false);
     (outEqnLst, outFound)
 }
 
 fn getScalarArrayEqns0(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFound: bool) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inEqnLst.clone()) {
+        ::match_deref::match_deref! { match &(inEqnLst) {
         Deref @ metamodelica::List::Nil => {
-            return (inAccEqnLst.clone().reverse(), inFound.clone())
+            return (inAccEqnLst.reverse(), inFound)
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: eqns } => {
             let mut eqns1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut b: bool;
-            (eqns1, b) = getScalarArrayEqns1(eqn.clone(), inAccEqnLst.clone());
-            { (inEqnLst, inAccEqnLst, inFound) = (eqns.clone(), eqns1.clone(), b.clone() || inFound.clone()); continue '__tco; }
+            (eqns1, b) = getScalarArrayEqns1(eqn.clone(), inAccEqnLst);
+            { (inEqnLst, inAccEqnLst, inFound) = (eqns.clone(), eqns1.clone(), b.clone() || inFound); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -194,7 +194,7 @@ fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Ar
 fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>, mut eqAttr: BackendDAE::EquationAttributes, mut eqExp: Arc<DAE::EquationExp>, mut iEqns: (i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<(i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
     let mut oEqns: (i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>);
     oEqns = 'mc: {
-        let __mc_input = iEqns.clone();
+        let __mc_input = iEqns;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (i, eqns) => {

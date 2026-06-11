@@ -146,10 +146,10 @@ pub use self::NFSubscript::{RAW_SUBSCRIPT,UNTYPED,INDEX,SLICE,EXPANDED_SLICE,WHO
 pub(crate) fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Arc<NFSubscript> {
     let mut subscript: Arc<NFSubscript>;
     subscript = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::INTEGER { .. } => Arc::new(NFSubscript::INDEX { index: exp.clone() }),
-        Deref @ Expression::BOOLEAN { .. } => Arc::new(NFSubscript::INDEX { index: exp.clone() }),
-        Deref @ Expression::ENUM_LITERAL { .. } => Arc::new(NFSubscript::INDEX { index: exp.clone() }),
-        _ => Arc::new(NFSubscript::UNTYPED { exp: exp.clone() }),
+        Deref @ Expression::INTEGER { .. } => Arc::new(NFSubscript::INDEX { index: exp }),
+        Deref @ Expression::BOOLEAN { .. } => Arc::new(NFSubscript::INDEX { index: exp }),
+        Deref @ Expression::ENUM_LITERAL { .. } => Arc::new(NFSubscript::INDEX { index: exp }),
+        _ => Arc::new(NFSubscript::UNTYPED { exp: exp }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     subscript
@@ -157,7 +157,7 @@ pub(crate) fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Arc<NFSubscript
 
 pub(crate) fn fromTypedExp(mut exp: Arc<Expression::NFExpression>) -> Arc<NFSubscript> {
     let mut subscript: Arc<NFSubscript>;
-    subscript = if (Type::isArray(Expression::typeOf(exp.clone()))) {Arc::new(NFSubscript::SLICE { slice: exp.clone() })} else {Arc::new(NFSubscript::INDEX { index: exp.clone() })};
+    subscript = if (Type::isArray(Expression::typeOf(exp.clone()))) {Arc::new(NFSubscript::SLICE { slice: exp })} else {Arc::new(NFSubscript::INDEX { index: exp })};
     subscript
 }
 
@@ -195,10 +195,10 @@ pub fn toIndexList(mut subscript: Arc<NFSubscript>, mut length: i32) -> Result<A
     let mut indices: Arc<metamodelica::List<i32>>;
     indices = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ INDEX { .. } => {
-            list![toInteger(subscript.clone())?]
+            list![toInteger(subscript)?]
         },
         Deref @ WHOLE { .. } => {
-            List::intRange2(1, length.clone())
+            List::intRange2(1, length)
         },
         Deref @ SLICE { slice: Deref @ Expression::ARRAY { elements: elems, .. } } => {
             ({
@@ -217,7 +217,7 @@ pub fn toIndexList(mut subscript: Arc<NFSubscript>, mut length: i32) -> Result<A
             List::intRange2(start.clone(), stop.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toIndexList")); __mm_s.push_str(&*literal!(" got an incorrect subscript type ")); __mm_s.push_str(&*toString(subscript.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toIndexList")); __mm_s.push_str(&*literal!(" got an incorrect subscript type ")); __mm_s.push_str(&*toString(subscript)?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -234,8 +234,8 @@ pub(crate) fn makeIndex(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NF
     let mut subscript: Arc<NFSubscript>;
     let mut ty: Arc<Type::NFType>;
     ty = Expression::typeOf(exp.clone());
-    if isValidIndexType(ty.clone())? {
-        subscript = Arc::new(NFSubscript::INDEX { index: exp.clone() });
+    if isValidIndexType(ty)? {
+        subscript = Arc::new(NFSubscript::INDEX { index: exp });
     } else {
         Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeIndex")); __mm_s.push_str(&*literal!(" got a non integer type exp to make an index sub")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
         bail!("fail");
@@ -244,16 +244,16 @@ pub(crate) fn makeIndex(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NF
 }
 
 pub(crate) fn makeSplitIndex(mut node: Arc<InstNode::InstNode>, mut dimIndex: i32) -> Result<Arc<NFSubscript>> {
-    let mut subscript: Arc<NFSubscript> = Arc::new(NFSubscript::SPLIT_INDEX { node: node.clone(), dimIndex: dimIndex.clone() });
-    if dimIndex.clone() < 1 {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeSplitIndex")); __mm_s.push_str(&*literal!(" got invalid index ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", dimIndex.clone()))); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
+    let mut subscript: Arc<NFSubscript> = Arc::new(NFSubscript::SPLIT_INDEX { node: node.clone(), dimIndex: dimIndex });
+    if dimIndex < 1 {
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeSplitIndex")); __mm_s.push_str(&*literal!(" got invalid index ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", dimIndex))); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
     }
     Ok(subscript)
 }
 
 pub(crate) fn isIndex(mut sub: Arc<NFSubscript>) -> bool {
     let mut isIndex: bool;
-    isIndex = (::match_deref::match_deref! { match &(sub.clone()) {
+    isIndex = (::match_deref::match_deref! { match &(sub) {
         Deref @ INDEX { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -263,7 +263,7 @@ pub(crate) fn isIndex(mut sub: Arc<NFSubscript>) -> bool {
 
 pub fn isWhole(mut sub: Arc<NFSubscript>) -> bool {
     let mut isWhole: bool;
-    isWhole = (::match_deref::match_deref! { match &(sub.clone()) {
+    isWhole = (::match_deref::match_deref! { match &(sub) {
         Deref @ WHOLE { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -278,7 +278,7 @@ pub(crate) fn isSimple(mut sub: Arc<NFSubscript>) -> bool {
 
 pub(crate) fn isSliced(mut sub: Arc<NFSubscript>) -> bool {
     let mut sliced: bool;
-    sliced = (::match_deref::match_deref! { match &(sub.clone()) {
+    sliced = (::match_deref::match_deref! { match &(sub) {
         Deref @ SLICE { .. } => true,
         Deref @ WHOLE { .. } => true,
         _ => false,
@@ -319,14 +319,14 @@ pub(crate) fn isScalarLiteral(mut sub: Arc<NFSubscript>) -> bool {
 pub(crate) fn equalsIterator(mut sub: Arc<NFSubscript>, mut iterator: Arc<InstNode::InstNode>) -> Result<bool> {
     let mut res: bool;
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    res = (::match_deref::match_deref! { match &(sub.clone()) {
+    res = (::match_deref::match_deref! { match &(sub) {
         Deref @ UNTYPED { exp: Deref @ Expression::CREF { cref: __esc_cref, .. } } => {
             cref = (*__esc_cref).clone();
-            InstNode::refEqual(iterator.clone(), ComponentRef::node(cref.clone())?)
+            InstNode::refEqual(iterator, ComponentRef::node(cref.clone())?)
         },
         Deref @ INDEX { index: Deref @ Expression::CREF { cref: __esc_cref, .. } } => {
             cref = (*__esc_cref).clone();
-            InstNode::refEqual(iterator.clone(), ComponentRef::node(cref.clone())?)
+            InstNode::refEqual(iterator, ComponentRef::node(cref.clone())?)
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -348,7 +348,7 @@ pub(crate) fn isIterator(mut sub: Arc<NFSubscript>) -> bool {
 pub(crate) fn toIterator(mut sub: Arc<NFSubscript>) -> Result<Arc<InstNode::InstNode>> {
     let mut iterator: Arc<InstNode::InstNode>;
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    iterator = (::match_deref::match_deref! { match &(sub.clone()) {
+    iterator = (::match_deref::match_deref! { match &(sub) {
         Deref @ UNTYPED { exp: Deref @ Expression::CREF { cref, .. } } if (ComponentRef::isIterator(cref.clone())) => ComponentRef::node(cref.clone())?,
         Deref @ INDEX { index: Deref @ Expression::CREF { cref, .. } } if (ComponentRef::isIterator(cref.clone())) => ComponentRef::node(cref.clone())?,
         _ => crate::NFInstNode::InstNode::interned_EMPTY_NODE(),
@@ -360,7 +360,7 @@ pub(crate) fn toIterator(mut sub: Arc<NFSubscript>) -> Result<Arc<InstNode::Inst
 pub(crate) fn isBackendIterator(mut sub: Arc<NFSubscript>) -> bool {
     let mut res: bool;
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    res = (::match_deref::match_deref! { match &(sub.clone()) {
+    res = (::match_deref::match_deref! { match &(sub) {
         Deref @ INDEX { index: Deref @ Expression::CREF { cref: __esc_cref, .. } } => {
             cref = (*__esc_cref).clone();
             ComponentRef::isIterator(cref.clone())
@@ -390,7 +390,7 @@ pub(crate) fn isEqualList(mut subscripts1: Arc<metamodelica::List<Arc<NFSubscrip
     let mut isEqual: bool;
     let mut s2: Arc<NFSubscript>;
     let mut rest: Arc<metamodelica::List<Arc<NFSubscript>>> = subscripts2.clone();
-    for mut s1 in &*subscripts1.clone() {
+    for mut s1 in &*subscripts1 {
         let mut s1 = s1.clone();
         if rest.clone().is_empty() {
             isEqual = false;
@@ -407,7 +407,7 @@ pub(crate) fn isEqualList(mut subscripts1: Arc<metamodelica::List<Arc<NFSubscrip
             return Ok(isEqual.clone());
         }
     }
-    isEqual = rest.clone().is_empty();
+    isEqual = rest.is_empty();
     Ok(isEqual)
 }
 
@@ -418,13 +418,13 @@ pub(crate) fn compare(mut subscript1: Arc<NFSubscript>, mut subscript2: Arc<NFSu
         return Ok(comp.clone());
     }
     comp = Util::intCompare(metamodelica::valueConstructor((&*subscript1.clone()))?, metamodelica::valueConstructor((&*subscript2.clone()))?);
-    if comp.clone() != 0 {
+    if comp != 0 {
         return Ok(comp.clone());
     }
     comp = (::match_deref::match_deref! { match &(subscript1.clone()) {
         Deref @ UNTYPED { .. } => {
             let mut e: Arc<Expression::NFExpression>;
-            let __pa0 = ::match_deref::match_deref! { match &(subscript2.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(subscript2) {
                 Deref @ UNTYPED { exp: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -433,7 +433,7 @@ pub(crate) fn compare(mut subscript1: Arc<NFSubscript>, mut subscript2: Arc<NFSu
         },
         Deref @ INDEX { .. } => {
             let mut e: Arc<Expression::NFExpression>;
-            let __pa0 = ::match_deref::match_deref! { match &(subscript2.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(subscript2) {
                 Deref @ INDEX { index: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -442,7 +442,7 @@ pub(crate) fn compare(mut subscript1: Arc<NFSubscript>, mut subscript2: Arc<NFSu
         },
         Deref @ SLICE { .. } => {
             let mut e: Arc<Expression::NFExpression>;
-            let __pa0 = ::match_deref::match_deref! { match &(subscript2.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(subscript2) {
                 Deref @ SLICE { slice: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -455,14 +455,14 @@ pub(crate) fn compare(mut subscript1: Arc<NFSubscript>, mut subscript2: Arc<NFSu
         Deref @ SPLIT_INDEX { .. } => {
             let mut node: Arc<InstNode::InstNode>;
             let mut index: i32;
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(subscript2.clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(subscript2) {
                 Deref @ SPLIT_INDEX { node: __pa0, dimIndex: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             node = __pa0.clone();
             index = __pa1.clone();
             comp = InstNode::refCompare(var_field!((*subscript1).node, NFSubscript::SPLIT_INDEX).clone(), node.clone())?;
-            if (comp.clone() == 0) {Util::intCompare(var_field!((*subscript1).dimIndex, NFSubscript::SPLIT_INDEX).clone(), index.clone())} else {comp.clone()}
+            if (comp == 0) {Util::intCompare(var_field!((*subscript1).dimIndex, NFSubscript::SPLIT_INDEX).clone(), index.clone())} else {comp}
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -473,11 +473,11 @@ pub(crate) fn compareList(mut subscripts1: Arc<metamodelica::List<Arc<NFSubscrip
     let mut comp: i32;
     let mut s2: Arc<NFSubscript>;
     let mut rest_s2: Arc<metamodelica::List<Arc<NFSubscript>>> = subscripts2.clone();
-    comp = Util::intCompare((subscripts1.clone().len() as i32), (subscripts2.clone().len() as i32));
-    if comp.clone() != 0 {
+    comp = Util::intCompare((subscripts1.clone().len() as i32), (subscripts2.len() as i32));
+    if comp != 0 {
         return Ok(comp.clone());
     }
-    for mut s1 in &*subscripts1.clone() {
+    for mut s1 in &*subscripts1 {
         let mut s1 = s1.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_s2.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -486,7 +486,7 @@ pub(crate) fn compareList(mut subscripts1: Arc<metamodelica::List<Arc<NFSubscrip
         s2 = __pa0.clone();
         rest_s2 = __pa1.clone();
         comp = compare(s1.clone(), s2.clone())?;
-        if comp.clone() != 0 {
+        if comp != 0 {
             return Ok(comp.clone());
         }
     }
@@ -512,7 +512,7 @@ pub(crate) fn listContainsExp(mut subscripts: Arc<metamodelica::List<Arc<NFSubsc
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
     let mut res: bool;
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
         if containsExp(s.clone(), func.clone())? {
             res = true;
@@ -541,7 +541,7 @@ pub(crate) fn listContainsExpShallow(mut subscripts: Arc<metamodelica::List<Arc<
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
     let mut res: bool;
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
         if containsExpShallow(s.clone(), func.clone())? {
             res = true;
@@ -604,20 +604,20 @@ pub fn mapExp(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(
         Deref @ UNTYPED { exp: e1 } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
         },
         Deref @ INDEX { index: e1 } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript} else {fromTypedExp(e2.clone())}
         },
         Deref @ SLICE { slice: e1 } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript} else {fromTypedExp(e2.clone())}
         },
         _ => {
-            subscript.clone()
+            subscript
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -632,20 +632,20 @@ pub(crate) fn mapShallowExp(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn :
         Deref @ UNTYPED { exp: e1 } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = func(e1.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
         },
         Deref @ INDEX { index: e1 } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = func(e1.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript} else {fromTypedExp(e2.clone())}
         },
         Deref @ SLICE { slice: e1 } => {
             let mut e2: Arc<Expression::NFExpression>;
             e2 = func(e1.clone())?;
-            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript} else {fromTypedExp(e2.clone())}
         },
         _ => {
-            subscript.clone()
+            subscript
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -657,10 +657,10 @@ pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut sub
 
     let mut result: ArgT;
     result = (::match_deref::match_deref! { match &(subscript.clone()) {
-        Deref @ UNTYPED { .. } => Expression::fold(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), func.clone(), arg.clone())?,
-        Deref @ INDEX { .. } => Expression::fold(var_field!((*subscript).index, NFSubscript::INDEX).clone(), func.clone(), arg.clone())?,
-        Deref @ SLICE { .. } => Expression::fold(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), func.clone(), arg.clone())?,
-        _ => arg.clone(),
+        Deref @ UNTYPED { .. } => Expression::fold(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), func.clone(), arg)?,
+        Deref @ INDEX { .. } => Expression::fold(var_field!((*subscript).index, NFSubscript::INDEX).clone(), func.clone(), arg)?,
+        Deref @ SLICE { .. } => Expression::fold(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), func.clone(), arg)?,
+        _ => arg,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)
@@ -674,21 +674,21 @@ pub(crate) fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
     outSubscript = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ UNTYPED { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, arg) = Expression::mapFold(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone()),&*(exp.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
+            (exp, arg) = Expression::mapFold(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), func.clone(), arg)?;
+            if (referenceEq(&*(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone()),&*(exp.clone()))) {subscript} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
         },
         Deref @ INDEX { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, arg) = Expression::mapFold(var_field!((*subscript).index, NFSubscript::INDEX).clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(var_field!((*subscript).index, NFSubscript::INDEX).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            (exp, arg) = Expression::mapFold(var_field!((*subscript).index, NFSubscript::INDEX).clone(), func.clone(), arg)?;
+            if (referenceEq(&*(var_field!((*subscript).index, NFSubscript::INDEX).clone()),&*(exp.clone()))) {subscript} else {fromTypedExp(exp.clone())}
         },
         Deref @ SLICE { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, arg) = Expression::mapFold(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&*(var_field!((*subscript).slice, NFSubscript::SLICE).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            (exp, arg) = Expression::mapFold(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), func.clone(), arg)?;
+            if (referenceEq(&*(var_field!((*subscript).slice, NFSubscript::SLICE).clone()),&*(exp.clone()))) {subscript} else {fromTypedExp(exp.clone())}
         },
         _ => {
-            subscript.clone()
+            subscript
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -703,21 +703,21 @@ pub(crate) fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrac
     outSubscript = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ UNTYPED { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, arg) = func(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), arg.clone())?;
-            if (referenceEq(&*(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone()),&*(exp.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
+            (exp, arg) = func(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), arg)?;
+            if (referenceEq(&*(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone()),&*(exp.clone()))) {subscript} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
         },
         Deref @ INDEX { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, arg) = func(var_field!((*subscript).index, NFSubscript::INDEX).clone(), arg.clone())?;
-            if (referenceEq(&*(var_field!((*subscript).index, NFSubscript::INDEX).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            (exp, arg) = func(var_field!((*subscript).index, NFSubscript::INDEX).clone(), arg)?;
+            if (referenceEq(&*(var_field!((*subscript).index, NFSubscript::INDEX).clone()),&*(exp.clone()))) {subscript} else {fromTypedExp(exp.clone())}
         },
         Deref @ SLICE { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, arg) = func(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), arg.clone())?;
-            if (referenceEq(&*(var_field!((*subscript).slice, NFSubscript::SLICE).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            (exp, arg) = func(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), arg)?;
+            if (referenceEq(&*(var_field!((*subscript).slice, NFSubscript::SLICE).clone()),&*(exp.clone()))) {subscript} else {fromTypedExp(exp.clone())}
         },
         _ => {
-            subscript.clone()
+            subscript
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -748,7 +748,7 @@ pub(crate) fn toDAE(mut subscript: Arc<NFSubscript>) -> Result<Arc<DAE::Subscrip
         Deref @ SLICE { .. } => Arc::new(DAE::Subscript::SLICE { exp: Expression::toDAE(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), false)? }),
         Deref @ WHOLE { .. } => openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDAE")); __mm_s.push_str(&*literal!(" failed on unknown subscript ")); __mm_s.push_str(&*toString(subscript.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDAE")); __mm_s.push_str(&*literal!(" failed on unknown subscript ")); __mm_s.push_str(&*toString(subscript)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -774,7 +774,7 @@ pub fn toString(mut subscript: Arc<NFSubscript>) -> Result<ArcStr> {
 
 pub fn toStringList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = (List::toString(subscripts.clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
+    string = (List::toString(subscripts, (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
     Ok(string)
 }
 
@@ -782,9 +782,9 @@ pub(crate) fn toFlatString(mut subscript: Arc<NFSubscript>, mut format: BaseMode
     let mut string: ArcStr;
     string = ((::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ RAW_SUBSCRIPT { .. } => Dump::printSubscriptStr(var_field!((*subscript).subscript, NFSubscript::RAW_SUBSCRIPT).clone())?,
-        Deref @ UNTYPED { .. } => Expression::toFlatString(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), format.clone())?,
-        Deref @ INDEX { .. } => Expression::toFlatString(var_field!((*subscript).index, NFSubscript::INDEX).clone(), format.clone())?,
-        Deref @ SLICE { .. } => Expression::toFlatString(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), format.clone())?,
+        Deref @ UNTYPED { .. } => Expression::toFlatString(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), format)?,
+        Deref @ INDEX { .. } => Expression::toFlatString(var_field!((*subscript).index, NFSubscript::INDEX).clone(), format)?,
+        Deref @ SLICE { .. } => Expression::toFlatString(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), format)?,
         Deref @ EXPANDED_SLICE { .. } => List::toString(var_field!((*subscript).indices, NFSubscript::EXPANDED_SLICE).clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), false, 0)?,
         Deref @ WHOLE { .. } => literal!(":"),
         Deref @ SPLIT_INDEX { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*InstNode::name(var_field!((*subscript).node, NFSubscript::SPLIT_INDEX).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!((*subscript).dimIndex, NFSubscript::SPLIT_INDEX).clone()))); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) },
@@ -795,9 +795,9 @@ pub(crate) fn toFlatString(mut subscript: Arc<NFSubscript>, mut format: BaseMode
 
 pub(crate) fn toFlatStringList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>, mut format: BaseModelica::OutputFormat, mut escapeQuotes: bool) -> Result<ArcStr> {
     let mut string: ArcStr;
-    string = (List::toString(subscripts.clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(",")).clone(), (literal!("]")).clone(), false, 0)?).clone();
-    if escapeQuotes.clone() {
-        string = (Util::escapeQuotes((string.clone()).clone())?).clone();
+    string = (List::toString(subscripts, (std::sync::Arc::new({ let __pe_b1 = format; move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(",")).clone(), (literal!("]")).clone(), false, 0)?).clone();
+    if escapeQuotes {
+        string = (Util::escapeQuotes((string).clone())?).clone();
     }
     Ok(string)
 }
@@ -808,7 +808,7 @@ pub(crate) fn toJSON(mut subscript: Arc<NFSubscript>) -> Result<Arc<JSON::JSON>>
         Deref @ UNTYPED { .. } => Expression::toJSON(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone())?,
         Deref @ INDEX { .. } => Expression::toJSON(var_field!((*subscript).index, NFSubscript::INDEX).clone())?,
         Deref @ SLICE { .. } => Expression::toJSON(var_field!((*subscript).slice, NFSubscript::SLICE).clone())?,
-        _ => JSON::makeString((toString(subscript.clone())?).clone()),
+        _ => JSON::makeString((toString(subscript)?).clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(json)
@@ -816,7 +816,7 @@ pub(crate) fn toJSON(mut subscript: Arc<NFSubscript>) -> Result<Arc<JSON::JSON>>
 
 pub(crate) fn toJSONList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = JSON::makeNull();
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
         json = JSON::addElement(toJSON(s.clone())?, json.clone())?;
     }
@@ -826,9 +826,9 @@ pub(crate) fn toJSONList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>
 pub(crate) fn eval(mut subscript: Arc<NFSubscript>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<NFSubscript>> {
     let mut outSubscript: Arc<NFSubscript>;
     outSubscript = (::match_deref::match_deref! { match &(subscript.clone()) {
-        Deref @ INDEX { .. } => Arc::new(NFSubscript::INDEX { index: Ceval::evalExp(var_field!((*subscript).index, NFSubscript::INDEX).clone(), target.clone())? }),
-        Deref @ SLICE { .. } => Arc::new(NFSubscript::SLICE { slice: Ceval::evalExp(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), target.clone())? }),
-        _ => subscript.clone(),
+        Deref @ INDEX { .. } => Arc::new(NFSubscript::INDEX { index: Ceval::evalExp(var_field!((*subscript).index, NFSubscript::INDEX).clone(), target)? }),
+        Deref @ SLICE { .. } => Arc::new(NFSubscript::SLICE { slice: Ceval::evalExp(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), target)? }),
+        _ => subscript,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSubscript)
@@ -838,8 +838,8 @@ pub(crate) fn simplify(mut subscript: Arc<NFSubscript>, mut dimension: Arc<Dimen
     let mut outSubscript: Arc<NFSubscript>;
     outSubscript = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ INDEX { .. } => Arc::new(NFSubscript::INDEX { index: SimplifyExp::simplify(var_field!((*subscript).index, NFSubscript::INDEX).clone(), false)? }),
-        Deref @ SLICE { .. } => simplifySlice(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), dimension.clone())?,
-        _ => subscript.clone(),
+        Deref @ SLICE { .. } => simplifySlice(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), dimension)?,
+        _ => subscript,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSubscript)
@@ -848,7 +848,7 @@ pub(crate) fn simplify(mut subscript: Arc<NFSubscript>, mut dimension: Arc<Dimen
 pub(crate) fn simplifySlice(mut slice: Arc<Expression::NFExpression>, mut dimension: Arc<Dimension::NFDimension>) -> Result<Arc<NFSubscript>> {
     let mut outSubscript: Arc<NFSubscript>;
     let mut exp: Arc<Expression::NFExpression>;
-    exp = SimplifyExp::simplify(slice.clone(), false)?;
+    exp = SimplifyExp::simplify(slice, false)?;
     outSubscript = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RANGE { .. } if ((isNone(var_field!((*exp).step, Expression::NFExpression::RANGE).clone()) || Expression::isOne(Util::getOption(var_field!((*exp).step, Expression::NFExpression::RANGE).clone())?)?) && Dimension::expIsLowerBound(var_field!((*exp).start, Expression::NFExpression::RANGE).clone()) && Dimension::expIsUpperBound(var_field!((*exp).stop, Expression::NFExpression::RANGE).clone(), dimension.clone())) => crate::NFSubscript::interned_WHOLE(),
         _ => Arc::new(NFSubscript::SLICE { slice: exp.clone() }),
@@ -861,17 +861,17 @@ pub(crate) fn simplifyList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscrip
     let mut outSubscripts: Arc<metamodelica::List<Arc<NFSubscript>>> = metamodelica::nil();
     let mut d: Arc<Dimension::NFDimension>;
     let mut rest_d: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = dimensions.clone();
-    if dimensions.clone().is_empty() {
+    if dimensions.is_empty() {
         outSubscripts = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFSubscript>>> = metamodelica::nil();
-        for mut s in (subscripts.clone()).into_iter().cloned() {
+        for mut s in (subscripts).into_iter().cloned() {
             let __x = simplify(s.clone(), crate::NFDimension::interned_UNKNOWN())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
     } else {
-        for mut s in &*subscripts.clone() {
+        for mut s in &*subscripts {
             let mut s = s.clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_d.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -881,10 +881,10 @@ pub(crate) fn simplifyList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscrip
             rest_d = __pa1.clone();
             outSubscripts = metamodelica::cons(simplify(s.clone(), d.clone())?, outSubscripts.clone());
         }
-        if trim.clone() {
-            outSubscripts = metamodelica::Dangerous::listReverseInPlace(List::trim(outSubscripts.clone(), (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?);
+        if trim {
+            outSubscripts = metamodelica::Dangerous::listReverseInPlace(List::trim(outSubscripts, (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?);
         } else {
-            outSubscripts = metamodelica::Dangerous::listReverseInPlace(outSubscripts.clone());
+            outSubscripts = metamodelica::Dangerous::listReverseInPlace(outSubscripts);
         }
     }
     Ok(outSubscripts)
@@ -898,7 +898,7 @@ pub(crate) fn toDimension(mut subscript: Arc<NFSubscript>) -> Result<Arc<Dimensi
         Deref @ WHOLE { .. } => crate::NFDimension::interned_UNKNOWN(),
         Deref @ SPLIT_INDEX { .. } => Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDimension")); __mm_s.push_str(&*literal!(" got wrong subscript ")); __mm_s.push_str(&*toString(subscript.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDimension")); __mm_s.push_str(&*literal!(" got wrong subscript ")); __mm_s.push_str(&*toString(subscript)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -921,17 +921,17 @@ pub(crate) fn fromDimension(mut dimension: Arc<Dimension::NFDimension>) -> Resul
 pub fn scalarize(mut subscript: Arc<NFSubscript>, mut dimension: Arc<Dimension::NFDimension>, mut resize: bool) -> Result<Arc<metamodelica::List<Arc<NFSubscript>>>> {
     let mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>;
     subscripts = (::match_deref::match_deref! { match &(subscript.clone()) {
-        Deref @ INDEX { .. } => list![subscript.clone()],
+        Deref @ INDEX { .. } => list![subscript],
         Deref @ SLICE { .. } => ({
         let mut __acc: Arc<metamodelica::List<Arc<NFSubscript>>> = metamodelica::nil();
-        for mut e in (Expression::arrayElements((ExpandExp::expand(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), resize.clone(), false)?).0)?).borrow().iter() {
+        for mut e in (Expression::arrayElements((ExpandExp::expand(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), resize, false)?).0)?).borrow().iter() {
             let __x = Arc::new(NFSubscript::INDEX { index: e.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
-        Deref @ WHOLE { .. } => RangeIterator::map(RangeIterator::fromDim(dimension.clone(), resize.clone())?, (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))?,
-        _ => list![subscript.clone()],
+        Deref @ WHOLE { .. } => RangeIterator::map(RangeIterator::fromDim(dimension, resize)?, (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))?,
+        _ => list![subscript],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(subscripts)
@@ -942,7 +942,7 @@ pub fn scalarizeList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>, 
     let mut dim: Arc<Dimension::NFDimension>;
     let mut rest_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = dimensions.clone();
     let mut subs: Arc<metamodelica::List<Arc<NFSubscript>>>;
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_dims.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -950,7 +950,7 @@ pub fn scalarizeList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>, 
         } };
         dim = __pa0.clone();
         rest_dims = __pa1.clone();
-        subs = scalarize(s.clone(), dim.clone(), resize.clone())?;
+        subs = scalarize(s.clone(), dim.clone(), resize)?;
         if subs.clone().is_empty() {
             outSubscripts = metamodelica::nil();
             return Ok(outSubscripts.clone());
@@ -958,9 +958,9 @@ pub fn scalarizeList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>, 
             outSubscripts = metamodelica::cons(subs.clone(), outSubscripts.clone());
         }
     }
-    for mut d in &*rest_dims.clone() {
+    for mut d in &*rest_dims {
         let mut d = d.clone();
-        subs = RangeIterator::map(RangeIterator::fromDim(d.clone(), resize.clone())?, (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))?;
+        subs = RangeIterator::map(RangeIterator::fromDim(d.clone(), resize)?, (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))?;
         if subs.clone().is_empty() {
             outSubscripts = metamodelica::nil();
             return Ok(outSubscripts.clone());
@@ -968,7 +968,7 @@ pub fn scalarizeList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>, 
             outSubscripts = metamodelica::cons(subs.clone(), outSubscripts.clone());
         }
     }
-    outSubscripts = outSubscripts.clone().reverse();
+    outSubscripts = outSubscripts.reverse();
     Ok(outSubscripts)
 }
 
@@ -977,22 +977,22 @@ pub(crate) fn expand(mut subscript: Arc<NFSubscript>, mut dimension: Arc<Dimensi
     let mut expanded: bool = false;
     (outSubscript, expanded) = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ SLICE { .. } => {
-            expandSlice(subscript.clone(), resize.clone())?
+            expandSlice(subscript, resize)?
         },
         Deref @ WHOLE { .. } => {
             let mut iter: Arc<RangeIterator::NFRangeIterator>;
-            iter = RangeIterator::fromDim(dimension.clone(), resize.clone())?;
+            iter = RangeIterator::fromDim(dimension, resize)?;
             if RangeIterator::isValid(iter.clone()) {
                 outSubscript = Arc::new(NFSubscript::EXPANDED_SLICE { indices: RangeIterator::map(iter.clone(), (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))? });
                 expanded = true;
             } else {
-                outSubscript = subscript.clone();
+                outSubscript = subscript;
                 expanded = false;
             }
-            (outSubscript.clone(), expanded.clone())
+            (outSubscript, expanded)
         },
         _ => {
-            (subscript.clone(), true)
+            (subscript, true)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1005,7 +1005,7 @@ pub(crate) fn expandSlice(mut subscript: Arc<NFSubscript>, mut resize: bool) -> 
     (outSubscript, expanded) = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ SLICE { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            (exp, _) = ExpandExp::expand(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), resize.clone(), false)?;
+            (exp, _) = ExpandExp::expand(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), resize, false)?;
             if Expression::isArray(exp.clone()) {
                 outSubscript = Arc::new(NFSubscript::EXPANDED_SLICE { indices: ({
         let mut __acc: Arc<metamodelica::List<Arc<NFSubscript>>> = metamodelica::nil();
@@ -1017,13 +1017,13 @@ pub(crate) fn expandSlice(mut subscript: Arc<NFSubscript>, mut resize: bool) -> 
     }) });
                 expanded = true;
             } else {
-                outSubscript = subscript.clone();
+                outSubscript = subscript;
                 expanded = false;
             }
-            (outSubscript.clone(), expanded.clone())
+            (outSubscript, expanded)
         },
         _ => {
-            (subscript.clone(), false)
+            (subscript, false)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1035,7 +1035,7 @@ pub(crate) fn expandList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>
     let mut dim: Arc<Dimension::NFDimension>;
     let mut rest_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = dimensions.clone();
     let mut sub: Arc<NFSubscript>;
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_dims.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1043,15 +1043,15 @@ pub(crate) fn expandList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>
         } };
         dim = __pa0.clone();
         rest_dims = __pa1.clone();
-        (sub, _) = expand(s.clone(), dim.clone(), resize.clone())?;
+        (sub, _) = expand(s.clone(), dim.clone(), resize)?;
         outSubscripts = metamodelica::cons(sub.clone(), outSubscripts.clone());
     }
-    for mut d in &*rest_dims.clone() {
+    for mut d in &*rest_dims {
         let mut d = d.clone();
-        sub = Arc::new(NFSubscript::EXPANDED_SLICE { indices: RangeIterator::map(RangeIterator::fromDim(d.clone(), resize.clone())?, (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))? });
+        sub = Arc::new(NFSubscript::EXPANDED_SLICE { indices: RangeIterator::map(RangeIterator::fromDim(d.clone(), resize)?, (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))? });
         outSubscripts = metamodelica::cons(sub.clone(), outSubscripts.clone());
     }
-    outSubscripts = outSubscripts.clone().reverse();
+    outSubscripts = outSubscripts.reverse();
     Ok(outSubscripts)
 }
 
@@ -1069,9 +1069,9 @@ pub(crate) fn variability(mut subscript: Arc<NFSubscript>) -> Result<Variability
 
 pub(crate) fn variabilityList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>) -> Result<Variability> {
     let mut var: Variability = Variability::CONSTANT.clone();
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
-        var = Prefixes::variabilityMax(var.clone(), variability(s.clone())?);
+        var = Prefixes::variabilityMax(var, variability(s.clone())?);
     }
     Ok(var)
 }
@@ -1090,9 +1090,9 @@ pub(crate) fn purity(mut subscript: Arc<NFSubscript>) -> Result<Purity> {
 
 pub(crate) fn purityList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>) -> Result<Purity> {
     let mut pur: Purity = Purity::PURE.clone();
-    for mut s in &*subscripts.clone() {
+    for mut s in &*subscripts {
         let mut s = s.clone();
-        pur = Prefixes::purityMin(pur.clone(), purity(s.clone())?);
+        pur = Prefixes::purityMin(pur, purity(s.clone())?);
     }
     Ok(pur)
 }
@@ -1105,25 +1105,25 @@ pub(crate) fn mergeList(mut newSubs: Arc<metamodelica::List<Arc<NFSubscript>>>, 
     let mut old_sub: Arc<NFSubscript>;
     let mut rest_old_subs: Arc<metamodelica::List<Arc<NFSubscript>>>;
     let mut merged: bool = true;
-    if backend.clone() && (oldSubs.clone().len() as i32) >= dimensions.clone() && List::all(List::firstN(oldSubs.clone(), dimensions.clone())?, (std::sync::Arc::new(fnptr!(isBackendIterator, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))? {
-        (_, remainingSubs) = List::split(newSubs.clone(), dimensions.clone())?;
-        (outSubs, _) = List::split(oldSubs.clone(), dimensions.clone())?;
+    if backend && (oldSubs.clone().len() as i32) >= dimensions && List::all(List::firstN(oldSubs.clone(), dimensions)?, (std::sync::Arc::new(fnptr!(isBackendIterator, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))? {
+        (_, remainingSubs) = List::split(newSubs, dimensions)?;
+        (outSubs, _) = List::split(oldSubs, dimensions)?;
         return Ok((outSubs.clone(), remainingSubs.clone()));
     }
     if oldSubs.clone().is_empty() {
-        if (newSubs.clone().len() as i32) <= dimensions.clone() {
-            outSubs = newSubs.clone();
+        if (newSubs.clone().len() as i32) <= dimensions {
+            outSubs = newSubs;
             remainingSubs = metamodelica::nil();
         } else {
-            (outSubs, remainingSubs) = List::split(newSubs.clone(), dimensions.clone())?;
+            (outSubs, remainingSubs) = List::split(newSubs, dimensions)?;
         }
         return Ok((outSubs.clone(), remainingSubs.clone()));
     }
     subs_count = (oldSubs.clone().len() as i32);
-    remainingSubs = newSubs.clone();
-    rest_old_subs = oldSubs.clone();
+    remainingSubs = newSubs;
+    rest_old_subs = oldSubs;
     outSubs = metamodelica::nil();
-    while merged.clone() && !(remainingSubs.clone().is_empty()) {
+    while merged && !(remainingSubs.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(remainingSubs.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -1131,7 +1131,7 @@ pub(crate) fn mergeList(mut newSubs: Arc<metamodelica::List<Arc<NFSubscript>>>, 
         new_sub = __pa0.clone();
         remainingSubs = __pa1.clone();
         merged = false;
-        while !(merged.clone()) {
+        while !(merged) {
             if rest_old_subs.clone().is_empty() {
                 remainingSubs = metamodelica::cons(new_sub.clone(), remainingSubs.clone());
                 break;
@@ -1158,11 +1158,11 @@ pub(crate) fn mergeList(mut newSubs: Arc<metamodelica::List<Arc<NFSubscript>>>, 
             }
         }
     }
-    for mut s in &*rest_old_subs.clone() {
+    for mut s in &*rest_old_subs {
         let mut s = s.clone();
         outSubs = metamodelica::cons(s.clone(), outSubs.clone());
     }
-    while !(remainingSubs.clone().is_empty()) && subs_count.clone() < dimensions.clone() {
+    while !(remainingSubs.clone().is_empty()) && subs_count < dimensions {
         let (__pa4, __pa5) = ::match_deref::match_deref! { match &(remainingSubs.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa4, tail: __pa5 } => (__pa4.clone(), __pa5.clone()),
             _ => bail!("pattern mismatch"),
@@ -1170,22 +1170,22 @@ pub(crate) fn mergeList(mut newSubs: Arc<metamodelica::List<Arc<NFSubscript>>>, 
         new_sub = __pa4.clone();
         remainingSubs = __pa5.clone();
         outSubs = metamodelica::cons(new_sub.clone(), outSubs.clone());
-        subs_count = subs_count.clone() + 1;
+        subs_count = subs_count + 1;
     }
-    outSubs = metamodelica::Dangerous::listReverseInPlace(outSubs.clone());
+    outSubs = metamodelica::Dangerous::listReverseInPlace(outSubs);
     Ok((outSubs, remainingSubs))
 }
 
 pub fn nth(mut dim: Arc<Dimension::NFDimension>, mut i: i32) -> Result<Arc<NFSubscript>> {
     let mut sub: Arc<NFSubscript>;
     sub = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ Dimension::INTEGER { .. } => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) }),
-        Deref @ Dimension::BOOLEAN if (i.clone() == 1) => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::BOOLEAN { value: false }) }),
-        Deref @ Dimension::BOOLEAN if (i.clone() == 2) => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::BOOLEAN { value: true }) }),
-        Deref @ Dimension::ENUM { .. } => Arc::new(NFSubscript::INDEX { index: Expression::nthEnumLiteral(var_field!((*dim).enumType, Dimension::NFDimension::ENUM).clone(), i.clone())? }),
-        Deref @ Dimension::RESIZABLE { .. } => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) }),
+        Deref @ Dimension::INTEGER { .. } => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) }),
+        Deref @ Dimension::BOOLEAN if (i == 1) => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::BOOLEAN { value: false }) }),
+        Deref @ Dimension::BOOLEAN if (i == 2) => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::BOOLEAN { value: true }) }),
+        Deref @ Dimension::ENUM { .. } => Arc::new(NFSubscript::INDEX { index: Expression::nthEnumLiteral(var_field!((*dim).enumType, Dimension::NFDimension::ENUM).clone(), i)? }),
+        Deref @ Dimension::RESIZABLE { .. } => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i }) }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.nth")); __mm_s.push_str(&*literal!(" got an incorrect dimension type ")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.nth")); __mm_s.push_str(&*literal!(" got an incorrect dimension type ")); __mm_s.push_str(&*Dimension::toString(dim)?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1207,7 +1207,7 @@ pub(crate) fn first(mut dim: Arc<Dimension::NFDimension>) -> Result<Arc<NFSubscr
 
 pub(crate) fn isFirst(mut sub: Arc<NFSubscript>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(sub.clone()) {
+    b = (::match_deref::match_deref! { match &(sub) {
         Deref @ INDEX { index: Deref @ Expression::INTEGER { value: 1 } } => true,
         Deref @ INDEX { index: Deref @ Expression::BOOLEAN { value: false } } => true,
         Deref @ INDEX { index: Deref @ Expression::ENUM_LITERAL { index: 1, .. } } => true,
@@ -1219,7 +1219,7 @@ pub(crate) fn isFirst(mut sub: Arc<NFSubscript>) -> bool {
 
 pub(crate) fn isSplit(mut sub: Arc<NFSubscript>) -> bool {
     let mut res: bool;
-    res = (::match_deref::match_deref! { match &(sub.clone()) {
+    res = (::match_deref::match_deref! { match &(sub) {
         Deref @ SPLIT_PROXY { .. } => true,
         Deref @ SPLIT_INDEX { .. } => true,
         _ => false,
@@ -1230,7 +1230,7 @@ pub(crate) fn isSplit(mut sub: Arc<NFSubscript>) -> bool {
 
 pub(crate) fn isSplitIndex(mut sub: Arc<NFSubscript>) -> bool {
     let mut res: bool;
-    res = (::match_deref::match_deref! { match &(sub.clone()) {
+    res = (::match_deref::match_deref! { match &(sub) {
         Deref @ SPLIT_INDEX { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1251,7 +1251,7 @@ pub(crate) fn isSplitClassProxy(mut sub: Arc<NFSubscript>) -> Result<bool> {
 pub(crate) fn isSplitFromOrigin(mut sub: Arc<NFSubscript>, mut origin: Arc<InstNode::InstNode>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ SPLIT_PROXY { .. } => InstNode::refEqual(origin.clone(), var_field!((*sub).origin, NFSubscript::SPLIT_PROXY).clone()),
+        Deref @ SPLIT_PROXY { .. } => InstNode::refEqual(origin, var_field!((*sub).origin, NFSubscript::SPLIT_PROXY).clone()),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1280,11 +1280,11 @@ pub(crate) fn expandSplitIndices(mut subs: Arc<metamodelica::List<Arc<NFSubscrip
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    if changed.clone() {
-        outSubs = List::trim(outSubs.clone(), (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?;
-        outSubs = metamodelica::Dangerous::listReverseInPlace(outSubs.clone());
+    if changed {
+        outSubs = List::trim(outSubs, (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?;
+        outSubs = metamodelica::Dangerous::listReverseInPlace(outSubs);
     } else {
-        outSubs = subs.clone();
+        outSubs = subs;
     }
     Ok(outSubs)
 }
@@ -1297,32 +1297,32 @@ pub(crate) fn hash(mut sub: Arc<NFSubscript>) -> Result<i32> {
 pub(crate) fn hashContinue(mut sub: Arc<NFSubscript>, mut hash: i32) -> Result<i32> {
     let mut hash: i32 = hash;
     hash = (::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ RAW_SUBSCRIPT { .. } => stringHashDjb2Continue((Dump::printSubscriptStr(var_field!((*sub).subscript, NFSubscript::RAW_SUBSCRIPT).clone())?).clone(), hash.clone()),
-        Deref @ UNTYPED { .. } => Expression::hashContinue(var_field!((*sub).exp, NFSubscript::UNTYPED).clone(), hash.clone())?,
-        Deref @ INDEX { .. } => Expression::hashContinue(var_field!((*sub).index, NFSubscript::INDEX).clone(), hash.clone())?,
-        Deref @ SLICE { .. } => Expression::hashContinue(var_field!((*sub).slice, NFSubscript::SLICE).clone(), hash.clone())?,
+        Deref @ RAW_SUBSCRIPT { .. } => stringHashDjb2Continue((Dump::printSubscriptStr(var_field!((*sub).subscript, NFSubscript::RAW_SUBSCRIPT).clone())?).clone(), hash),
+        Deref @ UNTYPED { .. } => Expression::hashContinue(var_field!((*sub).exp, NFSubscript::UNTYPED).clone(), hash)?,
+        Deref @ INDEX { .. } => Expression::hashContinue(var_field!((*sub).index, NFSubscript::INDEX).clone(), hash)?,
+        Deref @ SLICE { .. } => Expression::hashContinue(var_field!((*sub).slice, NFSubscript::SLICE).clone(), hash)?,
         Deref @ EXPANDED_SLICE { .. } => {
-            hash = stringHashDjb2Continue((literal!("{")).clone(), hash.clone());
+            hash = stringHashDjb2Continue((literal!("{")).clone(), hash);
             for mut s in &*var_field!((*sub).indices, NFSubscript::EXPANDED_SLICE).clone() {
                 let mut s = s.clone();
-                hash = hashContinue(s.clone(), hash.clone())?;
-                hash = stringHashDjb2Continue((literal!(", ")).clone(), hash.clone());
+                hash = hashContinue(s.clone(), hash)?;
+                hash = stringHashDjb2Continue((literal!(", ")).clone(), hash);
             }
-            hash = stringHashDjb2Continue((literal!("}")).clone(), hash.clone());
-            hash.clone()
+            hash = stringHashDjb2Continue((literal!("}")).clone(), hash);
+            hash
         },
-        Deref @ WHOLE { .. } => stringHashDjb2Continue((literal!(":")).clone(), hash.clone()),
+        Deref @ WHOLE { .. } => stringHashDjb2Continue((literal!(":")).clone(), hash),
         Deref @ SPLIT_PROXY { .. } => {
-            hash = InstNode::hashContinue(var_field!((*sub).origin, NFSubscript::SPLIT_PROXY).clone(), hash.clone())?;
-            hash = InstNode::hashContinue(var_field!((*sub).parent, NFSubscript::SPLIT_PROXY).clone(), hash.clone())?;
-            hash.clone()
+            hash = InstNode::hashContinue(var_field!((*sub).origin, NFSubscript::SPLIT_PROXY).clone(), hash)?;
+            hash = InstNode::hashContinue(var_field!((*sub).parent, NFSubscript::SPLIT_PROXY).clone(), hash)?;
+            hash
         },
         Deref @ SPLIT_INDEX { .. } => {
-            hash = InstNode::hashContinue(var_field!((*sub).node, NFSubscript::SPLIT_INDEX).clone(), hash.clone())?;
-            hash = stringHashDjb2Continue((intString(var_field!((*sub).dimIndex, NFSubscript::SPLIT_INDEX).clone())).clone(), hash.clone());
-            hash.clone()
+            hash = InstNode::hashContinue(var_field!((*sub).node, NFSubscript::SPLIT_INDEX).clone(), hash)?;
+            hash = stringHashDjb2Continue((intString(var_field!((*sub).dimIndex, NFSubscript::SPLIT_INDEX).clone())).clone(), hash);
+            hash
         },
-        _ => hash.clone(),
+        _ => hash,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(hash)
@@ -1332,13 +1332,13 @@ pub(crate) fn splitIndexDimExp(mut sub: Arc<NFSubscript>) -> Result<Arc<Expressi
     let mut exp: Arc<Expression::NFExpression>;
     let mut node: Arc<InstNode::InstNode>;
     let mut index: i32;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(sub.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(sub) {
         Deref @ SPLIT_INDEX { node: __pa0, dimIndex: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     node = __pa0.clone();
     index = __pa1.clone();
-    exp = Dimension::sizeExp(Type::nthDimension(InstNode::getType(node.clone())?, index.clone())?)?;
+    exp = Dimension::sizeExp(Type::nthDimension(InstNode::getType(node)?, index)?)?;
     Ok(exp)
 }
 
@@ -1357,7 +1357,7 @@ pub(crate) fn isLiteral(mut sub: Arc<NFSubscript>) -> Result<bool> {
 
 pub fn fillWithWholeLeft(mut subs: Arc<metamodelica::List<Arc<NFSubscript>>>, mut targetLength: i32) -> Arc<metamodelica::List<Arc<NFSubscript>>> {
     let mut subs: Arc<metamodelica::List<Arc<NFSubscript>>> = subs;
-    subs = listAppend(List::fill(crate::NFSubscript::interned_WHOLE(), targetLength.clone() - (subs.clone().len() as i32)), subs.clone());
+    subs = listAppend(List::fill(crate::NFSubscript::interned_WHOLE(), targetLength - (subs.clone().len() as i32)), subs);
     subs
 }
 

@@ -97,7 +97,7 @@ pub(crate) fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             isSingleton = (paths.clone().len() as i32) == 1;
             if isSingleton.clone() {
                 p2 = (paths.clone()).get(1)?;
-                singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: (std::sync::Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv.clone(), p2.clone(), None)); move || fixUniontype2(__pe_b0.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<DAE::Type>> + 'static>) });
+                singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: (std::sync::Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv, p2.clone(), None)); move || fixUniontype2(__pe_b0.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<DAE::Type>> + 'static>) });
             } else {
                 singletonType = openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON();
             }
@@ -128,9 +128,9 @@ fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<A
     (cache, env, p, ot) = metamodelica::arrayGet(arr.clone(), 1)?;
     if isNone(ot.clone()) {
         (_, singletonType, _) = Lookup::lookupType(cache.clone(), env.clone(), p.clone(), Some(metamodelica::sourceInfo!("FrontEnd/InstMeta.mo")))?;
-        metamodelica::arrayUpdate(arr.clone(), 1, (cache.clone(), env.clone(), p.clone(), Some(singletonType.clone())))?;
+        metamodelica::arrayUpdate(arr.clone(), 1, (cache, env, p, Some(singletonType.clone())))?;
     } else {
-        let __pa0 = ::match_deref::match_deref! { match &(ot.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(ot) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -141,8 +141,8 @@ fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<A
 
 pub(crate) fn checkArrayType(mut inType: Arc<DAE::Type>) -> Result<()> {
     let mut el_ty: Arc<DAE::Type>;
-    el_ty = Types::arrayElementType(inType.clone());
-    let false = (!(Types::isString(el_ty.clone())) && Types::isBoxedType(el_ty.clone()) || Flags::isSet(Flags::RML.clone())?) else { bail!("pattern mismatch") };
+    el_ty = Types::arrayElementType(inType);
+    let false = (!(Types::isString(el_ty.clone())) && Types::isBoxedType(el_ty) || Flags::isSet(Flags::RML.clone())?) else { bail!("pattern mismatch") };
     Ok(())
 }
 

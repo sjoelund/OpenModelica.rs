@@ -131,7 +131,7 @@ pub(crate) fn resolve(mut imp: Arc<NFImport>) -> Result<(Arc<InstNode::InstNode>
     (outImport, node, changed) = (::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => {
             (outImport, node) = instQualified(var_field!((*imp).imp, NFImport::UNRESOLVED_IMPORT).clone(), var_field!((*imp).scope, NFImport::UNRESOLVED_IMPORT).clone(), var_field!((*imp).info, NFImport::UNRESOLVED_IMPORT).clone())?;
-            (outImport.clone(), node.clone(), true)
+            (outImport, node, true)
         },
         Deref @ RESOLVED_IMPORT { .. } => (imp.clone(), var_field!((*imp).node, NFImport::RESOLVED_IMPORT).clone(), false),
         Deref @ CONFLICTING_IMPORT { .. } => {
@@ -166,15 +166,15 @@ pub(crate) fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::Ins
     let mut node: Arc<InstNode::InstNode>;
     let mut short_name: ArcStr;
     node = (match imp.clone() {
-        Absyn::Import::NAMED_IMPORT { .. } => Lookup::lookupImport(var_field!(imp.path, Absyn::Import::NAMED_IMPORT).clone(), scope.clone(), info.clone())?,
-        Absyn::Import::QUAL_IMPORT { .. } => Lookup::lookupImport(var_field!(imp.path, Absyn::Import::QUAL_IMPORT).clone(), scope.clone(), info.clone())?,
+        Absyn::Import::NAMED_IMPORT { .. } => Lookup::lookupImport(var_field!(imp.path, Absyn::Import::NAMED_IMPORT).clone(), scope, info.clone())?,
+        Absyn::Import::QUAL_IMPORT { .. } => Lookup::lookupImport(var_field!(imp.path, Absyn::Import::QUAL_IMPORT).clone(), scope, info.clone())?,
         _ => bail!("match: no arm matched"),
     });
     short_name = ((match imp.clone() {
         Absyn::Import::NAMED_IMPORT { .. } => var_field!(imp.name, Absyn::Import::NAMED_IMPORT).clone(),
         _ => literal!(""),
     })).clone();
-    outImport = Arc::new(NFImport::RESOLVED_IMPORT { node: node.clone(), shortName: (short_name.clone()).clone(), info: info.clone() });
+    outImport = Arc::new(NFImport::RESOLVED_IMPORT { node: node.clone(), shortName: (short_name).clone(), info: info });
     Ok((outImport, node))
 }
 
@@ -185,16 +185,16 @@ pub(crate) fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica
     let mut scope: Arc<InstNode::InstNode>;
     let mut tree: Arc<ClassTree::ClassTree>;
     let mut info: SourceInfo;
-    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(imp.clone()) {
+    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(imp) {
         Deref @ UNRESOLVED_IMPORT { imp: Absyn::Import::UNQUAL_IMPORT { path: __pa0 }, scope: __pa1, info: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
     path = __pa0.clone();
     scope = __pa1.clone();
     info = __pa2.clone();
-    node = Lookup::lookupImport(path.clone(), scope.clone(), info.clone())?;
-    node = Inst::instPackage(node.clone(), NFInstContext::NO_CONTEXT.clone())?;
-    tree = Class::classTree(InstNode::getClass(node.clone())?)?;
+    node = Lookup::lookupImport(path, scope, info.clone())?;
+    node = Inst::instPackage(node, NFInstContext::NO_CONTEXT.clone())?;
+    tree = Class::classTree(InstNode::getClass(node)?)?;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ClassTree::FLAT_TREE { .. } => {
             let __range0 = var_field!((*tree).classes, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -218,13 +218,13 @@ pub(crate) fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica
 
 pub(crate) fn printImportError(mut imp1: Arc<NFImport>, mut imp2: Arc<NFImport>) -> Result<()> {
     let mut err_msg: ErrorTypes::Message;
-    Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), info(imp1.clone())?)?;
+    Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), info(imp1)?)?;
     err_msg = (::match_deref::match_deref! { match &(imp2.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => Error::MULTIPLE_QUALIFIED_IMPORTS_WITH_SAME_NAME.clone(),
         Deref @ RESOLVED_IMPORT { .. } => Error::IMPORT_SEVERAL_NAMES.clone(),
         _ => bail!("match: no arm matched"),
     } });
-    Error::addSourceMessage(err_msg.clone(), list![(name(imp2.clone())?).clone()], info(imp2.clone())?)?;
+    Error::addSourceMessage(err_msg, list![(name(imp2.clone())?).clone()], info(imp2)?)?;
     Ok(())
 }
 

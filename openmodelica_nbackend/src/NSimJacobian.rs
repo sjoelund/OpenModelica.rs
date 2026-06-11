@@ -181,53 +181,53 @@ pub mod SimJacobian {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[EMPTY] SimCode Jacobian ")); __mm_s.push_str(&*simJac.name.clone()); __mm_s.push_str(&*literal!("(idx = ")); __mm_s.push_str(&*intString(simJac.jacobianIndex.clone())); __mm_s.push_str(&*literal!(", partition = ")); __mm_s.push_str(&*intString(simJac.partitionIndex.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             } else {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCode Jacobian ")); __mm_s.push_str(&*simJac.name.clone()); __mm_s.push_str(&*literal!("(idx = ")); __mm_s.push_str(&*intString(simJac.jacobianIndex.clone())); __mm_s.push_str(&*literal!(", partition = ")); __mm_s.push_str(&*intString(simJac.jacobianIndex.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SeedVars (size = ")); __mm_s.push_str(&*intString((simJac.seedVars.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SeedVars (size = ")); __mm_s.push_str(&*intString((simJac.seedVars.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
                 for mut var in &*simJac.seedVars.clone() {
                     let mut var = var.clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::toString(var.clone(), (literal!("  ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TmpVars (size = ")); __mm_s.push_str(&*intString((simJac.columnVars.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TmpVars (size = ")); __mm_s.push_str(&*intString((simJac.columnVars.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
                 for mut var in &*simJac.columnVars.clone() {
                     let mut var = var.clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::toString(var.clone(), (literal!("  ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ResultVars (size = ")); __mm_s.push_str(&*intString(simJac.numberOfResultVars.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Column Equations (size = ")); __mm_s.push_str(&*intString((simJac.columnEqns.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ResultVars (size = ")); __mm_s.push_str(&*intString(simJac.numberOfResultVars.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Column Equations (size = ")); __mm_s.push_str(&*intString((simJac.columnEqns.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())); ArcStr::from(__mm_s) }).clone();
                 for mut eq in &*simJac.columnEqns.clone() {
                     let mut eq = eq.clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::toString(eq.clone(), (literal!("  ")).clone())?); ArcStr::from(__mm_s) }).clone();
                 }
                 if !(simJac.constantEqns.clone().is_empty()) {
-                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StringUtil::headline_3((literal!("Constant Equations")).clone())); ArcStr::from(__mm_s) }).clone();
+                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_3((literal!("Constant Equations")).clone())); ArcStr::from(__mm_s) }).clone();
                     for mut eq in &*simJac.constantEqns.clone() {
                         let mut eq = eq.clone();
                         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimStrongComponent::Block::toString(eq.clone(), (literal!("  ")).clone())?); ArcStr::from(__mm_s) }).clone();
                     }
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Pattern Cols")).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Pattern Cols")).clone())); ArcStr::from(__mm_s) }).clone();
                 if !(simJac.sparsityT.clone().is_empty()) {
                     for mut tpl in &*simJac.sparsityT.clone() {
                         let mut tpl = tpl.clone();
                         (idx, dependencies) = tpl.clone();
-                        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(idx.clone())); __mm_s.push_str(&*literal!(":\t")); __mm_s.push_str(&*List::toString(dependencies.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(idx)); __mm_s.push_str(&*literal!(":\t")); __mm_s.push_str(&*List::toString(dependencies.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     }
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Pattern Rows")).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Pattern Rows")).clone())); ArcStr::from(__mm_s) }).clone();
                 if !(simJac.sparsity.clone().is_empty()) {
                     for mut tpl in &*simJac.sparsity.clone() {
                         let mut tpl = tpl.clone();
                         (idx, dependencies) = tpl.clone();
-                        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(idx.clone())); __mm_s.push_str(&*literal!(":\t")); __mm_s.push_str(&*List::toString(dependencies.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(idx)); __mm_s.push_str(&*literal!(":\t")); __mm_s.push_str(&*List::toString(dependencies.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     }
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Coloring Columns")).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Coloring Columns")).clone())); ArcStr::from(__mm_s) }).clone();
                 if !(simJac.coloring.clone().is_empty()) {
                     for mut lst in &*simJac.coloring.clone() {
                         let mut lst = lst.clone();
                         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*List::toString(lst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     }
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Coloring Rows")).clone())); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4((literal!("Sparsity Coloring Rows")).clone())); ArcStr::from(__mm_s) }).clone();
                 if !(simJac.rowColoring.clone().is_empty()) {
                     for mut lst in &*simJac.rowColoring.clone() {
                         let mut lst = lst.clone();
@@ -235,12 +235,12 @@ pub mod SimJacobian {
                     }
                 }
                 if !(simJac.generic_loop_calls.clone().is_empty()) {
-                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StringUtil::headline_3((literal!("Generic Calls")).clone())); ArcStr::from(__mm_s) }).clone();
-                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(simJac.generic_loop_calls.clone(), (std::sync::Arc::new(SimGenericCall::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimGenericCall::NSimGenericCall>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*StringUtil::headline_3((literal!("Generic Calls")).clone())); ArcStr::from(__mm_s) }).clone();
+                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*List::toString(simJac.generic_loop_calls.clone(), (std::sync::Arc::new(SimGenericCall::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimGenericCall::NSimGenericCall>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
                 }
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
-            r#str.clone()
+            r#str
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.toString")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -356,7 +356,7 @@ pub mod SimJacobian {
                     Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.create")); __mm_s.push_str(&*literal!(" could not generate sparsity pattern of Jacobian ")); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*jacobian).jacType, BackendDAE::NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone())?;
                 }
             }
-            simJacobian.clone()
+            simJacobian
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.create")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -380,7 +380,7 @@ pub mod SimJacobian {
         let mut simJacAdj_opt: Option<Arc<SimJacobian>>;
         let mut jacobian: Option<Arc<BackendDAE::NBackendDAE>>;
         let mut jacobianAdjoint: Option<Arc<BackendDAE::NBackendDAE>>;
-        for mut partition in &*partitions.clone() {
+        for mut partition in &*partitions {
             let mut partition = partition.clone();
             jacobian = Partition::Partition::getJacobian(partition.clone());
             if isSome(jacobian.clone()) {
@@ -392,25 +392,25 @@ pub mod SimJacobian {
             }
         }
         if jacobians.clone().is_empty() {
-            (simJac, simCodeIndices) = empty((literal!("A")).clone(), simCodeIndices.clone())?;
+            (simJac, simCodeIndices) = empty((literal!("A")).clone(), simCodeIndices)?;
         } else {
-            simJacobian = Jacobian::combine(jacobians.clone(), (literal!("A")).clone())?;
-            (simJac_opt, simCodeIndices) = create(simJacobian.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            simJacobian = Jacobian::combine(jacobians, (literal!("A")).clone())?;
+            (simJac_opt, simCodeIndices) = create(simJacobian, simCodeIndices, simcode_map.clone())?;
             if isSome(simJac_opt.clone()) {
-                simJac = Util::getOption(simJac_opt.clone())?;
+                simJac = Util::getOption(simJac_opt)?;
             } else {
-                (simJac, simCodeIndices) = empty((literal!("A")).clone(), simCodeIndices.clone())?;
+                (simJac, simCodeIndices) = empty((literal!("A")).clone(), simCodeIndices)?;
             }
         }
         if jacobiansAdjoint.clone().is_empty() {
-            (simJacAdjoint, simCodeIndices) = empty((literal!("ADJ")).clone(), simCodeIndices.clone())?;
+            (simJacAdjoint, simCodeIndices) = empty((literal!("ADJ")).clone(), simCodeIndices)?;
         } else {
-            simJacobianAdjoint = Jacobian::combine(jacobiansAdjoint.clone(), (literal!("ADJ")).clone())?;
-            (simJacAdj_opt, simCodeIndices) = create(simJacobianAdjoint.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            simJacobianAdjoint = Jacobian::combine(jacobiansAdjoint, (literal!("ADJ")).clone())?;
+            (simJacAdj_opt, simCodeIndices) = create(simJacobianAdjoint, simCodeIndices, simcode_map)?;
             if isSome(simJacAdj_opt.clone()) {
-                simJacAdjoint = Util::getOption(simJacAdj_opt.clone())?;
+                simJacAdjoint = Util::getOption(simJacAdj_opt)?;
             } else {
-                (simJacAdjoint, simCodeIndices) = empty((literal!("ADJ")).clone(), simCodeIndices.clone())?;
+                (simJacAdjoint, simCodeIndices) = empty((literal!("ADJ")).clone(), simCodeIndices)?;
             }
         }
         Ok((simJac, simJacAdjoint, simCodeIndices))
@@ -433,7 +433,7 @@ pub mod SimJacobian {
         let mut jacobianLfg: Option<Arc<BackendDAE::NBackendDAE>>;
         let mut jacobianMrf: Option<Arc<BackendDAE::NBackendDAE>>;
         let mut jacobianR0: Option<Arc<BackendDAE::NBackendDAE>>;
-        for mut partition in &*partitions.clone() {
+        for mut partition in &*partitions {
             let mut partition = partition.clone();
             jacobianLfg = Partition::Partition::getJacobianLfg(partition.clone());
             if isSome(jacobianLfg.clone()) {
@@ -449,36 +449,36 @@ pub mod SimJacobian {
             }
         }
         if jacobiansLfg.clone().is_empty() {
-            (simJacLfg, simCodeIndices) = empty((literal!("OPT_LFG")).clone(), simCodeIndices.clone())?;
+            (simJacLfg, simCodeIndices) = empty((literal!("OPT_LFG")).clone(), simCodeIndices)?;
         } else {
-            simJacobianLfg = Jacobian::combine(jacobiansLfg.clone(), (literal!("OPT_LFG")).clone())?;
-            (simJacLfg_opt, simCodeIndices) = create(simJacobianLfg.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            simJacobianLfg = Jacobian::combine(jacobiansLfg, (literal!("OPT_LFG")).clone())?;
+            (simJacLfg_opt, simCodeIndices) = create(simJacobianLfg, simCodeIndices, simcode_map.clone())?;
             if isSome(simJacLfg_opt.clone()) {
-                simJacLfg = Util::getOption(simJacLfg_opt.clone())?;
+                simJacLfg = Util::getOption(simJacLfg_opt)?;
             } else {
-                (simJacLfg, simCodeIndices) = empty((literal!("OPT_LFG")).clone(), simCodeIndices.clone())?;
+                (simJacLfg, simCodeIndices) = empty((literal!("OPT_LFG")).clone(), simCodeIndices)?;
             }
         }
         if jacobiansMrf.clone().is_empty() {
-            (simJacMrf, simCodeIndices) = empty((literal!("OPT_MRF")).clone(), simCodeIndices.clone())?;
+            (simJacMrf, simCodeIndices) = empty((literal!("OPT_MRF")).clone(), simCodeIndices)?;
         } else {
-            simJacobianMrf = Jacobian::combine(jacobiansMrf.clone(), (literal!("OPT_MRF")).clone())?;
-            (simJacMrf_opt, simCodeIndices) = create(simJacobianMrf.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            simJacobianMrf = Jacobian::combine(jacobiansMrf, (literal!("OPT_MRF")).clone())?;
+            (simJacMrf_opt, simCodeIndices) = create(simJacobianMrf, simCodeIndices, simcode_map.clone())?;
             if isSome(simJacMrf_opt.clone()) {
-                simJacMrf = Util::getOption(simJacMrf_opt.clone())?;
+                simJacMrf = Util::getOption(simJacMrf_opt)?;
             } else {
-                (simJacMrf, simCodeIndices) = empty((literal!("OPT_MRF")).clone(), simCodeIndices.clone())?;
+                (simJacMrf, simCodeIndices) = empty((literal!("OPT_MRF")).clone(), simCodeIndices)?;
             }
         }
         if jacobiansR0.clone().is_empty() {
-            (simJacR0, simCodeIndices) = empty((literal!("OPT_R0")).clone(), simCodeIndices.clone())?;
+            (simJacR0, simCodeIndices) = empty((literal!("OPT_R0")).clone(), simCodeIndices)?;
         } else {
-            simJacobianR0 = Jacobian::combine(jacobiansR0.clone(), (literal!("OPT_R0")).clone())?;
-            (simJacR0_opt, simCodeIndices) = create(simJacobianR0.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+            simJacobianR0 = Jacobian::combine(jacobiansR0, (literal!("OPT_R0")).clone())?;
+            (simJacR0_opt, simCodeIndices) = create(simJacobianR0, simCodeIndices, simcode_map)?;
             if isSome(simJacR0_opt.clone()) {
-                simJacR0 = Util::getOption(simJacR0_opt.clone())?;
+                simJacR0 = Util::getOption(simJacR0_opt)?;
             } else {
-                (simJacR0, simCodeIndices) = empty((literal!("OPT_R0")).clone(), simCodeIndices.clone())?;
+                (simJacR0, simCodeIndices) = empty((literal!("OPT_R0")).clone(), simCodeIndices)?;
             }
         }
         Ok((simJacLfg, simJacMrf, simJacR0, simCodeIndices))
@@ -493,8 +493,8 @@ pub mod SimJacobian {
         Deref @ BackendDAE::JACOBIAN { sparsityPattern: Bpattern, .. } => {
             sparsity = createSparsityPattern(Bpattern.col_wise_pattern.clone(), local_idx_map.clone())?;
             sparsityT = createSparsityPattern(Bpattern.row_wise_pattern.clone(), local_idx_map.clone())?;
-            (coloring, rowColoring) = createSparsityColoring(var_field!((*jacobian).sparsityColoring, BackendDAE::NBackendDAE::JACOBIAN).clone(), local_idx_map.clone())?;
-            (sparsity.clone(), sparsityT.clone(), coloring.clone(), rowColoring.clone())
+            (coloring, rowColoring) = createSparsityColoring(var_field!((*jacobian).sparsityColoring, BackendDAE::NBackendDAE::JACOBIAN).clone(), local_idx_map)?;
+            (sparsity, sparsityT, coloring, rowColoring)
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.createSparsity")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -510,7 +510,7 @@ pub mod SimJacobian {
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut dep_indices: Arc<metamodelica::List<i32>>;
-        for mut col in &*cols.clone() {
+        for mut col in &*cols {
             let mut col = col.clone();
             (cref, dependencies) = col.clone();
             if !(UnorderedMap::contains(cref.clone(), local_idx_map.clone())?) {
@@ -528,7 +528,7 @@ pub mod SimJacobian {
             }
             simPattern = metamodelica::cons((UnorderedMap::getOrFail(cref.clone(), local_idx_map.clone())?, List::sort(dep_indices.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?), simPattern.clone());
         }
-        simPattern = List::sort(simPattern.clone(), std::sync::Arc::new(fnptr!(Util::compareTupleIntGt, _, _)))?;
+        simPattern = List::sort(simPattern, std::sync::Arc::new(fnptr!(Util::compareTupleIntGt, _, _)))?;
         Ok(simPattern)
     }
 
@@ -560,11 +560,11 @@ pub mod SimJacobian {
         emptyJac = (::match_deref::match_deref! { match &(emptyJac.clone()) {
         Deref @ SimJacobian { .. } => {
             assign_field!(
-                emptyJac.name = name.clone(),
+                emptyJac.name = name,
                 emptyJac.jacobianIndex = indices.jacobianIndex.clone()
             );
             indices.jacobianIndex = indices.jacobianIndex.clone() + 1;
-            emptyJac.clone()
+            emptyJac
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.empty")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -590,7 +590,7 @@ pub mod SimJacobian {
 
     pub(crate) fn getJacobiansBlocks(mut jacobians: Arc<metamodelica::List<Arc<SimJacobian>>>) -> Result<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>> {
         let mut blcks: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>> = metamodelica::nil();
-        for mut jacobian in &*jacobians.clone() {
+        for mut jacobian in &*jacobians {
             let mut jacobian = jacobian.clone();
             blcks = listAppend(getJacobianBlocks(jacobian.clone())?, blcks.clone());
         }
@@ -637,7 +637,7 @@ pub mod SimJacobian {
         }
         __acc.reverse()
     }) });
-            oldJac = Arc::new(OldSimCode::JacobianMatrix { columns: list![oldJacCol.clone()], seedVars: SimVar::convertList(simJac.seedVars.clone())?, matrixName: (simJac.name.clone()).clone(), sparsity: simJac.sparsity.clone(), sparsityT: simJac.sparsityT.clone(), nonlinear: metamodelica::nil(), nonlinearT: metamodelica::nil(), coloredCols: simJac.coloring.clone(), coloredRows: simJac.rowColoring.clone(), maxColorCols: simJac.numColors.clone(), jacobianIndex: simJac.jacobianIndex.clone(), partitionIndex: simJac.partitionIndex.clone(), generic_loop_calls: ({
+            oldJac = Arc::new(OldSimCode::JacobianMatrix { columns: list![oldJacCol], seedVars: SimVar::convertList(simJac.seedVars.clone())?, matrixName: (simJac.name.clone()).clone(), sparsity: simJac.sparsity.clone(), sparsityT: simJac.sparsityT.clone(), nonlinear: metamodelica::nil(), nonlinearT: metamodelica::nil(), coloredCols: simJac.coloring.clone(), coloredRows: simJac.rowColoring.clone(), maxColorCols: simJac.numColors.clone(), jacobianIndex: simJac.jacobianIndex.clone(), partitionIndex: simJac.partitionIndex.clone(), generic_loop_calls: ({
         let mut __acc: Arc<metamodelica::List<OldSimCode::SimGenericCall>> = metamodelica::nil();
         for mut gc in (simJac.generic_loop_calls.clone()).into_iter().cloned() {
             let __x = SimGenericCall::convert(gc.clone())?;
@@ -645,7 +645,7 @@ pub mod SimJacobian {
         }
         __acc.reverse()
     }), crefsHT: Util::applyOption(simJac.jac_map.clone(), (std::sync::Arc::new(SimCodeUtil::convertSimCodeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))> + 'static>))?, isAdjoint: simJac.isAdjoint.clone() });
-            oldJac.clone()
+            oldJac
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.convert")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;

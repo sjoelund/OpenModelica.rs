@@ -22,7 +22,7 @@ use openmodelica_util::Util;
 
 fn fun_50(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -36,7 +36,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr, mut in_a_FMUType: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUType.clone()) {
+    out_txt = (match (in_txt, in_a_simCode, in_a_guid, in_a_FMUType) {
         (mut txt, ref i_simCode @ SimCode::SimCode { simulationSettingsOpt: ref i_simulationSettingsOpt, .. }, mut a_guid, mut a_FMUType) => {
             let mut ret_0: bool;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<fmiModelDescription\n")).clone() }))?;
@@ -65,7 +65,7 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vi_numStateVars: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_listStates.clone(), in_a_vi_numStateVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_listStates, in_a_vi_numStateVars)) {
         (txt, false, _, a_vi_numStateVars) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(a_vi_numStateVars.clone())).clone())?;
@@ -83,7 +83,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<met
 
 pub(crate) fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
+    out_txt = (match (in_txt, in_a_simCode, in_a_guid) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: ref i_vi_numStateVars, .. }, vars: SimCodeVar::SimVars { stateVars: ref i_listStates, .. }, name: ref i_modelInfo_name, description: ref i_modelInfo_description, .. }, .. }, mut a_guid) => {
             let mut ret_15: ArcStr;
             let mut ret_14: ArcStr;

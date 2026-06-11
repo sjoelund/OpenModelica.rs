@@ -115,7 +115,7 @@ pub fn reset() -> Result<()> {
 }
 
 pub fn update(mut table: Arc<SymbolTable>) -> () {
-    { let __v = table.clone(); crate::Globals::symbolTable.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = table; crate::Globals::symbolTable.with(|__root| *__root.borrow_mut() = __v) };
     ()
 }
 
@@ -144,15 +144,15 @@ pub fn setAbsyn(mut ast: Absyn::Program) -> Result<()> {
     if isSome(table.explodedAst.clone()) {
         assign_field!(table.explodedAst = None);
     }
-    update(table.clone());
+    update(table);
     Ok(())
 }
 
 pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>, mut path: Arc<Absyn::Path>) -> Result<()> {
     fn update_element(mut oldElement: Arc<SCode::Element>, mut newElement: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
         let mut newElement: Arc<SCode::Element> = newElement;
-        if SCodeUtil::isElementProtected(oldElement.clone())? {
-            newElement = SCodeUtil::makeElementProtected(newElement.clone());
+        if SCodeUtil::isElementProtected(oldElement)? {
+            newElement = SCodeUtil::makeElementProtected(newElement);
         }
         Ok(newElement)
     }
@@ -197,7 +197,7 @@ pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>
 pub fn setAbsynClass(mut ast: Absyn::Program, mut cls: Arc<Absyn::Class>, mut path: Arc<Absyn::Path>) -> Result<()> {
     fn update_element(mut oldElement: Arc<SCode::Element>, mut newElement: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
         let mut newElement: Arc<SCode::Element> = newElement;
-        newElement = SCodeUtil::setElementPrefixes(SCodeUtil::elementPrefixes(oldElement.clone())?, newElement.clone())?;
+        newElement = SCodeUtil::setElementPrefixes(SCodeUtil::elementPrefixes(oldElement)?, newElement)?;
         Ok(newElement)
     }
 
@@ -235,7 +235,7 @@ pub fn getSCode() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     if isNone(table.explodedAst.clone()) {
         ast = AbsynToSCode::translateAbsyn2SCode(table.ast.clone())?;
         assign_field!(table.explodedAst = Some(ast.clone()));
-        update(table.clone());
+        update(table);
     } else {
         let __pa0 = ::match_deref::match_deref! { match &(table.explodedAst.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -252,8 +252,8 @@ pub fn setSCode(mut ast: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>) -
     if (match (&(table.explodedAst.clone()), &(ast.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) {
         return ();
     }
-    assign_field!(table.explodedAst = ast.clone());
-    update(table.clone());
+    assign_field!(table.explodedAst = ast);
+    update(table);
     ()
 }
 
@@ -262,7 +262,7 @@ pub fn clearSCode() -> () {
     table = get();
     if isSome(table.explodedAst.clone()) {
         assign_field!(table.explodedAst = None);
-        update(table.clone());
+        update(table);
     }
     ()
 }
@@ -286,8 +286,8 @@ pub fn getVars() -> Arc<metamodelica::List<InteractiveTypes::Variable>> {
 pub fn setVars(mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> () {
     let mut table: Arc<SymbolTable>;
     table = get();
-    assign_field!(table.vars = vars.clone());
-    update(table.clone());
+    assign_field!(table.vars = vars);
+    update(table);
     ()
 }
 
@@ -296,8 +296,8 @@ pub fn addVars(mut inCref: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut 
     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
     let mut v: Arc<Values::Value>;
     let mut cr: Arc<DAE::ComponentRef>;
-    crefs = inCref.clone();
-    vals = inValues.clone();
+    crefs = inCref;
+    vals = inValues;
     while !(crefs.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crefs.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -321,24 +321,24 @@ pub fn addVar(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value
     let mut table: Arc<SymbolTable>;
     table = get();
     vars = addVarToVarList(inCref.clone(), inValue.clone(), inEnv.clone(), table.vars.clone())?;
-    assign_field!(table.vars = addVarToVarList(inCref.clone(), inValue.clone(), inEnv.clone(), vars.clone())?);
-    update(table.clone());
+    assign_field!(table.vars = addVarToVarList(inCref, inValue, inEnv, vars)?);
+    update(table);
     Ok(())
 }
 
 pub fn appendVar(mut inIdent: ArcStr, mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::Type>) -> () {
     let mut table: Arc<SymbolTable>;
     table = get();
-    assign_field!(table.vars = metamodelica::cons(InteractiveTypes::Variable { varIdent: (inIdent.clone()).clone(), value: inValue.clone(), type_: inType.clone() }, table.vars.clone()));
-    update(table.clone());
+    assign_field!(table.vars = metamodelica::cons(InteractiveTypes::Variable { varIdent: (inIdent).clone(), value: inValue, type_: inType }, table.vars.clone()));
+    update(table);
     ()
 }
 
 pub fn deleteVarFirstEntry(mut inIdent: ArcStr) -> Result<()> {
     let mut table: Arc<SymbolTable>;
     table = get();
-    assign_field!(table.vars = List::deleteMemberOnTrue((inIdent.clone()).clone(), table.vars.clone(), (std::sync::Arc::new(fnptr!(isVarNamed, ArcStr, InteractiveTypes::Variable)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, InteractiveTypes::Variable) -> Result<bool> + 'static>))?.0);
-    update(table.clone());
+    assign_field!(table.vars = List::deleteMemberOnTrue((inIdent).clone(), table.vars.clone(), (std::sync::Arc::new(fnptr!(isVarNamed, ArcStr, InteractiveTypes::Variable)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, InteractiveTypes::Variable) -> Result<bool> + 'static>))?.0);
+    update(table);
     Ok(())
 }
 
@@ -347,13 +347,13 @@ pub fn storeAST() -> Result<i32> {
     let mut table: Arc<SymbolTable>;
     table = get();
     id = table.cacheIndex.clone() + 1;
-    if id.clone() < 0 {
+    if id < 0 {
         id = 1;
     }
-    assign_field!(table.cacheIndex = id.clone());
+    assign_field!(table.cacheIndex = id);
     update(table.clone());
     if Vector::size(table.cachedAsts.clone()) >= AST_CACHE_MAX_SIZE.clone() {
-        Vector::update(table.cachedAsts.clone(), intMod(id.clone() - 1, AST_CACHE_MAX_SIZE.clone()) + 1, getAbsyn())?;
+        Vector::update(table.cachedAsts.clone(), intMod(id - 1, AST_CACHE_MAX_SIZE.clone()) + 1, getAbsyn())?;
     } else {
         Vector::push(table.cachedAsts.clone(), getAbsyn());
     }
@@ -364,24 +364,24 @@ pub fn restoreAST(mut id: i32) -> Result<bool> {
     let mut success: bool;
     let mut table: Arc<SymbolTable>;
     table = get();
-    success = id.clone() <= table.cacheIndex.clone() && id.clone() > table.cacheIndex.clone() - AST_CACHE_MAX_SIZE.clone() && id.clone() > 0;
-    if success.clone() {
-        setAbsyn(Vector::get(table.cachedAsts.clone(), intMod(id.clone() - 1, AST_CACHE_MAX_SIZE.clone()) + 1)?)?;
+    success = id <= table.cacheIndex.clone() && id > table.cacheIndex.clone() - AST_CACHE_MAX_SIZE.clone() && id > 0;
+    if success {
+        setAbsyn(Vector::get(table.cachedAsts.clone(), intMod(id - 1, AST_CACHE_MAX_SIZE.clone()) + 1)?)?;
     }
     Ok(success)
 }
 
 fn isVarNamed(mut id: ArcStr, mut v: InteractiveTypes::Variable) -> bool {
     let mut b: bool;
-    b = v.varIdent.clone() == id.clone();
+    b = v.varIdent.clone() == id;
     b
 }
 
 fn addVarToVarList(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph, mut inVariables: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Result<Arc<metamodelica::List<InteractiveTypes::Variable>>> {
     let mut outVariables: Arc<metamodelica::List<InteractiveTypes::Variable>>;
     let mut found: bool;
-    (outVariables, found) = List::findMap(inVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = inCref.clone(); let __pe_b2 = inValue.clone(); let __pe_b3 = inEnv.clone(); move |__pe_a0| addVarToVarList2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable) -> Result<(InteractiveTypes::Variable, bool)> + 'static>))?;
-    outVariables = addVarToVarList4(found.clone(), inCref.clone(), inValue.clone(), outVariables.clone())?;
+    (outVariables, found) = List::findMap(inVariables, (std::sync::Arc::new({ let __pe_b1 = inCref.clone(); let __pe_b2 = inValue.clone(); let __pe_b3 = inEnv; move |__pe_a0| addVarToVarList2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable) -> Result<(InteractiveTypes::Variable, bool)> + 'static>))?;
+    outVariables = addVarToVarList4(found, inCref, inValue, outVariables)?;
     Ok(outVariables)
 }
 
@@ -397,23 +397,23 @@ fn addVarToVarList2(mut inOldVariable: InteractiveTypes::Variable, mut inCref: A
         _ => bail!("pattern mismatch"),
     } };
     id2 = __pa1.clone();
-    outFound = stringEq((id1.clone()).clone(), (id2.clone()).clone());
-    outVariable = addVarToVarList3(outFound.clone(), inOldVariable.clone(), inCref.clone(), inValue.clone(), inEnv.clone())?;
+    outFound = stringEq((id1).clone(), (id2).clone());
+    outVariable = addVarToVarList3(outFound, inOldVariable, inCref, inValue, inEnv)?;
     Ok((outVariable, outFound))
 }
 
 fn addVarToVarList3(mut inFound: bool, mut inOldVariable: InteractiveTypes::Variable, mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Result<InteractiveTypes::Variable> {
     let mut outVariable: InteractiveTypes::Variable;
-    outVariable = (::match_deref::match_deref! { match &((inFound.clone(), inOldVariable.clone(), inCref.clone())) {
+    outVariable = (::match_deref::match_deref! { match &((inFound, inOldVariable.clone(), inCref)) {
         (false, _, _) => {
-            inOldVariable.clone()
+            inOldVariable
         },
         (true, _, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }) => {
-            InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue.clone(), type_: ty.clone() }
+            InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue, type_: ty.clone() }
         },
         (true, InteractiveTypes::Variable { varIdent: id, value: val, type_: ty }, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. }) => {
             let mut val = (*val).clone();
-            (_, val) = CevalFunction::assignVector(inValue.clone(), val.clone(), subs.clone(), FCore::emptyCache(), inEnv.clone())?;
+            (_, val) = CevalFunction::assignVector(inValue, val.clone(), subs.clone(), FCore::emptyCache(), inEnv)?;
             InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: val.clone(), type_: ty.clone() }
         },
         _ => bail!("match: no arm matched"),
@@ -423,12 +423,12 @@ fn addVarToVarList3(mut inFound: bool, mut inOldVariable: InteractiveTypes::Vari
 
 fn addVarToVarList4(mut inFound: bool, mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inVariables: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Result<Arc<metamodelica::List<InteractiveTypes::Variable>>> {
     let mut outVariables: Arc<metamodelica::List<InteractiveTypes::Variable>>;
-    outVariables = (::match_deref::match_deref! { match &((inFound.clone(), inCref.clone())) {
+    outVariables = (::match_deref::match_deref! { match &((inFound, inCref)) {
         (true, _) => {
-            inVariables.clone()
+            inVariables
         },
         (false, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }) => {
-            metamodelica::cons(InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue.clone(), type_: ty.clone() }, inVariables.clone())
+            metamodelica::cons(InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue, type_: ty.clone() }, inVariables)
         },
         (false, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, subscriptLst: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }) => {
             Error::addMessage(Error::SLICE_ASSIGN_NON_ARRAY.clone(), list![(id.clone()).clone()])?;
@@ -444,20 +444,20 @@ pub fn buildEnv() -> Result<FCore::Graph> {
     let mut table: Arc<SymbolTable>;
     table = get();
     (_, env) = Inst::makeEnvFromProgram(getSCode()?)?;
-    env = addVarsToEnv(table.vars.clone().reverse(), env.clone())?;
+    env = addVarsToEnv(table.vars.clone().reverse(), env)?;
     Ok(env)
 }
 
 fn addVarsToEnv(mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>, mut inEnv: FCore::Graph) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph;
-    outEnv = List::fold(inVariableLst.clone(), (std::sync::Arc::new(addVarToEnv) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable, FCore::Graph) -> Result<FCore::Graph> + 'static>), inEnv.clone())?;
+    outEnv = List::fold(inVariableLst, (std::sync::Arc::new(addVarToEnv) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable, FCore::Graph) -> Result<FCore::Graph> + 'static>), inEnv)?;
     Ok(outEnv)
 }
 
 fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Graph) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph;
     outEnv = 'mc: {
-        let __mc_input = (inVariable.clone(), inEnv.clone());
+        let __mc_input = (inVariable, inEnv);
         if let Ok(__v) = (|| -> Result<_> {
             let (InteractiveTypes::Variable { varIdent: mut id, value: ref v, type_: ref tp }, mut env) = __mc_input.clone() else { bail!("nomatch") };
             let mut empty_env: FCore::Graph;
@@ -499,7 +499,7 @@ fn updateUriMapping(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> 
             dir = (System::dirname((fileName.clone()).clone())).clone();
             fileName = (System::basename((fileName.clone()).clone())).clone();
             b = stringEq((fileName.clone()).clone(), (literal!("ModelicaBuiltin.mo")).clone()) || stringEq((fileName.clone()).clone(), (literal!("MetaModelicaBuiltin.mo")).clone()) || stringEq((dir.clone()).clone(), (literal!(".")).clone());
-            if !(b.clone()) {
+            if !(b) {
                 if AvlTreeStringString::hasKey(tree.clone(), (name.clone()).clone())? {
                     infos = ({
         let mut __acc: Arc<metamodelica::List<SourceInfo>> = metamodelica::nil();
@@ -519,7 +519,7 @@ fn updateUriMapping(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> 
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    namesAndDirs = metamodelica::arrayFromVec(List::thread(AvlTreeStringString::listValues(tree.clone(), metamodelica::nil()), AvlTreeStringString::listKeys(tree.clone(), metamodelica::nil()), metamodelica::nil())?.into_iter().cloned().collect());
+    namesAndDirs = metamodelica::arrayFromVec(List::thread(AvlTreeStringString::listValues(tree.clone(), metamodelica::nil()), AvlTreeStringString::listKeys(tree, metamodelica::nil()), metamodelica::nil())?.into_iter().cloned().collect());
     System::updateUriMapping(namesAndDirs.clone());
     Ok(())
 }

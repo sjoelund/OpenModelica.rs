@@ -148,7 +148,7 @@ pub type FUNCTION_LIST = functionList;
 
 pub fn dumpCommentStr(mut inComment: Option<Arc<SCode::Comment>>) -> ArcStr {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inComment.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inComment) {
         Some(Deref @ SCode::Comment { comment: Some(cmt), .. }) => {
             let mut cmt = (*cmt).clone();
             cmt = (System::escapedString((cmt.clone()).clone(), false)).clone();
@@ -164,7 +164,7 @@ pub fn dumpCommentStr(mut inComment: Option<Arc<SCode::Comment>>) -> ArcStr {
 
 pub fn dumpClassAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> ArcStr {
     let mut outString: ArcStr;
-    outString = (dumpAnnotationStr(inComment.clone(), (literal!("  ")).clone(), (literal!(";\n")).clone())).clone();
+    outString = (dumpAnnotationStr(inComment, (literal!("  ")).clone(), (literal!(";\n")).clone())).clone();
     outString
 }
 
@@ -172,7 +172,7 @@ pub fn dumpCommentAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> A
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComment.clone()) {
         None => literal!(""),
-        _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*dumpCommentStr(inComment.clone())); __mm_s.push_str(&*dumpCompAnnotationStr(inComment.clone())); ArcStr::from(__mm_s) },
+        _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*dumpCommentStr(inComment.clone())); __mm_s.push_str(&*dumpCompAnnotationStr(inComment)); ArcStr::from(__mm_s) },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     outString
@@ -180,14 +180,14 @@ pub fn dumpCommentAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> A
 
 pub fn dumpCompAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> ArcStr {
     let mut outString: ArcStr;
-    outString = (dumpAnnotationStr(inComment.clone(), (literal!(" ")).clone(), (literal!("")).clone())).clone();
+    outString = (dumpAnnotationStr(inComment, (literal!(" ")).clone(), (literal!("")).clone())).clone();
     outString
 }
 
 fn dumpAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>, mut inPrefix: ArcStr, mut inSuffix: ArcStr) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
-        let __mc_input = inComment.clone();
+        let __mc_input = inComment;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: ann_mod }), .. }) => {
@@ -225,7 +225,7 @@ fn dumpAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>, mut inPrefix: A
 
 pub fn filterStructuralMods(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
     let mut r#mod: Arc<SCode::Mod> = r#mod;
-    r#mod = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new(fnptr!(filterStructuralMod, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
+    r#mod = SCodeUtil::filterSubMods(r#mod, (std::sync::Arc::new(fnptr!(filterStructuralMod, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
     Ok(r#mod)
 }
 

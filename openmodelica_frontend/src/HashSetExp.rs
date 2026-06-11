@@ -75,7 +75,7 @@ pub(crate) fn emptyHashSet() -> HashSet {
 
 pub fn emptyHashSetSized(mut size: i32) -> HashSet {
     let mut hashSet: HashSet;
-    hashSet = BaseHashSet::emptyHashSetWork(size.clone(), ((std::sync::Arc::new(ExpressionBasics::hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
+    hashSet = BaseHashSet::emptyHashSetWork(size, ((std::sync::Arc::new(ExpressionBasics::hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
     hashSet
 }
 

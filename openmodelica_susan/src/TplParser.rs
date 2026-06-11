@@ -63,7 +63,7 @@ pub mod CacheTree {
 
     pub(crate) fn keyStr(mut inKey: Key) -> ArcStr {
         let mut outString: ArcStr;
-        outString = (inKey.clone()).clone();
+        outString = (inKey).clone();
         outString
     }
 
@@ -75,7 +75,7 @@ pub mod CacheTree {
 
     pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
         let mut outResult: i32;
-        outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
+        outResult = stringCompare((inKey1).clone(), (inKey2).clone());
         outResult
     }
 
@@ -140,23 +140,23 @@ pub mod CacheTree {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
-            Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() })
+            Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue })
         },
         Deref @ Tree::NODE { key, .. } => {
             let mut value: Value;
             let mut key_comp: i32;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
             if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
+                assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey).clone(), inValue, conflictFunc.clone())?);
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
                 if !(metamodelica::ReferenceEq::reference_eq(&*(var_field!((*tree).value, Tree::NODE).clone()), &*(value.clone()))) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp.clone() == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             let mut value: Value;
@@ -164,15 +164,15 @@ pub mod CacheTree {
             let mut outTree: Arc<Tree>;
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::TplParser::CacheTree::Tree::interned_EMPTY() });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }), right: crate::TplParser::CacheTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::TplParser::CacheTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::TplParser::CacheTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey).clone(), value: inValue }) });
             } else {
-                value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
+                value = conflictFunc(inValue, var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(metamodelica::ReferenceEq::reference_eq(&*(var_field!((*tree).value, Tree::LEAF).clone()), &*(value.clone()))) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
-                outTree = tree.clone();
+                outTree = tree;
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
@@ -203,7 +203,7 @@ pub mod CacheTree {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), (key.clone()).clone(), value.clone(), conflictFunc.clone())?;
@@ -218,29 +218,29 @@ pub mod CacheTree {
         let mut key_comp: i32 = 0;
         let mut new_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }),
+        Deref @ Tree::EMPTY { .. } => Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }),
         Deref @ Tree::NODE { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::NODE).clone()).clone());
-            if key_comp.clone() == -1 {
-                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone(), r#fn.clone())?);
-            } else if key_comp.clone() == 1 {
-                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone(), r#fn.clone())?);
+            if key_comp == -1 {
+                assign_variant_field!(tree => Tree::NODE; left = addUpdate(var_field!((*tree).left, Tree::NODE).clone(), (key).clone(), r#fn.clone())?);
+            } else if key_comp == 1 {
+                assign_variant_field!(tree => Tree::NODE; right = addUpdate(var_field!((*tree).right, Tree::NODE).clone(), (key).clone(), r#fn.clone())?);
             } else {
                 assign_variant_field!(tree => Tree::NODE; value = r#fn(Some(var_field!((*tree).value, Tree::NODE).clone()))?);
             }
-            if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
+            if (key_comp == 0) {tree} else {balance(tree)?}
         },
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
-            if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::TplParser::CacheTree::Tree::interned_EMPTY() });
-            } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::TplParser::CacheTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+            if key_comp == -1 {
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }), right: crate::TplParser::CacheTree::Tree::interned_EMPTY() });
+            } else if key_comp == 1 {
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::TplParser::CacheTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
-                new_tree = tree.clone();
+                new_tree = tree;
             }
-            if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
+            if (key_comp == 0) {new_tree} else {balance(new_tree)?}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -251,7 +251,7 @@ pub mod CacheTree {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::LEAF { .. } => {
-            inTree.clone()
+            inTree
         },
         Deref @ Tree::NODE { .. } => {
             let mut lh: i32;
@@ -262,14 +262,14 @@ pub mod CacheTree {
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
             if diff.clone() < -1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).right, Tree::NODE).clone()) > 0) {rotateLeft(setTreeLeftRight(outTree.clone(), var_field!((*outTree).left, Tree::NODE).clone(), rotateRight(var_field!((*outTree).right, Tree::NODE).clone())?)?)?} else {rotateLeft(outTree)?};
             } else if diff.clone() > 1 {
-                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree.clone())?};
+                balanced_tree = if (calculateBalance(var_field!((*outTree).left, Tree::NODE).clone()) < 0) {rotateRight(setTreeLeftRight(outTree.clone(), rotateLeft(var_field!((*outTree).left, Tree::NODE).clone())?, var_field!((*outTree).right, Tree::NODE).clone())?)?} else {rotateRight(outTree)?};
             } else if var_field!((*outTree).height, Tree::NODE).clone() != std::cmp::max(lh.clone(), rh.clone()) + 1 {
                 assign_variant_field!(outTree => Tree::NODE; height = std::cmp::max(lh.clone(), rh.clone()) + 1);
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             } else {
-                balanced_tree = outTree.clone();
+                balanced_tree = outTree;
             }
             balanced_tree.clone()
         },
@@ -295,17 +295,17 @@ pub mod CacheTree {
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            outResult
         },
         Deref @ Tree::LEAF { key, value } => {
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            outResult.clone()
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            outResult
         },
         _ => {
-            outResult.clone()
+            outResult
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -319,20 +319,20 @@ pub mod CacheTree {
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value)?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value)?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value)?;
             }
-            value.clone()
+            value
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
-            value.clone()
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value)?;
+            value
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -346,13 +346,13 @@ pub mod CacheTree {
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1, foldArg2)?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1, foldArg2)?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1, foldArg2)?;
             ()
         },
         _ => (),
@@ -385,7 +385,7 @@ pub mod CacheTree {
         let mut tree: Arc<Tree> = crate::TplParser::CacheTree::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
-        for mut t in &*inValues.clone() {
+        for mut t in &*inValues {
             let mut t = t.clone();
             (key, value) = t.clone();
             tree = add(tree.clone(), (key.clone()).clone(), value.clone(), conflictFunc.clone())?;
@@ -401,11 +401,11 @@ pub mod CacheTree {
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => bail!("match: no arm matched"),
     } })).clone();
-        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k).clone()), tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => var_field!((*tree).value, Tree::LEAF).clone(),
         (0, Deref @ Tree::NODE { .. }) => var_field!((*tree).value, Tree::NODE).clone(),
-        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone())?,
-        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone())?,
+        (1, Deref @ Tree::NODE { .. }) => get(var_field!((*tree).right, Tree::NODE).clone(), (key).clone())?,
+        ((-1), Deref @ Tree::NODE { .. }) => get(var_field!((*tree).left, Tree::NODE).clone(), (key).clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(value)
@@ -420,11 +420,11 @@ pub mod CacheTree {
         _ => key.clone(),
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } })).clone();
-            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k).clone()), tree.clone())) {
         (0, Deref @ Tree::LEAF { .. }) => return Some(var_field!((*tree).value, Tree::LEAF).clone()),
         (0, Deref @ Tree::NODE { .. }) => return Some(var_field!((*tree).value, Tree::NODE).clone()),
-        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
-        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key).clone()); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key).clone()); continue '__tco; },
         _ => return None,
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -445,16 +445,16 @@ pub mod CacheTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
-        key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
-        comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
+        key_comp = keyCompare((inKey.clone()).clone(), (key).clone());
+        comp = (::match_deref::match_deref! { match &((key_comp, inTree)) {
         (0, _) => true,
         (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), (inKey.clone()).clone())?
+            hasKey(tree.clone(), (inKey).clone())?
         },
         ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
             tree = (*__esc_tree).clone();
-            hasKey(tree.clone(), (inKey.clone()).clone())?
+            hasKey(tree.clone(), (inKey).clone())?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -480,7 +480,7 @@ pub mod CacheTree {
 
     pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
-        isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
+        isEmpty = (::match_deref::match_deref! { match &(tree) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -491,14 +491,14 @@ pub mod CacheTree {
     pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
-        Deref @ Tree::EMPTY { .. } => tree.clone(),
+        Deref @ Tree::EMPTY { .. } => tree,
         Deref @ Tree::NODE { .. } => {
-            tree = add(tree.clone(), (var_field!((*treeToJoin).key, Tree::NODE).clone()).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree = join(tree.clone(), var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
-            tree.clone()
+            tree = add(tree, (var_field!((*treeToJoin).key, Tree::NODE).clone()).clone(), var_field!((*treeToJoin).value, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).left, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree = join(tree, var_field!((*treeToJoin).right, Tree::NODE).clone(), conflictFunc.clone())?;
+            tree
         },
-        Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
+        Deref @ Tree::LEAF { .. } => add(tree, (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
@@ -508,16 +508,16 @@ pub mod CacheTree {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
-            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
-            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone()).clone(), lst);
+            lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, .. } => {
-            metamodelica::cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -527,14 +527,14 @@ pub mod CacheTree {
     pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst),
         Deref @ Tree::NODE { .. } => {
-            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
-            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst);
+            lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst
         },
-        _ => lst.clone(),
+        _ => lst,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         lst
@@ -544,16 +544,16 @@ pub mod CacheTree {
         let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<TplAbsyn::ASTDef>>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
-            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons(value.clone(), lst.clone());
-            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons(value.clone(), lst);
+            lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { value, .. } => {
-            metamodelica::cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -575,7 +575,7 @@ pub mod CacheTree {
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
@@ -583,10 +583,10 @@ pub mod CacheTree {
             if !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -603,24 +603,24 @@ pub mod CacheTree {
             let mut new_value: Value;
             let mut new_left: Arc<Tree>;
             let mut new_right: Arc<Tree>;
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult)?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult)?;
             if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
-            outTree.clone()
+            outTree
         },
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult)?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
-            outTree.clone()
+            outTree
         },
         _ => {
-            inTree.clone()
+            inTree
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -648,11 +648,11 @@ pub mod CacheTree {
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
-        Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
+        Deref @ Tree::LEAF { .. } => printNodeStr(inTree)?,
         Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
             left = (*__esc_left).clone();
             right = (*__esc_right).clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -664,8 +664,8 @@ pub mod CacheTree {
         let mut left: Option<Arc<Tree>>;
         let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
-        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent); __mm_s.push_str(&*if (isLeft) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -676,7 +676,7 @@ pub mod CacheTree {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
+        _ => referenceEq(&*(t1),&*(t2)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -696,7 +696,7 @@ pub mod CacheTree {
             setTreeLeftRight(child.clone(), node.clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -717,7 +717,7 @@ pub mod CacheTree {
             setTreeLeftRight(child.clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
-            inNode.clone()
+            inNode
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -728,9 +728,9 @@ pub mod CacheTree {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
-        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
-        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig.clone()} else {Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() })},
-        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::LEAF).clone()).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left.clone(), right: right.clone() }),
+        (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig,
+        (Deref @ Tree::NODE { .. }, _, _) => if (referenceEqOrEmpty(var_field!((*orig).left, Tree::NODE).clone(), left.clone()) && referenceEqOrEmpty(var_field!((*orig).right, Tree::NODE).clone(), right.clone())) {orig} else {Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right })},
+        (Deref @ Tree::LEAF { .. }, _, _) => Arc::new(Tree::NODE { key: (var_field!((*orig).key, Tree::LEAF).clone()).clone(), value: var_field!((*orig).value, Tree::LEAF).clone(), height: std::cmp::max(height(left.clone()), height(right.clone())) + 1, left: left, right: right }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(res)
@@ -751,16 +751,16 @@ pub mod CacheTree {
         let mut lst: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
-            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst.clone()
+            lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst);
+            lst = metamodelica::cons((key.clone(), value.clone()), lst);
+            lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst);
+            lst
         },
         Deref @ Tree::LEAF { key, value } => {
-            metamodelica::cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst)
         },
         _ => {
-            lst.clone()
+            lst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -836,7 +836,7 @@ pub type LINE_INFO = LineInfo;
 pub(crate) fn getPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(i32, i32)> {
     let mut outLineNumber: i32;
     let mut outColumnNumber: i32;
-    (outLineNumber, outColumnNumber) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outLineNumber, outColumnNumber) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (chars, LineInfo { lineNumber: lnum, lineLength: llen, .. }) => {
             let mut tillEnd: i32;
             tillEnd = charsTillEndOfLine(chars.clone(), 0)?;
@@ -855,22 +855,22 @@ pub(crate) fn captureStartPosition(mut inChars: Arc<metamodelica::List<ArcStr>>,
     let mut outLineColumnNumber: LineColumnNumber;
     let mut line: i32;
     let mut col: i32;
-    (line, col) = getPosition(inChars.clone(), inLineInfo.clone())?;
-    col = col.clone() - inColumnOffset.clone();
-    outLineColumnNumber = (line.clone(), col.clone());
+    (line, col) = getPosition(inChars, inLineInfo)?;
+    col = col - inColumnOffset;
+    outLineColumnNumber = (line, col);
     Ok(outLineColumnNumber)
 }
 
 //TODO: add correct TIME_STAMP
 pub(crate) fn tplSourceInfo(mut inStartLineColumnNumber: LineColumnNumber, mut inEndChars: Arc<metamodelica::List<ArcStr>>, mut inEndLineInfo: LineInfo) -> Result<SourceInfo> {
     let mut outSourceInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    outSourceInfo = (match (inStartLineColumnNumber.clone(), inEndLineInfo.clone()) {
+    outSourceInfo = (match (inStartLineColumnNumber, inEndLineInfo) {
         ((mut startL, mut startC), ref endlinfo @ LineInfo { parseInfo: ParseInfo { fileName: ref fileName, .. }, .. }) => {
             let mut endL: i32;
             let mut endC: i32;
-            (endL, endC) = getPosition(inEndChars.clone(), endlinfo.clone())?;
+            (endL, endC) = getPosition(inEndChars, endlinfo.clone())?;
             outSourceInfo = SourceInfo { fileName: (fileName.clone()).clone(), isReadOnly: false, lineNumberStart: startL.clone(), columnNumberStart: startC.clone(), lineNumberEnd: endL.clone(), columnNumberEnd: endC.clone(), lastModification: metamodelica::OrderedFloat(0.0_f64) };
-            outSourceInfo.clone()
+            outSourceInfo
         },
         _ => bail!("match: no arm matched"),
     });
@@ -879,7 +879,7 @@ pub(crate) fn tplSourceInfo(mut inStartLineColumnNumber: LineColumnNumber, mut i
 
 pub(crate) fn startPositionFromExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<LineColumnNumber> {
     let mut outLineColumnNumber: LineColumnNumber;
-    outLineColumnNumber = (::match_deref::match_deref! { match &(inExpression.clone()) {
+    outLineColumnNumber = (::match_deref::match_deref! { match &(inExpression) {
         (_, SourceInfo { lineNumberStart: startL, columnNumberStart: startC, .. }) => {
             (startL.clone(), startC.clone())
         },
@@ -891,13 +891,13 @@ pub(crate) fn startPositionFromExp(mut inExpression: (Arc<TplAbsyn::ExpressionBa
 pub(crate) fn charsTillEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut outCharsTillEnd: i32) -> Result<i32> {
     let mut outCharsTillEnd: i32 = outCharsTillEnd;
     let mut i: i32;
-    for mut c in &*inChars.clone() {
+    for mut c in &*inChars {
         let mut c = c.clone();
         i = stringCharInt((c.clone()).clone())?;
-        if i.clone() == 10 || i.clone() == 13 {
+        if i == 10 || i == 13 {
             return Ok(outCharsTillEnd.clone());
         }
-        outCharsTillEnd = outCharsTillEnd.clone() + if (i.clone() == 9) {TabSpaces.clone()} else {1};
+        outCharsTillEnd = outCharsTillEnd + if (i == 9) {TabSpaces.clone()} else {1};
     }
     Ok(outCharsTillEnd)
 }
@@ -906,12 +906,12 @@ pub(crate) fn makeStartLineInfo(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
     let mut outLineInfo: LineInfo;
     let mut llen: i32;
     llen = charsTillEndOfLine(inChars.clone(), 1)?;
-    outLineInfo = LineInfo { parseInfo: ParseInfo { fileName: (inFileName.clone()).clone(), errors: metamodelica::nil(), wasFatalError: false }, lineNumber: 1, lineLength: llen.clone(), startOfLineChars: inChars.clone() };
+    outLineInfo = LineInfo { parseInfo: ParseInfo { fileName: (inFileName).clone(), errors: metamodelica::nil(), wasFatalError: false }, lineNumber: 1, lineLength: llen, startOfLineChars: inChars };
     Ok(outLineInfo)
 }
 
 pub(crate) fn printAndFailIfError(mut inLineInfo: LineInfo) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inLineInfo.clone()) {
+    let () = (::match_deref::match_deref! { match &(inLineInfo) {
         LineInfo { parseInfo: ParseInfo { errors: Deref @ metamodelica::List::Nil, .. }, .. } => {
             metamodelica::print((literal!("\nSusan parsing successful.\n")).clone());
             ()
@@ -930,7 +930,7 @@ pub(crate) fn printAndFailIfError(mut inLineInfo: LineInfo) -> Result<()> {
 pub(crate) fn parseError(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inErrMessage: ArcStr, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone());
+        let __mc_input = (inChars, inLineInfo, inErrMessage, isFatal);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo @ LineInfo { parseInfo: ParseInfo { fileName: fname, errors: errLst, wasFatalError: false }, lineNumber: lnum, lineLength: llen, startOfLineChars: solchars }, errMsg, isfatal) => {
@@ -974,7 +974,7 @@ pub(crate) fn parseError(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
 pub(crate) fn parseErrorPrevPosition(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>>, mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: ArcStr, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
-        let __mc_input = (inCharsPrevPos.clone(), inLineInfoPrevPos.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone());
+        let __mc_input = (inCharsPrevPos, inLineInfoPrevPos, inLineInfo, inErrMessage, isFatal);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (charspp, LineInfo { lineNumber: lnumpp, lineLength: llenpp, startOfLineChars: solcharspp, .. }, LineInfo { parseInfo: pinfo, lineNumber: lnum, lineLength: llen, startOfLineChars: solchars }, errMsg, isfatal) => {
@@ -1005,7 +1005,7 @@ pub(crate) fn parseErrorPrevPosition(mut inCharsPrevPos: Arc<metamodelica::List<
 
 pub(crate) fn wasFatalError(mut inLineInfo: LineInfo) -> bool {
     let mut outWasError: bool;
-    outWasError = (match inLineInfo.clone() {
+    outWasError = (match inLineInfo {
         LineInfo { parseInfo: ParseInfo { wasFatalError: true, .. }, .. } => true,
         _ => false,
     });
@@ -1015,7 +1015,7 @@ pub(crate) fn wasFatalError(mut inLineInfo: LineInfo) -> bool {
 pub(crate) fn mergeErrors(mut inLineInfo: LineInfo, mut inLineInfoToAddErrorsFrom: LineInfo) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
-        let __mc_input = (inLineInfo.clone(), inLineInfoToAddErrorsFrom.clone());
+        let __mc_input = (inLineInfo, inLineInfoToAddErrorsFrom);
         if let Ok(__v) = (|| -> Result<_> {
             let (LineInfo { parseInfo: ParseInfo { fileName: mut fname, errors: ref errLst, wasFatalError: mut wasFatalError }, lineNumber: mut lnum, lineLength: mut llen, startOfLineChars: ref solchars }, LineInfo { parseInfo: ParseInfo { errors: ref errLstToAdd, .. }, .. }) = __mc_input.clone() else { bail!("nomatch") };
             let mut errLst = errLst.clone();
@@ -1036,7 +1036,7 @@ pub(crate) fn mergeErrors(mut inLineInfo: LineInfo, mut inLineInfoToAddErrorsFro
 pub(crate) fn parseErrorPrevPositionOpt(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>>, mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: Option<ArcStr>, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
-        let __mc_input = (inCharsPrevPos.clone(), inLineInfoPrevPos.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone());
+        let __mc_input = (inCharsPrevPos, inLineInfoPrevPos, inLineInfo, inErrMessage, isFatal);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, linfo, None, _) => {
@@ -1075,7 +1075,7 @@ pub(crate) fn parseErrorPrevPositionOptInfoChars(mut inLineInfoPrevPos: LineInfo
     let mut sol_chars: Arc<metamodelica::List<ArcStr>>;
     let LineInfo { startOfLineChars: __pa0, .. } = (inLineInfoPrevPos.clone()) else { bail!("pattern mismatch") };
     sol_chars = __pa0.clone();
-    outLineInfo = parseErrorPrevPositionOpt(sol_chars.clone(), inLineInfoPrevPos.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone())?;
+    outLineInfo = parseErrorPrevPositionOpt(sol_chars, inLineInfoPrevPos, inLineInfo, inErrMessage, isFatal)?;
     Ok(outLineInfo)
 }
 
@@ -1087,8 +1087,8 @@ pub(crate) fn expectChar(mut chars: Arc<metamodelica::List<ArcStr>>, mut lineInf
             rest.clone()
         },
         _ => {
-            lineInfo = parseError(chars.clone(), lineInfo.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected character '")); __mm_s.push_str(&*inExpectedChar.clone()); __mm_s.push_str(&*literal!("' at the position.")); ArcStr::from(__mm_s) }).clone(), false)?;
-            chars.clone()
+            lineInfo = parseError(chars.clone(), lineInfo, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected character '")); __mm_s.push_str(&*inExpectedChar.clone()); __mm_s.push_str(&*literal!("' at the position.")); ArcStr::from(__mm_s) }).clone(), false)?;
+            chars
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1101,7 +1101,7 @@ pub(crate) fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>,
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inExpectedChar.clone());
+        let __mc_input = (inChars, inLineInfo, inExpectedChar);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, ec) => {
@@ -1148,7 +1148,7 @@ pub(crate) fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>,
 
 pub(crate) fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((inChars.clone(), inKeywordChars.clone())) {
+        ::match_deref::match_deref! { match &((inChars, inKeywordChars)) {
         (Deref @ metamodelica::List::Cons { head: c, tail: chars }, Deref @ metamodelica::List::Cons { head: kwc, tail: kwchars }) => {
             let true = (stringEq((c.clone()).clone(), (kwc.clone()).clone())) else { bail!("pattern mismatch") };
             { (inChars, inKeywordChars) = (chars.clone(), kwchars.clone()); continue '__tco; }
@@ -1165,7 +1165,7 @@ pub(crate) fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeyw
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut isKeyword: bool;
     (outChars, isKeyword) = 'mc: {
-        let __mc_input = (inChars.clone(), inKeywordChars.clone());
+        let __mc_input = (inChars.clone(), inKeywordChars);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, kwchars) => {
@@ -1194,7 +1194,7 @@ pub(crate) fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inKeywordChars.clone(), isFatal.clone());
+        let __mc_input = (inChars, inLineInfo, inKeywordChars, isFatal);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, kwchars, _) => {
@@ -1248,7 +1248,7 @@ pub(crate) fn interleaveExpectEndOfFile(mut inChars: Arc<metamodelica::List<ArcS
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -1365,7 +1365,7 @@ fn typeviewDefsFromInterfaceFile(mut interfaceName: Arc<TplAbsyn::PathIdent>, mu
     let mut file: ArcStr;
     let mut chars: Arc<metamodelica::List<ArcStr>>;
     let mut newAstDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
-    file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*TplAbsyn::pathIdentString(interfaceName.clone())?); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone();
+    file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*TplAbsyn::pathIdentString(interfaceName)?); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone();
     match '__try0: {
         if unwrap_break_err!(CacheTree::hasKey(cachedDefs.clone(), (file.clone()).clone()), '__try0) {
             astDefs = listAppend(unwrap_break_err!(CacheTree::get(cachedDefs.clone(), (file.clone()).clone()), '__try0), astDefs.clone());
@@ -1421,7 +1421,7 @@ fn typeviewDefsFromTemplateFile(mut packageName: Arc<TplAbsyn::PathIdent>, mut i
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             astTypes = __pa1.clone();
-            astDefs = metamodelica::cons(TplAbsyn::ASTDef { importPackage: packageName.clone(), isDefault: isUnqualifiedImport.clone(), types: astTypes.clone() }, astDefs.clone());
+            astDefs = metamodelica::cons(TplAbsyn::ASTDef { importPackage: packageName.clone(), isDefault: isUnqualifiedImport, types: astTypes.clone() }, astDefs.clone());
             linfo = LineInfo { parseInfo: ParseInfo { fileName: (literal!("cachedResult")).clone(), errors: metamodelica::nil(), wasFatalError: false }, lineNumber: 0, lineLength: 0, startOfLineChars: metamodelica::nil() };
             errOpt = None;
             return Ok((astDefs.clone(), linfo.clone(), errOpt.clone(), cachedDefs.clone()));
@@ -1432,7 +1432,7 @@ fn typeviewDefsFromTemplateFile(mut packageName: Arc<TplAbsyn::PathIdent>, mut i
         let TplAbsyn::TEMPL_PACKAGE { templateDefs: __pa3, .. } = (unwrap_break_err!(TplAbsyn::fullyQualifyTemplatePackage(tplPackage.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         templateDefs = __pa3.clone();
         astTypes = unwrap_break_err!(List::map(templateDefs.clone(), (std::sync::Arc::new(templateDefToAstDefType) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, TplAbsyn::TemplateDef)) -> Result<(ArcStr, TplAbsyn::TypeInfo)> + 'static>)), '__try0);
-        newAstDef = TplAbsyn::ASTDef { importPackage: packageName.clone(), isDefault: isUnqualifiedImport.clone(), types: astTypes.clone() };
+        newAstDef = TplAbsyn::ASTDef { importPackage: packageName.clone(), isDefault: isUnqualifiedImport, types: astTypes.clone() };
         cachedDefs = unwrap_break_err!(CacheTree::add(cachedDefs.clone(), (file.clone()).clone(), metamodelica::cons(newAstDef.clone(), metamodelica::nil()), (std::sync::Arc::new(CacheTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>)), '__try0);
         astDefs = metamodelica::cons(newAstDef.clone(), astDefs.clone());
         if unwrap_break_err!(Flags::isSet(Flags::FAILTRACE.clone()), '__try0) {
@@ -1464,7 +1464,7 @@ fn typeviewDefsFromTemplateFile(mut packageName: Arc<TplAbsyn::PathIdent>, mut i
 pub(crate) fn templateDefToAstDefType(mut inTemplateDef: (ArcStr, TplAbsyn::TemplateDef)) -> Result<(ArcStr, TplAbsyn::TypeInfo)> {
     let mut outType: (ArcStr, TplAbsyn::TypeInfo);
     outType = 'mc: {
-        let __mc_input = inTemplateDef.clone();
+        let __mc_input = inTemplateDef;
         if let Ok(__v) = (|| -> Result<_> {
             let (mut id, TplAbsyn::TemplateDef::STR_TOKEN_DEF { .. }) = __mc_input.clone() else { bail!("nomatch") };
             Ok((id.clone(), TplAbsyn::TypeInfo::TI_CONST_TYPE { constType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))
@@ -1503,7 +1503,7 @@ newLine:
 pub(crate) fn newLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
-    (outChars, outLineInfo) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (Deref @ metamodelica::List::Cons { head: c, tail: chars }, LineInfo { parseInfo: pinfo, lineNumber: lnum, .. }) => {
             let mut llen: i32;
             let mut i: i32;
@@ -1640,7 +1640,7 @@ pub(crate) fn toEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -1686,7 +1686,7 @@ pub(crate) fn comment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "*", tail: Deref @ metamodelica::List::Cons { head: Deref @ "/", tail: chars } }, linfo) => {
@@ -1747,7 +1747,7 @@ afterKeyword:
     _  => ()
 */
 pub(crate) fn afterKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inChars.clone()) {
+    let () = (::match_deref::match_deref! { match &(inChars) {
         Deref @ metamodelica::List::Cons { head: c, tail: _ } => {
             let mut i: i32;
             i = stringCharInt((c.clone()).clone())?;
@@ -1771,7 +1771,7 @@ pub(crate) static keywords: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>>
 pub(crate) fn identifier(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outIdent: ArcStr;
-    (outChars, outIdent) = (::match_deref::match_deref! { match &(inChars.clone()) {
+    (outChars, outIdent) = (::match_deref::match_deref! { match &(inChars) {
         Deref @ metamodelica::List::Cons { head: c, tail: chars } => {
             let mut restIdChars: Arc<metamodelica::List<ArcStr>>;
             let mut ident: ArcStr;
@@ -1807,7 +1807,7 @@ pub(crate) fn identifier_rest(mut inChars: Arc<metamodelica::List<ArcStr>>) -> R
                 (chars, restIdChars) = identifier_rest(chars.clone())?;
                 restIdChars = metamodelica::cons((c.clone()).clone(), restIdChars.clone());
             } else {
-                chars = inChars.clone();
+                chars = inChars;
                 restIdChars = metamodelica::nil();
             }
             (chars.clone(), restIdChars.clone())
@@ -1825,7 +1825,7 @@ pub(crate) fn pathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPathIdent: Arc<TplAbsyn::PathIdent>;
-    (outChars, outLineInfo, outPathIdent) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outPathIdent) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (chars, linfo) => {
             let mut head: ArcStr;
             let mut pid: Arc<TplAbsyn::PathIdent>;
@@ -1887,7 +1887,7 @@ pub(crate) fn identifierNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     let mut outLineInfo: LineInfo;
     let mut outIdent: ArcStr;
     (outChars, outLineInfo, outIdent) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -1922,7 +1922,7 @@ pub(crate) fn pathIdentNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPathIdent: Arc<TplAbsyn::PathIdent>;
-    (outChars, outLineInfo, outPathIdent) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outPathIdent) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (chars, linfo) => {
             let mut head: ArcStr;
             let mut pid: Arc<TplAbsyn::PathIdent>;
@@ -1951,7 +1951,7 @@ pub(crate) fn templPackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outTemplPackage: TplAbsyn::TemplPackage;
     let mut cachedDefs: Arc<CacheTree::Tree> = cachedDefs;
     (outChars, outLineInfo, outTemplPackage) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -2177,7 +2177,7 @@ pub(crate) fn typeSig(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
-    (outChars, outLineInfo, outTypeSignature) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outTypeSignature) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (chars, linfo) => {
             let mut ts: Arc<TplAbsyn::TypeSignature>;
             let mut chars = (*chars).clone();
@@ -2197,7 +2197,7 @@ pub(crate) fn typeSigNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
     (outChars, outLineInfo, outTypeSignature) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -2242,7 +2242,7 @@ pub(crate) fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
     (outChars, outLineInfo, outTypeSignature) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: chars } } } }, linfo) => {
@@ -2377,7 +2377,7 @@ pub(crate) fn typeSigFromPathIdent(mut inPathIdent: Arc<TplAbsyn::PathIdent>) ->
         Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Integer" } => crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE(),
         Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Real" } => crate::TplAbsyn::TypeSignature::interned_REAL_TYPE(),
         Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Boolean" } => crate::TplAbsyn::TypeSignature::interned_BOOLEAN_TYPE(),
-        _ => Arc::new(TplAbsyn::TypeSignature::NAMED_TYPE { name: inPathIdent.clone() }),
+        _ => Arc::new(TplAbsyn::TypeSignature::NAMED_TYPE { name: inPathIdent }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outTypeSignature
@@ -2479,7 +2479,7 @@ pub(crate) fn stringCommentRest(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
     let mut outLineInfo: LineInfo;
     let mut outError: Option<ArcStr>;
     (outChars, outLineInfo, outError) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "\"", tail: chars }, linfo) => {
@@ -2563,7 +2563,7 @@ pub(crate) fn semicolon(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ ";", tail: chars }, linfo) => {
@@ -2610,7 +2610,7 @@ pub(crate) fn interfacePackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
     let mut outPid: Arc<TplAbsyn::PathIdent>;
     let mut outAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
     (outChars, outLineInfo, outPid, outAccASTDefs) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -2699,7 +2699,7 @@ pub(crate) fn absynDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outASTDef: TplAbsyn::ASTDef;
-    (outChars, outLineInfo, outASTDef) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outASTDef) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (chars, linfo) => {
             let mut isD: bool;
             let mut pid: Arc<TplAbsyn::PathIdent>;
@@ -2738,7 +2738,7 @@ pub(crate) fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inPathIdentToMatch.clone());
+        let __mc_input = (inChars, inLineInfo, inPathIdentToMatch);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "d", tail: chars } } }, linfo, pidToMatch) => {
@@ -2815,7 +2815,7 @@ pub(crate) fn endDefIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inIdentToMatch.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inIdentToMatch);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "d", tail: chars } } }, linfo, idToMatch) => {
@@ -2949,7 +2949,7 @@ pub(crate) fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
     let mut outLineInfo: LineInfo;
     let mut outType: (ArcStr, TplAbsyn::TypeInfo);
     (outChars, outLineInfo, outType) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "u", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "y", tail: Deref @ metamodelica::List::Cons { head: Deref @ "p", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } } } } } } }, linfo) => {
@@ -3074,7 +3074,7 @@ pub(crate) fn recordType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outRecordType: (ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>);
-    (outChars, outLineInfo, outRecordType) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outRecordType) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "c", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "d", tail: chars } } } } } }, linfo) => {
             let mut id: ArcStr;
             let mut fields: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3376,7 +3376,7 @@ pub(crate) fn templDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     let mut outLineInfo: LineInfo;
     let mut outTemplName: ArcStr;
     let mut outTemplDef: TplAbsyn::TemplateDef;
-    (outChars, outLineInfo, outTemplName, outTemplDef) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outTemplName, outTemplDef) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "m", tail: Deref @ metamodelica::List::Cons { head: Deref @ "p", tail: Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } } } } } }, linfo) => {
             let mut lesc: ArcStr;
             let mut resc: ArcStr;
@@ -3440,7 +3440,7 @@ pub(crate) fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outTemplDef: TplAbsyn::TemplateDef;
     let mut outConstType: Arc<TplAbsyn::TypeSignature>;
     (outChars, outLineInfo, outTemplDef, outConstType) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "=", tail: chars }, linfo) => {
@@ -3511,7 +3511,7 @@ pub(crate) fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outConstType: Arc<TplAbsyn::TypeSignature>;
     (outChars, outLineInfo, outConstType) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "S", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "g", tail: chars } } } } } }, linfo) => {
@@ -3566,7 +3566,7 @@ pub(crate) fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
 pub(crate) fn checkConstantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inConstType: Arc<TplAbsyn::TypeSignature>, mut inConstTypeLiteral: Arc<TplAbsyn::TypeSignature>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
-    (outChars, outLineInfo) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inConstType.clone(), inConstTypeLiteral.clone())) {
+    (outChars, outLineInfo) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inConstType, inConstTypeLiteral)) {
         (chars, linfo, Deref @ TplAbsyn::TypeSignature::UNRESOLVED_TYPE { reason: _ }, _) => {
             (chars.clone(), linfo.clone())
         },
@@ -3579,7 +3579,7 @@ pub(crate) fn checkConstantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
             (chars.clone(), linfo.clone())
         },
         _ => {
-            (inChars.clone(), inLineInfo.clone())
+            (inChars, inLineInfo)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3599,7 +3599,7 @@ pub(crate) fn templDef_Templ(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outLeftEsc: ArcStr;
     let mut outRightEsc: ArcStr;
     (outChars, outLineInfo, outExpression, outLeftEsc, outRightEsc) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ ":", tail: Deref @ metamodelica::List::Cons { head: Deref @ ":", tail: Deref @ metamodelica::List::Cons { head: Deref @ "=", tail: chars } } }, linfo) => {
@@ -3920,7 +3920,7 @@ pub(crate) fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone(), isOptional.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc, isOptional);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, lesc, resc, _) => {
@@ -3955,13 +3955,13 @@ pub(crate) fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
 
 pub(crate) fn makeEscapedExp(mut inEndChars: Arc<metamodelica::List<ArcStr>>, mut inEndLineInfo: LineInfo, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inOptions: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) -> Result<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)> {
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
-    outExpression = (::match_deref::match_deref! { match &((inExpression.clone(), inOptions.clone())) {
+    outExpression = (::match_deref::match_deref! { match &((inExpression, inOptions)) {
         (exp, Deref @ metamodelica::List::Nil) => {
             exp.clone()
         },
         (exp, opts @ Deref @ metamodelica::List::Cons { head: _, tail: _ }) => {
             let mut sinfo: SourceInfo;
-            sinfo = tplSourceInfo(startPositionFromExp(exp.clone())?, inEndChars.clone(), inEndLineInfo.clone())?;
+            sinfo = tplSourceInfo(startPositionFromExp(exp.clone())?, inEndChars, inEndLineInfo)?;
             (Arc::new(TplAbsyn::ExpressionBase::ESCAPED { exp: exp.clone(), options: opts.clone() }), sinfo.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -3982,7 +3982,7 @@ pub(crate) fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outLineInfo: LineInfo;
     let mut outOptions: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>;
     (outChars, outLineInfo, outOptions) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ ";", tail: chars }, linfo, lesc, resc) => {
@@ -4027,7 +4027,7 @@ pub(crate) fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outExpOption: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>;
     (outChars, outLineInfo, outExpOption) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "=", tail: chars }, linfo, lesc, resc) => {
@@ -4064,7 +4064,7 @@ pub(crate) fn expressionNoOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, 
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = metamodelica::nil();
-    (outChars, outLineInfo, outExpression, outIndexOffsetOption) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone())) {
+    (outChars, outLineInfo, outExpression, outIndexOffsetOption) = (::match_deref::match_deref! { match &((inChars, inLineInfo, inLeftEsc, inRightEsc)) {
         (chars, linfo, lesc, resc) => {
             let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
             let mut chars = (*chars).clone();
@@ -4072,7 +4072,7 @@ pub(crate) fn expressionNoOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, 
             (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
             (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, exp, outIndexOffsetOption) = mapTailOpt(chars.clone(), linfo.clone(), exp.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
-            (chars.clone(), linfo.clone(), exp.clone(), outIndexOffsetOption.clone())
+            (chars.clone(), linfo.clone(), exp.clone(), outIndexOffsetOption)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4093,7 +4093,7 @@ pub(crate) fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = metamodelica::nil();
     (outChars, outLineInfo, outExpression, outIndexOffsetOption) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inHeadExpression.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inHeadExpression.clone(), inLeftEsc, inRightEsc);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "|", tail: Deref @ metamodelica::List::Cons { head: Deref @ ">", tail: chars } }, linfo, headExp, lesc, resc) => {
@@ -4144,7 +4144,7 @@ pub(crate) fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outIndexNameOpt: Option<ArcStr>;
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = metamodelica::nil();
     (outChars, outLineInfo, outIndexNameOpt, outIndexOffsetOption) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "h", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "d", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "x", tail: chars } } } } } } } }, linfo, lesc, resc) => {
@@ -4187,7 +4187,7 @@ pub(crate) fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
     let mut outLineInfo: LineInfo;
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>;
     (outChars, outLineInfo, outIndexOffsetOption) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "f", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "m", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "d", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "x", tail: chars } } } } } } } } }, linfo, lesc, resc) => {
@@ -4242,7 +4242,7 @@ pub(crate) fn expressionLet(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: startChars } } }, startLInfo, lesc, resc) => {
@@ -4355,7 +4355,7 @@ pub(crate) fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "&", tail: startChars }, startLInfo, lesc, resc) => {
@@ -4506,7 +4506,7 @@ pub(crate) fn expressionMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, lesc, resc) => {
@@ -4549,7 +4549,7 @@ pub(crate) fn expressionIf(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, lesc, resc) => {
@@ -4588,7 +4588,7 @@ pub(crate) fn expressionPlus(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
-    (outChars, outLineInfo, outExpression) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone())) {
+    (outChars, outLineInfo, outExpression) = (::match_deref::match_deref! { match &((inChars, inLineInfo, inLeftEsc, inRightEsc)) {
         (chars, linfo, lesc, resc) => {
             let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
             let mut chars = (*chars).clone();
@@ -4615,7 +4615,7 @@ pub(crate) fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inBaseExpression.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inBaseExpression.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "+", tail: chars }, linfo, bexp, lesc, resc) => {
@@ -4658,7 +4658,7 @@ pub(crate) fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outLineInfo: LineInfo;
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     (outChars, outLineInfo, outExpressionList) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "+", tail: chars }, linfo, lesc, resc) => {
@@ -4717,7 +4717,7 @@ pub(crate) fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (startChars, startLInfo, _, _) => {
@@ -4860,7 +4860,7 @@ pub(crate) fn boundValueOrFunCall(mut inChars: Arc<metamodelica::List<ArcStr>>, 
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     (outChars, outLineInfo, outExpressionBase) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inName.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inName.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, name, lesc, resc) => {
@@ -4899,7 +4899,7 @@ pub(crate) fn funCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     (outChars, outLineInfo, outExpressionBase) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inName.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inName, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "(", tail: chars }, linfo, name, _, _) => {
@@ -4949,7 +4949,7 @@ pub(crate) fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, 
     let mut outLineInfo: LineInfo;
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     (outChars, outLineInfo, outExpressionList) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ ",", tail: chars }, linfo, lesc, resc) => {
@@ -4998,7 +4998,7 @@ pub(crate) fn stringConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
     (outChars, outLineInfo, outStrRevList) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (startChars @ Deref @ metamodelica::List::Cons { head: Deref @ "\"", tail: chars }, startLinfo) => {
@@ -5061,7 +5061,7 @@ pub(crate) fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     let mut outConstantValue: ArcStr;
     let mut outConstantType: Arc<TplAbsyn::TypeSignature>;
     (outChars, outLineInfo, outConstantValue, outConstantType) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -5145,7 +5145,7 @@ pub(crate) fn rightVerbatimConstQuote(mut inLeftQuote: ArcStr) -> ArcStr {
         Deref @ "{" => literal!("}"),
         Deref @ "<" => literal!(">"),
         Deref @ "[" => literal!("]"),
-        _ => inLeftQuote.clone(),
+        _ => inLeftQuote,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     outRightQuote
@@ -5175,7 +5175,7 @@ pub(crate) fn doubleQuoteConst(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
     let mut outError: Option<ArcStr>;
     (outChars, outLineInfo, outStrRevList, outError) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inAccChars.clone(), inAccStrList.clone());
+        let __mc_input = (inChars, inLineInfo, inAccChars, inAccStrList);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "\"", tail: chars }, linfo, accChars, accStrList) => {
@@ -5277,7 +5277,7 @@ escChar:
 */
 pub(crate) fn escChar(mut inEscChar: ArcStr) -> Result<ArcStr> {
     let mut outTheChar: ArcStr;
-    outTheChar = ((::match_deref::match_deref! { match &(inEscChar.clone()) {
+    outTheChar = ((::match_deref::match_deref! { match &(inEscChar) {
         Deref @ "'" => literal!("'"),
         Deref @ "\"" => literal!("\""),
         Deref @ "?" => literal!("?"),
@@ -5311,7 +5311,7 @@ pub(crate) fn verbatimConst(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
     let mut outError: Option<ArcStr>;
     (outChars, outLineInfo, outStrRevList, outError) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inRightQuote.clone(), inAccChars.clone(), inAccStrList.clone());
+        let __mc_input = (inChars, inLineInfo, inRightQuote, inAccChars, inAccStrList);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, rquot, accChars, accStrList) => {
@@ -5412,7 +5412,7 @@ pub(crate) fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
     (outChars, outLineInfo, outStrRevList) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inAccChars.clone(), inAccStrList.clone());
+        let __mc_input = (inChars, inLineInfo, inAccChars, inAccStrList);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "\\", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: chars } }, linfo, accChars, accStrList) => {
@@ -5459,7 +5459,7 @@ pub(crate) fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
 pub(crate) fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Tpl::StringToken>> {
     let mut outStringToken: Arc<Tpl::StringToken>;
     outStringToken = 'mc: {
-        let __mc_input = inRevStrList.clone();
+        let __mc_input = inRevStrList;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } => {
@@ -5535,7 +5535,7 @@ pub(crate) fn plusMinus(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<me
             (chars.clone(), char.clone())
         },
         _ => {
-            (inChars.clone(), literal!(""))
+            (inChars, literal!(""))
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5552,7 +5552,7 @@ pub(crate) fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metam
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outDigits: Arc<metamodelica::List<ArcStr>>;
     (outChars, outDigits) = 'mc: {
-        let __mc_input = inChars.clone();
+        let __mc_input = inChars;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: d, tail: chars } => {
@@ -5698,7 +5698,7 @@ pub(crate) fn templateExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outExpression) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "'", tail: startChars }, startLInfo, lesc, resc) => {
@@ -5771,7 +5771,7 @@ pub(crate) fn takeSpaceAndNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, 
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -5811,8 +5811,8 @@ pub(crate) fn templateBody(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     let mut lindent: i32;
-    (outChars, lindent) = lineIndent(inChars.clone(), 0);
-    (outChars, outLineInfo, outExpressionBase) = restOfTemplLine(outChars.clone(), inLineInfo.clone(), (inLeftEsc.clone()).clone(), (inRightEsc.clone()).clone(), inIsSingleQuote.clone(), inExpressionList.clone(), inIndentStack.clone(), inActualIndent.clone(), lindent.clone())?;
+    (outChars, lindent) = lineIndent(inChars, 0);
+    (outChars, outLineInfo, outExpressionBase) = restOfTemplLine(outChars, inLineInfo, (inLeftEsc).clone(), (inRightEsc).clone(), inIsSingleQuote, inExpressionList, inIndentStack, inActualIndent, lindent)?;
     Ok((outChars, outLineInfo, outExpressionBase))
 }
 
@@ -5831,13 +5831,13 @@ pub(crate) fn lineIndent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     (outChars, outLineIndent) = (::match_deref::match_deref! { match &(inChars.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ " ", tail: __esc_outChars } => {
             outChars = (*__esc_outChars).clone();
-            lineIndent(outChars.clone(), inLineIndent.clone() + 1)
+            lineIndent(outChars.clone(), inLineIndent + 1)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ "\t", tail: __esc_outChars } => {
             outChars = (*__esc_outChars).clone();
-            lineIndent(outChars.clone(), inLineIndent.clone() + TabSpaces.clone())
+            lineIndent(outChars.clone(), inLineIndent + TabSpaces.clone())
         },
-        _ => (inChars.clone(), inLineIndent.clone()),
+        _ => (inChars, inLineIndent),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     (outChars, outLineIndent)
@@ -5891,8 +5891,8 @@ pub(crate) fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     let mut outLineInfo: LineInfo = inLineInfo.clone();
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     let mut expl: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = inExpressionList.clone();
-    let mut lindent: i32 = inLineIndent.clone();
-    let mut aindent: i32 = inActualIndent.clone();
+    let mut lindent: i32 = inLineIndent;
+    let mut aindent: i32 = inActualIndent;
     let mut ind_stack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>> = inIndentStack.clone();
     let mut char: ArcStr;
     let mut next_char: ArcStr;
@@ -5909,8 +5909,8 @@ pub(crate) fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
             } };
             char = __pa1.clone();
             outChars = __pa2.clone();
-            if inIsSingleQuote.clone() && char.clone() == literal!("'") {
-                expl = unwrap_break_err!(onTemplEnd(false, expl.clone(), ind_stack.clone(), aindent.clone(), lindent.clone(), acc_chars.clone()), '__try0);
+            if inIsSingleQuote && char.clone() == literal!("'") {
+                expl = unwrap_break_err!(onTemplEnd(false, expl.clone(), ind_stack.clone(), aindent, lindent, acc_chars.clone()), '__try0);
                 outExpressionBase = makeTemplateFromExpList(expl.clone(), (literal!("'")).clone(), (literal!("'")).clone());
                 return Ok((outChars.clone(), outLineInfo.clone(), outExpressionBase.clone()));
             }
@@ -5920,14 +5920,14 @@ pub(crate) fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
             } };
             next_char = __pa3.clone();
             chars = __pa4.clone();
-            if !(inIsSingleQuote.clone()) && char.clone() == literal!(">") && next_char.clone() == literal!(">") {
-                expl = unwrap_break_err!(onTemplEnd(true, expl.clone(), ind_stack.clone(), aindent.clone(), lindent.clone(), acc_chars.clone()), '__try0);
+            if !(inIsSingleQuote) && char.clone() == literal!(">") && next_char.clone() == literal!(">") {
+                expl = unwrap_break_err!(onTemplEnd(true, expl.clone(), ind_stack.clone(), aindent, lindent, acc_chars.clone()), '__try0);
                 outExpressionBase = makeTemplateFromExpList(expl.clone(), (literal!("<<")).clone(), (literal!(">>")).clone());
                 outChars = chars.clone();
                 return Ok((outChars.clone(), outLineInfo.clone(), outExpressionBase.clone()));
             } else if char.clone() == literal!("\r") || char.clone() == literal!("\n") {
                 (outChars, linfo) = unwrap_break_err!(newLine(metamodelica::cons((char.clone()).clone(), outChars.clone()), outLineInfo.clone()), '__try0);
-                (expl, ind_stack, aindent, err_opt) = unwrap_break_err!(onNewLine(expl.clone(), ind_stack.clone(), aindent.clone(), lindent.clone(), acc_chars.clone()), '__try0);
+                (expl, ind_stack, aindent, err_opt) = unwrap_break_err!(onNewLine(expl.clone(), ind_stack.clone(), aindent, lindent, acc_chars.clone()), '__try0);
                 outLineInfo = unwrap_break_err!(parseErrorPrevPositionOptInfoChars(outLineInfo.clone(), linfo.clone(), err_opt.clone(), false), '__try0);
                 (outChars, lindent) = lineIndent(outChars.clone(), 0);
                 acc_chars = metamodelica::nil();
@@ -5941,12 +5941,12 @@ pub(crate) fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
                 next_char = __pa6.clone();
                 chars = __pa7.clone();
                 if char.clone() == literal!("%") && next_char.clone() == inRightEsc.clone() {
-                    (outChars, outLineInfo, lindent) = dropNewLineAfterEmptyExp(chars.clone(), linfo.clone(), lindent.clone(), acc_chars.clone());
+                    (outChars, outLineInfo, lindent) = dropNewLineAfterEmptyExp(chars.clone(), linfo.clone(), lindent, acc_chars.clone());
                 } else {
                     (outChars, linfo, exp) = unwrap_break_err!(expression(outChars.clone(), linfo.clone(), (inLeftEsc.clone()).clone(), (inRightEsc.clone()).clone(), false), '__try0);
                     (outChars, linfo) = unwrap_break_err!(interleaveExpectChar(outChars.clone(), linfo.clone(), (literal!("%")).clone()), '__try0);
                     (outChars, linfo) = unwrap_break_err!(expectChar(outChars.clone(), linfo.clone(), (inRightEsc.clone()).clone()), '__try0);
-                    (expl, ind_stack, aindent, err_opt) = unwrap_break_err!(onEscapedExp(exp.clone(), expl.clone(), ind_stack.clone(), aindent.clone(), lindent.clone(), acc_chars.clone()), '__try0);
+                    (expl, ind_stack, aindent, err_opt) = unwrap_break_err!(onEscapedExp(exp.clone(), expl.clone(), ind_stack.clone(), aindent, lindent, acc_chars.clone()), '__try0);
                     outLineInfo = unwrap_break_err!(parseErrorPrevPositionOptInfoChars(outLineInfo.clone(), linfo.clone(), err_opt.clone(), false), '__try0);
                     acc_chars = metamodelica::nil();
                 }
@@ -5958,7 +5958,7 @@ pub(crate) fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut 
     }.is_err() {
     }
     outChars = metamodelica::nil();
-    outLineInfo = parseError(metamodelica::nil(), inLineInfo.clone(), (literal!("Not able to parse the text template expression from the point.")).clone(), true)?;
+    outLineInfo = parseError(metamodelica::nil(), inLineInfo, (literal!("Not able to parse the text template expression from the point.")).clone(), true)?;
     outExpressionBase = crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP();
     Ok((outChars, outLineInfo, outExpressionBase))
 }
@@ -5968,7 +5968,7 @@ pub(crate) fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcSt
     let mut outLineInfo: LineInfo;
     let mut outLineIndent: i32;
     (outChars, outLineInfo, outLineIndent) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inAccStringChars.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inAccStringChars);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, Deref @ metamodelica::List::Nil) => {
@@ -5985,7 +5985,7 @@ pub(crate) fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcSt
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok((inChars.clone(), inLineInfo.clone(), inLineIndent.clone()))
+                    Ok((inChars.clone(), inLineInfo.clone(), inLineIndent))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5998,7 +5998,7 @@ pub(crate) fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcSt
 pub(crate) fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inLeftQuote: ArcStr, mut inRightQuote: ArcStr) -> Arc<TplAbsyn::ExpressionBase> {
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     outExpressionBase = 'mc: {
-        let __mc_input = (inExpressionList.clone(), inLeftQuote.clone(), inRightQuote.clone());
+        let __mc_input = (inExpressionList, inLeftQuote, inRightQuote);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _, _) => {
@@ -6036,7 +6036,7 @@ pub(crate) fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, Sou
     let mut outActualIndent: i32;
     let mut outError: Option<ArcStr>;
     (outExpressionList, outIndentStack, outActualIndent, outError) = 'mc: {
-        let __mc_input = (inExpression.clone(), inExpressionList.clone(), inIndentStack.clone(), inActualIndent.clone(), inLineIndent.clone(), inAccStringChars.clone());
+        let __mc_input = (inExpression, inExpressionList, inIndentStack, inActualIndent, inLineIndent, inAccStringChars);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp, expLst, indStack, actInd, lineInd, accChars) => {
@@ -6120,7 +6120,7 @@ pub(crate) fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbs
     let mut outActualIndent: i32;
     let mut outError: Option<ArcStr>;
     (outExpressionList, outIndentStack, outActualIndent, outError) = 'mc: {
-        let __mc_input = (inExpressionList.clone(), inIndentStack.clone(), inActualIndent.clone(), inLineIndent.clone(), inAccStringChars.clone());
+        let __mc_input = (inExpressionList, inIndentStack, inActualIndent, inLineIndent, inAccStringChars);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (expLst, indStack, actInd, lineInd, Deref @ metamodelica::List::Cons { head: c, tail: accChars }) => {
@@ -6256,7 +6256,7 @@ pub(crate) fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbs
 pub(crate) fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     outExpressionList = 'mc: {
-        let __mc_input = (inDropLastNewLine.clone(), inExpressionList.clone(), inIndentStack.clone(), inActualIndent.clone(), inLineIndent.clone(), inAccStringChars.clone());
+        let __mc_input = (inDropLastNewLine, inExpressionList, inIndentStack, inActualIndent, inLineIndent, inAccStringChars);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, baseInd, lineInd, Deref @ metamodelica::List::Nil) => {
@@ -6380,7 +6380,7 @@ pub(crate) fn popIndentStack(mut inExpressionList: Arc<metamodelica::List<(Arc<T
     let mut outIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>;
     let mut outActualIndent: i32;
     (outExpressionList, outIndentStack, outActualIndent) = 'mc: {
-        let __mc_input = (inExpressionList.clone(), inIndentStack.clone(), inActualIndent.clone(), inLineIndent.clone());
+        let __mc_input = (inExpressionList, inIndentStack, inActualIndent, inLineIndent);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (expLst, Deref @ metamodelica::List::Cons { head: (prevInd, prevExpLst), tail: indStack }, actInd, lineInd) => {
@@ -6433,7 +6433,7 @@ pub(crate) fn popIndentStack(mut inExpressionList: Arc<metamodelica::List<(Arc<T
 pub(crate) fn addAccStringChars(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     outExpressionList = 'mc: {
-        let __mc_input = (inExpressionList.clone(), inAccStringChars.clone());
+        let __mc_input = (inExpressionList, inAccStringChars);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (expLst, Deref @ metamodelica::List::Nil) => {
@@ -6634,7 +6634,7 @@ pub(crate) fn conditionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
-    (outChars, outLineInfo, outExpression) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone())) {
+    (outChars, outLineInfo, outExpression) = (::match_deref::match_deref! { match &((inChars, inLineInfo, inLeftEsc, inRightEsc)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "f", tail: startChars } }, startLInfo, lesc, resc) => {
             let mut chars: Arc<metamodelica::List<ArcStr>>;
             let mut linfo: LineInfo;
@@ -6664,7 +6664,7 @@ pub(crate) fn thenBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     let mut outLineInfo: LineInfo;
     let mut outTrueBranch: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     (outChars, outLineInfo, outTrueBranch) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "h", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: chars } } } }, linfo, lesc, resc) => {
@@ -6724,7 +6724,7 @@ pub(crate) fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     let mut outLineInfo: LineInfo;
     let mut outElseBranchOpt: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>;
     (outChars, outLineInfo, outElseBranchOpt) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } }, linfo, lesc, resc) => {
@@ -6770,7 +6770,7 @@ pub(crate) fn condArgExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     let mut outLHSExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     let mut outRHSMExpOpt: Option<Arc<TplAbsyn::MatchingExp>>;
     (outChars, outLineInfo, outIsNot, outLHSExpression, outRHSMExpOpt) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: chars } } }, linfo, lesc, resc) => {
@@ -6879,7 +6879,7 @@ pub(crate) fn matchExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
-    (outChars, outLineInfo, outExpression) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone())) {
+    (outChars, outLineInfo, outExpression) = (::match_deref::match_deref! { match &((inChars, inLineInfo, inLeftEsc, inRightEsc)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ "m", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "c", tail: Deref @ metamodelica::List::Cons { head: Deref @ "h", tail: startChars } } } } }, startLInfo, lesc, resc) => {
             let mut chars: Arc<metamodelica::List<ArcStr>>;
             let mut linfo: LineInfo;
@@ -6914,7 +6914,7 @@ pub(crate) fn matchCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
-    (outChars, outLineInfo, outMatchCaseLst) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone())) {
+    (outChars, outLineInfo, outMatchCaseLst) = (::match_deref::match_deref! { match &((inChars, inLineInfo, inLeftEsc, inRightEsc)) {
         (Deref @ metamodelica::List::Cons { head: Deref @ "c", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } }, linfo, lesc, resc) => {
             let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
             let mut mexp: Arc<TplAbsyn::MatchingExp>;
@@ -6949,7 +6949,7 @@ pub(crate) fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     let mut outLineInfo: LineInfo;
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
     (outChars, outLineInfo, outMatchCaseLst) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } }, linfo, lesc, resc) => {
@@ -7064,7 +7064,7 @@ pub(crate) fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut i
 
 pub(crate) fn makeMatchCaseLst(mut inMExpHeadLst: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>> {
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
-    outMatchCaseLst = (::match_deref::match_deref! { match &((inMExpHeadLst.clone(), inExpression.clone())) {
+    outMatchCaseLst = (::match_deref::match_deref! { match &((inMExpHeadLst, inExpression)) {
         (Deref @ metamodelica::List::Nil, _) => {
             metamodelica::nil()
         },
@@ -7090,7 +7090,7 @@ pub(crate) fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     let mut outLineInfo: LineInfo;
     let mut outMatchCases: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
     (outChars, outLineInfo, outMatchCases) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, lesc, resc) => {
@@ -7125,7 +7125,7 @@ pub(crate) fn matchCaseListNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, m
     let mut outLineInfo: LineInfo;
     let mut outMatchCases: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
     (outChars, outLineInfo, outMatchCases) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
+        let __mc_input = (inChars, inLineInfo, inLeftEsc, inRightEsc);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, lesc, resc) => {
@@ -7181,7 +7181,7 @@ pub(crate) fn matchBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
-    (outChars, outLineInfo, outMatchingExp) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
+    (outChars, outLineInfo, outMatchingExp) = (::match_deref::match_deref! { match &((inChars, inLineInfo)) {
         (chars, linfo) => {
             let mut headMExp: Arc<TplAbsyn::MatchingExp>;
             let mut mexp: Arc<TplAbsyn::MatchingExp>;
@@ -7270,7 +7270,7 @@ pub(crate) fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
     (outChars, outLineInfo, outMatchingExp) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "S", tail: Deref @ metamodelica::List::Cons { head: Deref @ "O", tail: Deref @ metamodelica::List::Cons { head: Deref @ "M", tail: Deref @ metamodelica::List::Cons { head: Deref @ "E", tail: chars } } } }, linfo) => {
@@ -7621,7 +7621,7 @@ pub(crate) fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
     (outChars, outLineInfo, outMatchingExp) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone(), inPathIdent.clone());
+        let __mc_input = (inChars, inLineInfo, inPathIdent);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "(", tail: chars }, linfo, pid) => {
@@ -7730,7 +7730,7 @@ pub(crate) fn fieldBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
     let mut outLineInfo: LineInfo;
     let mut outFieldBinding: (ArcStr, Arc<TplAbsyn::MatchingExp>);
     (outChars, outLineInfo, outFieldBinding) = 'mc: {
-        let __mc_input = (inChars.clone(), inLineInfo.clone());
+        let __mc_input = (inChars, inLineInfo);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
@@ -7821,12 +7821,12 @@ fn annotationFooter(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             chars = (*__esc_chars).clone();
             linfo = (*__esc_linfo).clone();
             let mut footerChars: Arc<metamodelica::List<ArcStr>>;
-            (footerChars, chars) = List::split(inChars.clone(), List::position((literal!(";")).clone(), inChars.clone())? + 1)?;
+            (footerChars, chars) = List::split(inChars.clone(), List::position((literal!(";")).clone(), inChars)? + 1)?;
             footer = stringAppendList(footerChars.clone());
-            (chars.clone(), linfo.clone(), footer.clone())
+            (chars.clone(), linfo.clone(), footer)
         },
         _ => {
-            (inChars.clone(), inLineInfo.clone(), literal!("annotation(__OpenModelica_generator=\"Susan\");"))
+            (inChars, inLineInfo, literal!("annotation(__OpenModelica_generator=\"Susan\");"))
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

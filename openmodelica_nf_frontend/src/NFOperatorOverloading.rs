@@ -67,7 +67,7 @@ pub(crate) fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<In
     let mut ctor_overloaded: bool;
     let mut ctor_node: Arc<InstNode::InstNode>;
     match '__try0: {
-        ctor_ref = unwrap_break_err!(Function::lookupFunctionSimple((literal!("'constructor'")).clone(), recordNode.clone(), context.clone()), '__try0);
+        ctor_ref = unwrap_break_err!(Function::lookupFunctionSimple((literal!("'constructor'")).clone(), recordNode.clone(), context), '__try0);
         ctor_overloaded = true;
         Ok::<_, anyhow::Error>((ctor_overloaded.clone(),))
     } {
@@ -78,16 +78,16 @@ pub(crate) fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<In
             ctor_overloaded = false;
         }
     }
-    if ctor_overloaded.clone() {
-        (_, ctor_node, _) = Function::instFunctionRef(ctor_ref.clone(), context.clone(), info.clone())?;
+    if ctor_overloaded {
+        (_, ctor_node, _) = Function::instFunctionRef(ctor_ref, context, info.clone())?;
         ctor_path = InstNode::fullPath(ctor_node.clone(), false)?;
-        for mut f in &*Function::getCachedFuncs(ctor_node.clone())? {
+        for mut f in &*Function::getCachedFuncs(ctor_node)? {
             let mut f = f.clone();
             checkOperatorConstructorOutput(f.clone(), Class::lastBaseClass(recordNode.clone())?, ctor_path.clone(), info.clone())?;
             recordNode = InstNode::cacheAddFunc(recordNode.clone(), f.clone(), false)?;
         }
     }
-    recordNode = Record::instDefaultConstructor(path.clone(), recordNode.clone(), context.clone(), info.clone())?;
+    recordNode = Record::instDefaultConstructor(path, recordNode, context, info)?;
     Ok(recordNode)
 }
 
@@ -99,16 +99,16 @@ pub(crate) fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut conte
     let mut funcs: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
     checkOperatorRestrictions(node.clone())?;
     tree = Class::classTree(InstNode::getClass(node.clone())?)?;
-    let () = (::match_deref::match_deref! { match &(tree.clone()) {
+    let () = (::match_deref::match_deref! { match &(tree) {
         Deref @ ClassTree::FLAT_TREE { classes: __esc_mclss, .. } => {
             mclss = (*__esc_mclss).clone();
             let __range0 = mclss.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut op in __range0 {
-                Function::instFunctionNode(op.clone(), context.clone(), info.clone())?;
+                Function::instFunctionNode(op.clone(), context, info.clone())?;
                 funcs = Function::getCachedFuncs(op.clone())?;
                 allfuncs = listAppend(funcs.clone(), allfuncs.clone());
             }
-            for mut f in &*allfuncs.clone() {
+            for mut f in &*allfuncs {
                 let mut f = f.clone();
                 node = InstNode::cacheAddFunc(node.clone(), f.clone(), false)?;
             }
@@ -125,7 +125,7 @@ pub(crate) fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut conte
 
 pub(crate) fn checkOperatorRestrictions(mut operatorNode: Arc<InstNode::InstNode>) -> Result<()> {
     if !(SCodeUtil::isElementEncapsulated(InstNode::definition(operatorNode.clone())?)) {
-        Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode.clone()))?;
+        Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode))?;
         bail!("fail");
     }
     Ok(())
@@ -136,7 +136,7 @@ pub(crate) fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Ar
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut fn_ref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut is_defined: bool = false;
-    functions = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
+    functions = (::match_deref::match_deref! { match &(Type::arrayElementType(ty)) {
         Deref @ Type::COMPLEX { cls: __esc_node, .. } => {
             node = (*__esc_node).clone();
             match '__try0: {
@@ -151,13 +151,13 @@ pub(crate) fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Ar
                     is_defined = false;
                 }
             }
-            if is_defined.clone() {
-                (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), InstContext::NO_CONTEXT.clone(), InstNode::info(node.clone()))?;
-                functions = Function::typeRefCache(fn_ref.clone(), InstContext::FUNCTION.clone())?;
+            if is_defined {
+                (fn_ref, _, _) = Function::instFunctionRef(fn_ref, InstContext::NO_CONTEXT.clone(), InstNode::info(node.clone()))?;
+                functions = Function::typeRefCache(fn_ref, InstContext::FUNCTION.clone())?;
             } else {
                 functions = metamodelica::nil();
             }
-            functions.clone()
+            functions
         },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -179,9 +179,9 @@ pub(crate) fn patchOperatorRecordConstructorBinding(mut r#fn: Arc<Function::Func
     if !(Binding::isBound(output_binding.clone())) {
         return Ok(r#fn.clone());
     }
-    output_binding = Binding::mapExp(output_binding.clone(), (std::sync::Arc::new({ let __pe_b1 = r#fn.clone(); move |__pe_a0| Ok(patchOperatorRecordConstructorBinding_traverser(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-    output_comp = Component::setBinding(output_binding.clone(), output_comp.clone())?;
-    output_node = InstNode::updateComponent(output_comp.clone(), output_node.clone())?;
+    output_binding = Binding::mapExp(output_binding, (std::sync::Arc::new({ let __pe_b1 = r#fn.clone(); move |__pe_a0| Ok(patchOperatorRecordConstructorBinding_traverser(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    output_comp = Component::setBinding(output_binding, output_comp)?;
+    output_node = InstNode::updateComponent(output_comp, output_node)?;
     Ok(r#fn)
 }
 
@@ -195,7 +195,7 @@ fn checkOperatorConstructorOutput(mut r#fn: Arc<Function::Function>, mut recordN
     output_node = listHead(r#fn.outputs.clone())?;
     output_ty = InstNode::classScope(output_node.clone());
     if !(InstNode::isSame(output_ty.clone(), recordNode.clone())) {
-        Error::addSourceMessage(Error::OPERATOR_OVERLOADING_INVALID_OUTPUT_TYPE.clone(), list![(InstNode::name(output_node.clone())?).clone(), (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::name(recordNode.clone())?).clone(), (InstNode::name(output_ty.clone())?).clone()], info.clone())?;
+        Error::addSourceMessage(Error::OPERATOR_OVERLOADING_INVALID_OUTPUT_TYPE.clone(), list![(InstNode::name(output_node)?).clone(), (AbsynUtil::pathString(path, (literal!(".")).clone(), true, false)?).clone(), (InstNode::name(recordNode)?).clone(), (InstNode::name(output_ty)?).clone()], info)?;
         bail!("fail");
     }
     Ok(())
@@ -212,7 +212,7 @@ fn patchOperatorRecordConstructorBinding_traverser(mut exp: Arc<Expression::NFEx
             args = (*__esc_args).clone();
             Expression::makeRecord(Function::name(constructorFn.clone()), ty.clone(), args.clone())
         },
-        _ => exp.clone(),
+        _ => exp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outExp

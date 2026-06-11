@@ -93,7 +93,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
 pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<VariablePointers::VariablePointers>, Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>> {
     let mut func: Module::daeModeInterface;
     let mut flag: ArcStr = literal!("default");
-    func = (::match_deref::match_deref! { match &(flag.clone()) {
+    func = (::match_deref::match_deref! { match &(flag) {
         Deref @ "default" => (std::sync::Arc::new(daeModeDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<VariablePointers::VariablePointers>, Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>),
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -104,7 +104,7 @@ pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<metamodelica::Lis
 fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
     let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = partitions;
     let mut new_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
-    for mut part in &*partitions.clone() {
+    for mut part in &*partitions {
         let mut part = part.clone();
         new_partitions = (::match_deref::match_deref! { match &(part.association.clone()) {
         association @ Deref @ Partition::Association::CONTINUOUS { .. } => {
@@ -156,7 +156,7 @@ fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partitio
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    partitions = new_partitions.clone().reverse();
+    partitions = new_partitions.reverse();
     Ok(partitions)
 }
 

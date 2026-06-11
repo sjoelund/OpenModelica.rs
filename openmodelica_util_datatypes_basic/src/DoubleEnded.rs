@@ -77,7 +77,7 @@ pub type LIST<T> = MutableList<T>;
 pub fn new<T: Clone + 'static + metamodelica::gc::MMTrace>(mut first: T) -> MutableList<T> {
     let mut delst: MutableList<T>;
     let mut lst: Arc<metamodelica::List<T>> = list![first.clone()];
-    delst = MutableList { length: Mutable::create(1), front: Mutable::create(lst.clone()), back: Mutable::create(lst.clone()) };
+    delst = MutableList { length: Mutable::create(1), front: Mutable::create(lst.clone()), back: Mutable::create(lst) };
     delst
 }
 
@@ -92,13 +92,13 @@ pub fn fromList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<met
         delst = MutableList { length: Mutable::create(0), front: Mutable::create(metamodelica::nil()), back: Mutable::create(metamodelica::nil()) };
         return Ok(delst.clone());
     }
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lst.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lst) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     t = __pa0.clone();
     tmp = __pa1.clone();
-    head = list![t.clone()];
+    head = list![t];
     tail = head.clone();
     length = 1;
     for mut l in &*tmp.clone() {
@@ -106,9 +106,9 @@ pub fn fromList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<met
         tmp = list![l.clone()];
         Dangerous::listSetRest(tail.clone(), tmp.clone())?;
         tail = tmp.clone();
-        length = length.clone() + 1;
+        length = length + 1;
     }
-    delst = MutableList { length: Mutable::create(length.clone()), front: Mutable::create(head.clone()), back: Mutable::create(tail.clone()) };
+    delst = MutableList { length: Mutable::create(length), front: Mutable::create(head), back: Mutable::create(tail) };
     Ok(delst)
 }
 
@@ -128,20 +128,20 @@ pub(crate) fn pop_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut dels
     let mut elt: T;
     let mut length: i32 = Mutable::access(delst.length.clone());
     let mut lst: Arc<metamodelica::List<T>>;
-    let true = (length.clone() > 0) else { bail!("pattern mismatch") };
-    Mutable::update(delst.length.clone(), length.clone() - 1);
+    let true = (length > 0) else { bail!("pattern mismatch") };
+    Mutable::update(delst.length.clone(), length - 1);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Mutable::access(delst.front.clone())) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     elt = __pa0.clone();
     lst = __pa1.clone();
-    if length.clone() == 1 {
+    if length == 1 {
         Mutable::update(delst.front.clone(), metamodelica::nil());
         Mutable::update(delst.back.clone(), metamodelica::nil());
         return Ok(elt.clone());
     }
-    Mutable::update(delst.front.clone(), lst.clone());
+    Mutable::update(delst.front.clone(), lst);
     Ok(elt)
 }
 
@@ -154,15 +154,15 @@ pub fn currentBackCell<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst
 pub fn push_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut elt: T) -> () {
     let mut length: i32 = Mutable::access(delst.length.clone());
     let mut lst: Arc<metamodelica::List<T>>;
-    Mutable::update(delst.length.clone(), length.clone() + 1);
-    if length.clone() == 0 {
-        lst = list![elt.clone()];
+    Mutable::update(delst.length.clone(), length + 1);
+    if length == 0 {
+        lst = list![elt];
         Mutable::update(delst.front.clone(), lst.clone());
-        Mutable::update(delst.back.clone(), lst.clone());
+        Mutable::update(delst.back.clone(), lst);
         return ();
     }
     lst = Mutable::access(delst.front.clone());
-    Mutable::update(delst.front.clone(), metamodelica::cons(elt.clone(), lst.clone()));
+    Mutable::update(delst.front.clone(), metamodelica::cons(elt, lst));
     ()
 }
 
@@ -175,29 +175,29 @@ pub fn push_list_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst
     let mut head: Arc<metamodelica::List<T>>;
     let mut t: T;
     lstLength = (lst.clone().len() as i32);
-    if lstLength.clone() == 0 {
+    if lstLength == 0 {
         return Ok(());
     }
-    Mutable::update(delst.length.clone(), length.clone() + lstLength.clone());
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lst.clone()) {
+    Mutable::update(delst.length.clone(), length + lstLength);
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lst) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     t = __pa0.clone();
     tmp = __pa1.clone();
-    head = list![t.clone()];
+    head = list![t];
     oldHead = Mutable::access(delst.front.clone());
     Mutable::update(delst.front.clone(), head.clone());
-    for mut l in &*tmp.clone() {
+    for mut l in &*tmp {
         let mut l = l.clone();
         work = list![l.clone()];
         Dangerous::listSetRest(head.clone(), work.clone())?;
         head = work.clone();
     }
-    if length.clone() == 0 {
-        Mutable::update(delst.back.clone(), head.clone());
+    if length == 0 {
+        Mutable::update(delst.back.clone(), head);
     } else {
-        Dangerous::listSetRest(head.clone(), oldHead.clone())?;
+        Dangerous::listSetRest(head, oldHead)?;
     }
     Ok(())
 }
@@ -205,16 +205,16 @@ pub fn push_list_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst
 pub fn push_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut elt: T) -> () {
     let mut length: i32 = Mutable::access(delst.length.clone());
     let mut lst: Arc<metamodelica::List<T>>;
-    Mutable::update(delst.length.clone(), length.clone() + 1);
-    if length.clone() == 0 {
-        lst = list![elt.clone()];
+    Mutable::update(delst.length.clone(), length + 1);
+    if length == 0 {
+        lst = list![elt];
         Mutable::update(delst.front.clone(), lst.clone());
-        Mutable::update(delst.back.clone(), lst.clone());
+        Mutable::update(delst.back.clone(), lst);
         return ();
     }
-    lst = list![elt.clone()];
+    lst = list![elt];
     Dangerous::listSetRest(Mutable::access(delst.back.clone()), lst.clone()).unwrap();
-    Mutable::update(delst.back.clone(), lst.clone());
+    Mutable::update(delst.back.clone(), lst);
     ()
 }
 
@@ -225,37 +225,37 @@ pub fn push_list_back<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst:
     let mut tmp: Arc<metamodelica::List<T>>;
     let mut t: T;
     lstLength = (lst.clone().len() as i32);
-    if lstLength.clone() == 0 {
+    if lstLength == 0 {
         return Ok(());
     }
-    Mutable::update(delst.length.clone(), length.clone() + lstLength.clone());
+    Mutable::update(delst.length.clone(), length + lstLength);
     t = (lst.clone()).get(1)?;
-    tmp = list![t.clone()];
-    if length.clone() == 0 {
+    tmp = list![t];
+    if length == 0 {
         Mutable::update(delst.front.clone(), tmp.clone());
     } else {
         Dangerous::listSetRest(Mutable::access(delst.back.clone()), tmp.clone())?;
     }
     tail = tmp.clone();
-    for mut l in &*listRest(lst.clone())? {
+    for mut l in &*listRest(lst)? {
         let mut l = l.clone();
         tmp = list![l.clone()];
         Dangerous::listSetRest(tail.clone(), tmp.clone())?;
         tail = tmp.clone();
     }
-    Mutable::update(delst.back.clone(), tail.clone());
+    Mutable::update(delst.back.clone(), tail);
     Ok(())
 }
 
 pub fn toListAndClear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>, mut prependToList: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<T>> {
     let mut res: Arc<metamodelica::List<T>>;
     if Mutable::access(delst.length.clone()) == 0 {
-        res = prependToList.clone();
+        res = prependToList;
         return res.clone();
     }
     res = Mutable::access(delst.front.clone());
     if !(prependToList.clone().is_empty()) {
-        Dangerous::listSetRest(Mutable::access(delst.back.clone()), prependToList.clone()).unwrap();
+        Dangerous::listSetRest(Mutable::access(delst.back.clone()), prependToList).unwrap();
     }
     Mutable::update(delst.back.clone(), metamodelica::nil());
     Mutable::update(delst.front.clone(), metamodelica::nil());
@@ -275,7 +275,7 @@ pub(crate) fn clear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: M
     Mutable::update(delst.back.clone(), metamodelica::nil());
     Mutable::update(delst.front.clone(), metamodelica::nil());
     Mutable::update(delst.length.clone(), 0);
-    for mut l in &*lst.clone() {
+    for mut l in &*lst {
         let mut l = l.clone();
         GCExt::free(l.clone());
     }

@@ -34,7 +34,7 @@ use openmodelica_util_datatypes_basic::List;
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_generateFMUModelDescription.clone()) {
+    out_txt = (match (in_txt, in_a_generateFMUModelDescription) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ModelDescription")).clone() }))?;
             txt.clone()
@@ -49,7 +49,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool) -> 
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_FMUGuid: ArcStr, mut in_a_FMUType: ArcStr, mut in_a_FMUVersion: ArcStr, mut in_a_simCode: SimCode::SimCode, mut in_a_modelInfo_name: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_generateFMUModelDescription.clone(), in_a_FMUGuid.clone(), in_a_FMUType.clone(), in_a_FMUVersion.clone(), in_a_simCode.clone(), in_a_modelInfo_name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_generateFMUModelDescription, in_a_FMUGuid, in_a_FMUType, in_a_FMUVersion, in_a_simCode, in_a_modelInfo_name)) {
         (txt, false, _, _, _, _, a_modelInfo_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("modelName=\"")).clone() }))?;
@@ -69,7 +69,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_FMUVersion: ArcStr, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_generateFMUModelDescription.clone(), in_a_FMUVersion.clone(), in_a_simCode.clone()) {
+    out_txt = (match (in_txt, in_a_generateFMUModelDescription, in_a_FMUVersion, in_a_simCode) {
         (mut txt, false, _, _) => {
             txt.clone()
         },
@@ -83,7 +83,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_FMUVersion: ArcStr, mut in_a_simulationSettingsOpt: Option<SimCode::SimulationSettings>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_generateFMUModelDescription.clone(), in_a_FMUVersion.clone(), in_a_simulationSettingsOpt.clone()) {
+    out_txt = (match (in_txt, in_a_generateFMUModelDescription, in_a_FMUVersion, in_a_simulationSettingsOpt) {
         (mut txt, false, _, _) => {
             txt.clone()
         },
@@ -99,7 +99,7 @@ pub fn modelInitXMLFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCod
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (match (in_txt.clone(), in_a_simCode.clone(), in_a_numRealVars.clone(), in_a_numIntVars.clone(), in_a_numBoolVars.clone(), in_a_numStringVars.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone(), in_a_FMUGuid.clone(), in_a_generateFMUModelDescription.clone(), in_a_generatorComments.clone(), in_a_complexStartExpressions.clone(), in_a_stateDerVectorName.clone()) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (match (in_txt, in_a_simCode, in_a_numRealVars, in_a_numIntVars, in_a_numBoolVars, in_a_numStringVars, in_a_FMUVersion, in_a_FMUType, in_a_FMUGuid, in_a_generateFMUModelDescription, in_a_generatorComments, in_a_complexStartExpressions, in_a_stateDerVectorName) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: ref i_modelInfo @ SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, varToArrayIndexMapping: ref i_varToArrayIndexMapping, simulationSettingsOpt: ref i_simulationSettingsOpt, .. }, mut a_numRealVars, mut a_numIntVars, mut a_numBoolVars, mut a_numStringVars, mut a_FMUVersion, mut a_FMUType, mut a_FMUGuid, mut a_generateFMUModelDescription, mut a_generatorComments, mut a_complexStartExpressions, mut a_stateDerVectorName) => {
             let mut l_fmiDefaultExperiment: Tpl::Text;
             let mut l_fmiTypeDefinitions: Tpl::Text;
@@ -156,7 +156,7 @@ pub fn modelInitXMLFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCod
 
 fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::SimCode, mut in_a_FMUGuid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_FMUGuid.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_simCode, in_a_FMUGuid) {
         (mut txt, false, mut a_simCode, mut a_FMUGuid) => {
             txt = fmiModelDescriptionAttributes(txt.clone(), a_simCode.clone(), (a_FMUGuid.clone()).clone())?;
             txt.clone()
@@ -172,14 +172,14 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
 pub(crate) fn fmiDescriptionAttributes(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_FMUVersion: ArcStr, mut a_FMUType: ArcStr, mut a_FMUGuid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: bool;
-    ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
-    out_txt = fun_57(txt.clone(), ret_0.clone(), a_simCode.clone(), (a_FMUGuid.clone()).clone())?;
+    ret_0 = FMI::isFMIVersion20((a_FMUVersion).clone())?;
+    out_txt = fun_57(txt, ret_0, a_simCode, (a_FMUGuid).clone())?;
     Ok(out_txt)
 }
 
 pub(crate) fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
+    out_txt = (match (in_txt, in_a_simCode, in_a_guid) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: ref i_vi_numStateVars, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, .. }, fileNamePrefix: ref i_fileNamePrefix, .. }, mut a_guid) => {
             let mut l_numberOfEventIndicators: Tpl::Text;
             let mut l_numberOfContinuousStates: Tpl::Text;
@@ -242,266 +242,296 @@ pub(crate) fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simC
     Ok(out_txt)
 }
 
-fn lm_60(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesReal: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_60 in &*items.clone() {
-        let mut lstElt_60 = lstElt_60.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_60.clone() {
-        mut i_var => {
+fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesReal, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_61(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesReal: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_61 in &*items.clone() {
-        let mut lstElt_61 = lstElt_61.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_61.clone() {
-        mut i_var => {
+fn lm_61(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesReal, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesReal: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_62 in &*items.clone() {
-        let mut lstElt_62 = lstElt_62.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_62.clone() {
-        mut i_var => {
+fn lm_62(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesReal, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_63(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesReal: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_63 in &*items.clone() {
-        let mut lstElt_63 = lstElt_63.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_63.clone() {
-        mut i_var => {
+fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesReal, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_64(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesReal: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_64 in &*items.clone() {
-        let mut lstElt_64 = lstElt_64.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_64.clone() {
-        mut i_var => {
+fn lm_64(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesReal, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesReal: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_65 in &*items.clone() {
-        let mut lstElt_65 = lstElt_65.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_65.clone() {
-        mut i_var => {
+fn lm_65(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesReal, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesReal, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesInt: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_66 in &*items.clone() {
-        let mut lstElt_66 = lstElt_66.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_66.clone() {
-        mut i_var => {
+fn lm_66(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesInt: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesInt, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesInt, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesInt, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_67(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesInt: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_67 in &*items.clone() {
-        let mut lstElt_67 = lstElt_67.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_67.clone() {
-        mut i_var => {
+fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesInt: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesInt, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesInt, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesInt, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_68(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesInt: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_68 in &*items.clone() {
-        let mut lstElt_68 = lstElt_68.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_68.clone() {
-        mut i_var => {
+fn lm_68(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesInt: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesInt, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesInt, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesInt, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesBool: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_69 in &*items.clone() {
-        let mut lstElt_69 = lstElt_69.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_69.clone() {
-        mut i_var => {
+fn lm_69(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesBool: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesBool, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesBool, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesBool, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_70(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesBool: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_70 in &*items.clone() {
-        let mut lstElt_70 = lstElt_70.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_70.clone() {
-        mut i_var => {
+fn lm_70(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesBool: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesBool, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesBool, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesBool, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_71(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesBool: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_71 in &*items.clone() {
-        let mut lstElt_71 = lstElt_71.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_71.clone() {
-        mut i_var => {
+fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesBool: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesBool, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesBool, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesBool, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesString: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_72 in &*items.clone() {
-        let mut lstElt_72 = lstElt_72.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_72.clone() {
-        mut i_var => {
+fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesString: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesString, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesString, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesString, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_73(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesString: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_73 in &*items.clone() {
-        let mut lstElt_73 = lstElt_73.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_73.clone() {
-        mut i_var => {
+fn lm_73(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesString: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesString, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesString, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesString, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
-fn lm_74(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressions: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferencesString: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressions: Tpl::Text = a_complexStartExpressions;
-    for mut lstElt_74 in &*items.clone() {
-        let mut lstElt_74 = lstElt_74.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressions) = (match lstElt_74.clone() {
-        mut i_var => {
+fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferencesString: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesString, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressions, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressions, a_generateFMUModelDescription, a_indexForUndefinedReferencesString, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
             (txt, a_complexStartExpressions, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferencesString, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressions))
 }
 
 fn fun_75(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_indexForUndefinedReferencesReal: ArcStr, mut in_a_indexForUndefinedReferencesInt: ArcStr, mut in_a_indexForUndefinedReferencesBool: ArcStr, mut in_a_indexForUndefinedReferencesString: ArcStr, mut in_a_generateFMUModelDescription: bool, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_stateDerVectorName: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (match (in_txt.clone(), in_a_modelInfo.clone(), in_a_simCode.clone(), in_a_varToArrayIndexMapping.clone(), in_a_indexForUndefinedReferencesReal.clone(), in_a_indexForUndefinedReferencesInt.clone(), in_a_indexForUndefinedReferencesBool.clone(), in_a_indexForUndefinedReferencesString.clone(), in_a_generateFMUModelDescription.clone(), in_a_complexStartExpressions.clone(), in_a_stateDerVectorName.clone()) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (match (in_txt, in_a_modelInfo, in_a_simCode, in_a_varToArrayIndexMapping, in_a_indexForUndefinedReferencesReal, in_a_indexForUndefinedReferencesInt, in_a_indexForUndefinedReferencesBool, in_a_indexForUndefinedReferencesString, in_a_generateFMUModelDescription, in_a_complexStartExpressions, in_a_stateDerVectorName) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: ref i_vars_stateVars, derivativeVars: ref i_vars_derivativeVars, algVars: ref i_vars_algVars, discreteAlgVars: ref i_vars_discreteAlgVars, paramVars: ref i_vars_paramVars, aliasVars: ref i_vars_aliasVars, intAlgVars: ref i_vars_intAlgVars, intParamVars: ref i_vars_intParamVars, intAliasVars: ref i_vars_intAliasVars, boolAlgVars: ref i_vars_boolAlgVars, boolParamVars: ref i_vars_boolParamVars, boolAliasVars: ref i_vars_boolAliasVars, stringAlgVars: ref i_vars_stringAlgVars, stringParamVars: ref i_vars_stringParamVars, stringAliasVars: ref i_vars_stringAliasVars, .. }, varInfo: SimCode::VarInfo { numAlgVars: _, numDiscreteReal: _, numOptimizeConstraints: _, .. }, .. }, mut a_simCode, mut a_varToArrayIndexMapping, mut a_indexForUndefinedReferencesReal, mut a_indexForUndefinedReferencesInt, mut a_indexForUndefinedReferencesBool, mut a_indexForUndefinedReferencesString, mut a_generateFMUModelDescription, mut a_complexStartExpressions, mut a_stateDerVectorName) => {
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_stateDerVectorName, a_complexStartExpressions) = lm_60(txt.clone(), i_vars_stateVars.clone(), a_stateDerVectorName.clone(), a_complexStartExpressions.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone())?;
@@ -578,7 +608,7 @@ pub(crate) fn modelVariablesXML(mut txt: Tpl::Text, mut a_simCode: SimCode::SimC
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_75(txt.clone(), a_modelInfo.clone(), a_simCode.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferencesReal.clone()).clone(), (a_indexForUndefinedReferencesInt.clone()).clone(), (a_indexForUndefinedReferencesBool.clone()).clone(), (a_indexForUndefinedReferencesString.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_75(txt, a_modelInfo, a_simCode, a_varToArrayIndexMapping, (a_indexForUndefinedReferencesReal).clone(), (a_indexForUndefinedReferencesInt).clone(), (a_indexForUndefinedReferencesBool).clone(), (a_indexForUndefinedReferencesString).clone(), a_generateFMUModelDescription, a_complexStartExpressions, a_stateDerVectorName)?;
     Ok((out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName))
 }
 
@@ -586,7 +616,7 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut
     let mut out_txt: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_complexStartExpressions) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_generateFMUModelDescription.clone(), in_a_stateDerVectorName.clone(), in_a_complexStartExpressions.clone(), in_a_type__.clone(), in_a_isFixed.clone(), in_a_nominalValue.clone(), in_a_initialValue.clone(), in_a_maxValue.clone(), in_a_minValue.clone(), in_a_displayUnit.clone(), in_a_unit.clone(), in_a_aliasvar.clone(), in_a_name.clone(), in_a_simCode.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_complexStartExpressions) = (::match_deref::match_deref! { match &((in_txt, in_a_generateFMUModelDescription, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_type__, in_a_isFixed, in_a_nominalValue, in_a_initialValue, in_a_maxValue, in_a_minValue, in_a_displayUnit, in_a_unit, in_a_aliasvar, in_a_name, in_a_simCode)) {
         (txt, false, a_stateDerVectorName, a_complexStartExpressions, a_type__, a_isFixed, a_nominalValue, a_initialValue, a_maxValue, a_minValue, a_displayUnit, a_unit, a_aliasvar, a_name, a_simCode) => {
             let mut ret_0: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
@@ -604,28 +634,30 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut
     Ok((out_txt, out_a_stateDerVectorName, out_a_complexStartExpressions))
 }
 
-fn lm_78(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_stateDerVectorName: Tpl::Text, mut a_complexStartExpressionsForScalarsUnused: Tpl::Text, mut a_generateFMUModelDescription: bool, mut a_indexForUndefinedReferences: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_stateDerVectorName: Tpl::Text = a_stateDerVectorName;
-    let mut a_complexStartExpressionsForScalarsUnused: Tpl::Text = a_complexStartExpressionsForScalarsUnused;
-    for mut lstElt_78 in &*items.clone() {
-        let mut lstElt_78 = lstElt_78.clone();
-        (txt, a_stateDerVectorName, a_complexStartExpressionsForScalarsUnused) = (match lstElt_78.clone() {
-        mut i_var => {
+fn lm_78(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressionsForScalarsUnused: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_indexForUndefinedReferences: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressionsForScalarsUnused, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping, in_a_simCode)) {
+        (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_complexStartExpressionsForScalarsUnused, _, _, _, _) => {
+            return Ok((txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressionsForScalarsUnused.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_stateDerVectorName, a_complexStartExpressionsForScalarsUnused, a_generateFMUModelDescription, a_indexForUndefinedReferences, a_varToArrayIndexMapping, a_simCode) => {
+            let mut txt = (*txt).clone();
+            let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
+            let mut a_complexStartExpressionsForScalarsUnused = (*a_complexStartExpressionsForScalarsUnused).clone();
             (txt, a_complexStartExpressionsForScalarsUnused, a_stateDerVectorName) = scalarVariableXML(txt.clone(), a_simCode.clone(), i_var.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressionsForScalarsUnused.clone(), a_stateDerVectorName.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_stateDerVectorName.clone(), a_complexStartExpressionsForScalarsUnused.clone())
+            { (in_txt, in_items, in_a_stateDerVectorName, in_a_complexStartExpressionsForScalarsUnused, in_a_generateFMUModelDescription, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping, in_a_simCode) = (txt.clone(), rest.clone(), a_stateDerVectorName.clone(), a_complexStartExpressionsForScalarsUnused.clone(), a_generateFMUModelDescription.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone(), a_simCode.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_stateDerVectorName, a_complexStartExpressionsForScalarsUnused))
 }
 
 fn fun_79(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_complexStartExpressions: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_isFixed: bool, mut in_a_nominalValue: Option<Arc<DAE::Exp>>, mut in_a_initialValue: Option<Arc<DAE::Exp>>, mut in_a_maxValue: Option<Arc<DAE::Exp>>, mut in_a_minValue: Option<Arc<DAE::Exp>>, mut in_a_displayUnit: ArcStr, mut in_a_unit: ArcStr, mut in_a_aliasvar: SimCodeVar::AliasVariable, mut in_a_name: Arc<DAE::ComponentRef>, mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
-    (out_txt, out_a_stateDerVectorName, out_a_complexStartExpressions) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_generateFMUModelDescription.clone(), in_a_simVar.clone(), in_a_stateDerVectorName.clone(), in_a_complexStartExpressions.clone(), in_a_type__.clone(), in_a_isFixed.clone(), in_a_nominalValue.clone(), in_a_initialValue.clone(), in_a_maxValue.clone(), in_a_minValue.clone(), in_a_displayUnit.clone(), in_a_unit.clone(), in_a_aliasvar.clone(), in_a_name.clone(), in_a_simCode.clone())) {
+    (out_txt, out_a_stateDerVectorName, out_a_complexStartExpressions) = (::match_deref::match_deref! { match &((in_txt, in_a_generateFMUModelDescription, in_a_simVar, in_a_stateDerVectorName, in_a_complexStartExpressions, in_a_type__, in_a_isFixed, in_a_nominalValue, in_a_initialValue, in_a_maxValue, in_a_minValue, in_a_displayUnit, in_a_unit, in_a_aliasvar, in_a_name, in_a_simCode)) {
         (txt, false, _, a_stateDerVectorName, a_complexStartExpressions, a_type__, a_isFixed, a_nominalValue, a_initialValue, a_maxValue, a_minValue, a_displayUnit, a_unit, a_aliasvar, a_name, a_simCode) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -647,7 +679,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_s
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_varToArrayIndexMapping.clone(), in_a_indexForUndefinedReferences.clone(), in_a_generateFMUModelDescription.clone(), in_a_complexStartExpressions.clone(), in_a_stateDerVectorName.clone())) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_simVar, in_a_simCode, in_a_varToArrayIndexMapping, in_a_indexForUndefinedReferences, in_a_generateFMUModelDescription, in_a_complexStartExpressions, in_a_stateDerVectorName)) {
         (txt, i_simVar @ SimCodeVar::SimVar { type_: i_type__ @ Deref @ DAE::Type::T_ARRAY { ty: _, .. }, name: i_name, aliasvar: i_aliasvar, unit: i_unit, displayUnit: i_displayUnit, minValue: i_minValue, maxValue: i_maxValue, initialValue: i_initialValue, nominalValue: i_nominalValue, isFixed: i_isFixed, .. }, a_simCode, a_varToArrayIndexMapping, a_indexForUndefinedReferences, a_generateFMUModelDescription, a_complexStartExpressions, a_stateDerVectorName) => {
             let mut ret_2: Arc<metamodelica::List<SimCodeVar::SimVar>>;
             let mut l_complexStartExpressionsForScalarsUnused: Tpl::Text;
@@ -691,13 +723,13 @@ pub(crate) fn scalarVariableXML(mut txt: Tpl::Text, mut a_simCode: SimCode::SimC
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_80(txt.clone(), a_simVar.clone(), a_simCode.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_generateFMUModelDescription.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_80(txt, a_simVar, a_simCode, a_varToArrayIndexMapping, (a_indexForUndefinedReferences).clone(), a_generateFMUModelDescription, a_complexStartExpressions, a_stateDerVectorName)?;
     Ok((out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName))
 }
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_a_comment: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comment.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comment)) {
         (txt, Deref @ "") => {
             txt.clone()
         },
@@ -717,7 +749,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_comment: ArcStr) -> Result<Tpl::Text> 
 
 fn fun_83(mut in_txt: Tpl::Text, mut in_a_hideResult: Option<bool>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_hideResult.clone()) {
+    out_txt = (match (in_txt, in_a_hideResult) {
         (mut txt, Some(mut i_bval)) => {
             txt = Tpl::writeStr(txt.clone(), (Tpl::booleanString(i_bval.clone())).clone())?;
             txt.clone()
@@ -731,7 +763,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_hideResult: Option<bool>) -> Result<Tp
 
 fn fun_84(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut in_a_isValueChangeable: bool, mut in_a_isDiscrete: bool, mut in_a_hr: Tpl::Text, mut in_a_isProtected: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_generateFMUModelDescription.clone(), in_a_isValueChangeable.clone(), in_a_isDiscrete.clone(), in_a_hr.clone(), in_a_isProtected.clone()) {
+    out_txt = (match (in_txt, in_a_generateFMUModelDescription, in_a_isValueChangeable, in_a_isDiscrete, in_a_hr, in_a_isProtected) {
         (mut txt, false, mut a_isValueChangeable, mut a_isDiscrete, mut a_hr, mut a_isProtected) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("isProtected=\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (Tpl::booleanString(a_isProtected.clone())).clone())?;
@@ -753,7 +785,7 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_generateFMUModelDescription: bool, mut
 
 fn fun_85(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_simCode: SimCode::SimCode, mut in_a_generateFMUModelDescription: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_generateFMUModelDescription.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_simVar, in_a_simCode, in_a_generateFMUModelDescription)) {
         (txt, i_simVar @ SimCodeVar::SimVar { source: Deref @ DAE::ElementSource { info: _, .. }, aliasvar: i_aliasvar, causality: i_causality, varKind: i_varKind, comment: i_comment, hideResult: i_hideResult, isProtected: i_isProtected, isDiscrete: i_isDiscrete, isValueChangeable: i_isValueChangeable, name: i_name, .. }, a_simCode, a_generateFMUModelDescription) => {
             let mut ret_10: ArcStr;
             let mut ret_9: ArcStr;
@@ -804,13 +836,13 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_s
 
 pub(crate) fn scalarVariableAttributeXML(mut txt: Tpl::Text, mut a_simVar: SimCodeVar::SimVar, mut a_simCode: SimCode::SimCode, mut a_indexForUndefinedReferences: ArcStr, mut a_generateFMUModelDescription: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_85(txt.clone(), a_simVar.clone(), a_simCode.clone(), a_generateFMUModelDescription.clone())?;
+    out_txt = fun_85(txt, a_simVar, a_simCode, a_generateFMUModelDescription)?;
     Ok(out_txt)
 }
 
 pub(crate) fn getAliasAttribute(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_aliasvar.clone()) {
+    out_txt = (match (in_txt, in_a_aliasvar) {
         (mut txt, SimCodeVar::AliasVariable::NOALIAS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("noAlias")).clone() }))?;
             txt.clone()
@@ -835,7 +867,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type__.clone(), in_a_simCode.clone(), in_a_simVarCref.clone(), in_a_simVarAlias.clone(), in_a_unit.clone(), in_a_displayUnit.clone(), in_a_minValue.clone(), in_a_maxValue.clone(), in_a_startValue.clone(), in_a_nominalValue.clone(), in_a_isFixed.clone(), in_a_complexStartExpressions.clone(), in_a_stateDerVectorName.clone())) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_type__, in_a_simCode, in_a_simVarCref, in_a_simVarAlias, in_a_unit, in_a_displayUnit, in_a_minValue, in_a_maxValue, in_a_startValue, in_a_nominalValue, in_a_isFixed, in_a_complexStartExpressions, in_a_stateDerVectorName)) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_simCode, a_simVarCref, a_simVarAlias, a_unit, a_displayUnit, a_minValue, a_maxValue, a_startValue, _, a_isFixed, a_complexStartExpressions, a_stateDerVectorName) => {
             let mut l_disp__: Tpl::Text;
             let mut l_unit__: Tpl::Text;
@@ -1008,29 +1040,30 @@ pub(crate) fn ScalarVariableType(mut txt: Tpl::Text, mut a_simCode: SimCode::Sim
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_88(txt.clone(), a_type__.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), (a_unit.clone()).clone(), (a_displayUnit.clone()).clone(), a_minValue.clone(), a_maxValue.clone(), a_startValue.clone(), a_nominalValue.clone(), a_isFixed.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_88(txt, a_type__, a_simCode, a_simVarCref, a_simVarAlias, (a_unit).clone(), (a_displayUnit).clone(), a_minValue, a_maxValue, a_startValue, a_nominalValue, a_isFixed, a_complexStartExpressions, a_stateDerVectorName)?;
     Ok((out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName))
 }
 
-fn lm_90(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_90 in &*items.clone() {
-        let mut lstElt_90 = lstElt_90.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_90.clone()) {
-        i_elem => {
+fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_elem, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = CodegenUtil::initValXml(txt.clone(), i_elem.clone(), (literal!("&quot;")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_91(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_array: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_attr__name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_array.clone(), in_a_attr__name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_array, in_a_attr__name)) {
         (txt, false, _, _) => {
             txt.clone()
         },
@@ -1053,7 +1086,7 @@ fn fun_91(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_array: Arc<metamode
 
 fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_attr__name: ArcStr, mut in_a_expr: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_attr__name.clone(), in_a_expr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_attr__name, in_a_expr)) {
         (txt, false, _, _) => {
             txt.clone()
         },
@@ -1069,7 +1102,7 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_attr__name: ArcStr,
 
 pub(crate) fn attributeString(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_attr__name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_attr__name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_attr__name)) {
         (txt, i_exp @ Deref @ DAE::Exp::ICONST { integer: _ }, a_attr__name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -1144,7 +1177,7 @@ pub(crate) fn attributeString(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>
 
 pub(crate) fn attributeOptionString(mut in_txt: Tpl::Text, mut in_a_exp__opt: Option<Arc<DAE::Exp>>, mut in_a_attr__name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp__opt.clone(), in_a_attr__name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp__opt, in_a_attr__name)) {
         (txt, Some(i_exp), a_attr__name) => {
             let mut txt = (*txt).clone();
             txt = attributeString(txt.clone(), i_exp.clone(), (a_attr__name.clone()).clone())?;
@@ -1160,7 +1193,7 @@ pub(crate) fn attributeOptionString(mut in_txt: Tpl::Text, mut in_a_exp__opt: Op
 
 pub(crate) fn unitString(mut in_txt: Tpl::Text, mut in_a_unit: ArcStr, mut in_a_attr__name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_unit.clone(), in_a_attr__name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_unit, in_a_attr__name)) {
         (txt, Deref @ "", _) => {
             txt.clone()
         },
@@ -1185,7 +1218,7 @@ fn fun_96(mut in_txt: Tpl::Text, mut in_a_simVarAlias: SimCodeVar::AliasVariable
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simVarAlias.clone(), in_a_type.clone(), in_a_complexStartExpressions.clone(), in_a_exp.clone(), in_a_stateDerVectorName.clone(), in_a_simCode.clone(), in_a_simVarCref.clone())) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_simVarAlias, in_a_type, in_a_complexStartExpressions, in_a_exp, in_a_stateDerVectorName, in_a_simCode, in_a_simVarCref)) {
         (txt, SimCodeVar::AliasVariable::NOALIAS { .. }, a_type, a_complexStartExpressions, a_exp, a_stateDerVectorName, a_simCode, a_simVarCref) => {
             let mut l_expression: Tpl::Text;
             let mut l_crefStr: Tpl::Text;
@@ -1225,7 +1258,7 @@ fn fun_97(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_startString: Tpl:
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_startString.clone(), in_a_type.clone(), in_a_complexStartExpressions.clone(), in_a_exp.clone(), in_a_stateDerVectorName.clone(), in_a_simCode.clone(), in_a_simVarCref.clone(), in_a_simVarAlias.clone())) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_startString, in_a_type, in_a_complexStartExpressions, in_a_exp, in_a_stateDerVectorName, in_a_simCode, in_a_simVarCref, in_a_simVarAlias)) {
         (txt, Deref @ "", _, a_type, a_complexStartExpressions, a_exp, a_stateDerVectorName, a_simCode, a_simVarCref, a_simVarAlias) => {
             let mut l_unsued: Tpl::Text;
             let mut a_complexStartExpressions = (*a_complexStartExpressions).clone();
@@ -1247,7 +1280,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_a_startValue: Option<Arc<DAE::Exp>>, mut
     let mut out_txt: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_startValue.clone(), in_a_simCode.clone(), in_a_simVarCref.clone(), in_a_simVarAlias.clone(), in_a_type.clone(), in_a_complexStartExpressions.clone(), in_a_stateDerVectorName.clone())) {
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt, in_a_startValue, in_a_simCode, in_a_simVarCref, in_a_simVarAlias, in_a_type, in_a_complexStartExpressions, in_a_stateDerVectorName)) {
         (txt, Some(i_exp), a_simCode, a_simVarCref, a_simVarAlias, a_type, a_complexStartExpressions, a_stateDerVectorName) => {
             let mut str_1: ArcStr;
             let mut l_startString: Tpl::Text;
@@ -1275,84 +1308,92 @@ pub(crate) fn ScalarVariableTypeStartAttribute(mut txt: Tpl::Text, mut a_simCode
     let mut out_a_type: Tpl::Text;
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
-    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_98(txt.clone(), a_startValue.clone(), a_simCode.clone(), a_simVarCref.clone(), a_simVarAlias.clone(), a_type.clone(), a_complexStartExpressions.clone(), a_stateDerVectorName.clone())?;
-    out_a_type = a_type.clone();
+    (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = fun_98(txt, a_startValue, a_simCode, a_simVarCref, a_simVarAlias, a_type.clone(), a_complexStartExpressions, a_stateDerVectorName)?;
+    out_a_type = a_type;
     Ok((out_txt, out_a_type, out_a_complexStartExpressions, out_a_stateDerVectorName))
 }
 
-fn lm_100(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_100 in &*items.clone() {
-        let mut lstElt_100 = lstElt_100.clone();
-        txt = (match lstElt_100.clone() {
-        mut i_it => {
-            txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
-            txt.clone()
+fn lm_100(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_101(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_indexForUndefinedReferences: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>))) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_101 in &*items.clone() {
-        let mut lstElt_101 = lstElt_101.clone();
-        txt = (match lstElt_101.clone() {
-        SimCodeVar::SimVar { name: ref i_v_name, .. } => {
+fn lm_101(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_indexForUndefinedReferences: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>))) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping)) {
+        (txt, Deref @ metamodelica::List::Nil, _, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_v_name, .. }, tail: rest }, a_indexForUndefinedReferences, a_varToArrayIndexMapping) => {
             let mut ret_0: Arc<metamodelica::List<ArcStr>>;
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Var type=\"double\" index=\"")).clone() }))?;
             ret_0 = SimCodeUtil::getVarIndexListByMapping(a_varToArrayIndexMapping.clone(), i_v_name.clone(), true, (a_indexForUndefinedReferences.clone()).clone())?;
             txt = lm_100(txt.clone(), ret_0.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" />")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping) = (txt.clone(), rest.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_indexForUndefinedReferences, a_varToArrayIndexMapping) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping) = (txt.clone(), rest.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_102(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_102 in &*items.clone() {
-        let mut lstElt_102 = lstElt_102.clone();
-        txt = (match lstElt_102.clone() {
-        mut i_it => {
+fn lm_102(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_103(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut a_indexForUndefinedReferences: ArcStr, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>))) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_103 in &*items.clone() {
-        let mut lstElt_103 = lstElt_103.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_103.clone()) {
-        i_name => {
+fn lm_103(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut in_a_indexForUndefinedReferences: ArcStr, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>))) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping)) {
+        (txt, Deref @ metamodelica::List::Nil, _, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_name, tail: rest }, a_indexForUndefinedReferences, a_varToArrayIndexMapping) => {
             let mut ret_0: Arc<metamodelica::List<ArcStr>>;
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Var type=\"double\" index=\"")).clone() }))?;
             ret_0 = SimCodeUtil::getVarIndexListByMapping(a_varToArrayIndexMapping.clone(), i_name.clone(), true, (a_indexForUndefinedReferences.clone()).clone())?;
             txt = lm_102(txt.clone(), ret_0.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" />")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_indexForUndefinedReferences, in_a_varToArrayIndexMapping) = (txt.clone(), rest.clone(), (a_indexForUndefinedReferences.clone()).clone(), a_varToArrayIndexMapping.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_104(mut in_txt: Tpl::Text, mut in_a_eqs: Arc<SimCode::SimEqSystem>, mut in_a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut in_a_indexForUndefinedReferences: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqs.clone(), in_a_varToArrayIndexMapping.clone(), in_a_indexForUndefinedReferences.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_eqs, in_a_varToArrayIndexMapping, in_a_indexForUndefinedReferences)) {
         (txt, Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: Deref @ SimCode::LinearSystem { index: i_ls_index, vars: i_ls_vars, .. }, .. }, a_varToArrayIndexMapping, a_indexForUndefinedReferences) => {
             let mut ret_0: i32;
             let mut txt = (*txt).clone();
@@ -1399,61 +1440,65 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_eqs: Arc<SimCode::SimEqSystem>, mut i
 
 pub(crate) fn algLoopXML(mut txt: Tpl::Text, mut a_eqs: Arc<SimCode::SimEqSystem>, mut a_simCode: SimCode::SimCode, mut a_varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), mut a_indexForUndefinedReferences: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_104(txt.clone(), a_eqs.clone(), a_varToArrayIndexMapping.clone(), (a_indexForUndefinedReferences.clone()).clone())?;
+    out_txt = fun_104(txt, a_eqs, a_varToArrayIndexMapping, (a_indexForUndefinedReferences).clone())?;
     Ok(out_txt)
 }
 
-fn lm_106(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::JacobianMatrix>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_106 in &*items.clone() {
-        let mut lstElt_106 = lstElt_106.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_106.clone()) {
-        Deref @ SimCode::JacobianMatrix { columns: i_mat, seedVars: i_vars, matrixName: i_name, sparsity: i_sparsepattern, coloredCols: i_colorList, maxColorCols: i_maxColor, jacobianIndex: i_jacIndex, .. } => {
+fn lm_106(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::JacobianMatrix>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianMatrix { columns: i_mat, seedVars: i_vars, matrixName: i_name, sparsity: i_sparsepattern, coloredCols: i_colorList, maxColorCols: i_maxColor, jacobianIndex: i_jacIndex, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = jacobianMatrixXML(txt.clone(), i_jacIndex.clone(), i_mat.clone(), i_vars.clone(), (i_name.clone()).clone(), i_sparsepattern.clone(), i_colorList.clone(), i_maxColor.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn jacobianMatricesXML(mut txt: Tpl::Text, mut a_JacobianMatrices: Arc<metamodelica::List<Arc<SimCode::JacobianMatrix>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_jacMats: Tpl::Text;
     l_jacMats = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_jacMats = lm_106(l_jacMats.clone(), a_JacobianMatrices.clone())?;
-    l_jacMats = Tpl::popIter(l_jacMats.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_jacMats.clone())?;
+    l_jacMats = lm_106(l_jacMats, a_JacobianMatrices)?;
+    l_jacMats = Tpl::popIter(l_jacMats)?;
+    out_txt = Tpl::writeText(txt, l_jacMats)?;
     Ok(out_txt)
 }
 
-fn lm_108(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::JacobianColumn>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_108 in &*items.clone() {
-        let mut lstElt_108 = lstElt_108.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_108.clone()) {
-        Deref @ SimCode::JacobianColumn { numberOfResultVars: i_nRows, .. } => {
+fn lm_108(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::JacobianColumn>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { numberOfResultVars: i_nRows, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_nRows.clone())).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_109(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_i__index: i32, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_i__index.clone(), in_a_index.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_i__index, in_a_index)) {
         (txt, Deref @ "1", _, a_index) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Entry indexX=\"")).clone() }))?;
@@ -1477,29 +1522,33 @@ fn fun_109(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_i__index: i32, m
     Ok(out_txt)
 }
 
-fn lm_110(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_index: i32, mut a_indexColumn: Tpl::Text) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_110 in &*items.clone() {
-        let mut lstElt_110 = lstElt_110.clone();
-        txt = (match lstElt_110.clone() {
-        mut i_i__index => {
+fn lm_110(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_index: i32, mut in_a_indexColumn: Tpl::Text) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_index, in_a_indexColumn)) {
+        (txt, Deref @ metamodelica::List::Nil, _, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_i__index, tail: rest }, a_index, a_indexColumn) => {
             let mut str_0: ArcStr;
+            let mut txt = (*txt).clone();
             str_0 = (Tpl::textString(a_indexColumn.clone())?).clone();
             txt = fun_109(txt.clone(), (str_0.clone()).clone(), i_i__index.clone(), a_index.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_index, in_a_indexColumn) = (txt.clone(), rest.clone(), a_index.clone(), a_indexColumn.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_111(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, mut a_indexColumn: Tpl::Text) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_111 in &*items.clone() {
-        let mut lstElt_111 = lstElt_111.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_111.clone()) {
-        (i_index, i_indexes) => {
+fn lm_111(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, mut in_a_indexColumn: Tpl::Text) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_indexColumn)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: (i_index, i_indexes), tail: rest }, a_indexColumn) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<Column>\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 19 }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1509,12 +1558,11 @@ fn lm_111(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, Arc<metamo
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</Column>")).clone() }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_indexColumn) = (txt.clone(), rest.clone(), a_indexColumn.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn jacobianMatrixXML(mut txt: Tpl::Text, mut a_indexJacobian: i32, mut a_jacobianColumn: Arc<metamodelica::List<Arc<SimCode::JacobianColumn>>>, mut a_seedVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_matrixName: ArcStr, mut a_sparsepattern: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, mut a_colorList: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut a_maxColor: i32) -> Result<Tpl::Text> {
@@ -1522,19 +1570,19 @@ pub(crate) fn jacobianMatrixXML(mut txt: Tpl::Text, mut a_indexJacobian: i32, mu
     let mut l_jacvals: Tpl::Text;
     let mut l_indexColumn: Tpl::Text;
     l_indexColumn = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_indexColumn = lm_108(l_indexColumn.clone(), a_jacobianColumn.clone())?;
-    l_indexColumn = Tpl::popIter(l_indexColumn.clone())?;
+    l_indexColumn = lm_108(l_indexColumn, a_jacobianColumn)?;
+    l_indexColumn = Tpl::popIter(l_indexColumn)?;
     l_jacvals = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_jacvals = lm_111(l_jacvals.clone(), a_sparsepattern.clone(), l_indexColumn.clone())?;
-    l_jacvals = Tpl::popIter(l_jacvals.clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Matrix name=\"")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_matrixName.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\">\n")).clone(), (literal!("  <Column>\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_jacvals.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("  </Column>\n")).clone(), (literal!("</Matrix>")).clone()], lastHasNewLine: false }))?;
+    l_jacvals = lm_111(l_jacvals, a_sparsepattern, l_indexColumn)?;
+    l_jacvals = Tpl::popIter(l_jacvals)?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Matrix name=\"")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_matrixName).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\">\n")).clone(), (literal!("  <Column>\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;
+    out_txt = Tpl::writeText(out_txt, l_jacvals)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("  </Column>\n")).clone(), (literal!("</Matrix>")).clone()], lastHasNewLine: false }))?;
     Ok(out_txt)
 }
 

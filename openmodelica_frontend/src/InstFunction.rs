@@ -92,7 +92,7 @@ pub(crate) fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FC
     let mut dae: DAE::DAElist;
     let mut ciState: ClassInf::State;
     (outCache, outEnv, outIH, dae, ciState) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), r#impl.clone());
+        let __mc_input = (inCache, inEnv.clone(), inIH, r#impl);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, false) => {
@@ -160,7 +160,7 @@ pub(crate) fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FC
 }
 
 fn checkExternalObjectMod(mut inMod: Arc<DAE::Mod>, mut inClassName: ArcStr) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inMod.clone()) {
+    let () = (::match_deref::match_deref! { match &(inMod) {
         Deref @ DAE::Mod::NOMOD { .. } => {
             ()
         },
@@ -170,7 +170,7 @@ fn checkExternalObjectMod(mut inMod: Arc<DAE::Mod>, mut inClassName: ArcStr) -> 
         Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { ident: id, r#mod }, tail: _ }, .. } => {
             let mut info: SourceInfo;
             info = Mod::getModInfo(r#mod.clone());
-            Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(id.clone()).clone(), (inClassName.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(id.clone()).clone(), (inClassName).clone()], info.clone())?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -182,7 +182,7 @@ fn instantiateExternalObjectDestructor(mut inCache: FCore::Cache, mut env: FCore
     let mut outCache: FCore::Cache;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     (outCache, outIH) = 'mc: {
-        let __mc_input = (inCache.clone(), inIH.clone());
+        let __mc_input = (inCache, inIH);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih) => {
@@ -214,7 +214,7 @@ fn instantiateExternalObjectConstructor(mut inCache: FCore::Cache, mut env: FCor
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     let mut outType: Arc<DAE::Type>;
     (outCache, outIH, outType) = 'mc: {
-        let __mc_input = (inCache.clone(), inIH.clone());
+        let __mc_input = (inCache, inIH);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih) => {
@@ -248,7 +248,7 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
-    (outCache, outEnv, outIH) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone())) {
+    (outCache, outEnv, outIH) = (::match_deref::match_deref! { match &((inCache, inEnv, inIH, inMod, inPrefix, inClass, inInstDims)) {
         (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_RECORD { isOperator: _ }, partialPrefix: pPrefix, .. }, inst_dims) => {
             let mut ty1: Arc<DAE::Type>;
             let mut cenv: FCore::Graph;
@@ -304,7 +304,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     let mut funcs: Arc<metamodelica::List<DAE::Function>>;
     (outCache, outEnv, outIH, funcs) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone());
+        let __mc_input = (inCache, inEnv, inIH, inMod, inPrefix, inClass.clone(), inInstDims);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { classDef: cd, prefixes: Deref @ SCode::Prefixes { visibility, .. }, partialPrefix, name: n, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: funcRest }, info, .. }, inst_dims) => {
@@ -327,7 +327,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let false = (SCodeUtil::isExternalFunctionRestriction(funcRest.clone())) else { bail!("pattern mismatch") };
                     isImpure = SCodeUtil::isImpureFunctionRestriction(funcRest.clone());
                     c = if (Config::acceptMetaModelicaGrammar()?) {inClass.clone()} else {SCodeUtil::setClassPartialPrefix(openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, inClass.clone())?};
-                    cs = if (instFunctionTypeOnly.clone()) {openmodelica_frontend_inst::InstTypes::CallingScope::TYPE_CALL} else {openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL};
+                    cs = if (instFunctionTypeOnly) {openmodelica_frontend_inst::InstTypes::CallingScope::TYPE_CALL} else {openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL};
                     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Inst::instClass(cache.clone(), env.clone(), ih.clone(), UnitAbsynBuilder::emptyInstStore(), r#mod.clone(), pre.clone(), c.clone(), inst_dims.clone(), true, cs.clone(), ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?) {
                         (__pa0, __pa1, __pa2, _, DAE::DAElist { elementLst: __pa3 }, _, __pa4, _, _, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
@@ -351,7 +351,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     partialPrefixBool = SCodeUtil::partialBool(partialPrefix.clone())?;
                     daeElts = InstUtil::optimizeFunctionCheckForLocals(fpath.clone(), daeElts.clone(), None, metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
                     InstUtil::checkFunctionDefUse(daeElts.clone(), info.clone())?;
-                    if false && Config::acceptMetaModelicaGrammar()? && !(instFunctionTypeOnly.clone()) {
+                    if false && Config::acceptMetaModelicaGrammar()? && !(instFunctionTypeOnly) {
                         InstUtil::checkFunctionInputUsed(daeElts.clone(), None, (AbsynUtil::pathString(fpath.clone(), (literal!(".")).clone(), true, false)?).clone())?;
                     }
                     Ok((cache.clone(), env_1.clone(), ih.clone(), list![DAE::Function::FUNCTION { path: fpath.clone(), functions: metamodelica::cons(DAE::FunctionDefinition::FUNCTION_DEF { body: ({
@@ -451,14 +451,14 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
 
 fn instantiateDerivativeFuncs(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut funcs: Arc<metamodelica::List<DAE::FunctionDefinition>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<FCore::Cache> {
     let mut outCache: FCore::Cache;
-    outCache = instantiateDerivativeFuncs2(cache.clone(), env.clone(), ih.clone(), DAEUtil::getDerivativePaths(funcs.clone()), path.clone(), info.clone())?;
+    outCache = instantiateDerivativeFuncs2(cache, env, ih, DAEUtil::getDerivativePaths(funcs), path, info)?;
     Ok(outCache)
 }
 
 fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPaths: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<FCore::Cache> {
     let mut outCache: FCore::Cache;
     outCache = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPaths.clone());
+        let __mc_input = (inCache, inEnv.clone(), inIH, inPaths.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, Deref @ metamodelica::List::Nil) => {
@@ -532,7 +532,7 @@ pub(crate) fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut i
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     (outCache, outEnv, outIH) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inClass.clone());
+        let __mc_input = (inCache, inEnv.clone(), inIH, inClass.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: _ } }, classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. }) => {
@@ -626,7 +626,7 @@ fn instOverloadedFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     let mut outFns: Arc<metamodelica::List<DAE::Function>>;
     (outCache, outEnv, outIH, outFns) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inAbsynPathLst.clone());
+        let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inAbsynPathLst);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, ih, Deref @ metamodelica::List::Nil) => {
@@ -689,14 +689,14 @@ fn instExtDecl(mut cache: FCore::Cache, mut env: FCore::Graph, mut iH: Arc<metam
     let mut extdecl: Arc<SCode::ExternalDecl> = inScExtDecl.clone();
     ann = InstUtil::instExtGetAnnotation(extdecl.clone())?;
     lang = (InstUtil::instExtGetLang(extdecl.clone())?).clone();
-    fname = (InstUtil::instExtGetFname(extdecl.clone(), (name.clone()).clone())?).clone();
+    fname = (InstUtil::instExtGetFname(extdecl.clone(), (name).clone())?).clone();
     if !(InstUtil::isExtExplicitCall(extdecl.clone())) {
-        (fargs, rettype) = instExtMakeDefaultExternalCall(inElements.clone(), funcType.clone(), (lang.clone()).clone(), info.clone())?;
+        (fargs, rettype) = instExtMakeDefaultExternalCall(inElements, funcType, (lang.clone()).clone(), info)?;
     } else {
-        (cache, fargs) = InstUtil::instExtGetFargs(cache.clone(), env.clone(), extdecl.clone(), r#impl.clone(), pre.clone(), info.clone())?;
-        (cache, rettype) = InstUtil::instExtGetRettype(cache.clone(), env.clone(), extdecl.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+        (cache, fargs) = InstUtil::instExtGetFargs(cache, env.clone(), extdecl.clone(), r#impl, pre.clone(), info.clone())?;
+        (cache, rettype) = InstUtil::instExtGetRettype(cache, env, extdecl, r#impl, pre, info)?;
     }
-    daeextdecl = DAE::ExternalDecl { name: (fname.clone()).clone(), args: fargs.clone(), returnArg: rettype.clone(), language: (lang.clone()).clone(), ann: ann.clone() };
+    daeextdecl = DAE::ExternalDecl { name: (fname).clone(), args: fargs, returnArg: rettype, language: (lang).clone(), ann: ann };
     Ok((cache, iH, daeextdecl))
 }
 
@@ -713,7 +713,7 @@ fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::
     (rettype, singleOutput) = (::match_deref::match_deref! { match &(funcType.clone()) {
         Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_ARRAY { .. }, .. } => {
             if lang.clone() != literal!("builtin") {
-                Error::addSourceMessage(Error::EXT_FN_SINGLE_RETURN_ARRAY.clone(), list![(lang.clone()).clone()], info.clone())?;
+                Error::addSourceMessage(Error::EXT_FN_SINGLE_RETURN_ARRAY.clone(), list![(lang).clone()], info)?;
             }
             (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false)
         },
@@ -724,29 +724,29 @@ fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::
             (DAE::ExtArg::EXTARG { componentRef: DAEUtil::varCref(List::find(elements.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::isOutputVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?)?, direction: openmodelica_ast::Absyn::Direction::OUTPUT, type_: ty.clone() }, true)
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("instExtMakeDefaultExternalCall failed for ")); __mm_s.push_str(&*TypesDump::unparseType(funcType.clone())?); ArcStr::from(__mm_s) }).clone(), info.clone())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("instExtMakeDefaultExternalCall failed for ")); __mm_s.push_str(&*TypesDump::unparseType(funcType)?); ArcStr::from(__mm_s) }).clone(), info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    for mut elt in &*elements.clone() {
+    for mut elt in &*elements {
         let mut elt = elt.clone();
         fargs = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::OUTPUT { .. }, .. } if (!(singleOutput.clone())) => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
+        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::OUTPUT { .. }, .. } if (!(singleOutput)) => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
         Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT { .. }, .. } => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::INPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
         Deref @ DAE::Element::VAR { direction: DAE::VarDirection::BIDIR { .. }, .. } => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
         _ => fargs.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    fargs = fargs.clone().reverse();
+    fargs = fargs.reverse();
     Ok((fargs, rettype))
 }
 
 fn addExtVarToCall(mut cr: Arc<DAE::ComponentRef>, mut dir: Absyn::Direction, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut fargs: Arc<metamodelica::List<DAE::ExtArg>>) -> Result<Arc<metamodelica::List<DAE::ExtArg>>> {
     let mut fargs: Arc<metamodelica::List<DAE::ExtArg>> = fargs;
-    fargs = metamodelica::cons(DAE::ExtArg::EXTARG { componentRef: cr.clone(), direction: dir.clone(), type_: ComponentReference::crefTypeFull(cr.clone())? }, fargs.clone());
-    for mut dim in 1..=(dims.clone().len() as i32) {
+    fargs = metamodelica::cons(DAE::ExtArg::EXTARG { componentRef: cr.clone(), direction: dir, type_: ComponentReference::crefTypeFull(cr.clone())? }, fargs);
+    for mut dim in 1..=(dims.len() as i32) {
         fargs = metamodelica::cons(DAE::ExtArg::EXTARGSIZE { componentRef: cr.clone(), type_: ComponentReference::crefTypeFull(cr.clone())?, exp: Arc::new(DAE::Exp::ICONST { integer: dim.clone() }) }, fargs.clone());
     }
     Ok(fargs)
@@ -842,7 +842,7 @@ pub(crate) fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv:
 pub(crate) fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> FCore::Cache {
     let mut outCache: FCore::Cache;
     outCache = 'mc: {
-        let __mc_input = (inCache.clone(), inType.clone());
+        let __mc_input = (inCache.clone(), inType);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path }, .. }) => {
@@ -898,7 +898,7 @@ pub(crate) fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv:
 
 fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(elt.clone()) {
+    b = (::match_deref::match_deref! { match &(elt) {
         Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, attributes: SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, variability: SCode::Variability::VAR { .. }, .. }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -907,9 +907,9 @@ fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {
 }
 
 fn checkExtObjOutput(mut inType: Arc<DAE::Type>, mut info: SourceInfo) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inType.clone()) {
+    let () = (::match_deref::match_deref! { match &(inType) {
         Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, path, .. } => {
-            ::match_deref::match_deref! { match &(Types::traverseType(ty.clone(), (path.clone(), info.clone(), true), (std::sync::Arc::new(checkExtObjOutputWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool)) -> Result<(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool))> + 'static>))?) {
+            ::match_deref::match_deref! { match &(Types::traverseType(ty.clone(), (path.clone(), info, true), (std::sync::Arc::new(checkExtObjOutputWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool)) -> Result<(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool))> + 'static>))?) {
                 (_, (_, _, true)) => (),
                 _ => bail!("pattern mismatch"),
             } };
@@ -923,7 +923,7 @@ fn checkExtObjOutput(mut inType: Arc<DAE::Type>, mut info: SourceInfo) -> Result
 fn checkExtObjOutputWork(mut ty: Arc<DAE::Type>, mut inTpl: (Arc<Absyn::Path>, SourceInfo, bool)) -> Result<(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool))> {
     let mut oty: Arc<DAE::Type> = ty.clone();
     let mut outTpl: (Arc<Absyn::Path>, SourceInfo, bool) = (Arc::new(<Absyn::Path as ::std::default::Default>::default()), <SourceInfo as ::std::default::Default>::default(), false);
-    outTpl = (::match_deref::match_deref! { match &((ty.clone(), inTpl.clone())) {
+    outTpl = (::match_deref::match_deref! { match &((ty, inTpl.clone())) {
         (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: path1 }, .. }, (path2, info, true)) => {
             let mut str1: ArcStr;
             let mut str2: ArcStr;
@@ -934,11 +934,11 @@ fn checkExtObjOutputWork(mut ty: Arc<DAE::Type>, mut inTpl: (Arc<Absyn::Path>, S
             str2 = AbsynUtil::pathStringNoQual(path1.clone(), (literal!(".")).clone(), false, false)?;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
             Error::assertionOrAddSourceMessage(b.clone(), Error::FUNCTION_RETURN_EXT_OBJ.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
-            outTpl = if (b.clone()) {inTpl.clone()} else {(path2.clone(), info.clone(), false)};
-            outTpl.clone()
+            outTpl = if (b.clone()) {inTpl} else {(path2.clone(), info.clone(), false)};
+            outTpl
         },
         _ => {
-            inTpl.clone()
+            inTpl
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

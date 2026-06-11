@@ -51,7 +51,7 @@ use openmodelica_frontend_types::SCode;
 pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> DAE::InlineType {
     let mut outInlineType: DAE::InlineType;
     outInlineType = 'mc: {
-        let __mc_input = cmt.clone();
+        let __mc_input = cmt;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: smlst, .. } }), .. } => {
@@ -77,7 +77,7 @@ fn isInlineFunc2(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) 
     let mut res: DAE::InlineType;
     let mut stop: bool = false;
     res = openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE;
-    for mut tp in &*inSubModList.clone() {
+    for mut tp in &*inSubModList {
         let mut tp = tp.clone();
         stop = (::match_deref::match_deref! { match &(tp.clone()) {
         Deref @ SCode::SubMod { ident: Deref @ "Inline", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: true }), .. } } => {
@@ -111,7 +111,7 @@ fn isInlineFunc2(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) 
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if stop.clone() {
+        if stop {
             break;
         }
     }
@@ -123,7 +123,7 @@ pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
         let mut res: bool;
         let mut stop: bool;
         res = false;
-        for mut tp in &*inSubModList.clone() {
+        for mut tp in &*inSubModList {
             let mut tp = tp.clone();
             stop = (::match_deref::match_deref! { match &(tp.clone()) {
         Deref @ SCode::SubMod { ident: Deref @ "GenerateEvents", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_res }), .. } } => {
@@ -133,7 +133,7 @@ pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            if stop.clone() {
+            if stop {
                 break;
             }
         }
@@ -155,15 +155,15 @@ pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
 
 pub fn getFunctionRestrictionPurity(mut purity: Absyn::FunctionPurity, mut cmt: Arc<SCode::Comment>, mut newFrontend: bool) -> Result<DAE::Purity> {
     let mut outPurity: DAE::Purity;
-    outPurity = (match purity.clone() {
+    outPurity = (match purity {
         Absyn::FunctionPurity::PURE { .. } => DAE::Purity::PURE.clone(),
         Absyn::FunctionPurity::IMPURE { .. } => DAE::Purity::IMPURE.clone(),
         _ => DAE::Purity::UNDEFINED.clone(),
     });
-    if outPurity.clone() == DAE::Purity::UNDEFINED.clone() {
+    if outPurity == DAE::Purity::UNDEFINED.clone() {
         if SCodeUtil::commentHasBooleanNamedAnnotation(cmt.clone(), (literal!("__ModelicaAssociation_Impure")).clone())? {
             outPurity = DAE::Purity::IMPURE.clone();
-        } else if !(newFrontend.clone()) && SCodeUtil::commentHasBooleanNamedAnnotation(cmt.clone(), (literal!("__OpenModelica_Impure")).clone())? {
+        } else if !(newFrontend) && SCodeUtil::commentHasBooleanNamedAnnotation(cmt, (literal!("__OpenModelica_Impure")).clone())? {
             outPurity = DAE::Purity::OM_IMPURE.clone();
         }
     }

@@ -65,7 +65,7 @@ use openmodelica_util_datatypes_basic::List;
 fn simulationFindLiterals(mut fns: Arc<metamodelica::List<DAE::Function>>) -> Result<(Arc<metamodelica::List<DAE::Function>>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> {
     let mut ofns: Arc<metamodelica::List<DAE::Function>>;
     let mut literals: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>);
-    (ofns, literals) = DAEUtil::traverseDAEFunctions(fns.clone(), (std::sync::Arc::new(SimCodeFunctionUtil::findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()))?;
+    (ofns, literals) = DAEUtil::traverseDAEFunctions(fns, (std::sync::Arc::new(SimCodeFunctionUtil::findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()))?;
     Ok((ofns, literals))
 }
 
@@ -122,16 +122,16 @@ pub fn createVarToArrayIndexMapping(mut iModelInfo: SimCode::ModelInfo) -> Resul
     for mut vl in &*vars.clone() {
         let mut vl = vl.clone();
         (var_lst, _) = vl.clone();
-        table_size = table_size.clone() + (var_lst.clone().len() as i32);
+        table_size = table_size + (var_lst.clone().len() as i32);
     }
-    table_size = Util::nextPrime(((metamodelica::OrderedFloat((table_size.clone()) as f64) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32));
-    oVarToArrayIndexMapping = HashTableCrIListArray::emptyHashTableSized(table_size.clone());
-    oVarToIndexMapping = HashTableCrILst::emptyHashTableSized(table_size.clone());
+    table_size = Util::nextPrime(((metamodelica::OrderedFloat((table_size) as f64) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32));
+    oVarToArrayIndexMapping = HashTableCrIListArray::emptyHashTableSized(table_size);
+    oVarToIndexMapping = HashTableCrILst::emptyHashTableSized(table_size);
     currentVarIndices = arrayCreate(4, 1);
-    for mut vl in &*vars.clone() {
+    for mut vl in &*vars {
         let mut vl = vl.clone();
         (var_lst, var_type) = vl.clone();
-        (currentVarIndices, oVarToArrayIndexMapping, oVarToIndexMapping) = addVarToArrayIndexMappings(var_lst.clone(), var_type.clone(), currentVarIndices.clone(), oVarToArrayIndexMapping.clone(), oVarToIndexMapping.clone())?;
+        (currentVarIndices, oVarToArrayIndexMapping, oVarToIndexMapping) = addVarToArrayIndexMappings(var_lst.clone(), var_type, currentVarIndices.clone(), oVarToArrayIndexMapping.clone(), oVarToIndexMapping.clone())?;
     }
     Ok((oVarToArrayIndexMapping, oVarToIndexMapping))
 }
@@ -140,9 +140,9 @@ pub fn addVarToArrayIndexMappings(mut vars: Arc<metamodelica::List<SimCodeVar::S
     let mut currentVarIndices: metamodelica::Array<i32> = currentVarIndices;
     let mut varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (HashTableCrIListArray::FuncHashCref, HashTableCrIListArray::FuncCrefEqual, HashTableCrIListArray::FuncCrefStr, HashTableCrIListArray::FuncExpStr)) = varToArrayIndexMapping;
     let mut varToIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (HashTableCrILst::FuncHashCref, HashTableCrILst::FuncCrefEqual, HashTableCrILst::FuncCrefStr, HashTableCrILst::FuncExpStr)) = varToIndexMapping;
-    for mut v in &*vars.clone() {
+    for mut v in &*vars {
         let mut v = v.clone();
-        (currentVarIndices, varToArrayIndexMapping, varToIndexMapping) = addVarToArrayIndexMapping(v.clone(), iVarType.clone(), currentVarIndices.clone(), varToArrayIndexMapping.clone(), varToIndexMapping.clone())?;
+        (currentVarIndices, varToArrayIndexMapping, varToIndexMapping) = addVarToArrayIndexMapping(v.clone(), iVarType, currentVarIndices.clone(), varToArrayIndexMapping.clone(), varToIndexMapping.clone())?;
     }
     Ok((currentVarIndices, varToArrayIndexMapping, varToIndexMapping))
 }
@@ -163,15 +163,15 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
         SimCodeVar::SimVar { name: mut __esc_name, numArrayElement: mut __esc_numArrayElement, .. } => {
             name = __esc_name.clone();
             numArrayElement = __esc_numArrayElement.clone();
-            (currentVarIndices, varIdx) = getArrayIdxByVar(iVar.clone(), iVarType.clone(), varToIndexMapping.clone(), currentVarIndices.clone())?;
-            varToIndexMapping = BaseHashTable::add((name.clone(), list![varIdx.clone()]), varToIndexMapping.clone())?;
+            (currentVarIndices, varIdx) = getArrayIdxByVar(iVar.clone(), iVarType, varToIndexMapping.clone(), currentVarIndices.clone())?;
+            varToIndexMapping = BaseHashTable::add((name.clone(), list![varIdx]), varToIndexMapping)?;
             arraySubscripts = ComponentReference::crefLastSubs(name.clone())?;
             if numArrayElement.clone().is_empty() || checkIfSubscriptsContainsUnhandlableIndices(arraySubscripts.clone()) {
                 arrayName = name.clone();
             } else {
                 arrayName = ComponentReferenceBasics::crefStripLastSubs(name.clone())?;
             }
-            if isArrayVar(iVar.clone()) {
+            if isArrayVar(iVar) {
                 arrayDimensions = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut e in (List::lastN(numArrayElement.clone(), (numArrayElement.clone().len() as i32))?).into_iter().cloned() {
@@ -180,11 +180,11 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
         }
         __acc.reverse()
     });
-                varIndices = arrayCreate(1, varIdx.clone());
-                varToArrayIndexMapping = BaseHashTable::add((arrayName.clone(), (arrayDimensions.clone(), varIndices.clone())), varToArrayIndexMapping.clone())?;
+                varIndices = arrayCreate(1, varIdx);
+                varToArrayIndexMapping = BaseHashTable::add((arrayName, (arrayDimensions, varIndices.clone())), varToArrayIndexMapping)?;
             } else if ComponentReferenceBasics::crefEqual(arrayName.clone(), name.clone())? {
-                varIndices = arrayCreate(1, varIdx.clone());
-                varToArrayIndexMapping = BaseHashTable::add((arrayName.clone(), (list![1], varIndices.clone())), varToArrayIndexMapping.clone())?;
+                varIndices = arrayCreate(1, varIdx);
+                varToArrayIndexMapping = BaseHashTable::add((arrayName, (list![1], varIndices.clone())), varToArrayIndexMapping)?;
             } else {
                 if BaseHashTable::hasKey(arrayName.clone(), varToArrayIndexMapping.clone())? {
                     (arrayDimensions, varIndices) = BaseHashTable::get(arrayName.clone(), varToArrayIndexMapping.clone())?;
@@ -199,9 +199,9 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
     });
                     varIndices = arrayCreate(List::fold(arrayDimensions.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?, 0);
                 }
-                arrayIndex = getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone())?;
-                varIndices = metamodelica::arrayUpdate(varIndices.clone(), arrayIndex.clone(), varIdx.clone())?;
-                varToArrayIndexMapping = BaseHashTable::add((arrayName.clone(), (arrayDimensions.clone(), varIndices.clone())), varToArrayIndexMapping.clone())?;
+                arrayIndex = getScalarElementIndex(arraySubscripts, arrayDimensions.clone())?;
+                varIndices = metamodelica::arrayUpdate(varIndices.clone(), arrayIndex, varIdx)?;
+                varToArrayIndexMapping = BaseHashTable::add((arrayName, (arrayDimensions, varIndices.clone())), varToArrayIndexMapping)?;
             }
             ()
         },
@@ -216,7 +216,7 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
 fn checkIfSubscriptsContainsUnhandlableIndices(mut iSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> bool {
     let mut oContainsUnhandledSubscripts: bool = false;
     let mut subscript: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
-    for mut subscript in &*iSubscripts.clone() {
+    for mut subscript in &*iSubscripts {
         let mut subscript = subscript.clone();
         if DAEUtil::getSubscriptIndex(subscript.clone()) < 0 {
             oContainsUnhandledSubscripts = true;
@@ -237,32 +237,32 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
         (SimCodeVar::SimVar { name: mut __esc_name, aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, .. }, mut __esc_tmpCurrentVarIndices) => {
             name = __esc_name.clone();
             tmpCurrentVarIndices = __esc_tmpCurrentVarIndices.clone();
-            (varIdx, tmpCurrentVarIndices) = getVarToArrayIndexByType(iVar.clone(), iVarType.clone(), tmpCurrentVarIndices.clone())?;
-            varIdx.clone()
+            (varIdx, tmpCurrentVarIndices) = getVarToArrayIndexByType(iVar, iVarType, tmpCurrentVarIndices.clone())?;
+            varIdx
         },
         (SimCodeVar::SimVar { name: mut __esc_name, aliasvar: SimCodeVar::AliasVariable::NEGATEDALIAS { varName: mut __esc_varName }, .. }, _) => {
             name = __esc_name.clone();
             varName = __esc_varName.clone();
             if BaseHashTable::hasKey(varName.clone(), iVarToIndexMapping.clone())? {
-                let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping.clone())?) {
+                let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping)?) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
                 varIdx = __pa0.clone();
-                varIdx = intMul(varIdx.clone(), -1);
+                varIdx = intMul(varIdx, -1);
             } else if ComponentReference::isTime(varName.clone()) {
                 varIdx = 0;
             } else {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Negated alias to unknown variable given.")).clone()])?;
                 bail!("fail");
             }
-            varIdx.clone()
+            varIdx
         },
         (SimCodeVar::SimVar { name: mut __esc_name, aliasvar: SimCodeVar::AliasVariable::ALIAS { varName: mut __esc_varName }, .. }, _) => {
             name = __esc_name.clone();
             varName = __esc_varName.clone();
             if BaseHashTable::hasKey(varName.clone(), iVarToIndexMapping.clone())? {
-                let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping.clone())?) {
+                let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping)?) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
@@ -273,7 +273,7 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Alias to unknown variable given.")).clone()])?;
                 bail!("fail");
             }
-            varIdx.clone()
+            varIdx
         },
         _ => bail!("match: no arm matched"),
     });
@@ -284,8 +284,8 @@ fn getVarToArrayIndexByType(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut
     let mut oVarIdx: i32;
     let mut iCurrentVarIndices: metamodelica::Array<i32> = iCurrentVarIndices;
     match '__try0: {
-        oVarIdx = unwrap_break_err!(metamodelica::arrayGet(iCurrentVarIndices.clone(), iVarType.clone()), '__try0);
-        unwrap_break_err!(metamodelica::arrayUpdate(iCurrentVarIndices.clone(), iVarType.clone(), oVarIdx.clone() + unwrap_break_err!(getNumElems(iVar.clone()), '__try0)), '__try0);
+        oVarIdx = unwrap_break_err!(metamodelica::arrayGet(iCurrentVarIndices.clone(), iVarType), '__try0);
+        unwrap_break_err!(metamodelica::arrayUpdate(iCurrentVarIndices.clone(), iVarType, oVarIdx + unwrap_break_err!(getNumElems(iVar.clone()), '__try0)), '__try0);
         Ok::<_, anyhow::Error>((oVarIdx.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -307,8 +307,8 @@ pub fn getScalarElementIndex(mut arraySubscripts: Arc<metamodelica::List<Arc<DAE
     fac = 1;
     for mut i in ({let __s=(arraySubscripts.clone().len() as i32); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         idx = DAEUtil::getSubscriptIndex((arraySubscripts.clone()).get(i.clone())?);
-        arrayIndex = arrayIndex.clone() + (idx.clone() - 1) * fac.clone();
-        fac = fac.clone() * (arrayDimensions.clone()).get(i.clone())?;
+        arrayIndex = arrayIndex + (idx - 1) * fac;
+        fac = fac * (arrayDimensions.clone()).get(i.clone())?;
     }
     Ok(arrayIndex)
 }
@@ -320,9 +320,9 @@ pub fn getNumElems(mut var: SimCodeVar::SimVar) -> Result<i32> {
             numElems = 1;
             for mut d in &*var.numArrayElement.clone() {
                 let mut d = d.clone();
-                numElems = numElems.clone() * stringInt((d.clone()).clone())?;
+                numElems = numElems * stringInt((d.clone()).clone())?;
             }
-            numElems.clone()
+            numElems
         },
         _ => 1,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -332,7 +332,7 @@ pub fn getNumElems(mut var: SimCodeVar::SimVar) -> Result<i32> {
 
 pub(crate) fn isArrayVar(mut var: SimCodeVar::SimVar) -> bool {
     let mut isArray: bool;
-    isArray = (::match_deref::match_deref! { match &(var.clone()) {
+    isArray = (::match_deref::match_deref! { match &(var) {
         SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

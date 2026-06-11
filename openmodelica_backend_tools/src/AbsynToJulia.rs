@@ -24,25 +24,26 @@ use openmodelica_util::Flags;
 use openmodelica_util::System;
 use openmodelica_util::Util;
 
-fn lm_17(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_17 in &*items.clone() {
-        let mut lstElt_17 = lstElt_17.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_17.clone()) {
-        i_cls => {
+fn lm_17(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_cls, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpClass(txt.clone(), i_cls.clone(), Dump::defaultDumpOptions.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub fn dumpProgram(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_program.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_program)) {
         (txt, Absyn::Program { classes: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -68,14 +69,14 @@ pub fn dumpProgram(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program) -> R
 pub(crate) fn dumpSCodeElements(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<Arc<SCode::Element>>>;
-    ret_0 = SCodeDump::filterElements(a_elements.clone(), SCodeDump::defaultOptions.clone())?;
-    out_txt = dumpSCodeElements2(txt.clone(), ret_0.clone())?;
+    ret_0 = SCodeDump::filterElements(a_elements, SCodeDump::defaultOptions.clone())?;
+    out_txt = dumpSCodeElements2(txt, ret_0)?;
     Ok(out_txt)
 }
 
 fn fun_20(mut in_txt: Tpl::Text, mut in_a_el: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_el.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_el)) {
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_UNIONTYPE { .. }, name: i_name, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("@UniontypeDecl ")).clone() }))?;
@@ -104,24 +105,25 @@ fn fun_20(mut in_txt: Tpl::Text, mut in_a_el: Arc<SCode::Element>) -> Result<Tpl
     Ok(out_txt)
 }
 
-fn lm_21(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_21 in &*items.clone() {
-        let mut lstElt_21 = lstElt_21.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_21.clone()) {
-        i_el => {
-            txt = fun_20(txt.clone(), i_el.clone())?;
-            txt.clone()
+fn lm_21(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        (txt, Deref @ metamodelica::List::Cons { head: i_el, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = fun_20(txt.clone(), i_el.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_22(mut in_txt: Tpl::Text, mut in_a_str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -139,71 +141,74 @@ fn fun_22(mut in_txt: Tpl::Text, mut in_a_str: Tpl::Text) -> Result<Tpl::Text> {
 pub(crate) fn dumpSCodeElements2(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_str: Tpl::Text;
-    l_str = lm_21(Tpl::emptyTxt.clone(), a_elements.clone())?;
-    out_txt = fun_22(txt.clone(), l_str.clone())?;
+    l_str = lm_21(Tpl::emptyTxt.clone(), a_elements)?;
+    out_txt = fun_22(txt, l_str)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpClass(mut txt: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = dumpClassElement(txt.clone(), a_cls.clone(), a_options.clone(), MMToJuliaUtil::noContext.clone())?;
+    out_txt = dumpClassElement(txt, a_cls, a_options, MMToJuliaUtil::noContext.clone())?;
     Ok(out_txt)
 }
 
-fn lm_25(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_25 in &*items.clone() {
-        let mut lstElt_25 = lstElt_25.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_25.clone()) {
-        i_cp => {
+fn lm_25(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_cp, tail: rest }) => {
             let mut ret_0: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+            let mut txt = (*txt).clone();
             ret_0 = AbsynUtil::getElementItemsInClassPart(i_cp.clone());
             txt = dumpReturnTypeJL(txt.clone(), ret_0.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_26(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_26 in &*items.clone() {
-        let mut lstElt_26 = lstElt_26.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_26.clone()) {
-        i_cp => {
+fn lm_26(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_cp, tail: rest }) => {
             let mut ret_0: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+            let mut txt = (*txt).clone();
             ret_0 = AbsynUtil::getElementItemsInClassPart(i_cp.clone());
             txt = dumpReturnStrJL(txt.clone(), ret_0.clone(), MMToJuliaUtil::functionContext.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_27(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_27 in &*items.clone() {
-        let mut lstElt_27 = lstElt_27.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_27.clone()) {
-        i_cp => {
+fn lm_27(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_cp, tail: rest }) => {
             let mut ret_0: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+            let mut txt = (*txt).clone();
             ret_0 = AbsynUtil::getElementItemsInClassPart(i_cp.clone());
             txt = dumpInputsJL(txt.clone(), ret_0.clone(), MMToJuliaUtil::inputContext.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_28(mut in_txt: Tpl::Text, mut in_a_header: Tpl::Text, mut in_a_typevar__inputs: Tpl::Text, mut in_a_inputs__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_header.clone(), in_a_typevar__inputs.clone(), in_a_inputs__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_header, in_a_typevar__inputs, in_a_inputs__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _, a_inputs__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_inputs__str.clone())?;
@@ -221,7 +226,7 @@ fn fun_28(mut in_txt: Tpl::Text, mut in_a_header: Tpl::Text, mut in_a_typevar__i
 
 fn fun_29(mut in_txt: Tpl::Text, mut in_a_header: Tpl::Text, mut in_a_returnType: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_header.clone(), in_a_returnType.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_header, in_a_returnType)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_returnType) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_returnType.clone())?;
@@ -237,7 +242,7 @@ fn fun_29(mut in_txt: Tpl::Text, mut in_a_header: Tpl::Text, mut in_a_returnType
 
 fn fun_30(mut in_txt: Tpl::Text, mut in_a_encapsulatedPrefix: bool) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_encapsulatedPrefix.clone()) {
+    out_txt = (match (in_txt, in_a_encapsulatedPrefix) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -250,7 +255,7 @@ fn fun_30(mut in_txt: Tpl::Text, mut in_a_encapsulatedPrefix: bool) -> Tpl::Text
 
 fn fun_31(mut in_txt: Tpl::Text, mut in_a_partialPrefix: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_partialPrefix.clone()) {
+    out_txt = (match (in_txt, in_a_partialPrefix) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -264,7 +269,7 @@ fn fun_31(mut in_txt: Tpl::Text, mut in_a_partialPrefix: bool) -> Result<Tpl::Te
 
 fn fun_32(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction, mut in_a_context: MMToJuliaUtil::Context, mut in_a_options: Dump::DumpOptions, mut in_a_parts: Arc<Absyn::ClassDef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_restriction.clone(), in_a_context.clone(), in_a_options.clone(), in_a_parts.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_restriction, in_a_context, in_a_options, in_a_parts)) {
         (txt, Absyn::Restriction::R_PACKAGE { .. }, _, a_options, a_parts) => {
             let mut txt = (*txt).clone();
             txt = dumpClassDef(txt.clone(), a_parts.clone(), MMToJuliaUtil::packageContext.clone(), a_options.clone())?;
@@ -289,7 +294,7 @@ fn fun_32(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction, mut i
 
 fn fun_33(mut in_txt: Tpl::Text, mut in_a_forwardDeclarations: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_forwardDeclarations.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_forwardDeclarations)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -305,7 +310,7 @@ fn fun_33(mut in_txt: Tpl::Text, mut in_a_forwardDeclarations: Tpl::Text) -> Res
 
 fn fun_34(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction, mut in_a_cdef__str1: Tpl::Text, mut in_a_forwardDeclarations: Tpl::Text, mut in_a_inform: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_restriction.clone(), in_a_cdef__str1.clone(), in_a_forwardDeclarations.clone(), in_a_inform.clone()) {
+    out_txt = (match (in_txt, in_a_restriction, in_a_cdef__str1, in_a_forwardDeclarations, in_a_inform) {
         (mut txt, Absyn::Restriction::R_PACKAGE { .. }, mut a_cdef__str1, mut a_forwardDeclarations, mut a_inform) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("using MetaModelica\n")).clone(), (literal!("#= ExportAll is not good practice but it makes it so that we do not have to write export after each function :( =#\n")).clone(), (literal!("using ExportAll\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::writeText(txt.clone(), a_inform.clone())?;
@@ -330,7 +335,7 @@ fn fun_34(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction, mut i
 
 fn fun_35(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
+    out_txt = (match (in_txt, in_a_restriction) {
         (mut txt, Absyn::Restriction::R_RECORD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("begin")).clone() }))?;
             txt.clone()
@@ -342,41 +347,43 @@ fn fun_35(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction) -> Re
     Ok(out_txt)
 }
 
-fn lm_36(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_36 in &*items.clone() {
-        let mut lstElt_36 = lstElt_36.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_36.clone()) {
-        i_earg => {
+fn lm_36(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_earg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementArg(txt.clone(), i_earg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_37(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_37 in &*items.clone() {
-        let mut lstElt_37 = lstElt_37.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_37.clone()) {
-        i_earg => {
+fn lm_37(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_earg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementArg(txt.clone(), i_earg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpClassElement(mut in_txt: Tpl::Text, mut in_a_class: Arc<Absyn::Class>, mut in_a_options: Dump::DumpOptions, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_class.clone(), in_a_options.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_class, in_a_options, in_a_context)) {
         (txt, Deref @ Absyn::Class { body: i_parts @ Deref @ Absyn::ClassDef::PARTS { comment: i_parts_comment, .. }, restriction: Absyn::Restriction::R_UNIONTYPE { .. }, name: i_name, .. }, a_options, _) => {
             let mut ret_2: MMToJuliaUtil::Context;
             let mut l_class__def__str: Tpl::Text;
@@ -544,7 +551,7 @@ pub(crate) fn dumpClassElement(mut in_txt: Tpl::Text, mut in_a_class: Arc<Absyn:
 
 pub(crate) fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<Absyn::ClassDef>, mut in_a_restriction: Absyn::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone(), in_a_restriction.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_classDef, in_a_restriction)) {
         (txt, Deref @ Absyn::ClassDef::CLASS_EXTENDS { baseClassName: _, .. }, _) => {
             let mut txt = (*txt).clone();
             txt = AbsynDumpTpl::errorMsg(txt.clone(), (literal!("Extend  not supported")).clone())?;
@@ -568,7 +575,7 @@ pub(crate) fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<Absy
 
 pub(crate) fn dumpClassTypeSuperType(mut in_txt: Tpl::Text, mut in_a_r: Absyn::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_r.clone()) {
+    out_txt = (match (in_txt, in_a_r) {
         (mut txt, Absyn::Restriction::R_METARECORD { name: ref i_name, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<: ")).clone() }))?;
             txt = dumpPathJL(txt.clone(), i_name.clone())?;
@@ -584,24 +591,26 @@ pub(crate) fn dumpClassTypeSuperType(mut in_txt: Tpl::Text, mut in_a_r: Absyn::R
     Ok(out_txt)
 }
 
-fn lm_41(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_41 in &*items.clone() {
-        let mut lstElt_41 = lstElt_41.clone();
-        txt = (match lstElt_41.clone() {
-        mut i_tv => {
+fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_tv, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_tv.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_42(mut in_txt: Tpl::Text, mut in_a_typeVars: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typeVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_typeVars)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -619,24 +628,26 @@ fn fun_42(mut in_txt: Tpl::Text, mut in_a_typeVars: Arc<metamodelica::List<ArcSt
     Ok(out_txt)
 }
 
-fn lm_43(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_43 in &*items.clone() {
-        let mut lstElt_43 = lstElt_43.clone();
-        txt = (match lstElt_43.clone() {
-        mut i_tv => {
+fn lm_43(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_tv, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_tv.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_44(mut in_txt: Tpl::Text, mut in_a_typeVars: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typeVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_typeVars)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -656,7 +667,7 @@ fn fun_44(mut in_txt: Tpl::Text, mut in_a_typeVars: Arc<metamodelica::List<ArcSt
 
 pub(crate) fn dumpClassTypeTypeVars(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction, mut in_a_typeVars: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_restriction.clone(), in_a_typeVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_restriction, in_a_typeVars)) {
         (txt, Absyn::Restriction::R_UNIONTYPE { .. }, a_typeVars) => {
             let mut txt = (*txt).clone();
             txt = fun_42(txt.clone(), a_typeVars.clone())?;
@@ -677,7 +688,7 @@ pub(crate) fn dumpClassTypeTypeVars(mut in_txt: Tpl::Text, mut in_a_restriction:
 
 fn fun_46(mut in_txt: Tpl::Text, mut in_a_ann: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ann.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ann)) {
         (txt, Deref @ "") => {
             txt.clone()
         },
@@ -694,7 +705,7 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_ann: ArcStr) -> Result<Tpl::Text> {
 
 fn fun_47(mut in_txt: Tpl::Text, mut in_a_annotation__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annotation__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_annotation__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -710,7 +721,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_annotation__str: Tpl::Text) -> Result<
 
 fn fun_48(mut in_txt: Tpl::Text, mut in_a_cdefStr: ArcStr, mut in_a_annotation__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdefStr.clone(), in_a_annotation__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cdefStr, in_a_annotation__str)) {
         (txt, Deref @ "", a_annotation__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_annotation__str.clone())?;
@@ -736,7 +747,7 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_cdefStr: ArcStr, mut in_a_annotation__
 
 fn fun_49(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<Absyn::ClassDef>, mut in_a_cdefStr: ArcStr, mut in_a_ann: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone(), in_a_cdefStr.clone(), in_a_ann.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_classDef, in_a_cdefStr, in_a_ann)) {
         (txt, Deref @ Absyn::ClassDef::DERIVED { typeSpec: _, .. }, _, _) => {
             let mut txt = (*txt).clone();
             txt = AbsynDumpTpl::errorMsg(txt.clone(), (literal!("AbsynToJulia.dumpClassFooter: Derived not yet supported.")).clone())?;
@@ -761,32 +772,33 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<Absyn::ClassDef>, mut in
 
 pub(crate) fn dumpClassFooter(mut txt: Tpl::Text, mut a_classDef: Arc<Absyn::ClassDef>, mut a_cdefStr: ArcStr, mut a_name: ArcStr, mut a_cmt: ArcStr, mut a_ann: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_49(txt.clone(), a_classDef.clone(), (a_cdefStr.clone()).clone(), (a_ann.clone()).clone())?;
+    out_txt = fun_49(txt, a_classDef, (a_cdefStr).clone(), (a_ann).clone())?;
     Ok(out_txt)
 }
 
-fn lm_51(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_51 in &*items.clone() {
-        let mut lstElt_51 = lstElt_51.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_51.clone()) {
-        i_ei => {
+fn lm_51(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ei, tail: rest }) => {
             let mut ret_3: MMToJuliaUtil::Context;
             let mut txt_2: Tpl::Text;
             let mut ret_1: Option<Arc<Absyn::TypeSpec>>;
             let mut ret_0: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
+            let mut txt = (*txt).clone();
             ret_0 = AbsynUtil::getComponentItemsFromElementItem(i_ei.clone());
             ret_1 = AbsynUtil::getTypeSpecFromElementItemOpt(i_ei.clone());
             txt_2 = dumpTypeSpecOpt(Tpl::emptyTxt.clone(), ret_1.clone(), MMToJuliaUtil::inputContext.clone())?;
             ret_3 = MMToJuliaUtil::makeInputContext((Tpl::textString(txt_2.clone())?).clone());
             txt = dumpComponentItems(txt.clone(), ret_0.clone(), ret_3.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpInputsJL(mut txt: Tpl::Text, mut a_inputs: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
@@ -796,18 +808,18 @@ pub(crate) fn dumpInputsJL(mut txt: Tpl::Text, mut a_inputs: Arc<metamodelica::L
     let mut ret_1: Absyn::Direction;
     let mut l_inputStr: Tpl::Text;
     ret_1 = MMToJuliaUtil::makeInputDirection();
-    ret_2 = MMToJuliaUtil::filterOnDirection(a_inputs.clone(), ret_1.clone());
-    ret_3 = ret_2.clone().reverse();
+    ret_2 = MMToJuliaUtil::filterOnDirection(a_inputs, ret_1);
+    ret_3 = ret_2.reverse();
     l_inputStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_inputStr = lm_51(l_inputStr.clone(), ret_3.clone())?;
-    l_inputStr = Tpl::popIter(l_inputStr.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_inputStr.clone())?;
+    l_inputStr = lm_51(l_inputStr, ret_3)?;
+    l_inputStr = Tpl::popIter(l_inputStr)?;
+    out_txt = Tpl::writeText(txt, l_inputStr)?;
     Ok(out_txt)
 }
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -837,46 +849,48 @@ pub(crate) fn dumpReturnTypeJL(mut txt: Tpl::Text, mut a_outputs: Arc<metamodeli
     let mut ret_1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     let mut ret_0: Absyn::Direction;
     ret_0 = MMToJuliaUtil::makeOutputDirection();
-    ret_1 = MMToJuliaUtil::filterOnDirection(a_outputs.clone(), ret_0.clone());
-    out_txt = fun_53(txt.clone(), ret_1.clone())?;
+    ret_1 = MMToJuliaUtil::filterOnDirection(a_outputs, ret_0);
+    out_txt = fun_53(txt, ret_1)?;
     Ok(out_txt)
 }
 
-fn lm_55(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_55 in &*items.clone() {
-        let mut lstElt_55 = lstElt_55.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_55.clone()) {
-        i_e => {
+fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementItemRaw(txt.clone(), i_e.clone(), Dump::defaultDumpOptions.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_56(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_56 in &*items.clone() {
-        let mut lstElt_56 = lstElt_56.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_56.clone()) {
-        i_e => {
+fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementItemRaw(txt.clone(), i_e.clone(), Dump::defaultDumpOptions.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_context)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -910,33 +924,34 @@ pub(crate) fn dumpReturnStrJL(mut txt: Tpl::Text, mut a_outputs: Arc<metamodelic
     let mut ret_1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     let mut ret_0: Absyn::Direction;
     ret_0 = MMToJuliaUtil::makeOutputDirection();
-    ret_1 = MMToJuliaUtil::filterOnDirection(a_outputs.clone(), ret_0.clone());
-    ret_2 = ret_1.clone().reverse();
-    out_txt = fun_57(txt.clone(), ret_2.clone(), a_context.clone())?;
+    ret_1 = MMToJuliaUtil::filterOnDirection(a_outputs, ret_0);
+    ret_2 = ret_1.reverse();
+    out_txt = fun_57(txt, ret_2, a_context)?;
     Ok(out_txt)
 }
 
-fn lm_59(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut a_options: Dump::DumpOptions, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_59 in &*items.clone() {
-        let mut lstElt_59 = lstElt_59.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_59.clone()) {
-        i_class__part => {
+fn lm_59(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut in_a_options: Dump::DumpOptions, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_options, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_class__part, tail: rest }, a_options, a_context) => {
             let mut x_idx: i32;
+            let mut txt = (*txt).clone();
             x_idx = Tpl::getIteri_i0(txt.clone())?;
             txt = dumpClassPart(txt.clone(), i_class__part.clone(), x_idx.clone(), a_context.clone(), a_options.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_options, in_a_context) = (txt.clone(), rest.clone(), a_options.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_context: MMToJuliaUtil::Context, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdef.clone(), in_a_context.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cdef, in_a_context, in_a_options)) {
         (txt, Deref @ Absyn::ClassDef::PARTS { classParts: i_classParts, .. }, a_context, a_options) => {
             let mut l_body__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -975,7 +990,7 @@ pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::Clas
 
 pub(crate) fn dumpClassType(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
+    out_txt = (match (in_txt, in_a_restriction) {
         (mut txt, Absyn::Restriction::R_PACKAGE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("module")).clone() }))?;
             txt.clone()
@@ -1012,7 +1027,7 @@ pub(crate) fn dumpClassType(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::
 
 fn fun_62(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_options: Dump::DumpOptions, mut in_a_context: MMToJuliaUtil::Context, mut in_a_contents: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_options.clone(), in_a_context.clone(), in_a_contents.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_options, in_a_context, in_a_contents)) {
         (txt, false, a_options, a_context, a_contents) => {
             let mut txt = (*txt).clone();
             txt = dumpElementItems(txt.clone(), a_contents.clone(), a_context.clone(), (literal!("")).clone(), true, a_options.clone())?;
@@ -1032,25 +1047,26 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_options: Dump::Dump
     Ok(out_txt)
 }
 
-fn lm_63(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_63 in &*items.clone() {
-        let mut lstElt_63 = lstElt_63.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_63.clone()) {
-        i_eq => {
+fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpAlgorithmItem(txt.clone(), i_eq.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_64(mut in_txt: Tpl::Text, mut in_a_annotation__: Option<Arc<Absyn::Annotation>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annotation__.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_annotation__, in_a_context)) {
         (txt, Some(i_ann), a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -1069,7 +1085,7 @@ fn fun_64(mut in_txt: Tpl::Text, mut in_a_annotation__: Option<Arc<Absyn::Annota
 
 fn fun_65(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<Absyn::ExternalDecl>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_externalDecl.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_externalDecl)) {
         (txt, Deref @ Absyn::ExternalDecl { funcName: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#= TODO: Defined in the runtime =#")).clone() }))?;
@@ -1085,7 +1101,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<Absyn::ExternalDecl>
 
 fn fun_66(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mut in_a_context: MMToJuliaUtil::Context, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_class__part.clone(), in_a_context.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_class__part, in_a_context, in_a_options)) {
         (txt, Deref @ Absyn::ClassPart::PUBLIC { contents: i_contents }, a_context, a_options) => {
             let mut ret_1: bool;
             let mut l_el__str: Tpl::Text;
@@ -1152,13 +1168,13 @@ fn fun_66(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
 
 pub(crate) fn dumpClassPart(mut txt: Tpl::Text, mut a_class__part: Arc<Absyn::ClassPart>, mut a_idx: i32, mut a_context: MMToJuliaUtil::Context, mut a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_66(txt.clone(), a_class__part.clone(), a_context.clone(), a_options.clone())?;
+    out_txt = fun_66(txt, a_class__part, a_context, a_options)?;
     Ok(out_txt)
 }
 
 fn fun_68(mut in_txt: Tpl::Text, mut in_a_first: bool, mut in_a_prevSpacing: ArcStr, mut in_a_spacing: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_first.clone(), in_a_prevSpacing.clone(), in_a_spacing.clone()) {
+    out_txt = (match (in_txt, in_a_first, in_a_prevSpacing, in_a_spacing) {
         (mut txt, false, mut a_prevSpacing, mut a_spacing) => {
             txt = dumpElementItemPreSpacing(txt.clone(), (Tpl::textString(a_spacing.clone())?).clone(), (a_prevSpacing.clone()).clone())?;
             txt.clone()
@@ -1172,7 +1188,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_first: bool, mut in_a_prevSpacing: Arc
 
 fn fun_69(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text, mut in_a_spacing: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rest__str.clone(), in_a_spacing.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_rest__str, in_a_spacing)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -1188,7 +1204,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text, mut in_a_spacing
 
 fn fun_70(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rest__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_rest__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -1204,7 +1220,7 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text) -> Result<Tpl::T
 
 pub(crate) fn dumpElementItems(mut in_txt: Tpl::Text, mut in_a_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut in_a_context: MMToJuliaUtil::Context, mut in_a_prevSpacing: ArcStr, mut in_a_first: bool, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_items.clone(), in_a_context.clone(), in_a_prevSpacing.clone(), in_a_first.clone(), in_a_options.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_items, in_a_context, in_a_prevSpacing, in_a_first, in_a_options)) {
         (txt, Deref @ metamodelica::List::Cons { head: i_item, tail: i_rest__items }, a_context, a_prevSpacing, a_first, a_options) => {
             let mut l_post__spacing: Tpl::Text;
             let mut l_rest__str: Tpl::Text;
@@ -1235,7 +1251,7 @@ pub(crate) fn dumpElementItems(mut in_txt: Tpl::Text, mut in_a_items: Arc<metamo
 
 fn fun_72(mut in_txt: Tpl::Text, mut in_a_prevSpacing: ArcStr, mut in_a_curSpacing: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_prevSpacing.clone(), in_a_curSpacing.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_prevSpacing, in_a_curSpacing)) {
         (txt, Deref @ "", a_curSpacing) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_curSpacing.clone()).clone())?;
@@ -1251,13 +1267,13 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_prevSpacing: ArcStr, mut in_a_curSpaci
 
 pub(crate) fn dumpElementItemPreSpacing(mut txt: Tpl::Text, mut a_curSpacing: ArcStr, mut a_prevSpacing: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_72(txt.clone(), (a_prevSpacing.clone()).clone(), (a_curSpacing.clone()).clone())?;
+    out_txt = fun_72(txt, (a_prevSpacing).clone(), (a_curSpacing).clone())?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpElementItemSpacing(mut in_txt: Tpl::Text, mut in_a_item: Arc<Absyn::ElementItem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_item.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_item)) {
         (txt, Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: i_cdef, .. }, .. }, .. } }) => {
             let mut txt = (*txt).clone();
             txt = dumpClassDefSpacing(txt.clone(), i_cdef.clone())?;
@@ -1273,7 +1289,7 @@ pub(crate) fn dumpElementItemSpacing(mut in_txt: Tpl::Text, mut in_a_item: Arc<A
 
 pub(crate) fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdef.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cdef)) {
         (txt, Deref @ Absyn::ClassDef::PARTS { typeVars: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -1294,7 +1310,7 @@ pub(crate) fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absy
 
 pub(crate) fn dumpElementItem(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut in_a_options: Dump::DumpOptions, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eitem.clone(), in_a_options.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_eitem, in_a_options, in_a_context)) {
         (txt, Deref @ Absyn::ElementItem::ELEMENTITEM { element: i_element }, a_options, a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpElement(txt.clone(), i_element.clone(), a_options.clone(), a_context.clone())?;
@@ -1313,25 +1329,26 @@ pub(crate) fn dumpElementItem(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::
     Ok(out_txt)
 }
 
-fn lm_77(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_77 in &*items.clone() {
-        let mut lstElt_77 = lstElt_77.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_77.clone()) {
-        i_comp => {
+fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_comp, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpComponentItem(txt.clone(), i_comp.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_78(mut in_txt: Tpl::Text, mut in_a_specification: Arc<Absyn::ElementSpec>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_specification.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_specification, in_a_context)) {
         (txt, Deref @ Absyn::ElementSpec::COMPONENTS { components: i_components, .. }, a_context) => {
             let mut l_comps__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -1353,7 +1370,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_specification: Arc<Absyn::ElementSpec>
 
 fn fun_79(mut in_txt: Tpl::Text, mut in_a_element: Arc<Absyn::Element>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_element.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_element, in_a_context)) {
         (txt, Deref @ Absyn::Element::ELEMENT { specification: i_specification, .. }, a_context) => {
             let mut txt = (*txt).clone();
             txt = fun_78(txt.clone(), i_specification.clone(), a_context.clone())?;
@@ -1371,7 +1388,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_element: Arc<Absyn::Element>, mut in_a
 
 fn fun_80(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eitem.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_eitem, in_a_context)) {
         (txt, Deref @ Absyn::ElementItem::ELEMENTITEM { element: i_element }, a_context) => {
             let mut txt = (*txt).clone();
             txt = fun_79(txt.clone(), i_element.clone(), a_context.clone())?;
@@ -1392,13 +1409,13 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut in
 
 pub(crate) fn dumpElementItemRaw(mut txt: Tpl::Text, mut a_eitem: Arc<Absyn::ElementItem>, mut a_options: Dump::DumpOptions, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_80(txt.clone(), a_eitem.clone(), a_context.clone())?;
+    out_txt = fun_80(txt, a_eitem, a_context)?;
     Ok(out_txt)
 }
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_a_redeclareKeywords: Option<Absyn::RedeclareKeywords>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_redeclareKeywords.clone()) {
+    out_txt = (match (in_txt, in_a_redeclareKeywords) {
         (mut txt, Some(mut i_re)) => {
             txt = dumpRedeclare(txt.clone(), i_re.clone())?;
             txt.clone()
@@ -1412,7 +1429,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_redeclareKeywords: Option<Absyn::Redec
 
 fn fun_83(mut in_txt: Tpl::Text, mut in_a_redeclareKeywords: Option<Absyn::RedeclareKeywords>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_redeclareKeywords.clone()) {
+    out_txt = (match (in_txt, in_a_redeclareKeywords) {
         (mut txt, Some(mut i_re)) => {
             txt = dumpReplaceable(txt.clone(), i_re.clone())?;
             txt.clone()
@@ -1426,7 +1443,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_redeclareKeywords: Option<Absyn::Redec
 
 fn fun_84(mut in_txt: Tpl::Text, mut in_a_constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_constrainClass.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_constrainClass, in_a_context)) {
         (txt, Some(i_cc), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpConstrainClass(txt.clone(), i_cc.clone(), a_context.clone())?;
@@ -1442,7 +1459,7 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_constrainClass: Option<Arc<Absyn::Cons
 
 fn fun_85(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut in_a_context: MMToJuliaUtil::Context, mut in_a_options: Dump::DumpOptions, mut in_a_specification: Arc<Absyn::ElementSpec>, mut in_a_redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut in_a_finalPrefix: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_constrainClass.clone(), in_a_context.clone(), in_a_options.clone(), in_a_specification.clone(), in_a_redeclareKeywords.clone(), in_a_finalPrefix.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_constrainClass, in_a_context, in_a_options, in_a_specification, in_a_redeclareKeywords, in_a_finalPrefix)) {
         (txt, false, _, _, _, _, _, _) => {
             txt.clone()
         },
@@ -1469,7 +1486,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_constrainClass: Opt
 
 fn fun_86(mut in_txt: Tpl::Text, mut in_a_optName: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_optName.clone()) {
+    out_txt = (match (in_txt, in_a_optName) {
         (mut txt, Some(mut i_name)) => {
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt.clone()
@@ -1483,7 +1500,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_optName: Option<ArcStr>) -> Result<Tpl
 
 fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_string: ArcStr, mut in_a_info: SourceInfo, mut in_a_optName: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_string.clone(), in_a_info.clone(), in_a_optName.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_string, in_a_info, in_a_optName) {
         (mut txt, false, _, _, _) => {
             txt.clone()
         },
@@ -1507,7 +1524,7 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_string: ArcStr, mut
 
 pub(crate) fn dumpElement(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_options: Dump::DumpOptions, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elem.clone(), in_a_options.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_elem, in_a_options, in_a_context)) {
         (txt, i_elem @ Deref @ Absyn::Element::ELEMENT { info: i_info, finalPrefix: i_finalPrefix, redeclareKeywords: i_redeclareKeywords, specification: i_specification, constrainClass: i_constrainClass, .. }, a_options, a_context) => {
             let mut ret_3: bool;
             let mut ret_2: bool;
@@ -1543,7 +1560,7 @@ pub(crate) fn dumpElement(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Eleme
 
 fn fun_89(mut in_txt: Tpl::Text, mut in_a_isReadOnly: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isReadOnly.clone()) {
+    out_txt = (match (in_txt, in_a_isReadOnly) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("writable")).clone() }))?;
             txt.clone()
@@ -1558,7 +1575,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_isReadOnly: bool) -> Result<Tpl::Text>
 
 pub(crate) fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_info.clone()) {
+    out_txt = (match (in_txt, in_a_info) {
         (mut txt, SourceInfo { isReadOnly: mut i_isReadOnly, fileName: mut i_fileName, lineNumberStart: mut i_lineNumberStart, columnNumberStart: mut i_columnNumberStart, lineNumberEnd: mut i_lineNumberEnd, columnNumberEnd: mut i_columnNumberEnd, .. }) => {
             let mut l_rm__str: Tpl::Text;
             l_rm__str = fun_89(Tpl::emptyTxt.clone(), i_isReadOnly.clone())?;
@@ -1584,25 +1601,26 @@ pub(crate) fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Resu
     Ok(out_txt)
 }
 
-fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_91 in &*items.clone() {
-        let mut lstElt_91 = lstElt_91.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_91.clone()) {
-        i_earg => {
+fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_earg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementArg(txt.clone(), i_earg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_ann: Arc<Absyn::Annotation>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ann.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ann, in_a_context)) {
         (txt, Deref @ Absyn::Annotation { elementArgs: Deref @ metamodelica::List::Nil }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#= annotation() =#")).clone() }))?;
@@ -1634,7 +1652,7 @@ pub(crate) fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_ann: Arc<Absyn::Ann
 
 pub(crate) fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_oann.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_oann, in_a_context)) {
         (txt, Some(i_ann), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpAnnotation(txt.clone(), i_ann.clone(), a_context.clone())?;
@@ -1650,7 +1668,7 @@ pub(crate) fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc
 
 pub(crate) fn dumpAnnotationOptSpace(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_oann.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_oann, in_a_context)) {
         (txt, Some(i_ann), a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1667,7 +1685,7 @@ pub(crate) fn dumpAnnotationOptSpace(mut in_txt: Tpl::Text, mut in_a_oann: Optio
 
 pub(crate) fn dumpComment(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<Absyn::Comment>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cmt.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cmt, in_a_context)) {
         (txt, Deref @ Absyn::Comment { comment: i_comment, annotation_: i_annotation__ }, a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpCommentStrOpt(txt.clone(), i_comment.clone())?;
@@ -1684,7 +1702,7 @@ pub(crate) fn dumpComment(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<Absyn::Commen
 
 pub(crate) fn dumpCommentOpt(mut in_txt: Tpl::Text, mut in_a_ocmt: Option<Arc<Absyn::Comment>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ocmt.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ocmt, in_a_context)) {
         (txt, Some(i_cmt), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpComment(txt.clone(), i_cmt.clone(), a_context.clone())?;
@@ -1700,7 +1718,7 @@ pub(crate) fn dumpCommentOpt(mut in_txt: Tpl::Text, mut in_a_ocmt: Option<Arc<Ab
 
 pub(crate) fn dumpCommentStrOpt(mut in_txt: Tpl::Text, mut in_a_comment: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_comment.clone()) {
+    out_txt = (match (in_txt, in_a_comment) {
         (mut txt, Some(mut i_cmt)) => {
             txt = dumpCommentStr(txt.clone(), (i_cmt.clone()).clone())?;
             txt.clone()
@@ -1718,18 +1736,18 @@ pub(crate) fn dumpCommentStr(mut txt: Tpl::Text, mut a_comment: ArcStr) -> Resul
     let mut ret_1: ArcStr;
     let mut l_replaceAllRegular: Tpl::Text;
     l_replaceAllRegular = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    l_replaceAllRegular = Tpl::writeTok(l_replaceAllRegular.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#= ")).clone() }))?;
-    ret_1 = (System::escapedString((a_comment.clone()).clone(), false)).clone();
-    ret_2 = (System::stringReplace((ret_1.clone()).clone(), (literal!("//")).clone(), (literal!("")).clone())?).clone();
-    l_replaceAllRegular = Tpl::writeStr(l_replaceAllRegular.clone(), (ret_2.clone()).clone())?;
-    l_replaceAllRegular = Tpl::writeTok(l_replaceAllRegular.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" =#")).clone() }))?;
-    out_txt = Tpl::writeText(txt.clone(), l_replaceAllRegular.clone())?;
+    l_replaceAllRegular = Tpl::writeTok(l_replaceAllRegular, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#= ")).clone() }))?;
+    ret_1 = (System::escapedString((a_comment).clone(), false)).clone();
+    ret_2 = (System::stringReplace((ret_1).clone(), (literal!("//")).clone(), (literal!("")).clone())?).clone();
+    l_replaceAllRegular = Tpl::writeStr(l_replaceAllRegular, (ret_2).clone())?;
+    l_replaceAllRegular = Tpl::writeTok(l_replaceAllRegular, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" =#")).clone() }))?;
+    out_txt = Tpl::writeText(txt, l_replaceAllRegular)?;
     Ok(out_txt)
 }
 
 fn fun_99(mut in_txt: Tpl::Text, mut in_a_modification: Option<Arc<Absyn::Modification>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modification.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modification, in_a_context)) {
         (txt, Some(i_mod), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpModification(txt.clone(), i_mod.clone(), a_context.clone())?;
@@ -1745,7 +1763,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_modification: Option<Arc<Absyn::Modifi
 
 fn fun_100(mut in_txt: Tpl::Text, mut in_a_constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_constrainClass.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_constrainClass, in_a_context)) {
         (txt, Some(i_cc), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpConstrainClass(txt.clone(), i_cc.clone(), a_context.clone())?;
@@ -1761,7 +1779,7 @@ fn fun_100(mut in_txt: Tpl::Text, mut in_a_constrainClass: Option<Arc<Absyn::Con
 
 pub(crate) fn dumpElementArg(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementArg>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_earg.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_earg, in_a_context)) {
         (txt, Deref @ Absyn::ElementArg::MODIFICATION { eachPrefix: i_eachPrefix, finalPrefix: i_finalPrefix, path: i_path, modification: i_modification, comment: i_comment, .. }, a_context) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_mod__str: Tpl::Text;
@@ -1812,7 +1830,7 @@ pub(crate) fn dumpElementArg(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::El
 
 pub(crate) fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_each.clone()) {
+    out_txt = (match (in_txt, in_a_each) {
         (mut txt, Absyn::Each::EACH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("each ")).clone() }))?;
             txt.clone()
@@ -1826,7 +1844,7 @@ pub(crate) fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Res
 
 pub(crate) fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_final.clone()) {
+    out_txt = (match (in_txt, in_a_final) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -1840,7 +1858,7 @@ pub(crate) fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<T
 
 pub(crate) fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_redecl.clone()) {
+    out_txt = (match (in_txt, in_a_redecl) {
         (mut txt, Absyn::RedeclareKeywords::REDECLARE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("redeclare ")).clone() }))?;
             txt.clone()
@@ -1858,7 +1876,7 @@ pub(crate) fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::Redec
 
 pub(crate) fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_repl.clone()) {
+    out_txt = (match (in_txt, in_a_repl) {
         (mut txt, Absyn::RedeclareKeywords::REPLACEABLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("replaceable ")).clone() }))?;
             txt.clone()
@@ -1874,25 +1892,26 @@ pub(crate) fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::Redec
     Ok(out_txt)
 }
 
-fn lm_106(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_106 in &*items.clone() {
-        let mut lstElt_106 = lstElt_106.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_106.clone()) {
-        i_earg => {
+fn lm_106(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_earg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementArg(txt.clone(), i_earg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_107(mut in_txt: Tpl::Text, mut in_a_elementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elementArgLst.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_elementArgLst, in_a_context)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -1912,7 +1931,7 @@ fn fun_107(mut in_txt: Tpl::Text, mut in_a_elementArgLst: Arc<metamodelica::List
 
 pub(crate) fn dumpModification(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::Modification>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_mod.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_mod, in_a_context)) {
         (txt, Deref @ Absyn::Modification { elementArgLst: i_elementArgLst, eqMod: i_eqMod }, a_context) => {
             let mut l_eq__str: Tpl::Text;
             let mut l_arg__str: Tpl::Text;
@@ -1933,7 +1952,7 @@ pub(crate) fn dumpModification(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::M
 
 pub(crate) fn dumpEqMod(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqmod.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_eqmod, in_a_context)) {
         (txt, Deref @ Absyn::EqMod::EQMOD { exp: i_exp, .. }, a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1949,25 +1968,26 @@ pub(crate) fn dumpEqMod(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>
     Ok(out_txt)
 }
 
-fn lm_110(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_110 in &*items.clone() {
-        let mut lstElt_110 = lstElt_110.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_110.clone()) {
-        i_earg => {
+fn lm_110(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_earg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementArg(txt.clone(), i_earg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_111(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -1983,30 +2003,31 @@ fn fun_111(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text) -> Result<Tpl::
     Ok(out_txt)
 }
 
-fn lm_112(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut a_ty__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_112 in &*items.clone() {
-        let mut lstElt_112 = lstElt_112.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_112.clone()) {
-        i_comp => {
+fn lm_112(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_a_ty__str: Tpl::Text) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_ty__str)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_comp, tail: rest }, a_ty__str) => {
             let mut ret_1: MMToJuliaUtil::Context;
             let mut l_comp__str: Tpl::Text;
+            let mut txt = (*txt).clone();
             ret_1 = MMToJuliaUtil::makeFunctionReturnContext((literal!("")).clone(), (Tpl::textString(a_ty__str.clone())?).clone());
             l_comp__str = dumpComponentItem(Tpl::emptyTxt.clone(), i_comp.clone(), ret_1.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("local ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_comp__str.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_ty__str) = (txt.clone(), rest.clone(), a_ty__str.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_113(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ty__str: Tpl::Text, mut in_a_components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ty__str.clone(), in_a_components.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_ty__str, in_a_components)) {
         (txt, false, _, _) => {
             txt.clone()
         },
@@ -2024,7 +2045,7 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ty__str: Tpl::Text
 
 fn fun_114(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, MMToJuliaUtil::Context::PACKAGE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("const ")).clone() }))?;
             txt.clone()
@@ -2036,13 +2057,15 @@ fn fun_114(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> R
     Ok(out_txt)
 }
 
-fn lm_115(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut a_ty__str: Tpl::Text, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_115 in &*items.clone() {
-        let mut lstElt_115 = lstElt_115.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_115.clone()) {
-        i_comp => {
+fn lm_115(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_a_ty__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_ty__str, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_comp, tail: rest }, a_ty__str, a_context) => {
             let mut l_comp__str: Tpl::Text;
+            let mut txt = (*txt).clone();
             l_comp__str = dumpComponentItem(Tpl::emptyTxt.clone(), i_comp.clone(), MMToJuliaUtil::noContext.clone())?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = fun_114(txt.clone(), a_context.clone())?;
@@ -2051,17 +2074,16 @@ fn lm_115(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Compo
             txt = Tpl::writeText(txt.clone(), a_ty__str.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_ty__str, in_a_context) = (txt.clone(), rest.clone(), a_ty__str.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_116(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ty__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context, mut in_a_components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ty__str.clone(), in_a_context.clone(), in_a_components.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_ty__str, in_a_context, in_a_components)) {
         (txt, false, _, _, _) => {
             txt.clone()
         },
@@ -2079,7 +2101,7 @@ fn fun_116(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ty__str: Tpl::Text
 
 fn fun_117(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, MMToJuliaUtil::Context::FUNCTION { retValsStr: mut i_retValsStr }) => {
             txt = Tpl::writeStr(txt.clone(), (i_retValsStr.clone()).clone())?;
             txt.clone()
@@ -2093,7 +2115,7 @@ fn fun_117(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> R
 
 fn fun_118(mut in_txt: Tpl::Text, mut in_a_comps__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comps__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comps__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -2109,7 +2131,7 @@ fn fun_118(mut in_txt: Tpl::Text, mut in_a_comps__str: Tpl::Text) -> Result<Tpl:
 
 fn fun_119(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context, mut in_a_comps__str__no__local: Tpl::Text, mut in_a_comps__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_comps__str__no__local.clone(), in_a_comps__str.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_comps__str__no__local, in_a_comps__str) {
         (mut txt, MMToJuliaUtil::Context::FUNCTION { retValsStr: _ }, _, mut a_comps__str) => {
             txt = fun_118(txt.clone(), a_comps__str.clone())?;
             txt.clone()
@@ -2132,7 +2154,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context, mut 
 
 pub(crate) fn dumpElementSpec(mut in_txt: Tpl::Text, mut in_a_specification: Arc<Absyn::ElementSpec>, mut in_a_options: Dump::DumpOptions, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_specification.clone(), in_a_options.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_specification, in_a_options, in_a_context)) {
         (txt, Deref @ Absyn::ElementSpec::CLASSDEF { class_: i_class__, .. }, a_options, a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpClassElement(txt.clone(), i_class__.clone(), a_options.clone(), a_context.clone())?;
@@ -2190,25 +2212,26 @@ pub(crate) fn dumpElementSpec(mut in_txt: Tpl::Text, mut in_a_specification: Arc
     Ok(out_txt)
 }
 
-fn lm_121(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_121 in &*items.clone() {
-        let mut lstElt_121 = lstElt_121.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_121.clone()) {
-        i_comp => {
+fn lm_121(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_comp, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpComponentItem(txt.clone(), i_comp.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_122(mut in_txt: Tpl::Text, mut in_a_specification: Arc<Absyn::ElementSpec>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_specification.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_specification, in_a_context)) {
         (txt, Deref @ Absyn::ElementSpec::COMPONENTS { components: i_components, .. }, a_context) => {
             let mut l_comps__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -2228,13 +2251,13 @@ fn fun_122(mut in_txt: Tpl::Text, mut in_a_specification: Arc<Absyn::ElementSpec
 
 pub(crate) fn dumpElementSpecForComponents(mut txt: Tpl::Text, mut a_specification: Arc<Absyn::ElementSpec>, mut a_options: Dump::DumpOptions, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_122(txt.clone(), a_specification.clone(), a_context.clone())?;
+    out_txt = fun_122(txt, a_specification, a_context)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpElementAttr(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_attr.clone()) {
+    out_txt = (match (in_txt, in_a_attr) {
         (mut txt, Absyn::ElementAttributes { variability: mut i_variability, .. }) => {
             let mut l_var__str: Tpl::Text;
             l_var__str = dumpVariability(Tpl::emptyTxt.clone(), i_variability.clone())?;
@@ -2250,7 +2273,7 @@ pub(crate) fn dumpElementAttr(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::Eleme
 
 pub(crate) fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_var.clone()) {
+    out_txt = (match (in_txt, in_a_var) {
         (mut txt, Absyn::Variability::VAR { .. }) => {
             txt.clone()
         },
@@ -2265,25 +2288,26 @@ pub(crate) fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variab
     Ok(out_txt)
 }
 
-fn lm_126(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_126 in &*items.clone() {
-        let mut lstElt_126 = lstElt_126.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_126.clone()) {
-        i_e => {
+fn lm_126(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementArg(txt.clone(), i_e.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_127(mut in_txt: Tpl::Text, mut in_a_el: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_el.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_el, in_a_context)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -2303,7 +2327,7 @@ fn fun_127(mut in_txt: Tpl::Text, mut in_a_el: Arc<metamodelica::List<Arc<Absyn:
 
 pub(crate) fn dumpConstrainClass(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::ConstrainClass>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cc.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cc, in_a_context)) {
         (txt, Deref @ Absyn::ConstrainClass { elementSpec: Deref @ Absyn::ElementSpec::EXTENDS { path: i_p, elementArg: i_el, .. }, comment: i_comment }, a_context) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_el__str: Tpl::Text;
@@ -2328,33 +2352,34 @@ pub(crate) fn dumpConstrainClass(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::
     Ok(out_txt)
 }
 
-fn lm_129(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_129 in &*items.clone() {
-        let mut lstElt_129 = lstElt_129.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_129.clone()) {
-        i_ci => {
+fn lm_129(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ci, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpComponentItemWithoutCondString(txt.clone(), i_ci.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpComponentItems(mut txt: Tpl::Text, mut a_componentItems: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_129(out_txt.clone(), a_componentItems.clone(), a_context.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_129(out_txt, a_componentItems, a_context)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpComponentItem(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn::ComponentItem>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comp.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comp, in_a_context)) {
         (txt, Deref @ Absyn::ComponentItem { component: i_component, condition: i_condition, comment: i_comment }, a_context) => {
             let mut l_cmt: Tpl::Text;
             let mut l_cond__str: Tpl::Text;
@@ -2378,7 +2403,7 @@ pub(crate) fn dumpComponentItem(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn:
 
 pub(crate) fn dumpComponentItemWithoutCondString(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn::ComponentItem>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comp.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_comp, in_a_context)) {
         (txt, Deref @ Absyn::ComponentItem { component: i_component, comment: i_comment, .. }, a_context) => {
             let mut l_cmt: Tpl::Text;
             let mut l_comp__str: Tpl::Text;
@@ -2399,7 +2424,7 @@ pub(crate) fn dumpComponentItemWithoutCondString(mut in_txt: Tpl::Text, mut in_a
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_modification: Option<Arc<Absyn::Modification>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modification.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_modification, in_a_context)) {
         (txt, Some(i_mod), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpModification(txt.clone(), i_mod.clone(), a_context.clone())?;
@@ -2415,7 +2440,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modification: Option<Arc<Absyn::Modif
 
 fn fun_134(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context, mut in_a_mod__str: Tpl::Text, mut in_a_dim__str: Tpl::Text, mut in_a_component__name: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone(), in_a_mod__str.clone(), in_a_dim__str.clone(), in_a_component__name.clone()) {
+    out_txt = (match (in_txt, in_a_context, in_a_mod__str, in_a_dim__str, in_a_component__name) {
         (mut txt, MMToJuliaUtil::Context::FUNCTION_RETURN_CONTEXT { ty_str: mut i_ty__str, .. }, mut a_mod__str, mut a_dim__str, mut a_component__name) => {
             txt = Tpl::writeText(txt.clone(), a_component__name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("::")).clone() }))?;
@@ -2448,7 +2473,7 @@ fn fun_134(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context, mut 
 
 pub(crate) fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Component, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_comp.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_comp, in_a_context) {
         (mut txt, Absyn::Component { arrayDim: ref i_arrayDim, modification: mut i_modification, name: mut i_name }, mut a_context) => {
             let mut l_component__name: Tpl::Text;
             let mut l_mod__str: Tpl::Text;
@@ -2468,7 +2493,7 @@ pub(crate) fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Compone
 
 pub(crate) fn dumpComponentCondition(mut in_txt: Tpl::Text, mut in_a_cond: Option<Arc<Absyn::Exp>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cond.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cond, in_a_context)) {
         (txt, Some(i_cexp), a_context) => {
             let mut l_exp__str: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -2489,7 +2514,7 @@ pub(crate) fn dumpComponentCondition(mut in_txt: Tpl::Text, mut in_a_cond: Optio
 
 fn fun_137(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_path__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_path__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_path__str)) {
         (txt, Deref @ "Array", _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("import ArrayUtil")).clone() }))?;
@@ -2511,24 +2536,26 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_path__str: Tpl::
     Ok(out_txt)
 }
 
-fn lm_138(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Absyn::GroupImport>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_138 in &*items.clone() {
-        let mut lstElt_138 = lstElt_138.clone();
-        txt = (match lstElt_138.clone() {
-        mut i_group => {
+fn lm_138(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Absyn::GroupImport>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_group, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpGroupImport(txt.clone(), i_group.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_imp.clone()) {
+    out_txt = (match (in_txt, in_a_imp) {
         (mut txt, Absyn::Import::NAMED_IMPORT { path: ref i_path, name: mut i_name }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("import ")).clone() }))?;
             txt = dumpPathJL(txt.clone(), i_path.clone())?;
@@ -2573,7 +2600,7 @@ pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> 
 
 pub(crate) fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_gimp.clone()) {
+    out_txt = (match (in_txt, in_a_gimp) {
         (mut txt, Absyn::GroupImport::GROUP_IMPORT_NAME { name: mut i_name }) => {
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt.clone()
@@ -2593,37 +2620,38 @@ pub(crate) fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::Group
 
 pub(crate) fn dumpEquation(mut txt: Tpl::Text, mut a_eq: Arc<Absyn::Equation>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("No equations allowed. Translate them to algorithms")).clone() }))?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("No equations allowed. Translate them to algorithms")).clone() }))?;
     Ok(out_txt)
 }
 
-fn lm_142(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_142 in &*items.clone() {
-        let mut lstElt_142 = lstElt_142.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_142.clone()) {
-        i_alg => {
+fn lm_142(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_alg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpAlgorithmItem(txt.clone(), i_alg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpAlgorithmItems(mut txt: Tpl::Text, mut a_algs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_142(out_txt.clone(), a_algs.clone(), a_context.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_142(out_txt, a_algs, a_context)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpAlgorithmItem(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::AlgorithmItem>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_alg.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_alg, in_a_context)) {
         (txt, Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: i_algorithm__, comment: i_comment, .. }, a_context) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_alg__str: Tpl::Text;
@@ -2649,7 +2677,7 @@ pub(crate) fn dumpAlgorithmItem(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::
 
 fn fun_145(mut in_txt: Tpl::Text, mut in_a_assignComponent: Arc<Absyn::Exp>, mut in_a_rhs__str: Tpl::Text, mut in_a_lhs__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_assignComponent.clone(), in_a_rhs__str.clone(), in_a_lhs__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_assignComponent, in_a_rhs__str, in_a_lhs__str)) {
         (txt, Deref @ Absyn::Exp::CONS { head: _, .. }, a_rhs__str, a_lhs__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("@match ")).clone() }))?;
@@ -2672,7 +2700,7 @@ fn fun_145(mut in_txt: Tpl::Text, mut in_a_assignComponent: Arc<Absyn::Exp>, mut
 
 fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_assignComponent: Arc<Absyn::Exp>, mut in_a_rhs__str: Tpl::Text, mut in_a_lhs__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_assignComponent.clone(), in_a_rhs__str.clone(), in_a_lhs__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_assignComponent, in_a_rhs__str, in_a_lhs__str)) {
         (txt, false, _, a_rhs__str, a_lhs__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("@match ")).clone() }))?;
@@ -2691,25 +2719,26 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_assignComponent: A
     Ok(out_txt)
 }
 
-fn lm_147(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>)>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_147 in &*items.clone() {
-        let mut lstElt_147 = lstElt_147.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_147.clone()) {
-        (i_c, i_b) => {
+fn lm_147(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>)>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: (i_c, i_b), tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpAlgorithmBranch(txt.clone(), i_c.clone(), i_b.clone(), (literal!("elseif")).clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_148(mut in_txt: Tpl::Text, mut in_a_else__branch__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_else__branch__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_else__branch__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -2728,7 +2757,7 @@ fn fun_148(mut in_txt: Tpl::Text, mut in_a_else__branch__str: Tpl::Text) -> Resu
 
 fn fun_149(mut in_txt: Tpl::Text, mut in_a_equ: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equ.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_equ, in_a_context)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("...")).clone() }))?;
@@ -2746,7 +2775,7 @@ fn fun_149(mut in_txt: Tpl::Text, mut in_a_equ: Arc<metamodelica::List<Arc<Absyn
 
 pub(crate) fn dumpAlgorithm(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_alg.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_alg, in_a_context)) {
         (txt, Deref @ Absyn::Algorithm::ALG_ASSIGN { assignComponent: i_assignComponent, value: i_value }, a_context) => {
             let mut ret_3: bool;
             let mut l_rhs__str: Tpl::Text;
@@ -2875,7 +2904,7 @@ pub(crate) fn dumpAlgorithm(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algo
 
 pub(crate) fn dumpAlgReturnString(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, MMToJuliaUtil::Context::FUNCTION { retValsStr: mut i_retValsStr }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("return ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_retValsStr.clone()).clone())?;
@@ -2889,43 +2918,44 @@ pub(crate) fn dumpAlgReturnString(mut in_txt: Tpl::Text, mut in_a_context: MMToJ
     Ok(out_txt)
 }
 
-fn lm_152(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_152 in &*items.clone() {
-        let mut lstElt_152 = lstElt_152.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_152.clone()) {
-        i_eq => {
+fn lm_152(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpAlgorithmItem(txt.clone(), i_eq.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpAlgorithmBranch(mut txt: Tpl::Text, mut a_cond: Arc<Absyn::Exp>, mut a_body: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_header: ArcStr, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_body__str: Tpl::Text;
     let mut l_cond__str: Tpl::Text;
-    l_cond__str = dumpExp(Tpl::emptyTxt.clone(), a_cond.clone(), a_context.clone())?;
+    l_cond__str = dumpExp(Tpl::emptyTxt.clone(), a_cond, a_context.clone())?;
     l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_body__str = lm_152(l_body__str.clone(), a_body.clone(), a_context.clone())?;
-    l_body__str = Tpl::popIter(l_body__str.clone())?;
-    out_txt = Tpl::writeStr(txt.clone(), (a_header.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_cond__str.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_body__str.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
+    l_body__str = lm_152(l_body__str, a_body, a_context)?;
+    l_body__str = Tpl::popIter(l_body__str)?;
+    out_txt = Tpl::writeStr(txt, (a_header).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_cond__str)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::writeText(out_txt, l_body__str)?;
+    out_txt = Tpl::popBlock(out_txt)?;
     Ok(out_txt)
 }
 
 fn fun_154(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_path: Arc<Absyn::Path>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_path.clone(), in_a_name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_path, in_a_name)) {
         (txt, false, a_path, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
@@ -2947,7 +2977,7 @@ fn fun_154(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_path: Arc<Absyn::P
 
 fn fun_155(mut in_txt: Tpl::Text, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_name)) {
         (txt, Deref @ "Real") => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Float")).clone() }))?;
@@ -3000,7 +3030,7 @@ fn fun_155(mut in_txt: Tpl::Text, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
 
 pub(crate) fn dumpPathJL(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_path)) {
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
@@ -3031,7 +3061,7 @@ pub(crate) fn dumpPathJL(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>)
 
 pub(crate) fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_path)) {
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = dumpPathJL(txt.clone(), i_path.clone())?;
@@ -3049,7 +3079,7 @@ pub(crate) fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Pa
 
 pub(crate) fn dumpTypeSpecOpt(mut in_txt: Tpl::Text, mut in_a_typespecOpt: Option<Arc<Absyn::TypeSpec>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typespecOpt.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_typespecOpt, in_a_context)) {
         (txt, Some(i_ts), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpTypeSpec(txt.clone(), i_ts.clone(), a_context.clone())?;
@@ -3063,25 +3093,26 @@ pub(crate) fn dumpTypeSpecOpt(mut in_txt: Tpl::Text, mut in_a_typespecOpt: Optio
     Ok(out_txt)
 }
 
-fn lm_159(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::TypeSpec>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_159 in &*items.clone() {
-        let mut lstElt_159 = lstElt_159.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_159.clone()) {
-        i_ty => {
+fn lm_159(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::TypeSpec>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpTypeSpec(txt.clone(), i_ty.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_160(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, MMToJuliaUtil::Context::INPUT_CONTEXT { ty_str: _ }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("iofunc")).clone() }))?;
             txt.clone()
@@ -3095,7 +3126,7 @@ fn fun_160(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> R
 
 fn fun_161(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, MMToJuliaUtil::Context::PACKAGE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("package")).clone() }))?;
             txt.clone()
@@ -3109,7 +3140,7 @@ fn fun_161(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> R
 
 fn fun_162(mut in_txt: Tpl::Text, mut in_a_isPackage: Tpl::Text, mut in_a_arraydim__str: Tpl::Text, mut in_a_ty__str: Tpl::Text, mut in_a_path__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_isPackage.clone(), in_a_arraydim__str.clone(), in_a_ty__str.clone(), in_a_path__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_isPackage, in_a_arraydim__str, in_a_ty__str, in_a_path__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_arraydim__str, a_ty__str, a_path__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_path__str.clone())?;
@@ -3131,7 +3162,7 @@ fn fun_162(mut in_txt: Tpl::Text, mut in_a_isPackage: Tpl::Text, mut in_a_arrayd
 
 fn fun_163(mut in_txt: Tpl::Text, mut in_a_isFunc: Tpl::Text, mut in_a_res: Tpl::Text, mut in_a_arraydim__str: Tpl::Text, mut in_a_ty__str: Tpl::Text, mut in_a_path__str: Tpl::Text, mut in_a_isPackage: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_isFunc.clone(), in_a_res.clone(), in_a_arraydim__str.clone(), in_a_ty__str.clone(), in_a_path__str.clone(), in_a_isPackage.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_isFunc, in_a_res, in_a_arraydim__str, in_a_ty__str, in_a_path__str, in_a_isPackage)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _, a_arraydim__str, a_ty__str, a_path__str, a_isPackage) => {
             let mut txt = (*txt).clone();
             txt = fun_162(txt.clone(), a_isPackage.clone(), a_arraydim__str.clone(), a_ty__str.clone(), a_path__str.clone())?;
@@ -3149,7 +3180,7 @@ fn fun_163(mut in_txt: Tpl::Text, mut in_a_isFunc: Tpl::Text, mut in_a_res: Tpl:
 
 pub(crate) fn dumpTypeSpec(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpec>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typeSpec.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_typeSpec, in_a_context)) {
         (txt, Deref @ Absyn::TypeSpec::TPATH { path: i_path, arrayDim: i_arrayDim }, a_context) => {
             let mut l_arraydim__str: Tpl::Text;
             let mut l_path__str: Tpl::Text;
@@ -3195,7 +3226,7 @@ pub(crate) fn dumpTypeSpec(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::
 
 pub(crate) fn dumpArrayDimOptTypeSpec(mut in_txt: Tpl::Text, mut in_a_arraydim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arraydim.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_arraydim, in_a_context)) {
         (txt, Some(i_ad), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpSubscriptsTypeSpec(txt.clone(), i_ad.clone(), a_context.clone())?;
@@ -3209,25 +3240,26 @@ pub(crate) fn dumpArrayDimOptTypeSpec(mut in_txt: Tpl::Text, mut in_a_arraydim: 
     Ok(out_txt)
 }
 
-fn lm_166(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_166 in &*items.clone() {
-        let mut lstElt_166 = lstElt_166.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_166.clone()) {
-        _ => {
+fn lm_166(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Array")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_167(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscripts)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -3249,13 +3281,13 @@ fn fun_167(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Ar
 
 pub(crate) fn dumpSubscriptsTypeSpec(mut txt: Tpl::Text, mut a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_167(txt.clone(), a_subscripts.clone())?;
+    out_txt = fun_167(txt, a_subscripts)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpArrayDimOpt(mut in_txt: Tpl::Text, mut in_a_arraydim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arraydim.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_arraydim, in_a_context)) {
         (txt, Some(i_ad), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpSubscripts(txt.clone(), i_ad.clone(), a_context.clone())?;
@@ -3269,25 +3301,26 @@ pub(crate) fn dumpArrayDimOpt(mut in_txt: Tpl::Text, mut in_a_arraydim: Option<A
     Ok(out_txt)
 }
 
-fn lm_170(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_170 in &*items.clone() {
-        let mut lstElt_170 = lstElt_170.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_170.clone()) {
-        i_s => {
+fn lm_170(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_s, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpSubscript(txt.clone(), i_s.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscripts, in_a_context)) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
@@ -3309,7 +3342,7 @@ pub(crate) fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<met
 
 pub(crate) fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<Absyn::Subscript>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_subscript, in_a_context)) {
         (txt, Deref @ Absyn::Subscript::NOSUB { .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
@@ -3328,25 +3361,26 @@ pub(crate) fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<Absyn
     Ok(out_txt)
 }
 
-fn lm_173(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_173 in &*items.clone() {
-        let mut lstElt_173 = lstElt_173.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_173.clone()) {
-        i_na => {
+fn lm_173(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_na, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpNamedArgPattern3(txt.clone(), i_na.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_174(mut in_txt: Tpl::Text, mut in_a_functionArgs: Arc<Absyn::FunctionArgs>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_functionArgs.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_functionArgs)) {
         (txt, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { argNames: i_argNames, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3362,25 +3396,26 @@ fn fun_174(mut in_txt: Tpl::Text, mut in_a_functionArgs: Arc<Absyn::FunctionArgs
     Ok(out_txt)
 }
 
-fn lm_175(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_175 in &*items.clone() {
-        let mut lstElt_175 = lstElt_175.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_175.clone()) {
-        i_e => {
+fn lm_175(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_e.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_176(mut in_txt: Tpl::Text, mut in_a_array__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_array__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_array__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("nil")).clone() }))?;
@@ -3398,59 +3433,62 @@ fn fun_176(mut in_txt: Tpl::Text, mut in_a_array__str: Tpl::Text) -> Result<Tpl:
     Ok(out_txt)
 }
 
-fn lm_177(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_177 in &*items.clone() {
-        let mut lstElt_177 = lstElt_177.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_177.clone()) {
-        i_e => {
+fn lm_177(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_e.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_178(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_178 in &*items.clone() {
-        let mut lstElt_178 = lstElt_178.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_178.clone()) {
-        i_row => {
+fn lm_178(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_row, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_177(txt.clone(), i_row.clone(), a_context.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_179(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_179 in &*items.clone() {
-        let mut lstElt_179 = lstElt_179.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_179.clone()) {
-        i_e => {
+fn lm_179(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_e.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_180(mut in_txt: Tpl::Text, mut in_a_tuple__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tuple__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_tuple__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("()")).clone() }))?;
@@ -3468,25 +3506,26 @@ fn fun_180(mut in_txt: Tpl::Text, mut in_a_tuple__str: Tpl::Text) -> Result<Tpl:
     Ok(out_txt)
 }
 
-fn lm_181(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_181 in &*items.clone() {
-        let mut lstElt_181 = lstElt_181.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_181.clone()) {
-        i_e => {
+fn lm_181(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_e.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context)) {
         (txt, Deref @ Absyn::Exp::INTEGER { value: i_value }, _) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeStr(txt.clone(), (intString(i_value.clone())).clone())?)
@@ -3722,77 +3761,81 @@ pub(crate) fn dumpExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut 
     }
 }
 
-fn lm_183(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_as__str: Tpl::Text, mut a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_as__str: Tpl::Text = a_as__str;
-    for mut lstElt_183 in &*items.clone() {
-        let mut lstElt_183 = lstElt_183.clone();
-        (txt, a_as__str) = (::match_deref::match_deref! { match &(lstElt_183.clone()) {
-        i_e => {
+fn lm_183(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_as__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_as__str, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, a_as__str, _) => {
+            return Ok((txt.clone(), a_as__str.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_as__str, a_context) => {
+            let mut txt = (*txt).clone();
+            let mut a_as__str = (*a_as__str).clone();
             (txt, a_as__str) = dumpPattern(txt.clone(), i_e.clone(), a_context.clone(), a_as__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <| ")).clone() }))?;
-            (txt.clone(), a_as__str.clone())
+            { (in_txt, in_items, in_a_as__str, in_a_context) = (txt.clone(), rest.clone(), a_as__str.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_as__str))
 }
 
-fn lm_184(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_as__str: Tpl::Text, mut a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_as__str: Tpl::Text = a_as__str;
-    for mut lstElt_184 in &*items.clone() {
-        let mut lstElt_184 = lstElt_184.clone();
-        (txt, a_as__str) = (::match_deref::match_deref! { match &(lstElt_184.clone()) {
-        i_e => {
+fn lm_184(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_as__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_as__str, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, a_as__str, _) => {
+            return Ok((txt.clone(), a_as__str.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_as__str, a_context) => {
+            let mut txt = (*txt).clone();
+            let mut a_as__str = (*a_as__str).clone();
             (txt, a_as__str) = dumpPattern(txt.clone(), i_e.clone(), a_context.clone(), a_as__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <| ")).clone() }))?;
-            (txt.clone(), a_as__str.clone())
+            { (in_txt, in_items, in_a_as__str, in_a_context) = (txt.clone(), rest.clone(), a_as__str.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_as__str))
 }
 
-fn lm_185(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_as__str: Tpl::Text, mut a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_as__str: Tpl::Text = a_as__str;
-    for mut lstElt_185 in &*items.clone() {
-        let mut lstElt_185 = lstElt_185.clone();
-        (txt, a_as__str) = (::match_deref::match_deref! { match &(lstElt_185.clone()) {
-        i_e => {
+fn lm_185(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_as__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_as__str, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, a_as__str, _) => {
+            return Ok((txt.clone(), a_as__str.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_as__str, a_context) => {
+            let mut txt = (*txt).clone();
+            let mut a_as__str = (*a_as__str).clone();
             (txt, a_as__str) = dumpPattern(txt.clone(), i_e.clone(), a_context.clone(), a_as__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <| ")).clone() }))?;
-            (txt.clone(), a_as__str.clone())
+            { (in_txt, in_items, in_a_as__str, in_a_context) = (txt.clone(), rest.clone(), a_as__str.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_as__str))
 }
 
-fn lm_186(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_as__str: Tpl::Text, mut a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_as__str: Tpl::Text = a_as__str;
-    for mut lstElt_186 in &*items.clone() {
-        let mut lstElt_186 = lstElt_186.clone();
-        (txt, a_as__str) = (::match_deref::match_deref! { match &(lstElt_186.clone()) {
-        i_e => {
+fn lm_186(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_as__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_as__str, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, a_as__str, _) => {
+            return Ok((txt.clone(), a_as__str.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_as__str, a_context) => {
+            let mut txt = (*txt).clone();
+            let mut a_as__str = (*a_as__str).clone();
             (txt, a_as__str) = dumpPattern(txt.clone(), i_e.clone(), a_context.clone(), a_as__str.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <| ")).clone() }))?;
-            (txt.clone(), a_as__str.clone())
+            { (in_txt, in_items, in_a_as__str, in_a_context) = (txt.clone(), rest.clone(), a_as__str.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_as__str))
 }
 
 fn fun_187(mut in_txt: Tpl::Text, mut in_a_id: ArcStr, mut in_a_function__: Arc<Absyn::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_id.clone(), in_a_function__.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_id, in_a_function__)) {
         (txt, Deref @ "list", _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("List")).clone() }))?;
@@ -3810,7 +3853,7 @@ fn fun_187(mut in_txt: Tpl::Text, mut in_a_id: ArcStr, mut in_a_function__: Arc<
 
 fn fun_188(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg)) {
         (txt, Deref @ "NONE") => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NONE")).clone() }))?;
@@ -3826,7 +3869,7 @@ fn fun_188(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 
 fn fun_189(mut in_txt: Tpl::Text, mut in_a_isNone: Tpl::Text, mut in_a_func__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_isNone.clone(), in_a_func__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_isNone, in_a_func__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_func__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_func__str.clone())?;
@@ -3846,7 +3889,7 @@ fn fun_189(mut in_txt: Tpl::Text, mut in_a_isNone: Tpl::Text, mut in_a_func__str
 
 fn fun_190(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_func__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone(), in_a_func__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str, in_a_func__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_func__str) => {
             let mut str_1: ArcStr;
             let mut l_isNone: Tpl::Text;
@@ -3871,7 +3914,7 @@ fn fun_190(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_func__
 
 fn fun_191(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_func__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone(), in_a_func__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str, in_a_func__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_func__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_func__str.clone())?;
@@ -3891,27 +3934,28 @@ fn fun_191(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_func__
     Ok(out_txt)
 }
 
-fn lm_192(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_as__str: Tpl::Text, mut a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_as__str: Tpl::Text = a_as__str;
-    for mut lstElt_192 in &*items.clone() {
-        let mut lstElt_192 = lstElt_192.clone();
-        (txt, a_as__str) = (::match_deref::match_deref! { match &(lstElt_192.clone()) {
-        i_e => {
+fn lm_192(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_as__str: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<(Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_as__str, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, a_as__str, _) => {
+            return Ok((txt.clone(), a_as__str.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }, a_as__str, a_context) => {
+            let mut txt = (*txt).clone();
+            let mut a_as__str = (*a_as__str).clone();
             (txt, a_as__str) = dumpPattern(txt.clone(), i_e.clone(), a_context.clone(), a_as__str.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_as__str.clone())
+            { (in_txt, in_items, in_a_as__str, in_a_context) = (txt.clone(), rest.clone(), a_as__str.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_as__str))
 }
 
 pub(crate) fn dumpPattern(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_context: MMToJuliaUtil::Context, mut in_a_as__str: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_as__str: Tpl::Text;
-    (out_txt, out_a_as__str) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_as__str.clone())) {
+    (out_txt, out_a_as__str) = (::match_deref::match_deref! { match &((in_txt, in_a_exp, in_a_context, in_a_as__str)) {
         (txt, Deref @ Absyn::Exp::INTEGER { value: i_value }, _, a_as__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_value.clone())).clone())?;
@@ -4037,47 +4081,49 @@ pub(crate) fn dumpPattern(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, 
 
 pub(crate) fn dumpCons(mut txt: Tpl::Text, mut a_headString: ArcStr, mut a_tailString: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::writeStr(txt.clone(), (a_headString.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <| ")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_tailString.clone()).clone())?;
+    out_txt = Tpl::writeStr(txt, (a_headString).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" <| ")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_tailString).clone())?;
     Ok(out_txt)
 }
 
-fn lm_195(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_195 in &*items.clone() {
-        let mut lstElt_195 = lstElt_195.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_195.clone()) {
-        i_arg => {
+fn lm_195(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_arg, tail: rest }) => {
+            let mut txt = (*txt).clone();
             (txt, _) = dumpPattern(txt.clone(), i_arg.clone(), MMToJuliaUtil::functionContext.clone(), Tpl::emptyTxt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_196(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_196 in &*items.clone() {
-        let mut lstElt_196 = lstElt_196.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_196.clone()) {
-        i_narg => {
+fn lm_196(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_narg, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpNamedArgPattern(txt.clone(), i_narg.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_197(mut in_txt: Tpl::Text, mut in_a_argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_argNames.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_argNames)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -4093,7 +4139,7 @@ fn fun_197(mut in_txt: Tpl::Text, mut in_a_argNames: Arc<metamodelica::List<Arc<
 
 fn fun_198(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone(), in_a_argNames.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str, in_a_argNames)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -4109,7 +4155,7 @@ fn fun_198(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_argNam
 
 pub(crate) fn dumpFunctionArgsPattern(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args)) {
         (txt, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: i_args, argNames: i_argNames }) => {
             let mut l_separator: Tpl::Text;
             let mut l_namedargs__str: Tpl::Text;
@@ -4139,7 +4185,7 @@ pub(crate) fn dumpFunctionArgsPattern(mut in_txt: Tpl::Text, mut in_a_args: Arc<
 
 pub(crate) fn dumpNamedArgPattern(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_narg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_narg)) {
         (txt, Deref @ Absyn::NamedArg { argName: i_argName, argValue: i_argValue }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_argName.clone()).clone())?;
@@ -4157,7 +4203,7 @@ pub(crate) fn dumpNamedArgPattern(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absy
 
 pub(crate) fn dumpNamedArgPattern2(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_narg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_narg)) {
         (txt, Deref @ Absyn::NamedArg { argName: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<%argName%>")).clone() }))?;
@@ -4173,7 +4219,7 @@ pub(crate) fn dumpNamedArgPattern2(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Abs
 
 pub(crate) fn dumpNamedArgPattern3(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_narg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_narg)) {
         (txt, Deref @ Absyn::NamedArg { argValue: i_argValue, .. }) => {
             let mut txt = (*txt).clone();
             (txt, _) = dumpPattern(txt.clone(), i_argValue.clone(), MMToJuliaUtil::functionContext.clone(), Tpl::emptyTxt.clone())?;
@@ -4189,7 +4235,7 @@ pub(crate) fn dumpNamedArgPattern3(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Abs
 
 pub(crate) fn dumpLhsExp(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<Absyn::Exp>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lhs.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_lhs, in_a_context)) {
         (txt, i_lhs @ Deref @ Absyn::Exp::IFEXP { ifExp: _, .. }, a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_lhs.clone(), a_context.clone())?;
@@ -4207,7 +4253,7 @@ pub(crate) fn dumpLhsExp(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<Absyn::Exp>, m
 
 fn fun_204(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_op__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_op__str.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_op__str) {
         (mut txt, false, mut a_op__str) => {
             txt = Tpl::writeText(txt.clone(), a_op__str.clone())?;
             txt.clone()
@@ -4226,15 +4272,15 @@ pub(crate) fn dumpOperand(mut txt: Tpl::Text, mut a_operand: Arc<Absyn::Exp>, mu
     let mut out_txt: Tpl::Text;
     let mut ret_1: bool;
     let mut l_op__str: Tpl::Text;
-    l_op__str = dumpExp(Tpl::emptyTxt.clone(), a_operand.clone(), a_context.clone())?;
-    ret_1 = Dump::shouldParenthesize(a_operand.clone(), a_operation.clone(), a_lhs.clone())?;
-    out_txt = fun_204(txt.clone(), ret_1.clone(), l_op__str.clone())?;
+    l_op__str = dumpExp(Tpl::emptyTxt.clone(), a_operand.clone(), a_context)?;
+    ret_1 = Dump::shouldParenthesize(a_operand, a_operation, a_lhs)?;
+    out_txt = fun_204(txt, ret_1, l_op__str)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpIfExp(mut in_txt: Tpl::Text, mut in_a_if__exp: Arc<Absyn::Exp>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_if__exp.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_if__exp, in_a_context)) {
         (txt, Deref @ Absyn::Exp::IFEXP { ifExp: i_ifExp, trueBranch: i_trueBranch, elseBranch: i_elseBranch, elseIfBranch: i_elseIfBranch }, a_context) => {
             let mut l_else__if__str: Tpl::Text;
             let mut l_else__branch__str: Tpl::Text;
@@ -4272,14 +4318,16 @@ pub(crate) fn dumpIfExp(mut in_txt: Tpl::Text, mut in_a_if__exp: Arc<Absyn::Exp>
     Ok(out_txt)
 }
 
-fn lm_207(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_207 in &*items.clone() {
-        let mut lstElt_207 = lstElt_207.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_207.clone()) {
-        (i_cond, i_branch) => {
+fn lm_207(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: (i_cond, i_branch), tail: rest }, a_context) => {
             let mut l_branch__str: Tpl::Text;
             let mut l_cond__str: Tpl::Text;
+            let mut txt = (*txt).clone();
             l_cond__str = dumpExp(Tpl::emptyTxt.clone(), i_cond.clone(), a_context.clone())?;
             l_branch__str = dumpExp(Tpl::emptyTxt.clone(), i_branch.clone(), a_context.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("elseif (")).clone() }))?;
@@ -4289,25 +4337,24 @@ fn lm_207(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>
             txt = Tpl::writeText(txt.clone(), l_branch__str.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpElseIfExp(mut txt: Tpl::Text, mut a_else__if: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_207(out_txt.clone(), a_else__if.clone(), a_context.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_207(out_txt, a_else__if, a_context)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 pub(crate) fn dumpCodeNode(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_code.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_code, in_a_context)) {
         (txt, Deref @ Absyn::CodeNode::C_TYPENAME { path: i_path }, _) => {
             let mut txt = (*txt).clone();
             txt = dumpPathJL(txt.clone(), i_path.clone())?;
@@ -4356,27 +4403,28 @@ pub(crate) fn dumpCodeNode(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::Code
     Ok(out_txt)
 }
 
-fn lm_210(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Case>>>, mut a_inputExp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_210 in &*items.clone() {
-        let mut lstElt_210 = lstElt_210.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_210.clone()) {
-        i_c => {
+fn lm_210(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Case>>>, mut in_a_inputExp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_inputExp)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_c, tail: rest }, a_inputExp) => {
             let mut ret_0: MMToJuliaUtil::Context;
+            let mut txt = (*txt).clone();
             ret_0 = MMToJuliaUtil::makeMatchContext(a_inputExp.clone());
             txt = dumpMatchCase(txt.clone(), i_c.clone(), ret_0.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_inputExp) = (txt.clone(), rest.clone(), a_inputExp.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpMatchExp(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_match__exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_match__exp)) {
         (txt, Deref @ Absyn::Exp::MATCHEXP { matchTy: i_matchTy, inputExp: i_inputExp, localDecls: i_localDecls, cases: i_cases, comment: i_comment }) => {
             let mut l_cmt__str: Tpl::Text;
             let mut l_cases__str: Tpl::Text;
@@ -4419,7 +4467,7 @@ pub(crate) fn dumpMatchExp(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn
 
 pub(crate) fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::MatchType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_match__type.clone()) {
+    out_txt = (match (in_txt, in_a_match__type) {
         (mut txt, Absyn::MatchType::MATCH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("@match")).clone() }))?;
             txt.clone()
@@ -4435,41 +4483,43 @@ pub(crate) fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::
     Ok(out_txt)
 }
 
-fn lm_213(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_213 in &*items.clone() {
-        let mut lstElt_213 = lstElt_213.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_213.clone()) {
-        i_alg => {
+fn lm_213(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_alg, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpAlgorithmItem(txt.clone(), i_alg.clone(), MMToJuliaUtil::functionContext.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_214(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_214 in &*items.clone() {
-        let mut lstElt_214 = lstElt_214.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_214.clone()) {
-        i_alg => {
+fn lm_214(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_alg, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpAlgorithmItem(txt.clone(), i_alg.clone(), MMToJuliaUtil::functionContext.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpMatchContents(mut in_txt: Tpl::Text, mut in_a_cp: Arc<Absyn::ClassPart>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cp)) {
         (txt, Deref @ Absyn::ClassPart::EQUATIONS { contents: Deref @ metamodelica::List::Nil }) => {
             txt.clone()
         },
@@ -4504,25 +4554,26 @@ pub(crate) fn dumpMatchContents(mut in_txt: Tpl::Text, mut in_a_cp: Arc<Absyn::C
     Ok(out_txt)
 }
 
-fn lm_216(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_216 in &*items.clone() {
-        let mut lstElt_216 = lstElt_216.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_216.clone()) {
-        i_decl => {
+fn lm_216(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_decl, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = dumpElementItem(txt.clone(), i_decl.clone(), Dump::defaultDumpOptions.clone(), MMToJuliaUtil::functionContext.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpMatchLocals(mut in_txt: Tpl::Text, mut in_a_locals: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_locals.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_locals)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -4542,7 +4593,7 @@ pub(crate) fn dumpMatchLocals(mut in_txt: Tpl::Text, mut in_a_locals: Arc<metamo
 
 fn fun_218(mut in_txt: Tpl::Text, mut in_a_patternGuard: Option<Arc<Absyn::Exp>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_patternGuard.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_patternGuard, in_a_context)) {
         (txt, Some(i_g), a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("where (")).clone() }))?;
@@ -4560,7 +4611,7 @@ fn fun_218(mut in_txt: Tpl::Text, mut in_a_patternGuard: Option<Arc<Absyn::Exp>>
 
 fn fun_219(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_context.clone()) {
+    out_txt = (match (in_txt, in_a_context) {
         (mut txt, ref i_context @ MMToJuliaUtil::Context::MATCH_CONTEXT { inputExp: ref i_inputExp }) => {
             txt = dumpExp(txt.clone(), i_inputExp.clone(), i_context.clone())?;
             txt.clone()
@@ -4574,7 +4625,7 @@ fn fun_219(mut in_txt: Tpl::Text, mut in_a_context: MMToJuliaUtil::Context) -> R
 
 fn fun_220(mut in_txt: Tpl::Text, mut in_a_as__str: Tpl::Text, mut in_a_result__str: Tpl::Text, mut in_a_eql__str: Tpl::Text, mut in_a_cmt__str: Tpl::Text, mut in_a_guard__str: Tpl::Text, mut in_a_pattern__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_as__str.clone(), in_a_result__str.clone(), in_a_eql__str.clone(), in_a_cmt__str.clone(), in_a_guard__str.clone(), in_a_pattern__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_as__str, in_a_result__str, in_a_eql__str, in_a_cmt__str, in_a_guard__str, in_a_pattern__str)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_result__str, a_eql__str, a_cmt__str, a_guard__str, a_pattern__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_pattern__str.clone())?;
@@ -4616,7 +4667,7 @@ fn fun_220(mut in_txt: Tpl::Text, mut in_a_as__str: Tpl::Text, mut in_a_result__
 
 pub(crate) fn dumpMatchCase(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_c.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_c, in_a_context)) {
         (txt, Deref @ Absyn::Case::CASE { pattern: i_pattern, patternGuard: i_patternGuard, classPart: i_classPart, result: i_result, comment: i_comment, .. }, a_context) => {
             let mut l_input__str: Tpl::Text;
             let mut l_cmt__str: Tpl::Text;
@@ -4666,7 +4717,7 @@ pub(crate) fn dumpMatchCase(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>,
 
 pub(crate) fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: Absyn::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_op.clone()) {
+    out_txt = (match (in_txt, in_a_op) {
         (mut txt, Absyn::Operator::AND { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("&&")).clone() }))?;
             txt.clone()
@@ -4693,7 +4744,7 @@ pub(crate) fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: Absyn::Operator) 
 
 fn fun_223(mut in_txt: Tpl::Text, mut in_a_name: ArcStr, mut in_a_c__str: Tpl::Text, mut in_a_ss__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_name.clone(), in_a_c__str.clone(), in_a_ss__str.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_name, in_a_c__str, in_a_ss__str)) {
         (txt, Deref @ "List", a_c__str, a_ss__str) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ListUtil")).clone() }))?;
@@ -4724,7 +4775,7 @@ fn fun_223(mut in_txt: Tpl::Text, mut in_a_name: ArcStr, mut in_a_c__str: Tpl::T
 
 fn fun_224(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -4738,7 +4789,7 @@ fn fun_224(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 pub(crate) fn dumpCref(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cref.clone(), in_a_context.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cref, in_a_context)) {
         (txt, Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: i_subscripts, componentRef: i_componentRef, name: i_name }, a_context) => {
             let mut l_c__str: Tpl::Text;
             let mut l_ss__str: Tpl::Text;
@@ -4775,41 +4826,43 @@ pub(crate) fn dumpCref(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::Componen
     }
 }
 
-fn lm_226(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_226 in &*items.clone() {
-        let mut lstElt_226 = lstElt_226.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_226.clone()) {
-        i_arg => {
+fn lm_226(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_arg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_arg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_227(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_227 in &*items.clone() {
-        let mut lstElt_227 = lstElt_227.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_227.clone()) {
-        i_narg => {
+fn lm_227(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_narg, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpNamedArg(txt.clone(), i_narg.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_228(mut in_txt: Tpl::Text, mut in_a_argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_argNames.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_argNames)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -4825,7 +4878,7 @@ fn fun_228(mut in_txt: Tpl::Text, mut in_a_argNames: Arc<metamodelica::List<Arc<
 
 fn fun_229(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args__str.clone(), in_a_argNames.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args__str, in_a_argNames)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
         },
@@ -4839,57 +4892,60 @@ fn fun_229(mut in_txt: Tpl::Text, mut in_a_args__str: Tpl::Text, mut in_a_argNam
     Ok(out_txt)
 }
 
-fn lm_230(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_230 in &*items.clone() {
-        let mut lstElt_230 = lstElt_230.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_230.clone()) {
-        i_i => {
+fn lm_230(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpForIterator(txt.clone(), i_i.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_231(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_231 in &*items.clone() {
-        let mut lstElt_231 = lstElt_231.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_231.clone()) {
-        i_i => {
+fn lm_231(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpForIteratorName(txt.clone(), i_i.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_232(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_232 in &*items.clone() {
-        let mut lstElt_232 = lstElt_232.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_232.clone()) {
-        i_i => {
+fn lm_232(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpForIteratorRanges(txt.clone(), i_i.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_233(mut in_txt: Tpl::Text, mut in_a_iterType: Absyn::ReductionIterType, mut in_a_iter__str: Tpl::Text, mut in_a_iter__ranges: Tpl::Text, mut in_a_iter__names: Tpl::Text, mut in_a_exp__str: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_iterType.clone(), in_a_iter__str.clone(), in_a_iter__ranges.clone(), in_a_iter__names.clone(), in_a_exp__str.clone()) {
+    out_txt = (match (in_txt, in_a_iterType, in_a_iter__str, in_a_iter__ranges, in_a_iter__names, in_a_exp__str) {
         (mut txt, Absyn::ReductionIterType::THREAD { .. }, _, mut a_iter__ranges, mut a_iter__names, mut a_exp__str) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("@do_threaded_for ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_exp__str.clone())?;
@@ -4912,7 +4968,7 @@ fn fun_233(mut in_txt: Tpl::Text, mut in_a_iterType: Absyn::ReductionIterType, m
 
 pub(crate) fn dumpFunctionArgs(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_args, in_a_context)) {
         (txt, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: i_args, argNames: i_argNames }, a_context) => {
             let mut l_separator: Tpl::Text;
             let mut l_namedargs__str: Tpl::Text;
@@ -4959,7 +5015,7 @@ pub(crate) fn dumpFunctionArgs(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::
 
 pub(crate) fn dumpNamedArg(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_narg.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_narg, in_a_context)) {
         (txt, Deref @ Absyn::NamedArg { argName: i_argName, argValue: i_argValue }, a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_argName.clone()).clone())?;
@@ -4975,33 +5031,34 @@ pub(crate) fn dumpNamedArg(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::Name
     Ok(out_txt)
 }
 
-fn lm_236(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_236 in &*items.clone() {
-        let mut lstElt_236 = lstElt_236.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_236.clone()) {
-        i_i => {
+fn lm_236(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_context)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }, a_context) => {
+            let mut txt = (*txt).clone();
             txt = dumpForIterator(txt.clone(), i_i.clone(), a_context.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_context) = (txt.clone(), rest.clone(), a_context.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpForIterators(mut txt: Tpl::Text, mut a_iters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_236(out_txt.clone(), a_iters.clone(), a_context.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_236(out_txt, a_iters, a_context)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 fn fun_238(mut in_txt: Tpl::Text, mut in_a_range: Option<Arc<Absyn::Exp>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_range.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_range, in_a_context)) {
         (txt, Some(i_r), a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -5020,7 +5077,7 @@ fn fun_238(mut in_txt: Tpl::Text, mut in_a_range: Option<Arc<Absyn::Exp>>, mut i
 
 fn fun_239(mut in_txt: Tpl::Text, mut in_a_guardExp: Option<Arc<Absyn::Exp>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_guardExp.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_guardExp, in_a_context)) {
         (txt, Some(i_g), a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -5039,7 +5096,7 @@ fn fun_239(mut in_txt: Tpl::Text, mut in_a_guardExp: Option<Arc<Absyn::Exp>>, mu
 
 pub(crate) fn dumpForIterator(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterator.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iterator, in_a_context)) {
         (txt, Deref @ Absyn::ForIterator { range: i_range, guardExp: i_guardExp, name: i_name }, a_context) => {
             let mut l_guard__str: Tpl::Text;
             let mut l_range__str: Tpl::Text;
@@ -5061,7 +5118,7 @@ pub(crate) fn dumpForIterator(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absy
 
 fn fun_241(mut in_txt: Tpl::Text, mut in_a_range: Option<Arc<Absyn::Exp>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_range.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_range, in_a_context)) {
         (txt, Some(i_r), a_context) => {
             let mut txt = (*txt).clone();
             txt = dumpExp(txt.clone(), i_r.clone(), a_context.clone())?;
@@ -5077,7 +5134,7 @@ fn fun_241(mut in_txt: Tpl::Text, mut in_a_range: Option<Arc<Absyn::Exp>>, mut i
 
 fn fun_242(mut in_txt: Tpl::Text, mut in_a_guardExp: Option<Arc<Absyn::Exp>>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_guardExp.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_guardExp, in_a_context)) {
         (txt, Some(i_g), a_context) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -5096,7 +5153,7 @@ fn fun_242(mut in_txt: Tpl::Text, mut in_a_guardExp: Option<Arc<Absyn::Exp>>, mu
 
 pub(crate) fn dumpForIteratorRanges(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>, mut in_a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterator.clone(), in_a_context.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iterator, in_a_context)) {
         (txt, Deref @ Absyn::ForIterator { range: i_range, guardExp: i_guardExp, .. }, a_context) => {
             let mut l_guard__str: Tpl::Text;
             let mut l_range__str: Tpl::Text;
@@ -5117,7 +5174,7 @@ pub(crate) fn dumpForIteratorRanges(mut in_txt: Tpl::Text, mut in_a_iterator: Ar
 
 fn fun_244(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterator.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_iterator)) {
         (txt, Deref @ Absyn::ForIterator { name: i_name, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -5133,37 +5190,38 @@ fn fun_244(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>) ->
 
 pub(crate) fn dumpForIteratorName(mut txt: Tpl::Text, mut a_iterator: Arc<Absyn::ForIterator>, mut a_context: MMToJuliaUtil::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_244(txt.clone(), a_iterator.clone())?;
+    out_txt = fun_244(txt, a_iterator)?;
     Ok(out_txt)
 }
 
-fn lm_246(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_246 in &*items.clone() {
-        let mut lstElt_246 = lstElt_246.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_246.clone()) {
-        i_e => {
+fn lm_246(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
             let mut ret_0: Option<Arc<Absyn::TypeSpec>>;
+            let mut txt = (*txt).clone();
             ret_0 = AbsynUtil::getTypeSpecFromElementItemOpt(i_e.clone());
             txt = dumpTypeSpecOpt(txt.clone(), ret_0.clone(), MMToJuliaUtil::functionContext.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn dumpOutputsJL(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     let mut l_outputStr: Tpl::Text;
-    ret_1 = a_elements.clone().reverse();
+    ret_1 = a_elements.reverse();
     l_outputStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_outputStr = lm_246(l_outputStr.clone(), ret_1.clone())?;
-    l_outputStr = Tpl::popIter(l_outputStr.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_outputStr.clone())?;
+    l_outputStr = lm_246(l_outputStr, ret_1)?;
+    l_outputStr = Tpl::popIter(l_outputStr)?;
+    out_txt = Tpl::writeText(txt, l_outputStr)?;
     Ok(out_txt)
 }
 

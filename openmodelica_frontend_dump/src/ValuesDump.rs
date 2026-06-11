@@ -57,15 +57,15 @@ pub fn valString(mut inValue: Arc<Values::Value>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut handle: i32;
     handle = Print::saveAndClearBuf()?;
-    valString2(inValue.clone())?;
+    valString2(inValue)?;
     outString = (Print::getString()?).clone();
-    Print::restoreBuf(handle.clone())?;
+    Print::restoreBuf(handle)?;
     Ok(outString)
 }
 
 pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = inValue.clone();
+        let __mc_input = inValue;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::INTEGER { integer: n } => {
@@ -340,26 +340,26 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
 fn filterSimulationResults(mut filter: bool, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inIds: Arc<metamodelica::List<ArcStr>>, mut valacc: Arc<metamodelica::List<Arc<Values::Value>>>, mut idacc: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<Arc<Values::Value>>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut outValues: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     let mut outIds: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    (outValues, outIds) = (::match_deref::match_deref! { match &((filter.clone(), inValues.clone(), inIds.clone())) {
+    (outValues, outIds) = (::match_deref::match_deref! { match &((filter, inValues.clone(), inIds.clone())) {
         (_, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            (valacc.clone().reverse(), idacc.clone().reverse())
+            (valacc.reverse(), idacc.reverse())
         },
         (true, Deref @ metamodelica::List::Cons { head: v, tail: vrest }, Deref @ metamodelica::List::Cons { head: id @ Deref @ "messages", tail: idrest }) => {
-            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), metamodelica::cons(v.clone(), valacc.clone()), metamodelica::cons((id.clone()).clone(), idacc.clone()))?;
-            (outValues.clone(), outIds.clone())
+            (outValues, outIds) = filterSimulationResults(filter, vrest.clone(), idrest.clone(), metamodelica::cons(v.clone(), valacc), metamodelica::cons((id.clone()).clone(), idacc))?;
+            (outValues, outIds)
         },
         (true, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: vrest }, Deref @ metamodelica::List::Cons { head: id @ Deref @ "resultFile", tail: idrest }) => {
             let mut r#str = (*r#str).clone();
             r#str = (System::basename((r#str.clone()).clone())).clone();
-            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), metamodelica::cons(Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }), valacc.clone()), metamodelica::cons((id.clone()).clone(), idacc.clone()))?;
-            (outValues.clone(), outIds.clone())
+            (outValues, outIds) = filterSimulationResults(filter, vrest.clone(), idrest.clone(), metamodelica::cons(Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }), valacc), metamodelica::cons((id.clone()).clone(), idacc))?;
+            (outValues, outIds)
         },
         (true, Deref @ metamodelica::List::Cons { head: _, tail: vrest }, Deref @ metamodelica::List::Cons { head: _, tail: idrest }) => {
-            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), valacc.clone(), idacc.clone())?;
-            (outValues.clone(), outIds.clone())
+            (outValues, outIds) = filterSimulationResults(filter, vrest.clone(), idrest.clone(), valacc, idacc)?;
+            (outValues, outIds)
         },
         (false, _, _) => {
-            (inValues.clone(), inIds.clone())
+            (inValues, inIds)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -368,7 +368,7 @@ fn filterSimulationResults(mut filter: bool, mut inValues: Arc<metamodelica::Lis
 
 fn valRecordString(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inIds: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let () = 'mc: {
-        let __mc_input = (inValues.clone(), inIds.clone());
+        let __mc_input = (inValues, inIds);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
@@ -419,7 +419,7 @@ fn valRecordString(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mu
 }
 
 fn valListString(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inValueLst.clone()) {
+    let () = (::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Nil => {
             ()
         },
@@ -440,20 +440,20 @@ fn valListString(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) ->
 
 pub(crate) fn printVal(mut v: Arc<Values::Value>) -> Result<()> {
     let mut s: ArcStr;
-    s = (valString(v.clone())?).clone();
-    Print::printBuf((s.clone()).clone())?;
+    s = (valString(v)?).clone();
+    Print::printBuf((s).clone())?;
     Ok(())
 }
 
 pub fn printValStr(mut v: Arc<Values::Value>) -> Result<ArcStr> {
     let mut s: ArcStr;
-    s = (valString(v.clone())?).clone();
+    s = (valString(v)?).clone();
     Ok(s)
 }
 
 pub fn unparseValues(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Cons { head: v, tail: vallst } => {
             let mut s1: ArcStr;
             let mut s2: ArcStr;
@@ -475,7 +475,7 @@ pub fn unparseValues(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>
 
 fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::TUPLE { valueLst: lst }, tail: xs } => {
             let mut s1: ArcStr;
             let mut s2: ArcStr;
@@ -544,7 +544,7 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
 
 fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: xs } => {
             let mut s1: ArcStr;
             let mut r#str: ArcStr;
@@ -600,20 +600,20 @@ fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>)
     let mut s6: ArcStr;
     let mut i1: i32;
     pt = (unparsePrimType(lst.clone())).clone();
-    s1 = (stringAppend((literal!("# ")).clone(), (pt.clone()).clone())).clone();
-    s2 = (stringAppend((s1.clone()).clone(), (literal!("[")).clone())).clone();
+    s1 = (stringAppend((literal!("# ")).clone(), (pt).clone())).clone();
+    s2 = (stringAppend((s1).clone(), (literal!("[")).clone())).clone();
     i1 = unparseNumDims(lst.clone(), 0);
-    s3 = (intString(i1.clone())).clone();
-    s4 = (stringAppend((s2.clone()).clone(), (s3.clone()).clone())).clone();
-    s5 = (stringAppend((s4.clone()).clone(), (literal!(" ")).clone())).clone();
-    s6 = (unparseDimSizes(lst.clone())).clone();
-    r#str = (stringAppend((s5.clone()).clone(), (s6.clone()).clone())).clone();
+    s3 = (intString(i1)).clone();
+    s4 = (stringAppend((s2).clone(), (s3).clone())).clone();
+    s5 = (stringAppend((s4).clone(), (literal!(" ")).clone())).clone();
+    s6 = (unparseDimSizes(lst)).clone();
+    r#str = (stringAppend((s5).clone(), (s6).clone())).clone();
     r#str
 }
 
 fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inValueLst.clone()) {
+        ::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: elts, .. }, tail: _ } => {
             let mut res: ArcStr;
             { inValueLst = elts.clone(); continue '__tco; }
@@ -643,12 +643,12 @@ fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) 
 
 fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inInteger: i32) -> i32 {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inValueLst.clone()) {
+        ::match_deref::match_deref! { match &(inValueLst) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: _ } => {
-            { (inValueLst, inInteger) = (vals.clone(), inInteger.clone() + 1); continue '__tco; }
+            { (inValueLst, inInteger) = (vals.clone(), inInteger + 1); continue '__tco; }
         },
         _ => {
-            return inInteger.clone() + 1
+            return inInteger + 1
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -658,7 +658,7 @@ fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, m
 fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
-        let __mc_input = inValueLst.clone();
+        let __mc_input = inValueLst;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 lst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: _ } => {

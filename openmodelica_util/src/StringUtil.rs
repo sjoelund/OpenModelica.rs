@@ -57,25 +57,25 @@ pub(crate) const CHAR_DOT: i32 = 46;
 
 pub fn headline_1(mut title: ArcStr) -> ArcStr {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n\n    ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n\n    ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
 pub fn headline_2(mut title: ArcStr) -> ArcStr {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
 pub fn headline_3(mut title: ArcStr) -> ArcStr {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("-")).clone(), ((title.clone()).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("-")).clone(), ((title).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
 pub fn headline_4(mut title: ArcStr) -> ArcStr {
     let mut header: ArcStr;
-    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("*")).clone(), ((title.clone()).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+    header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("*")).clone(), ((title).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
@@ -84,10 +84,10 @@ pub fn findChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut 
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
     let mut end_pos: i32;
-    start_pos = std::cmp::max(inStartPos.clone(), 1);
-    end_pos = if (inEndPos.clone() > 0) {std::cmp::min(inEndPos.clone(), len.clone())} else {len.clone()};
-    for mut i in start_pos.clone()..=end_pos.clone() {
-        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) == inChar.clone() {
+    start_pos = std::cmp::max(inStartPos, 1);
+    end_pos = if (inEndPos > 0) {std::cmp::min(inEndPos, len)} else {len};
+    for mut i in start_pos..=end_pos {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) == inChar {
             outIndex = i.clone();
             break;
         }
@@ -100,10 +100,10 @@ pub(crate) fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
     let mut end_pos: i32;
-    start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
-    end_pos = std::cmp::max(inEndPos.clone(), 1);
-    for mut i in ({let __s=start_pos.clone(); let __e=end_pos.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
-        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) == inChar.clone() {
+    start_pos = if (inStartPos > 0) {std::cmp::min(inStartPos, len)} else {len};
+    end_pos = std::cmp::max(inEndPos, 1);
+    for mut i in ({let __s=start_pos; let __e=end_pos; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) == inChar {
             outIndex = i.clone();
             break;
         }
@@ -116,10 +116,10 @@ pub(crate) fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos:
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
     let mut end_pos: i32;
-    start_pos = std::cmp::max(inStartPos.clone(), 1);
-    end_pos = if (inEndPos.clone() > 0) {std::cmp::min(inEndPos.clone(), len.clone())} else {len.clone()};
-    for mut i in start_pos.clone()..=end_pos.clone() {
-        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) != inChar.clone() {
+    start_pos = std::cmp::max(inStartPos, 1);
+    end_pos = if (inEndPos > 0) {std::cmp::min(inEndPos, len)} else {len};
+    for mut i in start_pos..=end_pos {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) != inChar {
             outIndex = i.clone();
             break;
         }
@@ -132,10 +132,10 @@ pub(crate) fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
     let mut end_pos: i32;
-    start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
-    end_pos = std::cmp::max(inEndPos.clone(), 1);
-    for mut i in ({let __s=start_pos.clone(); let __e=end_pos.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
-        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) != inChar.clone() {
+    start_pos = if (inStartPos > 0) {std::cmp::min(inStartPos, len)} else {len};
+    end_pos = std::cmp::max(inEndPos, 1);
+    for mut i in ({let __s=start_pos; let __e=end_pos; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) != inChar {
             outIndex = i.clone();
             break;
         }
@@ -144,14 +144,14 @@ pub(crate) fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos
 }
 
 pub(crate) fn isAlpha(mut inChar: i32) -> bool {
-    let mut outIsAlpha: bool = inChar.clone() >= 65 && inChar.clone() <= 90 || inChar.clone() >= 97 && inChar.clone() <= 122;
+    let mut outIsAlpha: bool = inChar >= 65 && inChar <= 90 || inChar >= 97 && inChar <= 122;
     outIsAlpha
 }
 
 pub(crate) fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: ArcStr, mut inRaggedness: metamodelica::Real) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut start_pos: i32 = 1;
-    let mut end_pos: i32 = inWrapLength.clone();
+    let mut end_pos: i32 = inWrapLength;
     let mut line_len: i32;
     let mut pos: i32;
     let mut next_char: i32;
@@ -160,64 +160,64 @@ pub(crate) fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimi
     let mut r#str: ArcStr;
     let mut delim: ArcStr = literal!("");
     let mut lines: Arc<metamodelica::List<ArcStr>>;
-    if ((inDelimiter.clone()).clone().len() as i32) >= inWrapLength.clone() - 1 {
-        outStrings = list![(inString.clone()).clone()];
+    if ((inDelimiter.clone()).clone().len() as i32) >= inWrapLength - 1 {
+        outStrings = list![(inString).clone()];
         return Ok(outStrings.clone());
     }
-    lines = System::strtok((inString.clone()).clone(), (literal!("\n")).clone());
-    line_len = inWrapLength.clone() - ((inDelimiter.clone()).clone().len() as i32) - 1;
-    gap_size = std::cmp::max((((metamodelica::OrderedFloat((line_len.clone()) as f64)) * (inRaggedness.clone())).0.floor() as i32), 0);
-    for mut line in &*lines.clone() {
+    lines = System::strtok((inString).clone(), (literal!("\n")).clone());
+    line_len = inWrapLength - ((inDelimiter.clone()).clone().len() as i32) - 1;
+    gap_size = std::cmp::max((((metamodelica::OrderedFloat((line_len) as f64)) * (inRaggedness)).0.floor() as i32), 0);
+    for mut line in &*lines {
         let mut line = line.clone();
-        while end_pos.clone() < ((line.clone()).clone().len() as i32) {
-            next_char = metamodelica::Dangerous::stringGetNoBoundsChecking((line.clone()).clone(), end_pos.clone() + 1);
-            if next_char.clone() != CHAR_SPACE.clone() && next_char.clone() != CHAR_DASH.clone() {
-                pos = rfindChar((line.clone()).clone(), CHAR_SPACE.clone(), end_pos.clone(), end_pos.clone() - gap_size.clone());
-                if pos.clone() != NO_POS.clone() {
-                    r#str = substring((line.clone()).clone(), start_pos.clone(), pos.clone() - 1)?;
-                    start_pos = pos.clone() + 1;
+        while end_pos < ((line.clone()).clone().len() as i32) {
+            next_char = metamodelica::Dangerous::stringGetNoBoundsChecking((line.clone()).clone(), end_pos + 1);
+            if next_char != CHAR_SPACE.clone() && next_char != CHAR_DASH.clone() {
+                pos = rfindChar((line.clone()).clone(), CHAR_SPACE.clone(), end_pos, end_pos - gap_size);
+                if pos != NO_POS.clone() {
+                    r#str = substring((line.clone()).clone(), start_pos, pos - 1)?;
+                    start_pos = pos + 1;
                 } else {
-                    pos = rfindChar((line.clone()).clone(), CHAR_DASH.clone(), end_pos.clone(), start_pos.clone() + gap_size.clone());
-                    if pos.clone() > 1 {
-                        char = metamodelica::Dangerous::stringGetNoBoundsChecking((line.clone()).clone(), pos.clone() - 1);
-                        pos = if (isAlpha(char.clone()) && isAlpha(next_char.clone())) {pos.clone()} else {NO_POS.clone()};
+                    pos = rfindChar((line.clone()).clone(), CHAR_DASH.clone(), end_pos, start_pos + gap_size);
+                    if pos > 1 {
+                        char = metamodelica::Dangerous::stringGetNoBoundsChecking((line.clone()).clone(), pos - 1);
+                        pos = if (isAlpha(char) && isAlpha(next_char)) {pos} else {NO_POS.clone()};
                     }
-                    if pos.clone() != NO_POS.clone() {
-                        r#str = substring((line.clone()).clone(), start_pos.clone(), pos.clone())?;
-                        start_pos = pos.clone() + 1;
+                    if pos != NO_POS.clone() {
+                        r#str = substring((line.clone()).clone(), start_pos, pos)?;
+                        start_pos = pos + 1;
                     } else {
-                        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*substring((line.clone()).clone(), start_pos.clone(), end_pos.clone() - 1)?); __mm_s.push_str(&*literal!("-")); ArcStr::from(__mm_s) }).clone();
-                        start_pos = end_pos.clone();
+                        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*substring((line.clone()).clone(), start_pos, end_pos - 1)?); __mm_s.push_str(&*literal!("-")); ArcStr::from(__mm_s) }).clone();
+                        start_pos = end_pos;
                     }
                 }
             } else {
-                r#str = substring((line.clone()).clone(), start_pos.clone(), end_pos.clone())?;
-                start_pos = end_pos.clone() + if (next_char.clone() == CHAR_SPACE.clone()) {2} else {1};
+                r#str = substring((line.clone()).clone(), start_pos, end_pos)?;
+                start_pos = end_pos + if (next_char == CHAR_SPACE.clone()) {2} else {1};
             }
             outStrings = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*delim.clone()); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone(), outStrings.clone());
-            end_pos = start_pos.clone() + line_len.clone();
+            end_pos = start_pos + line_len;
             delim = (inDelimiter.clone()).clone();
         }
-        if start_pos.clone() < ((line.clone()).clone().len() as i32) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*delim.clone()); __mm_s.push_str(&*substring((line.clone()).clone(), start_pos.clone(), ((line.clone()).clone().len() as i32))?); ArcStr::from(__mm_s) }).clone();
+        if start_pos < ((line.clone()).clone().len() as i32) {
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*delim.clone()); __mm_s.push_str(&*substring((line.clone()).clone(), start_pos, ((line.clone()).clone().len() as i32))?); ArcStr::from(__mm_s) }).clone();
             outStrings = metamodelica::cons((r#str.clone()).clone(), outStrings.clone());
         }
         start_pos = 1;
-        end_pos = line_len.clone();
+        end_pos = line_len;
         delim = (inDelimiter.clone()).clone();
     }
-    outStrings = metamodelica::Dangerous::listReverseInPlace(outStrings.clone());
+    outStrings = metamodelica::Dangerous::listReverseInPlace(outStrings);
     Ok(outStrings)
 }
 
 pub fn repeat(mut r#str: ArcStr, mut n: i32) -> ArcStr {
     let mut res: ArcStr = literal!("");
     let mut len: i32 = ((r#str.clone()).clone().len() as i32);
-    let mut ext: System::StringAllocator = System::StringAllocator(len.clone() * n.clone()).unwrap();
-    for mut i in 0..=n.clone() - 1 {
-        System::stringAllocatorStringCopy(ext.clone(), (r#str.clone()).clone(), len.clone() * i.clone());
+    let mut ext: System::StringAllocator = System::StringAllocator(len * n).unwrap();
+    for mut i in 0..=n - 1 {
+        System::stringAllocatorStringCopy(ext.clone(), (r#str.clone()).clone(), len * i.clone());
     }
-    res = (System::stringAllocatorResult(ext.clone(), (res.clone()).clone())).clone();
+    res = (System::stringAllocatorResult(ext, (res).clone())).clone();
     res
 }
 
@@ -233,7 +233,7 @@ pub(crate) fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
     for mut i in 1..=((s1.clone()).clone().len() as i32) {
         if metamodelica::Dangerous::stringGetNoBoundsChecking((s1.clone()).clone(), i.clone()) != stringCharInt((literal!(" ")).clone())? {
             b = false;
-            for mut j2 in j.clone()..=((s2.clone()).clone().len() as i32) {
+            for mut j2 in j..=((s2.clone()).clone().len() as i32) {
                 if metamodelica::Dangerous::stringGetNoBoundsChecking((s2.clone()).clone(), j2.clone()) != stringCharInt((literal!(" ")).clone())? {
                     if metamodelica::Dangerous::stringGetNoBoundsChecking((s2.clone()).clone(), j2.clone()) != metamodelica::Dangerous::stringGetNoBoundsChecking((s1.clone()).clone(), i.clone()) {
                         return Ok(b.clone());
@@ -243,12 +243,12 @@ pub(crate) fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
                     break;
                 }
             }
-            if !(b.clone()) {
+            if !(b) {
                 return Ok(b.clone());
             }
         }
     }
-    for mut j2 in j.clone()..=((s2.clone()).clone().len() as i32) {
+    for mut j2 in j..=((s2.clone()).clone().len() as i32) {
         if metamodelica::Dangerous::stringGetNoBoundsChecking((s2.clone()).clone(), j2.clone()) != stringCharInt((literal!(" ")).clone())? {
             b = false;
             return Ok(b.clone());
@@ -263,16 +263,16 @@ pub fn bytesToReadableUnit(mut bytes: metamodelica::Real, mut significantDigits:
     let GB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((3) as f64));
     let MB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((2) as f64));
     let kB: metamodelica::Real = metamodelica::OrderedFloat((1024) as f64);
-    if bytes.clone() > maxSizeInUnit.clone() * GB.clone() {
+    if bytes > maxSizeInUnit * GB {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*{ let __mm_unimpl: ArcStr = todo!("String() builtin with named args [significantDigits] not yet lowered"); __mm_unimpl }); __mm_s.push_str(&*literal!(" TB")); ArcStr::from(__mm_s) }).clone();
-    } else if bytes.clone() > maxSizeInUnit.clone() * MB.clone() {
+    } else if bytes > maxSizeInUnit * MB {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*{ let __mm_unimpl: ArcStr = todo!("String() builtin with named args [significantDigits] not yet lowered"); __mm_unimpl }); __mm_s.push_str(&*literal!(" GB")); ArcStr::from(__mm_s) }).clone();
-    } else if bytes.clone() > maxSizeInUnit.clone() * kB.clone() {
+    } else if bytes > maxSizeInUnit * kB {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*{ let __mm_unimpl: ArcStr = todo!("String() builtin with named args [significantDigits] not yet lowered"); __mm_unimpl }); __mm_s.push_str(&*literal!(" MB")); ArcStr::from(__mm_s) }).clone();
-    } else if bytes.clone() > maxSizeInUnit.clone() {
+    } else if bytes > maxSizeInUnit {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*{ let __mm_unimpl: ArcStr = todo!("String() builtin with named args [significantDigits] not yet lowered"); __mm_unimpl }); __mm_s.push_str(&*literal!(" kB")); ArcStr::from(__mm_s) }).clone();
     } else {
-        r#str = ArcStr::from(::std::format!("{}", ((bytes.clone()).0.floor() as i32)));
+        r#str = ArcStr::from(::std::format!("{}", ((bytes).0.floor() as i32)));
     }
     r#str
 }
@@ -286,15 +286,15 @@ pub fn endsWith(mut r#str: ArcStr, mut suffix: ArcStr) -> bool {
     let mut endsWith: bool = false;
     let mut str_len: i32 = ((r#str.clone()).clone().len() as i32);
     let mut suf_len: i32 = ((suffix.clone()).clone().len() as i32);
-    if str_len.clone() >= suf_len.clone() {
-        endsWith = 0 == System::strcmp_offset((r#str.clone()).clone(), str_len.clone() - suf_len.clone() + 1, str_len.clone(), (suffix.clone()).clone(), 1, suf_len.clone());
+    if str_len >= suf_len {
+        endsWith = 0 == System::strcmp_offset((r#str).clone(), str_len - suf_len + 1, str_len, (suffix).clone(), 1, suf_len);
     }
     endsWith
 }
 
 pub fn endsWithNewline(mut r#str: ArcStr) -> bool {
     let mut b: bool;
-    b = CHAR_NEWLINE.clone() == metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32));
+    b = CHAR_NEWLINE.clone() == metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), ((r#str).clone().len() as i32));
     b
 }
 
@@ -303,10 +303,10 @@ pub fn convertCharNonAsciiToHex(mut s: ArcStr) -> Result<ArcStr> {
     let mut i: i32;
     let hex: metamodelica::Array<ArcStr> = metamodelica::Dangerous::listArray(list![(literal!("0")).clone(), (literal!("1")).clone(), (literal!("2")).clone(), (literal!("3")).clone(), (literal!("4")).clone(), (literal!("5")).clone(), (literal!("6")).clone(), (literal!("7")).clone(), (literal!("8")).clone(), (literal!("9")).clone(), (literal!("A")).clone(), (literal!("B")).clone(), (literal!("C")).clone(), (literal!("D")).clone(), (literal!("E")).clone(), (literal!("F")).clone()]);
     i = stringCharInt((s.clone()).clone())?;
-    if i.clone() < 128 {
+    if i < 128 {
         return Ok(s.clone());
     }
-    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("0x")); __mm_s.push_str(&*metamodelica::arrayGet(hex.clone(), intDiv(i.clone(), 16) + 1)?); __mm_s.push_str(&*metamodelica::arrayGet(hex.clone(), intMod(i.clone(), 16) + 1)?); ArcStr::from(__mm_s) }).clone();
+    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("0x")); __mm_s.push_str(&*metamodelica::arrayGet(hex.clone(), intDiv(i, 16) + 1)?); __mm_s.push_str(&*metamodelica::arrayGet(hex.clone(), intMod(i, 16) + 1)?); ArcStr::from(__mm_s) }).clone();
     Ok(s)
 }
 
@@ -318,7 +318,7 @@ pub fn stripBOM(mut s: ArcStr) -> Result<(ArcStr, ArcStr)> {
     }
     if stringGet((s.clone()).clone(),1)? == 239 && stringGet((s.clone()).clone(),2)? == 187 && stringGet((s.clone()).clone(),3)? == 191 {
         bom = substring((s.clone()).clone(), 1, 3)?;
-        s = substring((s.clone()).clone(), 4, ((s.clone()).clone().len() as i32))?;
+        s = substring((s.clone()).clone(), 4, ((s).clone().len() as i32))?;
     }
     Ok((s, bom))
 }
@@ -327,15 +327,15 @@ pub fn stripFileExtension(mut filename: ArcStr) -> Result<ArcStr> {
     let mut filename: ArcStr = filename;
     let mut pos: i32;
     pos = rfindChar((filename.clone()).clone(), CHAR_DOT.clone(), 0, 1);
-    if pos.clone() != NO_POS.clone() {
-        filename = substring((filename.clone()).clone(), 1, pos.clone() - 1)?;
+    if pos != NO_POS.clone() {
+        filename = substring((filename).clone(), 1, pos - 1)?;
     }
     Ok(filename)
 }
 
 pub fn rest(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut rest: ArcStr;
-    rest = (if (((r#str.clone()).clone().len() as i32) == 1) {literal!("")} else {substring((r#str.clone()).clone(), 2, ((r#str.clone()).clone().len() as i32))?}).clone();
+    rest = (if (((r#str.clone()).clone().len() as i32) == 1) {literal!("")} else {substring((r#str.clone()).clone(), 2, ((r#str).clone().len() as i32))?}).clone();
     Ok(rest)
 }
 

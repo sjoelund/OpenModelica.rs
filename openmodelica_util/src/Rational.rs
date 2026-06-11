@@ -84,7 +84,7 @@ pub(crate) fn compare(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> i32 {
     let mut i: i32;
     let mut gn: i32 = Util::gcd(r1.n.clone(), r2.n.clone());
     let mut gd: i32 = Util::gcd(r1.d.clone(), r2.d.clone());
-    i = Util::intCompare(intDiv(r1.n.clone(), gn.clone()) * intDiv(r2.d.clone(), gd.clone()), intDiv(r2.n.clone(), gn.clone()) * intDiv(r1.d.clone(), gd.clone()));
+    i = Util::intCompare(intDiv(r1.n.clone(), gn) * intDiv(r2.d.clone(), gd), intDiv(r2.n.clone(), gn) * intDiv(r1.d.clone(), gd));
     i
 }
 
@@ -106,7 +106,7 @@ pub(crate) fn normalize(mut r: Arc<Rational>) -> Arc<Rational> {
 pub fn add(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     let mut r: Arc<Rational>;
     let mut g: i32 = Util::gcd(r1.d.clone(), r2.d.clone());
-    r = reduce(r1.n.clone() * intDiv(r2.d.clone(), g.clone()) + intDiv(r1.d.clone(), g.clone()) * r2.n.clone(), intDiv(r1.d.clone(), g.clone()) * r2.d.clone());
+    r = reduce(r1.n.clone() * intDiv(r2.d.clone(), g) + intDiv(r1.d.clone(), g) * r2.n.clone(), intDiv(r1.d.clone(), g) * r2.d.clone());
     r
 }
 
@@ -118,7 +118,7 @@ pub(crate) fn neg(mut r: Arc<Rational>) -> Arc<Rational> {
 pub(crate) fn sub(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     let mut r: Arc<Rational>;
     let mut g: i32 = Util::gcd(r1.d.clone(), r2.d.clone());
-    r = reduce(r1.n.clone() * intDiv(r2.d.clone(), g.clone()) - intDiv(r1.d.clone(), g.clone()) * r2.n.clone(), intDiv(r1.d.clone(), g.clone()) * r2.d.clone());
+    r = reduce(r1.n.clone() * intDiv(r2.d.clone(), g) - intDiv(r1.d.clone(), g) * r2.n.clone(), intDiv(r1.d.clone(), g) * r2.d.clone());
     r
 }
 
@@ -126,7 +126,7 @@ pub fn mul(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     let mut r: Arc<Rational>;
     let mut g1: i32 = Util::gcd(r1.n.clone(), r2.d.clone());
     let mut g2: i32 = Util::gcd(r2.n.clone(), r1.d.clone());
-    r = reduce(intDiv(r1.n.clone(), g1.clone()) * intDiv(r2.n.clone(), g2.clone()), intDiv(r1.d.clone(), g2.clone()) * intDiv(r2.d.clone(), g1.clone()));
+    r = reduce(intDiv(r1.n.clone(), g1) * intDiv(r2.n.clone(), g2), intDiv(r1.d.clone(), g2) * intDiv(r2.d.clone(), g1));
     r
 }
 
@@ -139,14 +139,14 @@ pub(crate) fn div(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational>
     let mut r: Arc<Rational>;
     let mut g1: i32 = Util::gcd(r1.n.clone(), r2.n.clone());
     let mut g2: i32 = Util::gcd(r2.d.clone(), r1.d.clone());
-    r = reduce(intDiv(r1.n.clone(), g1.clone()) * intDiv(r2.d.clone(), g2.clone()), intDiv(r1.d.clone(), g2.clone()) * intDiv(r2.n.clone(), g1.clone()));
+    r = reduce(intDiv(r1.n.clone(), g1) * intDiv(r2.d.clone(), g2), intDiv(r1.d.clone(), g2) * intDiv(r2.n.clone(), g1));
     r
 }
 
 fn reduce(mut i1: i32, mut i2: i32) -> Arc<Rational> {
     let mut r: Arc<Rational>;
-    let mut d: i32 = Util::gcd(i1.clone(), i2.clone());
-    r = normalize(Arc::new(Rational { n: intDiv(i1.clone(), d.clone()), d: intDiv(i2.clone(), d.clone()) }));
+    let mut d: i32 = Util::gcd(i1, i2);
+    r = normalize(Arc::new(Rational { n: intDiv(i1, d), d: intDiv(i2, d) }));
     r
 }
 

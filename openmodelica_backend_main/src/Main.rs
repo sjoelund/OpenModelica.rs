@@ -147,9 +147,9 @@ pub(crate) fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
     } else {
         outContinue = true;
         (stmts, prog) = parseCommand((inCommand.clone()).clone());
-        outResult = (handleCommand2(stmts.clone(), prog.clone(), (inCommand.clone()).clone())?).clone();
-        outResult = (makeDebugResult(Flags::DUMP.clone(), (outResult.clone()).clone())).clone();
-        outResult = (makeDebugResult(Flags::DUMP_GRAPHVIZ.clone(), (outResult.clone()).clone())).clone();
+        outResult = (handleCommand2(stmts, prog, (inCommand).clone())?).clone();
+        outResult = (makeDebugResult(Flags::DUMP.clone(), (outResult).clone())).clone();
+        outResult = (makeDebugResult(Flags::DUMP_GRAPHVIZ.clone(), (outResult).clone())).clone();
     }
     Ok((outContinue, outResult))
 }
@@ -216,7 +216,7 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
 
 fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
-    res = ((match p.clone() {
+    res = ((match p {
         Absyn::Program { classes: ref cls, within_: Absyn::Within::WITHIN { path: ref scope } } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             names = ({
@@ -236,7 +236,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
         }
         __acc.reverse()
     }), (literal!(",")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
-            res.clone()
+            res
         },
         Absyn::Program { classes: ref cls, within_: Absyn::Within::TOP { .. } } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>>;
@@ -256,7 +256,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
         }
         __acc.reverse()
     }), (literal!(",")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
-            res.clone()
+            res
         },
         _ => bail!("match: no arm matched"),
     })).clone();
@@ -267,18 +267,18 @@ fn isModelicaFile(mut inFilename: ArcStr) -> Result<bool> {
     let mut outIsModelicaFile: bool;
     let mut lst: Arc<metamodelica::List<ArcStr>>;
     let mut file_ext: ArcStr;
-    lst = System::strtok((inFilename.clone()).clone(), (literal!(".")).clone());
+    lst = System::strtok((inFilename).clone(), (literal!(".")).clone());
     if lst.clone().is_empty() {
         outIsModelicaFile = false;
     } else {
-        file_ext = (List::last(lst.clone())?).clone();
-        outIsModelicaFile = file_ext.clone() == literal!("mo") || file_ext.clone() == literal!("mof");
+        file_ext = (List::last(lst)?).clone();
+        outIsModelicaFile = file_ext.clone() == literal!("mo") || file_ext == literal!("mof");
     }
     Ok(outIsModelicaFile)
 }
 
 fn isEmptyOrFirstIsModelicaFile(mut libs: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(libs.clone()) {
+    let () = (::match_deref::match_deref! { match &(libs) {
         Deref @ metamodelica::List::Nil => {
             ()
         },
@@ -294,13 +294,13 @@ fn isEmptyOrFirstIsModelicaFile(mut libs: Arc<metamodelica::List<ArcStr>>) -> Re
 fn isFlatModelicaFile(mut filename: ArcStr) -> Result<()> {
     let mut lst: Arc<metamodelica::List<ArcStr>>;
     let mut last: ArcStr;
-    lst = System::strtok((filename.clone()).clone(), (literal!(".")).clone());
-    let __pa0 = ::match_deref::match_deref! { match &(lst.clone().reverse()) {
+    lst = System::strtok((filename).clone(), (literal!(".")).clone());
+    let __pa0 = ::match_deref::match_deref! { match &(lst.reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     last = __pa0.clone();
-    let true = (stringEq((last.clone()).clone(), (literal!("mof")).clone())) else { bail!("pattern mismatch") };
+    let true = (stringEq((last).clone(), (literal!("mof")).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
@@ -308,39 +308,39 @@ fn isModelicaScriptFile(mut filename: ArcStr) -> Result<()> {
     let mut lst: Arc<metamodelica::List<ArcStr>>;
     let mut last: ArcStr;
     let true = (System::regularFileExists((filename.clone()).clone())) else { bail!("pattern mismatch") };
-    lst = System::strtok((filename.clone()).clone(), (literal!(".")).clone());
-    let __pa0 = ::match_deref::match_deref! { match &(lst.clone().reverse()) {
+    lst = System::strtok((filename).clone(), (literal!(".")).clone());
+    let __pa0 = ::match_deref::match_deref! { match &(lst.reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     last = __pa0.clone();
-    let true = (stringEq((last.clone()).clone(), (literal!("mos")).clone())) else { bail!("pattern mismatch") };
+    let true = (stringEq((last).clone(), (literal!("mos")).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
 fn isCodegenTemplateFile(mut filename: ArcStr) -> Result<()> {
     let mut lst: Arc<metamodelica::List<ArcStr>>;
     let mut last: ArcStr;
-    lst = System::strtok((filename.clone()).clone(), (literal!(".")).clone());
-    let __pa0 = ::match_deref::match_deref! { match &(lst.clone().reverse()) {
+    lst = System::strtok((filename).clone(), (literal!(".")).clone());
+    let __pa0 = ::match_deref::match_deref! { match &(lst.reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     last = __pa0.clone();
-    let true = (stringEq((last.clone()).clone(), (literal!("tpl")).clone())) else { bail!("pattern mismatch") };
+    let true = (stringEq((last).clone(), (literal!("tpl")).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
 fn showErrors(mut errorString: ArcStr, mut errorMessages: ArcStr) -> () {
     if errorString.clone() != literal!("") {
         System::fflush();
-        System::fputs((errorString.clone()).clone(), System::StreamType::STDERR.clone());
+        System::fputs((errorString).clone(), System::StreamType::STDERR.clone());
         System::fputs((literal!("\n")).clone(), System::StreamType::STDERR.clone());
         System::fflush();
     }
     if errorMessages.clone() != literal!("") {
         System::fflush();
-        System::fputs((errorMessages.clone()).clone(), System::StreamType::STDERR.clone());
+        System::fputs((errorMessages).clone(), System::StreamType::STDERR.clone());
         System::fputs((literal!("\n")).clone(), System::StreamType::STDERR.clone());
         System::fflush();
     }
@@ -351,7 +351,7 @@ fn loadLib(mut inLib: ArcStr) -> Result<()> {
     let mut is_modelica_file: bool;
     is_modelica_file = isModelicaFile((inLib.clone()).clone())?;
     let () = 'mc: {
-        let __mc_input = is_modelica_file.clone();
+        let __mc_input = is_modelica_file;
         if let Ok(__v) = (|| -> Result<_> {
             let true = __mc_input.clone() else { bail!("nomatch") };
             let mut pnew: Absyn::Program;
@@ -408,7 +408,7 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
         }
     }
     let () = 'mc: {
-        let __mc_input = inStringLst.clone();
+        let __mc_input = inStringLst;
         if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 libs => {
@@ -441,7 +441,7 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
                     fileNamePrefix = (Util::stringReplaceChar((AbsynUtil::pathString(cname.clone(), (literal!(".")).clone(), true, false)?).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
                     runBackend = Config::simulationCg()? || Config::simulation()?;
                     runSilent = Config::silent()?;
-                    CevalScriptBackend::translateModel(FCore::emptyCache(), FGraph::empty(), cname.clone(), (fileNamePrefix.clone()).clone(), runBackend.clone(), runSilent.clone(), None)?;
+                    CevalScriptBackend::translateModel(FCore::emptyCache(), FGraph::empty(), cname.clone(), (fileNamePrefix.clone()).clone(), runBackend, runSilent, None)?;
                     showErrors((Print::getErrorString()?).clone(), (ErrorExt::printMessagesStr(false)).clone());
                     Ok(((), cls.clone(), cname.clone(), fileNamePrefix.clone(), runBackend.clone(), runSilent.clone()))
                 }
@@ -503,21 +503,21 @@ fn interactivemode() -> Result<()> {
     let mut r#str: ArcStr;
     let mut replystr: ArcStr;
     shandle = Socket::waitforconnect(29500);
-    if shandle.clone() == -1 {
+    if shandle == -1 {
         bail!("fail");
     }
     loop {
-        r#str = (Socket::handlerequest(shandle.clone())).clone();
+        r#str = (Socket::handlerequest(shandle)).clone();
         if Flags::isSet(Flags::INTERACTIVE_DUMP.clone())? {
             Debug::trace((literal!("------- Recieved Data from client -----\n")).clone())?;
             Debug::trace((r#str.clone()).clone())?;
             Debug::trace((literal!("------- End recieved Data-----\n")).clone())?;
         }
         (b, replystr) = handleCommand((r#str.clone()).clone())?;
-        replystr = (if (b.clone()) {replystr.clone()} else {literal!("quit requested, shutting server down\n")}).clone();
-        Socket::sendreply(shandle.clone(), (replystr.clone()).clone());
-        if !(b.clone()) {
-            Socket::close(shandle.clone());
+        replystr = (if (b) {replystr.clone()} else {literal!("quit requested, shutting server down\n")}).clone();
+        Socket::sendreply(shandle, (replystr.clone()).clone());
+        if !(b) {
+            Socket::close(shandle);
             Socket::cleanup();
             break;
         }
@@ -544,7 +544,7 @@ fn interactivemodeZMQ() -> Result<()> {
     let mut replystr: ArcStr;
     let mut suffix: ArcStr;
     suffix = (Flags::getConfigString(Flags::ZEROMQ_FILE_SUFFIX.clone())?).clone();
-    zmqSocket = ZeroMQ::initialize((if (suffix.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*suffix.clone()); ArcStr::from(__mm_s) }}).clone(), Flags::isSet(Flags::ZMQ_LISTEN_TO_ALL.clone())?, Flags::getConfigInt(Flags::INTERACTIVE_PORT.clone())?);
+    zmqSocket = ZeroMQ::initialize((if (suffix.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*suffix); ArcStr::from(__mm_s) }}).clone(), Flags::isSet(Flags::ZMQ_LISTEN_TO_ALL.clone())?, Flags::getConfigInt(Flags::INTERACTIVE_PORT.clone())?);
     let false = (Some(0) == zmqSocket.clone()) else { bail!("pattern mismatch") };
     loop {
         r#str = (ZeroMQ::handleRequest(zmqSocket.clone())).clone();
@@ -554,9 +554,9 @@ fn interactivemodeZMQ() -> Result<()> {
             Debug::trace((literal!("------- End recieved Data-----\n")).clone())?;
         }
         (b, replystr) = handleCommand((r#str.clone()).clone())?;
-        replystr = (if (b.clone()) {replystr.clone()} else {literal!("quit requested, shutting server down\n")}).clone();
+        replystr = (if (b) {replystr.clone()} else {literal!("quit requested, shutting server down\n")}).clone();
         ZeroMQ::sendReply(zmqSocket.clone(), (replystr.clone()).clone());
-        if !(b.clone()) {
+        if !(b) {
             ZeroMQ::close(zmqSocket.clone());
             break;
         }
@@ -572,7 +572,7 @@ fn serverLoopCorba() -> Result<()> {
     loop {
         r#str = (Corba::waitForCommand()?).clone();
         (cont, reply_str) = handleCommand((r#str.clone()).clone())?;
-        if cont.clone() {
+        if cont {
             Corba::sendreply((reply_str.clone()).clone())?;
         } else {
             break;
@@ -585,10 +585,10 @@ fn serverLoopCorba() -> Result<()> {
 
 pub(crate) fn readSettings(mut inArguments: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut settings_file: ArcStr;
-    settings_file = (Util::flagValue((literal!("-s")).clone(), inArguments.clone())?).clone();
+    settings_file = (Util::flagValue((literal!("-s")).clone(), inArguments)?).clone();
     if settings_file.clone() != literal!("") {
-        settings_file = (System::trim((settings_file.clone()).clone(), (literal!(" \"")).clone())).clone();
-        readSettingsFile((settings_file.clone()).clone())?;
+        settings_file = (System::trim((settings_file).clone(), (literal!(" \"")).clone())).clone();
+        readSettingsFile((settings_file).clone())?;
     }
     Ok(())
 }
@@ -596,14 +596,14 @@ pub(crate) fn readSettings(mut inArguments: Arc<metamodelica::List<ArcStr>>) -> 
 fn readSettingsFile(mut filePath: ArcStr) -> Result<()> {
     let mut command: ArcStr;
     if System::regularFileExists((filePath.clone()).clone()) {
-        command = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("runScript(\"")); __mm_s.push_str(&*filePath.clone()); __mm_s.push_str(&*literal!("\")")); ArcStr::from(__mm_s) }).clone();
-        handleCommand((command.clone()).clone())?;
+        command = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("runScript(\"")); __mm_s.push_str(&*filePath); __mm_s.push_str(&*literal!("\")")); ArcStr::from(__mm_s) }).clone();
+        handleCommand((command).clone())?;
     }
     Ok(())
 }
 
 pub(crate) fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
-    let () = (match inOMHome.clone() {
+    let () = (match inOMHome {
         mut omHome => {
             let mut oldPath: ArcStr;
             let mut newPath: ArcStr;
@@ -671,7 +671,7 @@ pub(crate) fn init(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<meta
     ErrorExt::registerModelicaFormatError();
     ErrorExt::initAssertionFunctions();
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
-    args_1 = FlagsUtil::new(args.clone())?;
+    args_1 = FlagsUtil::new(args)?;
     setDefaultCC();
     SymbolTable::reset()?;
     BackendInterfaceImplementation::initializeBackendInterface();
@@ -688,8 +688,8 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats after initialization:")).clone(), (literal!("\n  ")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         seconds = unwrap_break_err!(Flags::getConfigInt(Flags::ALARM.clone()), '__try0);
-        if seconds.clone() > 0 {
-            System::alarm(seconds.clone());
+        if seconds > 0 {
+            System::alarm(seconds);
         }
         unwrap_break_err!(main2(args_1.clone()), '__try0);
         Ok::<_, anyhow::Error>((args_1.clone(), seconds.clone()))

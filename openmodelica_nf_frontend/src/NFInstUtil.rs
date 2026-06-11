@@ -84,17 +84,17 @@ use openmodelica_util_datatypes_basic::List;
 pub fn dumpFlatModelDebug(mut stage: ArcStr, mut flatModel: Arc<FlatModel::NFFlatModel>, mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree>) -> Result<()> {
     let mut flat_model: Arc<FlatModel::NFFlatModel> = flatModel.clone();
     if Flags::getConfigString(Flags::OBFUSCATE.clone())? == literal!("protected") || Flags::getConfigString(Flags::OBFUSCATE.clone())? == literal!("encrypted") {
-        flat_model = FlatModel::obfuscate(flat_model.clone())?;
+        flat_model = FlatModel::obfuscate(flat_model)?;
     }
     if Flags::isConfigFlagSet(Flags::DUMP_FLAT_MODEL.clone(), (stage.clone()).clone())? || Flags::getConfigStringList(Flags::DUMP_FLAT_MODEL.clone())?.is_empty() {
-        flat_model = combineSubscripts(flatModel.clone())?;
+        flat_model = combineSubscripts(flatModel)?;
         metamodelica::print((literal!("########################################\n")).clone());
-        metamodelica::print((stage.clone()).clone());
+        metamodelica::print((stage).clone());
         metamodelica::print((literal!("\n########################################\n\n")).clone());
         if Flags::getConfigBool(Flags::BASE_MODELICA.clone())? {
-            FlatModel::printFlatString(flat_model.clone(), functions.clone(), false)?;
+            FlatModel::printFlatString(flat_model, functions, false)?;
         } else {
-            FlatModel::printString(flat_model.clone(), functions.clone(), false)?;
+            FlatModel::printString(flat_model, functions, false)?;
         }
         metamodelica::print((literal!("\n")).clone());
     }
@@ -104,7 +104,7 @@ pub fn dumpFlatModelDebug(mut stage: ArcStr, mut flatModel: Arc<FlatModel::NFFla
 pub(crate) fn combineSubscripts(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     if Flags::isSet(Flags::COMBINE_SUBSCRIPTS.clone())? {
-        flatModel = FlatModel::mapExp(flatModel.clone(), (std::sync::Arc::new(combineSubscriptsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        flatModel = FlatModel::mapExp(flatModel, (std::sync::Arc::new(combineSubscriptsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     }
     Ok(flatModel)
 }
@@ -124,7 +124,7 @@ pub(crate) fn combineSubscriptsExp(mut exp: Arc<Expression::NFExpression>) -> Re
     }
 
     let mut exp: Arc<Expression::NFExpression> = exp;
-    exp = Expression::map(exp.clone(), (std::sync::Arc::new(traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    exp = Expression::map(exp, (std::sync::Arc::new(traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(exp)
 }
 
@@ -144,13 +144,13 @@ pub(crate) fn printStructuralParameters(mut flatModel: Arc<FlatModel::NFFlatMode
         if !(params.clone().is_empty()) {
             names = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut v in (params.clone()).into_iter().cloned() {
+        for mut v in (params).into_iter().cloned() {
             let __x = ComponentRef::toString(v.name.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            Error::addMessage(Error::NOTIFY_FRONTEND_STRUCTURAL_PARAMETERS.clone(), list![stringDelimitList(names.clone(), (literal!(", ")).clone())])?;
+            Error::addMessage(Error::NOTIFY_FRONTEND_STRUCTURAL_PARAMETERS.clone(), list![stringDelimitList(names, (literal!(", ")).clone())])?;
         }
     }
     Ok(())
@@ -159,14 +159,14 @@ pub(crate) fn printStructuralParameters(mut flatModel: Arc<FlatModel::NFFlatMode
 pub(crate) fn dumpFlatModel(mut flatModel: Arc<FlatModel::NFFlatModel>, mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut flat_model: Arc<FlatModel::NFFlatModel>;
-    flat_model = combineSubscripts(flatModel.clone())?;
-    r#str = (FlatModel::toFlatString(flat_model.clone(), functions.clone(), false)?).clone();
+    flat_model = combineSubscripts(flatModel)?;
+    r#str = (FlatModel::toFlatString(flat_model, functions, false)?).clone();
     Ok(r#str)
 }
 
 pub(crate) fn replaceEmptyArrays(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
-    flatModel = FlatModel::mapExp(flatModel.clone(), (std::sync::Arc::new(replaceEmptyArraysExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    flatModel = FlatModel::mapExp(flatModel, (std::sync::Arc::new(replaceEmptyArraysExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(flatModel)
 }
 
@@ -189,20 +189,20 @@ pub(crate) fn replaceEmptyArraysExp(mut exp: Arc<Expression::NFExpression>) -> R
                 subs = metamodelica::nil();
                 ty = var_field!((*exp).ty, Expression::NFExpression::CREF).clone();
             }
-            outExp = Expression::makeDefaultValue(ty.clone(), None, None)?;
+            outExp = Expression::makeDefaultValue(ty, None, None)?;
             if !(subs.clone().is_empty()) {
-                outExp = Arc::new(Expression::NFExpression::SUBSCRIPTED_EXP { exp: outExp.clone(), subscripts: subs.clone(), ty: var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), split: false });
+                outExp = Arc::new(Expression::NFExpression::SUBSCRIPTED_EXP { exp: outExp, subscripts: subs, ty: var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), split: false });
             }
-            outExp.clone()
+            outExp
         },
-        _ => exp.clone(),
+        _ => exp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(outExp)
     }
 
     let mut exp: Arc<Expression::NFExpression> = exp;
-    exp = Expression::map(exp.clone(), (std::sync::Arc::new(traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    exp = Expression::map(exp, (std::sync::Arc::new(traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(exp)
 }
 
@@ -220,9 +220,9 @@ pub(crate) fn expandSlicedCrefs(mut flatModel: Arc<FlatModel::NFFlatModel>, mut 
         }
         __acc.reverse()
     }));
-    flatModel = FlatModel::mapEquations(flatModel.clone(), (std::sync::Arc::new(expandSlicedCrefsEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>))?;
-    flatModel = FlatModel::mapAlgorithms(flatModel.clone(), (std::sync::Arc::new(expandSlicedCrefsAlg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))?;
-    functions = NFFlatten::FunctionTreeImpl::map(functions.clone(), (std::sync::Arc::new(expandSlicedCrefsFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
+    flatModel = FlatModel::mapEquations(flatModel, (std::sync::Arc::new(expandSlicedCrefsEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>))?;
+    flatModel = FlatModel::mapAlgorithms(flatModel, (std::sync::Arc::new(expandSlicedCrefsAlg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))?;
+    functions = NFFlatten::FunctionTreeImpl::map(functions, (std::sync::Arc::new(expandSlicedCrefsFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
     Ok((flatModel, functions))
 }
 
@@ -254,7 +254,7 @@ pub(crate) fn expandSlicedCrefsExp2(mut cref: Arc<ComponentRef::NFComponentRef>,
     let mut cr: Arc<ComponentRef::NFComponentRef>;
     let mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
     (cr, iterators) = ComponentRef::iterate(cref.clone())?;
-    outExp = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: ComponentRef::variability(cref.clone())?, purity: ComponentRef::purity(cref.clone())?, exp: Expression::fromCref(cr.clone(), false)?, iters: iterators.clone() }) });
+    outExp = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty, var: ComponentRef::variability(cref.clone())?, purity: ComponentRef::purity(cref)?, exp: Expression::fromCref(cr, false)?, iters: iterators }) });
     Ok(outExp)
 }
 
@@ -269,13 +269,13 @@ pub(crate) fn expandSlicedCrefsEq(mut eq: Arc<Equation::NFEquation>) -> Result<A
             e1 = Expression::map(e1.clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = Expression::map(e1.clone(), (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(eq => Equation::NFEquation::EQUALITY; rhs = e2.clone());
+                assign_variant_field!(eq => Equation::NFEquation::EQUALITY; rhs = e2);
             }
-            eq.clone()
+            eq
         },
         _ => {
-            eq2 = Equation::mapExpShallow(eq.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            Equation::mapExpShallow(eq2.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
+            eq2 = Equation::mapExpShallow(eq, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            Equation::mapExpShallow(eq2, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -306,13 +306,13 @@ pub(crate) fn expandSlicedCrefsStmt(mut stmt: Arc<Statement::NFStatement>) -> Re
             e1 = Expression::map(e1.clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = Expression::map(e1.clone(), (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
-                assign_variant_field!(stmt => Statement::NFStatement::ASSIGNMENT; rhs = e2.clone());
+                assign_variant_field!(stmt => Statement::NFStatement::ASSIGNMENT; rhs = e2);
             }
-            stmt.clone()
+            stmt
         },
         _ => {
             let mut stmt2: Arc<Statement::NFStatement>;
-            stmt2 = Statement::mapExpShallow(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            stmt2 = Statement::mapExpShallow(stmt, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Statement::mapExpShallow(stmt2.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -322,8 +322,8 @@ pub(crate) fn expandSlicedCrefsStmt(mut stmt: Arc<Statement::NFStatement>) -> Re
 
 pub(crate) fn expandSlicedCrefsFunction(mut fnPath: Arc<Absyn::Path>, mut r#fn: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
     let mut r#fn: Arc<Function::Function> = r#fn;
-    r#fn = Function::mapExp(r#fn.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), true, false)?;
-    r#fn = Function::mapBody(r#fn.clone(), (std::sync::Arc::new(expandSlicedCrefsAlg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))?;
+    r#fn = Function::mapExp(r#fn, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), true, false)?;
+    r#fn = Function::mapBody(r#fn, (std::sync::Arc::new(expandSlicedCrefsAlg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))?;
     Ok(r#fn)
 }
 
@@ -341,8 +341,8 @@ pub(crate) fn mergeScalars(mut node: Arc<InstNode::InstNode>, mut classPath: Arc
         return Ok(node.clone());
     }
     elem = InstNode::definition(node.clone())?;
-    elem = mergeScalars2(elem.clone(), classPath.clone(), isRootClass.clone(), nameMap.clone())?;
-    node = InstNode::setDefinition(elem.clone(), node.clone())?;
+    elem = mergeScalars2(elem, classPath, isRootClass, nameMap)?;
+    node = InstNode::setDefinition(elem, node)?;
     execStat(literal!("NFInstUtil.mergeScalars"))?;
     Ok(node)
 }
@@ -357,22 +357,22 @@ pub(crate) fn mergeScalars2(mut cls: Arc<SCode::Element>, mut classPath: Arc<Abs
             elems = mergeScalars3(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), nameMap.clone())?;
             elems = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-        for mut e in (elems.clone()).into_iter().cloned() {
+        for mut e in (elems).into_iter().cloned() {
             let __x = mergeScalarsElement(e.clone(), nameMap.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
             assign_variant_field!(cdef => SCode::ClassDef::PARTS;
-                elementLst = elems.clone(),
+                elementLst = elems,
                 normalEquationLst = mergeScalarsEql(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone(), nameMap.clone())?,
                 initialEquationLst = mergeScalarsEql(var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone(), nameMap.clone())?,
                 normalAlgorithmLst = mergeScalarsAlgs(var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), nameMap.clone())?,
                 initialAlgorithmLst = mergeScalarsAlgs(var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), nameMap.clone())?
             );
             assign_variant_field!(cls => SCode::Element::CLASS; classDef = cdef.clone());
-            if isRootClass.clone() {
-                System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("_merged_table.json")); ArcStr::from(__mm_s) }).clone(), (UnorderedMap::toJSON(nameMap.clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(Dump::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<ArcStr> + 'static>))?).clone())?;
+            if isRootClass {
+                System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(classPath, (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("_merged_table.json")); ArcStr::from(__mm_s) }).clone(), (UnorderedMap::toJSON(nameMap, std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(Dump::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<ArcStr> + 'static>))?).clone())?;
             }
             ()
         },
@@ -388,15 +388,15 @@ pub(crate) fn mergeScalars3(mut elements: Arc<metamodelica::List<Arc<SCode::Elem
     let mut merged_e: Arc<SCode::Element>;
     let mut i: i32 = UnorderedMap::size(nameMap.clone()) + 1;
     let mut prefix: ArcStr;
-    (mergeable, outElements) = makeMergeMap(elements.clone())?;
-    for mut el in &*mergeable.clone() {
+    (mergeable, outElements) = makeMergeMap(elements)?;
+    for mut el in &*mergeable {
         let mut el = el.clone();
         prefix = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*AbsynUtil::pathLastIdent(SCodeUtil::getElementTypePath(listHead(el.clone())?)?)?); ArcStr::from(__mm_s) }).clone();
-        merged_e = mergeComponents(el.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", i.clone()))); ArcStr::from(__mm_s) }).clone(), nameMap.clone())?;
-        i = i.clone() + 1;
+        merged_e = mergeComponents(el.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", i))); ArcStr::from(__mm_s) }).clone(), nameMap.clone())?;
+        i = i + 1;
         outElements = metamodelica::cons(merged_e.clone(), outElements.clone());
     }
-    outElements = metamodelica::Dangerous::listReverseInPlace(outElements.clone());
+    outElements = metamodelica::Dangerous::listReverseInPlace(outElements);
     Ok(outElements)
 }
 
@@ -406,7 +406,7 @@ pub(crate) fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Eleme
     fn append_merge(mut oldValue: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>, mut elem: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
         let mut newValue: Arc<metamodelica::List<Arc<SCode::Element>>>;
         if isSome(oldValue.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(oldValue.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(oldValue) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -414,7 +414,7 @@ pub(crate) fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Eleme
         } else {
             newValue = metamodelica::nil();
         }
-        newValue = metamodelica::cons(elem.clone(), newValue.clone());
+        newValue = metamodelica::cons(elem, newValue);
         Ok(newValue)
     }
 
@@ -481,7 +481,7 @@ pub(crate) fn isMergeableMod(mut r#mod: Arc<SCode::Mod>) -> bool {
 
 pub(crate) fn isMergeableType(mut ty: Arc<Absyn::TypeSpec>) -> bool {
     let mut mergeable: bool;
-    mergeable = (::match_deref::match_deref! { match &(ty.clone()) {
+    mergeable = (::match_deref::match_deref! { match &(ty) {
         Deref @ Absyn::TypeSpec::TPATH { arrayDim: None, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -495,7 +495,7 @@ pub(crate) fn getComponentSignature(mut element: Arc<SCode::Element>) -> Result<
     let mut attrs: SCode::Attributes;
     let mut ty: Arc<Absyn::TypeSpec>;
     let mut r#mod: Arc<SCode::Mod>;
-    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(element.clone()) {
+    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(element) {
         Deref @ SCode::Element::COMPONENT { prefixes: __pa0, attributes: __pa1, typeSpec: __pa2, modifications: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -503,7 +503,7 @@ pub(crate) fn getComponentSignature(mut element: Arc<SCode::Element>) -> Result<
     attrs = __pa1.clone();
     ty = __pa2.clone();
     r#mod = __pa3.clone();
-    signature = stringAppendList(list![(SCodeDump::visibilityStr(prefs.visibility.clone())?).clone(), (SCodeDump::finalStr(prefs.finalPrefix.clone())?).clone(), (SCodeDump::connectorTypeStr(attrs.connectorType.clone())?).clone(), (SCodeDump::variabilityString(attrs.variability.clone())?).clone(), (Dump::unparseDirectionSymbolStr(attrs.direction.clone())?).clone(), (Dump::unparseTypeSpec(ty.clone())?).clone(), (getModSignature(r#mod.clone(), (literal!("")).clone())?).clone()]);
+    signature = stringAppendList(list![(SCodeDump::visibilityStr(prefs.visibility.clone())?).clone(), (SCodeDump::finalStr(prefs.finalPrefix.clone())?).clone(), (SCodeDump::connectorTypeStr(attrs.connectorType.clone())?).clone(), (SCodeDump::variabilityString(attrs.variability.clone())?).clone(), (Dump::unparseDirectionSymbolStr(attrs.direction.clone())?).clone(), (Dump::unparseTypeSpec(ty)?).clone(), (getModSignature(r#mod, (literal!("")).clone())?).clone()]);
     Ok(signature)
 }
 
@@ -576,17 +576,17 @@ pub(crate) fn mergeComponents(mut components: Arc<metamodelica::List<Arc<SCode::
         }
         __acc.reverse()
     });
-    r#mod = mergeMods(mods.clone())?;
-    mergedComponent = Arc::new(SCode::Element::COMPONENT { name: (prefix.clone()).clone(), prefixes: prefs.clone(), attributes: attrs.clone(), typeSpec: ty.clone(), modifications: r#mod.clone(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
-    for mut c in &*components.clone() {
+    r#mod = mergeMods(mods)?;
+    mergedComponent = Arc::new(SCode::Element::COMPONENT { name: (prefix.clone()).clone(), prefixes: prefs, attributes: attrs, typeSpec: ty, modifications: r#mod, comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
+    for mut c in &*components {
         let mut c = c.clone();
         let __pa3 = ::match_deref::match_deref! { match &(c.clone()) {
             Deref @ SCode::Element::COMPONENT { name: __pa3, .. } => __pa3.clone(),
             _ => bail!("pattern mismatch"),
         } };
         name = __pa3.clone();
-        cref = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (prefix.clone()).clone(), subscripts: list![AbsynUtil::makeIntegerSubscript(i.clone())] });
-        i = i.clone() + 1;
+        cref = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (prefix.clone()).clone(), subscripts: list![AbsynUtil::makeIntegerSubscript(i)] });
+        i = i + 1;
         UnorderedMap::addUnique((name.clone()).clone(), cref.clone(), nameMap.clone())?;
     }
     Ok(mergedComponent)
@@ -604,19 +604,19 @@ pub(crate) fn mergeMods(mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>>) -> R
     r#mod = listHead(mods.clone())?;
     names = getModNames(r#mod.clone(), metamodelica::nil(), metamodelica::nil())?;
     bindings = List::fill(metamodelica::nil(), (names.clone().len() as i32));
-    for mut m in &*mods.clone().reverse() {
+    for mut m in &*mods.reverse() {
         let mut m = m.clone();
         bindings = getModBindings(m.clone(), names.clone(), bindings.clone())?;
     }
-    binding_map = UnorderedMap::fromLists(names.clone(), ({
+    binding_map = UnorderedMap::fromLists(names, ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-        for mut b in (bindings.clone()).into_iter().cloned() {
+        for mut b in (bindings).into_iter().cloned() {
             let __x = Arc::new(Absyn::Exp::ARRAY { arrayExp: b.clone() });
             __acc = cons(__x, __acc);
         }
         __acc
     }), (std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?;
-    r#mod = mergeMods2(r#mod.clone(), binding_map.clone(), metamodelica::nil())?;
+    r#mod = mergeMods2(r#mod, binding_map, metamodelica::nil())?;
     Ok(r#mod)
 }
 
@@ -625,15 +625,15 @@ pub(crate) fn getModNames(mut r#mod: Arc<SCode::Mod>, mut name: Arc<metamodelica
     names = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
             if isSome(var_field!((*r#mod).binding, SCode::Mod::MOD).clone()) {
-                names = metamodelica::cons(makeModPath(name.clone())?, names.clone());
+                names = metamodelica::cons(makeModPath(name.clone())?, names);
             }
             for mut m in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {
                 let mut m = m.clone();
                 names = getModNames(m.r#mod.clone(), metamodelica::cons((m.ident.clone()).clone(), name.clone()), names.clone())?;
             }
-            names.clone()
+            names
         },
-        _ => names.clone(),
+        _ => names,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(names)
@@ -644,7 +644,7 @@ pub(crate) fn makeModPath(mut name: Arc<metamodelica::List<ArcStr>>) -> Result<A
     if name.clone().is_empty() {
         path = Arc::new(Absyn::Path::IDENT { name: (literal!("$")).clone() });
     } else {
-        path = AbsynUtil::stringListPathReversed(name.clone())?;
+        path = AbsynUtil::stringListPathReversed(name)?;
     }
     Ok(path)
 }
@@ -657,7 +657,7 @@ pub(crate) fn mergeMods2(mut r#mod: Arc<SCode::Mod>, mut bindingMap: Arc<Unorder
         Deref @ SCode::Mod::MOD { .. } => {
             if isSome(var_field!((*r#mod).binding, SCode::Mod::MOD).clone()) {
                 new_binding = UnorderedMap::getOrFail(makeModPath(name.clone())?, bindingMap.clone())?;
-                assign_variant_field!(r#mod => SCode::Mod::MOD; binding = Some(new_binding.clone()));
+                assign_variant_field!(r#mod => SCode::Mod::MOD; binding = Some(new_binding));
             }
             if !(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone().is_empty()) {
                 for mut m in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {
@@ -665,7 +665,7 @@ pub(crate) fn mergeMods2(mut r#mod: Arc<SCode::Mod>, mut bindingMap: Arc<Unorder
                     assign_field!(m.r#mod = mergeMods2(m.r#mod.clone(), bindingMap.clone(), metamodelica::cons((m.ident.clone()).clone(), name.clone()))?);
                     submods = metamodelica::cons(m.clone(), submods.clone());
                 }
-                assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = metamodelica::Dangerous::listReverseInPlace(submods.clone()));
+                assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = metamodelica::Dangerous::listReverseInPlace(submods));
             }
             ()
         },
@@ -678,15 +678,15 @@ pub(crate) fn mergeMods2(mut r#mod: Arc<SCode::Mod>, mut bindingMap: Arc<Unorder
 pub(crate) fn getModBindings(mut r#mod: Arc<SCode::Mod>, mut names: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut bindings: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>> {
     let mut bindings: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>> = bindings;
     let mut mod_bindings: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-    for mut name in &*names.clone() {
+    for mut name in &*names {
         let mut name = name.clone();
         mod_bindings = metamodelica::cons(lookupModBinding(name.clone(), r#mod.clone())?, mod_bindings.clone());
     }
     bindings = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        let __thr_src0 = mod_bindings.clone();
+        let __thr_src0 = mod_bindings;
         let mut __thr_it0 = (&__thr_src0).into_iter();
-        let __thr_src1 = bindings.clone();
+        let __thr_src1 = bindings;
         let mut __thr_it1 = (&__thr_src1).into_iter();
         loop {
             match (__thr_it0.next(), __thr_it1.next()) {
@@ -705,7 +705,7 @@ pub(crate) fn getModBindings(mut r#mod: Arc<SCode::Mod>, mut names: Arc<metamode
 
 pub(crate) fn lookupModBinding(mut name: Arc<Absyn::Path>, mut r#mod: Arc<SCode::Mod>) -> Result<Arc<Absyn::Exp>> {
     let mut binding: Arc<Absyn::Exp>;
-    let __pa0 = ::match_deref::match_deref! { match &(lookupMod(name.clone(), r#mod.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(lookupMod(name, r#mod)?) {
         Deref @ SCode::Mod::MOD { binding: Some(__pa0), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -716,10 +716,10 @@ pub(crate) fn lookupModBinding(mut name: Arc<Absyn::Path>, mut r#mod: Arc<SCode:
 pub(crate) fn lookupMod(mut name: Arc<Absyn::Path>, mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
     let mut outMod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     outMod = (::match_deref::match_deref! { match &(name.clone()) {
-        Deref @ Absyn::Path::IDENT { .. } => if (var_field!((*name).name, Absyn::Path::IDENT).clone() == literal!("$")) {r#mod.clone()} else {SCodeUtil::lookupModInMod((var_field!((*name).name, Absyn::Path::IDENT).clone()).clone(), r#mod.clone())},
+        Deref @ Absyn::Path::IDENT { .. } => if (var_field!((*name).name, Absyn::Path::IDENT).clone() == literal!("$")) {r#mod} else {SCodeUtil::lookupModInMod((var_field!((*name).name, Absyn::Path::IDENT).clone()).clone(), r#mod)},
         Deref @ Absyn::Path::QUALIFIED { .. } => {
-            outMod = SCodeUtil::lookupModInMod((var_field!((*name).name, Absyn::Path::QUALIFIED).clone()).clone(), r#mod.clone());
-            lookupMod(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), outMod.clone())?
+            outMod = SCodeUtil::lookupModInMod((var_field!((*name).name, Absyn::Path::QUALIFIED).clone()).clone(), r#mod);
+            lookupMod(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), outMod)?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -730,11 +730,11 @@ pub(crate) fn mergeScalarsElement(mut element: Arc<SCode::Element>, mut nameMap:
     let mut element: Arc<SCode::Element> = element;
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::EXTENDS { .. } => {
-            assign_variant_field!(element => SCode::Element::EXTENDS; modifications = mergeScalarsMod(var_field!((*element).modifications, SCode::Element::EXTENDS).clone(), nameMap.clone())?);
+            assign_variant_field!(element => SCode::Element::EXTENDS; modifications = mergeScalarsMod(var_field!((*element).modifications, SCode::Element::EXTENDS).clone(), nameMap)?);
             ()
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
-            assign_variant_field!(element => SCode::Element::COMPONENT; modifications = mergeScalarsMod(var_field!((*element).modifications, SCode::Element::COMPONENT).clone(), nameMap.clone())?);
+            assign_variant_field!(element => SCode::Element::COMPONENT; modifications = mergeScalarsMod(var_field!((*element).modifications, SCode::Element::COMPONENT).clone(), nameMap)?);
             ()
         },
         _ => (),
@@ -745,18 +745,18 @@ pub(crate) fn mergeScalarsElement(mut element: Arc<SCode::Element>, mut nameMap:
 
 pub(crate) fn mergeScalarsEql(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut nameMap: MergeNameMap) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = eql;
-    eql = SCodeUtil::mapEquationsList(eql.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsEq(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>))?;
+    eql = SCodeUtil::mapEquationsList(eql, (std::sync::Arc::new({ let __pe_b1 = nameMap; move |__pe_a0| mergeScalarsEq(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>))?;
     Ok(eql)
 }
 
 pub(crate) fn mergeScalarsEq(mut eq: Arc<SCode::Equation>, mut nameMap: MergeNameMap) -> Result<Arc<SCode::Equation>> {
     let mut eq: Arc<SCode::Equation> = eq;
-    eq = SCodeUtil::mapEquationExps(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsExps(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
+    eq = SCodeUtil::mapEquationExps(eq, (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsExps(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCode::Equation::EQ_CONNECT { .. } => {
             assign_variant_field!(eq => SCode::Equation::EQ_CONNECT;
                 crefLeft = mergeScalarsCref(var_field!((*eq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), nameMap.clone())?,
-                crefRight = mergeScalarsCref(var_field!((*eq).crefRight, SCode::Equation::EQ_CONNECT).clone(), nameMap.clone())?
+                crefRight = mergeScalarsCref(var_field!((*eq).crefRight, SCode::Equation::EQ_CONNECT).clone(), nameMap)?
             );
             ()
         },
@@ -791,13 +791,13 @@ pub(crate) fn mergeScalarsMod(mut r#mod: Arc<SCode::Mod>, mut nameMap: MergeName
 
 pub(crate) fn mergeScalarsSubMod(mut r#mod: Arc<SCode::SubMod>, mut nameMap: MergeNameMap) -> Result<Arc<SCode::SubMod>> {
     let mut r#mod: Arc<SCode::SubMod> = r#mod;
-    assign_field!(r#mod.r#mod = mergeScalarsMod(r#mod.r#mod.clone(), nameMap.clone())?);
+    assign_field!(r#mod.r#mod = mergeScalarsMod(r#mod.r#mod.clone(), nameMap)?);
     Ok(r#mod)
 }
 
 pub(crate) fn mergeScalarsExps(mut exp: Arc<Absyn::Exp>, mut nameMap: MergeNameMap) -> Result<Arc<Absyn::Exp>> {
     let mut exp: Arc<Absyn::Exp> = exp;
-    (exp, _) = AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(mergeScalarsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>) -> Result<(Arc<Absyn::Exp>, Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>)> + 'static>), nameMap.clone())?;
+    (exp, _) = AbsynUtil::traverseExp(exp, (std::sync::Arc::new(mergeScalarsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>) -> Result<(Arc<Absyn::Exp>, Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>)> + 'static>), nameMap)?;
     Ok(exp)
 }
 
@@ -820,19 +820,19 @@ pub(crate) fn mergeScalarsCref(mut cref: Arc<Absyn::ComponentRef>, mut nameMap: 
     let mut repl_ocr: Option<Arc<Absyn::ComponentRef>>;
     let mut repl_cr: Arc<Absyn::ComponentRef>;
     let mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
-    repl_ocr = UnorderedMap::get((AbsynUtil::crefFirstIdent(cref.clone())?).clone(), nameMap.clone())?;
+    repl_ocr = UnorderedMap::get((AbsynUtil::crefFirstIdent(cref.clone())?).clone(), nameMap)?;
     if isSome(repl_ocr.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(repl_ocr.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(repl_ocr) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         repl_cr = __pa0.clone();
         subs = AbsynUtil::crefFirstSubs(cref.clone())?;
         if !(subs.clone().is_empty()) {
-            subs = listAppend(AbsynUtil::crefFirstSubs(repl_cr.clone())?, subs.clone());
-            repl_cr = AbsynUtil::crefSetLastSubs(repl_cr.clone(), subs.clone())?;
+            subs = listAppend(AbsynUtil::crefFirstSubs(repl_cr.clone())?, subs);
+            repl_cr = AbsynUtil::crefSetLastSubs(repl_cr, subs)?;
         }
-        cref = AbsynUtil::crefReplaceFirst(cref.clone(), repl_cr.clone())?;
+        cref = AbsynUtil::crefReplaceFirst(cref, repl_cr)?;
     }
     Ok(cref)
 }
@@ -841,7 +841,7 @@ pub(crate) fn mergeScalarsAlgs(mut algs: Arc<metamodelica::List<Arc<SCode::Algor
     let mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = algs;
     algs = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-        for mut a in (algs.clone()).into_iter().cloned() {
+        for mut a in (algs).into_iter().cloned() {
             let __x = SCodeUtil::mapAlgorithmStatements(a.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsStmt(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
@@ -852,7 +852,7 @@ pub(crate) fn mergeScalarsAlgs(mut algs: Arc<metamodelica::List<Arc<SCode::Algor
 
 pub(crate) fn mergeScalarsStmt(mut stmt: Arc<SCode::Statement>, mut nameMap: MergeNameMap) -> Result<Arc<SCode::Statement>> {
     let mut stmt: Arc<SCode::Statement> = stmt;
-    stmt = SCodeUtil::mapStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsExps(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
+    stmt = SCodeUtil::mapStatementExps(stmt, (std::sync::Arc::new({ let __pe_b1 = nameMap; move |__pe_a0| mergeScalarsExps(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
     Ok(stmt)
 }
 
@@ -861,9 +861,9 @@ pub(crate) fn mergeScalarsComponentBindings(mut node: Arc<InstNode::InstNode>, m
     let mut cls_tree: Arc<ClassTree::ClassTree>;
     cls = InstNode::getClass(node.clone())?;
     cls_tree = Class::classTree(cls.clone())?;
-    ClassTree::applyComponents(cls_tree.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsComponentBinding(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
-    cls = Class::setClassTree(cls_tree.clone(), cls.clone())?;
-    InstNode::updateClass(cls.clone(), node.clone())?;
+    ClassTree::applyComponents(cls_tree.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap; move |__pe_a0| mergeScalarsComponentBinding(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
+    cls = Class::setClassTree(cls_tree, cls)?;
+    InstNode::updateClass(cls, node)?;
     Ok(())
 }
 
@@ -875,8 +875,8 @@ pub(crate) fn mergeScalarsComponentBinding(mut node: Arc<InstNode::InstNode>, mu
     comp = InstNode::component(node.clone())?;
     let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ Component::COMPONENT_DEF { .. } => {
-            assign_variant_field!(comp => Component::NFComponent::COMPONENT_DEF; definition = mergeScalarsElement(var_field!((*comp).definition, Component::NFComponent::COMPONENT_DEF).clone(), nameMap.clone())?);
-            InstNode::updateComponent(comp.clone(), node.clone())?;
+            assign_variant_field!(comp => Component::NFComponent::COMPONENT_DEF; definition = mergeScalarsElement(var_field!((*comp).definition, Component::NFComponent::COMPONENT_DEF).clone(), nameMap)?);
+            InstNode::updateComponent(comp, node)?;
             ()
         },
         _ => (),
@@ -900,24 +900,24 @@ pub fn createExtractorModel(mut flatModel: Arc<FlatModel::NFFlatModel>, mut func
     fn_template = createExtractorModelDummyFn(top_level_connectors.clone())?;
     args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut c in (top_level_connectors.clone()).into_iter().cloned() {
+        for mut c in (top_level_connectors).into_iter().cloned() {
             let __x = Expression::fromCref(Variable::name(c.clone()), false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    for mut f in &*flows.clone() {
+    for mut f in &*flows {
         let mut f = f.clone();
-        (eq, outFuncs, index) = createExtractorModelDummyEq(f.clone(), (literal!("flow")).clone(), fn_template.clone(), args.clone(), outFuncs.clone(), index.clone())?;
+        (eq, outFuncs, index) = createExtractorModelDummyEq(f.clone(), (literal!("flow")).clone(), fn_template.clone(), args.clone(), outFuncs.clone(), index)?;
         eqs = metamodelica::cons(eq.clone(), eqs.clone());
     }
-    for mut i in &*inputs.clone() {
+    for mut i in &*inputs {
         let mut i = i.clone();
-        (eq, outFuncs, index) = createExtractorModelDummyEq(i.clone(), (literal!("input")).clone(), fn_template.clone(), args.clone(), outFuncs.clone(), index.clone())?;
+        (eq, outFuncs, index) = createExtractorModelDummyEq(i.clone(), (literal!("input")).clone(), fn_template.clone(), args.clone(), outFuncs.clone(), index)?;
         eqs = metamodelica::cons(eq.clone(), eqs.clone());
     }
-    eqs = metamodelica::Dangerous::listReverseInPlace(eqs.clone());
-    assign_field!(extractorModel.equations = listAppend(extractorModel.equations.clone(), eqs.clone()));
+    eqs = metamodelica::Dangerous::listReverseInPlace(eqs);
+    assign_field!(extractorModel.equations = listAppend(extractorModel.equations.clone(), eqs));
     Ok((extractorModel, outFuncs))
 }
 
@@ -926,7 +926,7 @@ pub(crate) fn collectExtractorModelVariables(mut vars: Arc<metamodelica::List<Ar
     let mut flowVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut inputVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut top_node: Arc<InstNode::InstNode>;
-    for mut var in &*vars.clone().reverse() {
+    for mut var in &*vars.reverse() {
         let mut var = var.clone();
         if !(ComponentRef::isSimple(var.name.clone())) {
             top_node = ComponentRef::node(ComponentRef::last(var.name.clone()))?;
@@ -955,21 +955,21 @@ pub(crate) fn createExtractorModelDummyFn(mut connectors: Arc<metamodelica::List
     let mut output_binding: Arc<SCode::Mod>;
     let mut cmt: Arc<SCode::Comment>;
     output_binding = SCodeUtil::makeMod(false, false, metamodelica::nil(), Some(Arc::new(Absyn::Exp::INTEGER { value: 0 })), None, Absyn::dummyInfo.clone());
-    output_param = Arc::new(SCode::Element::COMPONENT { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: REAL_TYPE_SPEC.clone(), modifications: output_binding.clone(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
+    output_param = Arc::new(SCode::Element::COMPONENT { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: REAL_TYPE_SPEC.clone(), modifications: output_binding, comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
     params = listAppend(({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-        for mut c in (connectors.clone()).into_iter().cloned() {
+        for mut c in (connectors).into_iter().cloned() {
             let __x = createExtractorModelDummyFnInput(c.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), list![output_param.clone()]);
-    cdef = Arc::new(SCode::ClassDef::PARTS { elementLst: params.clone(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None });
+    }), list![output_param]);
+    cdef = Arc::new(SCode::ClassDef::PARTS { elementLst: params, normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None });
     cmt = Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: SCodeUtil::makeMod(false, false, list![Arc::new(SCode::SubMod { ident: (literal!("Inline")).clone(), r#mod: SCodeUtil::makeMod(false, false, metamodelica::nil(), Some(Arc::new(Absyn::Exp::BOOL { value: false })), None, Absyn::dummyInfo.clone()) })], None, None, Absyn::dummyInfo.clone()) })), comment: None });
-    elem = Arc::new(SCode::Element::CLASS { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::PURE } }, classDef: cdef.clone(), cmt: cmt.clone(), info: Absyn::dummyInfo.clone() });
-    fn_node = InstNode::new(elem.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
-    fn_node = Function::instFunctionNode(fn_node.clone(), NFInstContext::FUNCTION.clone(), Absyn::dummyInfo.clone())?;
-    let __pa0 = ::match_deref::match_deref! { match &(Function::typeNodeCache(fn_node.clone(), NFInstContext::FUNCTION.clone())?) {
+    elem = Arc::new(SCode::Element::CLASS { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::PURE } }, classDef: cdef, cmt: cmt, info: Absyn::dummyInfo.clone() });
+    fn_node = InstNode::new(elem, crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
+    fn_node = Function::instFunctionNode(fn_node, NFInstContext::FUNCTION.clone(), Absyn::dummyInfo.clone())?;
+    let __pa0 = ::match_deref::match_deref! { match &(Function::typeNodeCache(fn_node, NFInstContext::FUNCTION.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -992,17 +992,17 @@ pub(crate) fn createExtractorModelDummyEq(mut var: Arc<Variable::NFVariable>, mu
     let mut src: Arc<DAE::ElementSource> = DAE::emptyElementSource().clone();
     let mut var_name: ArcStr;
     loop {
-        index = index.clone() + 1;
-        fn_name = Arc::new(Absyn::Path::IDENT { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("f")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone() });
+        index = index + 1;
+        fn_name = Arc::new(Absyn::Path::IDENT { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("f")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index))); ArcStr::from(__mm_s) }).clone() });
         if !(NFFlatten::FunctionTreeImpl::hasKey(funcs.clone(), fn_name.clone())?) {
             break;
         }
     }
     indexed_fn = Function::setName(fn_name.clone(), r#fn.clone());
-    var_name = (ComponentRef::toString(Variable::name(var.clone()))?).clone();
-    src = ElementSource::addCommentToSource(src.clone(), Some(Arc::new(SCode::Comment { annotation_: None, comment: Some(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Dummy equation for ")); __mm_s.push_str(&*var_name.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*varType.clone()); __mm_s.push_str(&*literal!(" variable")); ArcStr::from(__mm_s) }).clone()) })));
-    eq = Equation::makeEquality(Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((0) as f64) }), Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(indexed_fn.clone(), args.clone(), Variability::CONTINUOUS.clone(), Purity::PURE.clone(), indexed_fn.returnType.clone()) }), crate::NFType::interned_REAL(), src.clone(), r#fn.node.clone(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
-    funcs = NFFlatten::FunctionTreeImpl::add(funcs.clone(), fn_name.clone(), indexed_fn.clone(), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
+    var_name = (ComponentRef::toString(Variable::name(var))?).clone();
+    src = ElementSource::addCommentToSource(src, Some(Arc::new(SCode::Comment { annotation_: None, comment: Some(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Dummy equation for ")); __mm_s.push_str(&*var_name); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*varType); __mm_s.push_str(&*literal!(" variable")); ArcStr::from(__mm_s) }).clone()) })));
+    eq = Equation::makeEquality(Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((0) as f64) }), Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(indexed_fn.clone(), args, Variability::CONTINUOUS.clone(), Purity::PURE.clone(), indexed_fn.returnType.clone()) }), crate::NFType::interned_REAL(), src, r#fn.node.clone(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+    funcs = NFFlatten::FunctionTreeImpl::add(funcs, fn_name, indexed_fn, (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
     Ok((eq, funcs, index))
 }
 

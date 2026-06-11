@@ -93,7 +93,7 @@ pub type ALGORITHM = NFAlgorithm;
 pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>;
 
 pub(crate) fn applyList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>) -> Result<()> {
-    for mut alg in &*algs.clone() {
+    for mut alg in &*algs {
         let mut alg = alg.clone();
         for mut s in &*alg.statements.clone() {
             let mut s = s.clone();
@@ -124,7 +124,7 @@ pub(crate) fn applyExp(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::
 pub(crate) fn applyExpList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
-    for mut alg in &*algs.clone() {
+    for mut alg in &*algs {
         let mut alg = alg.clone();
         applyExp(alg.clone(), func.clone())?;
     }
@@ -160,7 +160,7 @@ pub fn mapExpList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func:
     let mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>> = algs;
     algs = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFAlgorithm>>> = metamodelica::nil();
-        for mut alg in (algs.clone()).into_iter().cloned() {
+        for mut alg in (algs).into_iter().cloned() {
             let __x = mapExp(alg.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -184,7 +184,7 @@ pub(crate) fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
-    for mut alg in &*algs.clone() {
+    for mut alg in &*algs {
         let mut alg = alg.clone();
         arg = foldExp(alg.clone(), func.clone(), arg.clone())?;
     }
@@ -193,7 +193,7 @@ pub(crate) fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut
 
 pub fn toString(mut alg: Arc<NFAlgorithm>, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = (Statement::toStringList(alg.statements.clone(), (indent.clone()).clone())?).clone();
+    r#str = (Statement::toStringList(alg.statements.clone(), (indent).clone())?).clone();
     Ok(r#str)
 }
 
@@ -203,8 +203,8 @@ pub fn setInputsOutputs(mut alg: Arc<NFAlgorithm>) -> Result<Arc<NFAlgorithm>> {
     let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     (inputs, outputs) = getInputsOutputs(alg.statements.clone())?;
     assign_field!(
-        alg.inputs = inputs.clone(),
-        alg.outputs = outputs.clone()
+        alg.inputs = inputs,
+        alg.outputs = outputs
     );
     Ok(alg)
 }
@@ -242,7 +242,7 @@ pub fn isEmpty(mut alg: Arc<NFAlgorithm>) -> bool {
 pub fn isDiscrete(mut alg: Arc<NFAlgorithm>) -> Result<bool> {
     let mut b: bool;
     b = List::any(alg.outputs.clone(), (std::sync::Arc::new(ComponentRef::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
-    b = if (b.clone()) {b.clone()} else {List::any(alg.statements.clone(), (std::sync::Arc::new(Statement::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<bool> + 'static>))?};
+    b = if (b) {b} else {List::any(alg.statements.clone(), (std::sync::Arc::new(Statement::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<bool> + 'static>))?};
     Ok(b)
 }
 
@@ -250,7 +250,7 @@ fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs
     let () = (::match_deref::match_deref! { match &(statement.clone()) {
         Deref @ Statement::ASSIGNMENT { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs, .. } => {
             Expression::apply(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = inputs_set.clone(); let __pe_b2 = outputs_set.clone(); move |__pe_a0| expressionInputs(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
-            expressionOutput(lhs.clone(), inputs_set.clone(), outputs_set.clone())?;
+            expressionOutput(lhs.clone(), inputs_set, outputs_set)?;
             ()
         },
         Deref @ Statement::ASSIGNMENT { lhs: Deref @ Expression::TUPLE { elements, .. }, rhs, .. } => {
@@ -326,7 +326,7 @@ fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs
         },
         _ => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
-                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.statementInputsOutputs")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*Statement::toString(statement.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.statementInputsOutputs")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*Statement::toString(statement, (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             }
             bail!("fail")
         },
@@ -336,7 +336,7 @@ fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs
 }
 
 fn expressionInputs(mut exp: Arc<Expression::NFExpression>, mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(exp.clone()) {
+    let () = (::match_deref::match_deref! { match &(exp) {
         Deref @ Expression::CREF { cref: cr, .. } if (ComponentRef::isTime(cr.clone())?) => {
             ()
         },
@@ -349,8 +349,8 @@ fn expressionInputs(mut exp: Arc<Expression::NFExpression>, mut inputs_set: Arc<
         Deref @ Expression::CREF { cref: cr, .. } => {
             let mut cr = (*cr).clone();
             cr = ComponentRef::stripSubscriptsAll(cr.clone());
-            if !(UnorderedSet::contains(cr.clone(), outputs_set.clone())?) {
-                UnorderedSet::add(cr.clone(), inputs_set.clone())?;
+            if !(UnorderedSet::contains(cr.clone(), outputs_set)?) {
+                UnorderedSet::add(cr.clone(), inputs_set)?;
             }
             ()
         },
@@ -381,16 +381,16 @@ fn expressionOutput(mut exp: Arc<Expression::NFExpression>, mut inputs_set: Arc<
         Deref @ Expression::CREF { cref: cr, .. } => {
             let mut cr = (*cr).clone();
             cr = ComponentRef::stripSubscriptsAll(cr.clone());
-            if UnorderedSet::remove(cr.clone(), inputs_set.clone())? {
+            if UnorderedSet::remove(cr.clone(), inputs_set)? {
                 if Flags::isSet(Flags::FAILTRACE.clone())? {
-                    Error::addMessage(Error::COMPILER_WARNING.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Using output variable in RHS before it is assigned (former occurences will be set to initial value): ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                    Error::addMessage(Error::COMPILER_WARNING.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Using output variable in RHS before it is assigned (former occurences will be set to initial value): ")); __mm_s.push_str(&*Expression::toString(exp)?); ArcStr::from(__mm_s) }).clone()])?;
                 }
             }
-            UnorderedSet::add(cr.clone(), outputs_set.clone())?;
+            UnorderedSet::add(cr.clone(), outputs_set)?;
             ()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.expressionOutput")); __mm_s.push_str(&*literal!(" failed due to wrong expression type in LHS of algorithm statement: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.expressionOutput")); __mm_s.push_str(&*literal!(" failed due to wrong expression type in LHS of algorithm statement: ")); __mm_s.push_str(&*Expression::toString(exp)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

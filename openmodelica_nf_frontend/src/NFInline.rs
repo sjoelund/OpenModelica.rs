@@ -69,13 +69,13 @@ pub(crate) fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forc
             shouldInline = (match Call::inlineType(call.clone()) {
         DAE::InlineType::BUILTIN_EARLY_INLINE { .. } => true,
         DAE::InlineType::EARLY_INLINE { .. } if (Flags::isSet(Flags::INLINE_FUNCTIONS.clone())?) => true,
-        DAE::InlineType::NORM_INLINE { .. } => forceInline.clone() || Flags::getConfigBool(Flags::FRONTEND_INLINE.clone())?,
-        _ => forceInline.clone(),
+        DAE::InlineType::NORM_INLINE { .. } => forceInline || Flags::getConfigBool(Flags::FRONTEND_INLINE.clone())?,
+        _ => forceInline,
     });
-            if (shouldInline.clone()) {inlineCall(callExp.clone(), forceInline.clone())?} else {callExp.clone()}
+            if (shouldInline.clone()) {inlineCall(callExp, forceInline)?} else {callExp}
         },
         _ => {
-            callExp.clone()
+            callExp
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -103,13 +103,13 @@ pub(crate) fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceIn
         Deref @ Call::TYPED_CALL { r#fn, arguments: __esc_args, .. } if (!(InstNode::isEmpty(r#fn.node.clone())) && InstNode::isNamed(InstNode::parentScope(r#fn.node.clone(), false)?, (literal!("'constructor'")).clone())) => {
             args = (*__esc_args).clone();
             body = Function::getBody(r#fn.clone())?;
-            if !(body.clone().is_empty() && r#fn.locals.clone().is_empty()) {
-                exp = callExp.clone();
+            if !(body.is_empty() && r#fn.locals.clone().is_empty()) {
+                exp = callExp;
                 return Ok(exp.clone());
             }
             binding = Component::getBinding(InstNode::component(listHead(r#fn.outputs.clone())?)?);
             if Binding::hasExp(binding.clone()) {
-                exp = Binding::getExp(binding.clone())?;
+                exp = Binding::getExp(binding)?;
                 let true = (Expression::isRecord(exp.clone())) else { bail!("pattern mismatch") };
             } else {
                 exp = Class::makeRecordExp(listHead(r#fn.outputs.clone())?, r#fn.node.clone(), true)?;
@@ -122,10 +122,10 @@ pub(crate) fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceIn
                 } };
                 arg = __pa0.clone();
                 args = __pa1.clone();
-                arg = inlineCallExp(arg.clone(), forceInline.clone())?;
+                arg = inlineCallExp(arg.clone(), forceInline)?;
                 exp = Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = i.clone(); let __pe_b2 = arg.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             }
-            exp.clone()
+            exp
         },
         Deref @ Call::TYPED_CALL { r#fn: r#fn @ Deref @ Function::FUNCTION { inputs: __esc_inputs, outputs: __esc_outputs, locals: __esc_locals, .. }, arguments: __esc_args, .. } if (Function::hasSingleOrEmptyBody(r#fn.clone())) => {
             inputs = (*__esc_inputs).clone();
@@ -133,18 +133,18 @@ pub(crate) fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceIn
             locals = (*__esc_locals).clone();
             args = (*__esc_args).clone();
             body = Function::getBody(r#fn.clone())?;
-            body = removeDeadCode(body.clone())?;
+            body = removeDeadCode(body)?;
             if (body.clone().len() as i32) > 1 || (outputs.clone().len() as i32) != 1 || !(locals.clone().is_empty()) {
-                exp = callExp.clone();
+                exp = callExp;
                 return Ok(exp.clone());
             }
             if body.clone().is_empty() {
                 stmt = makeOutputStatement(listHead(outputs.clone())?)?;
             } else {
-                stmt = convertToAssignment(listHead(body.clone())?)?;
+                stmt = convertToAssignment(listHead(body)?)?;
             }
             if !(Statement::isAssignment(stmt.clone())) {
-                exp = callExp.clone();
+                exp = callExp;
                 return Ok(exp.clone());
             }
             Error::assertion((inputs.clone().len() as i32) == (args.clone().len() as i32), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInline.inlineCall")); __mm_s.push_str(&*literal!(" got wrong number of arguments for ")); __mm_s.push_str(&*AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInline.mo"))?;
@@ -157,11 +157,11 @@ pub(crate) fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceIn
                     } };
                     arg = __pa1.clone();
                     args = __pa2.clone();
-                    arg = unwrap_break_err!(inlineCallExp(arg.clone(), forceInline.clone()), '__try0);
+                    arg = unwrap_break_err!(inlineCallExp(arg.clone(), forceInline), '__try0);
                     stmt = unwrap_break_err!(Statement::mapExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = i.clone(); let __pe_b2 = arg.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
                 }
                 exp = getOutputExp(stmt.clone(), unwrap_break_err!(listHead(outputs.clone()), '__try0), call.clone());
-                exp = unwrap_break_err!(Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = forceInline.clone(); move |__pe_a0| inlineCallExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
+                exp = unwrap_break_err!(Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = forceInline; move |__pe_a0| inlineCallExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
                 Ok::<_, anyhow::Error>((exp.clone(),))
             } {
                 Ok((__try0_o0,)) => {
@@ -171,9 +171,9 @@ pub(crate) fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceIn
                     exp = callExp.clone();
                 }
             }
-            exp.clone()
+            exp
         },
-        _ => callExp.clone(),
+        _ => callExp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(exp)
@@ -189,9 +189,9 @@ fn replaceCrefNode(mut exp: Arc<Expression::NFExpression>, mut node: Arc<InstNod
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty = Expression::typeOf(exp.clone());
-    repl_ty = Type::mapDims(ty.clone(), (std::sync::Arc::new({ let __pe_b1 = node.clone(); let __pe_b2 = value.clone(); move |__pe_a0| replaceDimExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
-    if !(referenceEq(&*(ty.clone()),&*(repl_ty.clone()))) {
-        exp = Expression::setType(repl_ty.clone(), exp.clone())?;
+    repl_ty = Type::mapDims(ty.clone(), (std::sync::Arc::new({ let __pe_b1 = node; let __pe_b2 = value; move |__pe_a0| replaceDimExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
+    if !(referenceEq(&*(ty),&*(repl_ty.clone()))) {
+        exp = Expression::setType(repl_ty, exp)?;
     }
     Ok(exp)
 }
@@ -199,10 +199,10 @@ fn replaceCrefNode(mut exp: Arc<Expression::NFExpression>, mut node: Arc<InstNod
 fn replaceCrefNode2(mut cref: Arc<ComponentRef::NFComponentRef>, mut node: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut value: Arc<Expression::NFExpression> = value;
     if !(InstNode::refEqual(node.clone(), ComponentRef::node(cref.clone())?)) {
-        value = replaceCrefNode2(ComponentRef::rest(cref.clone())?, node.clone(), value.clone())?;
-        value = Expression::recordElement((InstNode::name(ComponentRef::node(cref.clone())?)?).clone(), value.clone())?;
+        value = replaceCrefNode2(ComponentRef::rest(cref.clone())?, node, value)?;
+        value = Expression::recordElement((InstNode::name(ComponentRef::node(cref.clone())?)?).clone(), value)?;
     }
-    value = Expression::applySubscripts(ComponentRef::getSubscripts(cref.clone()), value.clone(), false)?;
+    value = Expression::applySubscripts(ComponentRef::getSubscripts(cref), value, false)?;
     Ok(value)
 }
 
@@ -211,11 +211,11 @@ fn replaceDimExp(mut dim: Arc<Dimension::NFDimension>, mut node: Arc<InstNode::I
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::EXP { .. } => {
             let mut exp: Arc<Expression::NFExpression>;
-            exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b1 = node.clone(); let __pe_b2 = value.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b1 = node; let __pe_b2 = value; move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Dimension::fromExp(exp.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?
         },
         _ => {
-            dim.clone()
+            dim
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -225,7 +225,7 @@ fn replaceDimExp(mut dim: Arc<Dimension::NFDimension>, mut node: Arc<InstNode::I
 fn removeDeadCode(mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = body;
     if (body.clone().len() as i32) > 1 && Statement::isReturn((body.clone()).get(2)?) {
-        body = list![listHead(body.clone())?];
+        body = list![listHead(body)?];
     }
     Ok(body)
 }
@@ -233,8 +233,8 @@ fn removeDeadCode(mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>
 fn convertToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> {
     let mut outStmt: Arc<Statement::NFStatement>;
     outStmt = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::IF { .. } => convertIfToAssignment(stmt.clone())?,
-        _ => stmt.clone(),
+        Deref @ Statement::IF { .. } => convertIfToAssignment(stmt)?,
+        _ => stmt,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outStmt)
@@ -258,7 +258,7 @@ fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
     } };
     branches = __pa0.clone();
     source = __pa1.clone();
-    let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(branches.clone().reverse()) {
+    let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(branches.reverse()) {
         Deref @ metamodelica::List::Cons { head: (__pa2, __pa3), tail: __pa4 } => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -309,7 +309,7 @@ fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
         }
         if_exp = Arc::new(Expression::NFExpression::IF { ty: ty.clone(), condition: cond.clone(), trueBranch: rhs.clone(), falseBranch: if_exp.clone() });
     }
-    stmt = Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: output_exp.clone(), rhs: if_exp.clone(), ty: ty.clone(), source: source.clone() });
+    stmt = Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: output_exp, rhs: if_exp, ty: ty, source: source });
     Ok(stmt)
 }
 
@@ -320,9 +320,9 @@ fn makeOutputStatement(mut outputNode: Arc<InstNode::InstNode>) -> Result<Arc<St
     let mut binding_exp: Arc<Expression::NFExpression>;
     binding = Component::getImplicitBinding(InstNode::component(outputNode.clone())?, InstNode::instanceParent(outputNode.clone())?);
     if Binding::isBound(binding.clone()) {
-        cref_exp = Expression::fromCref(ComponentRef::fromNode(outputNode.clone(), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?;
-        binding_exp = Binding::getExp(binding.clone())?;
-        stmt = Statement::makeAssignment(cref_exp.clone(), binding_exp.clone(), crate::NFType::interned_UNKNOWN(), DAE::emptyElementSource().clone());
+        cref_exp = Expression::fromCref(ComponentRef::fromNode(outputNode, crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?;
+        binding_exp = Binding::getExp(binding)?;
+        stmt = Statement::makeAssignment(cref_exp, binding_exp, crate::NFType::interned_UNKNOWN(), DAE::emptyElementSource().clone());
     } else {
         stmt = Arc::new(Statement::NFStatement::FAILURE { body: metamodelica::nil(), source: DAE::emptyElementSource().clone() });
     }
@@ -336,7 +336,7 @@ fn getOutputExp(mut stmt: Arc<Statement::NFStatement>, mut outputNode: Arc<InstN
             var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone()
         },
         _ => {
-            Arc::new(Expression::NFExpression::CALL { call: call.clone() })
+            Arc::new(Expression::NFExpression::CALL { call: call })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -97,11 +97,11 @@ pub(crate) fn instInverses(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Fu
         Error::addSourceMessage(Error::FUNCTION_INVALID_OUTPUTS_FOR_INVERSE.clone(), list![(AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone()], SCodeUtil::getModifierInfo(listHead(inv_mods.clone())?))?;
         bail!("fail");
     }
-    for mut m in &*inv_mods.clone() {
+    for mut m in &*inv_mods {
         let mut m = m.clone();
         invs = instInverseMod(m.clone(), fnNode.clone(), r#fn.clone(), invs.clone())?;
     }
-    inverses = metamodelica::arrayFromVec(invs.clone().into_iter().cloned().collect());
+    inverses = metamodelica::arrayFromVec(invs.into_iter().cloned().collect());
     Ok(inverses)
 }
 
@@ -125,8 +125,8 @@ pub(crate) fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::S
     let mut inv_mod: Arc<SCode::SubMod>;
     let mut call_exp: Arc<Absyn::Exp>;
     call_exp = Expression::toAbsyn(fnInv.inverseCall.clone())?;
-    inv_mod = Arc::new(SCode::SubMod { ident: (ComponentRef::firstName(fnInv.inputParam.clone(), false)?).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(call_exp.clone()), comment: None, info: fnInv.info.clone() }) });
-    subMod = Arc::new(SCode::SubMod { ident: (literal!("inverse")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![inv_mod.clone()], binding: None, comment: None, info: fnInv.info.clone() }) });
+    inv_mod = Arc::new(SCode::SubMod { ident: (ComponentRef::firstName(fnInv.inputParam.clone(), false)?).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(call_exp), comment: None, info: fnInv.info.clone() }) });
+    subMod = Arc::new(SCode::SubMod { ident: (literal!("inverse")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![inv_mod], binding: None, comment: None, info: fnInv.info.clone() }) });
     Ok(subMod)
 }
 
@@ -138,13 +138,13 @@ pub(crate) fn getFunction(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<Funct
         _ => bail!("pattern mismatch"),
     } };
     call = __pa0.clone();
-    r#fn = Call::typedFunction(call.clone())?;
+    r#fn = Call::typedFunction(call)?;
     Ok(r#fn)
 }
 
 fn getInverseAnnotations(mut definition: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Mod>>>> {
     let mut invMods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
-    invMods = (::match_deref::match_deref! { match &(definition.clone()) {
+    invMods = (::match_deref::match_deref! { match &(definition) {
         Deref @ SCode::Element::CLASS { cmt: Deref @ SCode::Comment { annotation_: Some(ann), .. }, .. } => {
             SCodeUtil::lookupAnnotations(ann.clone(), (literal!("inverse")).clone())?
         },
@@ -164,7 +164,7 @@ fn instInverseMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstNode
                 let mut s = s.clone();
                 fnInvs = instInverseSubMod(s.clone(), fnNode.clone(), r#fn.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone(), fnInvs.clone())?;
             }
-            fnInvs.clone()
+            fnInvs
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunctionInverse.instInverseMod")); __mm_s.push_str(&*literal!(" got invalid modifier")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunctionInverse.mo"))?;
@@ -200,12 +200,12 @@ fn instInverseSubMod(mut submod: Arc<SCode::SubMod>, mut fnNode: Arc<InstNode::I
                     return Err(__try0_err);
                 }
             }
-            call_exp = Inst::instExp(call_aexp.clone(), fnNode.clone(), NFInstContext::RELAXED.clone(), info.clone())?;
-            metamodelica::cons(Arc::new(NFFunctionInverse { inputParam: param.clone(), inverseCall: call_exp.clone(), info: info.clone() }), fnInvs.clone())
+            call_exp = Inst::instExp(call_aexp.clone(), fnNode, NFInstContext::RELAXED.clone(), info.clone())?;
+            metamodelica::cons(Arc::new(NFFunctionInverse { inputParam: param, inverseCall: call_exp, info: info }), fnInvs)
         },
         Deref @ SCode::SubMod { .. } => {
-            Error::addStrictMessage(Error::INVALID_FUNCTION_ANNOTATION_ATTR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*submod.ident.clone()); __mm_s.push_str(&*SCodeDump::printModStr(submod.r#mod.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone(), (literal!("inverse")).clone()], info.clone())?;
-            fnInvs.clone()
+            Error::addStrictMessage(Error::INVALID_FUNCTION_ANNOTATION_ATTR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*submod.ident.clone()); __mm_s.push_str(&*SCodeDump::printModStr(submod.r#mod.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone(), (literal!("inverse")).clone()], info)?;
+            fnInvs
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -58,19 +58,19 @@ pub mod ConnectionSets {
     use super::*;
     pub(crate) fn EntryHash(mut entry: Entry) -> Result<i32> {
         let mut hash: i32;
-        hash = Connector::hash(entry.clone())?;
+        hash = Connector::hash(entry)?;
         Ok(hash)
     }
 
     pub(crate) fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
         let mut isEqual: bool;
-        isEqual = Connector::isEqual(entry1.clone(), entry2.clone())?;
+        isEqual = Connector::isEqual(entry1, entry2)?;
         Ok(isEqual)
     }
 
     pub(crate) fn EntryString(mut entry: Entry) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = (Connector::toString(entry.clone())?).clone();
+        r#str = (Connector::toString(entry)?).clone();
         Ok(r#str)
     }
 
@@ -78,36 +78,36 @@ pub mod ConnectionSets {
         let mut sets: Sets;
         sets = emptySets((connections.connections.clone().len() as i32) + (connections.flows.clone().len() as i32));
         if !(Flags::isSet(Flags::DISABLE_SINGLE_FLOW_EQ.clone())?) {
-            sets = List::fold(connections.flows.clone(), (std::sync::Arc::new(addSingleConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Sets) -> Result<Sets> + 'static>), sets.clone())?;
+            sets = List::fold(connections.flows.clone(), (std::sync::Arc::new(addSingleConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Sets) -> Result<Sets> + 'static>), sets)?;
         }
-        sets = List::fold1(connections.connections.clone(), (std::sync::Arc::new(addConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Connections::BrokenEdge>>, Sets) -> Result<Sets> + 'static>), connections.broken.clone(), sets.clone())?;
+        sets = List::fold1(connections.connections.clone(), (std::sync::Arc::new(addConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Connections::BrokenEdge>>, Sets) -> Result<Sets> + 'static>), connections.broken.clone(), sets)?;
         Ok(sets)
     }
 
     pub(crate) fn addScalarConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
-        (sets, _) = add(conn.clone(), sets.clone())?;
+        (sets, _) = add(conn, sets)?;
         Ok(sets)
     }
 
     pub(crate) fn addConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
-        sets = addList(Connector::scalarize(conn.clone())?, sets.clone())?;
+        sets = addList(Connector::scalarize(conn)?, sets)?;
         Ok(sets)
     }
 
     pub(crate) fn addSingleConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
-        (sets, _) = find(conn.clone(), sets.clone())?;
+        (sets, _) = find(conn, sets)?;
         Ok(sets)
     }
 
     pub(crate) fn addConnection(mut connection: Arc<Connection::NFConnection>, mut broken: Arc<metamodelica::List<Connections::BrokenEdge>>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
-        if !(broken.clone().is_empty()) && isBroken(connection.lhs.clone(), connection.rhs.clone(), broken.clone())? {
+        if !(broken.clone().is_empty()) && isBroken(connection.lhs.clone(), connection.rhs.clone(), broken)? {
             return Ok(sets.clone());
         }
-        sets = merge(connection.lhs.clone(), connection.rhs.clone(), sets.clone())?;
+        sets = merge(connection.lhs.clone(), connection.rhs.clone(), sets)?;
         Ok(sets)
     }
 
@@ -115,9 +115,9 @@ pub mod ConnectionSets {
         let mut b: bool = false;
         let mut cr1: Arc<ComponentRef::NFComponentRef>;
         let mut cr2: Arc<ComponentRef::NFComponentRef>;
-        cr1 = Connector::name(c1.clone());
-        cr2 = Connector::name(c2.clone());
-        for mut c in &*broken.clone() {
+        cr1 = Connector::name(c1);
+        cr2 = Connector::name(c2);
+        for mut c in &*broken {
             let mut c = c.clone();
             if ComponentRef::isPrefix(c.lhs.clone(), cr1.clone())? && ComponentRef::isPrefix(c.rhs.clone(), cr2.clone())? || ComponentRef::isPrefix(c.lhs.clone(), cr2.clone())? && ComponentRef::isPrefix(c.rhs.clone(), cr1.clone())? {
                 b = true;
@@ -173,16 +173,16 @@ pub mod ConnectionSets {
         let mut nodes: metamodelica::Array<i32>;
         let mut elements: IndexTable;
         let mut node_count: i32;
-        let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets.clone()) else { bail!("pattern mismatch") };
+        let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets) else { bail!("pattern mismatch") };
         nodes = __pa0.clone();
         elements = __pa1.clone();
         node_count = __pa2.clone();
-        index = node_count.clone() + 1;
-        if index.clone() > metamodelica::arrayLength(nodes.clone()) {
-            nodes = Array::expand(((intReal(index.clone()) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32), nodes.clone(), -1)?;
+        index = node_count + 1;
+        if index > metamodelica::arrayLength(nodes.clone()) {
+            nodes = Array::expand(((intReal(index) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32), nodes.clone(), -1)?;
         }
-        UnorderedMap::addNew(entry.clone(), index.clone(), elements.clone())?;
-        sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: index.clone() };
+        UnorderedMap::addNew(entry, index, elements.clone())?;
+        sets = Sets { nodes: nodes.clone(), elements: elements, nodeCount: index };
         Ok((sets, index))
     }
 
@@ -193,28 +193,28 @@ pub mod ConnectionSets {
         let mut node_count: i32;
         let mut sz: i32;
         let mut index: i32;
-        let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets.clone()) else { bail!("pattern mismatch") };
+        let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets) else { bail!("pattern mismatch") };
         nodes = __pa0.clone();
         elements = __pa1.clone();
         node_count = __pa2.clone();
         sz = (entries.clone().len() as i32);
-        index = node_count.clone() + 1;
-        node_count = node_count.clone() + sz.clone();
-        if node_count.clone() > metamodelica::arrayLength(nodes.clone()) {
-            nodes = Array::expand(((intReal(node_count.clone()) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32), nodes.clone(), -1)?;
+        index = node_count + 1;
+        node_count = node_count + sz;
+        if node_count > metamodelica::arrayLength(nodes.clone()) {
+            nodes = Array::expand(((intReal(node_count) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32), nodes.clone(), -1)?;
         }
-        for mut e in &*entries.clone() {
+        for mut e in &*entries {
             let mut e = e.clone();
-            UnorderedMap::addNew(e.clone(), index.clone(), elements.clone())?;
-            index = index.clone() + 1;
+            UnorderedMap::addNew(e.clone(), index, elements.clone())?;
+            index = index + 1;
         }
-        sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: node_count.clone() };
+        sets = Sets { nodes: nodes.clone(), elements: elements, nodeCount: node_count };
         Ok(sets)
     }
 
     pub(crate) fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
         let mut found: bool;
-        found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
+        found = isSome(UnorderedMap::get(entry, sets.elements.clone())?);
         Ok(found)
     }
 
@@ -223,10 +223,10 @@ pub mod ConnectionSets {
         let mut nodes: metamodelica::Array<i32>;
         let mut elements: IndexTable;
         let mut sz: i32;
-        sz = std::cmp::max(setCount.clone(), 3);
-        nodes = arrayCreate(sz.clone(), -1);
+        sz = std::cmp::max(setCount, 3);
+        nodes = arrayCreate(sz, -1);
         elements = UnorderedMap::new((std::sync::Arc::new(EntryHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(EntryEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), 1);
-        sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: 0 };
+        sets = Sets { nodes: nodes.clone(), elements: elements, nodeCount: 0 };
         sets
     }
 
@@ -241,26 +241,26 @@ pub mod ConnectionSets {
         nodes = sets.nodes.clone();
         for mut i in 1..=sets.nodeCount.clone() {
             if ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0 {
-                set_idx = set_idx.clone() + 1;
+                set_idx = set_idx + 1;
                 {
-                    let __cell0 = -(set_idx.clone());
+                    let __cell0 = -(set_idx);
                     let __idx0 = i.clone();
                     nodes.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
         }
-        setsArray = arrayCreate(set_idx.clone(), metamodelica::nil());
+        setsArray = arrayCreate(set_idx, metamodelica::nil());
         entries = UnorderedMap::toArray(sets.elements.clone());
         for mut i in ({let __s=metamodelica::arrayLength(entries.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             (e, idx) = metamodelica::Dangerous::arrayGetNoBoundsChecking(entries.clone(), i.clone());
-            set_idx = ({let __elt = nodes.borrow()[(idx.clone()-1) as usize].clone(); __elt});
-            while set_idx.clone() > 0 {
-                set_idx = ({let __elt = nodes.borrow()[(set_idx.clone()-1) as usize].clone(); __elt});
+            set_idx = ({let __elt = nodes.borrow()[(idx-1) as usize].clone(); __elt});
+            while set_idx > 0 {
+                set_idx = ({let __elt = nodes.borrow()[(set_idx-1) as usize].clone(); __elt});
             }
-            set_idx = -(set_idx.clone());
+            set_idx = -(set_idx);
             {
-                let __cell1 = metamodelica::cons(e.clone(), ({let __elt = setsArray.borrow()[(set_idx.clone()-1) as usize].clone(); __elt}));
-                let __idx1 = set_idx.clone();
+                let __cell1 = metamodelica::cons(e.clone(), ({let __elt = setsArray.borrow()[(set_idx-1) as usize].clone(); __elt}));
+                let __idx1 = set_idx;
                 setsArray.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
             }
         }
@@ -274,30 +274,30 @@ pub mod ConnectionSets {
         let mut oindex: Option<i32>;
         oindex = UnorderedMap::get(entry.clone(), sets.elements.clone())?;
         if isSome(oindex.clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(oindex.clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(oindex) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             index = __pa0.clone();
         } else {
-            (sets, index) = add(entry.clone(), sets.clone())?;
+            (sets, index) = add(entry, sets)?;
         }
         Ok((sets, index))
     }
 
     pub(crate) fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
-        let mut rootIndex: i32 = nodeIndex.clone();
-        let mut parent: i32 = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
-        let mut idx: i32 = nodeIndex.clone();
-        while parent.clone() > 0 {
-            rootIndex = parent.clone();
-            parent = ({let __elt = nodes.borrow()[(parent.clone()-1) as usize].clone(); __elt});
+        let mut rootIndex: i32 = nodeIndex;
+        let mut parent: i32 = ({let __elt = nodes.borrow()[(nodeIndex-1) as usize].clone(); __elt});
+        let mut idx: i32 = nodeIndex;
+        while parent > 0 {
+            rootIndex = parent;
+            parent = ({let __elt = nodes.borrow()[(parent-1) as usize].clone(); __elt});
         }
-        parent = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
-        while parent.clone() > 0 {
-            metamodelica::arrayUpdate(nodes.clone(), idx.clone(), rootIndex.clone())?;
-            idx = parent.clone();
-            parent = ({let __elt = nodes.borrow()[(parent.clone()-1) as usize].clone(); __elt});
+        parent = ({let __elt = nodes.borrow()[(nodeIndex-1) as usize].clone(); __elt});
+        while parent > 0 {
+            metamodelica::arrayUpdate(nodes.clone(), idx, rootIndex)?;
+            idx = parent;
+            parent = ({let __elt = nodes.borrow()[(parent-1) as usize].clone(); __elt});
         }
         Ok(rootIndex)
     }
@@ -306,24 +306,24 @@ pub mod ConnectionSets {
         let mut set: i32;
         let mut updatedSets: Sets;
         let mut index: i32;
-        (updatedSets, index) = find(entry.clone(), sets.clone())?;
-        set = findRoot(index.clone(), updatedSets.nodes.clone())?;
+        (updatedSets, index) = find(entry, sets)?;
+        set = findRoot(index, updatedSets.nodes.clone())?;
         Ok((set, updatedSets))
     }
 
     pub(crate) fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
         let mut set: i32;
-        set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
-        while set.clone() > 0 {
-            set = ({let __elt = sets.nodes.borrow()[(set.clone()-1) as usize].clone(); __elt});
+        set = UnorderedMap::getOrFail(entry, sets.elements.clone())?;
+        while set > 0 {
+            set = ({let __elt = sets.nodes.borrow()[(set-1) as usize].clone(); __elt});
         }
-        set = -(set.clone());
+        set = -(set);
         Ok(set)
     }
 
     pub(crate) fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<Connector::NFConnector>>> {
         let mut outEntry: Option<Arc<Connector::NFConnector>>;
-        outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
+        outEntry = UnorderedMap::getKey(entry, sets.elements.clone())?;
         Ok(outEntry)
     }
 
@@ -336,9 +336,9 @@ pub mod ConnectionSets {
         let mut sets: Sets = sets;
         let mut set1: i32;
         let mut set2: i32;
-        (set1, sets) = findSet(entry1.clone(), sets.clone())?;
-        (set2, sets) = findSet(entry2.clone(), sets.clone())?;
-        sets = union(set1.clone(), set2.clone(), sets.clone())?;
+        (set1, sets) = findSet(entry1, sets)?;
+        (set2, sets) = findSet(entry2, sets)?;
+        sets = union(set1, set2, sets)?;
         Ok(sets)
     }
 
@@ -350,15 +350,15 @@ pub mod ConnectionSets {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(sets.nodeCount.clone())); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone());
         nodes = sets.nodes.clone();
         entries = UnorderedMap::toList(sets.elements.clone());
-        for mut p in &*entries.clone() {
+        for mut p in &*entries {
             let mut p = p.clone();
             (e, i) = p.clone();
             metamodelica::print((literal!("[")).clone());
-            metamodelica::print(ArcStr::from(::std::format!("{}", i.clone())));
+            metamodelica::print(ArcStr::from(::std::format!("{}", i)));
             metamodelica::print((literal!("]")).clone());
             metamodelica::print((EntryString(e.clone())?).clone());
             metamodelica::print((literal!(" -> ")).clone());
-            metamodelica::print(ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}))));
+            metamodelica::print(ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i-1) as usize].clone(); __elt}))));
             metamodelica::print((literal!("\n")).clone());
         }
         Ok(())
@@ -368,16 +368,16 @@ pub mod ConnectionSets {
         let mut sets: Sets = sets;
         let mut rank1: i32;
         let mut rank2: i32;
-        if set1.clone() != set2.clone() {
-            rank1 = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt});
-            rank2 = ({let __elt = sets.nodes.borrow()[(set2.clone()-1) as usize].clone(); __elt});
-            if rank1.clone() > rank2.clone() {
-                metamodelica::arrayUpdate(sets.nodes.clone(), set2.clone(), set1.clone())?;
-            } else if rank1.clone() < rank2.clone() {
-                metamodelica::arrayUpdate(sets.nodes.clone(), set1.clone(), set2.clone())?;
+        if set1 != set2 {
+            rank1 = ({let __elt = sets.nodes.borrow()[(set1-1) as usize].clone(); __elt});
+            rank2 = ({let __elt = sets.nodes.borrow()[(set2-1) as usize].clone(); __elt});
+            if rank1 > rank2 {
+                metamodelica::arrayUpdate(sets.nodes.clone(), set2, set1)?;
+            } else if rank1 < rank2 {
+                metamodelica::arrayUpdate(sets.nodes.clone(), set1, set2)?;
             } else {
-                metamodelica::arrayUpdate(sets.nodes.clone(), set1.clone(), ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1)?;
-                metamodelica::arrayUpdate(sets.nodes.clone(), set2.clone(), set1.clone())?;
+                metamodelica::arrayUpdate(sets.nodes.clone(), set1, ({let __elt = sets.nodes.borrow()[(set1-1) as usize].clone(); __elt}) - 1)?;
+                metamodelica::arrayUpdate(sets.nodes.clone(), set2, set1)?;
             }
         }
         Ok(sets)

@@ -111,7 +111,7 @@ pub type BACKEND_INTERFACE_FUNCTIONS = BackendInterfaceFunctions;
 
 
 pub fn initializeBackendInterface(mut inFunctions: BackendInterfaceFunctions) -> () {
-    { let __v = inFunctions.clone(); crate::Globals::backendInterface.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = inFunctions; crate::Globals::backendInterface.with(|__root| *__root.borrow_mut() = __v) };
     ()
 }
 
@@ -132,7 +132,7 @@ pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, b
     let mut func: partialRewriteFrontEnd;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.rewriteFrontEnd.clone();
-    (outExp, isChanged) = func(inExp.clone())?;
+    (outExp, isChanged) = func(inExp)?;
     Ok((outExp, isChanged))
 }
 
@@ -143,7 +143,7 @@ pub fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) 
     let mut func: partialAppendLibrary;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.appendLibrary.clone();
-    (program, success) = func(modelName.clone(), (modelicaPath.clone()).clone())?;
+    (program, success) = func(modelName, (modelicaPath).clone())?;
     Ok((program, success))
 }
 

@@ -203,9 +203,9 @@ pub mod SimVar {
 
     pub(crate) fn toString(mut var: Arc<SimVar>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(var.index.clone())); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*VariableKind::toString(var.varKind.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(size(var.clone())?)); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Type::toString(var.type_.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(var.index.clone())); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*VariableKind::toString(var.varKind.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(size(var.clone())?)); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Type::toString(var.type_.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone();
         if isSome(var.start.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(Util::getOption(var.start.clone())?)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(Util::getOption(var.start.clone())?)?); ArcStr::from(__mm_s) }).clone();
         }
         Ok(r#str)
     }
@@ -213,13 +213,13 @@ pub mod SimVar {
     pub(crate) fn listToString(mut var_lst: Arc<metamodelica::List<Arc<SimVar>>>, mut r#str: ArcStr, mut printAlias: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         if !(var_lst.clone().is_empty()) {
-            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((var_lst.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
-            for mut var in &*var_lst.clone() {
+            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((var_lst.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
+            for mut var in &*var_lst {
                 let mut var = var.clone();
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toString(var.clone(), (literal!("  ")).clone())?); ArcStr::from(__mm_s) }).clone();
-                r#str = (if (printAlias.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Alias::toString(var.aliasvar.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }}).clone();
+                r#str = (if (printAlias) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Alias::toString(var.aliasvar.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }}).clone();
             }
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         } else {
             r#str = (literal!("")).clone();
         }
@@ -247,7 +247,7 @@ pub mod SimVar {
             comment = (parseComment(var.comment.clone())).clone();
             (varKind, unit, displayUnit, min, max, start, nominal, isFixed, isDiscrete, isProtected) = parseAttributes(var.backendinfo.clone())?;
             (start, isValueChangeable, causality) = parseBinding(start.clone(), var.clone());
-            result = Arc::new(SimVar { name: var.name.clone(), varKind: varKind.clone(), comment: (comment.clone()).clone(), unit: (unit.clone()).clone(), displayUnit: (displayUnit.clone()).clone(), index: typeIndex.clone(), min: min.clone(), max: max.clone(), start: start.clone(), nominal: nominal.clone(), isFixed: isFixed.clone(), type_: var.ty.clone(), isDiscrete: isDiscrete.clone(), arrayCref: ComponentRef::getArrayCrefOpt(var.name.clone())?, aliasvar: alias.clone(), info: var.info.clone(), causality: Some(causality.clone()), variable_index: Some(uniqueIndex.clone()), fmi_index: Some(typeIndex.clone()), numArrayElement: metamodelica::nil(), isValueChangeable: isValueChangeable.clone(), isProtected: isProtected.clone(), hideResult: var.backendinfo.annotations.hideResult.clone(), isEncrypted: Variable::isEncrypted(var.clone())?, inputIndex: None, matrixName: None, variability: None, initial_: None, exportVar: None });
+            result = Arc::new(SimVar { name: var.name.clone(), varKind: varKind.clone(), comment: (comment.clone()).clone(), unit: (unit.clone()).clone(), displayUnit: (displayUnit.clone()).clone(), index: typeIndex, min: min.clone(), max: max.clone(), start: start.clone(), nominal: nominal.clone(), isFixed: isFixed.clone(), type_: var.ty.clone(), isDiscrete: isDiscrete.clone(), arrayCref: ComponentRef::getArrayCrefOpt(var.name.clone())?, aliasvar: alias, info: var.info.clone(), causality: Some(causality.clone()), variable_index: Some(uniqueIndex), fmi_index: Some(typeIndex), numArrayElement: metamodelica::nil(), isValueChangeable: isValueChangeable.clone(), isProtected: isProtected.clone(), hideResult: var.backendinfo.annotations.hideResult.clone(), isEncrypted: Variable::isEncrypted(var)?, inputIndex: None, matrixName: None, variability: None, initial_: None, exportVar: None });
             result.clone()
         },
         _ => {
@@ -262,33 +262,33 @@ pub mod SimVar {
     pub(crate) fn traverseCreate(mut var: Arc<Variable::NFVariable>, mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
         let mut simCodeIndices: SimCodeIndices = Pointer::access(indices_ptr.clone());
-        let () = (match varType.clone() {
+        let () = (match varType {
         VarType::SIMULATION => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc)));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.realVarIndex = simCodeIndices.realVarIndex.clone() + 1;
             ()
         },
         VarType::PARAMETER { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc)));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.realParamIndex = simCodeIndices.realParamIndex.clone() + 1;
             ()
         },
         VarType::ALIAS { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(acc)));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.realAliasIndex = simCodeIndices.realAliasIndex.clone() + 1;
             ()
         },
         VarType::RESIDUAL { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.residualIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.residualIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc)));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.residualIndex = simCodeIndices.residualIndex.clone() + 1;
             ()
         },
         VarType::EXTERNAL_OBJECT { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.extObjIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.extObjIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc)));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.extObjIndex = simCodeIndices.extObjIndex.clone() + 1;
             ()
@@ -298,7 +298,7 @@ pub mod SimVar {
             bail!("fail")
         },
     });
-        Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+        Pointer::update(indices_ptr, simCodeIndices);
         Ok(var)
     }
 
@@ -306,7 +306,7 @@ pub mod SimVar {
         let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
         let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } if (Equation::isResidual(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone())) => {
-            traverseCreate(Pointer::access(Equation::getResidualVar(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone())?), acc.clone(), indices_ptr.clone(), varType.clone())?;
+            traverseCreate(Pointer::access(Equation::getResidualVar(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone())?), acc, indices_ptr, varType)?;
             ()
         },
         _ => (),
@@ -347,9 +347,9 @@ pub mod SimVar {
 
     pub(crate) fn shiftIndex(mut var: Arc<SimVar>, mut shift: i32) -> Result<Arc<SimVar>> {
         let mut var: Arc<SimVar> = var;
-        assign_field!(var.index = var.index.clone() + shift.clone());
+        assign_field!(var.index = var.index.clone() + shift);
         if isSome(var.fmi_index.clone()) {
-            assign_field!(var.fmi_index = Some(Util::getOption(var.fmi_index.clone())? + shift.clone()));
+            assign_field!(var.fmi_index = Some(Util::getOption(var.fmi_index.clone())? + shift));
         }
         Ok(var)
     }
@@ -376,8 +376,8 @@ pub mod SimVar {
         let mut oldTpl: (OldSimCodeVar::SimVar, bool);
         let mut var: Arc<SimVar>;
         let mut b: bool;
-        (var, b) = tpl.clone();
-        oldTpl = (convert(var.clone())?, b.clone());
+        (var, b) = tpl;
+        oldTpl = (convert(var)?, b);
         Ok(oldTpl)
     }
 
@@ -458,7 +458,7 @@ pub mod SimVar {
             ()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.parseAttributes")); __mm_s.push_str(&*literal!(" failed because the BackendInfo could not be parsed:\n")); __mm_s.push_str(&*BackendInfo::toString(backendInfo.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.parseAttributes")); __mm_s.push_str(&*literal!(" failed because the BackendInfo could not be parsed:\n")); __mm_s.push_str(&*BackendInfo::toString(backendInfo)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -468,7 +468,7 @@ pub mod SimVar {
 
     fn parseComment(mut absynComment: Arc<SCode::Comment>) -> ArcStr {
         let mut commentStr: ArcStr = arcstr::literal!("");
-        commentStr = ((::match_deref::match_deref! { match &(absynComment.clone()) {
+        commentStr = ((::match_deref::match_deref! { match &(absynComment) {
         Deref @ SCode::Comment { comment: Some(__esc_commentStr), .. } => {
             commentStr = (*__esc_commentStr).clone();
             commentStr.clone()
@@ -483,7 +483,7 @@ pub mod SimVar {
         let mut start: Option<Arc<Expression::NFExpression>> = start;
         let mut isValueChangeable: bool;
         let mut causality: Causality;
-        (start, isValueChangeable, causality) = (::match_deref::match_deref! { match &(var.clone()) {
+        (start, isValueChangeable, causality) = (::match_deref::match_deref! { match &(var) {
         Deref @ Variable::VARIABLE { binding: Deref @ Binding::TYPED_BINDING { variability: Prefixes::Variability::CONSTANT, bindingExp, .. }, backendinfo: Deref @ BackendInfo::BACKEND_INFO { varKind: Deref @ VariableKind::PARAMETER { .. }, .. }, .. } => {
             (Some(bindingExp.clone()), true, Causality::PARAMETER.clone())
         },
@@ -491,10 +491,10 @@ pub mod SimVar {
             (Some(bindingExp.clone()), true, Causality::PARAMETER.clone())
         },
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { varKind: Deref @ VariableKind::PARAMETER { .. }, .. }, .. } => {
-            (start.clone(), false, Causality::CALCULATED_PARAMETER.clone())
+            (start, false, Causality::CALCULATED_PARAMETER.clone())
         },
         _ => {
-            (start.clone(), false, Causality::LOCAL.clone())
+            (start, false, Causality::LOCAL.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -601,7 +601,7 @@ pub mod SimVar {
             bail!("fail")
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.convertVarKind")); __mm_s.push_str(&*literal!(" failed because of unhandled VariableKind ")); __mm_s.push_str(&*VariableKind::toString(varKind.clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.convertVarKind")); __mm_s.push_str(&*literal!(" failed because of unhandled VariableKind ")); __mm_s.push_str(&*VariableKind::toString(varKind)); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -699,7 +699,7 @@ pub mod Alias {
 
     fn getAlias(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Alias>> {
         let mut alias: Arc<Alias>;
-        alias = (::match_deref::match_deref! { match &(SimplifyExp::simplify(exp.clone(), false)?) {
+        alias = (::match_deref::match_deref! { match &(SimplifyExp::simplify(exp, false)?) {
         e @ Deref @ Expression::CREF { .. } => {
             Arc::new(Alias::ALIAS { alias: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), gain: metamodelica::OrderedFloat(1.0_f64), offset: metamodelica::OrderedFloat(0.0_f64) })
         },
@@ -745,11 +745,11 @@ pub mod Alias {
         },
         (Deref @ Expression::MULTARY { arguments: Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Cons { head: arg2, tail: Deref @ metamodelica::List::Nil } }, inv_arguments: Deref @ metamodelica::List::Nil, .. }, _) if (Operator::getMathClassification(var_field!((*e1).operator, Expression::NFExpression::MULTARY).clone())? == Operator::MathClassification::MULTIPLICATION.clone() && Expression::isConstNumber(e2.clone())) => {
             (cref, gain) = getGainAlias(arg1.clone(), arg2.clone())?;
-            (cref.clone(), gain.clone(), Expression::realValue(e2.clone())?)
+            (cref, gain, Expression::realValue(e2.clone())?)
         },
         (_, Deref @ Expression::MULTARY { arguments: Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Cons { head: arg2, tail: Deref @ metamodelica::List::Nil } }, inv_arguments: Deref @ metamodelica::List::Nil, .. }) if (Operator::getMathClassification(var_field!((*e2).operator, Expression::NFExpression::MULTARY).clone())? == Operator::MathClassification::MULTIPLICATION.clone() && Expression::isConstNumber(e1.clone())) => {
             (cref, gain) = getGainAlias(arg1.clone(), arg2.clone())?;
-            (cref.clone(), gain.clone(), Expression::realValue(e1.clone())?)
+            (cref, gain, Expression::realValue(e1.clone())?)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.Alias.getOffsetAlias")); __mm_s.push_str(&*literal!(" cannot generate offset alias from Expressions: {")); __mm_s.push_str(&*Expression::toString(e1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(e2.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?;
@@ -960,18 +960,18 @@ pub mod SimVars {
 
     pub(crate) fn toString(mut vars: Arc<SimVars>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        r#str = (StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimVars ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.stateVars.clone(), (literal!("States")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.derivativeVars.clone(), (literal!("Derivatives")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.algVars.clone(), (literal!("Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.discreteAlgVars.clone(), (literal!("Discrete Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.intAlgVars.clone(), (literal!("Integer Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.boolAlgVars.clone(), (literal!("Boolean Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.paramVars.clone(), (literal!("Real Parameters")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.intParamVars.clone(), (literal!("Integer Parameters")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.boolParamVars.clone(), (literal!("Boolean Parameters")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.residualVars.clone(), (literal!("Residual Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.aliasVars.clone(), (literal!("Real Alias")).clone(), true)?); ArcStr::from(__mm_s) }).clone();
+        r#str = (StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimVars ")); __mm_s.push_str(&*r#str); ArcStr::from(__mm_s) }).clone())).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.stateVars.clone(), (literal!("States")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.derivativeVars.clone(), (literal!("Derivatives")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.algVars.clone(), (literal!("Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.discreteAlgVars.clone(), (literal!("Discrete Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.intAlgVars.clone(), (literal!("Integer Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.boolAlgVars.clone(), (literal!("Boolean Algebraic Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.paramVars.clone(), (literal!("Real Parameters")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.intParamVars.clone(), (literal!("Integer Parameters")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.boolParamVars.clone(), (literal!("Boolean Parameters")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.residualVars.clone(), (literal!("Residual Variables")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*SimVar::listToString(vars.aliasVars.clone(), (literal!("Real Alias")).clone(), true)?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -1031,37 +1031,37 @@ pub mod SimVars {
         let mut dataReconSetBVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         let () = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ BVariable::VarData::VAR_DATA_SIM { .. } => {
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).states, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).states, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, __pa1) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             stateVars = __pa0.clone();
             simCodeIndices = __pa1.clone();
-            let (__pa3, __pa4) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).derivatives, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa3, __pa4) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).derivatives, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil }, __pa4) => (__pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             derivativeVars = __pa3.clone();
             simCodeIndices = __pa4.clone();
-            let (__pa6, __pa7) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).algebraics, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa6, __pa7) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).algebraics, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Nil }, __pa7) => (__pa6.clone(), __pa7.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             algVars = __pa6.clone();
             simCodeIndices = __pa7.clone();
-            let (__pa9, __pa10) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).top_level_inputs, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa9, __pa10) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).top_level_inputs, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Nil }, __pa10) => (__pa9.clone(), __pa10.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             inputVars = __pa9.clone();
             simCodeIndices = __pa10.clone();
-            let (__pa12, __pa13) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).nonTrivialAlias, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa12, __pa13) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).nonTrivialAlias, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::NONE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Nil }, __pa13) => (__pa12.clone(), __pa13.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             nonTrivialAlias = __pa12.clone();
             simCodeIndices = __pa13.clone();
-            let (__pa15, __pa16, __pa17, __pa18, __pa19, __pa20) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).discretes, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa15, __pa16, __pa17, __pa18, __pa19, __pa20) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).discretes, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa15, tail: Deref @ metamodelica::List::Cons { head: __pa16, tail: Deref @ metamodelica::List::Cons { head: __pa17, tail: Deref @ metamodelica::List::Cons { head: __pa18, tail: Deref @ metamodelica::List::Cons { head: __pa19, tail: Deref @ metamodelica::List::Nil } } } } }, __pa20) => (__pa15.clone(), __pa16.clone(), __pa17.clone(), __pa18.clone(), __pa19.clone(), __pa20.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1071,7 +1071,7 @@ pub mod SimVars {
             stringAlgVars = __pa18.clone();
             enumAlgVars = __pa19.clone();
             simCodeIndices = __pa20.clone();
-            let (__pa22, __pa23, __pa24, __pa25, __pa26, __pa27) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).discrete_states, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa22, __pa23, __pa24, __pa25, __pa26, __pa27) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).discrete_states, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa22, tail: Deref @ metamodelica::List::Cons { head: __pa23, tail: Deref @ metamodelica::List::Cons { head: __pa24, tail: Deref @ metamodelica::List::Cons { head: __pa25, tail: Deref @ metamodelica::List::Cons { head: __pa26, tail: Deref @ metamodelica::List::Nil } } } } }, __pa27) => (__pa22.clone(), __pa23.clone(), __pa24.clone(), __pa25.clone(), __pa26.clone(), __pa27.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1081,7 +1081,7 @@ pub mod SimVars {
             stringAlgVars2 = __pa25.clone();
             enumAlgVars2 = __pa26.clone();
             simCodeIndices = __pa27.clone();
-            let (__pa29, __pa30, __pa31, __pa32, __pa33, __pa34) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).clocked_states, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa29, __pa30, __pa31, __pa32, __pa33, __pa34) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).clocked_states, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa29, tail: Deref @ metamodelica::List::Cons { head: __pa30, tail: Deref @ metamodelica::List::Cons { head: __pa31, tail: Deref @ metamodelica::List::Cons { head: __pa32, tail: Deref @ metamodelica::List::Cons { head: __pa33, tail: Deref @ metamodelica::List::Nil } } } } }, __pa34) => (__pa29.clone(), __pa30.clone(), __pa31.clone(), __pa32.clone(), __pa33.clone(), __pa34.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1091,7 +1091,7 @@ pub mod SimVars {
             stringAlgVars3 = __pa32.clone();
             enumAlgVars3 = __pa33.clone();
             simCodeIndices = __pa34.clone();
-            let (__pa36, __pa37, __pa38, __pa39, __pa40, __pa41) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).aliasVars, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::ALIAS.clone())?) {
+            let (__pa36, __pa37, __pa38, __pa39, __pa40, __pa41) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).aliasVars, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::ALIAS.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa36, tail: Deref @ metamodelica::List::Cons { head: __pa37, tail: Deref @ metamodelica::List::Cons { head: __pa38, tail: Deref @ metamodelica::List::Cons { head: __pa39, tail: Deref @ metamodelica::List::Cons { head: __pa40, tail: Deref @ metamodelica::List::Nil } } } } }, __pa41) => (__pa36.clone(), __pa37.clone(), __pa38.clone(), __pa39.clone(), __pa40.clone(), __pa41.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1101,7 +1101,7 @@ pub mod SimVars {
             stringAliasVars = __pa39.clone();
             enumAliasVars = __pa40.clone();
             simCodeIndices = __pa41.clone();
-            let (__pa43, __pa44, __pa45, __pa46, __pa47, __pa48) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).parameters, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::PARAMETER.clone())?) {
+            let (__pa43, __pa44, __pa45, __pa46, __pa47, __pa48) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).parameters, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::PARAMETER.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa43, tail: Deref @ metamodelica::List::Cons { head: __pa44, tail: Deref @ metamodelica::List::Cons { head: __pa45, tail: Deref @ metamodelica::List::Cons { head: __pa46, tail: Deref @ metamodelica::List::Cons { head: __pa47, tail: Deref @ metamodelica::List::Nil } } } } }, __pa48) => (__pa43.clone(), __pa44.clone(), __pa45.clone(), __pa46.clone(), __pa47.clone(), __pa48.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1111,7 +1111,7 @@ pub mod SimVars {
             stringParamVars = __pa46.clone();
             enumParamVars = __pa47.clone();
             simCodeIndices = __pa48.clone();
-            let (__pa50, __pa51, __pa52, __pa53, __pa54, __pa55) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).resizables, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::PARAMETER.clone())?) {
+            let (__pa50, __pa51, __pa52, __pa53, __pa54, __pa55) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).resizables, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::PARAMETER.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa50, tail: Deref @ metamodelica::List::Cons { head: __pa51, tail: Deref @ metamodelica::List::Cons { head: __pa52, tail: Deref @ metamodelica::List::Cons { head: __pa53, tail: Deref @ metamodelica::List::Cons { head: __pa54, tail: Deref @ metamodelica::List::Nil } } } } }, __pa55) => (__pa50.clone(), __pa51.clone(), __pa52.clone(), __pa53.clone(), __pa54.clone(), __pa55.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1121,7 +1121,7 @@ pub mod SimVars {
             stringParamVarsR = __pa53.clone();
             enumParamVarsR = __pa54.clone();
             simCodeIndices = __pa55.clone();
-            let (__pa57, __pa58, __pa59, __pa60, __pa61, __pa62) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).constants, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices.clone(), SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
+            let (__pa57, __pa58, __pa59, __pa60, __pa61, __pa62) = ::match_deref::match_deref! { match &(createSimVarLists(var_field!((*varData).constants, BVariable::VarData::VarData::VAR_DATA_SIM).clone(), simCodeIndices, SplitType::TYPE.clone(), VarType::SIMULATION.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa57, tail: Deref @ metamodelica::List::Cons { head: __pa58, tail: Deref @ metamodelica::List::Cons { head: __pa59, tail: Deref @ metamodelica::List::Cons { head: __pa60, tail: Deref @ metamodelica::List::Cons { head: __pa61, tail: Deref @ metamodelica::List::Nil } } } } }, __pa62) => (__pa57.clone(), __pa58.clone(), __pa59.clone(), __pa60.clone(), __pa61.clone(), __pa62.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1131,7 +1131,7 @@ pub mod SimVars {
             stringConstVars = __pa60.clone();
             enumConstVars = __pa61.clone();
             simCodeIndices = __pa62.clone();
-            let (__pa64, __pa65) = ::match_deref::match_deref! { match &(createSimVarLists(residual_vars.clone(), simCodeIndices.clone(), SplitType::NONE.clone(), VarType::RESIDUAL.clone())?) {
+            let (__pa64, __pa65) = ::match_deref::match_deref! { match &(createSimVarLists(residual_vars, simCodeIndices, SplitType::NONE.clone(), VarType::RESIDUAL.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa64, tail: Deref @ metamodelica::List::Nil }, __pa65) => (__pa64.clone(), __pa65.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1147,7 +1147,7 @@ pub mod SimVars {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        simVars = Arc::new(SimVars { stateVars: stateVars.clone(), derivativeVars: derivativeVars.clone(), algVars: List::flatten(list![algVars.clone(), inputVars.clone(), nonTrivialAlias.clone()])?, discreteAlgVars: List::flatten(list![discreteAlgVars.clone(), discreteAlgVars2.clone(), discreteAlgVars3.clone()])?, intAlgVars: List::flatten(list![intAlgVars.clone(), intAlgVars2.clone(), intAlgVars3.clone()])?, boolAlgVars: List::flatten(list![boolAlgVars.clone(), boolAlgVars2.clone(), boolAlgVars3.clone()])?, stringAlgVars: List::flatten(list![stringAlgVars.clone(), stringAlgVars2.clone(), stringAlgVars3.clone()])?, enumAlgVars: List::flatten(list![enumAlgVars.clone(), enumAlgVars2.clone(), enumAlgVars3.clone()])?, inputVars: inputVars.clone(), outputVars: outputVars.clone(), aliasVars: aliasVars.clone(), intAliasVars: intAliasVars.clone(), boolAliasVars: boolAliasVars.clone(), stringAliasVars: stringAliasVars.clone(), enumAliasVars: enumAliasVars.clone(), paramVars: List::flatten(list![paramVars.clone(), paramVarsR.clone()])?, intParamVars: List::flatten(list![intParamVars.clone(), intParamVarsR.clone()])?, boolParamVars: List::flatten(list![boolParamVars.clone(), boolParamVarsR.clone()])?, stringParamVars: List::flatten(list![stringParamVars.clone(), stringParamVarsR.clone()])?, enumParamVars: List::flatten(list![enumParamVars.clone(), enumParamVarsR.clone()])?, extObjVars: extObjVars.clone(), constVars: constVars.clone(), intConstVars: intConstVars.clone(), boolConstVars: boolConstVars.clone(), stringConstVars: stringConstVars.clone(), enumConstVars: enumConstVars.clone(), residualVars: residualVars.clone(), jacobianVars: jacobianVars.clone(), seedVars: seedVars.clone(), realOptimizeConstraintsVars: realOptimizeConstraintsVars.clone(), realOptimizeFinalConstraintsVars: realOptimizeFinalConstraintsVars.clone(), sensitivityVars: sensitivityVars.clone(), dataReconSetcVars: dataReconSetcVars.clone(), dataReconinputVars: dataReconinputVars.clone(), dataReconSetBVars: dataReconSetBVars.clone() });
+        simVars = Arc::new(SimVars { stateVars: stateVars, derivativeVars: derivativeVars, algVars: List::flatten(list![algVars, inputVars.clone(), nonTrivialAlias])?, discreteAlgVars: List::flatten(list![discreteAlgVars, discreteAlgVars2, discreteAlgVars3])?, intAlgVars: List::flatten(list![intAlgVars, intAlgVars2, intAlgVars3])?, boolAlgVars: List::flatten(list![boolAlgVars, boolAlgVars2, boolAlgVars3])?, stringAlgVars: List::flatten(list![stringAlgVars, stringAlgVars2, stringAlgVars3])?, enumAlgVars: List::flatten(list![enumAlgVars, enumAlgVars2, enumAlgVars3])?, inputVars: inputVars, outputVars: outputVars, aliasVars: aliasVars, intAliasVars: intAliasVars, boolAliasVars: boolAliasVars, stringAliasVars: stringAliasVars, enumAliasVars: enumAliasVars, paramVars: List::flatten(list![paramVars, paramVarsR])?, intParamVars: List::flatten(list![intParamVars, intParamVarsR])?, boolParamVars: List::flatten(list![boolParamVars, boolParamVarsR])?, stringParamVars: List::flatten(list![stringParamVars, stringParamVarsR])?, enumParamVars: List::flatten(list![enumParamVars, enumParamVarsR])?, extObjVars: extObjVars, constVars: constVars, intConstVars: intConstVars, boolConstVars: boolConstVars, stringConstVars: stringConstVars, enumConstVars: enumConstVars, residualVars: residualVars, jacobianVars: jacobianVars, seedVars: seedVars, realOptimizeConstraintsVars: realOptimizeConstraintsVars, realOptimizeFinalConstraintsVars: realOptimizeFinalConstraintsVars, sensitivityVars: sensitivityVars, dataReconSetcVars: dataReconSetcVars, dataReconinputVars: dataReconinputVars, dataReconSetBVars: dataReconSetBVars });
         assign_field!(
             simVars.intAlgVars = listAppend(simVars.intAlgVars.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
@@ -1191,7 +1191,7 @@ pub mod SimVars {
         let mut var: Arc<SimVar::SimVar>;
         let mut seed_vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         let mut jacobian_vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-        for mut tpl in &*hash_tpl.clone() {
+        for mut tpl in &*hash_tpl {
             let mut tpl = tpl.clone();
             (cref, var) = tpl.clone();
             if BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))? {
@@ -1201,8 +1201,8 @@ pub mod SimVars {
             }
         }
         assign_field!(
-            vars.seedVars = listAppend(seed_vars.clone(), vars.seedVars.clone()),
-            vars.jacobianVars = listAppend(jacobian_vars.clone(), vars.jacobianVars.clone())
+            vars.seedVars = listAppend(seed_vars, vars.seedVars.clone()),
+            vars.jacobianVars = listAppend(jacobian_vars, vars.jacobianVars.clone())
         );
         Ok(vars)
     }
@@ -1229,14 +1229,14 @@ pub mod SimVars {
         let mut string_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> = Pointer::create(metamodelica::nil());
         let mut enum_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> = Pointer::create(metamodelica::nil());
         let mut indices_ptr: Pointer::Pointer<SimCodeIndices> = Pointer::create(simCodeIndices.clone());
-        if splitType.clone() == SplitType::NONE.clone() {
-            BVariable::VariablePointers::map(sim_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = acc.clone(); let __pe_b2 = indices_ptr.clone(); let __pe_b3 = varType.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>))?;
-            simVars = list![Pointer::access(acc.clone()).reverse()];
-            simCodeIndices = Pointer::access(indices_ptr.clone());
-        } else if splitType.clone() == SplitType::TYPE.clone() {
-            BVariable::VariablePointers::map(sim_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = real_lst.clone(); let __pe_b2 = int_lst.clone(); let __pe_b3 = bool_lst.clone(); let __pe_b4 = string_lst.clone(); let __pe_b5 = enum_lst.clone(); let __pe_b6 = indices_ptr.clone(); let __pe_b7 = varType.clone(); move |__pe_a0| splitByType(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>))?;
-            simVars = list![Pointer::access(real_lst.clone()).reverse(), Pointer::access(int_lst.clone()).reverse(), Pointer::access(bool_lst.clone()).reverse(), Pointer::access(string_lst.clone()).reverse(), Pointer::access(enum_lst.clone()).reverse()];
-            simCodeIndices = Pointer::access(indices_ptr.clone());
+        if splitType == SplitType::NONE.clone() {
+            BVariable::VariablePointers::map(sim_vars, (std::sync::Arc::new({ let __pe_b1 = acc.clone(); let __pe_b2 = indices_ptr.clone(); let __pe_b3 = varType; move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>))?;
+            simVars = list![Pointer::access(acc).reverse()];
+            simCodeIndices = Pointer::access(indices_ptr);
+        } else if splitType == SplitType::TYPE.clone() {
+            BVariable::VariablePointers::map(sim_vars, (std::sync::Arc::new({ let __pe_b1 = real_lst.clone(); let __pe_b2 = int_lst.clone(); let __pe_b3 = bool_lst.clone(); let __pe_b4 = string_lst.clone(); let __pe_b5 = enum_lst.clone(); let __pe_b6 = indices_ptr.clone(); let __pe_b7 = varType; move |__pe_a0| splitByType(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>))?;
+            simVars = list![Pointer::access(real_lst).reverse(), Pointer::access(int_lst).reverse(), Pointer::access(bool_lst).reverse(), Pointer::access(string_lst).reverse(), Pointer::access(enum_lst).reverse()];
+            simCodeIndices = Pointer::access(indices_ptr);
         } else {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.createSimVarLists")); __mm_s.push_str(&*literal!(" failed because of invalid splitType.")); ArcStr::from(__mm_s) }).clone()])?;
         }
@@ -1246,110 +1246,110 @@ pub mod SimVars {
     pub(crate) fn splitByType(mut var: Arc<Variable::NFVariable>, mut real_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut int_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut bool_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut string_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut enum_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
         let mut simCodeIndices: SimCodeIndices = Pointer::access(indices_ptr.clone());
-        let () = (::match_deref::match_deref! { match &((Type::arrayElementType(var.ty.clone()), varType.clone())) {
+        let () = (::match_deref::match_deref! { match &((Type::arrayElementType(var.ty.clone()), varType)) {
         (Deref @ Type::REAL, VarType::SIMULATION) => {
-            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(real_lst.clone())));
+            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(real_lst)));
             simCodeIndices.realVarIndex = simCodeIndices.realVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::INTEGER, VarType::SIMULATION) => {
-            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(int_lst.clone())));
+            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(int_lst)));
             simCodeIndices.integerVarIndex = simCodeIndices.integerVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::BOOLEAN, VarType::SIMULATION) => {
-            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(bool_lst.clone())));
+            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(bool_lst)));
             simCodeIndices.booleanVarIndex = simCodeIndices.booleanVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::STRING, VarType::SIMULATION) => {
-            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(string_lst.clone())));
+            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(string_lst)));
             simCodeIndices.stringVarIndex = simCodeIndices.stringVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::ENUMERATION { .. }, VarType::SIMULATION) => {
-            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(enum_lst.clone())));
+            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(enum_lst)));
             simCodeIndices.enumerationVarIndex = simCodeIndices.enumerationVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::REAL, VarType::PARAMETER { .. }) => {
-            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(real_lst.clone())));
+            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(real_lst)));
             simCodeIndices.realParamIndex = simCodeIndices.realParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::INTEGER, VarType::PARAMETER { .. }) => {
-            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(int_lst.clone())));
+            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(int_lst)));
             simCodeIndices.integerParamIndex = simCodeIndices.integerParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::BOOLEAN, VarType::PARAMETER { .. }) => {
-            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(bool_lst.clone())));
+            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(bool_lst)));
             simCodeIndices.booleanParamIndex = simCodeIndices.booleanParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::STRING, VarType::PARAMETER { .. }) => {
-            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(string_lst.clone())));
+            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(string_lst)));
             simCodeIndices.stringParamIndex = simCodeIndices.stringParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::ENUMERATION { .. }, VarType::PARAMETER { .. }) => {
-            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(enum_lst.clone())));
+            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(enum_lst)));
             simCodeIndices.enumerationParamIndex = simCodeIndices.enumerationParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::REAL, VarType::ALIAS { .. }) => {
-            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(real_lst.clone())));
+            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(real_lst)));
             simCodeIndices.realAliasIndex = simCodeIndices.realAliasIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::INTEGER, VarType::ALIAS { .. }) => {
-            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(int_lst.clone())));
+            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(int_lst)));
             simCodeIndices.integerAliasIndex = simCodeIndices.integerAliasIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::BOOLEAN, VarType::ALIAS { .. }) => {
-            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(bool_lst.clone())));
+            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(bool_lst)));
             simCodeIndices.booleanAliasIndex = simCodeIndices.booleanAliasIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::STRING, VarType::ALIAS { .. }) => {
-            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(string_lst.clone())));
+            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(string_lst)));
             simCodeIndices.stringAliasIndex = simCodeIndices.stringAliasIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::ENUMERATION { .. }, VarType::ALIAS { .. }) => {
-            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(enum_lst.clone())));
+            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationAliasIndex.clone(), Alias::fromBinding(var.binding.clone())?)?, Pointer::access(enum_lst)));
             simCodeIndices.enumerationAliasIndex = simCodeIndices.enumerationAliasIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
-            Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
+            Pointer::update(indices_ptr, simCodeIndices);
             ()
         },
         (Deref @ Type::CLOCK, _) => (),
@@ -1374,7 +1374,7 @@ pub mod SimVars {
             List::flatten(result.clone())?
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.getPartitionVars")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*Partition::toString(partition.clone(), 0)?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.getPartitionVars")); __mm_s.push_str(&*literal!(" failed for\n")); __mm_s.push_str(&*Partition::toString(partition, 0)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
     })
@@ -1385,7 +1385,7 @@ pub mod SimVars {
     pub(crate) fn getStrongComponentVars(mut comp: Arc<StrongComponent::NBStrongComponent>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::SINGLE_COMPONENT { .. } => return Ok(getVars(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), simcode_map.clone())?),
+        Deref @ StrongComponent::SINGLE_COMPONENT { .. } => return Ok(getVars(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), simcode_map)?),
         Deref @ StrongComponent::MULTI_COMPONENT { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         for mut v in (var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone()).into_iter().cloned() {
@@ -1394,9 +1394,9 @@ pub mod SimVars {
         }
         __acc.reverse()
     }))?),
-        Deref @ StrongComponent::SLICED_COMPONENT { .. } => return Ok(getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), simcode_map.clone())?),
-        Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => return Ok(getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), simcode_map.clone())?),
-        Deref @ StrongComponent::GENERIC_COMPONENT { .. } => return Ok(getVars(BVariable::getVarPointer(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?, simcode_map.clone())?),
+        Deref @ StrongComponent::SLICED_COMPONENT { .. } => return Ok(getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), simcode_map)?),
+        Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => return Ok(getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), simcode_map)?),
+        Deref @ StrongComponent::GENERIC_COMPONENT { .. } => return Ok(getVars(BVariable::getVarPointer(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?, simcode_map)?),
         Deref @ StrongComponent::ENTWINED_COMPONENT { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         for mut c in (var_field!((*comp).entwined_slices, StrongComponent::NBStrongComponent::ENTWINED_COMPONENT).clone()).into_iter().cloned() {
@@ -1413,9 +1413,9 @@ pub mod SimVars {
         }
         __acc.reverse()
     }))?),
-        Deref @ StrongComponent::ALIAS { .. } => { (comp, simcode_map) = (var_field!((*comp).original, StrongComponent::NBStrongComponent::ALIAS).clone(), simcode_map.clone()); continue '__tco; },
+        Deref @ StrongComponent::ALIAS { .. } => { (comp, simcode_map) = (var_field!((*comp).original, StrongComponent::NBStrongComponent::ALIAS).clone(), simcode_map); continue '__tco; },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.getStrongComponentVars")); __mm_s.push_str(&*literal!(" failed with unknown reason for\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.getStrongComponentVars")); __mm_s.push_str(&*literal!(" failed with unknown reason for\n")); __mm_s.push_str(&*StrongComponent::toString(comp, -1)?); ArcStr::from(__mm_s) }).clone()])?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1428,14 +1428,14 @@ pub mod SimVars {
         if Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())? {
             vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-        for mut v in ((BVariable::VariablePointers::scalarizeList(list![var.clone()])?).0).into_iter().cloned() {
+        for mut v in ((BVariable::VariablePointers::scalarizeList(list![var])?).0).into_iter().cloned() {
             let __x = UnorderedMap::getSafe(BVariable::getVarName(v.clone()), simcode_map.clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
         } else {
-            vars = list![UnorderedMap::getSafe(BVariable::getVarName(var.clone()), simcode_map.clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?];
+            vars = list![UnorderedMap::getSafe(BVariable::getVarName(var), simcode_map, metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?];
         }
         Ok(vars)
     }
@@ -1673,11 +1673,11 @@ pub mod ExtObjInfo {
         let mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> = Pointer::create(metamodelica::nil());
         let mut varType: VarType = VarType::EXTERNAL_OBJECT.clone();
         let mut var_lst: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
-        BVariable::VariablePointers::map(external_objects.clone(), (std::sync::Arc::new({ let __pe_b1 = acc.clone(); let __pe_b2 = indices_ptr.clone(); let __pe_b3 = varType.clone(); move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>))?;
-        simCodeIndices = Pointer::access(indices_ptr.clone());
-        var_lst = Pointer::access(acc.clone()).reverse();
+        BVariable::VariablePointers::map(external_objects, (std::sync::Arc::new({ let __pe_b1 = acc.clone(); let __pe_b2 = indices_ptr.clone(); let __pe_b3 = varType; move |__pe_a0| SimVar::traverseCreate(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>))?;
+        simCodeIndices = Pointer::access(indices_ptr);
+        var_lst = Pointer::access(acc).reverse();
         assign_field!(vars.extObjVars = var_lst.clone());
-        info = Arc::new(ExtObjInfo { objects: var_lst.clone(), aliases: metamodelica::nil() });
+        info = Arc::new(ExtObjInfo { objects: var_lst, aliases: metamodelica::nil() });
         Ok((info, vars, simCodeIndices))
     }
 

@@ -60,8 +60,8 @@ pub(crate) fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBL
         let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
         let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
         let mut lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
-        dom = arrayCreate(1, SBSet::addAtomicSet(aset.clone(), SBSet::newEmpty())?);
-        lm = arrayCreate(1, map.clone());
+        dom = arrayCreate(1, SBSet::addAtomicSet(aset, SBSet::newEmpty())?);
+        lm = arrayCreate(1, map);
         outMap = SBPWLinearMap::new(dom.clone(), lm.clone())?;
         Ok(outMap)
     }
@@ -93,7 +93,7 @@ pub(crate) fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBL
     g2 = SBLinearMap::gain(lm2.clone());
     o2 = SBLinearMap::offset(lm2.clone());
     ints = SBMultiInterval::intervals(SBAtomicSet::aset(dom.clone()));
-    as_aux = SBAtomicSet::copy(dom.clone());
+    as_aux = SBAtomicSet::copy(dom);
     lm_aux = SBLinearMap::copy(lm1.clone());
     resg = metamodelica::arrayFromVec(g1.clone().borrow().clone());
     reso = metamodelica::arrayFromVec(o1.clone().borrow().clone());
@@ -161,9 +161,9 @@ pub(crate) fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLine
     sres2 = SBSet::newEmpty();
     lres2 = SBLinearMap::newEmpty();
     if !(SBSet::isEmpty(dom.clone())) {
-        asets = UnorderedSet::toArray(SBSet::asets(dom.clone()));
+        asets = UnorderedSet::toArray(SBSet::asets(dom));
         as_aux = ({let __elt = asets.borrow()[(1-1) as usize].clone(); __elt});
-        aux = minAtomPW(as_aux.clone(), lm1.clone(), lm2.clone())?;
+        aux = minAtomPW(as_aux, lm1.clone(), lm2.clone())?;
         if !(SBPWLinearMap::isEmpty(aux.clone())) {
             sres1 = metamodelica::arrayGet(SBPWLinearMap::dom(aux.clone()), 1)?;
             lres1 = metamodelica::arrayGet(SBPWLinearMap::lmap(aux.clone()), 1)?;
@@ -189,14 +189,14 @@ pub(crate) fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLine
         }
     }
     if !(SBSet::isEmpty(sres2.clone())) && !(SBLinearMap::isEmpty(lres2.clone())) {
-        sres = metamodelica::cons(sres2.clone(), sres.clone());
-        lres = metamodelica::cons(lres2.clone(), lres.clone());
+        sres = metamodelica::cons(sres2, sres);
+        lres = metamodelica::cons(lres2, lres);
     }
     if !(SBSet::isEmpty(sres1.clone())) && !(SBLinearMap::isEmpty(lres1.clone())) {
-        sres = metamodelica::cons(sres1.clone(), sres.clone());
-        lres = metamodelica::cons(lres1.clone(), lres.clone());
+        sres = metamodelica::cons(sres1, sres);
+        lres = metamodelica::cons(lres1, lres);
     }
-    outMap = SBPWLinearMap::new(metamodelica::arrayFromVec(sres.clone().into_iter().cloned().collect()), metamodelica::arrayFromVec(lres.clone().into_iter().cloned().collect()))?;
+    outMap = SBPWLinearMap::new(metamodelica::arrayFromVec(sres.into_iter().cloned().collect()), metamodelica::arrayFromVec(lres.into_iter().cloned().collect()))?;
     Ok(outMap)
 }
 
@@ -214,9 +214,9 @@ pub(crate) fn minMap(mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw2: Arc<SB
         return Ok(outMap.clone());
     }
     d1 = SBPWLinearMap::dom(pw1.clone());
-    lm1 = SBPWLinearMap::lmap(pw1.clone());
+    lm1 = SBPWLinearMap::lmap(pw1);
     d2 = SBPWLinearMap::dom(pw2.clone());
-    lm2 = SBPWLinearMap::lmap(pw2.clone());
+    lm2 = SBPWLinearMap::lmap(pw2);
     for mut i in 1..=metamodelica::arrayLength(d1.clone()) {
         d1i = ({let __elt = d1.borrow()[(i.clone()-1) as usize].clone(); __elt});
         lm1i = ({let __elt = lm1.borrow()[(i.clone()-1) as usize].clone(); __elt});
@@ -259,37 +259,37 @@ pub(crate) fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32
     let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>;
     dom = SBPWLinearMap::dom(pw.clone());
     lmap = SBPWLinearMap::lmap(pw.clone());
-    pw_copy = SBPWLinearMap::copy(pw.clone())?;
+    pw_copy = SBPWLinearMap::copy(pw)?;
     sres = Vector::fromArray(SBPWLinearMap::dom(pw_copy.clone()));
-    lres = Vector::fromArray(SBPWLinearMap::lmap(pw_copy.clone()));
+    lres = Vector::fromArray(SBPWLinearMap::lmap(pw_copy));
     for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         di = ({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt});
         li = ({let __elt = lmap.borrow()[(i.clone()-1) as usize].clone(); __elt});
-        gdim = metamodelica::arrayGet(SBLinearMap::gain(li.clone()), dim.clone())?;
-        odim = metamodelica::arrayGet(SBLinearMap::offset(li.clone()), dim.clone())?;
-        if gdim.clone() == metamodelica::OrderedFloat((1) as f64) && odim.clone() < metamodelica::OrderedFloat((0) as f64) {
-            off = ((-(odim.clone())).0.floor() as i32);
+        gdim = metamodelica::arrayGet(SBLinearMap::gain(li.clone()), dim)?;
+        odim = metamodelica::arrayGet(SBLinearMap::offset(li.clone()), dim)?;
+        if gdim == metamodelica::OrderedFloat((1) as f64) && odim < metamodelica::OrderedFloat((0) as f64) {
+            off = ((-(odim)).0.floor() as i32);
             asets = UnorderedSet::toArray(SBSet::asets(di.clone()));
             let __range0 = asets.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut adom in __range0 {
                 mi = SBAtomicSet::aset(adom.clone());
-                idim = metamodelica::arrayGet(SBMultiInterval::intervals(mi.clone()), dim.clone())?;
+                idim = metamodelica::arrayGet(SBMultiInterval::intervals(mi.clone()), dim)?;
                 loint = SBInterval::lowerBound(idim.clone());
                 hiint = SBInterval::upperBound(idim.clone());
-                if hiint.clone() - loint.clone() > off.clone() * off.clone() {
-                    new_s = metamodelica::arrayCreate(off.clone(), di.clone());
-                    new_l = metamodelica::arrayCreate(off.clone(), li.clone());
-                    for mut k in 1..=off.clone() {
+                if hiint - loint > off * off {
+                    new_s = metamodelica::arrayCreate(off, di.clone());
+                    new_l = metamodelica::arrayCreate(off, li.clone());
+                    for mut k in 1..=off {
                         resg = metamodelica::arrayFromVec(SBLinearMap::gain(li.clone()).borrow().clone());
                         reso = metamodelica::arrayFromVec(SBLinearMap::offset(li.clone()).borrow().clone());
                         {
                             let __cell1 = metamodelica::OrderedFloat((0) as f64);
-                            let __idx1 = dim.clone();
+                            let __idx1 = dim;
                             resg.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                         }
                         {
-                            let __cell2 = metamodelica::OrderedFloat((loint.clone() + k.clone() - off.clone() - 1) as f64);
-                            let __idx2 = dim.clone();
+                            let __cell2 = metamodelica::OrderedFloat((loint + k.clone() - off - 1) as f64);
+                            let __idx2 = dim;
                             reso.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                         }
                         {
@@ -297,8 +297,8 @@ pub(crate) fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32
                             let __idx3 = k.clone();
                             unsafe { metamodelica::Dangerous::arrayInitSlot(new_l.clone().clone(), __idx3, __cell3); }
                         }
-                        new_inter = SBInterval::new(loint.clone() + k.clone() - 1, off.clone(), hiint.clone());
-                        aux_as = SBAtomicSet::replace(new_inter.clone(), dim.clone(), adom.clone())?;
+                        new_inter = SBInterval::new(loint + k.clone() - 1, off, hiint);
+                        aux_as = SBAtomicSet::replace(new_inter.clone(), dim, adom.clone())?;
                         {
                             let __cell4 = SBSet::addAtomicSet(aux_as.clone(), SBSet::newEmpty())?;
                             let __idx4 = k.clone();
@@ -331,7 +331,7 @@ pub(crate) fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32
             }
         }
     }
-    outMap = SBPWLinearMap::new(Vector::toArray(sres.clone()), Vector::toArray(lres.clone()))?;
+    outMap = SBPWLinearMap::new(Vector::toArray(sres), Vector::toArray(lres))?;
     Ok(outMap)
 }
 
@@ -342,11 +342,11 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
         let mut i: Arc<SBInterval::SBInterval>;
         let mut hi: metamodelica::Real;
         let mut lo: metamodelica::Real;
-        is = SBMultiInterval::intervals(SBAtomicSet::aset(aset.clone()));
-        i = ({let __elt = is.borrow()[(dim.clone()-1) as usize].clone(); __elt});
+        is = SBMultiInterval::intervals(SBAtomicSet::aset(aset));
+        i = ({let __elt = is.borrow()[(dim-1) as usize].clone(); __elt});
         hi = metamodelica::OrderedFloat((SBInterval::upperBound(i.clone())) as f64);
-        lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i.clone())) as f64);
-        its = std::cmp::max(its.clone(), ((hi.clone() - lo.clone()) / offset.clone().abs()).ceil());
+        lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i)) as f64);
+        its = std::cmp::max(its, ((hi - lo) / offset.abs()).ceil());
         its
     }
 
@@ -367,14 +367,14 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
     }
     outMap = reduceMapN(pw.clone(), 1)?;
     for mut i in 2..=SBPWLinearMap::ndim(outMap.clone()) {
-        outMap = reduceMapN(pw.clone(), i.clone())?;
+        outMap = reduceMapN(pw.clone(), i)?;
     }
     max_it = 0;
     dom = SBPWLinearMap::dom(outMap.clone());
     lmap = SBPWLinearMap::lmap(outMap.clone());
     for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
-        d = ({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt});
-        lm = ({let __elt = lmap.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        d = ({let __elt = dom.borrow()[(i-1) as usize].clone(); __elt});
+        lm = ({let __elt = lmap.borrow()[(i-1) as usize].clone(); __elt});
         gain = SBLinearMap::gain(lm.clone());
         off = SBLinearMap::offset(lm.clone());
         a = metamodelica::OrderedFloat((0) as f64);
@@ -386,11 +386,11 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
         if a.clone() > metamodelica::OrderedFloat((0) as f64) {
             its = metamodelica::OrderedFloat((0) as f64);
             for mut dim in 1..=SBPWLinearMap::ndim(outMap.clone()) {
-                if ({let __elt = gain.borrow()[(dim.clone()-1) as usize].clone(); __elt}) == metamodelica::OrderedFloat((1) as f64) && ({let __elt = off.borrow()[(dim.clone()-1) as usize].clone(); __elt}) < metamodelica::OrderedFloat((0) as f64) {
-                    its = UnorderedSet::fold(SBSet::asets(d.clone()), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = off.borrow()[(dim.clone()-1) as usize].clone(); __elt}); let __pe_b2 = dim.clone(); move |__pe_a0, __pe_a3| Ok(max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), its.clone())?;
+                if ({let __elt = gain.borrow()[(dim-1) as usize].clone(); __elt}) == metamodelica::OrderedFloat((1) as f64) && ({let __elt = off.borrow()[(dim-1) as usize].clone(); __elt}) < metamodelica::OrderedFloat((0) as f64) {
+                    its = UnorderedSet::fold(SBSet::asets(d.clone()), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = off.borrow()[(dim-1) as usize].clone(); __elt}); let __pe_b2 = dim; move |__pe_a0, __pe_a3| Ok(max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), its)?;
                 }
             }
-            max_it = max_it.clone() + ((its.clone()).0.floor() as i32);
+            max_it = max_it.clone() + ((its).0.floor() as i32);
         } else if b.clone() == metamodelica::OrderedFloat((0) as f64) {
             max_it = max_it.clone() + 1;
         }
@@ -436,16 +436,16 @@ pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1:
     lm_inv = SBLinearMap::inverse(({let __elt = lmap.borrow()[(1-1) as usize].clone(); __elt}));
     inv_pw = SBPWLinearMap::newScalar(dom_inv.clone(), lm_inv.clone());
     inf = intReal(System::intMaxLit());
-    if Array::maxElement(SBLinearMap::gain(lm_inv.clone()), (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? < inf.clone() {
-        outMap = SBPWLinearMap::compPW(pw1.clone(), inv_pw.clone())?;
-    } else if Array::minElement(SBLinearMap::gain(lm_inv.clone()), (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? == inf.clone() {
-        if !(SBPWLinearMap::isEmpty(pw2.clone())) {
-            aux = SBPWLinearMap::image(pw1.clone(), d.clone())?;
-            min_aux = SBSet::minElem(aux.clone())?;
+    if Array::maxElement(SBLinearMap::gain(lm_inv.clone()), (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? < inf {
+        outMap = SBPWLinearMap::compPW(pw1, inv_pw)?;
+    } else if Array::minElement(SBLinearMap::gain(lm_inv.clone()), (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? == inf {
+        if !(SBPWLinearMap::isEmpty(pw2)) {
+            aux = SBPWLinearMap::image(pw1, d)?;
+            min_aux = SBSet::minElem(aux)?;
             resg = arrayCreate(metamodelica::arrayLength(min_aux.clone()), metamodelica::OrderedFloat(0.0_f64));
             reso = Array::map(min_aux.clone(), (std::sync::Arc::new(fnptr!(intReal, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<metamodelica::Real> + 'static>))?;
             lm_res = SBLinearMap::new(resg.clone(), reso.clone())?;
-            outMap = SBPWLinearMap::newScalar(dom_inv.clone(), lm_res.clone());
+            outMap = SBPWLinearMap::newScalar(dom_inv, lm_res);
         } else {
             outMap = SBPWLinearMap::newEmpty();
         }
@@ -457,7 +457,7 @@ pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1:
         reso = metamodelica::arrayCreate(metamodelica::arrayLength(gain.clone()), metamodelica::OrderedFloat(0.0_f64));
         for mut i in 1..=metamodelica::arrayLength(gain.clone()) {
             g = metamodelica::Dangerous::arrayGetNoBoundsChecking(gain.clone(), i.clone());
-            if g.clone() == inf.clone() {
+            if g == inf {
                 {
                     let __cell0 = metamodelica::OrderedFloat(0.0_f64);
                     let __idx0 = i.clone();
@@ -470,7 +470,7 @@ pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1:
                 }
             } else {
                 {
-                    let __cell2 = g.clone();
+                    let __cell2 = g;
                     let __idx2 = i.clone();
                     unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx2, __cell2); }
                 }
@@ -482,20 +482,20 @@ pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1:
             }
         }
         aux_lm1 = SBLinearMap::new(resg.clone(), reso.clone())?;
-        aux_inv = SBPWLinearMap::newScalar(dom_inv.clone(), aux_lm1.clone());
-        aux_res = SBPWLinearMap::compPW(pw1.clone(), aux_inv.clone())?;
+        aux_inv = SBPWLinearMap::newScalar(dom_inv, aux_lm1);
+        aux_res = SBPWLinearMap::compPW(pw1.clone(), aux_inv)?;
         if SBPWLinearMap::isEmpty(aux_res.clone()) {
             outMap = SBPWLinearMap::newEmpty();
         } else {
-            aux = SBPWLinearMap::image(pw1.clone(), d.clone())?;
-            min_aux = SBSet::minElem(aux.clone())?;
+            aux = SBPWLinearMap::image(pw1, d)?;
+            min_aux = SBSet::minElem(aux)?;
             lm_res = metamodelica::arrayGet(SBPWLinearMap::lmap(aux_res.clone()), 1)?;
             gres = SBLinearMap::gain(lm_res.clone());
-            oi = SBLinearMap::offset(lm_res.clone());
-            ginv = SBLinearMap::gain(lm_inv.clone());
+            oi = SBLinearMap::offset(lm_res);
+            ginv = SBLinearMap::gain(lm_inv);
             for mut i in 1..=metamodelica::arrayLength(gain.clone()) {
                 g = metamodelica::Dangerous::arrayGetNoBoundsChecking(gain.clone(), i.clone());
-                if g.clone() == inf.clone() {
+                if g == inf {
                     {
                         let __cell4 = metamodelica::OrderedFloat(0.0_f64);
                         let __idx4 = i.clone();
@@ -520,7 +520,7 @@ pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1:
                 }
             }
             aux_lm2 = SBLinearMap::new(resg.clone(), reso.clone())?;
-            outMap = SBPWLinearMap::newScalar(metamodelica::arrayGet(SBPWLinearMap::dom(aux_res.clone()), 1)?, aux_lm2.clone());
+            outMap = SBPWLinearMap::newScalar(metamodelica::arrayGet(SBPWLinearMap::dom(aux_res), 1)?, aux_lm2);
         }
     }
     Ok(outMap)
@@ -539,9 +539,9 @@ pub(crate) fn minAdjMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc
         return Ok(outMap.clone());
     }
     dom2 = SBPWLinearMap::dom(pw2.clone());
-    lm2 = SBPWLinearMap::lmap(pw2.clone());
+    lm2 = SBPWLinearMap::lmap(pw2);
     map1 = SBPWLinearMap::newScalar(({let __elt = dom2.borrow()[(1-1) as usize].clone(); __elt}), ({let __elt = lm2.borrow()[(1-1) as usize].clone(); __elt}));
-    outMap = minAdjCompMap(map1.clone(), pw1.clone())?;
+    outMap = minAdjCompMap(map1, pw1.clone())?;
     for mut i in 1..=metamodelica::arrayLength(dom2.clone()) {
         mapi = SBPWLinearMap::newScalar(({let __elt = dom2.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = lm2.borrow()[(i.clone()-1) as usize].clone(); __elt}));
         min_adj = minAdjCompMap(mapi.clone(), pw1.clone())?;
@@ -597,8 +597,8 @@ pub(crate) fn make_set(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>
     let mut s: Arc<SBSet::SBSet>;
     let mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
     ss = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(SBAtomicSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
-    UnorderedSet::add(SBAtomicSet::new(SBMultiInterval::fromList(i.clone())?), ss.clone())?;
-    s = SBSet::new(ss.clone())?;
+    UnorderedSet::add(SBAtomicSet::new(SBMultiInterval::fromList(i)?), ss.clone())?;
+    s = SBSet::new(ss)?;
     Ok(s)
 }
 
@@ -606,9 +606,9 @@ pub(crate) fn make_pw(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>
     let mut pw: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut dom: Arc<SBSet::SBSet>;
     let mut lmap: Arc<SBLinearMap::SBLinearMap>;
-    dom = make_set(i.clone())?;
-    lmap = SBLinearMap::new(metamodelica::arrayFromVec(gain.clone().into_iter().cloned().collect()), metamodelica::arrayFromVec(offset.clone().into_iter().cloned().collect()))?;
-    pw = SBPWLinearMap::newScalar(dom.clone(), lmap.clone());
+    dom = make_set(i)?;
+    lmap = SBLinearMap::new(metamodelica::arrayFromVec(gain.into_iter().cloned().collect()), metamodelica::arrayFromVec(offset.into_iter().cloned().collect()))?;
+    pw = SBPWLinearMap::newScalar(dom, lmap);
     Ok(pw)
 }
 
@@ -622,34 +622,34 @@ pub(crate) fn test1() -> Result<()> {
     let mut res: Arc<SBPWLinearMap::SBPWLinearMap>;
     sets = list![make_set(list![SBInterval::new(1, 1, 1)])?, make_set(list![SBInterval::new(2, 1, 1001)])?, make_set(list![SBInterval::new(1002, 1, 1002)])?, make_set(list![SBInterval::new(1003, 1, 1003)])?, make_set(list![SBInterval::new(1004, 1, 2003)])?, make_set(list![SBInterval::new(2004, 1, 3003)])?, make_set(list![SBInterval::new(3004, 1, 4003)])?];
     vss = SBSet::newEmpty();
-    for mut s in &*sets.clone() {
+    for mut s in &*sets {
         let mut s = s.clone();
         vss = SBSet::union(vss.clone(), s.clone())?;
     }
     pws1 = list![make_pw(list![SBInterval::new(1, 1, 1)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1.0_f64)])?, make_pw(list![SBInterval::new(2, 1, 2)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1002.0_f64)])?, make_pw(list![SBInterval::new(3, 1, 1001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1001.0_f64)])?, make_pw(list![SBInterval::new(1002, 1, 2001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1002.0_f64)])?, make_pw(list![SBInterval::new(2002, 1, 3001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1002.0_f64)])?];
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(pws1.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(pws1) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     emap1 = __pa0.clone();
     pws1 = __pa1.clone();
-    for mut pw in &*pws1.clone() {
+    for mut pw in &*pws1 {
         let mut pw = pw.clone();
         emap1 = SBPWLinearMap::combine(pw.clone(), emap1.clone())?;
     }
     pws2 = list![make_pw(list![SBInterval::new(1, 1, 1)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(2.0_f64)])?, make_pw(list![SBInterval::new(2, 1, 2)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1003.0_f64)])?, make_pw(list![SBInterval::new(3, 1, 1001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(0.0_f64)])?, make_pw(list![SBInterval::new(1002, 1, 2001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(2.0_f64)])?, make_pw(list![SBInterval::new(2002, 1, 3001)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1003.0_f64)])?];
-    let (__pa2, __pa3) = ::match_deref::match_deref! { match &(pws2.clone()) {
+    let (__pa2, __pa3) = ::match_deref::match_deref! { match &(pws2) {
         Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
     emap2 = __pa2.clone();
     pws2 = __pa3.clone();
-    for mut pw in &*pws2.clone() {
+    for mut pw in &*pws2 {
         let mut pw = pw.clone();
         emap2 = SBPWLinearMap::combine(pw.clone(), emap2.clone())?;
     }
-    res = connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
-    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    res = connectedComponents(vss, emap1, emap2)?;
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -663,34 +663,34 @@ pub(crate) fn test2() -> Result<()> {
     let mut res: Arc<SBPWLinearMap::SBPWLinearMap>;
     sets = list![make_set(list![SBInterval::new(1, 1, 1)])?, make_set(list![SBInterval::new(2, 1, 1001)])?, make_set(list![SBInterval::new(1002, 1, 1002)])?, make_set(list![SBInterval::new(1003, 1, 1003)])?, make_set(list![SBInterval::new(1004, 1, 2003)])?, make_set(list![SBInterval::new(2004, 1, 3003)])?, make_set(list![SBInterval::new(3004, 1, 4003)])?];
     vss = SBSet::newEmpty();
-    for mut s in &*sets.clone() {
+    for mut s in &*sets {
         let mut s = s.clone();
         vss = SBSet::union(vss.clone(), s.clone())?;
     }
     pws1 = list![make_pw(list![SBInterval::new(1, 1, 1)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1.0_f64)])?, make_pw(list![SBInterval::new(2, 1, 2)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1002.0_f64)])?, make_pw(list![SBInterval::new(3, 1, 3)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1004.0_f64)])?, make_pw(list![SBInterval::new(4, 1, 1002)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(2000.0_f64)])?, make_pw(list![SBInterval::new(1003, 1, 2001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(2.0_f64)])?, make_pw(list![SBInterval::new(2002, 1, 3001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1002.0_f64)])?];
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(pws1.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(pws1) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     emap1 = __pa0.clone();
     pws1 = __pa1.clone();
-    for mut pw in &*pws1.clone() {
+    for mut pw in &*pws1 {
         let mut pw = pw.clone();
         emap1 = SBPWLinearMap::combine(pw.clone(), emap1.clone())?;
     }
     pws2 = list![make_pw(list![SBInterval::new(1, 1, 1)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(2.0_f64)])?, make_pw(list![SBInterval::new(2, 1, 2)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1003.0_f64)])?, make_pw(list![SBInterval::new(3, 1, 3)], list![metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(1003.0_f64)])?, make_pw(list![SBInterval::new(4, 1, 1002)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(-1.0_f64)])?, make_pw(list![SBInterval::new(1003, 1, 2001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1.0_f64)])?, make_pw(list![SBInterval::new(2002, 1, 3001)], list![metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(2.0_f64)])?];
-    let (__pa2, __pa3) = ::match_deref::match_deref! { match &(pws2.clone()) {
+    let (__pa2, __pa3) = ::match_deref::match_deref! { match &(pws2) {
         Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
     emap2 = __pa2.clone();
     pws2 = __pa3.clone();
-    for mut pw in &*pws2.clone() {
+    for mut pw in &*pws2 {
         let mut pw = pw.clone();
         emap2 = SBPWLinearMap::combine(pw.clone(), emap2.clone())?;
     }
-    res = connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
-    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    res = connectedComponents(vss, emap1, emap2)?;
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -704,34 +704,34 @@ pub(crate) fn test3() -> Result<()> {
     let mut pws2: Arc<metamodelica::List<Arc<SBPWLinearMap::SBPWLinearMap>>>;
     sets = list![make_set(list![SBInterval::new(1, 1, 1000), SBInterval::new(1, 1, 100)])?, make_set(list![SBInterval::new(1001, 1, 2000), SBInterval::new(101, 1, 200)])?, make_set(list![SBInterval::new(2001, 1, 3000), SBInterval::new(201, 1, 300)])?, make_set(list![SBInterval::new(3001, 1, 4000), SBInterval::new(301, 1, 400)])?, make_set(list![SBInterval::new(4001, 1, 4001)])?, make_set(list![SBInterval::new(4002, 1, 4002)])?];
     vss = SBSet::newEmpty();
-    for mut s in &*sets.clone() {
+    for mut s in &*sets {
         let mut s = s.clone();
         vss = SBSet::union(vss.clone(), s.clone())?;
     }
     pws1 = list![make_pw(list![SBInterval::new(1, 1, 999), SBInterval::new(1, 1, 99)], list![metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(0.0_f64)])?, make_pw(list![SBInterval::new(1000, 1, 1998), SBInterval::new(100, 1, 198)], list![metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1001.0_f64), metamodelica::OrderedFloat(101.0_f64)])?, make_pw(list![SBInterval::new(1999, 1, 2998), SBInterval::new(199, 1, 199)], list![metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(-1998.0_f64), metamodelica::OrderedFloat(100.0_f64)])?, make_pw(list![SBInterval::new(2999, 1, 2999), SBInterval::new(200, 1, 299)], list![metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(3001.0_f64), metamodelica::OrderedFloat(101.0_f64)])?, make_pw(list![SBInterval::new(3000, 1, 3000), SBInterval::new(300, 1, 399)], list![metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(3000.0_f64), metamodelica::OrderedFloat(-99.0_f64)])?];
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(pws1.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(pws1) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     emap1 = __pa0.clone();
     pws1 = __pa1.clone();
-    for mut pw in &*pws1.clone() {
+    for mut pw in &*pws1 {
         let mut pw = pw.clone();
         emap1 = SBPWLinearMap::combine(pw.clone(), emap1.clone())?;
     }
     pws2 = list![make_pw(list![SBInterval::new(1, 1, 999), SBInterval::new(1, 1, 99)], list![metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(1000.0_f64), metamodelica::OrderedFloat(101.0_f64)])?, make_pw(list![SBInterval::new(1000, 1, 1998), SBInterval::new(100, 1, 198)], list![metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(1.0_f64)], list![metamodelica::OrderedFloat(2002.0_f64), metamodelica::OrderedFloat(201.0_f64)])?, make_pw(list![SBInterval::new(1999, 1, 2998), SBInterval::new(199, 1, 199)], list![metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(-998.0_f64), metamodelica::OrderedFloat(101.0_f64)])?, make_pw(list![SBInterval::new(2999, 1, 2999), SBInterval::new(200, 1, 299)], list![metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(4001.0_f64), metamodelica::OrderedFloat(4001.0_f64)])?, make_pw(list![SBInterval::new(3000, 1, 3000), SBInterval::new(300, 1, 399)], list![metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(0.0_f64)], list![metamodelica::OrderedFloat(4002.0_f64), metamodelica::OrderedFloat(4002.0_f64)])?];
-    let (__pa2, __pa3) = ::match_deref::match_deref! { match &(pws2.clone()) {
+    let (__pa2, __pa3) = ::match_deref::match_deref! { match &(pws2) {
         Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
     emap2 = __pa2.clone();
     pws2 = __pa3.clone();
-    for mut pw in &*pws2.clone() {
+    for mut pw in &*pws2 {
         let mut pw = pw.clone();
         emap2 = SBPWLinearMap::combine(pw.clone(), emap2.clone())?;
     }
-    res = connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
-    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    res = connectedComponents(vss, emap1, emap2)?;
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 

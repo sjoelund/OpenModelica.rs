@@ -154,7 +154,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
         binding = Binding::EMPTY_BINDING().clone();
         assign_field!(binfo.varKind = crate::NFBackendExtension::VariableKind::interned_ITERATOR());
     } else {
-        binding = Component::getImplicitBinding(comp.clone(), InstNode::instanceParent(node.clone())?);
+        binding = Component::getImplicitBinding(comp, InstNode::instanceParent(node)?);
     }
     if !(Type::isExternalObject(ty.clone())) {
         children = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
@@ -169,13 +169,13 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
         }
         __acc.reverse()
     });
-            children.clone()
+            children
         },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    variable = Arc::new(NFVariable { name: cref.clone(), ty: ty.clone(), binding: binding.clone(), visibility: vis.clone(), attributes: attr.clone(), typeAttributes: metamodelica::nil(), children: children.clone(), comment: cmt.clone(), info: info.clone(), backendinfo: binfo.clone() });
+    variable = Arc::new(NFVariable { name: cref, ty: ty, binding: binding, visibility: vis, attributes: attr, typeAttributes: metamodelica::nil(), children: children, comment: cmt, info: info, backendinfo: binfo });
     Ok(variable)
 }
 
@@ -185,7 +185,7 @@ pub fn name(mut var: Arc<NFVariable>) -> Arc<ComponentRef::NFComponentRef> {
 }
 
 pub fn size(mut var: Arc<NFVariable>, mut resize: bool) -> Result<i32> {
-    let mut s: i32 = Type::sizeOf(var.ty.clone(), resize.clone())?;
+    let mut s: i32 = Type::sizeOf(var.ty.clone(), resize)?;
     Ok(s)
 }
 
@@ -213,11 +213,11 @@ pub(crate) fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<
     let mut expl_len: i32;
     if Type::isArray(var.ty.clone()) {
         exp = Expression::fromCref(var.name.clone(), false)?;
-        (exp, _) = ExpandExp::expandCref(exp.clone(), backend.clone(), false)?;
+        (exp, _) = ExpandExp::expandCref(exp, backend, false)?;
         expl = Expression::arrayScalarElements(exp.clone());
         crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut e in (expl.clone()).into_iter().cloned() {
+        for mut e in (expl).into_iter().cloned() {
             let __x = Expression::toCref(e.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -229,18 +229,18 @@ pub(crate) fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<
         binding = var.binding.clone();
         if Binding::isBound(binding.clone()) {
             bind_exp = Binding::getTypedExp(binding.clone())?;
-            expl = Expression::arrayScalarElements((ExpandExp::expand(bind_exp.clone(), false, false)?).0);
+            expl = Expression::arrayScalarElements((ExpandExp::expand(bind_exp, false, false)?).0);
             crefs_len = (crefs.clone().len() as i32);
             expl_len = (expl.clone().len() as i32);
-            if expl_len.clone() < crefs_len.clone() {
-                if intMod(crefs_len.clone(), expl_len.clone()) != 0 {
+            if expl_len < crefs_len {
+                if intMod(crefs_len, expl_len) != 0 {
                     Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFVariable.expand")); __mm_s.push_str(&*literal!(" failed to expand ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo"))?;
                 }
-                expl = List::flatten(List::fill(expl.clone(), intDiv(crefs_len.clone(), expl_len.clone())))?;
+                expl = List::flatten(List::fill(expl, intDiv(crefs_len, expl_len)))?;
             }
             bind_var = Binding::variability(binding.clone())?;
-            bind_src = Binding::source(binding.clone());
-            for mut cr in &*crefs.clone() {
+            bind_src = Binding::source(binding);
+            for mut cr in &*crefs {
                 let mut cr = cr.clone();
                 assign_field!(v.name = cr.clone());
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(expl.clone()) {
@@ -249,19 +249,19 @@ pub(crate) fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<
                 } };
                 exp = __pa0.clone();
                 expl = __pa1.clone();
-                assign_field!(v.binding = Binding::makeFlat(exp.clone(), bind_var.clone(), bind_src.clone(), Binding::NO_CONFIDENCE.clone()));
+                assign_field!(v.binding = Binding::makeFlat(exp.clone(), bind_var, bind_src, Binding::NO_CONFIDENCE.clone()));
                 vars = metamodelica::cons(v.clone(), vars.clone());
             }
         } else {
-            for mut cr in &*crefs.clone() {
+            for mut cr in &*crefs {
                 let mut cr = cr.clone();
                 assign_field!(v.name = cr.clone());
                 vars = metamodelica::cons(v.clone(), vars.clone());
             }
         }
-        vars = metamodelica::Dangerous::listReverseInPlace(vars.clone());
+        vars = metamodelica::Dangerous::listReverseInPlace(vars);
     } else {
-        vars = list![var.clone()];
+        vars = list![var];
     }
     Ok(vars)
 }
@@ -269,14 +269,14 @@ pub(crate) fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<
 pub fn expandChildren(mut var: Arc<NFVariable>, mut arrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut addDimensions: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
     let mut children: Arc<metamodelica::List<Arc<NFVariable>>>;
     let mut newArrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
-    if addDimensions.clone() && !(arrayDims.clone().is_empty()) {
-        assign_field!(var.ty = Type::liftArrayLeftList(var.ty.clone(), arrayDims.clone()));
+    if addDimensions && !(arrayDims.clone().is_empty()) {
+        assign_field!(var.ty = Type::liftArrayLeftList(var.ty.clone(), arrayDims));
     }
     newArrayDims = Type::arrayDims(var.ty.clone());
     children = metamodelica::cons(var.clone(), List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFVariable>>>>> = metamodelica::nil();
         for mut v in (var.children.clone()).into_iter().cloned() {
-            let __x = expandChildren(v.clone(), newArrayDims.clone(), addDimensions.clone())?;
+            let __x = expandChildren(v.clone(), newArrayDims.clone(), addDimensions)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -303,8 +303,8 @@ pub(crate) fn setVariability(mut variable: Arc<NFVariable>, mut variability: Var
     let mut variable: Arc<NFVariable> = variable;
     let mut attr: Arc<Attributes::NFAttributes>;
     attr = variable.attributes.clone();
-    assign_field!(attr.variability = variability.clone());
-    assign_field!(variable.attributes = attr.clone());
+    assign_field!(attr.variability = variability);
+    assign_field!(variable.attributes = attr);
     variable
 }
 
@@ -337,7 +337,7 @@ pub(crate) fn isDeleted(mut variable: Arc<NFVariable>) -> Result<bool> {
     let mut deleted: bool;
     let mut node: Arc<InstNode::InstNode>;
     node = ComponentRef::node(variable.name.clone())?;
-    deleted = InstNode::isComponent(node.clone())? && Component::isDeleted(InstNode::component(node.clone())?)?;
+    deleted = InstNode::isComponent(node.clone())? && Component::isDeleted(InstNode::component(node)?)?;
     Ok(deleted)
 }
 
@@ -404,7 +404,7 @@ pub(crate) fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
     let mut access: AccessLevel;
     oaccess = InstNode::getAccessLevel(ComponentRef::node(variable.name.clone())?)?;
     if isSome(oaccess.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(oaccess.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(oaccess) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -412,10 +412,10 @@ pub(crate) fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
     } else {
         access = if (isEncrypted(variable.clone())?) {AccessLevel::DOCUMENTATION.clone()} else {AccessLevel::PACKAGE_DUPLICATE.clone()};
     }
-    if access.clone() < AccessLevel::ICON.clone() {
+    if access < AccessLevel::ICON.clone() {
         isAccessible = false;
-    } else if access.clone() < AccessLevel::NON_PACKAGE_TEXT.clone() {
-        isAccessible = !(isProtected(variable.clone()));
+    } else if access < AccessLevel::NON_PACKAGE_TEXT.clone() {
+        isAccessible = !(isProtected(variable));
     } else {
         isAccessible = true;
     }
@@ -456,12 +456,12 @@ pub(crate) fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut eva
     let mut scope: Arc<InstNode::InstNode>;
     if ComponentRef::isCref(var.name.clone()) {
         node = ComponentRef::node(var.name.clone())?;
-        if overwrite.clone() && InstNode::isComponent(node.clone())? {
-            node = InstNode::parent(node.clone());
+        if overwrite && InstNode::isComponent(node.clone())? {
+            node = InstNode::parent(node);
         }
-        (r#mod, scope) = InstNode::getAnnotation((name.clone()).clone(), node.clone())?;
+        (r#mod, scope) = InstNode::getAnnotation((name.clone()).clone(), node)?;
         if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
-            if evaluate.clone() {
+            if evaluate {
                 let () = 'mc: {
         let __mc_input = r#mod.clone();
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
@@ -489,8 +489,8 @@ pub(crate) fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut eva
         bail!("matchcontinue: no arm matched")
     };
             }
-            anno = Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() })], binding: None, comment: None, info: metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo") }) });
-            assign_field!(var.comment = SCodeUtil::appendAnnotationToComment(anno.clone(), var.comment.clone(), true)?);
+            anno = Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (name).clone(), r#mod: r#mod })], binding: None, comment: None, info: metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo") }) });
+            assign_field!(var.comment = SCodeUtil::appendAnnotationToComment(anno, var.comment.clone(), true)?);
         }
     }
     Ok(var)
@@ -603,9 +603,9 @@ pub fn toString(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingTy
     let mut r#str: ArcStr;
     let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFVariable.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
-    s = toStream(var.clone(), (indent.clone()).clone(), printBindingType.clone(), s.clone())?;
+    s = toStream(var, (indent).clone(), printBindingType, s)?;
     r#str = (IOStream::string(s.clone())?).clone();
-    IOStream::delete(s.clone())?;
+    IOStream::delete(s)?;
     Ok(r#str)
 }
 
@@ -613,20 +613,20 @@ pub(crate) fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBi
     let mut s: IOStream::IOStream = s;
     let mut first: bool;
     let mut b: Arc<Binding::NFBinding>;
-    s = IOStream::append(s.clone(), (indent.clone()).clone())?;
+    s = IOStream::append(s, (indent).clone())?;
     if var.visibility.clone() == Visibility::PROTECTED.clone() {
-        s = IOStream::append(s.clone(), (literal!("protected ")).clone())?;
+        s = IOStream::append(s, (literal!("protected ")).clone())?;
     }
-    s = IOStream::append(s.clone(), (Attributes::toString(var.attributes.clone(), var.ty.clone())?).clone())?;
-    s = IOStream::append(s.clone(), (Type::toString(var.ty.clone())?).clone())?;
-    s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-    s = IOStream::append(s.clone(), (ComponentRef::toString(var.name.clone())?).clone())?;
+    s = IOStream::append(s, (Attributes::toString(var.attributes.clone(), var.ty.clone())?).clone())?;
+    s = IOStream::append(s, (Type::toString(var.ty.clone())?).clone())?;
+    s = IOStream::append(s, (literal!(" ")).clone())?;
+    s = IOStream::append(s, (ComponentRef::toString(var.name.clone())?).clone())?;
     if !(var.typeAttributes.clone().is_empty()) {
-        s = IOStream::append(s.clone(), (literal!("(")).clone())?;
+        s = IOStream::append(s, (literal!("(")).clone())?;
         first = true;
         for mut a in &*var.typeAttributes.clone() {
             let mut a = a.clone();
-            if first.clone() {
+            if first {
                 first = false;
             } else {
                 s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
@@ -639,16 +639,16 @@ pub(crate) fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBi
             s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
             s = IOStream::append(s.clone(), (Binding::toString(b.clone(), (literal!("")).clone())?).clone())?;
         }
-        s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+        s = IOStream::append(s, (literal!(")")).clone())?;
     }
     if Binding::isBound(var.binding.clone()) {
-        s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-        if printBindingType.clone() {
-            s = IOStream::append(s.clone(), (literal!("(")).clone())?;
-            s = IOStream::append(s.clone(), (Type::toString(Binding::getType(var.binding.clone())?)?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(") ")).clone())?;
+        s = IOStream::append(s, (literal!(" = ")).clone())?;
+        if printBindingType {
+            s = IOStream::append(s, (literal!("(")).clone())?;
+            s = IOStream::append(s, (Type::toString(Binding::getType(var.binding.clone())?)?).clone())?;
+            s = IOStream::append(s, (literal!(") ")).clone())?;
         }
-        s = IOStream::append(s.clone(), (Binding::toString(var.binding.clone(), (literal!("")).clone())?).clone())?;
+        s = IOStream::append(s, (Binding::toString(var.binding.clone(), (literal!("")).clone())?).clone())?;
     }
     Ok(s)
 }
@@ -656,35 +656,35 @@ pub(crate) fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBi
 pub(crate) fn toFlatStream(mut var: Arc<NFVariable>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
-    s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-    s = Attributes::toFlatStream(var.attributes.clone(), var.ty.clone(), s.clone(), ComponentRef::isSimple(var.name.clone()))?;
-    s = IOStream::append(s.clone(), (Type::toFlatString(Type::arrayElementType(var.ty.clone()), format.clone())?).clone())?;
-    s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-    s = IOStream::append(s.clone(), (ComponentRef::toFlatString(var.name.clone(), format.clone())?).clone())?;
+    s = IOStream::append(s, (indent).clone())?;
+    s = Attributes::toFlatStream(var.attributes.clone(), var.ty.clone(), s, ComponentRef::isSimple(var.name.clone()))?;
+    s = IOStream::append(s, (Type::toFlatString(Type::arrayElementType(var.ty.clone()), format.clone())?).clone())?;
+    s = IOStream::append(s, (literal!(" ")).clone())?;
+    s = IOStream::append(s, (ComponentRef::toFlatString(var.name.clone(), format.clone())?).clone())?;
     dims = Type::arrayDims(var.ty.clone());
     if !(dims.clone().is_empty()) {
-        s = IOStream::append(s.clone(), (Dimension::toFlatStringList(dims.clone(), format.clone(), (literal!("")).clone())?).clone())?;
+        s = IOStream::append(s, (Dimension::toFlatStringList(dims, format.clone(), (literal!("")).clone())?).clone())?;
     }
     if !(var.typeAttributes.clone().is_empty()) {
-        s = Component::typeAttrsToFlatStream(var.typeAttributes.clone(), var.ty.clone(), format.clone(), s.clone())?;
+        s = Component::typeAttrsToFlatStream(var.typeAttributes.clone(), var.ty.clone(), format.clone(), s)?;
     } else if !(var.children.clone().is_empty()) {
-        s = toFlatStreamModifier(var.children.clone(), format.moveBindings.clone() || Binding::isBound(var.binding.clone()), printBindingType.clone(), format.clone(), s.clone())?;
+        s = toFlatStreamModifier(var.children.clone(), format.moveBindings.clone() || Binding::isBound(var.binding.clone()), printBindingType, format.clone(), s)?;
     }
-    s = toFlatStreamBinding(var.binding.clone(), printBindingType.clone(), format.clone(), s.clone())?;
-    s = FlatModelicaUtil::appendComment(var.comment.clone(), FlatModelicaUtil::ElementType::COMPONENT.clone(), s.clone())?;
+    s = toFlatStreamBinding(var.binding.clone(), printBindingType, format, s)?;
+    s = FlatModelicaUtil::appendComment(var.comment.clone(), FlatModelicaUtil::ElementType::COMPONENT.clone(), s)?;
     Ok(s)
 }
 
 pub(crate) fn toFlatStreamBinding(mut binding: Arc<Binding::NFBinding>, mut printBindingType: bool, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     if Binding::isBound(binding.clone()) {
-        s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-        if printBindingType.clone() {
-            s = IOStream::append(s.clone(), (literal!("(")).clone())?;
-            s = IOStream::append(s.clone(), (Type::toFlatString(Binding::getType(binding.clone())?, format.clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(") ")).clone())?;
+        s = IOStream::append(s, (literal!(" = ")).clone())?;
+        if printBindingType {
+            s = IOStream::append(s, (literal!("(")).clone())?;
+            s = IOStream::append(s, (Type::toFlatString(Binding::getType(binding.clone())?, format.clone())?).clone())?;
+            s = IOStream::append(s, (literal!(") ")).clone())?;
         }
-        s = IOStream::append(s.clone(), (Binding::toFlatString(binding.clone(), format.clone(), (literal!("")).clone())?).clone())?;
+        s = IOStream::append(s, (Binding::toFlatString(binding, format, (literal!("")).clone())?).clone())?;
     }
     Ok(s)
 }
@@ -695,23 +695,23 @@ pub(crate) fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVa
     let mut overwritten_binding: bool;
     let mut ss: IOStream::IOStream;
     let mut src: Binding::Source;
-    for mut child in &*children.clone() {
+    for mut child in &*children {
         let mut child = child.clone();
         ss = IOStream::create(literal!("NFVariable.toFlatStreamModifier"), openmodelica_util::IOStream::IOStreamType::LIST)?;
         if !(child.typeAttributes.clone().is_empty()) {
             ss = Component::typeAttrsToFlatStream(child.typeAttributes.clone(), child.ty.clone(), format.clone(), ss.clone())?;
         } else if !(child.children.clone().is_empty()) {
-            overwritten_binding = overwrittenBinding.clone() || Binding::isBound(child.binding.clone());
-            ss = toFlatStreamModifier(child.children.clone(), overwritten_binding.clone(), printBindingType.clone(), format.clone(), ss.clone())?;
+            overwritten_binding = overwrittenBinding || Binding::isBound(child.binding.clone());
+            ss = toFlatStreamModifier(child.children.clone(), overwritten_binding, printBindingType, format.clone(), ss.clone())?;
         }
-        if !(overwrittenBinding.clone()) {
+        if !(overwrittenBinding) {
             src = Binding::source(child.binding.clone());
-            if src.clone() == Binding::Source::MODIFIER.clone() || src.clone() == Binding::Source::GENERATED.clone() {
-                ss = toFlatStreamBinding(child.binding.clone(), printBindingType.clone(), format.clone(), ss.clone())?;
+            if src == Binding::Source::MODIFIER.clone() || src == Binding::Source::GENERATED.clone() {
+                ss = toFlatStreamBinding(child.binding.clone(), printBindingType, format.clone(), ss.clone())?;
             }
         }
         if !(IOStream::empty(ss.clone())?) {
-            if empty.clone() {
+            if empty {
                 s = IOStream::append(s.clone(), (literal!("(")).clone())?;
                 empty = false;
             } else {
@@ -721,8 +721,8 @@ pub(crate) fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVa
             s = IOStream::appendListStream(ss.clone(), s.clone())?;
         }
     }
-    if !(empty.clone()) {
-        s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+    if !(empty) {
+        s = IOStream::append(s, (literal!(")")).clone())?;
     }
     Ok(s)
 }
@@ -731,7 +731,7 @@ pub(crate) fn moveBinding(mut var: Arc<NFVariable>, mut equations: Arc<metamodel
     let mut var: Arc<NFVariable> = var;
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     if variability(var.clone()) >= Variability::DISCRETE.clone() && Binding::isBound(var.binding.clone()) {
-        equations = metamodelica::cons(Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, Binding::getExp(var.binding.clone())?, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
+        equations = metamodelica::cons(Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, Binding::getExp(var.binding.clone())?, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations);
         assign_field!(var.binding = Binding::EMPTY_BINDING().clone());
     }
     Ok((var, equations))
@@ -749,7 +749,7 @@ pub(crate) fn getNominal(mut var: Arc<NFVariable>) -> Option<Arc<Expression::NFE
 
 pub(crate) fn asBinding(mut var: Arc<NFVariable>, mut source: Binding::Source) -> Arc<Binding::NFBinding> {
     let mut binding: Arc<Binding::NFBinding>;
-    binding = Binding::makeFlat(Expression::fromTypedCref(var.name.clone(), var.ty.clone()), variability(var.clone()), source.clone(), Binding::NO_CONFIDENCE.clone());
+    binding = Binding::makeFlat(Expression::fromTypedCref(var.name.clone(), var.ty.clone()), variability(var), source, Binding::NO_CONFIDENCE.clone());
     binding
 }
 

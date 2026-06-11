@@ -258,8 +258,8 @@ pub mod Prefixes {
 pub(crate) fn fromSCode(mut elements: Arc<metamodelica::List<Arc<Element>>>, mut isClassExtends: bool, mut scope: Arc<InstNode::InstNode>, mut prefixes: Arc<Prefixes::Prefixes>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass>;
     let mut tree: Arc<ClassTree::ClassTree>;
-    tree = ClassTree::fromSCode(elements.clone(), isClassExtends.clone(), scope.clone())?;
-    cls = Arc::new(NFClass::PARTIAL_CLASS { elements: tree.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD(), ccMod: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes.clone() });
+    tree = ClassTree::fromSCode(elements, isClassExtends, scope)?;
+    cls = Arc::new(NFClass::PARTIAL_CLASS { elements: tree, modifier: crate::NFModifier::Modifier::interned_NOMOD(), ccMod: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes });
     Ok(cls)
 }
 
@@ -267,7 +267,7 @@ pub(crate) fn initImports(mut cls: Arc<NFClass>, mut parent: Arc<InstNode::InstN
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; elements = ClassTree::initImports(var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone(), parent.clone())?);
+            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; elements = ClassTree::initImports(var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone(), parent)?);
             ()
         },
         _ => (),
@@ -279,16 +279,16 @@ pub(crate) fn initImports(mut cls: Arc<NFClass>, mut parent: Arc<InstNode::InstN
 pub(crate) fn fromEnumeration(mut literals: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut enumType: Arc<Type::NFType>, mut prefixes: Arc<Prefixes::Prefixes>, mut enumClass: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass>;
     let mut tree: Arc<ClassTree::ClassTree>;
-    tree = ClassTree::fromEnumeration(literals.clone(), enumType.clone(), enumClass.clone())?;
-    cls = Arc::new(NFClass::PARTIAL_BUILTIN { ty: enumType.clone(), elements: tree.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes.clone(), restriction: crate::NFRestriction::interned_ENUMERATION() });
+    tree = ClassTree::fromEnumeration(literals, enumType.clone(), enumClass)?;
+    cls = Arc::new(NFClass::PARTIAL_BUILTIN { ty: enumType, elements: tree, modifier: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes, restriction: crate::NFRestriction::interned_ENUMERATION() });
     Ok(cls)
 }
 
 pub(crate) fn makeRecordConstructor(mut fields: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut out: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass>;
     let mut tree: Arc<ClassTree::ClassTree>;
-    tree = ClassTree::fromRecordConstructor(fields.clone(), out.clone())?;
-    cls = Arc::new(NFClass::INSTANCED_CLASS { ty: crate::NFType::interned_UNKNOWN(), elements: tree.clone(), sections: crate::NFSections::interned_EMPTY(), prefixes: DEFAULT_PREFIXES.clone(), restriction: crate::NFRestriction::interned_RECORD_CONSTRUCTOR() });
+    tree = ClassTree::fromRecordConstructor(fields, out)?;
+    cls = Arc::new(NFClass::INSTANCED_CLASS { ty: crate::NFType::interned_UNKNOWN(), elements: tree, sections: crate::NFSections::interned_EMPTY(), prefixes: DEFAULT_PREFIXES.clone(), restriction: crate::NFRestriction::interned_RECORD_CONSTRUCTOR() });
     Ok(cls)
 }
 
@@ -315,10 +315,10 @@ pub fn getSections(mut cls: Arc<NFClass>) -> Result<Arc<Sections::NFSections>> {
 pub(crate) fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     cls = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ INSTANCED_CLASS { .. } => Arc::new(NFClass::INSTANCED_CLASS { ty: var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone(), elements: var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone(), sections: sections.clone(), prefixes: var_field!((*cls).prefixes, NFClass::INSTANCED_CLASS).clone(), restriction: var_field!((*cls).restriction, NFClass::INSTANCED_CLASS).clone() }),
+        Deref @ INSTANCED_CLASS { .. } => Arc::new(NFClass::INSTANCED_CLASS { ty: var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone(), elements: var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone(), sections: sections, prefixes: var_field!((*cls).prefixes, NFClass::INSTANCED_CLASS).clone(), restriction: var_field!((*cls).restriction, NFClass::INSTANCED_CLASS).clone() }),
         Deref @ TYPED_DERIVED { .. } => {
-            InstNode::classApply(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), (std::sync::Arc::new(setSections) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Sections::NFSections>, Arc<NFClass>) -> Result<Arc<NFClass>> + 'static>), sections.clone())?;
-            cls.clone()
+            InstNode::classApply(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), (std::sync::Arc::new(setSections) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Sections::NFSections>, Arc<NFClass>) -> Result<Arc<NFClass>> + 'static>), sections)?;
+            cls
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -328,7 +328,7 @@ pub(crate) fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<
 pub(crate) fn lookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<(Arc<InstNode::InstNode>, bool)> {
     let mut node: Arc<InstNode::InstNode>;
     let mut isImport: bool;
-    (node, isImport) = ClassTree::lookupElement((name.clone()).clone(), classTree(cls.clone())?)?;
+    (node, isImport) = ClassTree::lookupElement((name).clone(), classTree(cls)?)?;
     Ok((node, isImport))
 }
 
@@ -355,13 +355,13 @@ pub(crate) fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Opti
 
 pub(crate) fn lookupComponentIndex(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<i32> {
     let mut index: i32;
-    index = ClassTree::lookupComponentIndex((name.clone()).clone(), classTree(cls.clone())?)?;
+    index = ClassTree::lookupComponentIndex((name).clone(), classTree(cls)?)?;
     Ok(index)
 }
 
 pub(crate) fn nthComponent(mut index: i32, mut cls: Arc<NFClass>) -> Result<Arc<InstNode::InstNode>> {
     let mut component: Arc<InstNode::InstNode>;
-    component = ClassTree::nthComponent(index.clone(), classTree(cls.clone())?)?;
+    component = ClassTree::nthComponent(index, classTree(cls)?)?;
     Ok(component)
 }
 
@@ -395,7 +395,7 @@ pub(crate) fn lookupAttributeValue(mut name: ArcStr, mut cls: Arc<NFClass>) -> O
 
 pub fn isOnlyBuiltin(mut cls: Arc<NFClass>) -> bool {
     let mut builtin: bool;
-    builtin = (::match_deref::match_deref! { match &(cls.clone()) {
+    builtin = (::match_deref::match_deref! { match &(cls) {
         Deref @ PARTIAL_BUILTIN { .. } => true,
         Deref @ INSTANCED_BUILTIN { .. } => true,
         _ => false,
@@ -437,23 +437,23 @@ pub(crate) fn setClassTree(mut tree: Arc<ClassTree::ClassTree>, mut cls: Arc<NFC
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; elements = tree.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; elements = tree);
             ()
         },
         Deref @ EXPANDED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; elements = tree.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; elements = tree);
             ()
         },
         Deref @ PARTIAL_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; elements = tree.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; elements = tree);
             ()
         },
         Deref @ INSTANCED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; elements = tree.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; elements = tree);
             ()
         },
         Deref @ INSTANCED_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; elements = tree.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; elements = tree);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -521,19 +521,19 @@ pub(crate) fn setModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NF
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; modifier = modifier.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; modifier = modifier);
             ()
         },
         Deref @ EXPANDED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; modifier = modifier.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; modifier = modifier);
             ()
         },
         Deref @ EXPANDED_DERIVED { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; modifier = modifier.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; modifier = modifier);
             ()
         },
         Deref @ PARTIAL_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; modifier = modifier.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; modifier = modifier);
             ()
         },
         _ => {
@@ -549,19 +549,19 @@ pub(crate) fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; modifier = Modifier::merge(modifier.clone(), var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(), (literal!("")).clone())?);
+            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; modifier = Modifier::merge(modifier, var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(), (literal!("")).clone())?);
             ()
         },
         Deref @ EXPANDED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; modifier = Modifier::merge(modifier.clone(), var_field!((*cls).modifier, NFClass::EXPANDED_CLASS).clone(), (literal!("")).clone())?);
+            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; modifier = Modifier::merge(modifier, var_field!((*cls).modifier, NFClass::EXPANDED_CLASS).clone(), (literal!("")).clone())?);
             ()
         },
         Deref @ EXPANDED_DERIVED { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; modifier = Modifier::merge(modifier.clone(), var_field!((*cls).modifier, NFClass::EXPANDED_DERIVED).clone(), (literal!("")).clone())?);
+            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; modifier = Modifier::merge(modifier, var_field!((*cls).modifier, NFClass::EXPANDED_DERIVED).clone(), (literal!("")).clone())?);
             ()
         },
         Deref @ PARTIAL_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; modifier = Modifier::merge(modifier.clone(), var_field!((*cls).modifier, NFClass::PARTIAL_BUILTIN).clone(), (literal!("")).clone())?);
+            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; modifier = Modifier::merge(modifier, var_field!((*cls).modifier, NFClass::PARTIAL_BUILTIN).clone(), (literal!("")).clone())?);
             ()
         },
         _ => {
@@ -676,23 +676,23 @@ pub(crate) fn setType(mut ty: Arc<Type::NFType>, mut cls: Arc<NFClass>) -> Resul
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; ty = ty.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; ty = ty);
             ()
         },
         Deref @ EXPANDED_DERIVED { .. } => {
-            InstNode::classApply(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), (std::sync::Arc::new(setType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>, Arc<NFClass>) -> Result<Arc<NFClass>> + 'static>), ty.clone())?;
+            InstNode::classApply(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), (std::sync::Arc::new(setType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>, Arc<NFClass>) -> Result<Arc<NFClass>> + 'static>), ty)?;
             ()
         },
         Deref @ INSTANCED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; ty = ty.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; ty = ty);
             ()
         },
         Deref @ INSTANCED_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; ty = ty.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; ty = ty);
             ()
         },
         Deref @ TYPED_DERIVED { .. } => {
-            assign_variant_field!(cls => NFClass::TYPED_DERIVED; ty = ty.clone());
+            assign_variant_field!(cls => NFClass::TYPED_DERIVED; ty = ty);
             ()
         },
         _ => (),
@@ -720,23 +720,23 @@ pub(crate) fn setRestriction(mut res: Arc<Restriction::NFRestriction>, mut cls: 
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; restriction = res.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; restriction = res);
             ()
         },
         Deref @ EXPANDED_DERIVED { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; restriction = res.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; restriction = res);
             ()
         },
         Deref @ INSTANCED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; restriction = res.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; restriction = res);
             ()
         },
         Deref @ INSTANCED_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; restriction = res.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; restriction = res);
             ()
         },
         Deref @ TYPED_DERIVED { .. } => {
-            assign_variant_field!(cls => NFClass::TYPED_DERIVED; restriction = res.clone());
+            assign_variant_field!(cls => NFClass::TYPED_DERIVED; restriction = res);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -839,23 +839,23 @@ pub(crate) fn setPrefixes(mut prefs: Arc<Prefixes::Prefixes>, mut cls: Arc<NFCla
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; prefixes = prefs.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; prefixes = prefs);
             ()
         },
         Deref @ PARTIAL_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; prefixes = prefs.clone());
+            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; prefixes = prefs);
             ()
         },
         Deref @ EXPANDED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; prefixes = prefs.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; prefixes = prefs);
             ()
         },
         Deref @ EXPANDED_DERIVED { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; prefixes = prefs.clone());
+            assign_variant_field!(cls => NFClass::EXPANDED_DERIVED; prefixes = prefs);
             ()
         },
         Deref @ INSTANCED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; prefixes = prefs.clone());
+            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; prefixes = prefs);
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -879,7 +879,7 @@ pub(crate) fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<Ins
     node = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => lastBaseClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?,
         Deref @ TYPED_DERIVED { .. } => lastBaseClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?,
-        _ => node.clone(),
+        _ => node,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(node)
@@ -888,14 +888,14 @@ pub(crate) fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<Ins
 pub(crate) fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
     let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = cmts;
     cmts = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ EXPANDED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), cmts.clone()),
-        Deref @ TYPED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), cmts.clone()),
+        Deref @ EXPANDED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), cmts),
+        Deref @ TYPED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), cmts),
         _ => {
-            let __range0 = ClassTree::getExtends(classTree(cls.clone()).unwrap()).borrow().iter().cloned().collect::<Vec<_>>();
+            let __range0 = ClassTree::getExtends(classTree(cls).unwrap()).borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range0 {
                 cmts = InstNode::getComments(ext.clone(), cmts.clone());
             }
-            cmts.clone()
+            cmts
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -906,12 +906,12 @@ pub fn constrainingClassPath(mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut cls_node: Arc<InstNode::InstNode> = lastBaseClass(clsNode.clone())?;
     let mut prefs: Arc<Prefixes::Prefixes> = getPrefixes(InstNode::getClass(cls_node.clone())?)?;
-    path = (::match_deref::match_deref! { match &(prefs.clone()) {
+    path = (::match_deref::match_deref! { match &(prefs) {
         Deref @ Prefixes::PREFIXES { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: __esc_path, .. }) }, .. } => {
             path = (*__esc_path).clone();
             path.clone()
         },
-        _ => InstNode::enclosingScopePath(cls_node.clone(), false, false)?,
+        _ => InstNode::enclosingScopePath(cls_node, false, false)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(path)
@@ -948,14 +948,14 @@ pub(crate) fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     cls = InstNode::getClass(clsNode.clone())?;
-    let (__pa1, __pa0) = ::match_deref::match_deref! { match &(getType(cls.clone(), clsNode.clone())?) {
+    let (__pa1, __pa0) = ::match_deref::match_deref! { match &(getType(cls.clone(), clsNode)?) {
         __pa1 @ Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: __pa0, .. }, .. } => (__pa1.clone(), __pa0.clone()),
         _ => bail!("pattern mismatch"),
     } };
     ty_node = __pa0.clone();
     ty = __pa1.clone();
-    comps = ClassTree::getComponents(classTree(cls.clone())?)?;
-    if typed.clone() {
+    comps = ClassTree::getComponents(classTree(cls)?)?;
+    if typed {
         args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut c in (comps.clone()).borrow().iter() {
@@ -964,7 +964,7 @@ pub(crate) fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc
         }
         __acc.reverse()
     });
-        exp = Expression::makeRecord(InstNode::fullPath(ty_node.clone(), false)?, ty.clone(), args.clone());
+        exp = Expression::makeRecord(InstNode::fullPath(ty_node, false)?, ty, args);
     } else {
         args = metamodelica::nil();
         let __range3 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -974,8 +974,8 @@ pub(crate) fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc
                 args = metamodelica::cons(Binding::getExp(Component::getImplicitBinding(InstNode::component(c.clone())?, scope.clone()))?, args.clone());
             }
         }
-        args = metamodelica::Dangerous::listReverseInPlace(args.clone());
-        exp = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::UNTYPED_CALL { r#ref: ComponentRef::fromNode(ty_node.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), arguments: args.clone(), named_args: metamodelica::nil(), call_scope: scope.clone() }) });
+        args = metamodelica::Dangerous::listReverseInPlace(args);
+        exp = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::UNTYPED_CALL { r#ref: ComponentRef::fromNode(ty_node, ty, metamodelica::nil(), ComponentRef::Origin::CREF.clone()), arguments: args, named_args: metamodelica::nil(), call_scope: scope }) });
     }
     Ok(exp)
 }
@@ -983,41 +983,41 @@ pub(crate) fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc
 pub(crate) fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut name: ArcStr;
-    name = (Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(clsNode.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?).clone();
+    name = (Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(clsNode, InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?).clone();
     s = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ INSTANCED_CLASS { .. } => {
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (Restriction::toString(var_field!((*cls).restriction, NFClass::INSTANCED_CLASS).clone())).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-            s = IOStream::append(s.clone(), (name.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
+            s = IOStream::append(s, (indent.clone()).clone())?;
+            s = IOStream::append(s, (Restriction::toString(var_field!((*cls).restriction, NFClass::INSTANCED_CLASS).clone())).clone())?;
+            s = IOStream::append(s, (literal!(" ")).clone())?;
+            s = IOStream::append(s, (name.clone()).clone())?;
+            s = IOStream::append(s, (literal!("\n")).clone())?;
             let __range0 = ClassTree::getComponents(var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone())?.borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range0 {
                 s = IOStream::append(s.clone(), (InstNode::toFlatString(comp.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
                 s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
             }
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end ")).clone())?;
-            s = IOStream::append(s.clone(), (name.clone()).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end ")).clone())?;
+            s = IOStream::append(s, (name).clone())?;
+            s
         },
         Deref @ INSTANCED_BUILTIN { .. } => {
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("INSTANCED_BUILTIN(")).clone())?;
-            s = IOStream::append(s.clone(), (name.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("INSTANCED_BUILTIN(")).clone())?;
+            s = IOStream::append(s, (name).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
+            s
         },
         Deref @ TYPED_DERIVED { .. } => {
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (Restriction::toString(var_field!((*cls).restriction, NFClass::TYPED_DERIVED).clone())).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
-            s = IOStream::append(s.clone(), (name.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
-            s = IOStream::append(s.clone(), (Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?).clone())?;
-            s.clone()
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (Restriction::toString(var_field!((*cls).restriction, NFClass::TYPED_DERIVED).clone())).clone())?;
+            s = IOStream::append(s, (literal!(" ")).clone())?;
+            s = IOStream::append(s, (name).clone())?;
+            s = IOStream::append(s, (literal!(" = ")).clone())?;
+            s = IOStream::append(s, (Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?).clone())?;
+            s
         },
-        _ => IOStream::append(s.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UNKNOWN_CLASS(")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?,
+        _ => IOStream::append(s, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UNKNOWN_CLASS(")); __mm_s.push_str(&*name); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(s)
@@ -1027,9 +1027,9 @@ pub fn toFlatString(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>,
     let mut r#str: ArcStr;
     let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFClass.toFlatString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
-    s = toFlatStream(cls.clone(), clsNode.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
+    s = toFlatStream(cls, clsNode, format, (indent).clone(), s)?;
     r#str = (IOStream::string(s.clone())?).clone();
-    IOStream::delete(s.clone())?;
+    IOStream::delete(s)?;
     Ok(r#str)
 }
 

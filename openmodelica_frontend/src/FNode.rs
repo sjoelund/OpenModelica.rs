@@ -157,7 +157,7 @@ pub(crate) const statusNodeName: &'static str = "$status";
 
 pub(crate) fn toRef(mut inNode: Node) -> Ref {
     let mut outRef: Ref;
-    outRef = arrayCreate(1, inNode.clone());
+    outRef = arrayCreate(1, inNode);
     outRef
 }
 
@@ -169,27 +169,27 @@ pub fn fromRef(mut inRef: Ref) -> Result<Node> {
 
 pub(crate) fn updateRef(mut inRef: Ref, mut inNode: Node) -> Result<Ref> {
     let mut outRef: Ref;
-    outRef = metamodelica::arrayUpdate(inRef.clone(), 1, inNode.clone())?;
+    outRef = metamodelica::arrayUpdate(inRef.clone(), 1, inNode)?;
     Ok(outRef)
 }
 
 pub fn id(mut inNode: Node) -> Result<Id> {
     let mut id: Id;
-    let FCore::N { id: __pa0, .. } = (inNode.clone()) else { bail!("pattern mismatch") };
+    let FCore::N { id: __pa0, .. } = (inNode) else { bail!("pattern mismatch") };
     id = __pa0.clone();
     Ok(id)
 }
 
 pub(crate) fn parents(mut inNode: Node) -> Result<Parents> {
     let mut p: Parents;
-    let FCore::N { parents: __pa0, .. } = (inNode.clone()) else { bail!("pattern mismatch") };
+    let FCore::N { parents: __pa0, .. } = (inNode) else { bail!("pattern mismatch") };
     p = __pa0.clone();
     Ok(p)
 }
 
 pub(crate) fn hasParents(mut inNode: Node) -> Result<bool> {
     let mut b: bool;
-    b = !(parents(inNode.clone())?.is_empty());
+    b = !(parents(inNode)?.is_empty());
     Ok(b)
 }
 
@@ -213,8 +213,8 @@ pub(crate) fn refPushParents(mut inRef: Ref, mut inParents: Parents) -> Result<R
     p = __pa2.clone();
     c = __pa3.clone();
     d = __pa4.clone();
-    p = listAppend(inParents.clone(), p.clone());
-    outRef = updateRef(inRef.clone(), FCore::Node { name: (n.clone()).clone(), id: i.clone(), parents: p.clone(), children: c.clone(), data: d.clone() })?;
+    p = listAppend(inParents, p);
+    outRef = updateRef(inRef.clone(), FCore::Node { name: (n).clone(), id: i, parents: p, children: c, data: d })?;
     Ok(outRef)
 }
 
@@ -225,19 +225,19 @@ pub(crate) fn setParents(mut inNode: Node, mut inParents: Parents) -> Result<Nod
     let mut p: Parents;
     let mut c: Children;
     let mut d: Data;
-    let FCore::N { name: __pa0, id: __pa1, parents: __pa2, children: __pa3, data: __pa4 } = (inNode.clone()) else { bail!("pattern mismatch") };
+    let FCore::N { name: __pa0, id: __pa1, parents: __pa2, children: __pa3, data: __pa4 } = (inNode) else { bail!("pattern mismatch") };
     n = __pa0.clone();
     i = __pa1.clone();
     p = __pa2.clone();
     c = __pa3.clone();
     d = __pa4.clone();
-    outNode = FCore::Node { name: (n.clone()).clone(), id: i.clone(), parents: inParents.clone(), children: c.clone(), data: d.clone() };
+    outNode = FCore::Node { name: (n).clone(), id: i, parents: inParents, children: c, data: d };
     Ok(outNode)
 }
 
 pub(crate) fn target(mut inNode: Node) -> Result<Ref> {
     let mut outRef: Ref;
-    let __pa0 = ::match_deref::match_deref! { match &(targetScope(inNode.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(targetScope(inNode)?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -247,7 +247,7 @@ pub(crate) fn target(mut inNode: Node) -> Result<Ref> {
 
 pub(crate) fn targetScope(mut inNode: Node) -> Result<Scope> {
     let mut outScope: Scope = metamodelica::nil();
-    outScope = (match inNode.clone() {
+    outScope = (match inNode {
         FCore::Node { data: FCore::Data::REF { target: ref __esc_outScope }, .. } => {
             outScope = __esc_outScope.clone();
             outScope.clone()
@@ -259,13 +259,13 @@ pub(crate) fn targetScope(mut inNode: Node) -> Result<Scope> {
 
 pub(crate) fn new(mut inName: Name, mut inId: Id, mut inParents: Parents, mut inData: Data) -> Node {
     let mut node: Node;
-    node = FCore::Node { name: (inName.clone()).clone(), id: inId.clone(), parents: inParents.clone(), children: FCore::RefTree::new(), data: inData.clone() };
+    node = FCore::Node { name: (inName).clone(), id: inId, parents: inParents, children: FCore::RefTree::new(), data: inData };
     node
 }
 
 pub(crate) fn addImport(mut inImport: Arc<SCode::Element>, mut inImportTable: ImportTable) -> Result<ImportTable> {
     let mut outImportTable: ImportTable;
-    outImportTable = (::match_deref::match_deref! { match &((inImport.clone(), inImportTable.clone())) {
+    outImportTable = (::match_deref::match_deref! { match &((inImport, inImportTable)) {
         (Deref @ SCode::Element::IMPORT { imp: imp @ Absyn::Import::UNQUAL_IMPORT { .. }, .. }, FCore::ImportTable { hidden, qualifiedImports: qual_imps, unqualifiedImports: unqual_imps }) => {
             let mut unqual_imps = (*unqual_imps).clone();
             unqual_imps = List::unionElt(imp.clone(), unqual_imps.clone());
@@ -288,7 +288,7 @@ fn translateQualifiedImportToNamed(mut inImport: Import) -> Result<Import> {
     let mut outImport: Import;
     outImport = (match inImport.clone() {
         Absyn::Import::NAMED_IMPORT { .. } => {
-            inImport.clone()
+            inImport
         },
         Absyn::Import::QUAL_IMPORT { path: mut path } => {
             let mut name: Name;
@@ -320,7 +320,7 @@ fn checkUniqueQualifiedImport(mut inImport: Import, mut inImports: Arc<metamodel
 
 fn compareQualifiedImportNames(mut inImport1: Import, mut inImport2: Import) -> bool {
     let mut outEqual: bool;
-    outEqual = (match (inImport1.clone(), inImport2.clone()) {
+    outEqual = (match (inImport1, inImport2) {
         (Absyn::Import::NAMED_IMPORT { name: mut name1, .. }, Absyn::Import::NAMED_IMPORT { name: mut name2, .. }) if (stringEqual((name1.clone()).clone(), (name2.clone()).clone())) => {
             true
         },
@@ -344,8 +344,8 @@ pub(crate) fn addChildRef(mut inParentRef: Ref, mut inName: Name, mut inChildRef
     p = __pa2.clone();
     c = __pa3.clone();
     d = __pa4.clone();
-    c = FCore::RefTree::add(c.clone(), (inName.clone()).clone(), inChildRef.clone(), (if (checkDuplicate.clone()) { ((std::sync::Arc::new(printElementConflictError) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>, ArcStr) -> Result<metamodelica::Array<FCore::Node>> + 'static>) as _) } else { ((std::sync::Arc::new(fnptr!(FCore::RefTree::addConflictReplace, metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>, ArcStr) -> Result<metamodelica::Array<FCore::Node>> + 'static>) as _) }))?;
-    parent = updateRef(inParentRef.clone(), FCore::Node { name: (n.clone()).clone(), id: i.clone(), parents: p.clone(), children: c.clone(), data: d.clone() })?;
+    c = FCore::RefTree::add(c, (inName).clone(), inChildRef.clone(), (if (checkDuplicate) { ((std::sync::Arc::new(printElementConflictError) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>, ArcStr) -> Result<metamodelica::Array<FCore::Node>> + 'static>) as _) } else { ((std::sync::Arc::new(fnptr!(FCore::RefTree::addConflictReplace, metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>, ArcStr) -> Result<metamodelica::Array<FCore::Node>> + 'static>) as _) }))?;
+    parent = updateRef(inParentRef.clone(), FCore::Node { name: (n).clone(), id: i, parents: p, children: c, data: d })?;
     Ok(())
 }
 
@@ -358,7 +358,7 @@ fn printElementConflictError(mut newRef: Ref, mut oldRef: Ref, mut name: ArcStr)
     } else {
         info1 = SCodeUtil::elementInfo(getElementFromRef(newRef.clone())?);
         info2 = SCodeUtil::elementInfo(getElementFromRef(oldRef.clone())?);
-        Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(name.clone()).clone()], list![info2.clone(), info1.clone()])?;
+        Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(name).clone()], list![info2, info1])?;
         bail!("fail");
     }
     Ok(dummy)
@@ -377,8 +377,8 @@ pub(crate) fn addImportToRef(mut r#ref: Ref, mut imp: Arc<SCode::Element>) -> Re
     p = __pa2.clone();
     c = __pa3.clone();
     it = __pa4.clone();
-    it = addImport(imp.clone(), it.clone())?;
-    r = updateRef(r#ref.clone(), FCore::Node { name: (n.clone()).clone(), id: id.clone(), parents: p.clone(), children: c.clone(), data: FCore::Data::IM { i: it.clone() } })?;
+    it = addImport(imp, it)?;
+    r = updateRef(r#ref.clone(), FCore::Node { name: (n).clone(), id: id, parents: p, children: c, data: FCore::Data::IM { i: it } })?;
     Ok(())
 }
 
@@ -395,8 +395,8 @@ pub(crate) fn addTypesToRef(mut r#ref: Ref, mut inTys: Arc<metamodelica::List<Ar
     p = __pa2.clone();
     c = __pa3.clone();
     tys = __pa4.clone();
-    tys = List::unique(listAppend(inTys.clone(), tys.clone()));
-    r = updateRef(r#ref.clone(), FCore::Node { name: (n.clone()).clone(), id: id.clone(), parents: p.clone(), children: c.clone(), data: FCore::Data::FT { tys: tys.clone() } })?;
+    tys = List::unique(listAppend(inTys, tys));
+    r = updateRef(r#ref.clone(), FCore::Node { name: (n).clone(), id: id, parents: p, children: c, data: FCore::Data::FT { tys: tys } })?;
     Ok(())
 }
 
@@ -413,7 +413,7 @@ pub(crate) fn addIteratorsToRef(mut r#ref: Ref, mut inIterators: Arc<metamodelic
     p = __pa2.clone();
     c = __pa3.clone();
     it = __pa4.clone();
-    r = updateRef(r#ref.clone(), FCore::Node { name: (n.clone()).clone(), id: id.clone(), parents: p.clone(), children: c.clone(), data: FCore::Data::FS { fis: listAppend(it.clone(), inIterators.clone()) } })?;
+    r = updateRef(r#ref.clone(), FCore::Node { name: (n).clone(), id: id, parents: p, children: c, data: FCore::Data::FS { fis: listAppend(it, inIterators) } })?;
     Ok(())
 }
 
@@ -430,13 +430,13 @@ pub(crate) fn addDefinedUnitToRef(mut r#ref: Ref, mut du: Arc<SCode::Element>) -
     p = __pa2.clone();
     c = __pa3.clone();
     dus = __pa4.clone();
-    r = updateRef(r#ref.clone(), FCore::Node { name: (n.clone()).clone(), id: id.clone(), parents: p.clone(), children: c.clone(), data: FCore::Data::DU { els: metamodelica::cons(du.clone(), dus.clone()) } })?;
+    r = updateRef(r#ref.clone(), FCore::Node { name: (n).clone(), id: id, parents: p, children: c, data: FCore::Data::DU { els: metamodelica::cons(du, dus) } })?;
     Ok(())
 }
 
 pub fn name(mut n: Node) -> Result<ArcStr> {
     let mut name: ArcStr;
-    name = ((match n.clone() {
+    name = ((match n {
         FCore::Node { name: mut s, .. } => {
             s.clone()
         },
@@ -452,7 +452,7 @@ pub(crate) fn refName(mut r: Ref) -> Result<ArcStr> {
 
 pub(crate) fn data(mut n: Node) -> Result<Data> {
     let mut d: Data = FCore::Data::TOP;
-    d = (match n.clone() {
+    d = (match n {
         FCore::Node { data: mut __esc_d, .. } => {
             d = __esc_d.clone();
             d.clone()
@@ -478,7 +478,7 @@ pub(crate) fn top(mut inRef: Ref) -> Result<Ref> {
 
 pub fn children(mut inNode: Node) -> Result<Children> {
     let mut outChildren: Children;
-    let FCore::N { children: __pa0, .. } = (inNode.clone()) else { bail!("pattern mismatch") };
+    let FCore::N { children: __pa0, .. } = (inNode) else { bail!("pattern mismatch") };
     outChildren = __pa0.clone();
     Ok(outChildren)
 }
@@ -503,7 +503,7 @@ pub(crate) fn hasChild(mut inNode: Node, mut inName: Name) -> bool {
 
 pub(crate) fn refHasChild(mut inRef: Ref, mut inName: Name) -> Result<bool> {
     let mut b: bool;
-    b = hasChild(fromRef(inRef.clone())?, (inName.clone()).clone());
+    b = hasChild(fromRef(inRef.clone())?, (inName).clone());
     Ok(b)
 }
 
@@ -514,13 +514,13 @@ pub(crate) fn setChildren(mut inNode: Node, mut inChildren: Children) -> Result<
     let mut p: Parents;
     let mut c: Children;
     let mut d: Data;
-    let FCore::N { name: __pa0, id: __pa1, parents: __pa2, children: __pa3, data: __pa4 } = (inNode.clone()) else { bail!("pattern mismatch") };
+    let FCore::N { name: __pa0, id: __pa1, parents: __pa2, children: __pa3, data: __pa4 } = (inNode) else { bail!("pattern mismatch") };
     n = __pa0.clone();
     i = __pa1.clone();
     p = __pa2.clone();
     c = __pa3.clone();
     d = __pa4.clone();
-    outNode = FCore::Node { name: (n.clone()).clone(), id: i.clone(), parents: p.clone(), children: inChildren.clone(), data: d.clone() };
+    outNode = FCore::Node { name: (n).clone(), id: i, parents: p, children: inChildren, data: d };
     Ok(outNode)
 }
 
@@ -530,26 +530,26 @@ pub(crate) fn setData(mut inNode: Node, mut inData: Data) -> Result<Node> {
     let mut i: Id;
     let mut p: Parents;
     let mut c: Children;
-    let FCore::N { name: __pa0, id: __pa1, parents: __pa2, children: __pa3, data: _ } = (inNode.clone()) else { bail!("pattern mismatch") };
+    let FCore::N { name: __pa0, id: __pa1, parents: __pa2, children: __pa3, data: _ } = (inNode) else { bail!("pattern mismatch") };
     n = __pa0.clone();
     i = __pa1.clone();
     p = __pa2.clone();
     c = __pa3.clone();
-    outNode = FCore::Node { name: (n.clone()).clone(), id: i.clone(), parents: p.clone(), children: c.clone(), data: inData.clone() };
+    outNode = FCore::Node { name: (n).clone(), id: i, parents: p, children: c, data: inData };
     Ok(outNode)
 }
 
 pub(crate) fn child(mut inParentRef: Ref, mut inName: Name) -> Result<Ref> {
     let mut outChildRef: Ref;
-    outChildRef = childFromNode(fromRef(inParentRef.clone())?, (inName.clone()).clone())?;
+    outChildRef = childFromNode(fromRef(inParentRef.clone())?, (inName).clone())?;
     Ok(outChildRef)
 }
 
 pub(crate) fn childFromNode(mut inNode: Node, mut inName: Name) -> Result<Ref> {
     let mut outChildRef: Ref;
     let mut c: Children;
-    c = children(inNode.clone())?;
-    outChildRef = FCore::RefTree::get(c.clone(), (inName.clone()).clone())?;
+    c = children(inNode)?;
+    outChildRef = FCore::RefTree::get(c, (inName).clone())?;
     Ok(outChildRef)
 }
 
@@ -560,7 +560,7 @@ pub(crate) fn element2Data(mut inElement: Arc<SCode::Element>, mut inKind: Kind)
         Deref @ SCode::Element::COMPONENT { name: n, prefixes: Deref @ SCode::Prefixes { visibility: vis, redeclarePrefix: _, finalPrefix: _, innerOuter: io, replaceablePrefix: _ }, attributes: SCode::Attributes { arrayDims: _, connectorType: ct, parallelism: prl, variability: var, direction: dir, .. }, typeSpec: _, modifications: _, comment: _, condition: _, info: _ } => {
             let mut nd: Data;
             let mut i: Arc<DAE::Var>;
-            nd = FCore::Data::CO { e: inElement.clone(), r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED };
+            nd = FCore::Data::CO { e: inElement, r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), kind: inKind, status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED };
             i = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl.clone(), variability: var.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None });
             (nd.clone(), i.clone())
         },
@@ -571,7 +571,7 @@ pub(crate) fn element2Data(mut inElement: Arc<SCode::Element>, mut inKind: Kind)
 
 pub(crate) fn dataStr(mut inData: Data) -> ArcStr {
     let mut outStr: ArcStr;
-    outStr = ((::match_deref::match_deref! { match &(inData.clone()) {
+    outStr = ((::match_deref::match_deref! { match &(inData) {
         FCore::Data::TOP { .. } => {
             literal!("TOP")
         },
@@ -723,13 +723,13 @@ pub(crate) fn toPathStr(mut inNode: Node) -> Result<ArcStr> {
 
 pub(crate) fn scopeStr(mut sc: Scope) -> Result<ArcStr> {
     let mut s: ArcStr;
-    s = stringDelimitList(List::map(sc.clone().reverse(), (std::sync::Arc::new(refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>))?, (literal!("/")).clone());
+    s = stringDelimitList(List::map(sc.reverse(), (std::sync::Arc::new(refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>))?, (literal!("/")).clone());
     Ok(s)
 }
 
 pub(crate) fn isImplicitScope(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::TOP { .. }, .. } => false,
         FCore::Node { data: FCore::Data::CL { .. }, .. } => false,
         FCore::Node { data: FCore::Data::CO { .. }, .. } => false,
@@ -750,7 +750,7 @@ pub(crate) fn isRefImplicitScope(mut inRef: Ref) -> Result<bool> {
 
 pub(crate) fn isEncapsulated(mut inNode: Node) -> Result<bool> {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(inNode.clone()) {
+    b = (::match_deref::match_deref! { match &(inNode) {
         FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, .. }, .. }, .. } => true,
         FCore::Node { data: FCore::Data::CO { .. }, .. } if (boolEq(Config::acceptMetaModelicaGrammar()?, false) && boolNot(Flags::isSet(Flags::GRAPH_INST.clone())?)) => true,
         _ => false,
@@ -761,7 +761,7 @@ pub(crate) fn isEncapsulated(mut inNode: Node) -> Result<bool> {
 
 pub(crate) fn isReference(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::REF { .. }, .. } => true,
         _ => false,
     });
@@ -785,7 +785,7 @@ pub(crate) fn isUserDefined(mut inNode: Node) -> Result<bool> {
             } };
             p = __pa0.clone();
             b = isRefUserDefined(p.clone())?;
-            b.clone()
+            b
         },
         _ => {
             false
@@ -796,7 +796,7 @@ pub(crate) fn isUserDefined(mut inNode: Node) -> Result<bool> {
 
 pub(crate) fn isTop(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::TOP { .. }, .. } => true,
         _ => false,
     });
@@ -805,7 +805,7 @@ pub(crate) fn isTop(mut inNode: Node) -> bool {
 
 pub(crate) fn isExtends(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::EX { .. }, .. } => true,
         _ => false,
     });
@@ -814,7 +814,7 @@ pub(crate) fn isExtends(mut inNode: Node) -> bool {
 
 pub(crate) fn isDerived(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { e: mut e, .. }, .. } => {
             SCodeUtil::isDerivedClass(e.clone())
         },
@@ -827,7 +827,7 @@ pub(crate) fn isDerived(mut inNode: Node) -> bool {
 
 pub(crate) fn isClass(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { .. }, .. } => true,
         _ => false,
     });
@@ -836,7 +836,7 @@ pub(crate) fn isClass(mut inNode: Node) -> bool {
 
 pub(crate) fn isInstance(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { status: FCore::Status::CLS_INSTANCE { instanceOf: _ }, .. }, .. } => true,
         _ => false,
     });
@@ -845,7 +845,7 @@ pub(crate) fn isInstance(mut inNode: Node) -> bool {
 
 pub(crate) fn isRedeclare(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(inNode.clone()) {
+    b = (::match_deref::match_deref! { match &(inNode) {
         FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE { .. }, .. }, .. }, .. }, .. } => true,
         FCore::Node { data: FCore::Data::CO { e: Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE { .. }, .. }, .. }, .. }, .. } => true,
         _ => false,
@@ -856,7 +856,7 @@ pub(crate) fn isRedeclare(mut inNode: Node) -> bool {
 
 pub(crate) fn isClassExtends(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(inNode.clone()) {
+    b = (::match_deref::match_deref! { match &(inNode) {
         FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -866,7 +866,7 @@ pub(crate) fn isClassExtends(mut inNode: Node) -> bool {
 
 pub(crate) fn isComponent(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CO { .. }, .. } => true,
         _ => false,
     });
@@ -875,7 +875,7 @@ pub(crate) fn isComponent(mut inNode: Node) -> bool {
 
 pub(crate) fn isConstrainClass(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CC { .. }, .. } => true,
         _ => false,
     });
@@ -884,7 +884,7 @@ pub(crate) fn isConstrainClass(mut inNode: Node) -> bool {
 
 pub(crate) fn isCref(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CR { .. }, .. } => true,
         _ => false,
     });
@@ -893,7 +893,7 @@ pub(crate) fn isCref(mut inNode: Node) -> bool {
 
 pub(crate) fn isBasicType(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::BASIC_TYPE { .. }, .. }, .. } => true,
         _ => false,
     });
@@ -902,7 +902,7 @@ pub(crate) fn isBasicType(mut inNode: Node) -> bool {
 
 pub(crate) fn isBuiltin(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::BUILTIN { .. }, .. }, .. } => true,
         FCore::Node { data: FCore::Data::CO { kind: FCore::Kind::BUILTIN { .. }, .. }, .. } => true,
         _ => false,
@@ -912,7 +912,7 @@ pub(crate) fn isBuiltin(mut inNode: Node) -> bool {
 
 pub(crate) fn isFunction(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { e: mut e, .. }, .. } if (SCodeUtil::isFunction(e.clone()) || SCodeUtil::isOperator(e.clone())) => {
             true
         },
@@ -925,7 +925,7 @@ pub(crate) fn isFunction(mut inNode: Node) -> bool {
 
 pub(crate) fn isRecord(mut inNode: Node) -> bool {
     let mut b: bool = false;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::CL { e: mut e, .. }, .. } if (SCodeUtil::isRecord(e.clone())) => {
             true
         },
@@ -938,7 +938,7 @@ pub(crate) fn isRecord(mut inNode: Node) -> bool {
 
 pub(crate) fn isSection(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::AL { .. }, .. } => true,
         FCore::Node { data: FCore::Data::EQ { .. }, .. } => true,
         _ => false,
@@ -948,7 +948,7 @@ pub(crate) fn isSection(mut inNode: Node) -> bool {
 
 pub(crate) fn isMod(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::MO { .. }, .. } => true,
         _ => false,
     });
@@ -957,7 +957,7 @@ pub(crate) fn isMod(mut inNode: Node) -> bool {
 
 pub(crate) fn isModHolder(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { name: mut n, data: FCore::Data::MO { .. }, .. } => {
             stringEq((n.clone()).clone(), (arcstr::literal!(modNodeName)).clone())
         },
@@ -970,10 +970,10 @@ pub(crate) fn isModHolder(mut inNode: Node) -> bool {
 
 pub(crate) fn isClone(mut inNode: Node) -> Result<bool> {
     let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(inNode.clone()) {
+    b = (::match_deref::match_deref! { match &(inNode) {
         FCore::Node { parents: Deref @ metamodelica::List::Cons { head: r, tail: _ }, .. } => {
             b = isRefVersion(r.clone())?;
-            b.clone()
+            b
         },
         _ => {
             false
@@ -985,7 +985,7 @@ pub(crate) fn isClone(mut inNode: Node) -> Result<bool> {
 
 pub(crate) fn isVersion(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::VR { .. }, .. } => true,
         _ => false,
     });
@@ -994,7 +994,7 @@ pub(crate) fn isVersion(mut inNode: Node) -> bool {
 
 pub(crate) fn isDims(mut inNode: Node) -> bool {
     let mut b: bool;
-    b = (match inNode.clone() {
+    b = (match inNode {
         FCore::Node { data: FCore::Data::DIMS { .. }, .. } => true,
         _ => false,
     });
@@ -1012,10 +1012,10 @@ pub(crate) fn isIn(mut inNode: Node, mut inFunctionRefIs: Arc<dyn ::std::ops::Fn
             let mut b2: bool;
             s = originalScope(toRef(inNode.clone()))?;
             b1 = List::applyAndFold(s.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), inFunctionRefIs.clone(), false)?;
-            s = contextualScope(toRef(inNode.clone()))?;
+            s = contextualScope(toRef(inNode))?;
             b2 = List::applyAndFold(s.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), inFunctionRefIs.clone(), false)?;
             b = boolOr(b1.clone(), b2.clone());
-            b.clone()
+            b
         },
     });
     Ok(b)
@@ -1023,7 +1023,7 @@ pub(crate) fn isIn(mut inNode: Node, mut inFunctionRefIs: Arc<dyn ::std::ops::Fn
 
 pub(crate) fn nonImplicitRefFromScope(mut inScope: Scope) -> Result<Ref> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inScope.clone()) {
+        ::match_deref::match_deref! { match &(inScope) {
         Deref @ metamodelica::List::Nil => {
             return Ok(bail!("fail"))
         },
@@ -1040,7 +1040,7 @@ pub(crate) fn nonImplicitRefFromScope(mut inScope: Scope) -> Result<Ref> {
 
 pub(crate) fn namesUpToParentName(mut inRef: Ref, mut inName: Name) -> Result<Names> {
     let mut outNames: Names;
-    outNames = namesUpToParentName_dispatch(inRef.clone(), (inName.clone()).clone(), metamodelica::nil())?;
+    outNames = namesUpToParentName_dispatch(inRef.clone(), (inName).clone(), metamodelica::nil())?;
     Ok(outNames)
 }
 
@@ -1051,10 +1051,10 @@ fn namesUpToParentName_dispatch(mut inRef: Ref, mut inName: Name, mut acc: Names
             return Ok(metamodelica::nil())
         },
         (mut r, _) if (stringEq((inName.clone()).clone(), (refName(r.clone())?).clone())) => {
-            return Ok(acc.clone())
+            return Ok(acc)
         },
         (mut r, mut name) => {
-            { (inRef, inName, acc) = (original(refParents(r.clone())?)?, (name.clone()).clone(), metamodelica::cons((refName(r.clone())?).clone(), acc.clone())); continue '__tco; }
+            { (inRef, inName, acc) = (original(refParents(r.clone())?)?, (name.clone()).clone(), metamodelica::cons((refName(r.clone())?).clone(), acc)); continue '__tco; }
         },
     }
     }
@@ -1097,7 +1097,7 @@ pub(crate) fn originalScope(mut inRef: Ref) -> Result<Scope> {
 
 pub(crate) fn originalScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result<Scope> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inAcc.clone()) {
+        ::match_deref::match_deref! { match &(inAcc) {
         acc if (isTop(fromRef(inRef.clone())?)) => {
             return Ok(metamodelica::cons(inRef.clone(), acc.clone()).reverse())
         },
@@ -1113,7 +1113,7 @@ pub(crate) fn originalScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result
 
 pub(crate) fn original(mut inParents: Parents) -> Result<Ref> {
     let mut outOriginal: Ref;
-    outOriginal = List::last(inParents.clone())?;
+    outOriginal = List::last(inParents)?;
     Ok(outOriginal)
 }
 
@@ -1125,7 +1125,7 @@ pub(crate) fn contextualScope(mut inRef: Ref) -> Result<Scope> {
 
 pub(crate) fn contextualScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result<Scope> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inAcc.clone()) {
+        ::match_deref::match_deref! { match &(inAcc) {
         acc if (isTop(fromRef(inRef.clone())?)) => {
             return Ok(metamodelica::cons(inRef.clone(), acc.clone()).reverse())
         },
@@ -1141,14 +1141,14 @@ pub(crate) fn contextualScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Resu
 
 pub(crate) fn contextual(mut inParents: Parents) -> Result<Ref> {
     let mut outContextual: Ref;
-    outContextual = listHead(inParents.clone())?;
+    outContextual = listHead(inParents)?;
     Ok(outContextual)
 }
 
 pub(crate) fn lookupRef(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
     let mut outRef: Ref;
     outRef = 'mc: {
-        let __mc_input = inScope.clone();
+        let __mc_input = inScope;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } => {
@@ -1180,7 +1180,7 @@ pub(crate) fn lookupRef(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
 
 pub(crate) fn lookupRef_dispatch(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &(inScope.clone()) {
+        ::match_deref::match_deref! { match &(inScope) {
         Deref @ metamodelica::List::Nil => {
             return Ok(inRef.clone())
         },
@@ -1202,8 +1202,8 @@ pub(crate) fn filter(mut inRef: Ref, mut inFilter: Arc<dyn ::std::ops::Fn(metamo
     let mut filtered: Refs;
     let mut c: Children;
     c = children(fromRef(inRef.clone())?)?;
-    filtered = FCore::RefTree::fold(c.clone(), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static> = inFilter.clone(); move |__pe_a0, __pe_a1, __pe_a3| filter_work(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>), metamodelica::nil())?;
-    filtered = filtered.clone().reverse();
+    filtered = FCore::RefTree::fold(c, (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static> = inFilter.clone(); move |__pe_a0, __pe_a1, __pe_a3| filter_work(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>), metamodelica::nil())?;
+    filtered = filtered.reverse();
     Ok(filtered)
 }
 
@@ -1212,7 +1212,7 @@ fn filter_work(mut name: Name, mut r#ref: Ref, mut filter: Arc<dyn ::std::ops::F
 
     let mut refs: Refs = accum.clone();
     if filter(r#ref.clone())? {
-        refs = metamodelica::cons(r#ref.clone(), refs.clone());
+        refs = metamodelica::cons(r#ref.clone(), refs);
     }
     Ok(refs)
 }
@@ -1377,8 +1377,8 @@ pub(crate) fn apply1<ExtraArg: Clone + 'static + metamodelica::gc::MMTrace>(mut 
     pub type Apply<ExtraArg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Name, Ref, ExtraArg) -> Result<ExtraArg> + 'static>;
 
     let mut outExtraArg: ExtraArg;
-    outExtraArg = FCore::RefTree::fold(children(fromRef(inRef.clone())?)?, inApply.clone(), inExtraArg.clone())?;
-    outExtraArg = inApply((refName(inRef.clone())?).clone(), inRef.clone(), outExtraArg.clone())?;
+    outExtraArg = FCore::RefTree::fold(children(fromRef(inRef.clone())?)?, inApply.clone(), inExtraArg)?;
+    outExtraArg = inApply((refName(inRef.clone())?).clone(), inRef.clone(), outExtraArg)?;
     Ok(outExtraArg)
 }
 
@@ -1388,11 +1388,11 @@ pub(crate) fn hasImports(mut inNode: Node) -> Result<bool> {
         _ => {
             let mut qi: Arc<metamodelica::List<Absyn::Import>>;
             let mut uqi: Arc<metamodelica::List<Absyn::Import>>;
-            let FCore::IMPORT_TABLE { hidden: _, qualifiedImports: __pa0, unqualifiedImports: __pa1 } = (importTable(fromRef(refImport(toRef(inNode.clone()))?)?)?) else { bail!("pattern mismatch") };
+            let FCore::IMPORT_TABLE { hidden: _, qualifiedImports: __pa0, unqualifiedImports: __pa1 } = (importTable(fromRef(refImport(toRef(inNode))?)?)?) else { bail!("pattern mismatch") };
             qi = __pa0.clone();
             uqi = __pa1.clone();
             b = boolOr(!(qi.clone().is_empty()), !(uqi.clone().is_empty()));
-            b.clone()
+            b
         },
         _ => {
             false
@@ -1408,7 +1408,7 @@ pub(crate) fn imports(mut inNode: Node) -> Result<(Arc<metamodelica::List<Absyn:
         _ => {
             let mut qi: Arc<metamodelica::List<Absyn::Import>>;
             let mut uqi: Arc<metamodelica::List<Absyn::Import>>;
-            let FCore::IMPORT_TABLE { hidden: _, qualifiedImports: __pa0, unqualifiedImports: __pa1 } = (importTable(fromRef(refImport(toRef(inNode.clone()))?)?)?) else { bail!("pattern mismatch") };
+            let FCore::IMPORT_TABLE { hidden: _, qualifiedImports: __pa0, unqualifiedImports: __pa1 } = (importTable(fromRef(refImport(toRef(inNode))?)?)?) else { bail!("pattern mismatch") };
             qi = __pa0.clone();
             uqi = __pa1.clone();
             (qi.clone(), uqi.clone())
@@ -1451,11 +1451,11 @@ pub(crate) fn extendsRefs(mut inRef: Ref) -> Result<Refs> {
 pub(crate) fn cloneRef(mut inName: Name, mut inRef: Ref, mut inParentRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
-    (outGraph, outRef) = (match inGraph.clone() {
+    (outGraph, outRef) = (match inGraph {
         mut g => {
             let mut r: Ref;
             (g, r) = clone(fromRef(inRef.clone())?, inParentRef.clone(), g.clone())?;
-            addChildRef(inParentRef.clone(), (inName.clone()).clone(), r.clone(), false)?;
+            addChildRef(inParentRef.clone(), (inName).clone(), r.clone(), false)?;
             (g.clone(), r.clone())
         },
     });
@@ -1465,7 +1465,7 @@ pub(crate) fn cloneRef(mut inName: Name, mut inRef: Ref, mut inParentRef: Ref, m
 pub(crate) fn clone(mut inNode: Node, mut inParentRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
-    (outGraph, outRef) = (match (inNode.clone(), inGraph.clone()) {
+    (outGraph, outRef) = (match (inNode, inGraph) {
         (FCore::Node { name: mut name, id: mut id, parents: mut parents, children: mut children, data: mut data }, mut g) => {
             let mut n: Node;
             let mut r: Ref;
@@ -1491,21 +1491,21 @@ pub(crate) fn clone(mut inNode: Node, mut inParentRef: Ref, mut inGraph: Graph) 
 pub(crate) fn cloneTree(mut inChildren: Children, mut inParentRef: Ref, mut inGraph: Graph) -> Result<(Graph, Children)> {
     let mut outGraph: Graph;
     let mut outChildren: Children;
-    (outChildren, outGraph) = FCore::RefTree::mapFold(inChildren.clone(), (std::sync::Arc::new({ let __pe_b1 = inParentRef.clone(); move |__pe_a0, __pe_a2, __pe_a3| cloneChild(__pe_a0, __pe_b1.clone(), __pe_a2, __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<(metamodelica::Array<FCore::Node>, FCore::Graph)> + 'static>), inGraph.clone())?;
+    (outChildren, outGraph) = FCore::RefTree::mapFold(inChildren, (std::sync::Arc::new({ let __pe_b1 = inParentRef.clone(); move |__pe_a0, __pe_a2, __pe_a3| cloneChild(__pe_a0, __pe_b1.clone(), __pe_a2, __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<(metamodelica::Array<FCore::Node>, FCore::Graph)> + 'static>), inGraph)?;
     Ok((outGraph, outChildren))
 }
 
 fn cloneChild(mut name: Name, mut parentRef: Ref, mut inRef: Ref, mut inGraph: Graph) -> Result<(Ref, Graph)> {
     let mut r#ref: Ref;
     let mut graph: Graph;
-    (graph, r#ref) = cloneRef((name.clone()).clone(), inRef.clone(), parentRef.clone(), inGraph.clone())?;
+    (graph, r#ref) = cloneRef((name).clone(), inRef.clone(), parentRef.clone(), inGraph)?;
     Ok((r#ref, graph))
 }
 
 pub(crate) fn copyRef(mut inRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
-    (outGraph, outRef) = (match inGraph.clone() {
+    (outGraph, outRef) = (match inGraph {
         mut g => {
             let mut r: Ref;
             r = copyRefNoUpdate(inRef.clone())?;
@@ -1519,7 +1519,7 @@ pub(crate) fn copyRef(mut inRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)
 pub(crate) fn updateRefs(mut inRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
-    (outGraph, outRef) = (match inGraph.clone() {
+    (outGraph, outRef) = (match inGraph {
         mut g => {
             let mut r: Ref;
             (r, g) = apply1(inRef.clone(), (std::sync::Arc::new(updateRefInGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, (metamodelica::Array<FCore::Node>, FCore::Graph)) -> Result<(metamodelica::Array<FCore::Node>, FCore::Graph)> + 'static>), (inRef.clone(), g.clone()))?;
@@ -1531,7 +1531,7 @@ pub(crate) fn updateRefs(mut inRef: Ref, mut inGraph: Graph) -> Result<(Graph, R
 
 fn updateRefInGraph(mut name: Name, mut inRef: Ref, mut inTopRefAndGraph: (metamodelica::Array<FCore::Node>, FCore::Graph)) -> Result<(metamodelica::Array<FCore::Node>, FCore::Graph)> {
     let mut outTopRefAndGraph: (metamodelica::Array<FCore::Node>, FCore::Graph);
-    outTopRefAndGraph = (match inTopRefAndGraph.clone() {
+    outTopRefAndGraph = (match inTopRefAndGraph {
         (mut t, mut g) => {
             let mut n: Name;
             let mut i: Id;
@@ -1576,7 +1576,7 @@ fn updateRefInData(mut inData: Data, mut inRef: Ref) -> Result<Data> {
             FCore::Data::REF { target: sc.clone() }
         },
         _ => {
-            inData.clone()
+            inData
         },
     });
     Ok(outData)
@@ -1593,7 +1593,7 @@ fn copy(mut inNode: Node) -> Result<Ref> {
     outRef = (match node.clone() {
         FCore::Node { .. } => {
             node.children = FCore::RefTree::map(node.children.clone(), (std::sync::Arc::new(copyChild) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>))?;
-            toRef(node.clone())
+            toRef(node)
         },
     });
     Ok(outRef)
@@ -1606,7 +1606,7 @@ fn copyChild(mut name: Name, mut inRef: Ref) -> Result<Ref> {
 
 pub(crate) fn getElement(mut inNode: Node) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element>;
-    outElement = (match inNode.clone() {
+    outElement = (match inNode {
         FCore::Node { data: FCore::Data::CL { e: mut e, .. }, .. } => {
             e.clone()
         },
@@ -1657,7 +1657,7 @@ pub(crate) fn isRefRefUnresolved(mut inRef: Ref) -> bool {
             let mut b: bool = b.clone();
             refRef(inRef.clone())?;
             b = refRefTargetScope(inRef.clone())?.is_empty();
-            Ok((b.clone(), b.clone()))
+            Ok((b, b.clone()))
         })() { b = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -1696,7 +1696,7 @@ pub(crate) fn refImport(mut inRef: Ref) -> Result<Ref> {
 
 pub(crate) fn importTable(mut inNode: Node) -> Result<ImportTable> {
     let mut it: ImportTable = <FCore::ImportTable as ::std::default::Default>::default();
-    it = (match inNode.clone() {
+    it = (match inNode {
         FCore::Node { data: FCore::Data::IM { i: mut __esc_it }, .. } => {
             it = __esc_it.clone();
             it.clone()
@@ -1708,15 +1708,15 @@ pub(crate) fn importTable(mut inNode: Node) -> Result<ImportTable> {
 
 pub(crate) fn mkExtendsName(mut inPath: Arc<Absyn::Path>) -> Result<Name> {
     let mut outName: Name;
-    outName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(extendsPrefix)); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone();
+    outName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(extendsPrefix)); __mm_s.push_str(&*AbsynUtil::pathString(inPath, (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone();
     Ok(outName)
 }
 
 pub(crate) fn scopeHashWork(mut scope: Scope, mut hash: i32) -> Result<i32> {
     let mut hash: i32 = hash;
-    for mut r in &*scope.clone() {
+    for mut r in &*scope {
         let mut r = r.clone();
-        hash = 31 * hash.clone() + stringHashDjb2((refName(r.clone())?).clone());
+        hash = 31 * hash + stringHashDjb2((refName(r.clone())?).clone());
     }
     Ok(hash)
 }
@@ -1725,9 +1725,9 @@ pub(crate) fn scopePathEq(mut scope1: Scope, mut scope2: Scope) -> Result<bool> 
     let mut eq: bool;
     eq = ({
         let mut __acc: Option<bool> = None;
-        let __thr_src0 = scope1.clone();
+        let __thr_src0 = scope1;
         let mut __thr_it0 = (&__thr_src0).into_iter();
-        let __thr_src1 = scope2.clone();
+        let __thr_src1 = scope2;
         let mut __thr_it1 = (&__thr_src1).into_iter();
         loop {
             match (__thr_it0.next(), __thr_it1.next()) {

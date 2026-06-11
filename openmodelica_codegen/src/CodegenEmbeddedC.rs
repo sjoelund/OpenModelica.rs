@@ -35,7 +35,7 @@ use openmodelica_util::Util;
 
 fn fun_51(mut in_txt: Tpl::Text, mut in_mArg: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -52,7 +52,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_mArg: i32) -> Result<Tpl::Text> {
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntAlgVars: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numIntAlgVars.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numIntAlgVars) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -69,7 +69,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntAlgVars: i32) -> Result<
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolAlgVars: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numBoolAlgVars.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numBoolAlgVars) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -86,7 +86,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolAlgVars: i32) -> Result
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_a_varInfo_numStringAlgVars: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numStringAlgVars.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numStringAlgVars) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -100,7 +100,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_varInfo_numStringAlgVars: i32) -> Resu
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_a_varInfo_numParams: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numParams.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numParams) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -117,7 +117,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_varInfo_numParams: i32) -> Result<Tpl:
 
 fn fun_56(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntParams: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numIntParams.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numIntParams) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -134,7 +134,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntParams: i32) -> Result<T
 
 fn fun_57(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolParams: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numBoolParams.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numBoolParams) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -151,7 +151,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolParams: i32) -> Result<
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntParams: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numIntParams.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numIntParams) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -168,7 +168,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntParams: i32) -> Result<T
 
 fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone()) {
+    out_txt = (match (in_txt, in_mArg) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -183,93 +183,105 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: i32) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn lm_60(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_60 in &*items.clone() {
-        let mut lstElt_60 = lstElt_60.clone();
-        txt = (match lstElt_60.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_61(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_61 in &*items.clone() {
-        let mut lstElt_61 = lstElt_61.clone();
-        txt = (match lstElt_61.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_61(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_62 in &*items.clone() {
-        let mut lstElt_62 = lstElt_62.clone();
-        txt = (match lstElt_62.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_62(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_63(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_63 in &*items.clone() {
-        let mut lstElt_63 = lstElt_63.clone();
-        txt = (match lstElt_63.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_64(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_64 in &*items.clone() {
-        let mut lstElt_64 = lstElt_64.clone();
-        txt = (match lstElt_64.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_64(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_65(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_65 in &*items.clone() {
-        let mut lstElt_65 = lstElt_65.clone();
-        txt = (match lstElt_65.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_65(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_66(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_vars_realOptimizeFinalConstraintsVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vars_realOptimizeConstraintsVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vars_discreteAlgVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vars_algVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vars_derivativeVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vars_stateVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_vars_realOptimizeFinalConstraintsVars.clone(), in_a_vars_realOptimizeConstraintsVars.clone(), in_a_vars_discreteAlgVars.clone(), in_a_vars_algVars.clone(), in_a_vars_derivativeVars.clone(), in_a_vars_stateVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_mArg, in_a_vars_realOptimizeFinalConstraintsVars, in_a_vars_realOptimizeConstraintsVars, in_a_vars_discreteAlgVars, in_a_vars_algVars, in_a_vars_derivativeVars, in_a_vars_stateVars)) {
         (txt, 0, _, _, _, _, _, _) => {
             txt.clone()
         },
@@ -299,23 +311,25 @@ fn fun_66(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_vars_realOptimizeFin
     Ok(out_txt)
 }
 
-fn lm_67(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_67 in &*items.clone() {
-        let mut lstElt_67 = lstElt_67.clone();
-        txt = (match lstElt_67.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_68(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntAlgVars: i32, mut in_a_vars_intAlgVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numIntAlgVars.clone(), in_a_vars_intAlgVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numIntAlgVars, in_a_vars_intAlgVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -335,23 +349,25 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntAlgVars: i32, mut in_a_v
     Ok(out_txt)
 }
 
-fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_69 in &*items.clone() {
-        let mut lstElt_69 = lstElt_69.clone();
-        txt = (match lstElt_69.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_69(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_70(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolAlgVars: i32, mut in_a_vars_boolAlgVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numBoolAlgVars.clone(), in_a_vars_boolAlgVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numBoolAlgVars, in_a_vars_boolAlgVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -371,23 +387,25 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolAlgVars: i32, mut in_a_
     Ok(out_txt)
 }
 
-fn lm_71(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_71 in &*items.clone() {
-        let mut lstElt_71 = lstElt_71.clone();
-        txt = (match lstElt_71.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_72(mut in_txt: Tpl::Text, mut in_a_varInfo_numStringAlgVars: i32, mut in_a_vars_stringAlgVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numStringAlgVars.clone(), in_a_vars_stringAlgVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numStringAlgVars, in_a_vars_stringAlgVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -407,23 +425,25 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_varInfo_numStringAlgVars: i32, mut in_
     Ok(out_txt)
 }
 
-fn lm_73(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_73 in &*items.clone() {
-        let mut lstElt_73 = lstElt_73.clone();
-        txt = (match lstElt_73.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_73(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_74(mut in_txt: Tpl::Text, mut in_a_varInfo_numParams: i32, mut in_a_vars_paramVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numParams.clone(), in_a_vars_paramVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numParams, in_a_vars_paramVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -443,23 +463,25 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_varInfo_numParams: i32, mut in_a_vars_
     Ok(out_txt)
 }
 
-fn lm_75(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_75 in &*items.clone() {
-        let mut lstElt_75 = lstElt_75.clone();
-        txt = (match lstElt_75.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_75(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_76(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntParams: i32, mut in_a_vars_intParamVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numIntParams.clone(), in_a_vars_intParamVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numIntParams, in_a_vars_intParamVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -479,23 +501,25 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_varInfo_numIntParams: i32, mut in_a_va
     Ok(out_txt)
 }
 
-fn lm_77(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_77 in &*items.clone() {
-        let mut lstElt_77 = lstElt_77.clone();
-        txt = (match lstElt_77.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_78(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolParams: i32, mut in_a_vars_boolParamVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numBoolParams.clone(), in_a_vars_boolParamVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numBoolParams, in_a_vars_boolParamVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -515,23 +539,25 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_varInfo_numBoolParams: i32, mut in_a_v
     Ok(out_txt)
 }
 
-fn lm_79(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_79 in &*items.clone() {
-        let mut lstElt_79 = lstElt_79.clone();
-        txt = (match lstElt_79.clone() {
-        mut i_var => {
-            txt = startValue(txt.clone(), i_var.clone())?;
-            txt.clone()
+fn lm_79(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
         },
-    });
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            txt = startValue(txt.clone(), i_var.clone())?;
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_80(mut in_txt: Tpl::Text, mut in_a_varInfo_numStringParamVars: i32, mut in_a_vars_stringParamVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varInfo_numStringParamVars.clone(), in_a_vars_stringParamVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varInfo_numStringParamVars, in_a_vars_stringParamVars)) {
         (txt, 0, _) => {
             txt.clone()
         },
@@ -551,25 +577,26 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_varInfo_numStringParamVars: i32, mut i
     Ok(out_txt)
 }
 
-fn lm_81(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_81 in &*items.clone() {
-        let mut lstElt_81 = lstElt_81.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_81.clone()) {
-        i_eq => {
+fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = equation_(txt.clone(), i_eq.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_a_odeEquations: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_odeEquations.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_odeEquations)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -592,7 +619,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_odeEquations: Arc<metamodelica::List<A
 
 fn smf_83(mut in_txt: Tpl::Text, mut in_it: Arc<SimCode::SimEqSystem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_it)) {
         (txt, i_eq) => {
             let mut txt = (*txt).clone();
             txt = equation_(txt.clone(), i_eq.clone())?;
@@ -605,7 +632,7 @@ fn smf_83(mut in_txt: Tpl::Text, mut in_it: Arc<SimCode::SimEqSystem>) -> Result
 
 fn smf_84(mut in_txt: Tpl::Text, mut in_it: Arc<SimCode::SimEqSystem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_it)) {
         (txt, i_eq) => {
             let mut txt = (*txt).clone();
             txt = equation_(txt.clone(), i_eq.clone())?;
@@ -616,25 +643,26 @@ fn smf_84(mut in_txt: Tpl::Text, mut in_it: Arc<SimCode::SimEqSystem>) -> Result
     Ok(out_txt)
 }
 
-fn lm_85(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_85 in &*items.clone() {
-        let mut lstElt_85 = lstElt_85.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_85.clone()) {
-        i_eqs => {
+fn lm_85(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_eqs, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = smf_84(txt.clone(), i_eqs.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_86(mut in_txt: Tpl::Text, mut in_a_allEquations: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_allEquations.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_allEquations)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -657,7 +685,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_allEquations: Arc<metamodelica::List<A
 
 fn fun_87(mut in_txt: Tpl::Text, mut in_a_varInfo_numStateVars: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_varInfo_numStateVars.clone()) {
+    out_txt = (match (in_txt, in_a_varInfo_numStateVars) {
         (mut txt, 0) => {
             txt.clone()
         },
@@ -679,7 +707,7 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_a_varInfo_numStateVars: i32) -> Result<T
 
 fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_modelNamePrefixStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_modelNamePrefixStr.clone()) {
+    out_txt = (match (in_txt, in_a_simCode, in_a_modelNamePrefixStr) {
         (mut txt, SimCode::SimCode { simulationSettingsOpt: None, .. }, _) => {
             txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenEmbeddedC.tpl")).clone(), 96, 9), (literal!("Missing simulation settings")).clone())?;
             txt.clone()
@@ -815,29 +843,30 @@ pub fn mainFile(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode) -> Result<T
     let mut out_txt: Tpl::Text;
     let mut l_modelNamePrefixStr: Tpl::Text;
     l_modelNamePrefixStr = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), a_simCode.clone())?;
-    out_txt = fun_88(txt.clone(), a_simCode.clone(), l_modelNamePrefixStr.clone())?;
+    out_txt = fun_88(txt, a_simCode, l_modelNamePrefixStr)?;
     Ok(out_txt)
 }
 
-fn lm_90(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_90 in &*items.clone() {
-        let mut lstElt_90 = lstElt_90.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_90.clone()) {
-        i_stmt => {
+fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_stmt, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = statement(txt.clone(), i_stmt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn equation_(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_eq)) {
         (txt, Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_cref, exp: i_exp, index: i_index, .. }) => {
             let mut txt = (*txt).clone();
             txt = cref(txt.clone(), i_cref.clone())?;
@@ -865,25 +894,26 @@ pub(crate) fn equation_(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSy
     Ok(out_txt)
 }
 
-fn lm_92(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_92 in &*items.clone() {
-        let mut lstElt_92 = lstElt_92.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_92.clone()) {
-        i_stmt => {
+fn lm_92(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_stmt, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = statement(txt.clone(), i_stmt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn statement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_stmt)) {
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { type_: Deref @ DAE::Type::T_ARRAY { ty: _, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenEmbeddedC.tpl")).clone(), 388, 16), (literal!("Array assignments are not supported")).clone())?;
@@ -931,41 +961,43 @@ pub(crate) fn statement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
     Ok(out_txt)
 }
 
-fn lm_94(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_94 in &*items.clone() {
-        let mut lstElt_94 = lstElt_94.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_94.clone()) {
-        i_stmt => {
+fn lm_94(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_stmt, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = statement(txt.clone(), i_stmt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_95(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_95 in &*items.clone() {
-        let mut lstElt_95 = lstElt_95.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_95.clone()) {
-        i_stmt => {
+fn lm_95(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_stmt, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = statement(txt.clone(), i_stmt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn elseStatement(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_else__.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_else__)) {
         (txt, Deref @ DAE::Else::NOELSE { .. }) => {
             return Ok(txt.clone())
         },
@@ -1004,7 +1036,7 @@ pub(crate) fn elseStatement(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Els
 
 pub(crate) fn cref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->currentTime")).clone() }))?;
@@ -1025,7 +1057,7 @@ pub(crate) fn cref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -
 
 pub(crate) fn crefLocal(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("om_")).clone() }))?;
@@ -1044,7 +1076,7 @@ pub(crate) fn crefLocal(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
 
 fn fun_99(mut in_txt: Tpl::Text, mut in_a_isPre: bool, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_ix: i32, mut in_a_componentRef: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_isPre.clone(), in_a_cr.clone(), in_a_ix.clone(), in_a_componentRef.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_isPre, in_a_cr, in_a_ix, in_a_componentRef)) {
         (txt, false, _, a_ix, a_componentRef) => {
             let mut txt = (*txt).clone();
             txt = crefToCStr(txt.clone(), a_componentRef.clone(), a_ix.clone(), true)?;
@@ -1065,7 +1097,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_isPre: bool, mut in_a_cr: Arc<DAE::Com
 
 fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_isPre: bool, mut in_a_ix: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_isPre.clone(), in_a_ix.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_isPre, in_a_ix) {
         (mut txt, SimCodeVar::SimVar { index: (-1), varKind: mut i_varKind, name: ref i_name, .. }, _, _) => {
             let mut txt_0: Tpl::Text;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefToCStr got index=-1 for ")).clone() }))?;
@@ -1100,7 +1132,7 @@ fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_isPr
 
 pub(crate) fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_ix: i32, mut in_a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_ix.clone(), in_a_isPre.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_cr, in_a_ix, in_a_isPre)) {
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", subscriptLst: Deref @ metamodelica::List::Nil, componentRef: i_componentRef, .. }, a_ix, a_isPre) => {
             let mut txt = (*txt).clone();
             txt = fun_99(txt.clone(), a_isPre.clone(), i_cr.clone(), a_ix.clone(), i_componentRef.clone())?;
@@ -1122,7 +1154,7 @@ pub(crate) fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentR
 
 pub(crate) fn crefShortType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_cr)) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
             return Ok(expTypeShort(txt.clone(), i_identType.clone())?)
@@ -1142,7 +1174,7 @@ pub(crate) fn crefShortType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compone
 
 pub(crate) fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_type)) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fmi2Integer")).clone() }))?)
@@ -1191,7 +1223,7 @@ pub(crate) fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>)
 
 fn fun_104(mut in_txt: Tpl::Text, mut in_a_bool: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_bool.clone()) {
+    out_txt = (match (in_txt, in_a_bool) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fmi2False")).clone() }))?;
             txt.clone()
@@ -1206,7 +1238,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_bool: bool) -> Result<Tpl::Text> {
 
 pub(crate) fn daeExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+        ::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_integer }) => {
             let mut txt = (*txt).clone();
             return Ok(Tpl::writeStr(txt.clone(), (intString(i_integer.clone())).clone())?)
@@ -1298,7 +1330,7 @@ pub(crate) fn daeExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Resu
 
 fn fun_106(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_exp1: Arc<DAE::Exp>, mut in_a_exp2: Arc<DAE::Exp>, mut in_a_origExp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_op.clone(), in_a_exp1.clone(), in_a_exp2.clone(), in_a_origExp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_op, in_a_exp1, in_a_exp2, in_a_origExp)) {
         (txt, DAE::Operator::ADD { ty: _ }, a_exp1, a_exp2, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -1404,13 +1436,13 @@ fn fun_106(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_exp1: Arc
 
 pub(crate) fn daeExpBinary(mut txt: Tpl::Text, mut a_exp1: Arc<DAE::Exp>, mut a_op: DAE::Operator, mut a_exp2: Arc<DAE::Exp>, mut a_origExp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_106(txt.clone(), a_op.clone(), a_exp1.clone(), a_exp2.clone(), a_origExp.clone())?;
+    out_txt = fun_106(txt, a_op, a_exp1, a_exp2, a_origExp)?;
     Ok(out_txt)
 }
 
 pub(crate) fn daeExpCallBuiltin(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "DIVISION" }, expLst: Deref @ metamodelica::List::Cons { head: i_exp1, tail: Deref @ metamodelica::List::Cons { head: i_exp2, tail: _ } }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -1607,25 +1639,26 @@ pub(crate) fn daeExpCallBuiltin(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Ex
     Ok(out_txt)
 }
 
-fn lm_109(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_109 in &*items.clone() {
-        let mut lstElt_109 = lstElt_109.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_109.clone()) {
-        i_e => {
+fn lm_109(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             txt = daeExp(txt.clone(), i_e.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn daeExpCall(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_exp)) {
         (txt, Deref @ DAE::Exp::CALL { path: i_path, attr: Deref @ DAE::CallAttributes { ty: _, .. }, expLst: i_expLst }) => {
             let mut txt = (*txt).clone();
             txt = CodegenUtil::underscorePath(txt.clone(), i_path.clone())?;
@@ -1652,7 +1685,7 @@ pub(crate) fn daeExpCall(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> 
 
 fn fun_111(mut in_txt: Tpl::Text, mut in_a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isPre.clone()) {
+    out_txt = (match (in_txt, in_a_isPre) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -1666,7 +1699,7 @@ fn fun_111(mut in_txt: Tpl::Text, mut in_a_isPre: bool) -> Result<Tpl::Text> {
 
 fn fun_112(mut in_txt: Tpl::Text, mut in_a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_isPre.clone()) {
+    out_txt = (match (in_txt, in_a_isPre) {
         (mut txt, false) => {
             txt.clone()
         },
@@ -1680,7 +1713,7 @@ fn fun_112(mut in_txt: Tpl::Text, mut in_a_isPre: bool) -> Result<Tpl::Text> {
 
 fn fun_113(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_var.clone(), in_a_isPre.clone()) {
+    out_txt = (match (in_txt, in_a_var, in_a_isPre) {
         (mut txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::PARAM { .. }, name: ref i_name, .. }, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->")).clone() }))?;
             txt = crefShortType(txt.clone(), i_name.clone())?;
@@ -1715,7 +1748,7 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_isP
 
 fn fun_114(mut in_txt: Tpl::Text, mut in_a_ix: i32, mut in_a_var: SimCodeVar::SimVar, mut in_a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_ix.clone(), in_a_var.clone(), in_a_isPre.clone()) {
+    out_txt = (match (in_txt, in_a_ix, in_a_var, in_a_isPre) {
         (mut txt, 0, mut a_var, mut a_isPre) => {
             txt = fun_113(txt.clone(), a_var.clone(), a_isPre.clone())?;
             txt.clone()
@@ -1730,13 +1763,13 @@ fn fun_114(mut in_txt: Tpl::Text, mut in_a_ix: i32, mut in_a_var: SimCodeVar::Si
 
 pub(crate) fn varArrayNameValues(mut txt: Tpl::Text, mut a_var: SimCodeVar::SimVar, mut a_ix: i32, mut a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = fun_114(txt.clone(), a_ix.clone(), a_var.clone(), a_isPre.clone())?;
+    out_txt = fun_114(txt, a_ix, a_var, a_isPre)?;
     Ok(out_txt)
 }
 
 fn fun_116(mut in_txt: Tpl::Text, mut in_a_bool: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_bool.clone()) {
+    out_txt = (match (in_txt, in_a_bool) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fmi2False")).clone() }))?;
             txt.clone()
@@ -1751,7 +1784,7 @@ fn fun_116(mut in_txt: Tpl::Text, mut in_a_bool: bool) -> Result<Tpl::Text> {
 
 fn fun_117(mut in_txt: Tpl::Text, mut in_a_ty__: Arc<DAE::Type>, mut in_a_value: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty__.clone(), in_a_value.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty__, in_a_value)) {
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0.0")).clone() }))?;
@@ -1772,7 +1805,7 @@ fn fun_117(mut in_txt: Tpl::Text, mut in_a_ty__: Arc<DAE::Type>, mut in_a_value:
 
 pub(crate) fn constVal(mut in_txt: Tpl::Text, mut in_a_value: Arc<DAE::Exp>, mut in_a_ty__: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_value.clone(), in_a_ty__.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_value, in_a_ty__)) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_integer }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_integer.clone())).clone())?;
@@ -1814,7 +1847,7 @@ pub(crate) fn constVal(mut in_txt: Tpl::Text, mut in_a_value: Arc<DAE::Exp>, mut
 
 pub(crate) fn startValue(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_var)) {
         (txt, SimCodeVar::SimVar { initialValue: Some(i_e), type_: i_ty, name: i_name, .. }) => {
             let mut txt = (*txt).clone();
             txt = constVal(txt.clone(), i_e.clone(), i_ty.clone())?;
@@ -1873,96 +1906,101 @@ pub(crate) fn startValue(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar
     Ok(out_txt)
 }
 
-fn lm_120(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_120 in &*items.clone() {
-        let mut lstElt_120 = lstElt_120.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_120.clone()) {
-        i_literal => {
+fn lm_120(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_literal, tail: rest }) => {
             let mut x_i0: i32;
+            let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             txt = literalExpConst(txt.clone(), i_literal.clone(), x_i0.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_121(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_121 in &*items.clone() {
-        let mut lstElt_121 = lstElt_121.clone();
-        txt = (match lstElt_121.clone() {
-        mut i_inc => {
+fn lm_121(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_inc, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_inc.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_122(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_122 in &*items.clone() {
-        let mut lstElt_122 = lstElt_122.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_122.clone()) {
-        i_func => {
+fn lm_122(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_func, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = functionDeclaration(txt.clone(), i_func.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_123(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_123 in &*items.clone() {
-        let mut lstElt_123 = lstElt_123.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_123.clone()) {
-        i_func => {
+fn lm_123(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_func, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = functionBody(txt.clone(), i_func.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn functionsFile(mut txt: Tpl::Text, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut a_literals: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_externalFunctionIncludes: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_120(out_txt.clone(), a_literals.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_121(out_txt.clone(), a_externalFunctionIncludes.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_122(out_txt.clone(), a_functions.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_123(out_txt.clone(), a_functions.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
+    out_txt = Tpl::pushIter(txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_120(out_txt, a_literals)?;
+    out_txt = Tpl::popIter(out_txt)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::pushIter(out_txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_121(out_txt, a_externalFunctionIncludes)?;
+    out_txt = Tpl::popIter(out_txt)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::pushIter(out_txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_122(out_txt, a_functions.clone())?;
+    out_txt = Tpl::popIter(out_txt)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::pushIter(out_txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_123(out_txt, a_functions)?;
+    out_txt = Tpl::popIter(out_txt)?;
     Ok(out_txt)
 }
 
 pub(crate) fn functionBody(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_fn)) {
         (txt, i_fn @ Deref @ SimCodeFunction::Function::FUNCTION { name: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = functionBodyRegularFunction(txt.clone(), i_fn.clone())?;
@@ -1993,7 +2031,7 @@ pub(crate) fn functionBody(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFuncti
 
 pub(crate) fn functionDeclaration(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_fn)) {
         (txt, Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, functionArguments: i_functionArguments, outVars: i_outVars, .. }) => {
             let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -2029,25 +2067,26 @@ pub(crate) fn functionDeclaration(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCod
     Ok(out_txt)
 }
 
-fn lm_127(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_127 in &*items.clone() {
-        let mut lstElt_127 = lstElt_127.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_127.clone()) {
-        i_stmt => {
+fn lm_127(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_stmt, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = statement(txt.clone(), i_stmt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_128(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_outVars)) {
         (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("return ")).clone() }))?;
@@ -2065,7 +2104,7 @@ fn fun_128(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
 
 pub(crate) fn functionBodyRegularFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_fn)) {
         (txt, Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, functionArguments: i_functionArguments, outVars: i_outVars, body: i_body, .. }) => {
             let mut l_bodyPart: Tpl::Text;
             let mut l_prototype: Tpl::Text;
@@ -2096,44 +2135,46 @@ pub(crate) fn functionBodyRegularFunction(mut in_txt: Tpl::Text, mut in_a_fn: Ar
     Ok(out_txt)
 }
 
-fn lm_130(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::SimExtArg::SimExtArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_130 in &*items.clone() {
-        let mut lstElt_130 = lstElt_130.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_130.clone()) {
-        i_arg => {
+fn lm_130(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::SimExtArg::SimExtArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_arg, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = extArg(txt.clone(), i_arg.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_131(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_131 in &*items.clone() {
-        let mut lstElt_131 = lstElt_131.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_131.clone()) {
-        i_arg => {
+fn lm_131(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_arg, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = varType(txt.clone(), i_arg.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = varName(txt.clone(), i_arg.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_132(mut in_txt: Tpl::Text, mut in_a_extReturn: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_extReturn.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_extReturn)) {
         (txt, Deref @ SimCodeFunction::SimExtArg::SIMEXTARG { cref: i_c, .. }) => {
             let mut txt = (*txt).clone();
             txt = crefLocal(txt.clone(), i_c.clone())?;
@@ -2150,7 +2191,7 @@ fn fun_132(mut in_txt: Tpl::Text, mut in_a_extReturn: Arc<SimCodeFunction::SimEx
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_outVars)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -2171,28 +2212,29 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
     Ok(out_txt)
 }
 
-fn lm_134(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_134 in &*items.clone() {
-        let mut lstElt_134 = lstElt_134.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_134.clone()) {
-        i_var => {
+fn lm_134(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("*out")).clone() }))?;
             txt = varName(txt.clone(), i_var.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt = varName(txt.clone(), i_var.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_135(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_outVars)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -2210,7 +2252,7 @@ fn fun_135(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
 
 pub(crate) fn functionBodyExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_fn)) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { language: Deref @ "C", name: i_name, funArgs: i_funArgs, outVars: i_outVars, extArgs: i_extArgs, extReturn: i_extReturn, extName: i_extName, .. }) => {
             let mut l_varAssign: Tpl::Text;
             let mut l_returnStatement: Tpl::Text;
@@ -2263,7 +2305,7 @@ pub(crate) fn functionBodyExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: A
 
 pub(crate) fn extArg(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_extArg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_extArg)) {
         (txt, Deref @ SimCodeFunction::SimExtArg::SIMEXTARG { isInput: true, isArray: false, cref: i_cref, .. }) => {
             let mut txt = (*txt).clone();
             txt = crefLocal(txt.clone(), i_cref.clone())?;
@@ -2299,27 +2341,28 @@ pub(crate) fn extArg(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction
     Ok(out_txt)
 }
 
-fn lm_138(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_138 in &*items.clone() {
-        let mut lstElt_138 = lstElt_138.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_138.clone()) {
-        i_var => {
+fn lm_138(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             txt = varType(txt.clone(), i_var.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = varName(txt.clone(), i_var.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_139(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_var)) {
         (txt, i_var @ Deref @ SimCodeFunction::Variable::VARIABLE { name: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = varType(txt.clone(), i_var.clone())?;
@@ -2337,7 +2380,7 @@ fn fun_139(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
 
 fn fun_140(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_outVars)) {
         (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: _ }) => {
             let mut txt = (*txt).clone();
             txt = fun_139(txt.clone(), i_var.clone())?;
@@ -2353,27 +2396,28 @@ fn fun_140(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
     Ok(out_txt)
 }
 
-fn lm_141(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_141 in &*items.clone() {
-        let mut lstElt_141 = lstElt_141.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_141.clone()) {
-        i_var => {
+fn lm_141(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             txt = varType(txt.clone(), i_var.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" *out")).clone() }))?;
             txt = varName(txt.clone(), i_var.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_142(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outVars.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_outVars)) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
@@ -2395,23 +2439,23 @@ pub(crate) fn functionPrototype(mut txt: Tpl::Text, mut a_fname: Tpl::Text, mut 
     let mut l_outargs: Tpl::Text;
     let mut l_outarg: Tpl::Text;
     let mut l_fargsStr: Tpl::Text;
-    l_fargsStr = lm_138(Tpl::emptyTxt.clone(), a_fargs.clone())?;
+    l_fargsStr = lm_138(Tpl::emptyTxt.clone(), a_fargs)?;
     l_outarg = fun_140(Tpl::emptyTxt.clone(), a_outVars.clone())?;
-    l_outargs = fun_142(Tpl::emptyTxt.clone(), a_outVars.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_outarg.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), a_fname.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(fmi2Component comp")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_fargsStr.clone())?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_outargs.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-    out_a_fname = a_fname.clone();
+    l_outargs = fun_142(Tpl::emptyTxt.clone(), a_outVars)?;
+    out_txt = Tpl::writeText(txt, l_outarg)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, a_fname.clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(fmi2Component comp")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_fargsStr)?;
+    out_txt = Tpl::writeText(out_txt, l_outargs)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
+    out_a_fname = a_fname;
     Ok((out_txt, out_a_fname))
 }
 
 pub(crate) fn varName(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_var)) {
         (txt, Deref @ SimCodeFunction::Variable::VARIABLE { name: i_name, .. }) => {
             let mut txt = (*txt).clone();
             txt = crefLocal(txt.clone(), i_name.clone())?;
@@ -2429,7 +2473,7 @@ pub(crate) fn varName(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::
 
 pub(crate) fn varType(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_var)) {
         (txt, Deref @ SimCodeFunction::Variable::VARIABLE { ty: i_ty, .. }) => {
             let mut txt = (*txt).clone();
             txt = expTypeShort(txt.clone(), i_ty.clone())?;
@@ -2447,7 +2491,7 @@ pub(crate) fn varType(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::
 
 pub(crate) fn literalExpConst(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, mut in_a_i0: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_e.clone(), in_a_i0.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_e, in_a_i0)) {
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }, a_i0) => {
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
@@ -2472,31 +2516,33 @@ pub(crate) fn literalExpConst(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, 
     Ok(out_txt)
 }
 
-fn lm_147(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_147 in &*items.clone() {
-        let mut lstElt_147 = lstElt_147.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_147.clone()) {
-        SimCodeVar::SimVar { initialValue: Some(i_exp), name: i_var_name, .. } => {
+fn lm_147(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { initialValue: Some(i_exp), name: i_var_name, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = cref(txt.clone(), i_var_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
             txt = daeExp(txt.clone(), i_exp.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn callExternalObjectConstructors(mut in_txt: Tpl::Text, mut in_a_extObjInfo: SimCode::ExtObjInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_extObjInfo.clone()) {
+    out_txt = (match (in_txt, in_a_extObjInfo) {
         (mut txt, SimCode::ExtObjInfo { vars: ref i_vars, .. }) => {
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_147(txt.clone(), i_vars.clone())?;
@@ -2510,31 +2556,34 @@ pub(crate) fn callExternalObjectConstructors(mut in_txt: Tpl::Text, mut in_a_ext
     Ok(out_txt)
 }
 
-fn lm_149(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_149 in &*items.clone() {
-        let mut lstElt_149 = lstElt_149.clone();
-        txt = (match lstElt_149.clone() {
-        SimCodeVar::SimVar { varKind: BackendDAE::VarKind::EXTOBJ { fullClassName: ref i_ext_fullClassName }, name: ref i_var_name, .. } => {
+fn lm_149(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { varKind: BackendDAE::VarKind::EXTOBJ { fullClassName: i_ext_fullClassName }, name: i_var_name, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("omc_")).clone() }))?;
             txt = CodegenUtil::underscorePath(txt.clone(), i_ext_fullClassName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_destructor(threadData,")).clone() }))?;
             txt = cref(txt.clone(), i_var_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-    });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub(crate) fn callExternalObjectDestructors(mut in_txt: Tpl::Text, mut in_a_extObjInfo: SimCode::ExtObjInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_a_extObjInfo.clone()) {
+    out_txt = (match (in_txt, in_a_extObjInfo) {
         (mut txt, SimCode::ExtObjInfo { vars: ref i_vars, .. }) => {
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_149(txt.clone(), i_vars.clone())?;

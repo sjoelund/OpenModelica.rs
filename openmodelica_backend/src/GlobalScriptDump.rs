@@ -52,7 +52,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub fn printIstmtsStr(mut inStatements: GlobalScript::Statements) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((match inStatements.clone() {
+    outString = ((match inStatements {
         GlobalScript::Statements { interactiveStmtLst: ref stmts, .. } => {
             stringDelimitList(List::map(stmts.clone(), (std::sync::Arc::new(printIstmtStr) as std::sync::Arc<dyn ::std::ops::Fn(GlobalScript::Statement) -> Result<ArcStr> + 'static>))?, (literal!("; ")).clone())
         },
@@ -65,7 +65,7 @@ pub fn printIstmtsStr(mut inStatements: GlobalScript::Statements) -> Result<ArcS
 
 pub fn printIstmtStr(mut inStatement: GlobalScript::Statement) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((match inStatement.clone() {
+    outString = ((match inStatement {
         GlobalScript::Statement::IALG { algItem: ref alg } => {
             Dump::unparseAlgorithmStr(alg.clone())?
         },
@@ -84,14 +84,14 @@ pub(crate) fn printAST(mut pr: Absyn::Program) -> Result<()> {
     let mut class_: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     let mut within_: Absyn::Within;
-    let Absyn::PROGRAM { classes: __pa0, within_: __pa1 } = (pr.clone()) else { bail!("pattern mismatch") };
+    let Absyn::PROGRAM { classes: __pa0, within_: __pa1 } = (pr) else { bail!("pattern mismatch") };
     classes = __pa0.clone();
     within_ = __pa1.clone();
-    for mut class_ in &*classes.clone() {
+    for mut class_ in &*classes {
         let mut class_ = class_.clone();
         s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*classString(class_.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     }
-    metamodelica::print((s.clone()).clone());
+    metamodelica::print((s).clone());
     Ok(())
 }
 
@@ -109,7 +109,7 @@ fn classString(mut cl: Arc<Absyn::Class>) -> Result<ArcStr> {
         _ => bail!("pattern mismatch"),
     } };
     id = __pa0.clone();
-    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*AbsynUtil::classFilename(cl.clone())?); ArcStr::from(__mm_s) }).clone();
+    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*AbsynUtil::classFilename(cl)?); ArcStr::from(__mm_s) }).clone();
     Ok(s)
 }
 

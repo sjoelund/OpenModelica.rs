@@ -89,7 +89,7 @@ pub(crate) fn fromList(mut ints: Arc<metamodelica::List<Arc<SBInterval::SBInterv
     if List::any(ints.clone(), (std::sync::Arc::new(fnptr!(SBInterval::isEmpty, Arc<SBInterval::SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<bool> + 'static>))? {
         outMI = newEmpty();
     } else {
-        outMI = Arc::new(SBMultiInterval { intervals: metamodelica::arrayFromVec(ints.clone().into_iter().cloned().collect()), ndim: (ints.clone().len() as i32) });
+        outMI = Arc::new(SBMultiInterval { intervals: metamodelica::arrayFromVec(ints.clone().into_iter().cloned().collect()), ndim: (ints.len() as i32) });
     }
     Ok(outMI)
 }
@@ -147,14 +147,14 @@ pub(crate) fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInte
         let mut dummyi: Arc<SBInterval::SBInterval>;
         let mut resi: metamodelica::Array<Arc<SBInterval::SBInterval>>;
         if !(SBInterval::isEmpty(i.clone())) {
-            resi = metamodelica::arrayCreateDefault(size.clone());
-            Array::copyN(ints1.clone(), resi.clone(), count.clone(), 0, 0)?;
+            resi = metamodelica::arrayCreateDefault(size);
+            Array::copyN(ints1.clone(), resi.clone(), count, 0, 0)?;
             {
-                let __cell0 = i.clone();
-                let __idx0 = count.clone() + 1;
+                let __cell0 = i;
+                let __idx0 = count + 1;
                 unsafe { metamodelica::Dangerous::arrayInitSlot(resi.clone().clone(), __idx0, __cell0); }
             }
-            Array::copyN(ints2.clone(), resi.clone(), metamodelica::arrayLength(ints2.clone()) - count.clone() - 1, count.clone() + 1, count.clone() + 1)?;
+            Array::copyN(ints2.clone(), resi.clone(), metamodelica::arrayLength(ints2.clone()) - count - 1, count + 1, count + 1)?;
             UnorderedSet::add(fromArray(resi.clone())?, res.clone())?;
         }
         Ok(res)
@@ -183,16 +183,16 @@ pub(crate) fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInte
     diffs = metamodelica::arrayCreateDefault(mi1_size.clone());
     for mut i in 1..=mi1_size.clone() {
         {
-            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), metamodelica::arrayGet(tmp_mi.intervals.clone(), i.clone())?)?;
-            let __idx0 = i.clone();
+            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i), metamodelica::arrayGet(tmp_mi.intervals.clone(), i)?)?;
+            let __idx0 = i;
             unsafe { metamodelica::Dangerous::arrayInitSlot(diffs.clone().clone(), __idx0, __cell0); }
         }
     }
     count = 0;
     let __range1 = diffs.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut vdiff in __range1 {
-        UnorderedSet::fold(vdiff.clone(), (std::sync::Arc::new({ let __pe_b1 = count.clone(); let __pe_b2 = mi1_size.clone(); let __pe_b3 = tmp_mi.intervals.clone(); let __pe_b4 = mi1.intervals.clone(); move |__pe_a0, __pe_a5| add_interval(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>, Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>> + 'static>), res.clone())?;
-        count = count.clone() + 1;
+        UnorderedSet::fold(vdiff.clone(), (std::sync::Arc::new({ let __pe_b1 = count; let __pe_b2 = mi1_size.clone(); let __pe_b3 = tmp_mi.intervals.clone(); let __pe_b4 = mi1.intervals.clone(); move |__pe_a0, __pe_a5| add_interval(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>, Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>> + 'static>), res.clone())?;
+        count = count + 1;
     }
     Ok(res)
 }
@@ -208,7 +208,7 @@ pub(crate) fn crossProd(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInter
 pub(crate) fn cardinality(mut mi: Arc<SBMultiInterval>) -> i32 {
     let mut card: i32 = 0;
     for mut i in 1..=mi.ndim.clone() {
-        card = card.clone() + SBInterval::cardinality(({let __elt = mi.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}));
+        card = card + SBInterval::cardinality(({let __elt = mi.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}));
     }
     card
 }
@@ -241,8 +241,8 @@ pub(crate) fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut mi: 
     let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
     ints = metamodelica::arrayFromVec(mi.intervals.clone().borrow().clone());
     {
-        let __cell0 = i.clone();
-        let __idx0 = dim.clone();
+        let __cell0 = i;
+        let __idx0 = dim;
         ints.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     res = fromArray(ints.clone())?;
@@ -265,7 +265,7 @@ pub fn size(mut mi: Arc<SBMultiInterval>) -> i32 {
     let mut sz: i32 = 1;
     let __range0 = mi.intervals.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut i in __range0 {
-        sz = sz.clone() * SBInterval::size(i.clone());
+        sz = sz * SBInterval::size(i.clone());
     }
     sz
 }

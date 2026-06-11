@@ -72,12 +72,12 @@ pub fn execStatReset() -> Result<()> {
 
 pub fn execStat(mut name: ArcStr) -> Result<()> {
     fn snprintff(mut val: metamodelica::Real) -> Result<ArcStr> {
-        let mut r#str: ArcStr = System::snprintff((arcstr::literal!(timeFormat)).clone(), timeMaxLength.clone(), val.clone())?;
+        let mut r#str: ArcStr = System::snprintff((arcstr::literal!(timeFormat)).clone(), timeMaxLength.clone(), val)?;
         Ok(r#str)
     }
 
     fn bytesToReadableUnit(mut bytes: metamodelica::Real) -> ArcStr {
-        let mut r#str: ArcStr = StringUtil::bytesToReadableUnit(bytes.clone(), memorySignificantDigits.clone(), metamodelica::OrderedFloat((memoryMaxSizeInUnit.clone()) as f64));
+        let mut r#str: ArcStr = StringUtil::bytesToReadableUnit(bytes, memorySignificantDigits.clone(), metamodelica::OrderedFloat((memoryMaxSizeInUnit.clone()) as f64));
         r#str
     }
 

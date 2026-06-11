@@ -64,14 +64,14 @@ pub(crate) fn initializeBackendInterface() -> () {
 fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
-    (outCache, outValue) = CevalScript::cevalInteractiveFunctions(inCache.clone(), inEnv.clone(), inExp.clone(), inMsg.clone(), inNumIter.clone())?;
+    (outCache, outValue) = CevalScript::cevalInteractiveFunctions(inCache, inEnv, inExp, inMsg, inNumIter)?;
     Ok((outCache, outValue))
 }
 
 fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inImplInst: bool, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
-    (outCache, outValue) = CevalScript::cevalCallFunction(inCache.clone(), inEnv.clone(), inExp.clone(), inValues.clone(), inImplInst.clone(), inMsg.clone(), inNumIter.clone())?;
+    (outCache, outValue) = CevalScript::cevalCallFunction(inCache, inEnv, inExp, inValues, inImplInst, inMsg, inNumIter)?;
     Ok((outCache, outValue))
 }
 
@@ -79,7 +79,7 @@ fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
-    (outCache, outExp, outProperties) = StaticScript::elabCallInteractive(inCache.clone(), inEnv.clone(), inCref.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone())?;
+    (outCache, outExp, outProperties) = StaticScript::elabCallInteractive(inCache, inEnv, inCref, inExps, inNamedArgs, inImplInst, inPrefix, inInfo)?;
     Ok((outCache, outExp, outProperties))
 }
 
@@ -92,7 +92,7 @@ fn noRewriteRulesFrontEnd() -> bool {
 fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, bool)> {
     let mut outExp: Arc<Absyn::Exp>;
     let mut isChanged: bool;
-    (outExp, isChanged) = RewriteRules::rewriteFrontEnd(inExp.clone())?;
+    (outExp, isChanged) = RewriteRules::rewriteFrontEnd(inExp)?;
     Ok((outExp, isChanged))
 }
 
@@ -100,7 +100,7 @@ fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) -> R
     let mut program: Absyn::Program;
     let mut success: bool;
     program = SymbolTable::getAbsyn();
-    (program, success) = CevalScript::loadModel(list![(modelName.clone(), literal!(""), list![(literal!("default")).clone()], false)], (modelicaPath.clone()).clone(), program.clone(), true, true, true, false, false, (literal!("")).clone())?;
+    (program, success) = CevalScript::loadModel(list![(modelName, literal!(""), list![(literal!("default")).clone()], false)], (modelicaPath).clone(), program, true, true, true, false, false, (literal!("")).clone())?;
     SymbolTable::setAbsyn(program.clone())?;
     Ok((program, success))
 }

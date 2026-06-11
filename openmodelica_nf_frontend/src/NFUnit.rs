@@ -197,13 +197,13 @@ pub fn getKnownUnitsInverse() -> Result<UnitToStringTable> {
 
 pub(crate) fn newCrefUnitTable(mut size: i32) -> CrefToUnitTable {
     let mut table: CrefToUnitTable;
-    table = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
+    table = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size);
     table
 }
 
 pub(crate) fn isUnit(mut inUnit: Unit) -> bool {
     let mut b: bool;
-    b = (match inUnit.clone() {
+    b = (match inUnit {
         Unit::UNIT { .. } => true,
         _ => false,
     });
@@ -212,7 +212,7 @@ pub(crate) fn isUnit(mut inUnit: Unit) -> bool {
 
 pub(crate) fn isMaster(mut unit: Unit) -> bool {
     let mut res: bool;
-    res = (match unit.clone() {
+    res = (match unit {
         Unit::MASTER { .. } => true,
         _ => false,
     });
@@ -226,7 +226,7 @@ pub(crate) fn hash(mut inKey: Unit) -> Result<i32> {
 
 pub(crate) fn realAlmostEqRel(mut a: metamodelica::Real, mut b: metamodelica::Real, mut relTol: metamodelica::Real) -> bool {
     let mut c: bool;
-    c = if (a.clone() == b.clone()) {true} else {relTol.clone() > a.clone() - b.clone().abs() / (a.clone().abs() + b.clone().abs())};
+    c = if (a == b) {true} else {relTol > a - b.abs() / (a.abs() + b.abs())};
     c
 }
 
@@ -324,7 +324,7 @@ pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
 pub(crate) fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = (match inUnit.clone() {
-        Unit::UNIT { .. } => Unit::UNIT { s: var_field!(inUnit.s, Unit::UNIT).clone() * inExp.clone(), m: var_field!(inUnit.m, Unit::UNIT).clone() * inExp.clone(), g: var_field!(inUnit.g, Unit::UNIT).clone() * inExp.clone(), A: var_field!(inUnit.A, Unit::UNIT).clone() * inExp.clone(), K: var_field!(inUnit.K, Unit::UNIT).clone() * inExp.clone(), mol: var_field!(inUnit.mol, Unit::UNIT).clone() * inExp.clone(), cd: var_field!(inUnit.cd, Unit::UNIT).clone() * inExp.clone(), factor: (var_field!(inUnit.factor, Unit::UNIT).clone()).powf(metamodelica::OrderedFloat((inExp.clone()) as f64)) },
+        Unit::UNIT { .. } => Unit::UNIT { s: var_field!(inUnit.s, Unit::UNIT).clone() * inExp, m: var_field!(inUnit.m, Unit::UNIT).clone() * inExp, g: var_field!(inUnit.g, Unit::UNIT).clone() * inExp, A: var_field!(inUnit.A, Unit::UNIT).clone() * inExp, K: var_field!(inUnit.K, Unit::UNIT).clone() * inExp, mol: var_field!(inUnit.mol, Unit::UNIT).clone() * inExp, cd: var_field!(inUnit.cd, Unit::UNIT).clone() * inExp, factor: (var_field!(inUnit.factor, Unit::UNIT).clone()).powf(metamodelica::OrderedFloat((inExp) as f64)) },
         _ => bail!("match: no arm matched"),
     });
     Ok(outUnit)
@@ -332,9 +332,9 @@ pub(crate) fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
 
 pub(crate) fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
     let mut outUnit: Unit;
-    outUnit = (match inUnit.clone() {
+    outUnit = (match inUnit {
         mut unit @ Unit::UNIT { .. } => {
-            let __owned_variant_factor_0 = var_field!(unit.factor, Unit::UNIT).clone() * inFactor.clone();
+            let __owned_variant_factor_0 = var_field!(unit.factor, Unit::UNIT).clone() * inFactor;
             if let Unit::UNIT { factor, .. } = &mut unit {
                 *factor = __owned_variant_factor_0;
             } else { panic!("owned-variant field-assign: value held a different variant than Unit::UNIT"); }
@@ -359,28 +359,28 @@ pub(crate) fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> 
             let mut K: i32;
             let mut mol: i32;
             let mut cd: i32;
-            i = ((inExponent.clone()).0.floor() as i32);
-            r = realDiv(metamodelica::OrderedFloat(1.0_f64), inExponent.clone());
+            i = ((inExponent).0.floor() as i32);
+            r = realDiv(metamodelica::OrderedFloat(1.0_f64), inExponent);
             factor = realPow(var_field!(inUnit.factor, Unit::UNIT).clone(), r.clone());
-            r = realDiv(intReal(var_field!(inUnit.s, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.s, Unit::UNIT).clone()), inExponent);
             s = intDiv(var_field!(inUnit.s, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(s.clone()))) else { bail!("pattern mismatch") };
-            r = realDiv(intReal(var_field!(inUnit.m, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.m, Unit::UNIT).clone()), inExponent);
             m = intDiv(var_field!(inUnit.m, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(m.clone()))) else { bail!("pattern mismatch") };
-            r = realDiv(intReal(var_field!(inUnit.g, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.g, Unit::UNIT).clone()), inExponent);
             g = intDiv(var_field!(inUnit.g, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(g.clone()))) else { bail!("pattern mismatch") };
-            r = realDiv(intReal(var_field!(inUnit.A, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.A, Unit::UNIT).clone()), inExponent);
             A = intDiv(var_field!(inUnit.A, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(A.clone()))) else { bail!("pattern mismatch") };
-            r = realDiv(intReal(var_field!(inUnit.K, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.K, Unit::UNIT).clone()), inExponent);
             K = intDiv(var_field!(inUnit.K, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(K.clone()))) else { bail!("pattern mismatch") };
-            r = realDiv(intReal(var_field!(inUnit.mol, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.mol, Unit::UNIT).clone()), inExponent);
             mol = intDiv(var_field!(inUnit.mol, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(mol.clone()))) else { bail!("pattern mismatch") };
-            r = realDiv(intReal(var_field!(inUnit.cd, Unit::UNIT).clone()), inExponent.clone());
+            r = realDiv(intReal(var_field!(inUnit.cd, Unit::UNIT).clone()), inExponent);
             cd = intDiv(var_field!(inUnit.cd, Unit::UNIT).clone(), i.clone());
             let true = (realEq(r.clone(), intReal(cd.clone()))) else { bail!("pattern mismatch") };
             Unit::UNIT { s: s.clone(), m: m.clone(), g: g.clone(), A: A.clone(), K: K.clone(), mol: mol.clone(), cd: cd.clone(), factor: factor.clone() }
@@ -404,9 +404,9 @@ pub fn unitString(mut inUnit: Unit, mut inHtU2S: UnitToStringTable) -> Result<Ar
     let mut sExponent: ArcStr = arcstr::literal!("");
     let mut b: bool = false;
     let mut unit: Unit = <Unit as ::std::default::Default>::default();
-    opt_s = UnorderedMap::get(inUnit.clone(), inHtU2S.clone())?;
+    opt_s = UnorderedMap::get(inUnit.clone(), inHtU2S)?;
     if isSome(opt_s.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(opt_s.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(opt_s) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -419,44 +419,44 @@ pub fn unitString(mut inUnit: Unit, mut inHtU2S: UnitToStringTable) -> Result<Ar
             s = (if (var_field!(unit.factor, Unit::UNIT).clone() == metamodelica::OrderedFloat(1.0_f64)) {literal!("")} else {prefix2String(var_field!(unit.factor, Unit::UNIT).clone())}).clone();
             b = false;
             sExponent = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.mol, Unit::UNIT).clone())}).clone();
-            s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mol")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s1 = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 0)) {literal!("")} else {s1.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.mol, Unit::UNIT).clone(), 0);
-            s2 = (if (b.clone() && intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mol")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s1 = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 0)) {literal!("")} else {s1}).clone();
+            b = b || intNe(var_field!(unit.mol, Unit::UNIT).clone(), 0);
+            s2 = (if (b && intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.cd, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.cd, Unit::UNIT).clone())}).clone();
-            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("cd")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s2 = (if (intEq(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!("")} else {s2.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0);
-            s3 = (if (b.clone() && intNe(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s2); __mm_s.push_str(&*literal!("cd")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s2 = (if (intEq(var_field!(unit.cd, Unit::UNIT).clone(), 0)) {literal!("")} else {s2}).clone();
+            b = b || intNe(var_field!(unit.cd, Unit::UNIT).clone(), 0);
+            s3 = (if (b && intNe(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.m, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.m, Unit::UNIT).clone())}).clone();
-            s3 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("m")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s3 = (if (intEq(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!("")} else {s3.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.m, Unit::UNIT).clone(), 0);
-            s4 = (if (b.clone() && intNe(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s3 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s3); __mm_s.push_str(&*literal!("m")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s3 = (if (intEq(var_field!(unit.m, Unit::UNIT).clone(), 0)) {literal!("")} else {s3}).clone();
+            b = b || intNe(var_field!(unit.m, Unit::UNIT).clone(), 0);
+            s4 = (if (b && intNe(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.s, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.s, Unit::UNIT).clone())}).clone();
-            s4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("s")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s4 = (if (intEq(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!("")} else {s4.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.s, Unit::UNIT).clone(), 0);
-            s5 = (if (b.clone() && intNe(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s4); __mm_s.push_str(&*literal!("s")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s4 = (if (intEq(var_field!(unit.s, Unit::UNIT).clone(), 0)) {literal!("")} else {s4}).clone();
+            b = b || intNe(var_field!(unit.s, Unit::UNIT).clone(), 0);
+            s5 = (if (b && intNe(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.A, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.A, Unit::UNIT).clone())}).clone();
-            s5 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s5.clone()); __mm_s.push_str(&*literal!("A")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s5 = (if (intEq(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!("")} else {s5.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.A, Unit::UNIT).clone(), 0);
-            s6 = (if (b.clone() && intNe(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s5 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s5); __mm_s.push_str(&*literal!("A")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s5 = (if (intEq(var_field!(unit.A, Unit::UNIT).clone(), 0)) {literal!("")} else {s5}).clone();
+            b = b || intNe(var_field!(unit.A, Unit::UNIT).clone(), 0);
+            s6 = (if (b && intNe(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.K, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.K, Unit::UNIT).clone())}).clone();
-            s6 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s6.clone()); __mm_s.push_str(&*literal!("K")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s6 = (if (intEq(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!("")} else {s6.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.K, Unit::UNIT).clone(), 0);
-            s7 = (if (b.clone() && intNe(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
+            s6 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s6); __mm_s.push_str(&*literal!("K")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s6 = (if (intEq(var_field!(unit.K, Unit::UNIT).clone(), 0)) {literal!("")} else {s6}).clone();
+            b = b || intNe(var_field!(unit.K, Unit::UNIT).clone(), 0);
+            s7 = (if (b && intNe(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!(".")} else {literal!("")}).clone();
             sExponent = (if (intEq(var_field!(unit.g, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.g, Unit::UNIT).clone())}).clone();
-            s7 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s7.clone()); __mm_s.push_str(&*literal!("g")); __mm_s.push_str(&*sExponent.clone()); ArcStr::from(__mm_s) }).clone();
-            s7 = (if (intEq(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!("")} else {s7.clone()}).clone();
-            b = b.clone() || intNe(var_field!(unit.g, Unit::UNIT).clone(), 0);
-            s = (if (b.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*s5.clone()); __mm_s.push_str(&*s6.clone()); __mm_s.push_str(&*s7.clone()); ArcStr::from(__mm_s) }} else {literal!("1")}).clone();
-            s.clone()
+            s7 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s7); __mm_s.push_str(&*literal!("g")); __mm_s.push_str(&*sExponent); ArcStr::from(__mm_s) }).clone();
+            s7 = (if (intEq(var_field!(unit.g, Unit::UNIT).clone(), 0)) {literal!("")} else {s7}).clone();
+            b = b || intNe(var_field!(unit.g, Unit::UNIT).clone(), 0);
+            s = (if (b) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s); __mm_s.push_str(&*s1); __mm_s.push_str(&*s2); __mm_s.push_str(&*s3); __mm_s.push_str(&*s4); __mm_s.push_str(&*s5); __mm_s.push_str(&*s6); __mm_s.push_str(&*s7); ArcStr::from(__mm_s) }} else {literal!("1")}).clone();
+            s
         },
         _ => {
-            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function Unit.unitString failed for \"")); __mm_s.push_str(&*unit2string(inUnit.clone())?); __mm_s.push_str(&*literal!("\".")); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function Unit.unitString failed for \"")); __mm_s.push_str(&*unit2string(inUnit)?); __mm_s.push_str(&*literal!("\".")); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
     })).clone();
@@ -465,7 +465,7 @@ pub fn unitString(mut inUnit: Unit, mut inHtU2S: UnitToStringTable) -> Result<Ar
 
 fn prefix2String(mut inReal: metamodelica::Real) -> ArcStr {
     let mut outPrefix: ArcStr;
-    outPrefix = ((match inReal.clone() {
+    outPrefix = ((match inReal {
         __rlit_0 if __rlit_0.eq(&metamodelica::OrderedFloat((1e30) as f64)) => literal!("Q"),
         __rlit_1 if __rlit_1.eq(&metamodelica::OrderedFloat((1e27) as f64)) => literal!("R"),
         __rlit_2 if __rlit_2.eq(&metamodelica::OrderedFloat((1e24) as f64)) => literal!("Y"),
@@ -490,7 +490,7 @@ fn prefix2String(mut inReal: metamodelica::Real) -> ArcStr {
         __rlit_21 if __rlit_21.eq(&metamodelica::OrderedFloat((1e-24) as f64)) => literal!("y"),
         __rlit_22 if __rlit_22.eq(&metamodelica::OrderedFloat((1e-27) as f64)) => literal!("r"),
         __rlit_23 if __rlit_23.eq(&metamodelica::OrderedFloat((1e-30) as f64)) => literal!("q"),
-        _ => realString(inReal.clone()),
+        _ => realString(inReal),
     })).clone();
     outPrefix
 }
@@ -509,10 +509,10 @@ pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: StringToUnitT
         Error::addSourceMessage(Error::INVALID_UNIT.clone(), list![(inUnitString.clone()).clone()], info.clone())?;
         bail!("fail");
     }
-    outUnit = parser3(list![true, true], tokenList.clone(), ONE().clone(), inKnownUnits.clone());
+    outUnit = parser3(list![true, true], tokenList, ONE().clone(), inKnownUnits);
     if !(isUnit(outUnit.clone())) {
         if Flags::isSet(Flags::FAILTRACE.clone())? {
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnit.parseUnitString")); __mm_s.push_str(&*literal!(": failed to parse unit string ")); __mm_s.push_str(&*inUnitString.clone()); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnit.parseUnitString")); __mm_s.push_str(&*literal!(": failed to parse unit string ")); __mm_s.push_str(&*inUnitString); ArcStr::from(__mm_s) }).clone())?;
         }
     }
     Ok(outUnit)
@@ -521,7 +521,7 @@ pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: StringToUnitT
 fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamodelica::List<Token>>, mut inUnit: Unit, mut inHtS2U: StringToUnitTable) -> Unit {
     let mut outUnit: Unit;
     outUnit = 'mc: {
-        let __mc_input = (inMul.clone(), inTokenList.clone());
+        let __mc_input = (inMul.clone(), inTokenList);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: true, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil) => {
@@ -641,16 +641,16 @@ fn unitToken2unit(mut inS: ArcStr, mut inHtS2U: StringToUnitTable) -> Result<Uni
     let mut r: metamodelica::Real;
     opt_unit = UnorderedMap::get((inS.clone()).clone(), inHtS2U.clone())?;
     if isSome(opt_unit.clone()) {
-        let __pa0 = ::match_deref::match_deref! { match &(opt_unit.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(opt_unit) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         outUnit = __pa0.clone();
     } else {
         s = (stringGetStringChar((inS.clone()).clone(), 1)?).clone();
-        (r, s) = getPrefix((s.clone()).clone(), (inS.clone()).clone())?;
-        outUnit = unitToken2unit((s.clone()).clone(), inHtS2U.clone())?;
-        outUnit = unitMulReal(outUnit.clone(), r.clone())?;
+        (r, s) = getPrefix((s).clone(), (inS).clone())?;
+        outUnit = unitToken2unit((s).clone(), inHtS2U)?;
+        outUnit = unitMulReal(outUnit, r)?;
     }
     Ok(outUnit)
 }
@@ -659,7 +659,7 @@ fn getPrefix(mut inS: ArcStr, mut inS2: ArcStr) -> Result<(metamodelica::Real, A
     let mut outR: metamodelica::Real;
     let mut outUnit: ArcStr;
     (outR, outUnit) = 'mc: {
-        let __mc_input = inS.clone();
+        let __mc_input = inS;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "y" => {
@@ -981,7 +981,7 @@ fn getPrefix(mut inS: ArcStr, mut inS2: ArcStr) -> Result<(metamodelica::Real, A
 fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<Token>>> {
     let mut outTokenList: Arc<metamodelica::List<Token>>;
     outTokenList = 'mc: {
-        let __mc_input = inCharList.clone();
+        let __mc_input = inCharList;
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {

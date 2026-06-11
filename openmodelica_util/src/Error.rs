@@ -1311,17 +1311,17 @@ pub fn updateCurrentComponent(mut component: ArcStr, mut info: SourceInfo, mut f
     let mut ainfo: metamodelica::Array<SourceInfo> = Default::default();
     let mut afunc: metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>> = Default::default();
     tpl = crate::Globals::currentInstVar.with(|__root| __root.borrow().clone());
-    let () = (match tpl.clone() {
+    let () = (match tpl {
         None => {
-            { let __v = Some((arrayCreate(1, (component.clone()).clone()), arrayCreate(1, info.clone()), arrayCreate(1, func.clone()))); crate::Globals::currentInstVar.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = Some((arrayCreate(1, (component).clone()), arrayCreate(1, info), arrayCreate(1, func.clone()))); crate::Globals::currentInstVar.with(|__root| *__root.borrow_mut() = __v) };
             ()
         },
         Some((mut __esc_astr, mut __esc_ainfo, mut __esc_afunc)) => {
             astr = __esc_astr.clone();
             ainfo = __esc_ainfo.clone();
             afunc = __esc_afunc.clone();
-            metamodelica::arrayUpdate(astr.clone(), 1, (component.clone()).clone())?;
-            metamodelica::arrayUpdate(ainfo.clone(), 1, info.clone())?;
+            metamodelica::arrayUpdate(astr.clone(), 1, (component).clone())?;
+            metamodelica::arrayUpdate(ainfo.clone(), 1, info)?;
             metamodelica::arrayUpdate(afunc.clone(), 1, func.clone())?;
             ()
         },
@@ -1346,7 +1346,7 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut func: Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>;
     tpl = crate::Globals::currentInstVar.with(|__root| __root.borrow().clone());
-    r#str = ((match tpl.clone() {
+    r#str = ((match tpl {
         None => literal!(""),
         Some((mut __esc_astr, mut __esc_ainfo, mut __esc_afunc)) => {
             astr = __esc_astr.clone();
@@ -1355,7 +1355,7 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
             r#str = (metamodelica::arrayGet(astr.clone(), 1)?).clone();
             if r#str.clone() != literal!("") {
                 func = metamodelica::arrayGet(afunc.clone(), 1)?;
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable ")); __mm_s.push_str(&*func((r#str.clone()).clone())?); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable ")); __mm_s.push_str(&*func((r#str).clone())?); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone();
                 info = metamodelica::arrayGet(ainfo.clone(), 1)?;
                 sline = info.lineNumberStart.clone();
                 scol = info.columnNumberStart.clone();
@@ -1364,7 +1364,7 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
                 read_only = info.isReadOnly.clone();
                 filename = info.fileName.clone();
             }
-            r#str.clone()
+            r#str
         },
     })).clone();
     Ok((r#str, sline, scol, eline, ecol, read_only, filename))
@@ -1385,19 +1385,19 @@ pub fn addMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<
     let mut msg: ArcStr;
     if !(Flags::getConfigBool(Flags::DEMO_MODE.clone())?) {
         (r#str, sline, scol, eline, ecol, isReadOnly, file) = getCurrentComponent()?;
-        let ErrorTypes::MESSAGE { id: __pa0, ty: __pa1, severity: __pa2, message: __pa3 } = (inErrorMsg.clone()) else { bail!("pattern mismatch") };
+        let ErrorTypes::MESSAGE { id: __pa0, ty: __pa1, severity: __pa2, message: __pa3 } = (inErrorMsg) else { bail!("pattern mismatch") };
         error_id = __pa0.clone();
         msg_type = __pa1.clone();
         severity = __pa2.clone();
         msg = __pa3.clone();
-        msg_str = (msg.clone()).clone();
-        ErrorExt::addSourceMessage(error_id.clone(), msg_type.clone(), severity.clone(), sline.clone(), scol.clone(), eline.clone(), ecol.clone(), isReadOnly.clone(), (Testsuite::friendly((file.clone()).clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*msg_str.clone()); ArcStr::from(__mm_s) }).clone(), inMessageTokens.clone());
+        msg_str = (msg).clone();
+        ErrorExt::addSourceMessage(error_id, msg_type, severity, sline, scol, eline, ecol, isReadOnly, (Testsuite::friendly((file).clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*msg_str); ArcStr::from(__mm_s) }).clone(), inMessageTokens);
     }
     Ok(())
 }
 
 pub fn addSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfo: SourceInfo) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &((inErrorMsg.clone(), inMessageTokens.clone(), inInfo.clone())) {
+    let () = (::match_deref::match_deref! { match &((inErrorMsg, inMessageTokens, inInfo)) {
         (ErrorTypes::Message { id: error_id, ty: msg_type, severity, message: msg }, tokens, SourceInfo { fileName: file, isReadOnly, lineNumberStart: sline, columnNumberStart: scol, lineNumberEnd: eline, columnNumberEnd: ecol, .. }) => {
             let mut msg_str: ArcStr;
             msg_str = (msg.clone()).clone();
@@ -1412,7 +1412,7 @@ pub fn addSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens
 pub fn addSourceMessageAsError(mut msg: ErrorTypes::Message, mut tokens: Arc<metamodelica::List<ArcStr>>, mut info: SourceInfo) -> Result<()> {
     let mut m: ErrorTypes::Message = msg.clone();
     m.severity = openmodelica_error::ErrorTypes::Severity::ERROR;
-    addSourceMessage(m.clone(), tokens.clone(), info.clone())?;
+    addSourceMessage(m, tokens, info)?;
     Ok(())
 }
 
@@ -1420,35 +1420,35 @@ pub fn addStrictMessage(mut errorMsg: ErrorTypes::Message, mut tokens: Arc<metam
     let mut msg: ErrorTypes::Message = errorMsg.clone();
     if Flags::getConfigBool(Flags::STRICT.clone())? {
         msg.severity = openmodelica_error::ErrorTypes::Severity::ERROR;
-        addSourceMessageAndFail(msg.clone(), tokens.clone(), info.clone())?;
+        addSourceMessageAndFail(msg, tokens, info)?;
         unreachable!("addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     } else {
-        addSourceMessage(msg.clone(), tokens.clone(), info.clone())?;
+        addSourceMessage(msg, tokens, info)?;
     }
     Ok(())
 }
 
 pub fn addSourceMessageAndFail(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfo: SourceInfo) -> Result<()> {
-    addSourceMessage(inErrorMsg.clone(), inMessageTokens.clone(), inInfo.clone())?;
+    addSourceMessage(inErrorMsg, inMessageTokens, inInfo)?;
     bail!("fail");
     Ok(())
 }
 
 pub fn addMultiSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfo: Arc<metamodelica::List<SourceInfo>>) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &(inInfo.clone()) {
+    let () = (::match_deref::match_deref! { match &(inInfo) {
         Deref @ metamodelica::List::Cons { head: info, tail: Deref @ metamodelica::List::Nil } => {
-            addSourceMessage(inErrorMsg.clone(), inMessageTokens.clone(), info.clone())?;
+            addSourceMessage(inErrorMsg, inMessageTokens, info.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: info, tail: rest_info } => {
             if !(listMember(info.clone(), rest_info.clone())) {
                 addSourceMessage(ERROR_FROM_HERE.clone(), metamodelica::nil(), info.clone())?;
             }
-            addMultiSourceMessage(inErrorMsg.clone(), inMessageTokens.clone(), rest_info.clone())?;
+            addMultiSourceMessage(inErrorMsg, inMessageTokens, rest_info.clone())?;
             ()
         },
         Deref @ metamodelica::List::Nil => {
-            addMessage(inErrorMsg.clone(), inMessageTokens.clone())?;
+            addMessage(inErrorMsg, inMessageTokens)?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1457,13 +1457,13 @@ pub fn addMultiSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageT
 }
 
 pub(crate) fn addMessageOrSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfoOpt: Option<SourceInfo>) -> Result<()> {
-    let () = (match inInfoOpt.clone() {
+    let () = (match inInfoOpt {
         None => {
-            addMessage(inErrorMsg.clone(), inMessageTokens.clone())?;
+            addMessage(inErrorMsg, inMessageTokens)?;
             ()
         },
         Some(mut info) => {
-            addSourceMessage(inErrorMsg.clone(), inMessageTokens.clone(), info.clone())?;
+            addSourceMessage(inErrorMsg, inMessageTokens, info.clone())?;
             ()
         },
     });
@@ -1473,15 +1473,15 @@ pub(crate) fn addMessageOrSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut
 pub(crate) fn addTotalMessage(mut message: ErrorTypes::TotalMessage) -> Result<()> {
     let mut msg: ErrorTypes::Message;
     let mut info: SourceInfo;
-    let ErrorTypes::TOTALMESSAGE { msg: __pa0, info: __pa1 } = (message.clone()) else { bail!("pattern mismatch") };
+    let ErrorTypes::TOTALMESSAGE { msg: __pa0, info: __pa1 } = (message) else { bail!("pattern mismatch") };
     msg = __pa0.clone();
     info = __pa1.clone();
-    addSourceMessage(msg.clone(), metamodelica::nil(), info.clone())?;
+    addSourceMessage(msg, metamodelica::nil(), info)?;
     Ok(())
 }
 
 pub fn addTotalMessages(mut messages: Arc<metamodelica::List<ErrorTypes::TotalMessage>>) -> Result<()> {
-    for mut msg in &*messages.clone() {
+    for mut msg in &*messages {
         let mut msg = msg.clone();
         addTotalMessage(msg.clone())?;
     }
@@ -1490,7 +1490,7 @@ pub fn addTotalMessages(mut messages: Arc<metamodelica::List<ErrorTypes::TotalMe
 
 pub fn printMessagesStr(mut warningsAsErrors: bool) -> ArcStr {
     let mut res: ArcStr;
-    res = (ErrorExt::printMessagesStr(warningsAsErrors.clone())).clone();
+    res = (ErrorExt::printMessagesStr(warningsAsErrors)).clone();
     res
 }
 
@@ -1510,7 +1510,7 @@ pub(crate) fn printMessagesStrLst() -> Arc<metamodelica::List<ArcStr>> {
 
 pub(crate) fn printMessagesStrLstType(mut inMessageType: ErrorTypes::MessageType) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
-    outStringLst = (match inMessageType.clone() {
+    outStringLst = (match inMessageType {
         _ => list![(literal!("Not impl. yet")).clone()],
     });
     outStringLst
@@ -1518,7 +1518,7 @@ pub(crate) fn printMessagesStrLstType(mut inMessageType: ErrorTypes::MessageType
 
 pub(crate) fn printMessagesStrLstSeverity(mut inSeverity: ErrorTypes::Severity) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
-    outStringLst = (match inSeverity.clone() {
+    outStringLst = (match inSeverity {
         _ => list![(literal!("Not impl. yet")).clone()],
     });
     outStringLst
@@ -1561,7 +1561,7 @@ pub(crate) fn getMessagesStrSeverity(mut inSeverity: ErrorTypes::Severity) -> Ar
 
 pub(crate) fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((match inMessageType.clone() {
+    outString = ((match inMessageType {
         ErrorTypes::MessageType::SYNTAX { .. } => literal!("SYNTAX"),
         ErrorTypes::MessageType::GRAMMAR { .. } => literal!("GRAMMAR"),
         ErrorTypes::MessageType::TRANSLATION { .. } => literal!("TRANSLATION"),
@@ -1574,7 +1574,7 @@ pub(crate) fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Resu
 
 pub(crate) fn severityStr(mut inSeverity: ErrorTypes::Severity) -> Result<ArcStr> {
     let mut outString: ArcStr;
-    outString = ((match inSeverity.clone() {
+    outString = ((match inSeverity {
         ErrorTypes::Severity::INTERNAL { .. } => literal!("Internal error"),
         ErrorTypes::Severity::ERROR { .. } => literal!("Error"),
         ErrorTypes::Severity::WARNING { .. } => literal!("Warning"),
@@ -1585,7 +1585,7 @@ pub(crate) fn severityStr(mut inSeverity: ErrorTypes::Severity) -> Result<ArcStr
 
 pub fn infoStr(mut info: SourceInfo) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    r#str = ((match info.clone() {
+    r#str = ((match info {
         SourceInfo { fileName: mut filename, lineNumberStart: mut line_start, columnNumberStart: mut col_start, lineNumberEnd: mut line_end, columnNumberEnd: mut col_end, .. } => {
             let mut info_str: ArcStr;
             info_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Testsuite::friendly((filename.clone()).clone())?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(line_start.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(col_start.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(line_end.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(col_end.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
@@ -1597,10 +1597,10 @@ pub fn infoStr(mut info: SourceInfo) -> Result<ArcStr> {
 }
 
 pub fn assertion(mut b: bool, mut message: ArcStr, mut info: SourceInfo) -> Result<()> {
-    let () = (match b.clone() {
+    let () = (match b {
         true => (),
         _ => {
-            addSourceMessage(INTERNAL_ERROR.clone(), list![(message.clone()).clone()], info.clone())?;
+            addSourceMessage(INTERNAL_ERROR.clone(), list![(message).clone()], info)?;
             bail!("fail")
         },
     });
@@ -1608,11 +1608,11 @@ pub fn assertion(mut b: bool, mut message: ArcStr, mut info: SourceInfo) -> Resu
 }
 
 pub fn assertionOrAddSourceMessage(mut inCond: bool, mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfo: SourceInfo) -> Result<()> {
-    let () = (match inCond.clone() {
+    let () = (match inCond {
         true => (),
         _ => {
-            addSourceMessage(inErrorMsg.clone(), inMessageTokens.clone(), inInfo.clone())?;
-            failOnErrorMsg(inErrorMsg.clone())?;
+            addSourceMessage(inErrorMsg.clone(), inMessageTokens, inInfo)?;
+            failOnErrorMsg(inErrorMsg)?;
             ()
         },
     });
@@ -1620,7 +1620,7 @@ pub fn assertionOrAddSourceMessage(mut inCond: bool, mut inErrorMsg: ErrorTypes:
 }
 
 fn failOnErrorMsg(mut inMessage: ErrorTypes::Message) -> Result<()> {
-    let () = (match inMessage.clone() {
+    let () = (match inMessage {
         ErrorTypes::Message { severity: ErrorTypes::Severity::ERROR { .. }, .. } => bail!("fail"),
         _ => (),
     });
@@ -1628,34 +1628,34 @@ fn failOnErrorMsg(mut inMessage: ErrorTypes::Message) -> Result<()> {
 }
 
 pub fn addCompilerError(mut message: ArcStr) -> Result<()> {
-    addMessage(COMPILER_ERROR.clone(), list![(message.clone()).clone()])?;
+    addMessage(COMPILER_ERROR.clone(), list![(message).clone()])?;
     Ok(())
 }
 
 pub fn addCompilerWarning(mut message: ArcStr) -> Result<()> {
-    addMessage(COMPILER_WARNING.clone(), list![(message.clone()).clone()])?;
+    addMessage(COMPILER_WARNING.clone(), list![(message).clone()])?;
     Ok(())
 }
 
 pub fn addCompilerNotification(mut message: ArcStr) -> Result<()> {
-    addMessage(COMPILER_NOTIFICATION.clone(), list![(message.clone()).clone()])?;
+    addMessage(COMPILER_NOTIFICATION.clone(), list![(message).clone()])?;
     Ok(())
 }
 
 pub fn addInternalError(mut message: ArcStr, mut info: SourceInfo) -> Result<()> {
     let mut filename: ArcStr;
     if Testsuite::isRunning()? {
-        let SourceInfo { fileName: __pa0, .. } = (info.clone()) else { bail!("pattern mismatch") };
+        let SourceInfo { fileName: __pa0, .. } = (info) else { bail!("pattern mismatch") };
         filename = __pa0.clone();
-        addSourceMessage(INTERNAL_ERROR.clone(), list![(message.clone()).clone()], SourceInfo { fileName: (filename.clone()).clone(), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat((0) as f64) })?;
+        addSourceMessage(INTERNAL_ERROR.clone(), list![(message).clone()], SourceInfo { fileName: (filename).clone(), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat((0) as f64) })?;
     } else {
-        addSourceMessage(INTERNAL_ERROR.clone(), list![(message.clone()).clone()], info.clone())?;
+        addSourceMessage(INTERNAL_ERROR.clone(), list![(message).clone()], info)?;
     }
     Ok(())
 }
 
 pub(crate) fn terminateError(mut message: ArcStr, mut info: SourceInfo) -> Result<()> {
-    ErrorExt::addSourceMessage(0, openmodelica_error::ErrorTypes::MessageType::TRANSLATION, openmodelica_error::ErrorTypes::Severity::INTERNAL, info.lineNumberStart.clone(), info.columnNumberStart.clone(), info.lineNumberEnd.clone(), info.columnNumberEnd.clone(), info.isReadOnly.clone(), info.fileName.clone(), (literal!("%s")).clone(), list![(message.clone()).clone()]);
+    ErrorExt::addSourceMessage(0, openmodelica_error::ErrorTypes::MessageType::TRANSLATION, openmodelica_error::ErrorTypes::Severity::INTERNAL, info.lineNumberStart.clone(), info.columnNumberStart.clone(), info.lineNumberEnd.clone(), info.columnNumberEnd.clone(), info.isReadOnly.clone(), info.fileName.clone(), (literal!("%s")).clone(), list![(message).clone()]);
     metamodelica::print((ErrorExt::printMessagesStr(false)).clone());
     System::exit(-1)?;
     Ok(())

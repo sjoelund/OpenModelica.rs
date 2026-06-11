@@ -130,27 +130,27 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
         Deref @ Expression::ARRAY { .. } => {
             let mut e: Arc<Expression::NFExpression>;
             let mut expanded: bool;
-            (e, expanded) = ExpandExp::expand(exp.clone(), backend.clone(), resize.clone())?;
+            (e, expanded) = ExpandExp::expand(exp.clone(), backend, resize)?;
             if !(expanded.clone()) {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpressionIterator.fromExp")); __mm_s.push_str(&*literal!(" got unexpandable expression `")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("`")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpressionIterator.mo"))?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpressionIterator.fromExp")); __mm_s.push_str(&*literal!(" got unexpandable expression `")); __mm_s.push_str(&*Expression::toString(exp)?); __mm_s.push_str(&*literal!("`")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpressionIterator.mo"))?;
             }
             makeArrayIterator(e.clone())?
         },
         Deref @ Expression::CREF { .. } => {
             let mut e: Arc<Expression::NFExpression>;
-            (e, _) = ExpandExp::expandCref(exp.clone(), backend.clone(), false)?;
+            (e, _) = ExpandExp::expandCref(exp, backend, false)?;
             iterator = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ Expression::ARRAY { .. } => fromExp(e.clone(), backend.clone(), resize.clone())?,
+        Deref @ Expression::ARRAY { .. } => fromExp(e.clone(), backend, resize)?,
         _ => Arc::new(NFExpressionIterator::SCALAR_ITERATOR { exp: e.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            iterator.clone()
+            iterator
         },
         _ => {
             let mut e: Arc<Expression::NFExpression>;
             let mut expanded: bool;
-            (e, expanded) = ExpandExp::expand(exp.clone(), backend.clone(), resize.clone())?;
-            if (expanded.clone()) {if (Expression::isEqual(e.clone(), exp.clone())?) {Arc::new(NFExpressionIterator::SCALAR_ITERATOR { exp: exp.clone() })} else {fromExp(e.clone(), backend.clone(), resize.clone())?}} else {crate::NFExpressionIterator::interned_NONE_ITERATOR()}
+            (e, expanded) = ExpandExp::expand(exp.clone(), backend, resize)?;
+            if (expanded.clone()) {if (Expression::isEqual(e.clone(), exp.clone())?) {Arc::new(NFExpressionIterator::SCALAR_ITERATOR { exp: exp })} else {fromExp(e.clone(), backend, resize)?}} else {crate::NFExpressionIterator::interned_NONE_ITERATOR()}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -159,7 +159,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
 
 pub(crate) fn fromExpOpt(mut optExp: Option<Arc<Expression::NFExpression>>) -> Result<Arc<NFExpressionIterator>> {
     let mut iterator: Arc<NFExpressionIterator>;
-    iterator = (::match_deref::match_deref! { match &(optExp.clone()) {
+    iterator = (::match_deref::match_deref! { match &(optExp) {
         Some(exp) => {
             fromExp(exp.clone(), false, false)?
         },
@@ -216,7 +216,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
             } else {
                 assign_variant_field!(iterator => NFExpressionIterator::ARRAY_ITERATOR; index = var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() + 1);
             }
-            (iterator.clone(), next.clone())
+            (iterator, next.clone())
         },
         Deref @ SCALAR_ITERATOR { .. } => {
             (crate::NFExpressionIterator::interned_NONE_ITERATOR(), var_field!((*iterator).exp, NFExpressionIterator::SCALAR_ITERATOR).clone())
@@ -254,8 +254,8 @@ pub(crate) fn nextOpt(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NF
     let mut nextExp: Option<Arc<Expression::NFExpression>>;
     let mut exp: Arc<Expression::NFExpression>;
     if hasNext(iterator.clone())? {
-        (iterator, exp) = next(iterator.clone())?;
-        nextExp = Some(exp.clone());
+        (iterator, exp) = next(iterator)?;
+        nextExp = Some(exp);
     } else {
         nextExp = None;
     }
@@ -266,12 +266,12 @@ pub(crate) fn toList(mut iterator: Arc<NFExpressionIterator>) -> Result<Arc<meta
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut iter: Arc<NFExpressionIterator>;
     let mut exp: Arc<Expression::NFExpression>;
-    iter = iterator.clone();
+    iter = iterator;
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
         expl = metamodelica::cons(exp.clone(), expl.clone());
     }
-    expl = expl.clone().reverse();
+    expl = expl.reverse();
     Ok(expl)
 }
 
@@ -279,7 +279,7 @@ pub(crate) fn isSubscriptedArrayCall(mut iterator: Arc<NFExpressionIterator>, mu
     fn is_sub_call(mut exp: Arc<Expression::NFExpression>, mut trySimplify: bool) -> Result<bool> {
         let mut res: bool;
         res = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::SUBSCRIPTED_EXP { exp: Deref @ Expression::CALL { .. }, .. } => !(trySimplify.clone()) || Expression::isCall(SimplifyExp::simplify(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone(), false)?),
+        Deref @ Expression::SUBSCRIPTED_EXP { exp: Deref @ Expression::CALL { .. }, .. } => !(trySimplify) || Expression::isCall(SimplifyExp::simplify(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone(), false)?),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -288,7 +288,7 @@ pub(crate) fn isSubscriptedArrayCall(mut iterator: Arc<NFExpressionIterator>, mu
 
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(iterator.clone()) {
-        Deref @ ARRAY_ITERATOR { .. } => is_sub_call(metamodelica::arrayGet(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone(), 1)?, trySimplify.clone())?,
+        Deref @ ARRAY_ITERATOR { .. } => is_sub_call(metamodelica::arrayGet(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone(), 1)?, trySimplify)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -298,19 +298,19 @@ pub(crate) fn isSubscriptedArrayCall(mut iterator: Arc<NFExpressionIterator>, mu
 fn makeArrayIterator(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFExpressionIterator>> {
     let mut iterator: Arc<NFExpressionIterator>;
     let mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>;
-    arrays = flattenArray(exp.clone(), metamodelica::nil())?;
+    arrays = flattenArray(exp, metamodelica::nil())?;
     if arrays.clone().is_empty() {
-        iterator = Arc::new(NFExpressionIterator::ARRAY_ITERATOR { arr: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), index: 1, arrays: arrays.clone() });
+        iterator = Arc::new(NFExpressionIterator::ARRAY_ITERATOR { arr: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), index: 1, arrays: arrays });
     } else {
-        iterator = Arc::new(NFExpressionIterator::ARRAY_ITERATOR { arr: listHead(arrays.clone())?, index: 1, arrays: listRest(arrays.clone())? });
+        iterator = Arc::new(NFExpressionIterator::ARRAY_ITERATOR { arr: listHead(arrays.clone())?, index: 1, arrays: listRest(arrays)? });
     }
     Ok(iterator)
 }
 
 fn flattenArray(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>> {
     let mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = arrays;
-    arrays = flattenArray_impl(exp.clone(), metamodelica::nil())?;
-    arrays = metamodelica::Dangerous::listReverseInPlace(arrays.clone());
+    arrays = flattenArray_impl(exp, metamodelica::nil())?;
+    arrays = metamodelica::Dangerous::listReverseInPlace(arrays);
     while !(arrays.clone().is_empty()) && listHead(arrays.clone())?.borrow().is_empty() {
         arrays = listRest(arrays.clone())?;
     }
@@ -320,9 +320,9 @@ fn flattenArray(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamode
 fn flattenArray_impl(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>> {
     let mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = arrays;
     if Expression::isVector(exp.clone())? {
-        arrays = metamodelica::cons(Expression::arrayElements(exp.clone())?, arrays.clone());
+        arrays = metamodelica::cons(Expression::arrayElements(exp)?, arrays);
     } else {
-        let __range0 = Expression::arrayElements(exp.clone())?.borrow().iter().cloned().collect::<Vec<_>>();
+        let __range0 = Expression::arrayElements(exp)?.borrow().iter().cloned().collect::<Vec<_>>();
         for mut e in __range0 {
             arrays = flattenArray_impl(e.clone(), arrays.clone())?;
         }

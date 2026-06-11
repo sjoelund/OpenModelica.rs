@@ -324,7 +324,7 @@ pub mod FunctionMatchKind {
     pub use self::FunctionMatchKind::{EXACT,CAST,GENERIC,VECTORIZED,NOT_COMPATIBLE};
     pub(crate) fn isValid(mut mk: Arc<FunctionMatchKind>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(mk.clone()) {
+        b = (::match_deref::match_deref! { match &(mk) {
         Deref @ NOT_COMPATIBLE { .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -334,7 +334,7 @@ pub mod FunctionMatchKind {
 
     pub(crate) fn isExact(mut mk: Arc<FunctionMatchKind>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(mk.clone()) {
+        b = (::match_deref::match_deref! { match &(mk) {
         Deref @ EXACT { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -344,7 +344,7 @@ pub mod FunctionMatchKind {
 
     pub(crate) fn isVectorized(mut mk: Arc<FunctionMatchKind>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(mk.clone()) {
+        b = (::match_deref::match_deref! { match &(mk) {
         Deref @ VECTORIZED { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -354,7 +354,7 @@ pub mod FunctionMatchKind {
 
     pub(crate) fn isExactVectorized(mut mk: Arc<FunctionMatchKind>) -> bool {
         let mut b: bool;
-        b = (::match_deref::match_deref! { match &(mk.clone()) {
+        b = (::match_deref::match_deref! { match &(mk) {
         Deref @ VECTORIZED { baseMatch: Deref @ EXACT { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -536,9 +536,9 @@ pub mod Function {
         let mut attr: DAE::FunctionAttributes;
         let mut status: FunctionStatus;
         (inputs, outputs, locals) = collectParams(node.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
-        attr = makeAttributes(node.clone(), inputs.clone(), outputs.clone(), comments.clone())?;
+        attr = makeAttributes(node.clone(), inputs.clone(), outputs.clone(), comments)?;
         status = if (isBuiltinAttr(attr.clone())) {FunctionStatus::COLLECTED.clone()} else {FunctionStatus::INITIAL.clone()};
-        r#fn = Arc::new(Function { path: path.clone(), node: node.clone(), inputs: inputs.clone(), outputs: outputs.clone(), locals: locals.clone(), interfaceDiffInfo: None, slots: metamodelica::nil(), returnType: crate::NFType::interned_UNKNOWN(), attributes: attr.clone(), derivatives: metamodelica::nil(), derivedInputs: metamodelica::nil(), inverses: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), status: Pointer::create(status.clone()), callCounter: Pointer::create(0) });
+        r#fn = Arc::new(Function { path: path, node: node, inputs: inputs, outputs: outputs, locals: locals, interfaceDiffInfo: None, slots: metamodelica::nil(), returnType: crate::NFType::interned_UNKNOWN(), attributes: attr, derivatives: metamodelica::nil(), derivedInputs: metamodelica::nil(), inverses: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), status: Pointer::create(status), callCounter: Pointer::create(0) });
         Ok(r#fn)
     }
 
@@ -546,9 +546,9 @@ pub mod Function {
         let mut functionRef: Arc<ComponentRef::NFComponentRef>;
         let mut found_scope: Arc<InstNode::InstNode>;
         let mut prefix: Arc<ComponentRef::NFComponentRef>;
-        (functionRef, found_scope) = Lookup::lookupFunctionNameSilent(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (functionName.clone()).clone(), subscripts: metamodelica::nil() }), scope.clone(), context.clone())?;
-        prefix = ComponentRef::fromNodeList(InstNode::scopeList(found_scope.clone(), false, metamodelica::nil())?)?;
-        functionRef = ComponentRef::append(functionRef.clone(), prefix.clone())?;
+        (functionRef, found_scope) = Lookup::lookupFunctionNameSilent(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (functionName).clone(), subscripts: metamodelica::nil() }), scope, context)?;
+        prefix = ComponentRef::fromNodeList(InstNode::scopeList(found_scope, false, metamodelica::nil())?)?;
+        functionRef = ComponentRef::append(functionRef, prefix)?;
         Ok(functionRef)
     }
 
@@ -564,10 +564,10 @@ pub mod Function {
             Error::addSourceMessageAndFail(Error::SUBSCRIPTED_FUNCTION_CALL.clone(), list![(Dump::printComponentRefStr(functionName.clone())?).clone()], info.clone())?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
         }
-        (functionRef, found_scope) = Lookup::lookupFunctionName(functionName.clone(), scope.clone(), context.clone(), info.clone())?;
+        (functionRef, found_scope) = Lookup::lookupFunctionName(functionName, scope, context, info)?;
         is_class = InstNode::isClass(ComponentRef::node(functionRef.clone())?)?;
-        prefix = ComponentRef::fromNodeList(InstNode::scopeList(found_scope.clone(), is_class.clone(), metamodelica::nil())?)?;
-        functionRef = ComponentRef::append(functionRef.clone(), prefix.clone())?;
+        prefix = ComponentRef::fromNodeList(InstNode::scopeList(found_scope, is_class, metamodelica::nil())?)?;
+        functionRef = ComponentRef::append(functionRef, prefix)?;
         Ok(functionRef)
     }
 
@@ -575,8 +575,8 @@ pub mod Function {
         let mut fn_ref: Arc<ComponentRef::NFComponentRef>;
         let mut fn_node: Arc<InstNode::InstNode>;
         let mut specialBuiltin: bool;
-        fn_ref = lookupFunction(functionName.clone(), scope.clone(), context.clone(), info.clone())?;
-        (fn_ref, fn_node, specialBuiltin) = instFunctionRef(fn_ref.clone(), context.clone(), info.clone())?;
+        fn_ref = lookupFunction(functionName, scope, context, info.clone())?;
+        (fn_ref, fn_node, specialBuiltin) = instFunctionRef(fn_ref, context, info)?;
         Ok((fn_ref, fn_node, specialBuiltin))
     }
 
@@ -589,13 +589,13 @@ pub mod Function {
         fn_node = InstNode::classScope(ComponentRef::node(fn_ref.clone())?);
         cache = InstNode::getFuncCache(fn_node.clone())?;
         (fn_node, specialBuiltin) = (::match_deref::match_deref! { match &(cache.clone()) {
-        Deref @ CachedData::FUNCTION { .. } => (fn_node.clone(), var_field!((*cache).specialBuiltin, CachedData::CachedData::FUNCTION).clone()),
+        Deref @ CachedData::FUNCTION { .. } => (fn_node, var_field!((*cache).specialBuiltin, CachedData::CachedData::FUNCTION).clone()),
         _ => {
             parent = if (InstNode::isRedeclare(ComponentRef::node(fn_ref.clone())?)? || ComponentRef::isSimple(fn_ref.clone())) {crate::NFInstNode::InstNode::interned_EMPTY_NODE()} else {ComponentRef::node(ComponentRef::rest(fn_ref.clone())?)?};
             if !(InstNode::isComponent(parent.clone())?) {
                 parent = crate::NFInstNode::InstNode::interned_EMPTY_NODE();
             }
-            instFunction2(ComponentRef::toPath(fn_ref.clone())?, fn_node.clone(), context.clone(), info.clone(), parent.clone())?
+            instFunction2(ComponentRef::toPath(fn_ref.clone())?, fn_node, context, info, parent)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -606,10 +606,10 @@ pub mod Function {
         let mut node: Arc<InstNode::InstNode> = node;
         let mut cache: Arc<CachedData::CachedData>;
         cache = InstNode::getFuncCache(node.clone())?;
-        let () = (::match_deref::match_deref! { match &(cache.clone()) {
+        let () = (::match_deref::match_deref! { match &(cache) {
         Deref @ CachedData::FUNCTION { .. } => (),
         _ => {
-            (node, _) = instFunction2(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), info.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
+            (node, _) = instFunction2(InstNode::fullPath(node.clone(), false)?, node, context, info, crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -623,18 +623,18 @@ pub mod Function {
         let mut def: Arc<SCode::Element> = InstNode::definition(fnNode.clone())?;
         (fnNode, specialBuiltin) = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::Element::CLASS { .. } if (SCodeUtil::isOperatorRecord(def.clone())) => {
-            (fnNode, _) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
-            fnNode = OperatorOverloading::instConstructor(fnPath.clone(), fnNode.clone(), context.clone(), info.clone())?;
+            (fnNode, _) = instFunction3(fnNode, context, info.clone())?;
+            fnNode = OperatorOverloading::instConstructor(fnPath, fnNode, context, info)?;
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { .. } if (SCodeUtil::isRecord(def.clone())) => {
-            (fnNode, _) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
-            fnNode = Record::instDefaultConstructor(fnPath.clone(), fnNode.clone(), context.clone(), info.clone())?;
+            (fnNode, _) = instFunction3(fnNode, context, info.clone())?;
+            fnNode = Record::instDefaultConstructor(fnPath, fnNode, context, info)?;
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_OPERATOR { .. }, classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
-            (fnNode, _) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
-            fnNode = OperatorOverloading::instOperatorFunctions(fnNode.clone(), context.clone(), info.clone())?;
+            (fnNode, _) = instFunction3(fnNode, context, info.clone())?;
+            fnNode = OperatorOverloading::instOperatorFunctions(fnNode, context, info)?;
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { classDef: cdef @ Deref @ SCode::ClassDef::OVERLOAD { .. }, .. } => {
@@ -643,10 +643,10 @@ pub mod Function {
             for mut p in &*var_field!((**cdef).pathLst, SCode::ClassDef::OVERLOAD).clone() {
                 let mut p = p.clone();
                 cr = AbsynUtil::pathToCref(p.clone())?;
-                (_, node, specialBuiltin) = instFunction(cr.clone(), fnNode.clone(), context.clone(), info.clone())?;
+                (_, node, specialBuiltin) = instFunction(cr.clone(), fnNode.clone(), context, info.clone())?;
                 for mut f in &*getCachedFuncs(node.clone())? {
                     let mut f = f.clone();
-                    fnNode = InstNode::cacheAddFunc(fnNode.clone(), f.clone(), specialBuiltin.clone())?;
+                    fnNode = InstNode::cacheAddFunc(fnNode.clone(), f.clone(), specialBuiltin)?;
                 }
             }
             (fnNode.clone(), false)
@@ -656,10 +656,10 @@ pub mod Function {
             let mut node: Arc<InstNode::InstNode>;
             let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
             node = makeEnumConversionOp(fnNode.clone())?;
-            node = InstNode::makeRootClass(node.clone(), parent.clone(), None);
-            (node, cmts) = instFunction3(node.clone(), context.clone(), info.clone())?;
-            r#fn = new(fnPath.clone(), node.clone(), cmts.clone())?;
-            fnNode = InstNode::cacheAddFunc(fnNode.clone(), r#fn.clone(), false)?;
+            node = InstNode::makeRootClass(node.clone(), parent, None);
+            (node, cmts) = instFunction3(node.clone(), context, info)?;
+            r#fn = new(fnPath, node.clone(), cmts.clone())?;
+            fnNode = InstNode::cacheAddFunc(fnNode, r#fn.clone(), false)?;
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { .. } => {
@@ -668,15 +668,15 @@ pub mod Function {
             if SCodeUtil::isOperator(def.clone()) {
                 OperatorOverloading::checkOperatorRestrictions(fnNode.clone())?;
             }
-            fnNode = InstNode::makeRootClass(fnNode.clone(), parent.clone(), None);
-            (fnNode, cmts) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
-            r#fn = new(fnPath.clone(), fnNode.clone(), cmts.clone())?;
+            fnNode = InstNode::makeRootClass(fnNode, parent, None);
+            (fnNode, cmts) = instFunction3(fnNode, context, info.clone())?;
+            r#fn = new(fnPath, fnNode.clone(), cmts.clone())?;
             specialBuiltin = isSpecialBuiltin(r#fn.clone())?;
             assign_field!(r#fn.derivatives = FunctionDerivative::instDerivatives(fnNode.clone(), r#fn.clone())?);
             assign_field!(r#fn.inverses = FunctionInverse::instInverses(fnNode.clone(), r#fn.clone())?);
-            assign_field!(r#fn.derivedInputs = instPartialDerivedVars(var_field!((*def).classDef, SCode::Element::CLASS).clone(), r#fn.inputs.clone(), r#fn.clone(), context.clone(), info.clone())?);
-            fnNode = InstNode::cacheAddFunc(fnNode.clone(), r#fn.clone(), specialBuiltin.clone())?;
-            (fnNode.clone(), specialBuiltin.clone())
+            assign_field!(r#fn.derivedInputs = instPartialDerivedVars(var_field!((*def).classDef, SCode::Element::CLASS).clone(), r#fn.inputs.clone(), r#fn.clone(), context, info)?);
+            fnNode = InstNode::cacheAddFunc(fnNode, r#fn.clone(), specialBuiltin)?;
+            (fnNode.clone(), specialBuiltin)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -688,18 +688,18 @@ pub mod Function {
         let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
         let mut def: Arc<SCode::Element>;
         let mut numError: i32 = Error::getNumErrorMessages();
-        let mut fn_context: i32 = InstContext::set(context.clone(), InstContext::FUNCTION.clone());
-        if let Ok(__iflet0) = Inst::instantiate(fnNode.clone(), crate::NFModifier::Modifier::interned_NOMOD(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), fn_context.clone(), true) {
+        let mut fn_context: i32 = InstContext::set(context, InstContext::FUNCTION.clone());
+        if let Ok(__iflet0) = Inst::instantiate(fnNode.clone(), crate::NFModifier::Modifier::interned_NOMOD(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), fn_context, true) {
             fnNode = __iflet0;
         } else {
-            let true = (Error::getNumErrorMessages() == numError.clone()) else { bail!("pattern mismatch") };
+            let true = (Error::getNumErrorMessages() == numError) else { bail!("pattern mismatch") };
             def = InstNode::definition(fnNode.clone())?;
             Error::addSourceMessage(Error::UNKNOWN_ERROR_INST_FUNCTION.clone(), list![(SCodeDump::unparseElementStr(def.clone(), SCodeDump::defaultOptions.clone())?).clone()], SCodeUtil::elementInfo(def.clone()))?;
             bail!("fail");
         }
         cmts = InstNode::getComments(fnNode.clone(), metamodelica::nil());
         InstNode::cacheInitFunc(fnNode.clone())?;
-        Inst::instExpressions(fnNode.clone(), fnNode.clone(), crate::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), context.clone(), Inst::InstSettings::create()?)?;
+        Inst::instExpressions(fnNode.clone(), fnNode.clone(), crate::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), context, Inst::InstSettings::create()?)?;
         Ok((fnNode, cmts))
     }
 
@@ -714,7 +714,7 @@ pub mod Function {
         let mut info: SourceInfo = InstNode::info(enumNode.clone());
         let mut enum_name: ArcStr = InstNode::name(enumNode.clone())?;
         elem = InstNode::definition(InstNode::resolveInner(Class::lastBaseClass(enumNode.clone())?))?;
-        fn_def = (::match_deref::match_deref! { match &(elem.clone()) {
+        fn_def = (::match_deref::match_deref! { match &(elem) {
         Deref @ SCode::Element::CLASS { classDef: __esc_def @ Deref @ SCode::ClassDef::ENUMERATION { .. }, .. } => {
             def = (*__esc_def).clone();
             params = list![Arc::new(SCode::Element::COMPONENT { name: (literal!("index")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() }), Arc::new(SCode::Element::COMPONENT { name: (literal!("value")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (enum_name.clone()).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() })];
@@ -726,20 +726,20 @@ pub mod Function {
         }
         __acc.reverse()
     }) }), subscripts: list![Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }) })] }), comment: SCode::noComment.clone(), info: info.clone() })];
-            Arc::new(SCode::ClassDef::PARTS { elementLst: params.clone(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: list![Arc::new(SCode::AlgorithmSection { statements: stmts.clone() })], initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None })
+            Arc::new(SCode::ClassDef::PARTS { elementLst: params, normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: list![Arc::new(SCode::AlgorithmSection { statements: stmts })], initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None })
         },
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        fn_elem = Arc::new(SCode::Element::CLASS { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*enum_name.clone()); ArcStr::from(__mm_s) }).clone(), prefixes: SCode::defaultPrefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::PURE } }, classDef: fn_def.clone(), cmt: Arc::new(SCode::Comment { annotation_: None, comment: Some(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Automatically generated conversion operator for ")); __mm_s.push_str(&*enum_name.clone()); ArcStr::from(__mm_s) }).clone()) }), info: info.clone() });
-        fnNode = InstNode::new(fn_elem.clone(), InstNode::parentScope(enumNode.clone(), true)?)?;
+        fn_elem = Arc::new(SCode::Element::CLASS { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*enum_name.clone()); ArcStr::from(__mm_s) }).clone(), prefixes: SCode::defaultPrefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::PURE } }, classDef: fn_def, cmt: Arc::new(SCode::Comment { annotation_: None, comment: Some(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Automatically generated conversion operator for ")); __mm_s.push_str(&*enum_name); ArcStr::from(__mm_s) }).clone()) }), info: info });
+        fnNode = InstNode::new(fn_elem, InstNode::parentScope(enumNode, true)?)?;
         Ok(fnNode)
     }
 
     pub fn getCachedFuncs(mut inNode: Arc<InstNode::InstNode>) -> Result<Arc<metamodelica::List<Arc<Function>>>> {
         let mut outFuncs: Arc<metamodelica::List<Arc<Function>>>;
         let mut cache: Arc<CachedData::CachedData>;
-        cache = InstNode::getFuncCache(InstNode::classScope(inNode.clone()))?;
+        cache = InstNode::getFuncCache(InstNode::classScope(inNode))?;
         outFuncs = (::match_deref::match_deref! { match &(cache.clone()) {
         Deref @ CachedData::FUNCTION { .. } => var_field!((*cache).funcs, CachedData::CachedData::FUNCTION).clone(),
         _ => metamodelica::nil(),
@@ -753,7 +753,7 @@ pub mod Function {
 
         let mut cls_node: Arc<InstNode::InstNode>;
         let mut cache: Arc<CachedData::CachedData>;
-        cls_node = InstNode::classScope(inNode.clone());
+        cls_node = InstNode::classScope(inNode);
         cache = InstNode::getFuncCache(cls_node.clone())?;
         cache = (::match_deref::match_deref! { match &(cache.clone()) {
         Deref @ CachedData::FUNCTION { .. } => {
@@ -765,12 +765,12 @@ pub mod Function {
         }
         __acc.reverse()
     }));
-            cache.clone()
+            cache
         },
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        InstNode::setFuncCache(cls_node.clone(), cache.clone())?;
+        InstNode::setFuncCache(cls_node, cache)?;
         Ok(())
     }
 
@@ -832,7 +832,7 @@ pub mod Function {
 
     pub(crate) fn setName(mut name: Arc<Absyn::Path>, mut r#fn: Arc<Function>) -> Arc<Function> {
         let mut r#fn: Arc<Function> = r#fn;
-        assign_field!(r#fn.path = name.clone());
+        assign_field!(r#fn.path = name);
         r#fn
     }
 
@@ -891,17 +891,17 @@ pub mod Function {
         SlotType::POSITIONAL => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*input_str.clone()); ArcStr::from(__mm_s) },
         _ => input_str.clone(),
     })).clone();
-            if printTypes.clone() && Component::isTyped(c.clone()) {
+            if printTypes && Component::isTyped(c.clone()) {
                 ty = Component::getType(c.clone())?;
                 var_s = (Prefixes::unparseVariability(Component::variability(c.clone())?, ty.clone())?).clone();
                 input_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*var_s.clone()); __mm_s.push_str(&*Type::toString(ty.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*input_str.clone()); ArcStr::from(__mm_s) }).clone();
             }
             inputs_strl = metamodelica::cons((input_str.clone()).clone(), inputs_strl.clone());
         }
-        input_str = stringDelimitList(inputs_strl.clone().reverse(), (literal!(", ")).clone());
-        output_str = (if (printTypes.clone() && isTyped(r#fn.clone())) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" => ")); __mm_s.push_str(&*Type::toString(r#fn.returnType.clone())?); ArcStr::from(__mm_s) }} else {literal!("")}).clone();
-        fn_name = nameConsiderBuiltin(r#fn.clone())?;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(fn_name.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*input_str.clone()); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*output_str.clone()); ArcStr::from(__mm_s) }).clone();
+        input_str = stringDelimitList(inputs_strl.reverse(), (literal!(", ")).clone());
+        output_str = (if (printTypes && isTyped(r#fn.clone())) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" => ")); __mm_s.push_str(&*Type::toString(r#fn.returnType.clone())?); ArcStr::from(__mm_s) }} else {literal!("")}).clone();
+        fn_name = nameConsiderBuiltin(r#fn)?;
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(fn_name, (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*input_str); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*output_str); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -921,23 +921,23 @@ pub mod Function {
         let mut r#str: ArcStr;
         r#str = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut arg in (posArgs.clone()).into_iter().cloned() {
+        for mut arg in (posArgs).into_iter().cloned() {
             let __x = Expression::toString(arg.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }), (literal!(", ")).clone());
         if !(namedArgs.clone().is_empty()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*stringDelimitList(({
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut arg in (namedArgs.clone()).into_iter().cloned() {
+        for mut arg in (namedArgs).into_iter().cloned() {
             let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(arg.clone())); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(Util::tuple22(arg.clone()))?); ArcStr::from(__mm_s) };
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone();
         }
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
@@ -964,30 +964,30 @@ pub mod Function {
         let mut fn_name: ArcStr;
         let mut cmt: Option<Arc<SCode::Comment>>;
         if isDefaultRecordConstructor(r#fn.clone()) {
-            s = Record::toDeclarationStream(r#fn.node.clone(), (indent.clone()).clone(), s.clone())?;
+            s = Record::toDeclarationStream(r#fn.node.clone(), (indent).clone(), s)?;
         } else if isPartialDerivative(r#fn.clone()) {
             fn_name = (AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone();
             cmt = SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?);
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("function ")).clone())?;
-            s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" = der(")).clone())?;
-            s = IOStream::append(s.clone(), (AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), stringDelimitList(getDerivedInputNames(r#fn.clone())?, (literal!(", ")).clone()))?;
-            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCommentAnnotationStr(cmt.clone())).clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("function ")).clone())?;
+            s = IOStream::append(s, (fn_name).clone())?;
+            s = IOStream::append(s, (literal!(" = der(")).clone())?;
+            s = IOStream::append(s, (AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, stringDelimitList(getDerivedInputNames(r#fn)?, (literal!(", ")).clone()))?;
+            s = IOStream::append(s, (DAEDumpTypes::dumpCommentAnnotationStr(cmt)).clone())?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
         } else {
             fn_name = (AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone();
             cmt = SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?);
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
+            s = IOStream::append(s, (indent.clone()).clone())?;
             if InstNode::isPartial(r#fn.node.clone())? {
-                s = IOStream::append(s.clone(), (literal!("partial ")).clone())?;
+                s = IOStream::append(s, (literal!("partial ")).clone())?;
             }
-            s = IOStream::append(s.clone(), (literal!("function ")).clone())?;
-            s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
-            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCommentStr(cmt.clone())).clone())?;
-            s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
+            s = IOStream::append(s, (literal!("function ")).clone())?;
+            s = IOStream::append(s, (fn_name.clone()).clone())?;
+            s = IOStream::append(s, (DAEDumpTypes::dumpCommentStr(cmt.clone())).clone())?;
+            s = IOStream::append(s, (literal!("\n")).clone())?;
             for mut i in &*r#fn.inputs.clone() {
                 let mut i = i.clone();
                 s = IOStream::append(s.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?;
@@ -1001,8 +1001,8 @@ pub mod Function {
                 s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
             }
             if !(r#fn.locals.clone().is_empty()) {
-                s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-                s = IOStream::append(s.clone(), (literal!("protected\n")).clone())?;
+                s = IOStream::append(s, (indent.clone()).clone())?;
+                s = IOStream::append(s, (literal!("protected\n")).clone())?;
                 for mut l in &*r#fn.locals.clone() {
                     let mut l = l.clone();
                     s = IOStream::append(s.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?;
@@ -1010,11 +1010,11 @@ pub mod Function {
                     s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
                 }
             }
-            s = Sections::toStream(InstNode::getSections(r#fn.node.clone())?, (indent.clone()).clone(), s.clone())?;
-            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpClassAnnotationStr(cmt.clone())).clone())?;
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end ")).clone())?;
-            s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
+            s = Sections::toStream(InstNode::getSections(r#fn.node.clone())?, (indent.clone()).clone(), s)?;
+            s = IOStream::append(s, (DAEDumpTypes::dumpClassAnnotationStr(cmt)).clone())?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end ")).clone())?;
+            s = IOStream::append(s, (fn_name).clone())?;
         }
         Ok(s)
     }
@@ -1025,29 +1025,29 @@ pub mod Function {
         let mut cmt: Arc<SCode::Comment>;
         let mut annMod: Arc<SCode::Mod>;
         if isDefaultRecordConstructor(r#fn.clone()) {
-            s = Record::toFlatDeclarationStream(r#fn.node.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
+            s = Record::toFlatDeclarationStream(r#fn.node.clone(), format, (indent).clone(), s)?;
         } else if isPartialDerivative(r#fn.clone()) {
-            fn_name = (if (stringEmpty((overrideName.clone()).clone())) {Util::makeQuotedIdentifier((AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone())?} else {overrideName.clone()}).clone();
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("function ")).clone())?;
-            s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!(" = der(")).clone())?;
-            s = IOStream::append(s.clone(), (Util::makeQuotedIdentifier((AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone())?).clone())?;
-            s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
-            s = IOStream::append(s.clone(), stringDelimitList(getDerivedInputNames(r#fn.clone())?, (literal!(", ")).clone()))?;
-            s = FlatModelicaUtil::appendCommentOpt(SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?), FlatModelicaUtil::ElementType::FUNCTION.clone(), s.clone())?;
-            s = IOStream::append(s.clone(), (literal!(")")).clone())?;
+            fn_name = (if (stringEmpty((overrideName.clone()).clone())) {Util::makeQuotedIdentifier((AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone())?} else {overrideName}).clone();
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("function ")).clone())?;
+            s = IOStream::append(s, (fn_name).clone())?;
+            s = IOStream::append(s, (literal!(" = der(")).clone())?;
+            s = IOStream::append(s, (Util::makeQuotedIdentifier((AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone())?).clone())?;
+            s = IOStream::append(s, (literal!(", ")).clone())?;
+            s = IOStream::append(s, stringDelimitList(getDerivedInputNames(r#fn.clone())?, (literal!(", ")).clone()))?;
+            s = FlatModelicaUtil::appendCommentOpt(SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?), FlatModelicaUtil::ElementType::FUNCTION.clone(), s)?;
+            s = IOStream::append(s, (literal!(")")).clone())?;
         } else {
             cmt = Util::getOptionOrDefault(SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?), Arc::new(SCode::Comment { annotation_: None, comment: None }));
-            fn_name = (if (stringEmpty((overrideName.clone()).clone())) {Util::makeQuotedIdentifier((AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone())?} else {overrideName.clone()}).clone();
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
+            fn_name = (if (stringEmpty((overrideName.clone()).clone())) {Util::makeQuotedIdentifier((AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone())?} else {overrideName}).clone();
+            s = IOStream::append(s, (indent.clone()).clone())?;
             if InstNode::isPartial(r#fn.node.clone())? {
-                s = IOStream::append(s.clone(), (literal!("partial ")).clone())?;
+                s = IOStream::append(s, (literal!("partial ")).clone())?;
             }
-            s = IOStream::append(s.clone(), (literal!("function ")).clone())?;
-            s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
-            s = FlatModelicaUtil::appendCommentString(cmt.clone(), s.clone())?;
-            s = IOStream::append(s.clone(), (literal!("\n")).clone())?;
+            s = IOStream::append(s, (literal!("function ")).clone())?;
+            s = IOStream::append(s, (fn_name.clone()).clone())?;
+            s = FlatModelicaUtil::appendCommentString(cmt.clone(), s)?;
+            s = IOStream::append(s, (literal!("\n")).clone())?;
             for mut i in &*r#fn.inputs.clone() {
                 let mut i = i.clone();
                 s = IOStream::append(s.clone(), (InstNode::toFlatString(i.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?).clone())?;
@@ -1065,7 +1065,7 @@ pub mod Function {
                     s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
                 }
             }
-            s = Sections::toFlatStream(InstNode::getSections(r#fn.node.clone())?, r#fn.path.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
+            s = Sections::toFlatStream(InstNode::getSections(r#fn.node.clone())?, r#fn.path.clone(), format, (indent.clone()).clone(), s)?;
             if isSome(cmt.annotation_.clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(cmt.annotation_.clone()) {
                     Some(Deref @ SCode::Annotation { modification: __pa0 }) => __pa0.clone(),
@@ -1075,7 +1075,7 @@ pub mod Function {
             } else {
                 annMod = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
             }
-            annMod = SCodeUtil::filterSubMods(annMod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("derivative")).clone(), (literal!("inverse")).clone()]; move |__pe_a0| Ok(SCodeUtil::removeGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
+            annMod = SCodeUtil::filterSubMods(annMod, (std::sync::Arc::new({ let __pe_b1 = list![(literal!("derivative")).clone(), (literal!("inverse")).clone()]; move |__pe_a0| Ok(SCodeUtil::removeGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
             for mut derivative in &*r#fn.derivatives.clone().reverse() {
                 let mut derivative = derivative.clone();
                 annMod = SCodeUtil::prependSubModToMod(FunctionDerivative::toSubMod(derivative.clone())?, annMod.clone())?;
@@ -1084,12 +1084,12 @@ pub mod Function {
                 annMod = SCodeUtil::prependSubModToMod(FunctionInverse::toSubMod(({let __elt = r#fn.inverses.borrow()[(i.clone()-1) as usize].clone(); __elt}))?, annMod.clone())?;
             }
             if !(SCodeUtil::emptyModOrEquality(annMod.clone())) {
-                cmt = Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: annMod.clone() })), comment: None });
-                s = FlatModelicaUtil::appendCommentAnnotation(cmt.clone(), FlatModelicaUtil::ElementType::FUNCTION.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), (literal!(";\n")).clone(), s.clone())?;
+                cmt = Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: annMod })), comment: None });
+                s = FlatModelicaUtil::appendCommentAnnotation(cmt, FlatModelicaUtil::ElementType::FUNCTION.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), (literal!(";\n")).clone(), s)?;
             }
-            s = IOStream::append(s.clone(), (indent.clone()).clone())?;
-            s = IOStream::append(s.clone(), (literal!("end ")).clone())?;
-            s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
+            s = IOStream::append(s, (indent).clone())?;
+            s = IOStream::append(s, (literal!("end ")).clone())?;
+            s = IOStream::append(s, (fn_name).clone())?;
         }
         Ok(s)
     }
@@ -1098,9 +1098,9 @@ pub mod Function {
         let mut r#str: ArcStr;
         let mut s: IOStream::IOStream;
         s = IOStream::create(literal!("NFFunction.Function.toFlatString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
-        s = toFlatStream(r#fn.clone(), format.clone(), (indent.clone()).clone(), s.clone(), (literal!("")).clone())?;
+        s = toFlatStream(r#fn, format, (indent).clone(), s, (literal!("")).clone())?;
         r#str = (IOStream::string(s.clone())?).clone();
-        IOStream::delete(s.clone())?;
+        IOStream::delete(s)?;
         Ok(r#str)
     }
 
@@ -1116,7 +1116,7 @@ pub mod Function {
 
     pub(crate) fn setReturnType(mut ty: Arc<Type::NFType>, mut r#fn: Arc<Function>) -> Arc<Function> {
         let mut r#fn: Arc<Function> = r#fn;
-        assign_field!(r#fn.returnType = ty.clone());
+        assign_field!(r#fn.returnType = ty);
         r#fn
     }
 
@@ -1135,35 +1135,35 @@ pub mod Function {
         let mut slot_count: i32;
         let mut index: i32 = 1;
         slots = r#fn.slots.clone();
-        pos_arg_count = (posArgs.clone().len() as i32);
+        pos_arg_count = (posArgs.len() as i32);
         slot_count = (slots.clone().len() as i32);
-        if pos_arg_count.clone() > slot_count.clone() {
+        if pos_arg_count > slot_count {
             matching = false;
             return Ok((args.clone(), matching.clone()));
-        } else if pos_arg_count.clone() == slot_count.clone() && namedArgs.clone().is_empty() && List::all(slots.clone(), (std::sync::Arc::new(fnptr!(Slot::positional, Arc<Slot::Slot>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Slot::Slot>) -> Result<bool> + 'static>))? {
+        } else if pos_arg_count == slot_count && namedArgs.clone().is_empty() && List::all(slots.clone(), (std::sync::Arc::new(fnptr!(Slot::positional, Arc<Slot::Slot>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Slot::Slot>) -> Result<bool> + 'static>))? {
             matching = true;
             return Ok((args.clone(), matching.clone()));
         }
-        slots_arr = metamodelica::arrayFromVec(slots.clone().into_iter().cloned().collect());
-        for mut arg in &*args.clone() {
+        slots_arr = metamodelica::arrayFromVec(slots.into_iter().cloned().collect());
+        for mut arg in &*args {
             let mut arg = arg.clone();
-            slot = ({let __elt = slots_arr.borrow()[(index.clone()-1) as usize].clone(); __elt});
+            slot = ({let __elt = slots_arr.borrow()[(index-1) as usize].clone(); __elt});
             if !(Slot::positional(slot.clone())) {
                 matching = false;
                 return Ok((args.clone(), matching.clone()));
             }
             assign_field!(slot.arg = Some(arg.clone()));
-            metamodelica::arrayUpdate(slots_arr.clone(), index.clone(), slot.clone())?;
-            index = index.clone() + 1;
+            metamodelica::arrayUpdate(slots_arr.clone(), index, slot.clone())?;
+            index = index + 1;
         }
-        for mut narg in &*namedArgs.clone() {
+        for mut narg in &*namedArgs {
             let mut narg = narg.clone();
             (slots_arr, matching) = fillNamedArg(narg.clone(), slots_arr.clone(), r#fn.clone(), info.clone())?;
-            if !(matching.clone()) {
+            if !(matching) {
                 return Ok((args.clone(), matching.clone()));
             }
         }
-        (args, matching) = collectArgs(slots_arr.clone(), context.clone(), info.clone())?;
+        (args, matching) = collectArgs(slots_arr.clone(), context, info)?;
         Ok((args, matching))
     }
 
@@ -1235,7 +1235,7 @@ pub mod Function {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok(metamodelica::cons(fillDefaultSlot(s.clone(), slots.clone(), context.clone(), info.clone())?, args.clone()))
+                    Ok(metamodelica::cons(fillDefaultSlot(s.clone(), slots.clone(), context, info.clone())?, args.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1253,7 +1253,7 @@ pub mod Function {
         bail!("matchcontinue: no arm matched")
     };
         }
-        args = args.clone().reverse();
+        args = args.reverse();
         Ok((args, matching))
     }
 
@@ -1264,9 +1264,9 @@ pub mod Function {
             outArg = (*__esc_outArg).clone();
             outArg.clone()
         },
-        Deref @ Slot::SLOT { default: Some(_), .. } => fillDefaultSlot2(slot.clone(), slots.clone(), context.clone(), info.clone())?,
+        Deref @ Slot::SLOT { default: Some(_), .. } => fillDefaultSlot2(slot, slots.clone(), context, info)?,
         _ => {
-            Error::addSourceMessage(Error::UNFILLED_SLOT.clone(), list![(Slot::name(slot.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::UNFILLED_SLOT.clone(), list![(Slot::name(slot)?).clone()], info)?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1281,7 +1281,7 @@ pub mod Function {
             Util::getOption(slot.arg.clone())?
         },
         SlotEvalStatus::EVALUATING => {
-            Error::addSourceMessage(Error::CYCLIC_DEFAULT_VALUE.clone(), list![(Slot::name(slot.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::CYCLIC_DEFAULT_VALUE.clone(), list![(Slot::name(slot)?).clone()], info)?;
             bail!("fail")
         },
         SlotEvalStatus::NOT_EVALUATED => {
@@ -1291,15 +1291,15 @@ pub mod Function {
             let mut pur: Prefixes::Purity;
             assign_field!(slot.evalStatus = SlotEvalStatus::EVALUATING.clone());
             metamodelica::arrayUpdate(slots.clone(), slot.index.clone(), slot.clone())?;
-            exp = evaluateSlotExp(Util::getOption(slot.default.clone())?, slots.clone(), context.clone(), info.clone())?;
-            (exp, ty, var, pur) = Typing::typeExp(exp.clone(), context.clone(), info.clone(), false)?;
+            exp = evaluateSlotExp(Util::getOption(slot.default.clone())?, slots.clone(), context, info.clone())?;
+            (exp, ty, var, pur) = Typing::typeExp(exp.clone(), context, info, false)?;
             outArg = Arc::new(TypedArg { name: None, value: exp.clone(), ty: ty.clone(), var: var.clone(), purity: pur.clone() });
             assign_field!(
                 slot.arg = Some(outArg.clone()),
                 slot.evalStatus = SlotEvalStatus::EVALUATED.clone()
             );
-            metamodelica::arrayUpdate(slots.clone(), slot.index.clone(), slot.clone())?;
-            outArg.clone()
+            metamodelica::arrayUpdate(slots.clone(), slot.index.clone(), slot)?;
+            outArg
         },
     });
         Ok(outArg)
@@ -1307,15 +1307,15 @@ pub mod Function {
 
     pub(crate) fn evaluateSlotExp(mut exp: Arc<Expression::NFExpression>, mut slots: metamodelica::Array<Arc<Slot::Slot>>, mut context: i32, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
         let mut outExp: Arc<Expression::NFExpression>;
-        outExp = Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = slots.clone(); let __pe_b2 = context.clone(); let __pe_b3 = info.clone(); move |__pe_a0| evaluateSlotExp_traverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        outExp = Expression::map(exp, (std::sync::Arc::new({ let __pe_b1 = slots.clone(); let __pe_b2 = context; let __pe_b3 = info; move |__pe_a0| evaluateSlotExp_traverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         Ok(outExp)
     }
 
     pub(crate) fn evaluateSlotExp_traverser(mut exp: Arc<Expression::NFExpression>, mut slots: metamodelica::Array<Arc<Slot::Slot>>, mut context: i32, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
         let mut outExp: Arc<Expression::NFExpression>;
         outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => evaluateSlotCref(exp.clone(), slots.clone(), context.clone(), info.clone())?,
-        _ => exp.clone(),
+        Deref @ Expression::CREF { .. } => evaluateSlotCref(exp, slots.clone(), context, info)?,
+        _ => exp,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(outExp)
@@ -1338,25 +1338,25 @@ pub mod Function {
         if !(ComponentRef::isCref(cref.clone())) {
             return Ok(crefExp.clone());
         }
-        let (__pa2, __pa3) = ::match_deref::match_deref! { match &(ComponentRef::toListReverse(cref.clone(), true, metamodelica::nil())) {
+        let (__pa2, __pa3) = ::match_deref::match_deref! { match &(ComponentRef::toListReverse(cref, true, metamodelica::nil())) {
             Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
             _ => bail!("pattern mismatch"),
         } };
         cref = __pa2.clone();
         cref_parts = __pa3.clone();
         cref_node = ComponentRef::node(cref.clone())?;
-        slot = lookupSlotInArray(cref_node.clone(), slots.clone());
+        slot = lookupSlotInArray(cref_node, slots.clone());
         if isSome(slot.clone()) {
-            arg = fillDefaultSlot(Util::getOption(slot.clone())?, slots.clone(), context.clone(), info.clone())?;
+            arg = fillDefaultSlot(Util::getOption(slot)?, slots.clone(), context, info)?;
             crefExp = arg.value.clone();
-            crefExp = applyCrefSubs(cref.clone(), crefExp.clone())?;
-            for mut cr in &*cref_parts.clone() {
+            crefExp = applyCrefSubs(cref.clone(), crefExp)?;
+            for mut cr in &*cref_parts {
                 let mut cr = cr.clone();
                 crefExp = Expression::recordElement((ComponentRef::firstName(cr.clone(), false)?).clone(), crefExp.clone())?;
                 crefExp = applyCrefSubs(cref.clone(), crefExp.clone())?;
             }
             if Type::isKnown(cref_ty.clone()) {
-                (crefExp, _, _) = TypeCheck::matchTypes(Expression::typeOf(crefExp.clone()), cref_ty.clone(), crefExp.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
+                (crefExp, _, _) = TypeCheck::matchTypes(Expression::typeOf(crefExp.clone()), cref_ty, crefExp, TypeCheck::DEFAULT_OPTIONS.clone())?;
             }
         }
         Ok(crefExp)
@@ -1419,7 +1419,7 @@ pub mod Function {
         let mut vect_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         let mut matched: bool;
         let mut vectorized_args: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut arg in &*args.clone() {
+        for mut arg in &*args {
             let mut arg = arg.clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(arg.clone()) {
                 Deref @ TypedArg { value: __pa0, ty: __pa1, var: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1435,36 +1435,36 @@ pub mod Function {
             input_node = __pa3.clone();
             inputs = __pa4.clone();
             comp = InstNode::component(input_node.clone())?;
-            if arg_var.clone() > Component::variability(comp.clone())? {
-                Error::addSourceMessage(Error::FUNCTION_SLOT_VARIABILITY.clone(), list![(InstNode::name(input_node.clone())?).clone(), (Expression::toString(arg_exp.clone())?).clone(), (AbsynUtil::pathString(name(func.clone()), (literal!(".")).clone(), true, false)?).clone(), (Prefixes::variabilityString(arg_var.clone())?).clone(), (Prefixes::variabilityString(Component::variability(comp.clone())?)?).clone()], info.clone())?;
+            if arg_var > Component::variability(comp.clone())? {
+                Error::addSourceMessage(Error::FUNCTION_SLOT_VARIABILITY.clone(), list![(InstNode::name(input_node.clone())?).clone(), (Expression::toString(arg_exp.clone())?).clone(), (AbsynUtil::pathString(name(func.clone()), (literal!(".")).clone(), true, false)?).clone(), (Prefixes::variabilityString(arg_var)?).clone(), (Prefixes::variabilityString(Component::variability(comp.clone())?)?).clone()], info.clone())?;
                 funcMatchKind = NO_MATCH().clone();
                 return Ok((args.clone(), funcMatchKind.clone()));
             }
             input_ty = Component::getType(comp.clone())?;
             (arg_exp, ty, mk) = TypeCheck::matchTypes(arg_ty.clone(), input_ty.clone(), arg_exp.clone(), TypeCheck::ALLOW_UNKNOWN.clone())?;
-            matched = TypeCheck::isValidArgumentMatch(mk.clone());
-            if !(matched.clone()) && vectorize.clone() {
+            matched = TypeCheck::isValidArgumentMatch(mk);
+            if !(matched) && vectorize {
                 (arg_exp, ty, vect_arg, vect_dims, mk) = matchArgVectorized(arg_exp.clone(), arg_ty.clone(), input_ty.clone(), vect_arg.clone(), vect_dims.clone(), info.clone())?;
-                vectorized_args = metamodelica::cons(arg_idx.clone(), vectorized_args.clone());
-                matched = TypeCheck::isValidArgumentMatch(mk.clone());
+                vectorized_args = metamodelica::cons(arg_idx, vectorized_args.clone());
+                matched = TypeCheck::isValidArgumentMatch(mk);
             }
-            if !(matched.clone()) {
-                Error::addSourceMessage(Error::ARG_TYPE_MISMATCH.clone(), list![(intString(arg_idx.clone())).clone(), (AbsynUtil::pathString(func.path.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::name(input_node.clone())?).clone(), (Expression::toString(arg_exp.clone())?).clone(), (Type::toString(arg_ty.clone())?).clone(), (Type::toString(input_ty.clone())?).clone()], info.clone())?;
+            if !(matched) {
+                Error::addSourceMessage(Error::ARG_TYPE_MISMATCH.clone(), list![(intString(arg_idx)).clone(), (AbsynUtil::pathString(func.path.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::name(input_node.clone())?).clone(), (Expression::toString(arg_exp.clone())?).clone(), (Type::toString(arg_ty.clone())?).clone(), (Type::toString(input_ty.clone())?).clone()], info.clone())?;
                 funcMatchKind = NO_MATCH().clone();
                 return Ok((args.clone(), funcMatchKind.clone()));
             }
-            if TypeCheck::isCastMatch(mk.clone()) {
+            if TypeCheck::isCastMatch(mk) {
                 funcMatchKind = CAST_MATCH().clone();
-            } else if TypeCheck::isGenericMatch(mk.clone()) {
+            } else if TypeCheck::isGenericMatch(mk) {
                 funcMatchKind = GENERIC_MATCH().clone();
             }
-            checked_args = metamodelica::cons(Arc::new(TypedArg { name: arg.name.clone(), value: arg_exp.clone(), ty: ty.clone(), var: arg_var.clone(), purity: arg.purity.clone() }), checked_args.clone());
-            arg_idx = arg_idx.clone() + 1;
+            checked_args = metamodelica::cons(Arc::new(TypedArg { name: arg.name.clone(), value: arg_exp.clone(), ty: ty.clone(), var: arg_var, purity: arg.purity.clone() }), checked_args.clone());
+            arg_idx = arg_idx + 1;
         }
         if !(vectorized_args.clone().is_empty()) {
-            funcMatchKind = Arc::new(FunctionMatchKind::FunctionMatchKind::VECTORIZED { vectDims: vect_dims.clone(), vectorizedArgs: vectorized_args.clone().reverse(), baseMatch: funcMatchKind.clone() });
+            funcMatchKind = Arc::new(FunctionMatchKind::FunctionMatchKind::VECTORIZED { vectDims: vect_dims, vectorizedArgs: vectorized_args.reverse(), baseMatch: funcMatchKind });
         }
-        args = checked_args.clone().reverse();
+        args = checked_args.reverse();
         Ok((args, funcMatchKind))
     }
 
@@ -1482,35 +1482,35 @@ pub mod Function {
         let mut vect_dims_count: i32;
         arg_dims = Type::arrayDims(argTy.clone());
         input_dims = Type::arrayDims(inputTy.clone());
-        vect_dims_count = (arg_dims.clone().len() as i32) - (input_dims.clone().len() as i32);
-        if vect_dims_count.clone() < 1 {
+        vect_dims_count = (arg_dims.clone().len() as i32) - (input_dims.len() as i32);
+        if vect_dims_count < 1 {
             matchKind = MatchKind::NOT_COMPATIBLE.clone();
             return Ok((argExp.clone(), argTy.clone(), vectArg.clone(), vectDims.clone(), matchKind.clone()));
         }
-        (vect_dims, rest_dims) = List::split(arg_dims.clone(), vect_dims_count.clone())?;
+        (vect_dims, rest_dims) = List::split(arg_dims, vect_dims_count)?;
         if vectDims.clone().is_empty() {
-            vectDims = fillUnknownVectorizedDims(vect_dims.clone(), argExp.clone());
+            vectDims = fillUnknownVectorizedDims(vect_dims, argExp.clone());
             vectArg = argExp.clone();
         } else if !(List::isEqualOnTrue(vectDims.clone(), vect_dims.clone(), (std::sync::Arc::new(Dimension::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?) {
-            Error::addSourceMessage(Error::VECTORIZE_CALL_DIM_MISMATCH.clone(), list![(literal!("")).clone(), (Expression::toString(vectArg.clone())?).clone(), (literal!("")).clone(), (Expression::toString(argExp.clone())?).clone(), (Dimension::toStringList(vectDims.clone(), true)?).clone(), (Dimension::toStringList(vect_dims.clone(), true)?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::VECTORIZE_CALL_DIM_MISMATCH.clone(), list![(literal!("")).clone(), (Expression::toString(vectArg.clone())?).clone(), (literal!("")).clone(), (Expression::toString(argExp.clone())?).clone(), (Dimension::toStringList(vectDims.clone(), true)?).clone(), (Dimension::toStringList(vect_dims, true)?).clone()], info)?;
         }
-        rest_ty = Type::liftArrayLeftList(Type::arrayElementType(argTy.clone()), rest_dims.clone());
-        (argExp, argTy, matchKind) = TypeCheck::matchTypes(rest_ty.clone(), inputTy.clone(), argExp.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
+        rest_ty = Type::liftArrayLeftList(Type::arrayElementType(argTy), rest_dims);
+        (argExp, argTy, matchKind) = TypeCheck::matchTypes(rest_ty, inputTy, argExp, TypeCheck::DEFAULT_OPTIONS.clone())?;
         Ok((argExp, argTy, vectArg, vectDims, matchKind))
     }
 
     pub(crate) fn fillUnknownVectorizedDims(mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut argExp: Arc<Expression::NFExpression>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
         let mut outDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         let mut i: i32 = 1;
-        for mut dim in &*dims.clone() {
+        for mut dim in &*dims {
             let mut dim = dim.clone();
             if Dimension::isUnknown(dim.clone()) {
-                dim = Arc::new(Dimension::NFDimension::EXP { exp: Arc::new(Expression::NFExpression::SIZE { exp: argExp.clone(), dimIndex: Some(Arc::new(Expression::NFExpression::INTEGER { value: i.clone() })) }), var: Variability::CONTINUOUS.clone() });
+                dim = Arc::new(Dimension::NFDimension::EXP { exp: Arc::new(Expression::NFExpression::SIZE { exp: argExp.clone(), dimIndex: Some(Arc::new(Expression::NFExpression::INTEGER { value: i })) }), var: Variability::CONTINUOUS.clone() });
             }
             outDims = metamodelica::cons(dim.clone(), outDims.clone());
-            i = i.clone() + 1;
+            i = i + 1;
         }
-        outDims = metamodelica::Dangerous::listReverseInPlace(outDims.clone());
+        outDims = metamodelica::Dangerous::listReverseInPlace(outDims);
         outDims
     }
 
@@ -1518,9 +1518,9 @@ pub mod Function {
         let mut out_args: Arc<metamodelica::List<Arc<TypedArg>>>;
         let mut matchKind: Arc<FunctionMatchKind::FunctionMatchKind> = NO_MATCH().clone();
         let mut slot_matched: bool;
-        (out_args, slot_matched) = fillArgs(args.clone(), named_args.clone(), func.clone(), context.clone(), info.clone())?;
-        if slot_matched.clone() {
-            (out_args, matchKind) = matchArgs(func.clone(), out_args.clone(), info.clone(), vectorize.clone())?;
+        (out_args, slot_matched) = fillArgs(args, named_args, func.clone(), context, info.clone())?;
+        if slot_matched {
+            (out_args, matchKind) = matchArgs(func, out_args, info, vectorize)?;
         }
         Ok((out_args, matchKind))
     }
@@ -1530,9 +1530,9 @@ pub mod Function {
         let mut m_args: Arc<metamodelica::List<Arc<TypedArg>>>;
         let mut matchKind: Arc<FunctionMatchKind::FunctionMatchKind>;
         matchedFunctions = metamodelica::nil();
-        for mut func in &*funcs.clone() {
+        for mut func in &*funcs {
             let mut func = func.clone();
-            (m_args, matchKind) = matchFunction(func.clone(), args.clone(), named_args.clone(), context.clone(), info.clone(), vectorize.clone())?;
+            (m_args, matchKind) = matchFunction(func.clone(), args.clone(), named_args.clone(), context, info.clone(), vectorize)?;
             if FunctionMatchKind::isValid(matchKind.clone()) {
                 matchedFunctions = metamodelica::cons(Arc::new(MatchedFunction::MatchedFunction { func: func.clone(), args: m_args.clone(), mk: matchKind.clone() }), matchedFunctions.clone());
             }
@@ -1543,7 +1543,7 @@ pub mod Function {
     pub(crate) fn matchFunctionsSilent(mut funcs: Arc<metamodelica::List<Arc<Function>>>, mut args: Arc<metamodelica::List<Arc<TypedArg>>>, mut named_args: Arc<metamodelica::List<Arc<TypedArg>>>, mut context: i32, mut info: SourceInfo, mut vectorize: bool) -> Result<Arc<metamodelica::List<Arc<MatchedFunction::MatchedFunction>>>> {
         let mut matchedFunctions: Arc<metamodelica::List<Arc<MatchedFunction::MatchedFunction>>>;
         ErrorExt::setCheckpoint((literal!("NFFunction:matchFunctions")).clone());
-        matchedFunctions = matchFunctions(funcs.clone(), args.clone(), named_args.clone(), context.clone(), info.clone(), vectorize.clone())?;
+        matchedFunctions = matchFunctions(funcs, args, named_args, context, info, vectorize)?;
         ErrorExt::rollBack((literal!("NFFunction:matchFunctions")).clone());
         Ok(matchedFunctions)
     }
@@ -1561,7 +1561,7 @@ pub mod Function {
     pub(crate) fn typeRefCache(mut functionRef: Arc<ComponentRef::NFComponentRef>, mut context: i32) -> Result<Arc<metamodelica::List<Arc<Function>>>> {
         let mut functions: Arc<metamodelica::List<Arc<Function>>>;
         functions = (::match_deref::match_deref! { match &(functionRef.clone()) {
-        Deref @ ComponentRef::CREF { .. } => typeNodeCache(var_field!((*functionRef).node, ComponentRef::NFComponentRef::CREF).clone(), context.clone())?,
+        Deref @ ComponentRef::CREF { .. } => typeNodeCache(var_field!((*functionRef).node, ComponentRef::NFComponentRef::CREF).clone(), context)?,
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.typeRefCache")); __mm_s.push_str(&*literal!(" got invalid function call reference")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
@@ -1576,7 +1576,7 @@ pub mod Function {
         let mut fn_node: Arc<InstNode::InstNode>;
         let mut typed: bool;
         let mut special: bool;
-        fn_node = InstNode::classScope(functionNode.clone());
+        fn_node = InstNode::classScope(functionNode);
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(InstNode::getFuncCache(fn_node.clone())?) {
             Deref @ CachedData::FUNCTION { funcs: __pa0, typed: __pa1, specialBuiltin: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
             _ => bail!("pattern mismatch"),
@@ -1584,25 +1584,25 @@ pub mod Function {
         functions = __pa0.clone();
         typed = __pa1.clone();
         special = __pa2.clone();
-        if !(typed.clone()) {
+        if !(typed) {
             functions = ({
         let mut __acc: Arc<metamodelica::List<Arc<Function>>> = metamodelica::nil();
-        for mut f in (functions.clone()).into_iter().cloned() {
-            let __x = typeFunctionSignature(f.clone(), context.clone())?;
+        for mut f in (functions).into_iter().cloned() {
+            let __x = typeFunctionSignature(f.clone(), context)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            InstNode::setFuncCache(fn_node.clone(), Arc::new(CachedData::CachedData::FUNCTION { funcs: functions.clone(), typed: true, specialBuiltin: special.clone() }))?;
+            InstNode::setFuncCache(fn_node.clone(), Arc::new(CachedData::CachedData::FUNCTION { funcs: functions.clone(), typed: true, specialBuiltin: special }))?;
             functions = ({
         let mut __acc: Arc<metamodelica::List<Arc<Function>>> = metamodelica::nil();
-        for mut f in (functions.clone()).into_iter().cloned() {
-            let __x = typeFunctionBody(f.clone(), context.clone())?;
+        for mut f in (functions).into_iter().cloned() {
+            let __x = typeFunctionBody(f.clone(), context)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-            InstNode::setFuncCache(fn_node.clone(), Arc::new(CachedData::CachedData::FUNCTION { funcs: functions.clone(), typed: true, specialBuiltin: special.clone() }))?;
+            InstNode::setFuncCache(fn_node, Arc::new(CachedData::CachedData::FUNCTION { funcs: functions.clone(), typed: true, specialBuiltin: special }))?;
         }
         Ok(functions)
     }
@@ -1610,8 +1610,8 @@ pub mod Function {
     pub(crate) fn getRefCache(mut fnRef: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<metamodelica::List<Arc<Function>>>> {
         let mut functions: Arc<metamodelica::List<Arc<Function>>>;
         let mut fn_node: Arc<InstNode::InstNode>;
-        fn_node = InstNode::classScope(ComponentRef::node(fnRef.clone())?);
-        let __pa0 = ::match_deref::match_deref! { match &(InstNode::getFuncCache(fn_node.clone())?) {
+        fn_node = InstNode::classScope(ComponentRef::node(fnRef)?);
+        let __pa0 = ::match_deref::match_deref! { match &(InstNode::getFuncCache(fn_node)?) {
             Deref @ CachedData::FUNCTION { funcs: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -1621,8 +1621,8 @@ pub mod Function {
 
     pub(crate) fn typeFunction(mut r#fn: Arc<Function>, mut context: i32) -> Result<Arc<Function>> {
         let mut r#fn: Arc<Function> = r#fn;
-        r#fn = typeFunctionSignature(r#fn.clone(), context.clone())?;
-        r#fn = typeFunctionBody(r#fn.clone(), context.clone())?;
+        r#fn = typeFunctionSignature(r#fn, context)?;
+        r#fn = typeFunctionBody(r#fn, context)?;
         Ok(r#fn)
     }
 
@@ -1631,12 +1631,12 @@ pub mod Function {
         let mut node: Arc<InstNode::InstNode> = r#fn.node.clone();
         let mut fn_context: i32;
         if !(isTyped(r#fn.clone())) {
-            fn_context = InstContext::set(context.clone(), InstContext::FUNCTION.clone());
+            fn_context = InstContext::set(context, InstContext::FUNCTION.clone());
             assign_field!(r#fn.slots = makeSlots(r#fn.inputs.clone())?);
-            Typing::typeClassType(node.clone(), Binding::EMPTY_BINDING().clone(), fn_context.clone(), node.clone())?;
-            Typing::typeComponents(node.clone(), fn_context.clone(), isPartialDerivative(r#fn.clone()))?;
+            Typing::typeClassType(node.clone(), Binding::EMPTY_BINDING().clone(), fn_context, node.clone())?;
+            Typing::typeComponents(node.clone(), fn_context, isPartialDerivative(r#fn.clone()))?;
             if InstNode::isPartial(node.clone())? {
-                ClassTree::applyComponents(Class::classTree(InstNode::getClass(node.clone())?)?, (std::sync::Arc::new(boxFunctionParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
+                ClassTree::applyComponents(Class::classTree(InstNode::getClass(node)?)?, (std::sync::Arc::new(boxFunctionParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
             }
             checkParamTypes(r#fn.clone())?;
             checkPartialDerivativeTypes(r#fn.clone())?;
@@ -1650,20 +1650,20 @@ pub mod Function {
         let mut pure: bool;
         let mut attr: DAE::FunctionAttributes;
         let mut fn_context: i32;
-        fn_context = InstContext::set(context.clone(), InstContext::FUNCTION.clone());
+        fn_context = InstContext::set(context, InstContext::FUNCTION.clone());
         for mut c in &*r#fn.inputs.clone() {
             let mut c = c.clone();
-            Typing::typeComponentBinding(c.clone(), fn_context.clone(), true)?;
+            Typing::typeComponentBinding(c.clone(), fn_context, true)?;
         }
         for mut c in &*r#fn.outputs.clone() {
             let mut c = c.clone();
-            Typing::typeComponentBinding(c.clone(), fn_context.clone(), true)?;
+            Typing::typeComponentBinding(c.clone(), fn_context, true)?;
         }
         for mut c in &*r#fn.locals.clone() {
             let mut c = c.clone();
-            Typing::typeComponentBinding(c.clone(), fn_context.clone(), true)?;
+            Typing::typeComponentBinding(c.clone(), fn_context, true)?;
         }
-        Typing::typeFunctionSections(r#fn.node.clone(), fn_context.clone())?;
+        Typing::typeFunctionSections(r#fn.node.clone(), fn_context)?;
         for mut fn_der in &*r#fn.derivatives.clone() {
             let mut fn_der = fn_der.clone();
             FunctionDerivative::typeDerivative(fn_der.clone())?;
@@ -1671,13 +1671,13 @@ pub mod Function {
         Array::mapNoCopy(r#fn.inverses.clone(), (std::sync::Arc::new(FunctionInverse::typeInverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FunctionInverse::NFFunctionInverse>) -> Result<Arc<FunctionInverse::NFFunctionInverse>> + 'static>))?;
         if !(isImpure(r#fn.clone())) {
             pure = foldExp(r#fn.clone(), (std::sync::Arc::new({ let __pe_b1 = r#fn.clone(); move |__pe_a0, __pe_a2| checkPureCall(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true, true, true)?;
-            if !(pure.clone()) {
+            if !(pure) {
                 attr = r#fn.attributes.clone();
                 attr.purity = DAE::Purity::IMPURE.clone();
-                assign_field!(r#fn.attributes = attr.clone());
+                assign_field!(r#fn.attributes = attr);
             }
         }
-        if !(InstContext::inRelaxed(fn_context.clone())) {
+        if !(InstContext::inRelaxed(fn_context)) {
             checkUseBeforeAssign(r#fn.clone())?;
         }
         assign_field!(r#fn.locals = sortLocals(r#fn.locals.clone(), InstNode::info(r#fn.node.clone()))?);
@@ -1686,13 +1686,13 @@ pub mod Function {
 
     pub(crate) fn checkPureCall(mut exp: Arc<Expression::NFExpression>, mut r#fn: Arc<Function>, mut pure: bool) -> Result<bool> {
         let mut pure: bool = pure;
-        if !(pure.clone()) {
+        if !(pure) {
             return Ok(pure.clone());
         }
         if Expression::isImpureCall(exp.clone())? {
             pure = false;
             if Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())? {
-                Error::addSourceMessage(Error::PURE_FUNCTION_WITH_IMPURE_CALLS.clone(), list![(AbsynUtil::pathString(name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone(), (Expression::getName(exp.clone())?).clone()], InstNode::info(r#fn.node.clone()))?;
+                Error::addSourceMessage(Error::PURE_FUNCTION_WITH_IMPURE_CALLS.clone(), list![(AbsynUtil::pathString(name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone(), (Expression::getName(exp)?).clone()], InstNode::info(r#fn.node.clone()))?;
             }
         }
         Ok(pure)
@@ -1701,8 +1701,8 @@ pub mod Function {
     pub(crate) fn boxFunctionParameter(mut component: Arc<InstNode::InstNode>) -> Result<()> {
         let mut comp: Arc<Component::NFComponent>;
         comp = InstNode::component(component.clone())?;
-        comp = Component::setType(Type::r#box(Component::getType(comp.clone())?), comp.clone())?;
-        InstNode::updateComponent(comp.clone(), component.clone())?;
+        comp = Component::setType(Type::r#box(Component::getType(comp.clone())?), comp)?;
+        InstNode::updateComponent(comp, component)?;
         Ok(())
     }
 
@@ -1719,11 +1719,11 @@ pub mod Function {
         let mut arg_var: Prefixes::Variability;
         let mut arg_pur: Prefixes::Purity;
         let mut r#fn: Arc<Function>;
-        let mut next_context: i32 = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
+        let mut next_context: i32 = InstContext::set(context, InstContext::SUBEXPRESSION.clone());
         let mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>>;
         let mut slots_arr: metamodelica::Array<Arc<Slot::Slot>>;
         let mut ty_arg: Arc<TypedArg>;
-        let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
+        let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp) {
             Deref @ Expression::PARTIAL_FUNCTION_APPLICATION { r#fn: __pa0, args: __pa1, argNames: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
             _ => bail!("pattern mismatch"),
         } };
@@ -1738,22 +1738,22 @@ pub mod Function {
         slots_arr = metamodelica::arrayFromVec(r#fn.slots.clone().into_iter().cloned().collect());
         purity = if (isImpure(r#fn.clone())) {Purity::IMPURE.clone()} else {Purity::PURE.clone()};
         variability = Variability::CONSTANT.clone();
-        for mut arg in &*args.clone() {
+        for mut arg in &*args {
             let mut arg = arg.clone();
-            (arg, arg_ty, arg_var, arg_pur) = Typing::typeExp(arg.clone(), next_context.clone(), info.clone(), false)?;
+            (arg, arg_ty, arg_var, arg_pur) = Typing::typeExp(arg.clone(), next_context, info.clone(), false)?;
             let (__pa4, __pa5) = ::match_deref::match_deref! { match &(arg_names.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa4, tail: __pa5 } => (__pa4.clone(), __pa5.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             arg_name = __pa4.clone();
             arg_names = __pa5.clone();
-            ty_arg = Arc::new(TypedArg { name: Some((arg_name.clone()).clone()), value: arg.clone(), ty: arg_ty.clone(), var: arg_var.clone(), purity: arg_pur.clone() });
+            ty_arg = Arc::new(TypedArg { name: Some((arg_name.clone()).clone()), value: arg.clone(), ty: arg_ty.clone(), var: arg_var, purity: arg_pur });
             let (__pa6, true) = (fillNamedArg(ty_arg.clone(), slots_arr.clone(), r#fn.clone(), info.clone())?) else { bail!("pattern mismatch") };
             slots_arr = __pa6.clone();
-            variability = Prefixes::variabilityMax(variability.clone(), arg_var.clone());
-            purity = Prefixes::purityMin(purity.clone(), arg_pur.clone());
+            variability = Prefixes::variabilityMax(variability, arg_var);
+            purity = Prefixes::purityMin(purity, arg_pur);
         }
-        exp = makePartialApplicationFromSlots(slots_arr.clone(), r#fn.clone(), fn_ref.clone(), info.clone())?;
+        exp = makePartialApplicationFromSlots(slots_arr.clone(), r#fn, fn_ref, info)?;
         ty = Expression::typeOf(exp.clone());
         Ok((exp, ty, variability, purity))
     }
@@ -1777,7 +1777,7 @@ pub mod Function {
                 } };
                 ty_arg = __pa1.clone();
                 (arg, _, mk) = TypeCheck::matchTypes(ty_arg.ty.clone(), InstNode::getType(slot.node.clone())?, ty_arg.value.clone(), TypeCheck::ALLOW_UNKNOWN.clone())?;
-                if TypeCheck::isIncompatibleMatch(mk.clone()) {
+                if TypeCheck::isIncompatibleMatch(mk) {
                     Error::addSourceMessage(Error::NAMED_ARG_TYPE_MISMATCH.clone(), list![(AbsynUtil::pathString(name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone(), (Util::getOption(ty_arg.name.clone())?).clone(), (Expression::toString(ty_arg.value.clone())?).clone(), (Type::toString(ty_arg.ty.clone())?).clone(), (Type::toString(InstNode::getType(slot.node.clone())?)?).clone()], info.clone())?;
                     bail!("fail");
                 }
@@ -1789,13 +1789,13 @@ pub mod Function {
             }
         }
         assign_field!(
-            r#fn.inputs = metamodelica::Dangerous::listReverseInPlace(inputs.clone()),
-            r#fn.slots = metamodelica::Dangerous::listReverseInPlace(slots.clone())
+            r#fn.inputs = metamodelica::Dangerous::listReverseInPlace(inputs),
+            r#fn.slots = metamodelica::Dangerous::listReverseInPlace(slots)
         );
-        fn_ty = Arc::new(Type::NFType::FUNCTION { r#fn: r#fn.clone(), fnType: Type::FunctionType::FUNCTIONAL_VARIABLE.clone() });
-        args = metamodelica::Dangerous::listReverseInPlace(args.clone());
-        arg_names = metamodelica::Dangerous::listReverseInPlace(arg_names.clone());
-        outExp = Arc::new(Expression::NFExpression::PARTIAL_FUNCTION_APPLICATION { r#fn: fnRef.clone(), args: args.clone(), argNames: arg_names.clone(), ty: fn_ty.clone() });
+        fn_ty = Arc::new(Type::NFType::FUNCTION { r#fn: r#fn, fnType: Type::FunctionType::FUNCTIONAL_VARIABLE.clone() });
+        args = metamodelica::Dangerous::listReverseInPlace(args);
+        arg_names = metamodelica::Dangerous::listReverseInPlace(arg_names);
+        outExp = Arc::new(Expression::NFExpression::PARTIAL_FUNCTION_APPLICATION { r#fn: fnRef, args: args, argNames: arg_names, ty: fn_ty });
         Ok(outExp)
     }
 
@@ -1819,11 +1819,11 @@ pub mod Function {
         if !(isBuiltin(r#fn.clone())) {
             special = false;
         } else {
-            path = nameConsiderBuiltin(r#fn.clone())?;
+            path = nameConsiderBuiltin(r#fn)?;
             if !(AbsynUtil::pathIsIdent(path.clone())) {
                 special = false;
             } else {
-                special = (::match_deref::match_deref! { match &(AbsynUtil::pathFirstIdent(path.clone())?) {
+                special = (::match_deref::match_deref! { match &(AbsynUtil::pathFirstIdent(path)?) {
         Deref @ "array" => true,
         Deref @ "actualStream" => true,
         Deref @ "backSample" => true,
@@ -1877,7 +1877,7 @@ pub mod Function {
         if !(isBuiltin(r#fn.clone())) {
             scalarBuiltin = false;
         } else {
-            scalarBuiltin = (::match_deref::match_deref! { match &(AbsynUtil::pathFirstIdent(nameConsiderBuiltin(r#fn.clone())?)?) {
+            scalarBuiltin = (::match_deref::match_deref! { match &(AbsynUtil::pathFirstIdent(nameConsiderBuiltin(r#fn)?)?) {
         Deref @ "change" => true,
         Deref @ "der" => true,
         Deref @ "pre" => true,
@@ -1901,8 +1901,8 @@ pub mod Function {
     pub(crate) fn setFunctionPointer(mut isPointer: bool, mut r#fn: Arc<Function>) -> Arc<Function> {
         let mut r#fn: Arc<Function> = r#fn;
         let mut attr: DAE::FunctionAttributes = r#fn.attributes.clone();
-        attr.isFunctionPointer = isPointer.clone();
-        assign_field!(r#fn.attributes = attr.clone());
+        attr.isFunctionPointer = isPointer;
+        assign_field!(r#fn.attributes = attr);
         r#fn
     }
 
@@ -1916,11 +1916,11 @@ pub mod Function {
         let mut path: Arc<Absyn::Path>;
         let mut lastIdent: ArcStr;
         path = name(r#fn.clone());
-        lastIdent = (AbsynUtil::pathLastIdent(path.clone())?).clone();
+        lastIdent = (AbsynUtil::pathLastIdent(path)?).clone();
         isExternal = false;
         if lastIdent.clone() == literal!("constructor") {
             isExternal = Type::isExternalObject(r#fn.returnType.clone());
-        } else if lastIdent.clone() == literal!("destructor") {
+        } else if lastIdent == literal!("destructor") {
             if (r#fn.inputs.clone().len() as i32) == 1 {
                 isExternal = Type::isExternalObject(Component::getType(InstNode::component(listHead(r#fn.inputs.clone())?)?)?);
             }
@@ -1939,7 +1939,7 @@ pub mod Function {
             let mut i = i.clone();
             names = metamodelica::cons((InstNode::name((r#fn.inputs.clone()).get(i.clone())?)?).clone(), names.clone());
         }
-        names = metamodelica::Dangerous::listReverseInPlace(names.clone());
+        names = metamodelica::Dangerous::listReverseInPlace(names);
         Ok(names)
     }
 
@@ -2008,9 +2008,9 @@ pub mod Function {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), defs.clone());
-        defs = metamodelica::cons(def.clone(), defs.clone());
-        daeFn = DAE::Function::FUNCTION { path: r#fn.path.clone(), functions: defs.clone(), type_: ty.clone(), visibility: vis.clone(), partialPrefix: par.clone(), isImpure: impr.clone(), inlineType: ity.clone(), unusedInputs: unused_inputs.clone(), source: ElementSource::createElementSource(InstNode::info(r#fn.node.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, comment: SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?) };
+    }), defs);
+        defs = metamodelica::cons(def, defs);
+        daeFn = DAE::Function::FUNCTION { path: r#fn.path.clone(), functions: defs, type_: ty, visibility: vis, partialPrefix: par, isImpure: impr, inlineType: ity, unusedInputs: unused_inputs, source: ElementSource::createElementSource(InstNode::info(r#fn.node.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, comment: SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?) };
         Ok(daeFn)
     }
 
@@ -2029,29 +2029,29 @@ pub mod Function {
             comp = InstNode::component(param.clone())?;
             pname = (InstNode::name(param.clone())?).clone();
             ty = Component::getType(comp.clone())?;
-            ptype = Type::toDAE(if (boxTypes.clone()) {Type::r#box(ty.clone())} else {ty.clone()}, true)?;
+            ptype = Type::toDAE(if (boxTypes) {Type::r#box(ty.clone())} else {ty.clone()}, true)?;
             pconst = Prefixes::variabilityToDAEConst(Component::variability(comp.clone())?);
             ppar = Prefixes::parallelismToDAE(Component::parallelism(comp.clone()))?;
             pdefault = Util::applyOption(Binding::typedExp(Component::getBinding(comp.clone())), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             params = metamodelica::cons(Arc::new(DAE::FuncArg { name: (pname.clone()).clone(), ty: ptype.clone(), r#const: pconst.clone(), par: ppar.clone(), defaultBinding: pdefault.clone() }), params.clone());
         }
-        params = params.clone().reverse();
+        params = params.reverse();
         ty = if (isDefaultRecordConstructor(r#fn.clone())) {InstNode::getType(r#fn.node.clone())?} else {r#fn.returnType.clone()};
-        ty = if (boxTypes.clone()) {Type::r#box(ty.clone())} else {ty.clone()};
-        outType = Arc::new(DAE::Type::T_FUNCTION { funcArg: params.clone(), funcResultType: Type::toDAE(ty.clone(), true)?, functionAttributes: r#fn.attributes.clone(), path: r#fn.path.clone() });
+        ty = if (boxTypes) {Type::r#box(ty)} else {ty};
+        outType = Arc::new(DAE::Type::T_FUNCTION { funcArg: params, funcResultType: Type::toDAE(ty, true)?, functionAttributes: r#fn.attributes.clone(), path: r#fn.path.clone() });
         Ok(outType)
     }
 
     pub fn getSingleBodyExp(mut r#fn: Arc<Function>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression>;
         let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
-        body = getBody(r#fn.clone())?;
+        body = getBody(r#fn)?;
         exp = (::match_deref::match_deref! { match &(body.clone()) {
         Deref @ metamodelica::List::Cons { head: stmt @ Deref @ Statement::ASSIGNMENT { .. }, tail: Deref @ metamodelica::List::Nil } => {
             var_field!((**stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getSingleBodyExp")); __mm_s.push_str(&*literal!(" failed because the body of the function is not a single assignment:\n")); __mm_s.push_str(&*List::toString(body.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Statement::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getSingleBodyExp")); __mm_s.push_str(&*literal!(" failed because the body of the function is not a single assignment:\n")); __mm_s.push_str(&*List::toString(body, (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| Statement::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2069,7 +2069,7 @@ pub mod Function {
         res = (match r#fn.attributes.clone() {
         DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { unboxArgs: mut __esc_res, .. }, .. } => {
             res = __esc_res.clone();
-            res.clone()
+            res
         },
         _ => false,
     });
@@ -2094,15 +2094,15 @@ pub mod Function {
         let mut ctree: Arc<ClassTree::ClassTree>;
         let mut sections: Arc<Sections::NFSections>;
         cls = InstNode::getClass(r#fn.node.clone())?;
-        if mapParameters.clone() {
+        if mapParameters {
             ctree = Class::classTree(cls.clone())?;
-            ClassTree::applyComponents(ctree.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFn.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFnFields.clone(); move |__pe_a0| mapExpParameter(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
+            ClassTree::applyComponents(ctree, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFn.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFnFields.clone(); move |__pe_a0| mapExpParameter(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
             assign_field!(r#fn.returnType = makeReturnType(r#fn.clone())?);
         }
-        if mapBody.clone() {
+        if mapBody {
             sections = Sections::mapExp(Class::getSections(cls.clone())?, mapFn.clone())?;
-            cls = Class::setSections(sections.clone(), cls.clone())?;
-            InstNode::updateClass(cls.clone(), r#fn.node.clone())?;
+            cls = Class::setSections(sections, cls)?;
+            InstNode::updateClass(cls, r#fn.node.clone())?;
         }
         Ok(r#fn)
     }
@@ -2119,26 +2119,26 @@ pub mod Function {
         comp = InstNode::component(node.clone())?;
         binding = Component::getBinding(comp.clone());
         binding2 = Binding::mapExpShallow(binding.clone(), mapFn.clone())?;
-        if !(referenceEq(&*(binding.clone()),&*(binding2.clone()))) {
-            comp = Component::setBinding(binding2.clone(), comp.clone())?;
+        if !(referenceEq(&*(binding),&*(binding2.clone()))) {
+            comp = Component::setBinding(binding2, comp)?;
             dirty = true;
         }
         let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ Component::COMPONENT { .. } => {
             ty = Type::mapDims(var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
             if !(referenceEq(&*(ty.clone()),&*(var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone()))) {
-                assign_variant_field!(comp => Component::NFComponent::COMPONENT; ty = ty.clone());
+                assign_variant_field!(comp => Component::NFComponent::COMPONENT; ty = ty);
                 dirty = true;
             }
             cls = InstNode::getClass(var_field!((*comp).classInst, Component::NFComponent::COMPONENT).clone())?;
-            ClassTree::applyComponents(Class::classTree(cls.clone())?, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFnFields.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFnFields.clone(); move |__pe_a0| mapExpParameter(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
+            ClassTree::applyComponents(Class::classTree(cls)?, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFnFields.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFnFields.clone(); move |__pe_a0| mapExpParameter(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if dirty.clone() {
-            InstNode::updateComponent(comp.clone(), node.clone())?;
+        if dirty {
+            InstNode::updateComponent(comp, node)?;
         }
         Ok(())
     }
@@ -2151,8 +2151,8 @@ pub mod Function {
         let mut sections: Arc<Sections::NFSections>;
         cls = InstNode::getClass(r#fn.node.clone())?;
         sections = Sections::map(Class::getSections(cls.clone())?, (std::sync::Arc::new(fnptr!(Sections::eqId, Arc<NFEquation::NFEquation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation::NFEquation>) -> Result<Arc<NFEquation::NFEquation>> + 'static>), mapFn.clone(), (std::sync::Arc::new(fnptr!(Sections::eqId, Arc<NFEquation::NFEquation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation::NFEquation>) -> Result<Arc<NFEquation::NFEquation>> + 'static>), mapFn.clone())?;
-        cls = Class::setSections(sections.clone(), cls.clone())?;
-        InstNode::updateClass(cls.clone(), r#fn.node.clone())?;
+        cls = Class::setSections(sections, cls)?;
+        InstNode::updateClass(cls, r#fn.node.clone())?;
         Ok(r#fn)
     }
 
@@ -2162,11 +2162,11 @@ pub mod Function {
         let mut arg: ArgT = arg;
         let mut cls: Arc<Class::NFClass>;
         cls = InstNode::getClass(r#fn.node.clone())?;
-        if mapParameters.clone() {
-            arg = ClassTree::foldComponents(Class::classTree(cls.clone())?, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _) -> Result<_> + 'static> = foldFn.clone(); move |__pe_a0, __pe_a2| foldExpParameter(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, _) -> Result<_> + 'static>), arg.clone())?;
+        if mapParameters {
+            arg = ClassTree::foldComponents(Class::classTree(cls.clone())?, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _) -> Result<_> + 'static> = foldFn.clone(); move |__pe_a0, __pe_a2| foldExpParameter(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, _) -> Result<_> + 'static>), arg)?;
         }
-        if mapBody.clone() {
-            arg = Sections::foldExp(Class::getSections(cls.clone())?, foldFn.clone(), arg.clone())?;
+        if mapBody {
+            arg = Sections::foldExp(Class::getSections(cls)?, foldFn.clone(), arg)?;
         }
         Ok(arg)
     }
@@ -2177,13 +2177,13 @@ pub mod Function {
         let mut arg: ArgT = arg;
         let mut comp: Arc<Component::NFComponent>;
         let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-        comp = InstNode::component(node.clone())?;
-        arg = Binding::foldExp(Component::getBinding(comp.clone()), foldFn.clone(), arg.clone())?;
+        comp = InstNode::component(node)?;
+        arg = Binding::foldExp(Component::getBinding(comp.clone()), foldFn.clone(), arg)?;
         let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ Component::COMPONENT { .. } => {
-            arg = Type::foldDims(var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _) -> Result<_> + 'static> = foldFn.clone(); move |__pe_a0, __pe_a2| Dimension::foldExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, _) -> Result<_> + 'static>), arg.clone())?;
+            arg = Type::foldDims(var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _) -> Result<_> + 'static> = foldFn.clone(); move |__pe_a0, __pe_a2| Dimension::foldExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, _) -> Result<_> + 'static>), arg)?;
             cls = InstNode::getClass(var_field!((*comp).classInst, Component::NFComponent::COMPONENT).clone())?;
-            arg = ClassTree::foldComponents(Class::classTree(cls.clone())?, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _) -> Result<_> + 'static> = foldFn.clone(); move |__pe_a0, __pe_a2| foldExpParameter(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, _) -> Result<_> + 'static>), arg.clone())?;
+            arg = ClassTree::foldComponents(Class::classTree(cls)?, (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _) -> Result<_> + 'static> = foldFn.clone(); move |__pe_a0, __pe_a2| foldExpParameter(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, _) -> Result<_> + 'static>), arg)?;
             ()
         },
         _ => (),
@@ -2208,7 +2208,7 @@ pub mod Function {
                 localArgs = metamodelica::cons(Binding::getExp(binding.clone())?, localArgs.clone());
             }
         }
-        localArgs = metamodelica::Dangerous::listReverseInPlace(localArgs.clone());
+        localArgs = metamodelica::Dangerous::listReverseInPlace(localArgs);
         Ok(localArgs)
     }
 
@@ -2228,7 +2228,7 @@ pub mod Function {
             for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 n = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 check_vis = !(Flags::getConfigBool(Flags::BASE_MODELICA.clone())?);
-                let () = (match paramDirection(n.clone(), check_vis.clone())? {
+                let () = (match paramDirection(n.clone(), check_vis)? {
         Prefixes::Direction::INPUT => {
             inputs = metamodelica::cons(n.clone(), inputs.clone());
             ()
@@ -2250,7 +2250,7 @@ pub mod Function {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-instantiated function ")); __mm_s.push_str(&*AbsynUtil::pathString(InstNode::scopePath(node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-instantiated function ")); __mm_s.push_str(&*AbsynUtil::pathString(InstNode::scopePath(node, InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2267,30 +2267,30 @@ pub mod Function {
         let mut var: Prefixes::Variability;
         comp = InstNode::component(InstNode::resolveOuter(component.clone()))?;
         io = Component::innerOuter(comp.clone())?;
-        if io.clone() != InnerOuter::NOT_INNER_OUTER.clone() {
-            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::innerOuterString(io.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(InstNode::resolveOuter(component.clone())))?;
+        if io != InnerOuter::NOT_INNER_OUTER.clone() {
+            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::innerOuterString(io)).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(InstNode::resolveOuter(component.clone())))?;
             bail!("fail");
         }
-        let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Component::getAttributes(comp.clone())) {
+        let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Component::getAttributes(comp)) {
             Deref @ Attributes::ATTRIBUTES { connectorType: __pa0, direction: __pa1, variability: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
             _ => bail!("pattern mismatch"),
         } };
         cty = __pa0.clone();
         direction = __pa1.clone();
         var = __pa2.clone();
-        if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
-            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
+        if Prefixes::ConnectorType::isFlowOrStream(cty) {
+            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::ConnectorType::toString(cty)).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
             bail!("fail");
         }
-        if checkVisibility.clone() {
+        if checkVisibility {
             vis = InstNode::visibility(component.clone());
-            if direction.clone() != Direction::NONE.clone() {
-                if vis.clone() == Visibility::PROTECTED.clone() {
-                    Error::addSourceMessage(Error::PROTECTED_FORMAL_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
+            if direction != Direction::NONE.clone() {
+                if vis == Visibility::PROTECTED.clone() {
+                    Error::addSourceMessage(Error::PROTECTED_FORMAL_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component))?;
                     bail!("fail");
                 }
-            } else if vis.clone() == Visibility::PUBLIC.clone() {
-                Error::addSourceMessageAsError(Error::NON_FORMAL_PUBLIC_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
+            } else if vis == Visibility::PUBLIC.clone() {
+                Error::addSourceMessageAsError(Error::NON_FORMAL_PUBLIC_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component))?;
                 bail!("fail");
             }
         }
@@ -2300,12 +2300,12 @@ pub mod Function {
     fn makeSlots(mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<Slot::Slot>>>> {
         let mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>> = metamodelica::nil();
         let mut index: i32 = 1;
-        for mut i in &*inputs.clone() {
+        for mut i in &*inputs {
             let mut i = i.clone();
-            slots = metamodelica::cons(makeSlot(i.clone(), index.clone())?, slots.clone());
-            index = index.clone() + 1;
+            slots = metamodelica::cons(makeSlot(i.clone(), index)?, slots.clone());
+            index = index + 1;
         }
-        slots = metamodelica::Dangerous::listReverseInPlace(slots.clone());
+        slots = metamodelica::Dangerous::listReverseInPlace(slots);
         Ok(slots)
     }
 
@@ -2321,7 +2321,7 @@ pub mod Function {
             if StringUtil::startsWith((name.clone()).clone(), (literal!("$in_")).clone()) {
                 name = unwrap_break_err!(substring((name.clone()).clone(), 5, ((name.clone()).clone().len() as i32)), '__try0);
             }
-            slot = Arc::new(Slot::Slot { node: component.clone(), ty: SlotType::GENERIC.clone(), default: default.clone(), arg: None, index: index.clone(), evalStatus: SlotEvalStatus::NOT_EVALUATED.clone() });
+            slot = Arc::new(Slot::Slot { node: component.clone(), ty: SlotType::GENERIC.clone(), default: default.clone(), arg: None, index: index, evalStatus: SlotEvalStatus::NOT_EVALUATED.clone() });
             Ok::<(), anyhow::Error>(())
         }.is_err() {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeSlot")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
@@ -2344,7 +2344,7 @@ pub mod Function {
         let mut comment: Option<ArcStr> = None;
         let mut r#mod: Arc<SCode::Mod> = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
         let mut mod2: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-        for mut cmt in &*comments.clone() {
+        for mut cmt in &*comments {
             let mut cmt = cmt.clone();
             if isNone(comment.clone()) {
                 comment = cmt.comment.clone();
@@ -2359,8 +2359,8 @@ pub mod Function {
     } });
         }
         outComment = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::NOMOD { .. } => Arc::new(SCode::Comment { annotation_: None, comment: comment.clone() }),
-        _ => Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: r#mod.clone() })), comment: comment.clone() }),
+        Deref @ SCode::Mod::NOMOD { .. } => Arc::new(SCode::Comment { annotation_: None, comment: comment }),
+        _ => Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: r#mod })), comment: comment }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         outComment
@@ -2377,10 +2377,10 @@ pub mod Function {
         def = InstNode::classDefinition(Class::lastBaseClass(node.clone())?)?;
         res = SCodeUtil::getClassRestriction(def.clone())?;
         Error::assertion(SCodeUtil::isFunctionRestriction(res.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeAttributes")); __mm_s.push_str(&*literal!(" got non-function restriction")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
-        let SCode::Restriction::R_FUNCTION { functionRestriction: __pa0 } = (res.clone()) else { bail!("pattern mismatch") };
+        let SCode::Restriction::R_FUNCTION { functionRestriction: __pa0 } = (res) else { bail!("pattern mismatch") };
         fres = __pa0.clone();
-        is_partial = InstNode::isPartial(node.clone())?;
-        cmt = mergeFunctionAnnotations(comments.clone());
+        is_partial = InstNode::isPartial(node)?;
+        cmt = mergeFunctionAnnotations(comments);
         purity = InstBasics::getFunctionRestrictionPurity(SCodeUtil::getFunctionRestrictionPurity(fres.clone()), cmt.clone(), true)?;
         attr = 'mc: {
         let __mc_input = fres.clone();
@@ -2412,7 +2412,7 @@ pub mod Function {
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             has_unbox_args = hasUnboxArgsAnnotation(cmt.clone())?;
-            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: has_unbox_args.clone() }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL })
+            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity, isFunctionPointer: is_partial, isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: has_unbox_args.clone() }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
@@ -2442,7 +2442,7 @@ pub mod Function {
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             has_unbox_args = hasUnboxArgsAnnotation(cmt.clone())?;
-            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: has_unbox_args.clone() }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
+            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity, isFunctionPointer: is_partial, isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: has_unbox_args.clone() }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
@@ -2450,11 +2450,11 @@ pub mod Function {
             let mut generateEvents: bool;
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
-            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
+            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity, isFunctionPointer: is_partial, isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
-            Ok(DAE::FunctionAttributes { inline: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, generateEvents: false, purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_KERNEL_FUNCTION })
+            Ok(DAE::FunctionAttributes { inline: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, generateEvents: false, purity: purity, isFunctionPointer: is_partial, isBuiltin: openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_KERNEL_FUNCTION })
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -2463,13 +2463,13 @@ pub mod Function {
             let mut purity: DAE::Purity = purity.clone();
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
-            if purity.clone() == DAE::Purity::UNDEFINED.clone() && Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())? {
+            if purity == DAE::Purity::UNDEFINED.clone() && Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())? {
                 purity = if (SCodeUtil::isExternalFunctionRestriction(fres.clone())) {DAE::Purity::IMPURE.clone()} else {DAE::Purity::PURE.clone()};
             }
             if SCodeUtil::hasNamedExternalCall((literal!("ModelicaError")).clone(), SCodeUtil::getClassDef(def.clone())?) {
                 purity = DAE::Purity::PURE.clone();
             }
-            Ok((DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, purity.clone()))
+            Ok((DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity, isFunctionPointer: is_partial, isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, purity.clone()))
         })() { purity = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
@@ -2485,7 +2485,7 @@ pub mod Function {
 
     fn checkParamTypes2(mut params: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<()> {
         let mut ty: Arc<Type::NFType>;
-        for mut p in &*params.clone() {
+        for mut p in &*params {
             let mut p = p.clone();
             ty = InstNode::getType(p.clone())?;
             if !(isValidParamType(ty.clone())?) {
@@ -2518,7 +2518,7 @@ pub mod Function {
 
     fn isValidParamState(mut cls: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut isValid: bool;
-        isValid = (::match_deref::match_deref! { match &(Class::restriction(InstNode::getClass(cls.clone())?)) {
+        isValid = (::match_deref::match_deref! { match &(Class::restriction(InstNode::getClass(cls)?)) {
         Deref @ Restriction::RECORD { .. } => true,
         Deref @ Restriction::TYPE => true,
         Deref @ Restriction::OPERATOR => true,
@@ -2562,7 +2562,7 @@ pub mod Function {
             returnType = (*__esc_returnType).clone();
             returnType.clone()
         },
-        _ => Arc::new(Type::NFType::TUPLE { types: ret_tyl.clone(), names: None }),
+        _ => Arc::new(Type::NFType::TUPLE { types: ret_tyl, names: None }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(returnType)
@@ -2571,7 +2571,7 @@ pub mod Function {
     pub(crate) fn getBody2(mut node: Arc<InstNode::InstNode>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
         let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
         let mut fn_body: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
-        body = (::match_deref::match_deref! { match &(InstNode::getSections(node.clone())?) {
+        body = (::match_deref::match_deref! { match &(InstNode::getSections(node)?) {
         Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Nil, .. } => metamodelica::nil(),
         Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Cons { head: __esc_fn_body, tail: Deref @ metamodelica::List::Nil }, .. } => {
             fn_body = (*__esc_fn_body).clone();
@@ -2622,10 +2622,10 @@ pub mod Function {
         let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
         let mut index: i32;
         inputs = foldExp(r#fn.clone(), (std::sync::Arc::new(analyseUnusedParametersExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), r#fn.inputs.clone(), true, true)?;
-        for mut i in &*inputs.clone() {
+        for mut i in &*inputs {
             let mut i = i.clone();
             index = List::positionOnTrue(r#fn.inputs.clone(), (std::sync::Arc::new({ let __pe_b0 = i.clone(); move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-            unusedInputs = metamodelica::cons(index.clone(), unusedInputs.clone());
+            unusedInputs = metamodelica::cons(index, unusedInputs.clone());
         }
         Ok(unusedInputs)
     }
@@ -2633,7 +2633,7 @@ pub mod Function {
     pub(crate) fn analyseUnusedParametersExp(mut exp: Arc<Expression::NFExpression>, mut params: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
         let mut params: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = params;
         if !(params.clone().is_empty()) {
-            params = Expression::fold(exp.clone(), (std::sync::Arc::new(analyseUnusedParametersExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), params.clone())?;
+            params = Expression::fold(exp, (std::sync::Arc::new(analyseUnusedParametersExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), params)?;
         }
         Ok(params)
     }
@@ -2642,7 +2642,7 @@ pub mod Function {
         let mut params: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = params;
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            (params, _) = List::deleteMemberOnTrue(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), params.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::containsNode, Arc<ComponentRef::NFComponentRef>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            (params, _) = List::deleteMemberOnTrue(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), params, (std::sync::Arc::new(fnptr!(ComponentRef::containsNode, Arc<ComponentRef::NFComponentRef>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
             ()
         },
         _ => (),
@@ -2658,18 +2658,18 @@ pub mod Function {
         let mut cycles: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)>>;
         let mut cycles_str: ArcStr;
         locals_set = UnorderedSet::fromList(locals.clone(), (std::sync::Arc::new(InstNode::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-        dep_graph = Graph::buildGraph(locals.clone(), (std::sync::Arc::new(getLocalDependencies) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), locals_set.clone())?;
-        (locals, cycles) = Graph::topologicalSort(dep_graph.clone(), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+        dep_graph = Graph::buildGraph(locals, (std::sync::Arc::new(getLocalDependencies) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), locals_set)?;
+        (locals, cycles) = Graph::topologicalSort(dep_graph, (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
         if !(cycles.clone().is_empty()) {
             cycles_str = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut cycle in (Graph::findCycles(cycles.clone(), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?).into_iter().cloned() {
+        for mut cycle in (Graph::findCycles(cycles, (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?).into_iter().cloned() {
             let __x = List::toString(cycle.clone(), (std::sync::Arc::new(InstNode::name) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }), (literal!(", ")).clone());
-            Error::addSourceMessage(Error::CYCLIC_FUNCTION_COMPONENTS.clone(), list![(cycles_str.clone()).clone()], info.clone())?;
+            Error::addSourceMessage(Error::CYCLIC_FUNCTION_COMPONENTS.clone(), list![(cycles_str).clone()], info)?;
             bail!("fail");
         }
         Ok(locals)
@@ -2679,10 +2679,10 @@ pub mod Function {
         let mut dependencies: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
         let mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>;
         deps = UnorderedSet::new((std::sync::Arc::new(InstNode::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), 1);
-        deps = getLocalDependencies2(node.clone(), locals.clone(), deps.clone())?;
+        deps = getLocalDependencies2(node.clone(), locals.clone(), deps)?;
         UnorderedSet::remove(node.clone(), deps.clone())?;
-        deps = Type::foldDims(InstNode::getType(node.clone())?, (std::sync::Arc::new({ let __pe_b1 = locals.clone(); move |__pe_a0, __pe_a2| getLocalDependenciesDim(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), deps.clone())?;
-        dependencies = UnorderedSet::toList(deps.clone());
+        deps = Type::foldDims(InstNode::getType(node)?, (std::sync::Arc::new({ let __pe_b1 = locals; move |__pe_a0, __pe_a2| getLocalDependenciesDim(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), deps)?;
+        dependencies = UnorderedSet::toList(deps);
         Ok(dependencies)
     }
 
@@ -2693,16 +2693,16 @@ pub mod Function {
         comp = InstNode::component(node.clone())?;
         binding = Component::getBinding(comp.clone());
         if Binding::hasExp(binding.clone()) {
-            dependencies = getLocalDependenciesExp(Binding::getExp(binding.clone())?, locals.clone(), dependencies.clone())?;
-        } else if Type::isRecord(Component::getType(comp.clone())?) {
-            dependencies = ClassTree::foldComponents(Class::classTree(InstNode::getClass(node.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = locals.clone(); move |__pe_a0, __pe_a2| getLocalDependencies2(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), dependencies.clone())?;
+            dependencies = getLocalDependenciesExp(Binding::getExp(binding)?, locals, dependencies)?;
+        } else if Type::isRecord(Component::getType(comp)?) {
+            dependencies = ClassTree::foldComponents(Class::classTree(InstNode::getClass(node)?)?, (std::sync::Arc::new({ let __pe_b1 = locals; move |__pe_a0, __pe_a2| getLocalDependencies2(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), dependencies)?;
         }
         Ok(dependencies)
     }
 
     pub(crate) fn getLocalDependenciesExp(mut exp: Arc<Expression::NFExpression>, mut locals: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>, mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> {
         let mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = deps;
-        deps = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = locals.clone(); move |__pe_a0, __pe_a2| getLocalDependenciesExp2(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), deps.clone())?;
+        deps = Expression::fold(exp, (std::sync::Arc::new({ let __pe_b1 = locals; move |__pe_a0, __pe_a2| getLocalDependenciesExp2(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), deps)?;
         Ok(deps)
     }
 
@@ -2715,7 +2715,7 @@ pub mod Function {
             cr = ComponentRef::last(var_field!((*exp).cref, Expression::NFExpression::CREF).clone());
             if ComponentRef::isCref(cr.clone()) {
                 cr_node = ComponentRef::node(cr.clone())?;
-                if UnorderedSet::contains(cr_node.clone(), locals.clone())? {
+                if UnorderedSet::contains(cr_node.clone(), locals)? {
                     UnorderedSet::add(cr_node.clone(), deps.clone())?;
                 }
             }
@@ -2731,7 +2731,7 @@ pub mod Function {
 
     pub(crate) fn getLocalDependenciesDim(mut dim: Arc<Dimension::NFDimension>, mut locals: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>, mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> {
         let mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = deps;
-        deps = Dimension::foldExp(dim.clone(), (std::sync::Arc::new({ let __pe_b1 = locals.clone(); move |__pe_a0, __pe_a2| getLocalDependenciesExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), deps.clone())?;
+        deps = Dimension::foldExp(dim, (std::sync::Arc::new({ let __pe_b1 = locals; move |__pe_a0, __pe_a2| getLocalDependenciesExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>> + 'static>), deps)?;
         Ok(deps)
     }
 
@@ -2763,9 +2763,9 @@ pub mod Function {
         unassigned = Vector::new(0);
         addUnassignedComponents(unassigned.clone(), r#fn.outputs.clone())?;
         addUnassignedComponents(unassigned.clone(), r#fn.locals.clone())?;
-        body = getBody(r#fn.clone())?;
-        checkUseBeforeAssign2(unassigned.clone(), body.clone())?;
-        for mut var in &*Vector::toList(unassigned.clone()) {
+        body = getBody(r#fn)?;
+        checkUseBeforeAssign2(unassigned.clone(), body)?;
+        for mut var in &*Vector::toList(unassigned) {
             let mut var = var.clone();
             if InstNode::isOutput(var.clone()) {
                 parent = InstNode::parent(var.clone());
@@ -2781,7 +2781,7 @@ pub mod Function {
 
     pub(crate) fn addUnassignedComponents(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut variables: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<()> {
         let mut ty: Arc<Type::NFType>;
-        for mut var in &*variables.clone() {
+        for mut var in &*variables {
             let mut var = var.clone();
             ty = InstNode::getType(var.clone())?;
             if Type::isScalarBuiltin(ty.clone())? && !(Component::hasBinding(InstNode::component(var.clone())?, crate::NFInstNode::InstNode::interned_EMPTY_NODE())?) {
@@ -2793,7 +2793,7 @@ pub mod Function {
 
     pub(crate) fn checkUseBeforeAssign2(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<()> {
         let mut info: SourceInfo;
-        for mut stmt in &*statements.clone() {
+        for mut stmt in &*statements {
             let mut stmt = stmt.clone();
             info = Statement::info(stmt.clone())?;
             let () = (::match_deref::match_deref! { match &(stmt.clone()) {
@@ -2837,9 +2837,9 @@ pub mod Function {
         let () = (::match_deref::match_deref! { match &(assignedExp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::isCref(var_field!((*assignedExp).cref, Expression::NFExpression::CREF).clone())) => {
             node = ComponentRef::node(ComponentRef::last(var_field!((*assignedExp).cref, Expression::NFExpression::CREF).clone()))?;
-            (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node.clone(); move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-            if index.clone() > 0 {
-                Vector::remove(unassigned.clone(), index.clone())?;
+            (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node; move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            if index > 0 {
+                Vector::remove(unassigned, index)?;
             }
             ()
         },
@@ -2864,7 +2864,7 @@ pub mod Function {
             let mut b = b.clone();
             checkUseBeforeAssignExp(unassigned.clone(), Util::tuple21(b.clone()), info.clone())?;
         }
-        for mut b in &*branches.clone() {
+        for mut b in &*branches {
             let mut b = b.clone();
             unassigned_branch = Vector::copy(unassigned.clone());
             checkUseBeforeAssign2(unassigned_branch.clone(), Util::tuple22(b.clone()))?;
@@ -2873,12 +2873,12 @@ pub mod Function {
             }
         }
         if !(assigned.clone().is_empty()) {
-            assigned = List::uniqueOnTrue(assigned.clone(), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-            for mut a in &*assigned.clone() {
+            assigned = List::uniqueOnTrue(assigned, (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            for mut a in &*assigned {
                 let mut a = a.clone();
                 (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = a.clone(); move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-                if index.clone() > 0 {
-                    Vector::remove(unassigned.clone(), index.clone())?;
+                if index > 0 {
+                    Vector::remove(unassigned.clone(), index)?;
                 }
             }
         }
@@ -2886,7 +2886,7 @@ pub mod Function {
     }
 
     pub(crate) fn checkUseBeforeAssignExp(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<()> {
-        Expression::apply(exp.clone(), (std::sync::Arc::new({ let __pe_b0 = unassigned.clone(); let __pe_b2 = info.clone(); move |__pe_a1| checkUseBeforeAssignExp_traverse(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+        Expression::apply(exp, (std::sync::Arc::new({ let __pe_b0 = unassigned; let __pe_b2 = info; move |__pe_a1| checkUseBeforeAssignExp_traverse(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
         Ok(())
     }
 
@@ -2897,9 +2897,9 @@ pub mod Function {
         Deref @ Expression::CREF { .. } if (ComponentRef::isCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())) => {
             node = ComponentRef::node(ComponentRef::last(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))?;
             (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node.clone(); move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-            if index.clone() > 0 {
-                Vector::remove(unassigned.clone(), index.clone())?;
-                Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(InstNode::name(node.clone())?).clone()], info.clone())?;
+            if index > 0 {
+                Vector::remove(unassigned, index)?;
+                Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(InstNode::name(node)?).clone()], info)?;
             }
             ()
         },
@@ -2917,13 +2917,13 @@ pub mod Function {
             for mut var in &*var_field!((*classDef).derivedVariables, SCode::ClassDef::PDER).clone() {
                 let mut var = var.clone();
                 index = List::positionOnTrue(inputs.clone(), (std::sync::Arc::new({ let __pe_b1 = (var.clone()).clone(); move |__pe_a0| Ok(InstNode::isNamed(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
-                if index.clone() < 1 {
+                if index < 1 {
                     Error::addSourceMessage(Error::PARTIAL_DERIVATIVE_INPUT_NOT_FOUND.clone(), list![(var.clone()).clone(), (AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone()], info.clone())?;
                     bail!("fail");
                 }
-                derivedVars = metamodelica::cons(index.clone(), derivedVars.clone());
+                derivedVars = metamodelica::cons(index, derivedVars.clone());
             }
-            derivedVars = metamodelica::Dangerous::listReverseInPlace(derivedVars.clone());
+            derivedVars = metamodelica::Dangerous::listReverseInPlace(derivedVars);
             ()
         },
         _ => (),

@@ -21,39 +21,41 @@ use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-fn lm_43(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_43 in &*items.clone() {
-        let mut lstElt_43 = lstElt_43.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_43.clone()) {
-        Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. } => {
+fn lm_43(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. }, tail: rest }) => {
             let mut ret_0: ArcStr;
+            let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
             txt = getCevalScriptInterfaceFunc(txt.clone(), (ret_0.clone()).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub fn getCevalScriptInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_funcs: Tpl::Text;
-    l_funcs = lm_43(Tpl::emptyTxt.clone(), a_tys.clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("import Absyn;\n")).clone(), (literal!("import AbsynUtil;\n")).clone(), (literal!("import CevalScript;\n")).clone(), (literal!("import Parser;\n")).clone(), (literal!("\n")).clone(), (literal!("protected\n")).clone(), (literal!("\n")).clone(), (literal!("import Values;\n")).clone(), (literal!("import ValuesMake;\n")).clone(), (literal!("import ValuesUtil;\n")).clone(), (literal!("constant Absyn.Msg dummyMsg = Absyn.MSG(SOURCEINFO(\"<interactive>\",false,1,1,1,1,0.0));\n")).clone(), (literal!("\n")).clone(), (literal!("public\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_funcs.clone())?;
+    l_funcs = lm_43(Tpl::emptyTxt.clone(), a_tys)?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("import Absyn;\n")).clone(), (literal!("import AbsynUtil;\n")).clone(), (literal!("import CevalScript;\n")).clone(), (literal!("import Parser;\n")).clone(), (literal!("\n")).clone(), (literal!("protected\n")).clone(), (literal!("\n")).clone(), (literal!("import Values;\n")).clone(), (literal!("import ValuesMake;\n")).clone(), (literal!("import ValuesUtil;\n")).clone(), (literal!("constant Absyn.Msg dummyMsg = Absyn.MSG(SOURCEINFO(\"<interactive>\",false,1,1,1,1,0.0));\n")).clone(), (literal!("\n")).clone(), (literal!("public\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeText(out_txt, l_funcs)?;
     Ok(out_txt)
 }
 
 pub(crate) fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("String")).clone() }))?;
@@ -103,7 +105,7 @@ pub(crate) fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> R
 
 fn fun_46(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name)) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.STRING(")).clone() }))?;
@@ -171,8 +173,8 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 pub(crate) fn getInValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
-    out_txt = fun_46(txt.clone(), a_ty.clone(), a_name.clone())?;
-    out_a_name = a_name.clone();
+    out_txt = fun_46(txt, a_ty, a_name.clone())?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name))
 }
 
@@ -180,7 +182,7 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
     let mut out_a_postMatch: Tpl::Text;
-    (out_txt, out_a_varDecl, out_a_postMatch) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_varDecl.clone(), in_a_postMatch.clone())) {
+    (out_txt, out_a_varDecl, out_a_postMatch) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name, in_a_varDecl, in_a_postMatch)) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name, a_varDecl, a_postMatch) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.STRING(")).clone() }))?;
@@ -267,14 +269,14 @@ pub(crate) fn getOutValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: A
     let mut out_a_name: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
     let mut out_a_postMatch: Tpl::Text;
-    (out_txt, out_a_varDecl, out_a_postMatch) = fun_48(txt.clone(), a_ty.clone(), a_name.clone(), a_varDecl.clone(), a_postMatch.clone())?;
-    out_a_name = a_name.clone();
+    (out_txt, out_a_varDecl, out_a_postMatch) = fun_48(txt, a_ty, a_name.clone(), a_varDecl, a_postMatch)?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name, out_a_varDecl, out_a_postMatch))
 }
 
 fn fun_50(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name)) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("match ")).clone() }))?;
@@ -350,58 +352,61 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 pub(crate) fn getOutValueArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
-    out_txt = fun_50(txt.clone(), a_ty.clone(), a_name.clone())?;
-    out_a_name = a_name.clone();
+    out_txt = fun_50(txt, a_ty, a_name.clone())?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name))
 }
 
-fn lm_52(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_52 in &*items.clone() {
-        let mut lstElt_52 = lstElt_52.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_52.clone()) {
-        Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. } => {
+fn lm_52(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             (txt, _) = getInValue(txt.clone(), Tpl::stringText((i_arg_name.clone()).clone()), i_arg_ty.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_53(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_postMatch: Tpl::Text, mut a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_postMatch: Tpl::Text = a_postMatch;
-    let mut a_varDecl: Tpl::Text = a_varDecl;
-    for mut lstElt_53 in &*items.clone() {
-        let mut lstElt_53 = lstElt_53.clone();
-        (txt, a_postMatch, a_varDecl) = (::match_deref::match_deref! { match &(lstElt_53.clone()) {
-        i_ty => {
+fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_postMatch: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_postMatch, in_a_varDecl)) {
+        (txt, Deref @ metamodelica::List::Nil, a_postMatch, a_varDecl) => {
+            return Ok((txt.clone(), a_postMatch.clone(), a_varDecl.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }, a_postMatch, a_varDecl) => {
             let mut x_i: i32;
             let mut txt_0: Tpl::Text;
+            let mut txt = (*txt).clone();
+            let mut a_postMatch = (*a_postMatch).clone();
+            let mut a_varDecl = (*a_varDecl).clone();
             x_i = Tpl::getIteri_i0(txt.clone())?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("res")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(x_i.clone())).clone())?;
             (txt, txt_0, a_varDecl, a_postMatch) = getOutValue(txt.clone(), txt_0.clone(), i_ty.clone(), a_varDecl.clone(), a_postMatch.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_postMatch.clone(), a_varDecl.clone())
+            { (in_txt, in_items, in_a_postMatch, in_a_varDecl) = (txt.clone(), rest.clone(), a_postMatch.clone(), a_varDecl.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_postMatch, a_varDecl))
 }
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postMatch: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_postMatch: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
-    (out_txt, out_a_postMatch, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_postMatch.clone(), in_a_varDecl.clone())) {
+    (out_txt, out_a_postMatch, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt, in_a_res, in_a_postMatch, in_a_varDecl)) {
         (txt, Deref @ DAE::Type::T_TUPLE { types: i_types, .. }, a_postMatch, a_varDecl) => {
             let mut txt = (*txt).clone();
             let mut a_postMatch = (*a_postMatch).clone();
@@ -430,36 +435,40 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postMatc
     Ok((out_txt, out_a_postMatch, out_a_varDecl))
 }
 
-fn lm_55(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_55 in &*items.clone() {
-        let mut lstElt_55 = lstElt_55.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_55.clone()) {
-        Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. } => {
+fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input ")).clone() }))?;
             txt = getInType(txt.clone(), i_arg_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_arg_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_56(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_56 in &*items.clone() {
-        let mut lstElt_56 = lstElt_56.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_56.clone()) {
-        i_ty => {
+fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }) => {
             let mut x_i: i32;
+            let mut txt = (*txt).clone();
             x_i = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output ")).clone() }))?;
             txt = getInType(txt.clone(), i_ty.clone())?;
@@ -467,17 +476,16 @@ fn lm_56(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>)
             txt = Tpl::writeStr(txt.clone(), (intString(x_i.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_57(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_res)) {
         (txt, Deref @ DAE::Type::T_TUPLE { types: i_types, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -502,7 +510,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Te
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varDecl.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_varDecl)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -528,118 +536,122 @@ pub(crate) fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr
     l_varDecl = Tpl::emptyTxt.clone();
     l_postMatch = Tpl::emptyTxt.clone();
     l_inVals = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_inVals = lm_52(l_inVals.clone(), a_args.clone())?;
-    l_inVals = Tpl::popIter(l_inVals.clone())?;
-    (l_outVals, l_postMatch, l_varDecl) = fun_54(Tpl::emptyTxt.clone(), a_res.clone(), l_postMatch.clone(), l_varDecl.clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function ")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    out_txt = lm_55(out_txt.clone(), a_args.clone())?;
-    out_txt = Tpl::popIter(out_txt.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = fun_57(out_txt.clone(), a_res.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = fun_58(out_txt.clone(), l_varDecl.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("algorithm\n")).clone() }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(_,")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_outVals.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(") := CevalScript.cevalInteractiveFunctions2(FCore.emptyCache(), FGraph.empty(), \"")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", {")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_inVals.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}, dummyMsg);\n")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_postMatch.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end ")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    l_inVals = lm_52(l_inVals, a_args.clone())?;
+    l_inVals = Tpl::popIter(l_inVals)?;
+    (l_outVals, l_postMatch, l_varDecl) = fun_54(Tpl::emptyTxt.clone(), a_res.clone(), l_postMatch, l_varDecl)?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function ")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_name.clone()).clone())?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::pushIter(out_txt, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    out_txt = lm_55(out_txt, a_args)?;
+    out_txt = Tpl::popIter(out_txt)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = fun_57(out_txt, a_res)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = fun_58(out_txt, l_varDecl)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("algorithm\n")).clone() }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(_,")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_outVals)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(") := CevalScript.cevalInteractiveFunctions2(FCore.emptyCache(), FGraph.empty(), \"")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_name.clone()).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", {")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_inVals)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}, dummyMsg);\n")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_postMatch)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end ")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_name).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
-fn lm_60(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_classNameWithColons: ArcStr) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_60 in &*items.clone() {
-        let mut lstElt_60 = lstElt_60.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_60.clone()) {
-        Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. } => {
+fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_classNameWithColons: ArcStr) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_classNameWithColons)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. }, tail: rest }, a_classNameWithColons) => {
             let mut ret_0: ArcStr;
+            let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
             txt = getQtInterfaceFunc(txt.clone(), (ret_0.clone()).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_classNameWithColons.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_classNameWithColons) = (txt.clone(), rest.clone(), (a_classNameWithColons.clone()).clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_classNameWithColons) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items, in_a_classNameWithColons) = (txt.clone(), rest.clone(), (a_classNameWithColons.clone()).clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub fn getQtInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_classNameWithColons: ArcStr, mut a_className: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_funcs: Tpl::Text;
-    l_funcs = lm_60(Tpl::emptyTxt.clone(), a_tys.clone(), (a_classNameWithColons.clone()).clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* generated by OpenModelica */\n")).clone(), (literal!("\n")).clone(), (literal!("#include <stdexcept>\n")).clone(), (literal!("#include \"OpenModelicaScriptingAPIQt.h\"\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_classNameWithColons.clone()).clone())?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_className.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("(threadData_t *td)\n")).clone(), (literal!("  : threadData(td)\n")).clone(), (literal!("{\n")).clone(), (literal!("}\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_funcs.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    l_funcs = lm_60(Tpl::emptyTxt.clone(), a_tys, (a_classNameWithColons.clone()).clone())?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* generated by OpenModelica */\n")).clone(), (literal!("\n")).clone(), (literal!("#include <stdexcept>\n")).clone(), (literal!("#include \"OpenModelicaScriptingAPIQt.h\"\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_classNameWithColons).clone())?;
+    out_txt = Tpl::writeStr(out_txt, (a_className).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("(threadData_t *td)\n")).clone(), (literal!("  : threadData(td)\n")).clone(), (literal!("{\n")).clone(), (literal!("}\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeText(out_txt, l_funcs)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
     Ok(out_txt)
 }
 
-fn lm_62(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_className: ArcStr) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_62 in &*items.clone() {
-        let mut lstElt_62 = lstElt_62.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_62.clone()) {
-        Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. } => {
+fn lm_62(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_className: ArcStr) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_className)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. }, tail: rest }, a_className) => {
             let mut ret_0: ArcStr;
+            let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
             txt = getQtInterfaceHeader(txt.clone(), (ret_0.clone()).clone(), (literal!("")).clone(), i_ty_funcArg.clone(), i_ty_funcResultType.clone(), (a_className.clone()).clone(), true)?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_className) = (txt.clone(), rest.clone(), (a_className.clone()).clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_className) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items, in_a_className) = (txt.clone(), rest.clone(), (a_className.clone()).clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 pub fn getQtInterfaceHeaders(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_className: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_heads: Tpl::Text;
-    l_heads = lm_62(Tpl::emptyTxt.clone(), a_tys.clone(), (a_className.clone()).clone())?;
-    out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* generated by OpenModelica */\n")).clone(), (literal!("#ifndef OpenModelicaScriptingAPIQt__H\n")).clone(), (literal!("#define OpenModelicaScriptingAPIQt__H\n")).clone(), (literal!("\n")).clone(), (literal!("#include <QOpenGLContext> // must be first include to fix undefined GLDEBUGPROC\n")).clone(), (literal!("#include <QtCore>\n")).clone(), (literal!("/* import the scripting here */\n")).clone(), (literal!("#define IMPORT_INTO\n")).clone(), (literal!("#include \"OpenModelicaScriptingAPI.h\"\n")).clone(), (literal!("\n")).clone(), (literal!("class ")).clone()], lastHasNewLine: false }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_className.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" : public QObject\n")).clone(), (literal!("{\n")).clone(), (literal!("  Q_OBJECT\n")).clone(), (literal!("public:\n")).clone(), (literal!("  threadData_t *threadData;\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_className.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("(threadData_t *td);\n")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_heads.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("signals:\n")).clone(), (literal!("  void logCommand(QString command);\n")).clone(), (literal!("  // elapsed time in seconds\n")).clone(), (literal!("  void logResponse(QString command, QString response, double elapsed);\n")).clone(), (literal!("  void throwException(QString exception);\n")).clone(), (literal!("};\n")).clone(), (literal!("\n")).clone(), (literal!("#endif /* OpenModelicaScriptingAPIQt__H */")).clone()], lastHasNewLine: false }))?;
+    l_heads = lm_62(Tpl::emptyTxt.clone(), a_tys, (a_className.clone()).clone())?;
+    out_txt = Tpl::writeTok(txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* generated by OpenModelica */\n")).clone(), (literal!("#ifndef OpenModelicaScriptingAPIQt__H\n")).clone(), (literal!("#define OpenModelicaScriptingAPIQt__H\n")).clone(), (literal!("\n")).clone(), (literal!("#include <QOpenGLContext> // must be first include to fix undefined GLDEBUGPROC\n")).clone(), (literal!("#include <QtCore>\n")).clone(), (literal!("/* import the scripting here */\n")).clone(), (literal!("#define IMPORT_INTO\n")).clone(), (literal!("#include \"OpenModelicaScriptingAPI.h\"\n")).clone(), (literal!("\n")).clone(), (literal!("class ")).clone()], lastHasNewLine: false }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_className.clone()).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" : public QObject\n")).clone(), (literal!("{\n")).clone(), (literal!("  Q_OBJECT\n")).clone(), (literal!("public:\n")).clone(), (literal!("  threadData_t *threadData;\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_className).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("(threadData_t *td);\n")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_heads)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("signals:\n")).clone(), (literal!("  void logCommand(QString command);\n")).clone(), (literal!("  // elapsed time in seconds\n")).clone(), (literal!("  void logResponse(QString command, QString response, double elapsed);\n")).clone(), (literal!("  void throwException(QString exception);\n")).clone(), (literal!("};\n")).clone(), (literal!("\n")).clone(), (literal!("#endif /* OpenModelicaScriptingAPIQt__H */")).clone()], lastHasNewLine: false }))?;
     Ok(out_txt)
 }
 
 pub(crate) fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty)) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("QString")).clone() }))?;
@@ -689,7 +701,7 @@ pub(crate) fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> R
 
 pub(crate) fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_names: Option<Arc<metamodelica::List<ArcStr>>>, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_names.clone(), in_a_index.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_names, in_a_index)) {
         (txt, Some(i_lst), a_index) => {
             let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
@@ -710,7 +722,7 @@ pub(crate) fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_nam
 
 pub(crate) fn getQtTupleTypeOutputName(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_index.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_index)) {
         (txt, Deref @ DAE::Type::T_TUPLE { names: i_names, .. }, a_index) => {
             let mut txt = (*txt).clone();
             txt = getQtTupleTypeOutputNameHelper(txt.clone(), i_names.clone(), a_index.clone())?;
@@ -730,7 +742,7 @@ pub(crate) fn getQtTupleTypeOutputName(mut in_txt: Tpl::Text, mut in_a_ty: Arc<D
 fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<DAE::Type>, mut in_a_index: i32, mut in_a_name: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
-    (out_txt, out_a_name) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_res.clone(), in_a_index.clone(), in_a_name.clone())) {
+    (out_txt, out_a_name) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_res, in_a_index, in_a_name)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_res, a_index, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
@@ -829,73 +841,77 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
 pub(crate) fn structToString(mut txt: Tpl::Text, mut a_res: Arc<DAE::Type>, mut a_ty: Arc<DAE::Type>, mut a_index: i32, mut a_name: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
-    (out_txt, out_a_name) = fun_67(txt.clone(), a_ty.clone(), a_res.clone(), a_index.clone(), a_name.clone())?;
+    (out_txt, out_a_name) = fun_67(txt, a_ty, a_res, a_index, a_name)?;
     Ok((out_txt, out_a_name))
 }
 
-fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_69 in &*items.clone() {
-        let mut lstElt_69 = lstElt_69.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_69.clone()) {
-        Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. } => {
+fn lm_69(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             txt = getQtType(txt.clone(), i_arg_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_arg_name.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_70(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_70 in &*items.clone() {
-        let mut lstElt_70 = lstElt_70.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_70.clone()) {
-        i_ty => {
+fn lm_70(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_res)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }, a_res) => {
             let mut x_i: i32;
+            let mut txt = (*txt).clone();
             x_i = Tpl::getIteri_i0(txt.clone())?;
             txt = getQtType(txt.clone(), i_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = getQtTupleTypeOutputName(txt.clone(), a_res.clone(), x_i.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_res) = (txt.clone(), rest.clone(), a_res.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_71(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_71 in &*items.clone() {
-        let mut lstElt_71 = lstElt_71.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_71.clone()) {
-        i_ty => {
+fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_res)) {
+        (txt, Deref @ metamodelica::List::Nil, _) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }, a_res) => {
             let mut x_i: i32;
+            let mut txt = (*txt).clone();
             x_i = Tpl::getIteri_i0(txt.clone())?;
             (txt, _) = structToString(txt.clone(), a_res.clone(), i_ty.clone(), x_i.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("resultBuffer")).clone() })))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items, in_a_res) = (txt.clone(), rest.clone(), a_res.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
 fn fun_72(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DAE::Type>, mut in_a_types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_name: ArcStr, mut in_a_prefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_addStructs.clone(), in_a_res.clone(), in_a_types.clone(), in_a_name.clone(), in_a_prefix.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_addStructs, in_a_res, in_a_types, in_a_name, in_a_prefix)) {
         (txt, false, _, _, a_name, a_prefix) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_prefix.clone()).clone())?;
@@ -943,7 +959,7 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DA
 
 fn fun_73(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_name: ArcStr, mut in_a_prefix: ArcStr, mut in_a_addStructs: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_name.clone(), in_a_prefix.clone(), in_a_addStructs.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_res, in_a_name, in_a_prefix, in_a_addStructs)) {
         (txt, i_res @ Deref @ DAE::Type::T_TUPLE { types: i_types, .. }, a_name, a_prefix, a_addStructs) => {
             let mut txt = (*txt).clone();
             txt = fun_72(txt.clone(), a_addStructs.clone(), i_res.clone(), i_types.clone(), (a_name.clone()).clone(), (a_prefix.clone()).clone())?;
@@ -969,23 +985,23 @@ pub(crate) fn getQtInterfaceHeader(mut txt: Tpl::Text, mut a_name: ArcStr, mut a
     let mut l_outType: Tpl::Text;
     let mut l_inTypes: Tpl::Text;
     l_inTypes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_inTypes = lm_69(l_inTypes.clone(), a_args.clone())?;
-    l_inTypes = Tpl::popIter(l_inTypes.clone())?;
-    l_outType = fun_73(Tpl::emptyTxt.clone(), a_res.clone(), (a_name.clone()).clone(), (a_prefix.clone()).clone(), a_addStructs.clone())?;
-    out_txt = Tpl::writeText(txt.clone(), l_outType.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_prefix.clone()).clone())?;
-    out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_inTypes.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
+    l_inTypes = lm_69(l_inTypes, a_args)?;
+    l_inTypes = Tpl::popIter(l_inTypes)?;
+    l_outType = fun_73(Tpl::emptyTxt.clone(), a_res, (a_name.clone()).clone(), (a_prefix.clone()).clone(), a_addStructs)?;
+    out_txt = Tpl::writeText(txt, l_outType)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
+    out_txt = Tpl::writeStr(out_txt, (a_prefix).clone())?;
+    out_txt = Tpl::writeStr(out_txt, (a_name).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_inTypes)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
     Ok(out_txt)
 }
 
 fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
-    (out_txt, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_varDecl.clone())) {
+    (out_txt, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name, in_a_varDecl)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_varDecl) => {
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
@@ -1098,14 +1114,14 @@ pub(crate) fn getQtInArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Ar
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
-    (out_txt, out_a_varDecl) = fun_75(txt.clone(), a_ty.clone(), a_name.clone(), a_varDecl.clone())?;
-    out_a_name = a_name.clone();
+    (out_txt, out_a_varDecl) = fun_75(txt, a_ty, a_name.clone(), a_varDecl)?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name, out_a_varDecl))
 }
 
 fn fun_77(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
@@ -1160,15 +1176,15 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 pub(crate) fn getQtInArgBoxed(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
-    out_txt = fun_77(txt.clone(), a_ty.clone(), a_name.clone())?;
-    out_a_name = a_name.clone();
+    out_txt = fun_77(txt, a_ty, a_name.clone())?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name))
 }
 
 fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_commandLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_commandLog: Tpl::Text;
-    (out_txt, out_a_commandLog) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_commandLog.clone())) {
+    (out_txt, out_a_commandLog) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name, in_a_commandLog)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_commandLog) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_commandLog.clone())?;
@@ -1271,8 +1287,8 @@ pub(crate) fn getQtCommandLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_commandLog: Tpl::Text;
-    (out_txt, out_a_commandLog) = fun_79(txt.clone(), a_ty.clone(), a_name.clone(), a_commandLog.clone())?;
-    out_a_name = a_name.clone();
+    (out_txt, out_a_commandLog) = fun_79(txt, a_ty, a_name.clone(), a_commandLog)?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name, out_a_commandLog))
 }
 
@@ -1282,7 +1298,7 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     let mut out_a_shortName: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
     let mut out_a_postCall: Tpl::Text;
-    (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_shortName.clone(), in_a_varDecl.clone(), in_a_postCall.clone())) {
+    (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name, in_a_shortName, in_a_varDecl, in_a_postCall)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_shortName, a_varDecl, a_postCall) => {
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
@@ -1371,13 +1387,13 @@ pub(crate) fn getQtOutArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_short
     let mut out_a_shortName: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
     let mut out_a_postCall: Tpl::Text;
-    (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = fun_81(txt.clone(), a_ty.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())?;
+    (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = fun_81(txt, a_ty, a_name, a_shortName, a_varDecl, a_postCall)?;
     Ok((out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall))
 }
 
 fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_shortName: Tpl::Text, mut in_a_mm: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_shortName.clone(), in_a_mm.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name, in_a_shortName, in_a_mm)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, _, a_mm) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
@@ -1476,17 +1492,17 @@ pub(crate) fn getQtOutArgArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_
     let mut out_a_name: Tpl::Text;
     let mut out_a_shortName: Tpl::Text;
     let mut out_a_mm: Tpl::Text;
-    out_txt = fun_83(txt.clone(), a_ty.clone(), a_name.clone(), a_shortName.clone(), a_mm.clone())?;
-    out_a_name = a_name.clone();
-    out_a_shortName = a_shortName.clone();
-    out_a_mm = a_mm.clone();
+    out_txt = fun_83(txt, a_ty, a_name.clone(), a_shortName.clone(), a_mm.clone())?;
+    out_a_name = a_name;
+    out_a_shortName = a_shortName;
+    out_a_mm = a_mm;
     Ok((out_txt, out_a_name, out_a_shortName, out_a_mm))
 }
 
 fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_responseLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_responseLog: Tpl::Text;
-    (out_txt, out_a_responseLog) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_responseLog.clone())) {
+    (out_txt, out_a_responseLog) = (::match_deref::match_deref! { match &((in_txt, in_a_ty, in_a_name, in_a_responseLog)) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_responseLog) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_responseLog.clone())?;
@@ -1598,61 +1614,68 @@ pub(crate) fn getQtResponseLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mu
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_responseLog: Tpl::Text;
-    (out_txt, out_a_responseLog) = fun_85(txt.clone(), a_ty.clone(), a_name.clone(), a_responseLog.clone())?;
-    out_a_name = a_name.clone();
+    (out_txt, out_a_responseLog) = fun_85(txt, a_ty, a_name.clone(), a_responseLog)?;
+    out_a_name = a_name;
     Ok((out_txt, out_a_name, out_a_responseLog))
 }
 
-fn lm_87(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_varDecl: Tpl::Text = a_varDecl;
-    for mut lstElt_87 in &*items.clone() {
-        let mut lstElt_87 = lstElt_87.clone();
-        (txt, a_varDecl) = (::match_deref::match_deref! { match &(lstElt_87.clone()) {
-        Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. } => {
+fn lm_87(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_varDecl)) {
+        (txt, Deref @ metamodelica::List::Nil, a_varDecl) => {
+            return Ok((txt.clone(), a_varDecl.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }, a_varDecl) => {
+            let mut txt = (*txt).clone();
+            let mut a_varDecl = (*a_varDecl).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
             (txt, _, a_varDecl) = getQtInArg(txt.clone(), Tpl::stringText((i_arg_name.clone()).clone()), i_arg_ty.clone(), a_varDecl.clone())?;
-            (txt.clone(), a_varDecl.clone())
+            { (in_txt, in_items, in_a_varDecl) = (txt.clone(), rest.clone(), a_varDecl.clone()); continue '__tco; }
         },
-        _ => {
-            (txt.clone(), a_varDecl.clone())
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_varDecl) => {
+            let mut txt = (*txt).clone();
+            let mut a_varDecl = (*a_varDecl).clone();
+            { (in_txt, in_items, in_a_varDecl) = (txt.clone(), rest.clone(), a_varDecl.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_varDecl))
 }
 
-fn lm_88(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut txt: Tpl::Text = txt;
-    for mut lstElt_88 in &*items.clone() {
-        let mut lstElt_88 = lstElt_88.clone();
-        txt = (::match_deref::match_deref! { match &(lstElt_88.clone()) {
-        Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. } => {
+fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items)) {
+        (txt, Deref @ metamodelica::List::Nil) => {
+            return Ok(txt.clone())
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }) => {
+            let mut txt = (*txt).clone();
             (txt, _, _) = getQtCommandLogText(txt.clone(), Tpl::stringText((i_arg_name.clone()).clone()), i_arg_ty.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("commandLog")).clone() })))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt.clone()
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => {
-            txt.clone()
+        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
+            let mut txt = (*txt).clone();
+            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok(txt)
 }
 
-fn lm_89(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_postCall: Tpl::Text, mut a_varDecl: Tpl::Text, mut a_res: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut txt: Tpl::Text = txt;
-    let mut a_postCall: Tpl::Text = a_postCall;
-    let mut a_varDecl: Tpl::Text = a_varDecl;
-    for mut lstElt_89 in &*items.clone() {
-        let mut lstElt_89 = lstElt_89.clone();
-        (txt, a_postCall, a_varDecl) = (::match_deref::match_deref! { match &(lstElt_89.clone()) {
-        i_t => {
+fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_postCall: Tpl::Text, mut in_a_varDecl: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_postCall, in_a_varDecl, in_a_res)) {
+        (txt, Deref @ metamodelica::List::Nil, a_postCall, a_varDecl, _) => {
+            return Ok((txt.clone(), a_postCall.clone(), a_varDecl.clone()))
+        },
+        (txt, Deref @ metamodelica::List::Cons { head: i_t, tail: rest }, a_postCall, a_varDecl, a_res) => {
             let mut x_i1: i32;
             let mut txt_1: Tpl::Text;
             let mut txt_0: Tpl::Text;
+            let mut txt = (*txt).clone();
+            let mut a_postCall = (*a_postCall).clone();
+            let mut a_varDecl = (*a_varDecl).clone();
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", &")).clone() }))?;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("result.")).clone() }))?;
@@ -1661,12 +1684,11 @@ fn lm_89(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>,
             txt_1 = Tpl::writeStr(txt_1.clone(), (intString(x_i1.clone())).clone())?;
             (txt, txt_0, txt_1, a_varDecl, a_postCall) = getQtOutArg(txt.clone(), txt_0.clone(), txt_1.clone(), i_t.clone(), a_varDecl.clone(), a_postCall.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt.clone(), a_postCall.clone(), a_varDecl.clone())
+            { (in_txt, in_items, in_a_postCall, in_a_varDecl, in_a_res) = (txt.clone(), rest.clone(), a_postCall.clone(), a_varDecl.clone(), a_res.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
     }
-    Ok((txt, a_postCall, a_varDecl))
 }
 
 fn fun_90(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall: Tpl::Text, mut in_a_outArg: Tpl::Text, mut in_a_responseLog: Tpl::Text, mut in_a_name: ArcStr, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
@@ -1675,7 +1697,7 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
     let mut out_a_outArg: Tpl::Text;
     let mut out_a_responseLog: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
-    (out_txt, out_a_postCall, out_a_outArg, out_a_responseLog, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_postCall.clone(), in_a_outArg.clone(), in_a_responseLog.clone(), in_a_name.clone(), in_a_varDecl.clone())) {
+    (out_txt, out_a_postCall, out_a_outArg, out_a_responseLog, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt, in_a_res, in_a_postCall, in_a_outArg, in_a_responseLog, in_a_name, in_a_varDecl)) {
         (txt, Deref @ DAE::Type::T_NORETCALL { .. }, a_postCall, a_outArg, a_responseLog, _, a_varDecl) => {
             (txt.clone(), a_postCall.clone(), a_outArg.clone(), a_responseLog.clone(), a_varDecl.clone())
         },
@@ -1719,7 +1741,7 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
 
 fn fun_91(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_commandLog: Tpl::Text, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_commandLog.clone(), in_a_name.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_commandLog, in_a_name) {
         (mut txt, false, _, mut a_name) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("emit logCommand(\"")).clone() }))?;
             txt = CodegenUtil::replaceDotAndUnderscore(txt.clone(), (a_name.clone()).clone())?;
@@ -1741,7 +1763,7 @@ fn fun_91(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_commandLog: Tpl::Te
 
 fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone()) {
+    out_txt = (match (in_txt, in_mArg, in_a_name) {
         (mut txt, false, mut a_name) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("emit logResponse(\"")).clone() }))?;
             txt = CodegenUtil::replaceDotAndUnderscore(txt.clone(), (a_name.clone()).clone())?;
@@ -1760,7 +1782,7 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr) -> Re
 
 fn fun_93(mut in_txt: Tpl::Text, mut in_a_outArg: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outArg.clone())) {
+    out_txt = (::match_deref::match_deref! { match &((in_txt, in_a_outArg)) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
@@ -1792,59 +1814,59 @@ pub(crate) fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_a
     l_varDecl = Tpl::emptyTxt.clone();
     l_responseLog = Tpl::emptyTxt.clone();
     l_postCall = Tpl::emptyTxt.clone();
-    (l_inArgs, l_varDecl) = lm_87(Tpl::emptyTxt.clone(), a_args.clone(), l_varDecl.clone())?;
+    (l_inArgs, l_varDecl) = lm_87(Tpl::emptyTxt.clone(), a_args.clone(), l_varDecl)?;
     l_commandLog = Tpl::emptyTxt.clone();
     txt_5 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("commandLog.append(\",\");")).clone() }))?;
-    txt_5 = Tpl::writeTok(txt_5.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    ret_6 = Tpl::textStrTok(txt_5.clone())?;
-    l_commandLog = Tpl::pushIter(l_commandLog.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(ret_6.clone()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-    l_commandLog = lm_88(l_commandLog.clone(), a_args.clone())?;
-    l_commandLog = Tpl::popIter(l_commandLog.clone())?;
+    txt_5 = Tpl::writeTok(txt_5, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    ret_6 = Tpl::textStrTok(txt_5)?;
+    l_commandLog = Tpl::pushIter(l_commandLog, Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(ret_6), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
+    l_commandLog = lm_88(l_commandLog, a_args.clone())?;
+    l_commandLog = Tpl::popIter(l_commandLog)?;
     l_outArg = Tpl::emptyTxt.clone();
-    (l_outArgs, l_postCall, l_outArg, l_responseLog, l_varDecl) = fun_90(Tpl::emptyTxt.clone(), a_res.clone(), l_postCall.clone(), l_outArg.clone(), l_responseLog.clone(), (a_name.clone()).clone(), l_varDecl.clone())?;
-    out_txt = getQtInterfaceHeader(txt.clone(), (a_name.clone()).clone(), (a_className.clone()).clone(), a_args.clone(), a_res.clone(), (a_className.clone()).clone(), false)?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("{\n")).clone(), (literal!("  QElapsedTimer commandTime;\n")).clone(), (literal!("  commandTime.start();\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    (l_outArgs, l_postCall, l_outArg, l_responseLog, l_varDecl) = fun_90(Tpl::emptyTxt.clone(), a_res.clone(), l_postCall, l_outArg, l_responseLog, (a_name.clone()).clone(), l_varDecl)?;
+    out_txt = getQtInterfaceHeader(txt, (a_name.clone()).clone(), (a_className.clone()).clone(), a_args.clone(), a_res, (a_className).clone(), false)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("{\n")).clone(), (literal!("  QElapsedTimer commandTime;\n")).clone(), (literal!("  commandTime.start();\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
     ret_9 = (a_args.clone().len() as i32);
-    ret_10 = intGt(ret_9.clone(), 0);
-    out_txt = fun_91(out_txt.clone(), ret_10.clone(), l_commandLog.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_varDecl.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("try {\n")).clone(), (literal!("  MMC_TRY_TOP_INTERNAL()\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_outArg.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("omc_OpenModelicaScriptingAPI_")).clone() }))?;
-    out_txt = CodegenUtil::replaceDotAndUnderscore(out_txt.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(threadData")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_inArgs.clone())?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_outArgs.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_postCall.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("MMC_CATCH_TOP()\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("} catch(std::exception &exception) {\n")).clone() }))?;
-    out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("emit throwException(QString(\"")).clone() }))?;
-    out_txt = CodegenUtil::replaceDotAndUnderscore(out_txt.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" failed. %1\").arg(exception.what()));\n")).clone() }))?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("QString responseLog;\n")).clone()], lastHasNewLine: true }))?;
-    out_txt = Tpl::writeText(out_txt.clone(), l_responseLog.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("double elapsed = (double)commandTime.elapsed() / 1000.0;\n")).clone() }))?;
-    ret_11 = (a_args.clone().len() as i32);
-    ret_12 = intGt(ret_11.clone(), 0);
-    out_txt = fun_92(out_txt.clone(), ret_12.clone(), (a_name.clone()).clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-    out_txt = fun_93(out_txt.clone(), l_outArg.clone())?;
-    out_txt = Tpl::softNewLine(out_txt.clone())?;
-    out_txt = Tpl::popBlock(out_txt.clone())?;
-    out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
+    ret_10 = intGt(ret_9, 0);
+    out_txt = fun_91(out_txt, ret_10, l_commandLog, (a_name.clone()).clone())?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = Tpl::writeText(out_txt, l_varDecl)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("try {\n")).clone(), (literal!("  MMC_TRY_TOP_INTERNAL()\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::writeText(out_txt, l_outArg.clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("omc_OpenModelicaScriptingAPI_")).clone() }))?;
+    out_txt = CodegenUtil::replaceDotAndUnderscore(out_txt, (a_name.clone()).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(threadData")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_inArgs)?;
+    out_txt = Tpl::writeText(out_txt, l_outArgs)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
+    out_txt = Tpl::writeText(out_txt, l_postCall)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("MMC_CATCH_TOP()\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("} catch(std::exception &exception) {\n")).clone() }))?;
+    out_txt = Tpl::pushBlock(out_txt, Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("emit throwException(QString(\"")).clone() }))?;
+    out_txt = CodegenUtil::replaceDotAndUnderscore(out_txt, (a_name.clone()).clone())?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" failed. %1\").arg(exception.what()));\n")).clone() }))?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("QString responseLog;\n")).clone()], lastHasNewLine: true }))?;
+    out_txt = Tpl::writeText(out_txt, l_responseLog)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("double elapsed = (double)commandTime.elapsed() / 1000.0;\n")).clone() }))?;
+    ret_11 = (a_args.len() as i32);
+    ret_12 = intGt(ret_11, 0);
+    out_txt = fun_92(out_txt, ret_12, (a_name).clone())?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
+    out_txt = fun_93(out_txt, l_outArg)?;
+    out_txt = Tpl::softNewLine(out_txt)?;
+    out_txt = Tpl::popBlock(out_txt)?;
+    out_txt = Tpl::writeTok(out_txt, Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
     Ok(out_txt)
 }
 

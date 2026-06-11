@@ -162,7 +162,7 @@ pub fn emptyListObject() -> Arc<JSON> {
 pub fn fromPair(mut key: ArcStr, mut value: Arc<JSON>) -> Result<Arc<JSON>> {
     let mut obj: Arc<JSON>;
     obj = emptyObject();
-    obj = addPair((key.clone()).clone(), value.clone(), obj.clone())?;
+    obj = addPair((key).clone(), value, obj)?;
     Ok(obj)
 }
 
@@ -172,7 +172,7 @@ pub(crate) fn listObjectFromPair(mut key: ArcStr, mut value: Arc<JSON>) -> Arc<J
 }
 
 pub fn emptyArray(mut capacity: i32) -> Arc<JSON> {
-    let mut obj: Arc<JSON> = Arc::new(JSON::ARRAY { values: Vector::new(capacity.clone()) });
+    let mut obj: Arc<JSON> = Arc::new(JSON::ARRAY { values: Vector::new(capacity) });
     obj
 }
 
@@ -192,17 +192,17 @@ pub fn makeString(mut r#str: ArcStr) -> Arc<JSON> {
 }
 
 pub fn makeInteger(mut i: i32) -> Arc<JSON> {
-    let mut obj: Arc<JSON> = Arc::new(JSON::INTEGER { i: i.clone() });
+    let mut obj: Arc<JSON> = Arc::new(JSON::INTEGER { i: i });
     obj
 }
 
 pub fn makeNumber(mut r: metamodelica::Real) -> Arc<JSON> {
-    let mut obj: Arc<JSON> = Arc::new(JSON::NUMBER { r: r.clone() });
+    let mut obj: Arc<JSON> = Arc::new(JSON::NUMBER { r: r });
     obj
 }
 
 pub fn makeBoolean(mut b: bool) -> Arc<JSON> {
-    let mut obj: Arc<JSON> = if (b.clone()) {crate::JSON::interned_TRUE()} else {crate::JSON::interned_FALSE()};
+    let mut obj: Arc<JSON> = if (b) {crate::JSON::interned_TRUE()} else {crate::JSON::interned_FALSE()};
     obj
 }
 
@@ -213,7 +213,7 @@ pub fn makeNull() -> Arc<JSON> {
 
 pub fn isNull(mut obj: Arc<JSON>) -> bool {
     let mut res: bool;
-    res = (::match_deref::match_deref! { match &(obj.clone()) {
+    res = (::match_deref::match_deref! { match &(obj) {
         Deref @ NULL { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -225,10 +225,10 @@ pub fn addElement(mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>>
     '__tco: loop {
         ::match_deref::match_deref! { match &(obj.clone()) {
         Deref @ ARRAY { .. } => {
-            Vector::push(var_field!((*obj).values, JSON::ARRAY).clone(), value.clone());
-            return Ok(obj.clone())
+            Vector::push(var_field!((*obj).values, JSON::ARRAY).clone(), value);
+            return Ok(obj)
         },
-        Deref @ NULL { .. } => { (value, obj) = (value.clone(), emptyArray(0)); continue '__tco; },
+        Deref @ NULL { .. } => { (value, obj) = (value, emptyArray(0)); continue '__tco; },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
     }
@@ -236,7 +236,7 @@ pub fn addElement(mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>>
 
 pub fn addElementNotNull(mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>> {
     let mut outObj: Arc<JSON>;
-    outObj = if (isNull(value.clone())) {obj.clone()} else {addElement(value.clone(), obj.clone())?};
+    outObj = if (isNull(value.clone())) {obj} else {addElement(value, obj)?};
     Ok(outObj)
 }
 
@@ -244,11 +244,11 @@ pub fn addPair(mut key: ArcStr, mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Res
     '__tco: loop {
         ::match_deref::match_deref! { match &(obj.clone()) {
         Deref @ OBJECT { .. } => {
-            UnorderedMap::add((key.clone()).clone(), value.clone(), var_field!((*obj).values, JSON::OBJECT).clone())?;
-            return Ok(obj.clone())
+            UnorderedMap::add((key).clone(), value, var_field!((*obj).values, JSON::OBJECT).clone())?;
+            return Ok(obj)
         },
-        Deref @ LIST_OBJECT { .. } => return Ok(Arc::new(JSON::LIST_OBJECT { values: metamodelica::cons((key.clone(), value.clone()), var_field!((*obj).values, JSON::LIST_OBJECT).clone()) })),
-        Deref @ NULL { .. } => { (key, value, obj) = ((key.clone()).clone(), value.clone(), emptyListObject()); continue '__tco; },
+        Deref @ LIST_OBJECT { .. } => return Ok(Arc::new(JSON::LIST_OBJECT { values: metamodelica::cons((key, value), var_field!((*obj).values, JSON::LIST_OBJECT).clone()) })),
+        Deref @ NULL { .. } => { (key, value, obj) = ((key).clone(), value, emptyListObject()); continue '__tco; },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
     }
@@ -256,7 +256,7 @@ pub fn addPair(mut key: ArcStr, mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Res
 
 pub fn addPairNotNull(mut key: ArcStr, mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>> {
     let mut outObj: Arc<JSON>;
-    outObj = if (isNull(value.clone())) {obj.clone()} else {addPair((key.clone()).clone(), value.clone(), obj.clone())?};
+    outObj = if (isNull(value.clone())) {obj} else {addPair((key).clone(), value, obj)?};
     Ok(outObj)
 }
 
@@ -301,7 +301,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
             Arc::new(JSON::LIST { values: elems.clone() })
         },
         _ => {
-            value.clone()
+            value
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -312,13 +312,13 @@ pub fn toString(mut value: Arc<JSON>, mut prettyPrint: bool) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut handle: i32;
     handle = Print::saveAndClearBuf()?;
-    if prettyPrint.clone() {
-        toStringPP_work(value.clone(), (literal!("")).clone())?;
+    if prettyPrint {
+        toStringPP_work(value, (literal!("")).clone())?;
     } else {
-        toString_work(value.clone())?;
+        toString_work(value)?;
     }
     r#str = (Print::getString()?).clone();
-    Print::restoreBuf(handle.clone())?;
+    Print::restoreBuf(handle)?;
     Ok(r#str)
 }
 
@@ -387,9 +387,9 @@ pub(crate) fn toString_array(mut values: Arc<Vector::Vector<Arc<JSON>>>) -> Resu
 pub(crate) fn toString_list(mut values: Arc<metamodelica::List<Arc<JSON>>>) -> Result<()> {
     let mut first: bool = true;
     Print::printBuf((literal!("[")).clone())?;
-    for mut v in &*values.clone() {
+    for mut v in &*values {
         let mut v = v.clone();
-        if first.clone() {
+        if first {
             first = false;
         } else {
             Print::printBuf((literal!(", ")).clone())?;
@@ -420,10 +420,10 @@ pub(crate) fn toString_listObject(mut object: Arc<metamodelica::List<(ArcStr, Ar
     let mut key: ArcStr;
     let mut value: Arc<JSON>;
     Print::printBuf((literal!("{")).clone())?;
-    for mut entry in &*object.clone().reverse() {
+    for mut entry in &*object.reverse() {
         let mut entry = entry.clone();
         (key, value) = entry.clone();
-        if first.clone() {
+        if first {
             first = false;
         } else {
             Print::printBuf((literal!(", ")).clone())?;
@@ -466,19 +466,19 @@ pub(crate) fn toStringPP_work(mut value: Arc<JSON>, mut indent: ArcStr) -> Resul
             ()
         },
         Deref @ ARRAY { .. } => {
-            toStringPP_array(var_field!((*value).values, JSON::ARRAY).clone(), (indent.clone()).clone())?;
+            toStringPP_array(var_field!((*value).values, JSON::ARRAY).clone(), (indent).clone())?;
             ()
         },
         Deref @ LIST { .. } => {
-            toStringPP_list(var_field!((*value).values, JSON::LIST).clone(), (indent.clone()).clone())?;
+            toStringPP_list(var_field!((*value).values, JSON::LIST).clone(), (indent).clone())?;
             ()
         },
         Deref @ OBJECT { .. } => {
-            toStringPP_object(var_field!((*value).values, JSON::OBJECT).clone(), (indent.clone()).clone())?;
+            toStringPP_object(var_field!((*value).values, JSON::OBJECT).clone(), (indent).clone())?;
             ()
         },
         Deref @ LIST_OBJECT { .. } => {
-            toStringPP_listObject(var_field!((*value).values, JSON::LIST_OBJECT).clone(), (indent.clone()).clone())?;
+            toStringPP_listObject(var_field!((*value).values, JSON::LIST_OBJECT).clone(), (indent).clone())?;
             ()
         },
         _ => (),
@@ -498,7 +498,7 @@ pub(crate) fn toStringPP_array(mut values: Arc<Vector::Vector<Arc<JSON>>>, mut i
         toStringPP_work(Vector::getNoBounds(values.clone(), i.clone()), (next_indent.clone()).clone())?;
     }
     Print::printBuf((literal!("\n")).clone())?;
-    Print::printBuf((indent.clone()).clone())?;
+    Print::printBuf((indent).clone())?;
     Print::printBuf((literal!("]")).clone())?;
     Ok(())
 }
@@ -507,9 +507,9 @@ pub(crate) fn toStringPP_list(mut values: Arc<metamodelica::List<Arc<JSON>>>, mu
     let mut next_indent: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) };
     let mut first: bool = true;
     Print::printBuf((literal!("[\n")).clone())?;
-    for mut v in &*values.clone() {
+    for mut v in &*values {
         let mut v = v.clone();
-        if first.clone() {
+        if first {
             first = false;
         } else {
             Print::printBuf((literal!(",\n")).clone())?;
@@ -518,7 +518,7 @@ pub(crate) fn toStringPP_list(mut values: Arc<metamodelica::List<Arc<JSON>>>, mu
         toStringPP_work(v.clone(), (next_indent.clone()).clone())?;
     }
     Print::printBuf((literal!("\n")).clone())?;
-    Print::printBuf((indent.clone()).clone())?;
+    Print::printBuf((indent).clone())?;
     Print::printBuf((literal!("]")).clone())?;
     Ok(())
 }
@@ -535,7 +535,7 @@ pub(crate) fn toStringPP_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, 
         toStringPP_work(UnorderedMap::valueAt(map.clone(), i.clone())?, (next_indent.clone()).clone())?;
     }
     Print::printBuf((literal!("\n")).clone())?;
-    Print::printBuf((indent.clone()).clone())?;
+    Print::printBuf((indent).clone())?;
     Print::printBuf((literal!("}")).clone())?;
     Ok(())
 }
@@ -546,10 +546,10 @@ pub(crate) fn toStringPP_listObject(mut object: Arc<metamodelica::List<(ArcStr, 
     let mut value: Arc<JSON>;
     let mut next_indent: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) };
     Print::printBuf((literal!("{\n")).clone())?;
-    for mut entry in &*object.clone().reverse() {
+    for mut entry in &*object.reverse() {
         let mut entry = entry.clone();
         (key, value) = entry.clone();
-        if first.clone() {
+        if first {
             first = false;
         } else {
             Print::printBuf((literal!(",\n")).clone())?;
@@ -561,7 +561,7 @@ pub(crate) fn toStringPP_listObject(mut object: Arc<metamodelica::List<(ArcStr, 
         toStringPP_work(value.clone(), (next_indent.clone()).clone())?;
     }
     Print::printBuf((literal!("\n")).clone())?;
-    Print::printBuf((indent.clone()).clone())?;
+    Print::printBuf((indent).clone())?;
     Print::printBuf((literal!("}")).clone())?;
     Ok(())
 }
@@ -572,16 +572,16 @@ pub fn parseFile(mut fileName: ArcStr) -> Result<Arc<JSON>> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errTokens: Arc<metamodelica::List<Token>>;
-    (tokens, errTokens) = LexerJSON::scan((fileName.clone()).clone())?;
-    reportErrors(errTokens.clone())?;
-    value = parse_value_check_empty(tokens.clone())?;
+    (tokens, errTokens) = LexerJSON::scan((fileName).clone())?;
+    reportErrors(errTokens)?;
+    value = parse_value_check_empty(tokens)?;
     Ok(value)
 }
 
 pub fn hasKey(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ OBJECT { .. } => UnorderedMap::contains((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone())?,
+        Deref @ OBJECT { .. } => UnorderedMap::contains((r#str).clone(), var_field!((*obj).values, JSON::OBJECT).clone())?,
         Deref @ LIST_OBJECT { .. } => {
             b = false;
             for mut entry in &*var_field!((*obj).values, JSON::LIST_OBJECT).clone() {
@@ -590,7 +590,7 @@ pub fn hasKey(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<bool> {
                     b = true;
                 }
             }
-            b.clone()
+            b
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -600,7 +600,7 @@ pub fn hasKey(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<bool> {
 pub fn get(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<Arc<JSON>> {
     let mut out: Arc<JSON> = Arc::new(JSON::FALSE);
     out = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ OBJECT { .. } => UnorderedMap::getOrFail((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone())?,
+        Deref @ OBJECT { .. } => UnorderedMap::getOrFail((r#str).clone(), var_field!((*obj).values, JSON::OBJECT).clone())?,
         Deref @ LIST_OBJECT { .. } => {
             for mut entry in &*var_field!((*obj).values, JSON::LIST_OBJECT).clone() {
                 let mut entry = entry.clone();
@@ -619,7 +619,7 @@ pub fn get(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<Arc<JSON>> {
 pub fn getOrDefault(mut obj: Arc<JSON>, mut r#str: ArcStr, mut default: Arc<JSON>) -> Result<Arc<JSON>> {
     let mut out: Arc<JSON> = Arc::new(JSON::FALSE);
     out = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ OBJECT { .. } => UnorderedMap::getOrDefault((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone(), default.clone())?,
+        Deref @ OBJECT { .. } => UnorderedMap::getOrDefault((r#str).clone(), var_field!((*obj).values, JSON::OBJECT).clone(), default)?,
         Deref @ LIST_OBJECT { .. } => {
             for mut entry in &*var_field!((*obj).values, JSON::LIST_OBJECT).clone() {
                 let mut entry = entry.clone();
@@ -628,9 +628,9 @@ pub fn getOrDefault(mut obj: Arc<JSON>, mut r#str: ArcStr, mut default: Arc<JSON
                     return Ok(out.clone());
                 }
             }
-            default.clone()
+            default
         },
-        _ => default.clone(),
+        _ => default,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(out)
@@ -639,7 +639,7 @@ pub fn getOrDefault(mut obj: Arc<JSON>, mut r#str: ArcStr, mut default: Arc<JSON
 pub fn at(mut obj: Arc<JSON>, mut index: i32) -> Result<Arc<JSON>> {
     let mut out: Arc<JSON>;
     out = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ ARRAY { .. } => Vector::get(var_field!((*obj).values, JSON::ARRAY).clone(), index.clone())?,
+        Deref @ ARRAY { .. } => Vector::get(var_field!((*obj).values, JSON::ARRAY).clone(), index)?,
         _ => bail!("match: no arm matched"),
     } });
     Ok(out)
@@ -647,7 +647,7 @@ pub fn at(mut obj: Arc<JSON>, mut index: i32) -> Result<Arc<JSON>> {
 
 pub fn getString(mut obj: Arc<JSON>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
-    let __pa0 = ::match_deref::match_deref! { match &(obj.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(obj) {
         Deref @ STRING { r#str: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -707,7 +707,7 @@ pub fn getKeys(mut obj: Arc<JSON>) -> Result<Arc<metamodelica::List<ArcStr>>> {
 
 pub fn getBoolean(mut obj: Arc<JSON>) -> Result<bool> {
     let mut b: bool;
-    b = (::match_deref::match_deref! { match &(obj.clone()) {
+    b = (::match_deref::match_deref! { match &(obj) {
         Deref @ TRUE { .. } => true,
         Deref @ FALSE { .. } => false,
         _ => bail!("match: no arm matched"),
@@ -732,17 +732,17 @@ pub(crate) fn parse(mut content: ArcStr, mut fileName: ArcStr) -> Result<Arc<JSO
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errTokens: Arc<metamodelica::List<Token>>;
-    (tokens, errTokens) = LexerJSON::scanString((content.clone()).clone(), (fileName.clone()).clone())?;
-    reportErrors(errTokens.clone())?;
-    value = parse_value_check_empty(tokens.clone())?;
+    (tokens, errTokens) = LexerJSON::scanString((content).clone(), (fileName).clone())?;
+    reportErrors(errTokens)?;
+    value = parse_value_check_empty(tokens)?;
     Ok(value)
 }
 
 pub(crate) fn parse_value_check_empty(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<Arc<JSON>> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>>;
-    (value, tokens) = parse_value(inTokens.clone())?;
-    check_empty(tokens.clone())?;
+    (value, tokens) = parse_value(inTokens)?;
+    check_empty(tokens)?;
     Ok(value)
 }
 
@@ -751,7 +751,7 @@ pub(crate) fn parse_value(mut inTokens: Arc<metamodelica::List<Token>>) -> Resul
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;
     not_eof(tokens.clone())?;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -759,30 +759,30 @@ pub(crate) fn parse_value(mut inTokens: Arc<metamodelica::List<Token>>) -> Resul
     tokens = __pa1.clone();
     (value, tokens) = (match tok.id.clone() {
         LexerJSON::TokenId::STRING { .. } => {
-            (value, tokens) = parse_string(inTokens.clone())?;
-            (value.clone(), tokens.clone())
+            (value, tokens) = parse_string(inTokens)?;
+            (value, tokens)
         },
         LexerJSON::TokenId::INTEGER { .. } => {
-            (value, tokens) = parse_integer(inTokens.clone())?;
-            (value.clone(), tokens.clone())
+            (value, tokens) = parse_integer(inTokens)?;
+            (value, tokens)
         },
         LexerJSON::TokenId::NUMBER { .. } => {
-            (value, tokens) = parse_number(inTokens.clone())?;
-            (value.clone(), tokens.clone())
+            (value, tokens) = parse_number(inTokens)?;
+            (value, tokens)
         },
         LexerJSON::TokenId::OBJECTBEGIN => {
-            (value, tokens) = parse_object(inTokens.clone())?;
-            (value.clone(), tokens.clone())
+            (value, tokens) = parse_object(inTokens)?;
+            (value, tokens)
         },
         LexerJSON::TokenId::ARRAYBEGIN => {
-            (value, tokens) = parse_array(inTokens.clone())?;
-            (value.clone(), tokens.clone())
+            (value, tokens) = parse_array(inTokens)?;
+            (value, tokens)
         },
-        LexerJSON::TokenId::TRUE => (crate::JSON::interned_TRUE(), tokens.clone()),
-        LexerJSON::TokenId::FALSE => (crate::JSON::interned_FALSE(), tokens.clone()),
-        LexerJSON::TokenId::NULL => (crate::JSON::interned_NULL(), tokens.clone()),
+        LexerJSON::TokenId::TRUE => (crate::JSON::interned_TRUE(), tokens),
+        LexerJSON::TokenId::FALSE => (crate::JSON::interned_FALSE(), tokens),
+        LexerJSON::TokenId::NULL => (crate::JSON::interned_NULL(), tokens),
         _ => {
-            errorExpected((literal!("a value")).clone(), tok.clone())?;
+            errorExpected((literal!("a value")).clone(), tok)?;
             bail!("fail")
         },
     });
@@ -795,7 +795,7 @@ pub(crate) fn parse_string(mut inTokens: Arc<metamodelica::List<Token>>) -> Resu
     let mut tok: Token;
     let mut content: ArcStr;
     not_eof(tokens.clone())?;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -804,13 +804,13 @@ pub(crate) fn parse_string(mut inTokens: Arc<metamodelica::List<Token>>) -> Resu
     if tok.id.clone() != TokenId::STRING.clone() {
         errorExpected((literal!("a String")).clone(), tok.clone())?;
     }
-    content = (tokenContent(tok.clone())?).clone();
+    content = (tokenContent(tok)?).clone();
     if ((content.clone()).clone().len() as i32) == 2 {
         content = (literal!("")).clone();
     } else {
-        content = (System::unescapedString(substring((content.clone()).clone(), 2, ((content.clone()).clone().len() as i32) - 1)?)).clone();
+        content = (System::unescapedString(substring((content.clone()).clone(), 2, ((content).clone().len() as i32) - 1)?)).clone();
     }
-    value = Arc::new(JSON::STRING { r#str: (content.clone()).clone() });
+    value = Arc::new(JSON::STRING { r#str: (content).clone() });
     Ok((value, tokens))
 }
 
@@ -820,7 +820,7 @@ pub(crate) fn parse_integer(mut inTokens: Arc<metamodelica::List<Token>>) -> Res
     let mut tok: Token;
     let mut content: ArcStr;
     not_eof(tokens.clone())?;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -829,8 +829,8 @@ pub(crate) fn parse_integer(mut inTokens: Arc<metamodelica::List<Token>>) -> Res
     if tok.id.clone() != TokenId::INTEGER.clone() {
         errorExpected((literal!("an integer")).clone(), tok.clone())?;
     }
-    content = (tokenContent(tok.clone())?).clone();
-    value = Arc::new(JSON::INTEGER { i: stringInt((content.clone()).clone())? });
+    content = (tokenContent(tok)?).clone();
+    value = Arc::new(JSON::INTEGER { i: stringInt((content).clone())? });
     Ok((value, tokens))
 }
 
@@ -840,7 +840,7 @@ pub(crate) fn parse_number(mut inTokens: Arc<metamodelica::List<Token>>) -> Resu
     let mut tok: Token;
     let mut content: ArcStr;
     not_eof(tokens.clone())?;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -849,8 +849,8 @@ pub(crate) fn parse_number(mut inTokens: Arc<metamodelica::List<Token>>) -> Resu
     if tok.id.clone() != TokenId::NUMBER.clone() {
         errorExpected((literal!("a (real) number")).clone(), tok.clone())?;
     }
-    content = (tokenContent(tok.clone())?).clone();
-    value = Arc::new(JSON::NUMBER { r: stringReal((content.clone()).clone())? });
+    content = (tokenContent(tok)?).clone();
+    value = Arc::new(JSON::NUMBER { r: stringReal((content).clone())? });
     Ok((value, tokens))
 }
 
@@ -861,15 +861,15 @@ pub(crate) fn parse_array(mut inTokens: Arc<metamodelica::List<Token>>) -> Resul
     let mut values: Arc<Vector::Vector<Arc<JSON>>> = Vector::new(0);
     let mut cont: bool;
     value = emptyObject();
-    tokens = parse_expected_token(tokens.clone(), TokenId::ARRAYBEGIN.clone())?;
+    tokens = parse_expected_token(tokens, TokenId::ARRAYBEGIN.clone())?;
     cont = peek_id(tokens.clone())? != TokenId::ARRAYEND.clone();
-    while cont.clone() {
+    while cont {
         (value, tokens) = parse_value(tokens.clone())?;
         Vector::push(values.clone(), value.clone());
         (tokens, cont) = eat_if_next_token_matches(tokens.clone(), TokenId::COMMA.clone())?;
     }
-    tokens = parse_expected_token(tokens.clone(), TokenId::ARRAYEND.clone())?;
-    value = Arc::new(JSON::ARRAY { values: values.clone() });
+    tokens = parse_expected_token(tokens, TokenId::ARRAYEND.clone())?;
+    value = Arc::new(JSON::ARRAY { values: values });
     Ok((value, tokens))
 }
 
@@ -881,9 +881,9 @@ pub(crate) fn parse_object(mut inTokens: Arc<metamodelica::List<Token>>) -> Resu
     let mut key: ArcStr;
     let mut cont: bool;
     values = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
-    tokens = parse_expected_token(tokens.clone(), TokenId::OBJECTBEGIN.clone())?;
+    tokens = parse_expected_token(tokens, TokenId::OBJECTBEGIN.clone())?;
     cont = peek_id(tokens.clone())? != TokenId::ARRAYEND.clone();
-    while cont.clone() {
+    while cont {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(parse_string(tokens.clone())?) {
             (Deref @ STRING { r#str: __pa0 }, __pa1) => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -895,8 +895,8 @@ pub(crate) fn parse_object(mut inTokens: Arc<metamodelica::List<Token>>) -> Resu
         UnorderedMap::add((key.clone()).clone(), value.clone(), values.clone())?;
         (tokens, cont) = eat_if_next_token_matches(tokens.clone(), TokenId::COMMA.clone())?;
     }
-    tokens = parse_expected_token(tokens.clone(), TokenId::OBJECTEND.clone())?;
-    value = Arc::new(JSON::OBJECT { values: values.clone() });
+    tokens = parse_expected_token(tokens, TokenId::OBJECTEND.clone())?;
+    value = Arc::new(JSON::OBJECT { values: values });
     Ok((value, tokens))
 }
 
@@ -904,13 +904,13 @@ fn reportErrors(mut tokens: Arc<metamodelica::List<Token>>) -> Result<()> {
     let mut i: i32 = 0;
     for mut t in &*tokens.clone() {
         let mut t = t.clone();
-        i = i.clone() + 1;
-        if i.clone() > 10 {
+        i = i + 1;
+        if i > 10 {
             Error::addMessage(Error::SCANNER_ERROR_LIMIT.clone(), metamodelica::nil())?;
         }
         Error::addSourceMessage(Error::SCANNER_ERROR.clone(), list![(tokenContent(t.clone())?).clone()], tokenSourceInfo(t.clone())?)?;
     }
-    if !(tokens.clone().is_empty()) {
+    if !(tokens.is_empty()) {
         bail!("fail");
     }
     Ok(())
@@ -931,7 +931,7 @@ fn peek_id(mut tokens: Arc<metamodelica::List<Token>>) -> Result<TokenId> {
     if tokens.clone().is_empty() {
         nextToken = TokenId::_NO_TOKEN.clone();
     }
-    tok = listHead(tokens.clone())?;
+    tok = listHead(tokens)?;
     nextToken = tok.id.clone();
     Ok(nextToken)
 }
@@ -944,11 +944,11 @@ fn eat_if_next_token_matches(mut tokens: Arc<metamodelica::List<Token>>, mut exp
         return Ok((tokens.clone(), matched.clone()));
     }
     tok = listHead(tokens.clone())?;
-    if tok.id.clone() != expectedToken.clone() {
+    if tok.id.clone() != expectedToken {
         return Ok((tokens.clone(), matched.clone()));
     }
     matched = true;
-    let __pa0 = ::match_deref::match_deref! { match &(tokens.clone()) {
+    let __pa0 = ::match_deref::match_deref! { match &(tokens) {
         Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -960,14 +960,14 @@ fn parse_expected_token(mut tokens: Arc<metamodelica::List<Token>>, mut expected
     let mut tokens: Arc<metamodelica::List<Token>> = tokens;
     let mut tok: Token;
     not_eof(tokens.clone())?;
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens.clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     tok = __pa0.clone();
     tokens = __pa1.clone();
-    if tok.id.clone() != expectedToken.clone() {
-        Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected a ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", expectedToken.clone()))); __mm_s.push_str(&*literal!(", got token: ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok.clone())?)?;
+    if tok.id.clone() != expectedToken {
+        Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected a ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", expectedToken))); __mm_s.push_str(&*literal!(", got token: ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok)?)?;
         bail!("fail");
     }
     Ok(tokens)
@@ -978,29 +978,29 @@ fn check_empty(mut tokens: Arc<metamodelica::List<Token>>) -> Result<()> {
     if tokens.clone().is_empty() {
         return Ok(());
     }
-    tok = listHead(tokens.clone())?;
-    Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected <EOF>, got more tokens, starting with: ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok.clone())?)?;
+    tok = listHead(tokens)?;
+    Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected <EOF>, got more tokens, starting with: ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok)?)?;
     bail!("fail");
     Ok(())
 }
 
 fn errorExpected(mut expected: ArcStr, mut tok: Token) -> Result<()> {
-    Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("JSON expected ")); __mm_s.push_str(&*expected.clone()); __mm_s.push_str(&*literal!(", got token ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", tok.id.clone()))); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok.clone())?)?;
+    Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("JSON expected ")); __mm_s.push_str(&*expected); __mm_s.push_str(&*literal!(", got token ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", tok.id.clone()))); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok)?)?;
     bail!("fail");
     Ok(())
 }
 
 pub fn dumpJSONSourceInfo(mut info: SourceInfo, mut dumpFilename: bool) -> Result<Arc<JSON>> {
     let mut json: Arc<JSON> = makeNull();
-    if dumpFilename.clone() {
-        json = addPair((literal!("filename")).clone(), makeString((Testsuite::friendly(info.fileName.clone())?).clone()), json.clone())?;
+    if dumpFilename {
+        json = addPair((literal!("filename")).clone(), makeString((Testsuite::friendly(info.fileName.clone())?).clone()), json)?;
     }
-    json = addPair((literal!("lineStart")).clone(), makeInteger(info.lineNumberStart.clone()), json.clone())?;
-    json = addPair((literal!("columnStart")).clone(), makeInteger(info.columnNumberStart.clone()), json.clone())?;
-    json = addPair((literal!("lineEnd")).clone(), makeInteger(info.lineNumberEnd.clone()), json.clone())?;
-    json = addPair((literal!("columnEnd")).clone(), makeInteger(info.columnNumberEnd.clone()), json.clone())?;
+    json = addPair((literal!("lineStart")).clone(), makeInteger(info.lineNumberStart.clone()), json)?;
+    json = addPair((literal!("columnStart")).clone(), makeInteger(info.columnNumberStart.clone()), json)?;
+    json = addPair((literal!("lineEnd")).clone(), makeInteger(info.lineNumberEnd.clone()), json)?;
+    json = addPair((literal!("columnEnd")).clone(), makeInteger(info.columnNumberEnd.clone()), json)?;
     if info.isReadOnly.clone() {
-        json = addPair((literal!("readonly")).clone(), makeBoolean(true), json.clone())?;
+        json = addPair((literal!("readonly")).clone(), makeBoolean(true), json)?;
     }
     Ok(json)
 }

@@ -69,7 +69,7 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
     let mut stopTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut numberOfIntervals: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     (outCache, startTime, stopTime, numberOfIntervals) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone());
+        let __mc_input = (inCache, inEnv, inAbsynExpLst, inAbsynNamedArgLst, inImplInst, inPrefix, inInfo);
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
@@ -131,7 +131,7 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 pub(crate) fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut callName: ArcStr, mut inInfo: SourceInfo, mut defaultOption: Option<InteractiveTypes::SimulationOptions>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>)> {
     let mut outCache: FCore::Cache;
     let mut outSimulationArguments: Arc<metamodelica::List<Arc<DAE::Exp>>>;
-    (outCache, outSimulationArguments) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone())) {
+    (outCache, outSimulationArguments) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst, inPrefix.clone(), inInfo.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: crexp, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
             let mut cname_str: ArcStr;
             let mut className: Arc<Absyn::Path>;
@@ -150,7 +150,7 @@ pub(crate) fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore
             let mut defaulSimOpt: InteractiveTypes::SimulationOptions;
             let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
-            checkSimulationArguments(args.clone(), (callName.clone()).clone(), info.clone())?;
+            checkSimulationArguments(args.clone(), (callName).clone(), info.clone())?;
             exp = Static::elabCodeExp(crexp.clone(), cache.clone(), env.clone(), openmodelica_frontend_types::DAE::CodeType::C_TYPENAME, info.clone())?;
             (cache, v) = Ceval::ceval(cache.clone(), env.clone(), exp.clone(), true, Absyn::Msg::MSG { info: info.clone() }, 0)?;
             let __pa0 = ::match_deref::match_deref! { match &(CevalScript::evalCodeTypeName(v.clone(), env.clone())) {
@@ -159,8 +159,8 @@ pub(crate) fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore
             } };
             className = __pa0.clone();
             cname_str = (AbsynUtil::pathString(AbsynUtil::unqotePathIdents(className.clone())?, (literal!(".")).clone(), true, false)?).clone();
-            defaulSimOpt = CevalScriptBackend::buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (cname_str.clone()).clone(), defaultOption.clone())?;
-            (cache, startTime, stopTime, numberOfIntervals) = calculateSimulationTimes(inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), r#impl.clone(), inPrefix.clone(), inInfo.clone(), defaulSimOpt.clone())?;
+            defaulSimOpt = CevalScriptBackend::buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (cname_str.clone()).clone(), defaultOption)?;
+            (cache, startTime, stopTime, numberOfIntervals) = calculateSimulationTimes(inCache, inEnv, inAbsynExpLst, inAbsynNamedArgLst, r#impl.clone(), inPrefix, inInfo, defaulSimOpt.clone())?;
             (cache, tolerance) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("tolerance")).clone(), DAE::T_REAL_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("tolerance")).clone())?, pre.clone(), info.clone())?;
             (cache, method) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("method")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("method")).clone())?, pre.clone(), info.clone())?;
             (cache, fileNamePrefix) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("fileNamePrefix")).clone(), DAE::T_STRING_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(defaulSimOpt.clone(), (literal!("fileNamePrefix")).clone())?, pre.clone(), info.clone())?;
@@ -179,7 +179,7 @@ pub(crate) fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore
 pub(crate) static VALID_SIMULATE_ARGS: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("startTime")).clone(), (literal!("stopTime")).clone(), (literal!("numberOfIntervals")).clone(), (literal!("stepSize")).clone(), (literal!("tolerance")).clone(), (literal!("method")).clone(), (literal!("fileNamePrefix")).clone(), (literal!("options")).clone(), (literal!("outputFormat")).clone(), (literal!("variableFilter")).clone(), (literal!("cflags")).clone(), (literal!("simflags")).clone()] });
 
 pub(crate) fn checkSimulationArguments(mut args: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut callName: ArcStr, mut info: SourceInfo) -> Result<()> {
-    for mut arg in &*args.clone() {
+    for mut arg in &*args {
         let mut arg = arg.clone();
         if !(listMember((arg.argName.clone()).clone(), VALID_SIMULATE_ARGS.clone())) {
             Error::addSourceMessage(Error::NO_SUCH_PARAMETER.clone(), list![(callName.clone()).clone(), (arg.argName.clone()).clone()], info.clone())?;
@@ -201,7 +201,7 @@ pub(crate) fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph
     handles = ErrorExt::popCheckPoint((literal!("elabCall_InteractiveFunction")).clone());
     match '__try0: {
         ErrorExt::setCheckpoint((literal!("elabCall_InteractiveFunction1")).clone());
-        (cache, e, prop) = unwrap_break_err!(elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone()), '__try0);
+        (cache, e, prop) = unwrap_break_err!(elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl, pre.clone(), info.clone()), '__try0);
         ErrorExt::delCheckpoint((literal!("elabCall_InteractiveFunction1")).clone());
         Ok::<_, anyhow::Error>((cache.clone(), e.clone(), prop.clone()))
     } {
@@ -216,7 +216,7 @@ pub(crate) fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph
             return Err(__try0_err);
         }
     }
-    ErrorExt::freeMessages(handles.clone());
+    ErrorExt::freeMessages(handles);
     Ok((cache, e, prop))
 }
 
@@ -225,7 +225,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inComponentRef.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone());
+        let __mc_input = (inCache, inEnv, inComponentRef, inExps.clone(), inNamedArgs.clone(), inImplInst, inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, cr2 @ Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, _, _, r#impl, _) => {
@@ -256,7 +256,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "translateModel", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("translateModel")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("translateModel")).clone(), info.clone(), None)?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("translateModel")).clone(), simulationArgs.clone(), DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_STRING_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
                 _ => bail!("nomatch"),
@@ -335,7 +335,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "buildModel", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("buildModel")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("buildModel")).clone(), info.clone(), None)?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("buildModel")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_STRING_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: 2 })] }), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
                 _ => bail!("nomatch"),
@@ -346,7 +346,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "buildModelBeast", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("buildModelBeast")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("buildModelBeast")).clone(), info.clone(), None)?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("buildModelBeast")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_STRING_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: 2 })] }), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
                 _ => bail!("nomatch"),
@@ -358,7 +358,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut recordtype: Arc<DAE::Type>;
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("simulate")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("simulate")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("simulate")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: recordtype.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
@@ -371,7 +371,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut recordtype: Arc<DAE::Type>;
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("simulation")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("simulation")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getDrModelicaSimulationResultType()?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("simulation")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: recordtype.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
@@ -384,7 +384,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut recordtype: Arc<DAE::Type>;
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("linearize")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("linearize")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("linearize")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: recordtype.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
@@ -397,7 +397,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut recordtype: Arc<DAE::Type>;
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("optimize")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("optimize")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("optimize")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: recordtype.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
@@ -410,7 +410,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut recordtype: Arc<DAE::Type>;
                     let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
-                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("moo")).clone(), info.clone(), None)?;
+                    (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst, inPrefix.clone(), (literal!("moo")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("moo")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: recordtype.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
@@ -502,7 +502,7 @@ pub(crate) fn elabExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
-    (outCache, outExp, outProperties) = elabExp2(inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone(), info.clone(), Error::getNumErrorMessages())?;
+    (outCache, outExp, outProperties) = elabExp2(inCache, inEnv, inExp, inImplicit, performVectorization, inPrefix, info, Error::getNumErrorMessages())?;
     Ok((outCache, outExp, outProperties))
 }
 
@@ -511,7 +511,7 @@ fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<A
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone());
+        let __mc_input = (inCache, inEnv, inExp, inImplicit, performVectorization, inPrefix);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { function_: r#fn, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args, argNames: nargs }, .. }, r#impl, _, pre) => {
@@ -546,12 +546,12 @@ fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentR
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
-    (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inComponentRef.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone())) {
+    (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache, inEnv, inComponentRef, inAbsynExpLst, inAbsynNamedArgLst, inImplInst, inPrefix)) {
         (cache, env, r#fn, args, nargs, r#impl, pre) => {
             let mut e: Arc<DAE::Exp>;
             let mut prop: DAE::Properties;
             let mut cache = (*cache).clone();
-            (cache, e, prop) = elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone())?;
+            (cache, e, prop) = elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info)?;
             (cache.clone(), e.clone(), prop.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -564,7 +564,7 @@ pub(crate) fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = 'mc: {
-        let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inImplInst.clone(), inPrefix.clone());
+        let __mc_input = (inCache, inEnv, inExp, inImplInst, inPrefix);
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { function_: r#fn, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args, argNames: nargs }, .. }, _, pre) => {
