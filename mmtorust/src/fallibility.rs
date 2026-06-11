@@ -276,6 +276,11 @@ pub struct FallibilityInfo {
     /// rewritten as a plain `match` in the MetaModelica source. Ordered by
     /// enclosing function FQN then source position. Printed by the caller.
     pub matchcontinue_as_match: Vec<String>,
+    /// Source location (the first arm's `Info`) of each safe-to-rewrite
+    /// `matchcontinue`, parallel to [`Self::matchcontinue_as_match`]. Consumed
+    /// by the `--fix` rewriter (`crate::fix`) to locate and rewrite the
+    /// `matchcontinue`/`end matchcontinue` keywords in the `.mo` source.
+    pub matchcontinue_as_match_locs: Vec<Absyn::Info>,
 }
 
 // ── Walk state ───────────────────────────────────────────────────────────────
@@ -1301,6 +1306,7 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
     // `resolved` is a BTreeMap and each function's lints are in source order, so
     // the result is already deterministically ordered by FQN then position.
     let mut matchcontinue_as_match: Vec<String> = Vec::new();
+    let mut matchcontinue_as_match_locs: Vec<Absyn::Info> = Vec::new();
     for (qname, rs) in &resolved {
         for lint in &rs.mc_lints {
             if lint.arms.iter().all(|arm| !sources_fallible(arm, &fallible)) {
@@ -1308,6 +1314,7 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
                     "warning: matchcontinue in `{qname}` ({}:{}:{}) has only infallible arms — rewrite it as `match`",
                     lint.info.fileName, lint.info.lineNumberStart, lint.info.columnNumberStart,
                 ));
+                matchcontinue_as_match_locs.push(lint.info.clone());
             }
         }
     }
@@ -1317,6 +1324,7 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
         total_functions: functions.len(),
         external_functions: external_count,
         matchcontinue_as_match,
+        matchcontinue_as_match_locs,
     }
 }
 

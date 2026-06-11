@@ -9,6 +9,7 @@ mod typedexp;
 mod codegen;
 mod external_c_calls;
 mod fallibility;
+mod fix;
 mod visibility;
 mod validate;
 mod dep_analysis;
@@ -17,7 +18,7 @@ mod const_patterns;
 mod mutable_cycles;
 use rayon::prelude::*;
 
-fn start_compilation(results: Vec<Absyn::Program>) {
+fn start_compilation(results: Vec<Absyn::Program>, fix: bool) {
     let mut failures = 0;
     let t0 = std::time::Instant::now();
     let mut all_classes: Vec<MM::Class> = Vec::new();
@@ -94,6 +95,20 @@ fn start_compilation(results: Vec<Absyn::Program>) {
             "Fallibility analysis: {} matchcontinue expression(s) could be rewritten as `match`",
             info.matchcontinue_as_match.len(),
         );
+    }
+
+    // `--fix`: rewrite those provably-equivalent `matchcontinue`s to `match` in
+    // the MetaModelica sources and stop (no code generation). The user then
+    // verifies the rewrites by rebuilding the boot compiler / running tests.
+    if fix {
+        match fix::apply_match_fixes(&info.matchcontinue_as_match_locs) {
+            Ok(s) => println!(
+                "--fix: rewrote {} matchcontinue → match across {} file(s); {} skipped",
+                s.rewritten, s.files_changed, s.skipped,
+            ),
+            Err(e) => eprintln!("--fix: failed: {e}"),
+        }
+        return;
     }
 
     // Visibility analysis: narrow every public function not reachable across a
@@ -375,6 +390,9 @@ fn run_mutable_cycles(programs: Vec<Absyn::Program>) {
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let subcommand = args.get(1).map(|s| s.as_str());
+    // `--fix` rewrites provably-safe `matchcontinue`s to `match` in the sources
+    // (see `crate::fix`) instead of generating code.
+    let fix = args.iter().any(|a| a == "--fix");
     let t0 = std::time::Instant::now();
     rayon::ThreadPoolBuilder::new()
     .stack_size(16 * 1024 * 1024) // 16 MiB stack size, to avoid "thread stack overflow" on large files, especially on debug builds
@@ -425,6 +443,6 @@ fn main() {
         Some("unused-functions") => run_unused_functions(parsed),
         Some("const-patterns") => run_const_patterns(parsed),
         Some("mutable-cycles") => run_mutable_cycles(parsed),
-        _ => start_compilation(parsed),
+        _ => start_compilation(parsed, fix),
     }
 }
