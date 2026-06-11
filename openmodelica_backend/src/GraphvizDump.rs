@@ -97,80 +97,74 @@ fn fun_11(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_var_varName: Arc<DA
     Ok(out_txt)
 }
 
-fn lm_12(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE::Var>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var @ BackendDAE::Var { varName: i_var_varName, .. }, tail: rest }, a_clusterID) => {
+fn lm_12(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<BackendDAE::Var>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_12 in &*items {
+        let mut lstElt_12 = lstElt_12.clone();
+        txt = (match lstElt_12.clone() {
+        ref i_var @ BackendDAE::Var { varName: ref i_var_varName, .. } => {
             let mut x_varID: i32;
             let mut ret_0: bool;
-            let mut txt = (*txt).clone();
             x_varID = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = BackendVariable::isStateVar(i_var.clone());
-            txt = fun_11(txt.clone(), ret_0, i_var_varName.clone(), x_varID, a_clusterID.clone())?;
+            txt = fun_11(txt.clone(), ret_0, i_var_varName.clone(), x_varID, a_clusterID)?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_clusterID) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
-fn lm_13(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_clusterID) => {
+fn lm_13(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_13 in &*items {
+        let mut lstElt_13 = lstElt_13.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_13.clone()) {
+        i_eq => {
             let mut x_eqID: i32;
             let mut ret_0: ArcStr;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("eq")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_eqID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             ret_0 = (BackendDump::equationString(i_eq.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
-fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, m: i_eqSystem_m, .. }, tail: rest }) => {
+fn lm_14(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_14 in &*items {
+        let mut lstElt_14 = lstElt_14.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_14.clone()) {
+        Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, m: i_eqSystem_m, .. } => {
             let mut x_clusterID: i32;
             let mut ret_3: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut l_eqDeclaration: Tpl::Text;
             let mut ret_1: Arc<metamodelica::List<BackendDAE::Var>>;
             let mut l_varDeclaration: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_clusterID = Tpl::getIteri_i0(txt.clone())?;
             ret_1 = BackendVariable::varList(i_eqSystem_orderedVars.clone())?;
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_varDeclaration = lm_12(l_varDeclaration, ret_1, x_clusterID)?;
-            l_varDeclaration = Tpl::popIter(l_varDeclaration)?;
+            l_varDeclaration = lm_12(l_varDeclaration.clone(), ret_1.clone(), x_clusterID)?;
+            l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
             ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eqDeclaration = lm_13(l_eqDeclaration, ret_3, x_clusterID)?;
-            l_eqDeclaration = Tpl::popIter(l_eqDeclaration)?;
+            l_eqDeclaration = lm_13(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID)?;
+            l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("subgraph cluster_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
@@ -178,10 +172,10 @@ fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label = \"system #")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\";\n")).clone(), (literal!("color=white\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_varDeclaration)?;
+            txt = Tpl::writeText(txt.clone(), l_varDeclaration.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = Tpl::writeText(txt.clone(), l_eqDeclaration)?;
+            txt = Tpl::writeText(txt.clone(), l_eqDeclaration.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = dumpDependence2(txt.clone(), x_clusterID, i_eqSystem_m.clone())?;
@@ -189,15 +183,15 @@ fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 pub(crate) fn dumpDependence(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
@@ -252,46 +246,43 @@ fn fun_16(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a
     Ok(out_txt)
 }
 
-fn lm_17(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_eqID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_eqID, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varID, tail: rest }, a_eqID, a_clusterID) => {
+fn lm_17(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_eqID: i32, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_17 in &*items {
+        let mut lstElt_17 = lstElt_17.clone();
+        txt = (match lstElt_17.clone() {
+        mut i_varID => {
             let mut ret_0: bool;
-            let mut txt = (*txt).clone();
             ret_0 = intGt(i_varID.clone(), 0);
-            txt = fun_16(txt.clone(), ret_0, a_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
+            txt = fun_16(txt.clone(), ret_0, a_eqID, i_varID.clone(), a_clusterID)?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_eqID, in_a_clusterID) = (txt.clone(), rest.clone(), a_eqID.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
-fn lm_18(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varList, tail: rest }, a_clusterID) => {
+fn lm_18(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_18 in &*items {
+        let mut lstElt_18 = lstElt_18.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_18.clone()) {
+        i_varList => {
             let mut x_eqID: i32;
             let mut l_foo: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_17(l_foo, i_varList.clone(), x_eqID, a_clusterID.clone())?;
-            l_foo = Tpl::popIter(l_foo)?;
-            txt = Tpl::writeText(txt.clone(), l_foo)?;
+            l_foo = lm_17(l_foo.clone(), i_varList.clone(), x_eqID, a_clusterID)?;
+            l_foo = Tpl::popIter(l_foo.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 fn fun_19(mut in_txt: Tpl::Text, mut in_a_m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
@@ -351,80 +342,74 @@ fn fun_21(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_var_varName: Arc<DA
     Ok(out_txt)
 }
 
-fn lm_22(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE::Var>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var @ BackendDAE::Var { varName: i_var_varName, .. }, tail: rest }, a_clusterID) => {
+fn lm_22(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<BackendDAE::Var>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_22 in &*items {
+        let mut lstElt_22 = lstElt_22.clone();
+        txt = (match lstElt_22.clone() {
+        ref i_var @ BackendDAE::Var { varName: ref i_var_varName, .. } => {
             let mut x_varID: i32;
             let mut ret_0: bool;
-            let mut txt = (*txt).clone();
             x_varID = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = BackendVariable::isStateVar(i_var.clone());
-            txt = fun_21(txt.clone(), ret_0, i_var_varName.clone(), x_varID, a_clusterID.clone())?;
+            txt = fun_21(txt.clone(), ret_0, i_var_varName.clone(), x_varID, a_clusterID)?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_clusterID) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
-fn lm_23(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_clusterID) => {
+fn lm_23(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_23 in &*items {
+        let mut lstElt_23 = lstElt_23.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_23.clone()) {
+        i_eq => {
             let mut x_eqID: i32;
             let mut ret_0: ArcStr;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("eq")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_eqID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             ret_0 = (BackendDump::equationString(i_eq.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
-fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, matching: i_eqSystem_matching, m: i_eqSystem_m, .. }, tail: rest }) => {
+fn lm_24(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_24 in &*items {
+        let mut lstElt_24 = lstElt_24.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_24.clone()) {
+        Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, matching: i_eqSystem_matching, m: i_eqSystem_m, .. } => {
             let mut x_clusterID: i32;
             let mut ret_3: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut l_eqDeclaration: Tpl::Text;
             let mut ret_1: Arc<metamodelica::List<BackendDAE::Var>>;
             let mut l_varDeclaration: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_clusterID = Tpl::getIteri_i0(txt.clone())?;
             ret_1 = BackendVariable::varList(i_eqSystem_orderedVars.clone())?;
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_varDeclaration = lm_22(l_varDeclaration, ret_1, x_clusterID)?;
-            l_varDeclaration = Tpl::popIter(l_varDeclaration)?;
+            l_varDeclaration = lm_22(l_varDeclaration.clone(), ret_1.clone(), x_clusterID)?;
+            l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
             ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eqDeclaration = lm_23(l_eqDeclaration, ret_3, x_clusterID)?;
-            l_eqDeclaration = Tpl::popIter(l_eqDeclaration)?;
+            l_eqDeclaration = lm_23(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID)?;
+            l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("subgraph cluster_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
@@ -432,10 +417,10 @@ fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label = \"system #")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\";\n")).clone(), (literal!("color=white\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_varDeclaration)?;
+            txt = Tpl::writeText(txt.clone(), l_varDeclaration.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt = Tpl::writeText(txt.clone(), l_eqDeclaration)?;
+            txt = Tpl::writeText(txt.clone(), l_eqDeclaration.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = connections(txt.clone(), x_clusterID, i_eqSystem_matching.clone(), i_eqSystem_m.clone())?;
@@ -443,15 +428,15 @@ fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 pub(crate) fn dumpMatching(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
@@ -531,50 +516,47 @@ fn fun_27(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a
     Ok(out_txt)
 }
 
-fn lm_28(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_clusterID: i32, mut in_a_eqID: i32, mut in_a_ass2: metamodelica::Array<i32>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID, in_a_eqID, in_a_ass2.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varID, tail: rest }, a_clusterID, a_eqID, a_ass2) => {
+fn lm_28(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_clusterID: i32, mut a_eqID: i32, mut a_ass2: metamodelica::Array<i32>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_28 in &*items {
+        let mut lstElt_28 = lstElt_28.clone();
+        txt = (match lstElt_28.clone() {
+        mut i_varID => {
             let mut ret_2: bool;
             let mut ret_1: i32;
             let mut ret_0: Arc<metamodelica::List<i32>>;
-            let mut txt = (*txt).clone();
             ret_0 = Arc::new(a_ass2.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-            ret_1 = (ret_0).get(a_eqID.clone())?;
+            ret_1 = (ret_0.clone()).get(a_eqID)?;
             ret_2 = intEq(ret_1, i_varID.clone());
-            txt = fun_27(txt.clone(), ret_2, a_eqID.clone(), a_clusterID.clone(), i_varID.clone())?;
+            txt = fun_27(txt.clone(), ret_2, a_eqID, a_clusterID, i_varID.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID, in_a_eqID, in_a_ass2) = (txt.clone(), rest.clone(), a_clusterID.clone(), a_eqID.clone(), a_ass2.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
-fn lm_29(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut in_a_clusterID: i32, mut in_a_ass2: metamodelica::Array<i32>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID, in_a_ass2.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varList, tail: rest }, a_clusterID, a_ass2) => {
+fn lm_29(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut a_clusterID: i32, mut a_ass2: metamodelica::Array<i32>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_29 in &*items {
+        let mut lstElt_29 = lstElt_29.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_29.clone()) {
+        i_varList => {
             let mut x_eqID: i32;
             let mut l_foo: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_28(l_foo, i_varList.clone(), a_clusterID.clone(), x_eqID, a_ass2.clone())?;
-            l_foo = Tpl::popIter(l_foo)?;
-            txt = Tpl::writeText(txt.clone(), l_foo)?;
+            l_foo = lm_28(l_foo.clone(), i_varList.clone(), a_clusterID, x_eqID, a_ass2.clone())?;
+            l_foo = Tpl::popIter(l_foo.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID, in_a_ass2) = (txt.clone(), rest.clone(), a_clusterID.clone(), a_ass2.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 fn fun_30(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
@@ -599,46 +581,43 @@ fn fun_30(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a
     Ok(out_txt)
 }
 
-fn lm_31(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_eqID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_eqID, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varID, tail: rest }, a_eqID, a_clusterID) => {
+fn lm_31(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_eqID: i32, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_31 in &*items {
+        let mut lstElt_31 = lstElt_31.clone();
+        txt = (match lstElt_31.clone() {
+        mut i_varID => {
             let mut ret_0: bool;
-            let mut txt = (*txt).clone();
             ret_0 = intGt(i_varID.clone(), 0);
-            txt = fun_30(txt.clone(), ret_0, a_eqID.clone(), i_varID.clone(), a_clusterID.clone())?;
+            txt = fun_30(txt.clone(), ret_0, a_eqID, i_varID.clone(), a_clusterID)?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_eqID, in_a_clusterID) = (txt.clone(), rest.clone(), a_eqID.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
-fn lm_32(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varList, tail: rest }, a_clusterID) => {
+fn lm_32(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_32 in &*items {
+        let mut lstElt_32 = lstElt_32.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_32.clone()) {
+        i_varList => {
             let mut x_eqID: i32;
             let mut l_foo: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             l_foo = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_foo = lm_31(l_foo, i_varList.clone(), x_eqID, a_clusterID.clone())?;
-            l_foo = Tpl::popIter(l_foo)?;
-            txt = Tpl::writeText(txt.clone(), l_foo)?;
+            l_foo = lm_31(l_foo.clone(), i_varList.clone(), x_eqID, a_clusterID)?;
+            l_foo = Tpl::popIter(l_foo.clone())?;
+            txt = Tpl::writeText(txt.clone(), l_foo.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 fn fun_33(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, mut in_a_clusterID: i32, mut in_a_incMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Tpl::Text> {
@@ -694,25 +673,23 @@ fn fun_34(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a
     Ok(out_txt)
 }
 
-fn lm_35(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_varID, tail: rest }, a_clusterID) => {
+fn lm_35(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_35 in &*items {
+        let mut lstElt_35 = lstElt_35.clone();
+        txt = (match lstElt_35.clone() {
+        mut i_varID => {
             let mut x_eqID: i32;
             let mut ret_0: bool;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intGt(i_varID.clone(), 0);
-            txt = fun_34(txt.clone(), ret_0, x_eqID, i_varID.clone(), a_clusterID.clone())?;
+            txt = fun_34(txt.clone(), ret_0, x_eqID, i_varID.clone(), a_clusterID)?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 fn fun_36(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
@@ -764,84 +741,78 @@ pub(crate) fn connections(mut txt: Tpl::Text, mut a_clusterID: i32, mut a_matchi
     Ok(out_txt)
 }
 
-fn lm_39(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE::Var>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varName: i_var_varName, .. }, tail: rest }, a_clusterID) => {
+fn lm_39(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<BackendDAE::Var>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_39 in &*items {
+        let mut lstElt_39 = lstElt_39.clone();
+        txt = (match lstElt_39.clone() {
+        BackendDAE::Var { varName: ref i_var_varName, .. } => {
             let mut x_varID: i32;
-            let mut txt = (*txt).clone();
             x_varID = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("var")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_varID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             txt = CodegenUtil::crefStr(txt.clone(), i_var_varName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_clusterID) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
-fn lm_40(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_clusterID) => {
+fn lm_40(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_40 in &*items {
+        let mut lstElt_40 = lstElt_40.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_40.clone()) {
+        i_eq => {
             let mut x_eqID: i32;
             let mut ret_0: ArcStr;
-            let mut txt = (*txt).clone();
             x_eqID = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("eq")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_eqID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" [label=\"")).clone() }))?;
             ret_0 = (BackendDump::equationString(i_eq.clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\", shape=\"box\"]")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
-fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, matching: i_eqSystem_matching, .. }, tail: rest }) => {
+fn lm_41(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_41 in &*items {
+        let mut lstElt_41 = lstElt_41.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_41.clone()) {
+        Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, matching: i_eqSystem_matching, .. } => {
             let mut x_clusterID: i32;
             let mut ret_3: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut l_eqDeclaration: Tpl::Text;
             let mut ret_1: Arc<metamodelica::List<BackendDAE::Var>>;
             let mut l_varDeclaration: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_clusterID = Tpl::getIteri_i0(txt.clone())?;
             ret_1 = BackendVariable::varList(i_eqSystem_orderedVars.clone())?;
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_varDeclaration = lm_39(l_varDeclaration, ret_1, x_clusterID)?;
-            l_varDeclaration = Tpl::popIter(l_varDeclaration)?;
+            l_varDeclaration = lm_39(l_varDeclaration.clone(), ret_1.clone(), x_clusterID)?;
+            l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
             ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
-            l_eqDeclaration = lm_40(l_eqDeclaration, ret_3, x_clusterID)?;
-            l_eqDeclaration = Tpl::popIter(l_eqDeclaration)?;
+            l_eqDeclaration = lm_40(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID)?;
+            l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("subgraph cluster_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" {\n")).clone() }))?;
@@ -849,7 +820,7 @@ fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label = \"system #")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\";\n")).clone(), (literal!("color=white\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
-            txt = Tpl::writeText(txt.clone(), l_varDeclaration)?;
+            txt = Tpl::writeText(txt.clone(), l_varDeclaration.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_tpl::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = dumpStrongComponent(txt.clone(), x_clusterID, i_eqSystem_matching.clone())?;
@@ -857,15 +828,15 @@ fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 pub(crate) fn dumpSorting(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
@@ -898,24 +869,22 @@ pub(crate) fn dumpSorting(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Backen
     Ok(out_txt)
 }
 
-fn lm_43(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: rest }, a_clusterID) => {
-            let mut txt = (*txt).clone();
+fn lm_43(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_43 in &*items {
+        let mut lstElt_43 = lstElt_43.clone();
+        txt = (match lstElt_43.clone() {
+        mut i_v => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("var")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID.clone())).clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(a_clusterID)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_v.clone())).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 fn fun_44(mut in_txt: Tpl::Text, mut in_a_comp: Arc<BackendDAE::StrongComponent>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
@@ -948,21 +917,20 @@ fn fun_44(mut in_txt: Tpl::Text, mut in_a_comp: Arc<BackendDAE::StrongComponent>
     Ok(out_txt)
 }
 
-fn lm_45(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_clusterID)) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_comp, tail: rest }, a_clusterID) => {
-            let mut txt = (*txt).clone();
-            txt = fun_44(txt.clone(), i_comp.clone(), a_clusterID.clone())?;
+fn lm_45(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut a_clusterID: i32) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_45 in &*items {
+        let mut lstElt_45 = lstElt_45.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_45.clone()) {
+        i_comp => {
+            txt = fun_44(txt.clone(), i_comp.clone(), a_clusterID)?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items, in_a_clusterID) = (txt.clone(), rest.clone(), a_clusterID.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok(txt)
 }
 
 fn fun_46(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {

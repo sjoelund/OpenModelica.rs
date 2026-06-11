@@ -159,22 +159,21 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_InitDerMatFiles, in_a_fileNamePrefix, in_a_InitAlgSystemFiles)) {
-        (txt, Deref @ metamodelica::List::Nil, a_InitDerMatFiles, _, a_InitAlgSystemFiles) => {
-            return Ok((txt.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone()))
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_InitDerMatFiles, a_fileNamePrefix, a_InitAlgSystemFiles) => {
-            let mut txt = (*txt).clone();
-            let mut a_InitDerMatFiles = (*a_InitDerMatFiles).clone();
-            let mut a_InitAlgSystemFiles = (*a_InitAlgSystemFiles).clone();
+fn lm_55(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_InitDerMatFiles: Tpl::Text, mut a_fileNamePrefix: ArcStr, mut a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    let mut txt: Tpl::Text = txt;
+    let mut a_InitDerMatFiles: Tpl::Text = a_InitDerMatFiles;
+    let mut a_InitAlgSystemFiles: Tpl::Text = a_InitAlgSystemFiles;
+    for mut lstElt_55 in &*items {
+        let mut lstElt_55 = lstElt_55.clone();
+        (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = (::match_deref::match_deref! { match &(lstElt_55.clone()) {
+        i_eq => {
             (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = fun_54(txt.clone(), i_eq.clone(), a_InitDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
-            { (in_txt, in_items, in_a_InitDerMatFiles, in_a_fileNamePrefix, in_a_InitAlgSystemFiles) = (txt.clone(), rest.clone(), a_InitDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone()); continue '__tco; }
+            (txt.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone())
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok((txt, a_InitDerMatFiles, a_InitAlgSystemFiles))
 }
 
 fn fun_56(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
@@ -220,22 +219,21 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles))
 }
 
-fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_SimDerMatFiles, in_a_fileNamePrefix, in_a_SimAlgSystemFiles)) {
-        (txt, Deref @ metamodelica::List::Nil, a_SimDerMatFiles, _, a_SimAlgSystemFiles) => {
-            return Ok((txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone()))
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_SimDerMatFiles, a_fileNamePrefix, a_SimAlgSystemFiles) => {
-            let mut txt = (*txt).clone();
-            let mut a_SimDerMatFiles = (*a_SimDerMatFiles).clone();
-            let mut a_SimAlgSystemFiles = (*a_SimAlgSystemFiles).clone();
+fn lm_57(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_SimDerMatFiles: Tpl::Text, mut a_fileNamePrefix: ArcStr, mut a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    let mut txt: Tpl::Text = txt;
+    let mut a_SimDerMatFiles: Tpl::Text = a_SimDerMatFiles;
+    let mut a_SimAlgSystemFiles: Tpl::Text = a_SimAlgSystemFiles;
+    for mut lstElt_57 in &*items {
+        let mut lstElt_57 = lstElt_57.clone();
+        (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = (::match_deref::match_deref! { match &(lstElt_57.clone()) {
+        i_eq => {
             (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = fun_56(txt.clone(), i_eq.clone(), a_SimDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
-            { (in_txt, in_items, in_a_SimDerMatFiles, in_a_fileNamePrefix, in_a_SimAlgSystemFiles) = (txt.clone(), rest.clone(), a_SimDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone()); continue '__tco; }
+            (txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone())
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok((txt, a_SimDerMatFiles, a_SimAlgSystemFiles))
 }
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
@@ -818,22 +816,21 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_InitDerMatFiles, in_a_FileNamePrefix, in_a_InitAlgSystemFiles)) {
-        (txt, Deref @ metamodelica::List::Nil, a_InitDerMatFiles, _, a_InitAlgSystemFiles) => {
-            return Ok((txt.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone()))
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_InitDerMatFiles, a_FileNamePrefix, a_InitAlgSystemFiles) => {
-            let mut txt = (*txt).clone();
-            let mut a_InitDerMatFiles = (*a_InitDerMatFiles).clone();
-            let mut a_InitAlgSystemFiles = (*a_InitAlgSystemFiles).clone();
+fn lm_74(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_InitDerMatFiles: Tpl::Text, mut a_FileNamePrefix: ArcStr, mut a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    let mut txt: Tpl::Text = txt;
+    let mut a_InitDerMatFiles: Tpl::Text = a_InitDerMatFiles;
+    let mut a_InitAlgSystemFiles: Tpl::Text = a_InitAlgSystemFiles;
+    for mut lstElt_74 in &*items {
+        let mut lstElt_74 = lstElt_74.clone();
+        (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = (::match_deref::match_deref! { match &(lstElt_74.clone()) {
+        i_eq => {
             (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = fun_73(txt.clone(), i_eq.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
-            { (in_txt, in_items, in_a_InitDerMatFiles, in_a_FileNamePrefix, in_a_InitAlgSystemFiles) = (txt.clone(), rest.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone()); continue '__tco; }
+            (txt.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone())
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok((txt, a_InitDerMatFiles, a_InitAlgSystemFiles))
 }
 
 fn fun_75(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
@@ -864,22 +861,21 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles))
 }
 
-fn lm_76(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items, in_a_SimDerMatFiles, in_a_FileNamePrefix, in_a_SimAlgSystemFiles)) {
-        (txt, Deref @ metamodelica::List::Nil, a_SimDerMatFiles, _, a_SimAlgSystemFiles) => {
-            return Ok((txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone()))
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }, a_SimDerMatFiles, a_FileNamePrefix, a_SimAlgSystemFiles) => {
-            let mut txt = (*txt).clone();
-            let mut a_SimDerMatFiles = (*a_SimDerMatFiles).clone();
-            let mut a_SimAlgSystemFiles = (*a_SimAlgSystemFiles).clone();
+fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_SimDerMatFiles: Tpl::Text, mut a_FileNamePrefix: ArcStr, mut a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+    let mut txt: Tpl::Text = txt;
+    let mut a_SimDerMatFiles: Tpl::Text = a_SimDerMatFiles;
+    let mut a_SimAlgSystemFiles: Tpl::Text = a_SimAlgSystemFiles;
+    for mut lstElt_76 in &*items {
+        let mut lstElt_76 = lstElt_76.clone();
+        (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = (::match_deref::match_deref! { match &(lstElt_76.clone()) {
+        i_eq => {
             (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = fun_75(txt.clone(), i_eq.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
-            { (in_txt, in_items, in_a_SimDerMatFiles, in_a_FileNamePrefix, in_a_SimAlgSystemFiles) = (txt.clone(), rest.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone()); continue '__tco; }
+            (txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone())
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
     }
+    Ok((txt, a_SimDerMatFiles, a_SimAlgSystemFiles))
 }
 
 fn fun_77(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
@@ -964,21 +960,19 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result
     Ok(out_txt)
 }
 
-fn lm_80(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_lib, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_80(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_80 in &*items {
+        let mut lstElt_80 = lstElt_80.clone();
+        txt = (match lstElt_80.clone() {
+        mut i_lib => {
             txt = Tpl::writeStr(txt.clone(), (i_lib.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 fn fun_81(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
@@ -1307,21 +1301,19 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result
     Ok(out_txt)
 }
 
-fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_lib, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_90(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_90 in &*items {
+        let mut lstElt_90 = lstElt_90.clone();
+        txt = (match lstElt_90.clone() {
+        mut i_lib => {
             txt = Tpl::writeStr(txt.clone(), (i_lib.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 fn fun_91(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
@@ -1406,21 +1398,19 @@ fn fun_95(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_96(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_96 in &*items {
+        let mut lstElt_96 = lstElt_96.clone();
+        txt = (match lstElt_96.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 fn fun_97(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {

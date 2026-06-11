@@ -102,21 +102,19 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_path, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_54(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_54 in &*items {
+        let mut lstElt_54 = lstElt_54.clone();
+        txt = (match lstElt_54.clone() {
+        mut i_path => {
             txt = Tpl::writeStr(txt.clone(), (i_path.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {

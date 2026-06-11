@@ -19,33 +19,30 @@ use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_tpl::Tpl;
 use openmodelica_util::Util;
 
-fn lm_46(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &((in_txt, in_items)) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            return Ok(txt.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_v_name, .. }, tail: rest }) => {
+fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_46 in &*items {
+        let mut lstElt_46 = lstElt_46.clone();
+        txt = (match lstElt_46.clone() {
+        SimCodeVar::SimVar { name: ref i_v_name, .. } => {
             let mut x_index0: i32;
             let mut ret_1: ArcStr;
             let mut txt_0: Tpl::Text;
-            let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_index0)).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(": ")).clone() }))?;
             txt_0 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_v_name.clone())?;
-            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0)?).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_1).clone())?;
+            ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
+            txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+            txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
-            let mut txt = (*txt).clone();
-            { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
+        _ => {
+            txt.clone()
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    });
     }
+    Ok(txt)
 }
 
 pub(crate) fn dumpVarsShort(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {

@@ -55,9 +55,11 @@ use crate::Matching;
 use crate::Sorting;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_util::BackendDAEEXT;
+use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_base::Expression;
 use openmodelica_frontend_base::ExpressionSimplify;
 use openmodelica_frontend_dump::AvlTreePathFunction;
+use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_types::DAE;
@@ -1712,6 +1714,11 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     let mut b: bool;
     let mut noDynamicStateSelection: bool;
     let mut dynamicTearing: bool;
+    let mut forceDegree1: bool;
+    let mut hasStartCycle: bool;
+    let mut cref: Arc<DAE::ComponentRef>;
+    let mut startBaseCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut valueCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut s: ArcStr;
     let mut modelName: ArcStr;
     let debug: bool = false;
@@ -1729,6 +1736,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     DAEtype = __pa1.clone();
     modelName = __pa2.clone();
     DAEtypeStr = (BackendDump::printBackendDAEType2String(DAEtype)?).clone();
+    forceDegree1 = BackendDAEUtil::isInitializationDAE(ishared.clone());
     dynamicTearing = (::match_deref::match_deref! { match &((Config::dynamicTearing()?, linear, noDynamicStateSelection, DAEtypeStr.clone(), Flags::getConfigBool(Flags::DYNAMIC_TEARING_FOR_INITIALIZATION.clone())?, Config::simCodeTarget()?)) {
         (Deref @ "true", _, true, Deref @ "simulation", _, Deref @ "C") => true,
         (Deref @ "true", _, true, Deref @ "initialization", true, Deref @ "C") => true,
@@ -1767,6 +1775,27 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
         execStat((literal!("Tearing.CellierTearing -> 1.5")).clone())?;
     }
     unsolvables = getUnsolvableVars(size, meT.clone())?;
+    hasStartCycle = false;
+    if forceDegree1 {
+        startBaseCrefs = metamodelica::nil();
+        valueCrefs = metamodelica::nil();
+        for mut i in 1..=size {
+            cref = BackendVariable::varCref(BackendVariable::getVarAt(vars.clone(), i.clone())?)?;
+            if ComponentReference::isStartCref(cref.clone()) {
+                startBaseCrefs = metamodelica::cons(ComponentReference::popCref(cref.clone()), startBaseCrefs.clone());
+            } else {
+                valueCrefs = metamodelica::cons(cref.clone(), valueCrefs.clone());
+            }
+        }
+        for mut baseCref in &*startBaseCrefs {
+            let mut baseCref = baseCref.clone();
+            if List::isMemberOnTrue(baseCref.clone(), valueCrefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))? {
+                hasStartCycle = true;
+                Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initialization start-value cycle: the start attribute of '")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(baseCref.clone())?); __mm_s.push_str(&*literal!("' transitively depends on the variable itself, so its start value (only an initial guess) ")); __mm_s.push_str(&*literal!("cannot be evaluated before the variable is known. This is sometimes an intentional pattern ")); __mm_s.push_str(&*literal!("(a guess refined during initialization) but is often a modeling mistake; if unintended, give '")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(baseCref.clone())?); __mm_s.push_str(&*literal!("' a start value that does not depend ")); __mm_s.push_str(&*literal!("on itself. Use the transformational debugger to inspect the dependency chain.")); ArcStr::from(__mm_s) }).clone())?;
+            }
+        }
+    }
+    forceDegree1 = forceDegree1 && hasStartCycle;
     eqnNonlinPoints = arrayCreate(size, -1);
     getEquationNonlinearityPoints(eqnNonlinPoints.clone(), me.clone(), size);
     if debug {
@@ -1805,7 +1834,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nBEGINNING of CellierTearing2\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (OutTVars, order) = CellierTearing2(false, m.clone(), mt.clone(), me.clone(), meT.clone(), ass1.clone(), ass2.clone(), unsolvables, metamodelica::nil(), discreteVars.clone(), tSel_always.clone(), tSel_prefer.clone(), tSel_avoid.clone(), tSel_never.clone(), order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+    (OutTVars, order) = CellierTearing2(false, m.clone(), mt.clone(), me.clone(), meT.clone(), ass1.clone(), ass2.clone(), unsolvables, metamodelica::nil(), discreteVars.clone(), tSel_always.clone(), tSel_prefer.clone(), tSel_avoid.clone(), tSel_never.clone(), order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of CellierTearing2\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -1871,7 +1900,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
         if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nBEGINNING of CellierTearing2\n\n")); ArcStr::from(__mm_s) }).clone());
         }
-        (OutTVars, order) = CellierTearing2(false, m.clone(), mt.clone(), me.clone(), meT.clone(), ass1.clone(), ass2.clone(), unsolvables, metamodelica::nil(), discreteVars, tSel_always, tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+        (OutTVars, order) = CellierTearing2(false, m.clone(), mt.clone(), me.clone(), meT.clone(), ass1.clone(), ass2.clone(), unsolvables, metamodelica::nil(), discreteVars, tSel_always, tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
         if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of CellierTearing2\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
@@ -2100,7 +2129,7 @@ fn nonlinearityWeight(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica
     weight
 }
 
-fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut meTIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1In: metamodelica::Array<i32>, mut ass2In: metamodelica::Array<i32>, mut Unsolvables: Arc<metamodelica::List<i32>>, mut tvarsIn: Arc<metamodelica::List<i32>>, mut discreteVars: Arc<metamodelica::List<i32>>, mut tSel_always: Arc<metamodelica::List<i32>>, mut tSel_prefer: Arc<metamodelica::List<i32>>, mut tSel_avoid: Arc<metamodelica::List<i32>>, mut tSel_never: Arc<metamodelica::List<i32>>, mut orderIn: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eqnNonlinPoints: metamodelica::Array<i32>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut meTIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1In: metamodelica::Array<i32>, mut ass2In: metamodelica::Array<i32>, mut Unsolvables: Arc<metamodelica::List<i32>>, mut tvarsIn: Arc<metamodelica::List<i32>>, mut discreteVars: Arc<metamodelica::List<i32>>, mut tSel_always: Arc<metamodelica::List<i32>>, mut tSel_prefer: Arc<metamodelica::List<i32>>, mut tSel_avoid: Arc<metamodelica::List<i32>>, mut tSel_never: Arc<metamodelica::List<i32>>, mut orderIn: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eqnNonlinPoints: metamodelica::Array<i32>, mut forceDegree1: bool) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut OutTVars: Arc<metamodelica::List<i32>>;
     let mut orderOut: Arc<metamodelica::List<i32>>;
     let debug: bool = false;
@@ -2147,7 +2176,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nBEGINNING of TarjanMatching\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            (order, causal) = TarjanMatching(mIn.clone(), mtIn.clone(), meIn.clone(), ass1In.clone(), ass2In.clone(), orderIn, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+            (order, causal) = TarjanMatching(mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), orderIn, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 1.2")).clone())?;
             }
@@ -2170,7 +2199,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 1 done")).clone())?;
             }
-            (tvars, order) = CellierTearing2(causal, mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables, tvars, discreteVars, tSel_always, tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+            (tvars, order) = CellierTearing2(causal, mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables, tvars, discreteVars, tSel_always, tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
             (tvars, order)
         },
         _ => {
@@ -2204,7 +2233,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nBEGINNING of TarjanMatching\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             tvars = listAppend(tvars, tvarsIn);
-            (order, causal) = TarjanMatching(mIn.clone(), mtIn.clone(), meIn.clone(), ass1In.clone(), ass2In.clone(), orderIn, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+            (order, causal) = TarjanMatching(mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), orderIn, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of TarjanMatching\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n* TARJAN RESULTS:\n* ass1: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(ass1In.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -2221,7 +2250,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if debug {
                 execStat((literal!("Tearing.CellierTearing2 - 2")).clone())?;
             }
-            (tvars, order) = CellierTearing2(causal, mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables, tvars, discreteVars, metamodelica::nil(), tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+            (tvars, order) = CellierTearing2(causal, mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), unsolvables, tvars, discreteVars, metamodelica::nil(), tSel_prefer, tSel_avoid, tSel_never, order, mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
             (tvars, order)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3028,7 +3057,7 @@ fn countImpossibleAss(mut elem: Arc<metamodelica::List<(i32, BackendDAE::Solvabi
     Ok(outCount)
 }
 
-fn TarjanMatching(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1In: metamodelica::Array<i32>, mut ass2In: metamodelica::Array<i32>, mut orderIn: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eqnNonlinPoints: metamodelica::Array<i32>) -> Result<(Arc<metamodelica::List<i32>>, bool)> {
+fn TarjanMatching(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut meTIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1In: metamodelica::Array<i32>, mut ass2In: metamodelica::Array<i32>, mut orderIn: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eqnNonlinPoints: metamodelica::Array<i32>, mut forceDegree1: bool) -> Result<(Arc<metamodelica::List<i32>>, bool)> {
     let mut orderOut: Arc<metamodelica::List<i32>>;
     let mut causal: bool;
     let mut unassigned: Arc<metamodelica::List<i32>>;
@@ -3039,7 +3068,7 @@ fn TarjanMatching(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mu
         if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
             metamodelica::print((literal!("\nTarjanAssignment:\n")).clone());
         }
-        (order, assignable) = TarjanAssignment(mIn.clone(), mtIn.clone(), meIn.clone(), ass1In.clone(), ass2In.clone(), order.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone())?;
+        (order, assignable) = TarjanAssignment(mIn.clone(), mtIn.clone(), meIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), order.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone(), forceDegree1)?;
     }
     if debug {
         execStat((literal!("Tearing.TarjanMatching iters done")).clone())?;
@@ -3064,23 +3093,34 @@ fn TarjanMatching(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mu
     Ok((orderOut, causal))
 }
 
-fn TarjanAssignment(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1In: metamodelica::Array<i32>, mut ass2In: metamodelica::Array<i32>, mut orderIn: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eqnNonlinPoints: metamodelica::Array<i32>) -> Result<(Arc<metamodelica::List<i32>>, bool)> {
+fn TarjanAssignment(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut meTIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1In: metamodelica::Array<i32>, mut ass2In: metamodelica::Array<i32>, mut orderIn: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eqnNonlinPoints: metamodelica::Array<i32>, mut forceDegree1: bool) -> Result<(Arc<metamodelica::List<i32>>, bool)> {
     let mut orderOut: Arc<metamodelica::List<i32>> = orderIn.clone();
     let mut assignable: bool = false;
     let mut eq_coll: i32;
     let mut assEq_coll: Arc<metamodelica::List<i32>>;
     let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    assEq_coll = traverseCollectiveEqnsforAssignable(ass2In.clone(), mIn.clone(), mapEqnIncRow.clone())?;
-    if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("New assEq_coll: ")); __mm_s.push_str(&*stringDelimitList(List::map(assEq_coll.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    if forceDegree1 {
+        if '__try0: {
+            (eq_coll, eqns, vars) = unwrap_break_err!(getNextDegree1Var(mtIn.clone(), meTIn.clone(), ass1In.clone(), ass2In.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()), '__try0);
+            orderOut = metamodelica::cons(eq_coll, orderOut.clone());
+            assignable = true;
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+        }
     }
-    if '__try0: {
-        (eq_coll, eqns, vars) = unwrap_break_err!(getNextSolvableEqn(assEq_coll.clone(), mIn.clone(), meIn.clone(), ass1In.clone(), ass2In.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone()), '__try0);
-        orderOut = metamodelica::cons(eq_coll, orderOut.clone());
-        assignable = true;
-        Ok::<(), anyhow::Error>(())
-    }.is_err() {
+    if !(assignable) {
+        assEq_coll = traverseCollectiveEqnsforAssignable(ass2In.clone(), mIn.clone(), mapEqnIncRow.clone())?;
+        if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("New assEq_coll: ")); __mm_s.push_str(&*stringDelimitList(List::map(assEq_coll.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        }
+        if '__try1: {
+            (eq_coll, eqns, vars) = unwrap_break_err!(getNextSolvableEqn(assEq_coll.clone(), mIn.clone(), meIn.clone(), ass1In.clone(), ass2In.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), eqnNonlinPoints.clone()), '__try1);
+            orderOut = metamodelica::cons(eq_coll, orderOut.clone());
+            assignable = true;
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+        }
     }
     if assignable {
         makeAssignment(eqns, vars, ass1In.clone(), ass2In.clone(), mIn.clone(), mtIn.clone())?;
@@ -3089,6 +3129,46 @@ fn TarjanAssignment(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("order: ")); __mm_s.push_str(&*stringDelimitList(List::map(orderOut.clone().reverse(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((orderOut, assignable))
+}
+
+fn getNextDegree1Var(mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut meTIn: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>) -> Result<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+    let mut eqCollOut: i32;
+    let mut eqnsOut: Arc<metamodelica::List<i32>>;
+    let mut varsOut: Arc<metamodelica::List<i32>>;
+    let mut e: i32;
+    let mut eqColl: i32;
+    let mut cnt: i32;
+    let mut theEqn: i32;
+    let mut s: BackendDAE::Solvability;
+    for mut v in 1..=metamodelica::arrayLength(meTIn.clone()) {
+        if metamodelica::arrayGet(ass1.clone(), v.clone())? == -1 && (metamodelica::arrayGet(mtIn.clone(), v.clone())?.len() as i32) > 1 {
+            cnt = 0;
+            theEqn = -1;
+            let __range0 = &*({let __elt = meTIn.borrow()[(v.clone()-1) as usize].clone(); __elt});
+            for mut entry in __range0 {
+                let mut entry = entry.clone();
+                (e, s, _) = entry.clone();
+                if metamodelica::arrayGet(ass2.clone(), e)? == -1 && BackendDAEUtil::isSolvable(s, false) {
+                    cnt = cnt + 1;
+                    theEqn = e;
+                    if cnt > 1 {
+                        break;
+                    }
+                }
+            }
+            if cnt == 1 {
+                eqColl = ({let __elt = mapIncRowEqn.borrow()[(theEqn-1) as usize].clone(); __elt});
+                if (({let __elt = mapEqnIncRow.borrow()[(eqColl-1) as usize].clone(); __elt}).len() as i32) == 1 {
+                    eqCollOut = eqColl;
+                    eqnsOut = list![theEqn];
+                    varsOut = list![v.clone()];
+                    return Ok((eqCollOut.clone(), eqnsOut.clone(), varsOut.clone()));
+                }
+            }
+        }
+    }
+    bail!("fail");
+    Ok((eqCollOut, eqnsOut, varsOut))
 }
 
 fn traverseSingleEqnsforAssignable(mut inAss: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<i32>>> {

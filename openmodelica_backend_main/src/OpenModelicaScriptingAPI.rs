@@ -834,6 +834,43 @@ pub(crate) fn modifierToJSON(mut modifier: ArcStr, mut prettyPrint: bool) -> Res
     Ok(res)
 }
 
+pub(crate) fn releaseModelInstanceReference(mut handle: i32) -> Result<bool> {
+    let mut res: bool;
+    let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("releaseModelInstanceReference")).clone(), list![Arc::new(Values::Value::INTEGER { integer: handle })], dummyMsg.clone())?) {
+        (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
+        _ => bail!("pattern mismatch"),
+    } };
+    res = __pa0.clone();
+    Ok(res)
+}
+
+pub(crate) fn getModelInstanceAnnotationReference(mut className: ArcStr, mut filter: Arc<metamodelica::List<ArcStr>>) -> Result<i32> {
+    let mut res: i32;
+    let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstanceAnnotationReference")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), ValuesMake::makeArray(({
+        let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+        for mut filter_iter in (filter).into_iter().cloned() {
+            let __x = Arc::new(Values::Value::STRING { string: (filter_iter.clone()).clone() });
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }))], dummyMsg.clone())?) {
+        (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
+        _ => bail!("pattern mismatch"),
+    } };
+    res = __pa0.clone();
+    Ok(res)
+}
+
+pub(crate) fn getModelInstanceReference(mut className: ArcStr, mut context: ArcStr, mut modifier: ArcStr) -> Result<i32> {
+    let mut res: i32;
+    let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstanceReference")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((context).clone())? }) }), Arc::new(Values::Value::STRING { string: (modifier).clone() })], dummyMsg.clone())?) {
+        (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
+        _ => bail!("pattern mismatch"),
+    } };
+    res = __pa0.clone();
+    Ok(res)
+}
+
 pub(crate) fn getModelInstanceAnnotation(mut className: ArcStr, mut filter: Arc<metamodelica::List<ArcStr>>, mut prettyPrint: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstanceAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), ValuesMake::makeArray(({
