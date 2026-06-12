@@ -838,7 +838,7 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
                 UnorderedMap::add(name2.clone(), linMap.clone(), replacements.clone())?;
                 status = FrameOrderingStatus::CHANGED.clone();
             } else {
-                m = (((metamodelica::OrderedFloat((({let __elt = loc2.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone(); __elt})) as f64)) / (metamodelica::OrderedFloat((({let __elt = loc1.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone(); __elt})) as f64))).0.floor() as i32);
+                m = ((metamodelica::real_div_checked((metamodelica::OrderedFloat((({let __elt = loc2.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone(); __elt})) as f64)), (metamodelica::OrderedFloat((({let __elt = loc1.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone(); __elt})) as f64)))?).0.floor() as i32);
                 b = ({let __elt = loc2.borrow()[(1-1) as usize].clone(); __elt}) - m * ({let __elt = loc1.borrow()[(1-1) as usize].clone(); __elt});
                 for mut i in 2..=metamodelica::arrayLength(loc1.clone()) {
                     if ({let __elt = loc2.borrow()[(i.clone()-1) as usize].clone(); __elt}) != m * ({let __elt = loc1.borrow()[(i.clone()-1) as usize].clone(); __elt}) + b {
@@ -1403,7 +1403,7 @@ fn resolveAllRegular(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
     scal_size = (List::flatten(UnorderedMap::valueList(map3.clone()))?.len() as i32);
     if size == scal_size || UnorderedSet::contains(cref.clone(), rep.clone())? && intMod(size, scal_size) == 0 {
         shift = 0;
-        for mut i in 1..=((metamodelica::OrderedFloat((size) as f64) / metamodelica::OrderedFloat((scal_size) as f64)).0 as i32) {
+        for mut i in 1..=((metamodelica::real_div_checked(metamodelica::OrderedFloat((size) as f64), metamodelica::OrderedFloat((scal_size) as f64))?).0 as i32) {
             for mut scal in &*scalarized.clone() {
                 let mut scal = scal.clone();
                 for mut scal_idx in &*UnorderedMap::getSafe(scal.clone(), map3.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))? {

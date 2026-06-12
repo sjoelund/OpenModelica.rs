@@ -497,7 +497,7 @@ pub fn reverse<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: meta
     let mut elem2: T;
     outArray = inArray.clone();
     size = metamodelica::arrayLength(inArray.clone());
-    for mut i in 1..=((metamodelica::OrderedFloat((size) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
+    for mut i in 1..=((metamodelica::real_div_checked(metamodelica::OrderedFloat((size) as f64), metamodelica::OrderedFloat((2) as f64))?).0 as i32) {
         elem1 = metamodelica::arrayGet(inArray.clone(), i)?;
         elem2 = metamodelica::arrayGet(inArray.clone(), size - i + 1)?;
         outArray = metamodelica::arrayUpdate(outArray.clone(), i, elem2.clone())?;

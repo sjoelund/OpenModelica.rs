@@ -542,7 +542,7 @@ fn populateSimulationOptions(mut options: InteractiveTypes::SimulationOptions, m
     if isSome(interval.clone()) {
         options = setSimulationOptionsInterval(options, Expression::toReal(Util::getOption(interval)?)?)?;
     } else {
-        options.stepSize = Arc::new(DAE::Exp::RCONST { real: (Expression::toReal(options.stopTime.clone())? - Expression::toReal(options.startTime.clone())?) / metamodelica::OrderedFloat((500) as f64) });
+        options.stepSize = Arc::new(DAE::Exp::RCONST { real: metamodelica::real_div_checked((Expression::toReal(options.stopTime.clone())? - Expression::toReal(options.startTime.clone())?), metamodelica::OrderedFloat((500) as f64))? });
     }
     Ok(options)
 }
@@ -554,7 +554,7 @@ fn setSimulationOptionsInterval(mut options: InteractiveTypes::SimulationOptions
     start_time = Expression::toReal(options.startTime.clone())?;
     stop_time = Expression::toReal(options.stopTime.clone())?;
     options.stepSize = Arc::new(DAE::Exp::RCONST { real: interval });
-    options.numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: (((stop_time - start_time) / interval).0.floor() as i32) });
+    options.numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: ((metamodelica::real_div_checked((stop_time - start_time), interval)?).0.floor() as i32) });
     Ok(options)
 }
 
@@ -3115,9 +3115,9 @@ pub(crate) fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: F
                     } };
                     numberOfIntervals = __pa5.clone();
                     if numberOfIntervals.clone() == 0 {
-                        numberOfIntervals = if (interval.clone() > metamodelica::OrderedFloat(0.0_f64)) {((((stopTime.clone() - startTime.clone()) / interval.clone()).ceil()).0.floor() as i32)} else {0};
+                        numberOfIntervals = if (interval.clone() > metamodelica::OrderedFloat(0.0_f64)) {(((metamodelica::real_div_checked((stopTime.clone() - startTime.clone()), interval.clone())?).ceil()).0.floor() as i32)} else {0};
                     } else {
-                        interval = (stopTime.clone() - startTime.clone()) / metamodelica::OrderedFloat((std::cmp::max(numberOfIntervals.clone(), 1)) as f64);
+                        interval = metamodelica::real_div_checked((stopTime.clone() - startTime.clone()), metamodelica::OrderedFloat((std::cmp::max(numberOfIntervals.clone(), 1)) as f64))?;
                     }
                     Ok(Arc::new(Values::Value::TUPLE { valueLst: list![Arc::new(Values::Value::REAL { real: startTime.clone() }), Arc::new(Values::Value::REAL { real: stopTime.clone() }), Arc::new(Values::Value::REAL { real: tolerance.clone() }), Arc::new(Values::Value::INTEGER { integer: numberOfIntervals.clone() }), Arc::new(Values::Value::REAL { real: interval.clone() })] }))
                 }
@@ -6425,7 +6425,7 @@ fn calculateSimulationSettings(mut inCache: FCore::Cache, mut vals: Arc<metamode
             starttime_r = ValuesUtil::valueReal(starttime_v.clone())?;
             stoptime_r = ValuesUtil::valueReal(stoptime_v.clone())?;
             tolerance_r = ValuesUtil::valueReal(tolerance_v.clone())?;
-            outSimSettings = SimCodeMain::createSimulationSettings(starttime_r, stoptime_r, interval_i.clone(), tolerance_r, (method_str.clone()).clone(), (options_str.clone()).clone(), (outputFormat_str.clone()).clone(), (variableFilter_str.clone()).clone(), (cflags.clone()).clone(), (simflags.clone()).clone());
+            outSimSettings = SimCodeMain::createSimulationSettings(starttime_r, stoptime_r, interval_i.clone(), tolerance_r, (method_str.clone()).clone(), (options_str.clone()).clone(), (outputFormat_str.clone()).clone(), (variableFilter_str.clone()).clone(), (cflags.clone()).clone(), (simflags.clone()).clone())?;
             (cache.clone(), outSimSettings)
         },
         _ => {

@@ -423,7 +423,7 @@ pub(crate) fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     j5 = __pa13.clone();
     j6 = __pa14.clone();
     j7 = __pa15.clone();
-    factor1 = factor1 / factor2;
+    factor1 = metamodelica::real_div_checked(factor1, factor2)?;
     i1 = i1 - j1;
     i2 = i2 - j2;
     i3 = i3 - j3;

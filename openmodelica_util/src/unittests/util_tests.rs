@@ -378,7 +378,7 @@ fn test_int_pow_negative_exponent_errors() {
 fn test_real_range_size_unit_step() {
     use metamodelica::OrderedFloat;
     // range 0..=4 step 1.0 → 5 elements
-    let n = U::realRangeSize(OrderedFloat(0.0), OrderedFloat(1.0), OrderedFloat(4.0));
+    let n = U::realRangeSize(OrderedFloat(0.0), OrderedFloat(1.0), OrderedFloat(4.0)).unwrap();
     assert_eq!(n, 5, "range 0..=4 step 1.0 should have 5 elements");
 }
 
@@ -387,7 +387,7 @@ fn test_real_range_size_half_step() {
     use metamodelica::OrderedFloat;
     // range 1..=3 step 0.5 → 1.0, 1.5, 2.0, 2.5, 3.0 → 5 elements
     // BUG: actual returns 2 instead of 5
-    let n = U::realRangeSize(OrderedFloat(1.0), OrderedFloat(0.5), OrderedFloat(3.0));
+    let n = U::realRangeSize(OrderedFloat(1.0), OrderedFloat(0.5), OrderedFloat(3.0)).unwrap();
     assert_eq!(n, 5, "range 1..=3 step 0.5 should have 5 elements");
 }
 
@@ -396,7 +396,7 @@ fn test_real_range_size_step_two() {
     use metamodelica::OrderedFloat;
     // range 1..=5 step 2.0 → 1.0, 3.0, 5.0 → 3 elements
     // BUG: actual returns floor(5.0 - 1.0/2.0 + ε) + 1 = floor(4.5) + 1 = 5 instead of 3
-    let n = U::realRangeSize(OrderedFloat(1.0), OrderedFloat(2.0), OrderedFloat(5.0));
+    let n = U::realRangeSize(OrderedFloat(1.0), OrderedFloat(2.0), OrderedFloat(5.0)).unwrap();
     assert_eq!(n, 3, "range 1..=5 step 2.0 should have 3 elements");
 }
 
@@ -404,7 +404,7 @@ fn test_real_range_size_step_two() {
 fn test_real_range_size_single_element() {
     use metamodelica::OrderedFloat;
     // range start==stop → always 1 element regardless of step
-    let n = U::realRangeSize(OrderedFloat(3.0), OrderedFloat(1.0), OrderedFloat(3.0));
+    let n = U::realRangeSize(OrderedFloat(3.0), OrderedFloat(1.0), OrderedFloat(3.0)).unwrap();
     assert_eq!(n, 1, "range start==stop should have 1 element");
 }
 

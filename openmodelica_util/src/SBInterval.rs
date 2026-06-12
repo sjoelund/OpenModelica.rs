@@ -252,7 +252,7 @@ pub(crate) fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut
             hi = (hi).floor();
         }
         if lo < metamodelica::OrderedFloat((0) as f64) {
-            lo = lo + step * (metamodelica::OrderedFloat((1) as f64) + ((lo).abs() / step).floor());
+            lo = lo + step * (metamodelica::OrderedFloat((1) as f64) + (metamodelica::real_div_checked((lo).abs(), step)?).floor());
         }
         if hi < lo {
             res = newEmpty();
@@ -272,9 +272,9 @@ pub(crate) fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut
     Ok(res)
 }
 
-pub(crate) fn cardinality(mut int: Arc<SBInterval>) -> i32 {
-    let mut card: i32 = ((intReal(int.hi.clone() - int.lo.clone()) / intReal(int.step.clone())).0.floor() as i32);
-    card
+pub(crate) fn cardinality(mut int: Arc<SBInterval>) -> Result<i32> {
+    let mut card: i32 = ((metamodelica::real_div_checked(intReal(int.hi.clone() - int.lo.clone()), intReal(int.step.clone()))?).0.floor() as i32);
+    Ok(card)
 }
 
 pub(crate) fn contains(mut c: i32, mut int: Arc<SBInterval>) -> bool {

@@ -200,7 +200,7 @@ pub(crate) fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i
         (Operator::MathClassification::ADDITION, _) => hash1 + hash2,
         (Operator::MathClassification::SUBTRACTION, _) => hash1 - hash2,
         (Operator::MathClassification::MULTIPLICATION, _) => hash1 * hash2,
-        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1) as f64) / metamodelica::OrderedFloat((hash2) as f64)).0.floor() as i32),
+        (Operator::MathClassification::DIVISION, _) => ((metamodelica::real_div_checked(metamodelica::OrderedFloat((hash1) as f64), metamodelica::OrderedFloat((hash2) as f64))?).0.floor() as i32),
         (Operator::MathClassification::POWER, _) => (((metamodelica::OrderedFloat((hash1) as f64)).powf(metamodelica::OrderedFloat((hash2) as f64))).0.floor() as i32),
         (Operator::MathClassification::LOGICAL, _) => -(hash1 + hash2),
         (Operator::MathClassification::RELATION, _) => hash2 - hash1,

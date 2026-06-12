@@ -2796,7 +2796,7 @@ fn elabRangeSize(mut inStartValue: Arc<Values::Value>, mut inStepValue: Option<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: real_start }, None, Deref @ Values::Value::REAL { real: real_stop }) => {
-                    Ok(Util::realRangeSize(real_start.clone(), metamodelica::OrderedFloat(1.0_f64), real_stop.clone()))
+                    Ok(Util::realRangeSize(real_start.clone(), metamodelica::OrderedFloat(1.0_f64), real_stop.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2804,7 +2804,7 @@ fn elabRangeSize(mut inStartValue: Arc<Values::Value>, mut inStepValue: Option<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: real_start }, Some(Deref @ Values::Value::REAL { real: real_step }), Deref @ Values::Value::REAL { real: real_stop }) => {
-                    Ok(Util::realRangeSize(real_start.clone(), real_step.clone(), real_stop.clone()))
+                    Ok(Util::realRangeSize(real_start.clone(), real_step.clone(), real_stop.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}

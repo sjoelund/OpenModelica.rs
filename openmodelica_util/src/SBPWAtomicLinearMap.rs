@@ -211,7 +211,7 @@ pub(crate) fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicS
     let mut inv: Arc<SBPWAtomicLinearMap>;
     full_im = image(map.clone(), map.dom.clone())?;
     actual_im = SBAtomicSet::intersection(full_im, set)?;
-    inv = new(actual_im.clone(), SBLinearMap::inverse(map.lmap.clone()));
+    inv = new(actual_im.clone(), SBLinearMap::inverse(map.lmap.clone())?);
     aux = image(inv, actual_im)?;
     outSet = SBAtomicSet::intersection(map.dom.clone(), aux)?;
     Ok(outSet)

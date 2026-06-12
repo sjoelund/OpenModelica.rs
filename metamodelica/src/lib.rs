@@ -466,6 +466,23 @@ pub fn realDiv(r1: Real, r2: Real) -> Real {
     r1 / r2
 }
 
+/// Real division `/` with MetaModelica failure semantics: dividing by exactly
+/// zero is a *recoverable* MetaModelica failure, not `inf`/`nan`. The C runtime
+/// generated for every `Real / Real` emits `if (denom == 0) goto fail;` before
+/// the division, so a zero divisor fails the enclosing `match`/`matchcontinue`
+/// arm rather than producing a non-finite constant. mmtorust lowers the `/`
+/// operator (`BinOpKind::Div`) through this helper so the same observable
+/// behaviour holds — e.g. `ExpressionSimplify.simplifyBinaryConst` must *fail*
+/// on `1.0 / 0.0` (leaving the expression unsimplified) instead of folding it
+/// to `RCONST(inf)`.
+#[inline(always)]
+pub fn real_div_checked(r1: Real, r2: Real) -> Result<Real> {
+    if r2.0 == 0.0 {
+        bail!("Real division by zero");
+    }
+    Ok(r1 / r2)
+}
+
 /// Calculates remainder of Real division r1/r2.
 pub fn realMod(r1: Real, r2: Real) -> Real {
     OrderedFloat(r1.0 - (r1.0/r2.0).floor()*r2.0)
@@ -2137,31 +2154,6 @@ pub fn fail() -> Result<()> {
 
 #[allow(non_snake_case)]
 pub mod ext {
-    use anyhow::Result;
-    use arcstr::ArcStr;
-
-    /// MetaModelica `System.stringFind(str, searchStr)`: returns the 0-based
-    /// index of the first occurrence of `searchStr` in `str`, or `-1` if
-    /// the substring is absent. Matches the C++ runtime's signature
-    /// (`return haystack.find(needle);` with `std::string::npos` reported
-    /// as `-1` by the wrapper).
-    pub fn System_stringFind(s: ArcStr, search: ArcStr) -> Result<i32> {
-        Ok(match s.find(search.as_str()) {
-            Some(idx) => idx as i32,
-            None => -1,
-        })
-    }
-
-    /// MetaModelica `System.stringFindString(str, searchStr)`: returns the
-    /// substring of `str` starting at the first occurrence of `searchStr`
-    /// (inclusive), or the empty string if the substring is absent.
-    pub fn System_stringFindString(s: ArcStr, search: ArcStr) -> ArcStr {
-        match s.find(search.as_str()) {
-            Some(idx) => ArcStr::from(&s[idx..]),
-            None => ArcStr::new(),
-        }
-    }
-
     /// C `atof`-style parse: the longest valid floating-point prefix (after
     /// leading whitespace), `0.0` when there is none. Hand-written ports of
     /// runtime C code use this where the original called `atof`/`strtod` on
@@ -2224,98 +2216,6 @@ pub mod ext {
             return 0;
         }
         s[..end].parse::<i64>().unwrap_or(0)
-    }
-
-    // ── NBASSC externals (Compiler/runtime/ASSCEXT_omc.cpp) ────────────────
-    //
-    // The analytical-to-structural singularity conversion matrix store.
-    // Upstream this is an unfinished feature: NBASSC.main builds a dummy
-    // matrix, ASSC_setMatrix stores it in C globals in CSR form, and nothing
-    // ever reads it back (the printMatrix call in NBASSC.mo is commented
-    // out). We mirror the storage semantics with a thread-local — the C
-    // globals are only touched from the single-threaded backend, and a
-    // thread-local keeps the Rust port safe if that changes.
-
-    /// CSR matrix plus per-row `(index, value)` pairs, mirroring the C
-    /// globals `col_ptrs`/`col_ids`/`col_val` and the `rows` linked lists.
-    #[derive(Default)]
-    struct AsscMatrix {
-        ne: i32,
-        col_ptrs: Vec<i32>,
-        col_ids: Vec<i32>,
-        col_val: Vec<i32>,
-        rows: Vec<Vec<(i32, i32)>>,
-    }
-
-    thread_local! {
-        static ASSC_MATRIX: std::cell::RefCell<Option<AsscMatrix>> =
-            const { std::cell::RefCell::new(None) };
-    }
-
-    /// `ASSC_setMatrix(nv, ne, nz, adj, val)`: store the adjacency/value
-    /// matrix in CSR form. `adj` holds 1-based column indices; the C side
-    /// stores them 0-based, and so do we. `nv` (variable count) is stored
-    /// by the C side but never read; the row/nonzero counts come from `ne`
-    /// and the list contents.
-    pub fn ASSC_setMatrix(
-        _nv: i32,
-        ne: i32,
-        nz: i32,
-        adj: crate::Array<std::sync::Arc<crate::List<i32>>>,
-        val: crate::Array<std::sync::Arc<crate::List<i32>>>,
-    ) {
-        let mut m = AsscMatrix {
-            ne,
-            col_ptrs: Vec::with_capacity(ne as usize + 1),
-            col_ids: Vec::with_capacity(nz as usize),
-            col_val: Vec::with_capacity(nz as usize),
-            rows: Vec::with_capacity(ne as usize),
-        };
-        m.col_ptrs.push(0);
-        let adj = adj.borrow();
-        let val = val.borrow();
-        for i in 0..ne as usize {
-            let mut row = Vec::new();
-            // Like the C loop, walk both lists in lockstep, stopping at the
-            // shorter one.
-            for (a, v) in (&*adj[i]).into_iter().zip(&*val[i]) {
-                m.col_ids.push(*a - 1);
-                m.col_val.push(*v);
-                row.push((*a - 1, *v));
-            }
-            m.col_ptrs.push(m.col_ids.len() as i32);
-            m.rows.push(row);
-        }
-        ASSC_MATRIX.with(|s| *s.borrow_mut() = Some(m));
-    }
-
-    /// `ASSC_freeMatrix()`: drop the stored matrix.
-    pub fn ASSC_freeMatrix() {
-        ASSC_MATRIX.with(|s| *s.borrow_mut() = None);
-    }
-
-    /// `ASSC_printMatrix()`: print the stored matrix to stdout in the same
-    /// two formats as the C implementation (CSR triplets per row, then the
-    /// per-row `(index: value)` element lists).
-    pub fn ASSC_printMatrix() {
-        ASSC_MATRIX.with(|s| {
-            let borrow = s.borrow();
-            let Some(m) = borrow.as_ref() else { return };
-            println!("Sparse Matrix:\n================");
-            for i in 0..m.ne as usize {
-                print!("{i}: ");
-                for j in m.col_ptrs[i]..m.col_ptrs[i + 1] {
-                    print!("({},{})", m.col_ids[j as usize], m.col_val[j as usize]);
-                }
-                println!();
-            }
-            for row in &m.rows {
-                for (index, value) in row {
-                    print!("({index}: {value}) ");
-                }
-                println!();
-            }
-        });
     }
 }
 

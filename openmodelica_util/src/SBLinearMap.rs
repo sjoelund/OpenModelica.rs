@@ -171,7 +171,7 @@ pub(crate) fn compose(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) ->
     map
 }
 
-pub(crate) fn inverse(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
+pub(crate) fn inverse(mut map: Arc<SBLinearMap>) -> Result<Arc<SBLinearMap>> {
     let mut inv: Arc<SBLinearMap>;
     let mut gain: metamodelica::Array<metamodelica::Real>;
     let mut offset: metamodelica::Array<metamodelica::Real>;
@@ -184,15 +184,15 @@ pub(crate) fn inverse(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
         g = metamodelica::Dangerous::arrayGetNoBoundsChecking(map.gain.clone(), i.clone());
         o = metamodelica::Dangerous::arrayGetNoBoundsChecking(map.offset.clone(), i.clone());
         if g != metamodelica::OrderedFloat((0) as f64) {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(gain.clone(), i.clone(), metamodelica::OrderedFloat(1.0_f64) / g) };
-            unsafe { metamodelica::Dangerous::arrayInitSlot(offset.clone(), i.clone(), -(o / g)) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(gain.clone(), i.clone(), metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), g)?) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(offset.clone(), i.clone(), -(metamodelica::real_div_checked(o, g)?)) };
         } else {
             unsafe { metamodelica::Dangerous::arrayInitSlot(gain.clone(), i.clone(), intReal(System::intMaxLit())) };
             unsafe { metamodelica::Dangerous::arrayInitSlot(offset.clone(), i.clone(), intReal(System::intMaxLit())) };
         }
     }
     inv = Arc::new(SBLinearMap { gain: gain.clone(), offset: offset.clone() });
-    inv
+    Ok(inv)
 }
 
 pub(crate) fn apply(mut domain: Arc<SBSet::SBSet>, mut map: Arc<SBLinearMap>) -> Result<Arc<SBSet::SBSet>> {

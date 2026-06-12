@@ -75,10 +75,10 @@ pub static RAT0: Rational = Rational { nom: 0, denom: 1 };
 
 pub static RAT1: Rational = Rational { nom: 1, denom: 1 };
 
-pub(crate) fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> bool {
+pub(crate) fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> Result<bool> {
     let mut b: bool;
-    b = realGt(metamodelica::OrderedFloat((r1.nom.clone()) as f64) / metamodelica::OrderedFloat((r1.denom.clone()) as f64), metamodelica::OrderedFloat((r2.nom.clone()) as f64) / metamodelica::OrderedFloat((r2.denom.clone()) as f64));
-    b
+    b = realGt(metamodelica::real_div_checked(metamodelica::OrderedFloat((r1.nom.clone()) as f64), metamodelica::OrderedFloat((r1.denom.clone()) as f64))?, metamodelica::real_div_checked(metamodelica::OrderedFloat((r2.nom.clone()) as f64), metamodelica::OrderedFloat((r2.denom.clone()) as f64))?);
+    Ok(b)
 }
 
 pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {

@@ -1113,11 +1113,11 @@ pub fn replace<T: Clone + 'static + metamodelica::gc::MMTrace>(mut replaced: T, 
     outArg
 }
 
-pub fn realRangeSize(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inStop: metamodelica::Real) -> i32 {
+pub fn realRangeSize(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inStop: metamodelica::Real) -> Result<i32> {
     let mut outSize: i32;
-    outSize = ((((inStop - inStart) / inStep + metamodelica::OrderedFloat(5e-15_f64)).floor()).0.floor() as i32) + 1;
+    outSize = (((metamodelica::real_div_checked((inStop - inStart), inStep)? + metamodelica::OrderedFloat(5e-15_f64)).floor()).0.floor() as i32) + 1;
     outSize = std::cmp::max(outSize, 0);
-    outSize
+    Ok(outSize)
 }
 
 fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentDirExists: bool) -> bool {

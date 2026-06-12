@@ -604,10 +604,10 @@ fn getIconTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, mut
             rcy1 = getValueFromExp(y1.clone())?;
             rcx2 = getValueFromExp(x2.clone())?;
             rcy2 = getValueFromExp(y2.clone())?;
-            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2);
-            x = getXYAnn(rax1, rax2, (literal!("x")).clone());
-            y = getXYAnn(ray1, ray2, (literal!("y")).clone());
-            scale = getScaleAnn(rax1, rax2, rcx1, rcx2);
+            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2)?;
+            x = getXYAnn(rax1, rax2, (literal!("x")).clone())?;
+            y = getXYAnn(ray1, ray2, (literal!("y")).clone())?;
+            scale = getScaleAnn(rax1, rax2, rcx1, rcx2)?;
             flipHorizontal = getFlipAnn(rax1, rax2, (literal!("flipHorizontal")).clone());
             flipVertical = getFlipAnn(ray1, ray2, (literal!("flipVertical")).clone());
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("iconTransformation")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![x, y, scale, aspectRatio, flipHorizontal, flipVertical], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() })
@@ -641,10 +641,10 @@ fn getIconTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, mut
             rcy1 = getValueFromExp(y1.clone())?;
             rcx2 = getValueFromExp(x2.clone())?;
             rcy2 = getValueFromExp(y2.clone())?;
-            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2);
-            x = getXYAnn(rax1, rax2, (literal!("x")).clone());
-            y = getXYAnn(ray1, ray2, (literal!("y")).clone());
-            scale = getScaleAnn(rax1, rax2, rcx1, rcx2);
+            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2)?;
+            x = getXYAnn(rax1, rax2, (literal!("x")).clone())?;
+            y = getXYAnn(ray1, ray2, (literal!("y")).clone())?;
+            scale = getScaleAnn(rax1, rax2, rcx1, rcx2)?;
             flipHorizontal = getFlipAnn(rax1, rax2, (literal!("flipHorizontal")).clone());
             flipVertical = getFlipAnn(ray1, ray2, (literal!("flipVertical")).clone());
             rotation = getRotationAnn(rot.clone());
@@ -686,10 +686,10 @@ fn getDiagramTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, 
             rcy1 = getValueFromExp(y1.clone())?;
             rcx2 = getValueFromExp(x2.clone())?;
             rcy2 = getValueFromExp(y2.clone())?;
-            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2);
-            x = getXYAnn(rax1, rax2, (literal!("x")).clone());
-            y = getXYAnn(ray1, ray2, (literal!("y")).clone());
-            scale = getScaleAnn(rax1, rax2, rcx1, rcx2);
+            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2)?;
+            x = getXYAnn(rax1, rax2, (literal!("x")).clone())?;
+            y = getXYAnn(ray1, ray2, (literal!("y")).clone())?;
+            scale = getScaleAnn(rax1, rax2, rcx1, rcx2)?;
             flipHorizontal = getFlipAnn(rax1, rax2, (literal!("flipHorizontal")).clone());
             flipVertical = getFlipAnn(ray1, ray2, (literal!("flipVertical")).clone());
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("transformation")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![x, y, scale, aspectRatio, flipHorizontal, flipVertical], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() })
@@ -723,10 +723,10 @@ fn getDiagramTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, 
             rcy1 = getValueFromExp(y1.clone())?;
             rcx2 = getValueFromExp(x2.clone())?;
             rcy2 = getValueFromExp(y2.clone())?;
-            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2);
-            x = getXYAnn(rax1, rax2, (literal!("x")).clone());
-            y = getXYAnn(ray1, ray2, (literal!("y")).clone());
-            scale = getScaleAnn(rax1, rax2, rcx1, rcx2);
+            aspectRatio = getAspectRatioAnn(rax1, rax2, ray1, ray2, rcx1, rcy1, rcx2, rcy2)?;
+            x = getXYAnn(rax1, rax2, (literal!("x")).clone())?;
+            y = getXYAnn(ray1, ray2, (literal!("y")).clone())?;
+            scale = getScaleAnn(rax1, rax2, rcx1, rcx2)?;
             flipHorizontal = getFlipAnn(rax1, rax2, (literal!("flipHorizontal")).clone());
             flipVertical = getFlipAnn(ray1, ray2, (literal!("flipVertical")).clone());
             rotation = getRotationAnn(rot.clone());
@@ -737,46 +737,46 @@ fn getDiagramTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, 
     Ok(trans)
 }
 
-fn getAspectRatioAnn(mut x1: metamodelica::Real, mut x2: metamodelica::Real, mut y1: metamodelica::Real, mut y2: metamodelica::Real, mut cx1: metamodelica::Real, mut cy1: metamodelica::Real, mut cx2: metamodelica::Real, mut cy2: metamodelica::Real) -> Arc<Absyn::ElementArg> {
+fn getAspectRatioAnn(mut x1: metamodelica::Real, mut x2: metamodelica::Real, mut y1: metamodelica::Real, mut y2: metamodelica::Real, mut cx1: metamodelica::Real, mut cy1: metamodelica::Real, mut cx2: metamodelica::Real, mut cy2: metamodelica::Real) -> Result<Arc<Absyn::ElementArg>> {
     let mut aspectRatio: Arc<Absyn::ElementArg>;
     aspectRatio = (match (x1, x2, y1, y2, cx1, cy1, cx2, cy2) {
         (mut rx1, mut rx2, mut ry1, mut ry2, mut crx1, mut cry1, mut crx2, mut cry2) => {
             let mut aspect: metamodelica::Real;
             let mut s: ArcStr;
-            aspect = realAbs(ry2.clone() - ry1.clone()) * realAbs(cry2.clone() - cry1.clone()) / (realAbs(rx2.clone() - rx1.clone()) * realAbs(crx2.clone() - crx1.clone()));
+            aspect = metamodelica::real_div_checked(realAbs(ry2.clone() - ry1.clone()) * realAbs(cry2.clone() - cry1.clone()), (realAbs(rx2.clone() - rx1.clone()) * realAbs(crx2.clone() - crx1.clone())))?;
             s = (realString(aspect)).clone();
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("aspectRatio")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::REAL { value: (s).clone() }), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() })
         },
     });
-    aspectRatio
+    Ok(aspectRatio)
 }
 
-fn getXYAnn(mut val1: metamodelica::Real, mut val2: metamodelica::Real, mut name: ArcStr) -> Arc<Absyn::ElementArg> {
+fn getXYAnn(mut val1: metamodelica::Real, mut val2: metamodelica::Real, mut name: ArcStr) -> Result<Arc<Absyn::ElementArg>> {
     let mut res: Arc<Absyn::ElementArg>;
     res = (match (val1, val2, name) {
         (mut x1, mut x2, mut n) => {
             let mut value: metamodelica::Real;
             let mut s: ArcStr;
-            value = (x1.clone() + x2.clone()) / metamodelica::OrderedFloat(2.0_f64);
+            value = metamodelica::real_div_checked((x1.clone() + x2.clone()), metamodelica::OrderedFloat(2.0_f64))?;
             s = (realString(value)).clone();
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::REAL { value: (s).clone() }), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() })
         },
     });
-    res
+    Ok(res)
 }
 
-fn getScaleAnn(mut ax1: metamodelica::Real, mut ax2: metamodelica::Real, mut cx1: metamodelica::Real, mut cx2: metamodelica::Real) -> Arc<Absyn::ElementArg> {
+fn getScaleAnn(mut ax1: metamodelica::Real, mut ax2: metamodelica::Real, mut cx1: metamodelica::Real, mut cx2: metamodelica::Real) -> Result<Arc<Absyn::ElementArg>> {
     let mut scale: Arc<Absyn::ElementArg>;
     scale = (match (ax1, ax2, cx1, cx2) {
         (mut arx1, mut arx2, mut crx1, mut crx2) => {
             let mut scaleFac: metamodelica::Real;
             let mut s: ArcStr;
-            scaleFac = realAbs(arx1.clone() - arx2.clone()) / realAbs(crx1.clone() - crx2.clone());
+            scaleFac = metamodelica::real_div_checked(realAbs(arx1.clone() - arx2.clone()), realAbs(crx1.clone() - crx2.clone()))?;
             s = (realString(scaleFac)).clone();
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("scale")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::REAL { value: (s).clone() }), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() })
         },
     });
-    scale
+    Ok(scale)
 }
 
 fn getFlipAnn(mut val1: metamodelica::Real, mut val2: metamodelica::Real, mut name: ArcStr) -> Arc<Absyn::ElementArg> {

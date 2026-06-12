@@ -257,7 +257,7 @@ pub(crate) fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
     Ok(b)
 }
 
-pub fn bytesToReadableUnit(mut bytes: metamodelica::Real, mut significantDigits: i32, mut maxSizeInUnit: metamodelica::Real) -> ArcStr {
+pub fn bytesToReadableUnit(mut bytes: metamodelica::Real, mut significantDigits: i32, mut maxSizeInUnit: metamodelica::Real) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let TB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((4) as f64));
     let GB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((3) as f64));
@@ -274,7 +274,7 @@ pub fn bytesToReadableUnit(mut bytes: metamodelica::Real, mut significantDigits:
     } else {
         r#str = ArcStr::from(::std::format!("{}", ((bytes).0.floor() as i32)));
     }
-    r#str
+    Ok(r#str)
 }
 
 pub fn startsWith(mut r#str: ArcStr, mut prefix: ArcStr) -> bool {

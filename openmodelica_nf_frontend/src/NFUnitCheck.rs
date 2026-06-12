@@ -1170,7 +1170,7 @@ fn unitTypesEqual(mut unit1: Unit::Unit, mut unit2: Unit::Unit, mut htCr2U: Arc<
     let mut outUnit: Unit::Unit;
     (isEqual, outUnit) = (match (unit1.clone(), unit2.clone()) {
         (Unit::Unit::UNIT { .. }, Unit::Unit::UNIT { .. }) => {
-            (Unit::isEqual(unit1.clone(), unit2), unit1)
+            (Unit::isEqual(unit1.clone(), unit2)?, unit1)
         },
         (Unit::Unit::UNIT { .. }, Unit::Unit::MASTER { varList: ref vars2 }) => {
             List::map2_0(vars2.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Unit::Unit, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>) -> Result<()> + 'static>), unit1.clone(), htCr2U)?;

@@ -138,10 +138,10 @@ pub(crate) fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRa
             Arc::new(NFRangeIterator::INT_RANGE { current: istart.clone(), last: istop.clone() })
         },
         Deref @ Expression::RANGE { start: Deref @ Expression::REAL { value: rstart }, step: Some(Deref @ Expression::REAL { value: rstep }), stop: Deref @ Expression::REAL { value: rstop }, .. } => {
-            Arc::new(NFRangeIterator::REAL_RANGE { start: rstart.clone(), stepsize: rstep.clone(), current: 0, steps: Util::realRangeSize(rstart.clone(), rstep.clone(), rstop.clone()) })
+            Arc::new(NFRangeIterator::REAL_RANGE { start: rstart.clone(), stepsize: rstep.clone(), current: 0, steps: Util::realRangeSize(rstart.clone(), rstep.clone(), rstop.clone())? })
         },
         Deref @ Expression::RANGE { start: Deref @ Expression::REAL { value: rstart }, step: None, stop: Deref @ Expression::REAL { value: rstop }, .. } => {
-            Arc::new(NFRangeIterator::REAL_RANGE { start: rstart.clone(), stepsize: metamodelica::OrderedFloat(1.0_f64), current: 0, steps: Util::realRangeSize(rstart.clone(), metamodelica::OrderedFloat(1.0_f64), rstop.clone()) })
+            Arc::new(NFRangeIterator::REAL_RANGE { start: rstart.clone(), stepsize: metamodelica::OrderedFloat(1.0_f64), current: 0, steps: Util::realRangeSize(rstart.clone(), metamodelica::OrderedFloat(1.0_f64), rstop.clone())? })
         },
         Deref @ Expression::RANGE { start: Deref @ Expression::BOOLEAN { value: bstart }, stop: Deref @ Expression::BOOLEAN { value: bstop }, .. } => {
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(({

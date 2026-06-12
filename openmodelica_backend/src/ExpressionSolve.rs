@@ -582,7 +582,7 @@ fn preprocessingSolve3(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
         (Deref @ DAE::Exp::BINARY { exp1: e1 @ Deref @ DAE::Exp::RCONST { real: r1 }, operator: DAE::Operator::POW { ty: _ }, exp2: e2 }, Deref @ DAE::Exp::RCONST { real: r2 }) if (r2.clone() > metamodelica::OrderedFloat(0.0_f64) && r1.clone() > metamodelica::OrderedFloat(0.0_f64) && !(Expression::isConstOne(e1.clone())) && expHasCref(e2.clone(), inExp3.clone())?) => {
             let mut r: metamodelica::Real;
             let mut res: Arc<DAE::Exp>;
-            r = (r2.clone()).ln() / (r1.clone()).ln();
+            r = metamodelica::real_div_checked((r2.clone()).ln(), (r1.clone()).ln())?;
             res = Arc::new(DAE::Exp::RCONST { real: r });
             (e2.clone(), res, true)
         },
@@ -1863,7 +1863,7 @@ fn makeInitialGuess2(mut iExp: Arc<DAE::Exp>, mut itpl: (Arc<DAE::Exp>, ArcStr, 
         (_, (_, _, tp, true)) => {
             let mut e: Arc<DAE::Exp>;
             match '__try0: {
-                let __pa1 = ::match_deref::match_deref! { match &(makeInitialGuess3(iExp.clone(), tp.clone())) {
+                let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(makeInitialGuess3(iExp.clone(), tp.clone()), '__try0)) {
                     Some(__pa1) => __pa1.clone(),
                     _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                 } };
@@ -1887,21 +1887,21 @@ fn makeInitialGuess2(mut iExp: Arc<DAE::Exp>, mut itpl: (Arc<DAE::Exp>, ArcStr, 
     Ok((oExp, otpl))
 }
 
-fn makeInitialGuess3(mut iExp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Option<Arc<DAE::Exp>> {
+fn makeInitialGuess3(mut iExp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Result<Option<Arc<DAE::Exp>>> {
     let mut oExp: Option<Arc<DAE::Exp>>;
     oExp = (::match_deref::match_deref! { match &(iExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut con: Arc<DAE::Exp>;
             let mut o: Arc<DAE::Exp>;
             con = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
-            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::OrderedFloat((1) as f64) / metamodelica::OrderedFloat(0.000000001_f64)) }), expElse: iExp });
+            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::real_div_checked(metamodelica::OrderedFloat((1) as f64), metamodelica::OrderedFloat(0.000000001_f64))?) }), expElse: iExp });
             Some(o)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log10" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut con: Arc<DAE::Exp>;
             let mut o: Arc<DAE::Exp>;
             con = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::LESSEQ { ty: tp }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
-            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::OrderedFloat((1) as f64) / metamodelica::OrderedFloat(0.000000001_f64)) }), expElse: iExp });
+            o = Arc::new(DAE::Exp::IFEXP { expCond: con, expThen: Arc::new(DAE::Exp::RCONST { real: -(metamodelica::real_div_checked(metamodelica::OrderedFloat((1) as f64), metamodelica::OrderedFloat(0.000000001_f64))?) }), expElse: iExp });
             Some(o)
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
@@ -1923,7 +1923,7 @@ fn makeInitialGuess3(mut iExp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Option<
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    oExp
+    Ok(oExp)
 }
 
 fn helpInvCos(mut acosy: Arc<DAE::Exp>, mut x: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>, mut neg: bool) -> Result<Arc<DAE::Exp>> {

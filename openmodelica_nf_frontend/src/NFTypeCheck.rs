@@ -2232,14 +2232,14 @@ pub(crate) fn getRangeTypeReal(mut startExp: Arc<Expression::NFExpression>, mut 
     let mut dim: Arc<Dimension::NFDimension>;
     dim = (::match_deref::match_deref! { match &((startExp.clone(), stepExp.clone(), stopExp.clone())) {
         (Deref @ Expression::REAL { .. }, None, Deref @ Expression::REAL { .. }) => {
-            Dimension::fromInteger(Util::realRangeSize(var_field!((*startExp).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat(1.0_f64), var_field!((*stopExp).value, Expression::NFExpression::REAL).clone()), Prefixes::Variability::CONSTANT.clone())
+            Dimension::fromInteger(Util::realRangeSize(var_field!((*startExp).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat(1.0_f64), var_field!((*stopExp).value, Expression::NFExpression::REAL).clone())?, Prefixes::Variability::CONSTANT.clone())
         },
         (Deref @ Expression::REAL { value: start }, Some(Deref @ Expression::REAL { value: step }), Deref @ Expression::REAL { .. }) => {
             if start.clone() == start.clone() + step.clone() {
                 Error::addSourceMessageAndFail(Error::RANGE_TOO_SMALL_STEP.clone(), list![ArcStr::from(::std::format!("{}", step.clone()))], info)?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
-            Dimension::fromInteger(Util::realRangeSize(var_field!((*startExp).value, Expression::NFExpression::REAL).clone(), step.clone(), var_field!((*stopExp).value, Expression::NFExpression::REAL).clone()), Prefixes::Variability::CONSTANT.clone())
+            Dimension::fromInteger(Util::realRangeSize(var_field!((*startExp).value, Expression::NFExpression::REAL).clone(), step.clone(), var_field!((*stopExp).value, Expression::NFExpression::REAL).clone())?, Prefixes::Variability::CONSTANT.clone())
         },
         (_, None, _) if (Expression::isEqual(startExp.clone(), stopExp.clone())?) => {
             Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone())

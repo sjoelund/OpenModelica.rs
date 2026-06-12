@@ -1151,7 +1151,7 @@ fn checkNominalThresholdSingle(mut lst_values: Arc<metamodelica::List<Arc<Expres
     });
         nom_min = List::minElement(real_constants.clone(), (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))?;
         nom_max = List::maxElement(real_constants, (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))?;
-        nom_quotient = nom_max / nom_min;
+        nom_quotient = metamodelica::real_div_checked(nom_max, nom_min)?;
         if nom_quotient > NOMINAL_THRESHOLD.clone() {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.checkNominalThresholdSingle")); __mm_s.push_str(&*literal!(": The quotient of the greatest and lowest nominal value is greater than the nominal threshold = ")); __mm_s.push_str(&*realString(NOMINAL_THRESHOLD.clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone();
             if Flags::isSet(Flags::DUMP_REPL.clone())? {
@@ -1288,7 +1288,7 @@ fn mean(mut lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Resu
         }
         __acc
     });
-    mean_val = cur_sum / metamodelica::OrderedFloat(((lst.len() as i32)) as f64);
+    mean_val = metamodelica::real_div_checked(cur_sum, metamodelica::OrderedFloat(((lst.len() as i32)) as f64))?;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mean = ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", mean_val))); ArcStr::from(__mm_s) }).clone());
     Ok(mean_val)
 }

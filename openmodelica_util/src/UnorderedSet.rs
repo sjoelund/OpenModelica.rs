@@ -421,9 +421,9 @@ pub(crate) fn bucketCount<T: Clone + 'static + metamodelica::gc::MMTrace>(mut se
     count
 }
 
-pub(crate) fn loadFactor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Real {
-    let mut load: metamodelica::Real = intReal(Mutable::access(set.size.clone())) / metamodelica::OrderedFloat((bucketCount(set.clone())) as f64);
-    load
+pub(crate) fn loadFactor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Result<metamodelica::Real> {
+    let mut load: metamodelica::Real = metamodelica::real_div_checked(intReal(Mutable::access(set.size.clone())), metamodelica::OrderedFloat((bucketCount(set.clone())) as f64))?;
+    Ok(load)
 }
 
 pub(crate) fn rehash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
@@ -717,7 +717,7 @@ fn addKey<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut hash: 
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
     let mut h: i32;
     let mut hashfn: Hash<T>;
-    if loadFactor(set.clone()) > metamodelica::OrderedFloat((1) as f64) {
+    if loadFactor(set.clone())? > metamodelica::OrderedFloat((1) as f64) {
         rehash(set.clone())?;
         hashfn = set.hashFn.clone();
         buckets = Mutable::access(set.buckets.clone());

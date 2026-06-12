@@ -1103,7 +1103,7 @@ pub(crate) fn getStructurallySingularSystemHandlerArg(mut inSystem: Arc<BackendD
     if Config::getIndexReductionMethod()? == literal!("uode") {
         so = openmodelica_backend_types::BackendDAE::StateOrder::NOSTATEORDER;
     } else {
-        count = ((metamodelica::OrderedFloat((8) as f64) / metamodelica::OrderedFloat((3) as f64) * metamodelica::OrderedFloat((BackendVariable::getNumStateVarFromVariables(inSystem.orderedVars.clone())?) as f64)).0.floor() as i32);
+        count = ((metamodelica::real_div_checked(metamodelica::OrderedFloat((8) as f64), metamodelica::OrderedFloat((3) as f64))? * metamodelica::OrderedFloat((BackendVariable::getNumStateVarFromVariables(inSystem.orderedVars.clone())?) as f64)).0.floor() as i32);
         if count == 0 {
             so = openmodelica_backend_types::BackendDAE::StateOrder::NOSTATEORDER;
         } else {
@@ -2747,7 +2747,7 @@ fn varStateSelectHeuristicPrio(mut v: BackendDAE::Var, mut vars: BackendDAE::Var
     }
     prio3 = varStateSelectHeuristicPrio3(v.clone());
     prio4 = varStateSelectHeuristicPrio4(v.clone(), vars);
-    prio5 = varStateSelectHeuristicPrio5(v, index, m);
+    prio5 = varStateSelectHeuristicPrio5(v, index, m)?;
     prio = prio1 + prio2 + prio3 + prio4 + prio5;
     printVarListtateSelectHeuristicPrio(prio1, prio2, prio3, prio4, prio5)?;
     Ok(prio)
@@ -2764,7 +2764,7 @@ fn printVarListtateSelectHeuristicPrio(mut Prio1: metamodelica::Real, mut Prio2:
     Ok(())
 }
 
-fn varStateSelectHeuristicPrio5(mut v: BackendDAE::Var, mut index: i32, mut om: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>) -> metamodelica::Real {
+fn varStateSelectHeuristicPrio5(mut v: BackendDAE::Var, mut index: i32, mut om: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>) -> Result<metamodelica::Real> {
     let mut prio: metamodelica::Real;
     prio = (match om {
         None => {
@@ -2775,11 +2775,11 @@ fn varStateSelectHeuristicPrio5(mut v: BackendDAE::Var, mut index: i32, mut om: 
             let mut n: metamodelica::Real;
             row = ({let __elt = m.borrow()[(index-1) as usize].clone(); __elt});
             n = intReal(metamodelica::arrayLength(m.clone())) + metamodelica::OrderedFloat(1.0_f64);
-            n = intReal((row.len() as i32)) / n;
+            n = metamodelica::real_div_checked(intReal((row.len() as i32)), n)?;
             metamodelica::OrderedFloat(0.3_f64) * n
         },
     });
-    prio
+    Ok(prio)
 }
 
 fn varStateSelectHeuristicPrio4(mut inVar: BackendDAE::Var, mut vars: BackendDAE::Variables) -> metamodelica::Real {

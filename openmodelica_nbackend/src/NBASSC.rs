@@ -87,17 +87,17 @@ pub(crate) fn main(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: 
 }
 
 pub(crate) fn setMatrix(mut nv: i32, mut ne: i32, mut nz: i32, mut adj: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut val: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> () {
-    metamodelica::ext::ASSC_setMatrix(nv.clone(), ne.clone(), nz.clone(), adj.clone(), val.clone());
+    crate::NBASSCExt::ASSC_setMatrix(nv.clone(), ne.clone(), nz.clone(), adj.clone(), val.clone());
     ()
 }
 
 pub(crate) fn freeMatrix() -> () {
-    metamodelica::ext::ASSC_freeMatrix();
+    crate::NBASSCExt::ASSC_freeMatrix();
     ()
 }
 
 pub(crate) fn printMatrix() -> () {
-    metamodelica::ext::ASSC_printMatrix();
+    crate::NBASSCExt::ASSC_printMatrix();
     ()
 }
 

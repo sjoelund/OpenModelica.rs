@@ -3723,7 +3723,7 @@ fn rateVariable(mut var: BackendDAE::Var) -> Result<metamodelica::Real> {
     acc = metamodelica::OrderedFloat(0.0_f64);
     let BackendDAE::VAR { varName: __pa0, .. } = (var.clone()) else { bail!("pattern mismatch") };
     cr = __pa0.clone();
-    i = metamodelica::OrderedFloat(1.0_f64) / (metamodelica::OrderedFloat(1.0_f64) + intReal(ComponentReference::crefDepth(cr)?));
+    i = metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), (metamodelica::OrderedFloat(1.0_f64) + intReal(ComponentReference::crefDepth(cr)?)))?;
     acc = acc + i;
     i = if (BackendVariable::isParam(var.clone())) {metamodelica::OrderedFloat(3.0_f64)} else {metamodelica::OrderedFloat(0.0_f64)};
     acc = acc + i;

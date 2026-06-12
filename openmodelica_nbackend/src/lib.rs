@@ -37,3 +37,4 @@ pub mod NSimJacobian;
 pub mod NSimPartition;
 pub mod NSimStrongComponent;
 pub mod NSimVar;
+pub mod NBASSCExt;

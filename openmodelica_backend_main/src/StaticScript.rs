@@ -101,7 +101,7 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     cache = __pa5.clone();
                     rstopTime = __pa6.clone();
                     stopTime = __pa7.clone();
-                    intervals = (((rstopTime.clone() - rstartTime.clone()) / rstepTime.clone()).0.floor() as i32);
+                    intervals = ((metamodelica::real_div_checked((rstopTime.clone() - rstartTime.clone()), rstepTime.clone())?).0.floor() as i32);
                     numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: intervals.clone() });
                     Ok(((cache.clone(), startTime.clone(), stopTime.clone(), numberOfIntervals.clone()), numberOfIntervals.clone(), startTime.clone(), stopTime.clone()))
                 }

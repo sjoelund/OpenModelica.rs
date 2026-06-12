@@ -223,7 +223,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     cpCostsWoC = __pa6.clone();
                     criticalPathInfo = (HpcOmTaskGraph::dumpCriticalPathInfo((criticalPaths.clone(), cpCosts.clone()), (criticalPathsWoC.clone(), cpCostsWoC.clone()))?).clone();
                     (graphOps, graphCosts) = HpcOmTaskGraph::sumUpExeCosts(taskGraphOde.clone(), taskGraphDataOde.clone())?;
-                    graphCosts = HpcOmTaskGraph::roundReal(graphCosts.clone(), 2);
+                    graphCosts = HpcOmTaskGraph::roundReal(graphCosts.clone(), 2)?;
                     criticalPathInfo = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*criticalPathInfo.clone()); __mm_s.push_str(&*literal!(" sum: (")); __mm_s.push_str(&*realString(graphCosts.clone())); __mm_s.push_str(&*literal!(" ; ")); __mm_s.push_str(&*intString(graphOps.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*filenamePrefix.clone()); __mm_s.push_str(&*literal!("ODE.graphml")); ArcStr::from(__mm_s) }).clone();
                     schedulerInfo = arrayCreate(metamodelica::arrayLength(taskGraphOde.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));

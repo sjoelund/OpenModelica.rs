@@ -2294,10 +2294,10 @@ algorithm
   end for;
 end varDim;
 */
-fn varsLoadFactor(mut inVariables: BackendDAE::Variables, mut inIncrease: i32) -> metamodelica::Real {
+fn varsLoadFactor(mut inVariables: BackendDAE::Variables, mut inIncrease: i32) -> Result<metamodelica::Real> {
     let mut outLoadFactor: metamodelica::Real;
-    outLoadFactor = intReal(inVariables.numberOfVars.clone() + inIncrease) / intReal(inVariables.bucketSize.clone());
-    outLoadFactor
+    outLoadFactor = metamodelica::real_div_checked(intReal(inVariables.numberOfVars.clone() + inIncrease), intReal(inVariables.bucketSize.clone()))?;
+    Ok(outLoadFactor)
 }
 
 pub(crate) fn isVariable(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inVariables2: BackendDAE::Variables, mut inVariables3: BackendDAE::Variables) -> Result<()> {
@@ -3270,7 +3270,7 @@ pub fn mergeVariables(mut inVariables1: BackendDAE::Variables, mut inVariables2:
     let mut outVariables: BackendDAE::Variables;
     let mut num_vars: i32;
     num_vars = varsSize(inVariables2.clone());
-    if varsLoadFactor(inVariables1.clone(), num_vars) > metamodelica::OrderedFloat((1) as f64) {
+    if varsLoadFactor(inVariables1.clone(), num_vars)? > metamodelica::OrderedFloat((1) as f64) {
         outVariables = emptyVarsSized(varsSize(inVariables1.clone()) + num_vars);
         outVariables = addVariables(inVariables1, outVariables)?;
     } else if copy {
@@ -3284,7 +3284,7 @@ pub fn mergeVariables(mut inVariables1: BackendDAE::Variables, mut inVariables2:
 
 pub(crate) fn rehashVariables(mut inVariables: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables;
-    let mut load: metamodelica::Real = varsLoadFactor(inVariables.clone(), 0);
+    let mut load: metamodelica::Real = varsLoadFactor(inVariables.clone(), 0)?;
     if load < metamodelica::OrderedFloat(0.5_f64) || load > metamodelica::OrderedFloat(1.0_f64) {
         outVariables = emptyVarsSized(varsSize(inVariables.clone()));
         outVariables = addVariables(inVariables, outVariables)?;

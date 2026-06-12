@@ -104,7 +104,7 @@ pub(crate) fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBL
         o2i = ({let __elt = o2.borrow()[(i.clone()-1) as usize].clone(); __elt});
         inti = ({let __elt = ints.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if g1i.clone() != g2i.clone() {
-            xinter = (o2i.clone() - o1i.clone()) / (g1i.clone() - g2i.clone());
+            xinter = metamodelica::real_div_checked((o2i.clone() - o1i.clone()), (g1i.clone() - g2i.clone()))?;
             if xinter.clone() <= metamodelica::OrderedFloat((SBInterval::lowerBound(inti.clone())) as f64) {
                 if g2i.clone() < g1i.clone() {
                     lm_aux = SBLinearMap::copy(lm2.clone());
@@ -336,7 +336,7 @@ pub(crate) fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32
 }
 
 pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
-    fn max_inter(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut offset: metamodelica::Real, mut dim: i32, mut its: metamodelica::Real) -> metamodelica::Real {
+    fn max_inter(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut offset: metamodelica::Real, mut dim: i32, mut its: metamodelica::Real) -> Result<metamodelica::Real> {
         let mut its: metamodelica::Real = its;
         let mut is: metamodelica::Array<Arc<SBInterval::SBInterval>>;
         let mut i: Arc<SBInterval::SBInterval>;
@@ -346,8 +346,8 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
         i = ({let __elt = is.borrow()[(dim-1) as usize].clone(); __elt});
         hi = metamodelica::OrderedFloat((SBInterval::upperBound(i.clone())) as f64);
         lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i)) as f64);
-        its = std::cmp::max(its, ((hi - lo) / (offset).abs()).ceil());
-        its
+        its = std::cmp::max(its, (metamodelica::real_div_checked((hi - lo), (offset).abs())?).ceil());
+        Ok(its)
     }
 
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
@@ -387,7 +387,7 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
             its = metamodelica::OrderedFloat((0) as f64);
             for mut dim in 1..=SBPWLinearMap::ndim(outMap.clone()) {
                 if ({let __elt = gain.borrow()[(dim-1) as usize].clone(); __elt}) == metamodelica::OrderedFloat((1) as f64) && ({let __elt = off.borrow()[(dim-1) as usize].clone(); __elt}) < metamodelica::OrderedFloat((0) as f64) {
-                    its = UnorderedSet::fold(SBSet::asets(d.clone()), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = off.borrow()[(dim-1) as usize].clone(); __elt}); let __pe_b2 = dim; move |__pe_a0, __pe_a3| Ok(max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), its)?;
+                    its = UnorderedSet::fold(SBSet::asets(d.clone()), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = off.borrow()[(dim-1) as usize].clone(); __elt}); let __pe_b2 = dim; move |__pe_a0, __pe_a3| max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), its)?;
                 }
             }
             max_it = max_it.clone() + ((its).0.floor() as i32);
@@ -433,7 +433,7 @@ pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1:
     }
     d = ({let __elt = dom.borrow()[(1-1) as usize].clone(); __elt});
     dom_inv = SBPWLinearMap::image(pw2.clone(), d.clone())?;
-    lm_inv = SBLinearMap::inverse(({let __elt = lmap.borrow()[(1-1) as usize].clone(); __elt}));
+    lm_inv = SBLinearMap::inverse(({let __elt = lmap.borrow()[(1-1) as usize].clone(); __elt}))?;
     inv_pw = SBPWLinearMap::newScalar(dom_inv.clone(), lm_inv.clone());
     inf = intReal(System::intMaxLit());
     if Array::maxElement(SBLinearMap::gain(lm_inv.clone()), (std::sync::Arc::new(fnptr!(realLt, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? < inf {

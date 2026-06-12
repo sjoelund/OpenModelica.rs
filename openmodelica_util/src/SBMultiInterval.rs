@@ -205,12 +205,12 @@ pub(crate) fn crossProd(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInter
     Ok(res)
 }
 
-pub(crate) fn cardinality(mut mi: Arc<SBMultiInterval>) -> i32 {
+pub(crate) fn cardinality(mut mi: Arc<SBMultiInterval>) -> Result<i32> {
     let mut card: i32 = 0;
     for mut i in 1..=mi.ndim.clone() {
-        card = card + SBInterval::cardinality(({let __elt = mi.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}));
+        card = card + SBInterval::cardinality(({let __elt = mi.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
     }
-    card
+    Ok(card)
 }
 
 pub fn intervals(mut mi: Arc<SBMultiInterval>) -> metamodelica::Array<Arc<SBInterval::SBInterval>> {

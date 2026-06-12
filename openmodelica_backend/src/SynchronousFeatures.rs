@@ -729,10 +729,10 @@ fn getSubClockForClkConstructor(mut refClock: Arc<DAE::ClockKind>, mut clk: Arc<
             BackendDAE::SubClock::SUBCLOCK { factor: MMath::divRational(MMath::Rational { nom: i2.clone(), denom: i1.clone() }, MMath::Rational { nom: i4.clone(), denom: i3.clone() })?, shift: MMath::RAT0.clone(), solver: None }
         },
         (Deref @ DAE::ClockKind::REAL_CLOCK { interval: Deref @ DAE::Exp::RCONST { real: r1 } }, Deref @ DAE::ClockKind::INFERRED_CLOCK { .. }) => {
-            BackendDAE::SubClock::SUBCLOCK { factor: MMath::Rational { nom: 1, denom: ((metamodelica::OrderedFloat(1.0_f64) / r1.clone()).0.floor() as i32) }, shift: MMath::RAT0.clone(), solver: None }
+            BackendDAE::SubClock::SUBCLOCK { factor: MMath::Rational { nom: 1, denom: ((metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), r1.clone())?).0.floor() as i32) }, shift: MMath::RAT0.clone(), solver: None }
         },
         (Deref @ DAE::ClockKind::REAL_CLOCK { interval: Deref @ DAE::Exp::RCONST { real: r1 } }, Deref @ DAE::ClockKind::REAL_CLOCK { interval: Deref @ DAE::Exp::RCONST { real: r2 } }) => {
-            BackendDAE::SubClock::SUBCLOCK { factor: MMath::divRational(MMath::Rational { nom: 1, denom: ((metamodelica::OrderedFloat(1.0_f64) / r1.clone()).0.floor() as i32) }, MMath::Rational { nom: 1, denom: ((metamodelica::OrderedFloat(1.0_f64) / r2.clone()).0.floor() as i32) })?, shift: MMath::RAT0.clone(), solver: None }
+            BackendDAE::SubClock::SUBCLOCK { factor: MMath::divRational(MMath::Rational { nom: 1, denom: ((metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), r1.clone())?).0.floor() as i32) }, MMath::Rational { nom: 1, denom: ((metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), r2.clone())?).0.floor() as i32) })?, shift: MMath::RAT0.clone(), solver: None }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.getSubClockForClkConstructor")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SynchronousFeatures.mo"))?;

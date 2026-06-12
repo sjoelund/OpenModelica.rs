@@ -3678,7 +3678,7 @@ fn distributeToClusters1(mut tplIn: (Arc<metamodelica::List<i32>>, Arc<metamodel
                     let mut clusters = (*clusters).clone();
                     let mut clusterValues = (*clusterValues).clone();
                     let true = ((itemsIn.clone().len() as i32) > numClusters) else { bail!("pattern mismatch") };
-                    let true = (metamodelica::OrderedFloat(((itemsIn.clone().len() as i32)) as f64) / metamodelica::OrderedFloat((2) as f64) < metamodelica::OrderedFloat((numClusters) as f64)) else { bail!("pattern mismatch") };
+                    let true = (metamodelica::real_div_checked(metamodelica::OrderedFloat(((itemsIn.clone().len() as i32)) as f64), metamodelica::OrderedFloat((2) as f64))? < metamodelica::OrderedFloat((numClusters) as f64)) else { bail!("pattern mismatch") };
                     (lst1, _) = List::split(itemsIn.clone(), numClusters)?;
                     diff = (itemsIn.clone().len() as i32) - numClusters;
                     idcsLst1 = List::intRange2(numClusters - diff.clone() + 1, numClusters);
@@ -3712,7 +3712,7 @@ fn distributeToClusters1(mut tplIn: (Arc<metamodelica::List<i32>>, Arc<metamodel
                     let mut clusters = (*clusters).clone();
                     let mut clusterValues = (*clusterValues).clone();
                     let true = ((itemsIn.clone().len() as i32) > numClusters) else { bail!("pattern mismatch") };
-                    let true = (metamodelica::OrderedFloat(((itemsIn.clone().len() as i32)) as f64) / metamodelica::OrderedFloat((2) as f64) >= metamodelica::OrderedFloat((numClusters) as f64)) else { bail!("pattern mismatch") };
+                    let true = (metamodelica::real_div_checked(metamodelica::OrderedFloat(((itemsIn.clone().len() as i32)) as f64), metamodelica::OrderedFloat((2) as f64))? >= metamodelica::OrderedFloat((numClusters) as f64)) else { bail!("pattern mismatch") };
                     numCl = nextGreaterPowerOf2(intReal((itemsIn.clone().len() as i32)))?;
                     (lst1, _) = List::split(itemsIn.clone(), intDiv(numCl.clone(), 2))?;
                     idcsLst2 = List::intRange2(intDiv(numCl.clone(), 2) + 1, (itemsIn.clone().len() as i32));
@@ -5567,8 +5567,8 @@ pub(crate) fn getCriticalPaths(mut graphIn: TaskGraph, mut graphDataIn: TaskGrap
             rootNodes = getRootNodes(graphIn.clone())?;
             (cpWCpaths, cpWCcosts) = getCriticalPath(graphIn.clone(), graphDataIn.clone(), rootNodes.clone(), true)?;
             (CpWoCpaths, cpWoCcosts) = getCriticalPath(graphIn.clone(), graphDataIn.clone(), rootNodes.clone(), false)?;
-            cpWCcosts = roundReal(cpWCcosts.clone(), 2);
-            cpWoCcosts = roundReal(cpWoCcosts.clone(), 2);
+            cpWCcosts = roundReal(cpWCcosts.clone(), 2)?;
+            cpWoCcosts = roundReal(cpWoCcosts.clone(), 2)?;
             Ok(((cpWCpaths.clone(), cpWCcosts.clone()), (CpWoCpaths.clone(), cpWoCcosts.clone())))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -6206,13 +6206,13 @@ pub(crate) fn getAllSCCsOfGraph(mut iTaskGraphMeta: TaskGraphMeta) -> Result<Arc
 }
 
 //TODO: Remove
-pub(crate) fn roundReal(mut inReal: metamodelica::Real, mut nIn: i32) -> metamodelica::Real {
+pub(crate) fn roundReal(mut inReal: metamodelica::Real, mut nIn: i32) -> Result<metamodelica::Real> {
     let mut outReal: metamodelica::Real;
     let mut real: metamodelica::Real;
     real = inReal * (metamodelica::OrderedFloat(10.0_f64)).powf(metamodelica::OrderedFloat((nIn) as f64));
     real = (real).floor();
-    outReal = real / (metamodelica::OrderedFloat(10.0_f64)).powf(metamodelica::OrderedFloat((nIn) as f64));
-    outReal
+    outReal = metamodelica::real_div_checked(real, (metamodelica::OrderedFloat(10.0_f64)).powf(metamodelica::OrderedFloat((nIn) as f64)))?;
+    Ok(outReal)
 }
 
 //--------------------------------------------------------

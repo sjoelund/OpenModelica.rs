@@ -184,7 +184,7 @@ fn sbinterval_size_step_two() {
 #[test]
 fn sbinterval_cardinality_is_size_minus_one() {
     let i = SBInterval::new(1, 1, 3);
-    let card = SBInterval::cardinality(i.clone());
+    let card = SBInterval::cardinality(i.clone()).unwrap();
     let sz   = SBInterval::size(i);
     assert_eq!(
         card, sz - 1,
@@ -197,7 +197,7 @@ fn sbinterval_cardinality_is_size_minus_one() {
 #[test]
 fn sbinterval_cardinality_step_two() {
     let i = SBInterval::new(1, 2, 7);
-    assert_eq!(SBInterval::cardinality(i), 3, "cardinality([1:2:7]) should be 3");
+    assert_eq!(SBInterval::cardinality(i).unwrap(), 3, "cardinality([1:2:7]) should be 3");
 }
 
 // ---------------------------------------------------------------------------
@@ -408,7 +408,7 @@ fn sbmultiinterval_intersection_different_ndim_is_empty() -> Result<()> {
 fn sbmultiinterval_cardinality_1d_unit_step() {
     // cardinality([1:1:3]) = SBInterval::cardinality = floor((3-1)/1) = 2
     let mi = mi1d(1, 1, 3);
-    assert_eq!(SBMultiInterval::cardinality(mi), 2);
+    assert_eq!(SBMultiInterval::cardinality(mi).unwrap(), 2);
 }
 
 /// Bug: SBMultiInterval::cardinality *sums* per-dimension SBInterval cardinalities
@@ -419,7 +419,7 @@ fn sbmultiinterval_cardinality_1d_unit_step() {
 #[test]
 fn sbmultiinterval_cardinality_2d_sums_not_product() {
     let mi = mi2d(1, 1, 3, 1, 1, 5);
-    let card = SBMultiInterval::cardinality(mi);
+    let card = SBMultiInterval::cardinality(mi).unwrap();
     // Implementation sums: SBInterval::cardinality([1:1:3])=2,
     //                      SBInterval::cardinality([1:1:5])=4 → 6
     assert_eq!(
@@ -522,7 +522,7 @@ fn sbatomicset_intersection_non_overlapping_is_empty() -> Result<()> {
 #[test]
 fn sbatomicset_cardinality_accumulates_from_zero() {
     let s = aset1d(1, 1, 5);
-    let card = SBAtomicSet::cardinality(s, 0);
+    let card = SBAtomicSet::cardinality(s, 0).unwrap();
     // SBInterval::cardinality([1:1:5]) = floor((5-1)/1) = 4
     assert_eq!(card, 4, "cardinality([1:1:5]) starting from 0 should be 4");
 }
@@ -530,7 +530,7 @@ fn sbatomicset_cardinality_accumulates_from_zero() {
 #[test]
 fn sbatomicset_cardinality_adds_to_given_accumulator() {
     let s = aset1d(1, 1, 5);
-    let card = SBAtomicSet::cardinality(s, 10);
+    let card = SBAtomicSet::cardinality(s, 10).unwrap();
     // 10 + 4 = 14
     assert_eq!(card, 14, "cardinality should add to the given accumulator");
 }
@@ -672,7 +672,7 @@ fn partb_sbinterval_size_step_two() {
 fn partb_sbinterval_cardinality_is_size_minus_one() {
     let i = raw_interval(1, 1, 3);
     let sz   = SBInterval::size(i.clone());
-    let card = SBInterval::cardinality(i);
+    let card = SBInterval::cardinality(i).unwrap();
     assert_eq!(card, sz - 1,
         "cardinality = floor((hi-lo)/step) = size-1; sz={}, card={}", sz, card);
 }
@@ -763,7 +763,7 @@ fn partb_sbmi_contains_out_of_range() {
 #[test]
 fn partb_sbmi_cardinality_1d() {
     let mi = raw_mi1d(1, 1, 3);
-    assert_eq!(SBMultiInterval::cardinality(mi), 2);
+    assert_eq!(SBMultiInterval::cardinality(mi).unwrap(), 2);
 }
 
 /// Bug: SBMultiInterval::cardinality sums per-dimension SBInterval::cardinality
@@ -775,7 +775,7 @@ fn partb_sbmi_cardinality_2d_sums_not_product() {
         raw_interval(1, 1, 3),
         raw_interval(1, 1, 5)
     ]).unwrap();
-    let card = SBMultiInterval::cardinality(mi);
+    let card = SBMultiInterval::cardinality(mi).unwrap();
     // 2 + 4 = 6  (sums)
     assert_eq!(card, 6,
         "cardinality sums per-dim values; expected 6, got {}", card);
@@ -882,14 +882,14 @@ fn partb_sbas_to_string_format() {
 fn partb_sbas_cardinality_from_zero() {
     let s = raw_aset1d(1, 1, 5);
     // SBInterval::cardinality([1:1:5]) = floor((5-1)/1) = 4
-    assert_eq!(SBAtomicSet::cardinality(s, 0), 4);
+    assert_eq!(SBAtomicSet::cardinality(s, 0).unwrap(), 4);
 }
 
 /// cardinality adds to the supplied accumulator.
 #[test]
 fn partb_sbas_cardinality_accumulates() {
     let s = raw_aset1d(1, 1, 5);
-    assert_eq!(SBAtomicSet::cardinality(s, 10), 14); // 10 + 4 = 14
+    assert_eq!(SBAtomicSet::cardinality(s, 10).unwrap(), 14); // 10 + 4 = 14
 }
 
 /// copy produces an equal but independent value.

@@ -122,6 +122,12 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // reader); hand-written in `openmodelica_util/src/TaskGraphResults.rs`
     // using `roxmltree`.
     "TaskGraphResults",
+    // All bodies are `external "C"` into the CORBA communication runtime
+    // (`runtime/Corba_omc.cpp`, or the `corbaimpl_stub_omc.c` stub build). The
+    // Rust port is built WITHOUT CORBA, mirroring the stub: `haveCorba`
+    // reports false and the rest fail. Hand-written in
+    // `openmodelica_util/src/Corba.rs`.
+    "Corba",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
@@ -762,10 +768,23 @@ impl GenCtx {
         if self.fallible_functions.contains(qname) {
             return false;
         }
-        // Confirm `qname` actually denotes a user-defined function node
-        // (R_FUNCTION). Anything else — record constructor, type alias,
-        // builtin — has its own emission logic and must not be re-classified
-        // here based on absence-from-the-fallible-set alone.
+        // Confirm `qname` actually denotes a user-defined function node.
+        // Anything else (record constructor, type alias, builtin) has its own
+        // emission logic and must not be re-classified here based on
+        // absence-from-the-fallible-set alone.
+        self.denotes_user_fn(qname, top_level)
+    }
+
+    /// Whether `qname` resolves to a user-defined, non-`partial` function node
+    /// (`R_FUNCTION`). This is the "is this a real callee with a body" test,
+    /// independent of fallibility. It is what lets a *qualified* user-function
+    /// reference take precedence over a same-named builtin: e.g.
+    /// `SBAtomicSet.cardinality` is a user function, not the Modelica
+    /// `cardinality()` connector builtin, even though `is_infallible_builtin`
+    /// strips the module prefix and would match the builtin name. Call sites
+    /// that classify a function *value* reference must consult this first and
+    /// only fall back to the builtin tables when it returns `false`.
+    fn denotes_user_fn<'a>(&self, qname: &str, top_level: &BTreeMap<String, NameNode<'a>>) -> bool {
         let Some(node) = lookup_node(qname, top_level) else { return false };
         let NodeKind::Class(c) = &node.kind else { return false };
         if !matches!(c.restriction, Absyn::Restriction::R_FUNCTION { .. }) {
@@ -780,11 +799,11 @@ impl GenCtx {
         }
         // `function Foo = Bar(...)` aliases are re-exports; their effective
         // fallibility comes from `Bar`. The fallibility analysis records the
-        // alias under its own qname, so the membership check above is the
-        // authoritative answer — but we still require the alias to denote a
-        // real function (not an unresolved name). FunctionAlias node.ty would
-        // be the cleaner signal; we don't have it cheaply here, so we accept
-        // any non-partial R_FUNCTION as known.
+        // alias under its own qname, so the membership check in
+        // `is_known_infallible_user_fn` is the authoritative answer — but we
+        // still require the alias to denote a real function (not an unresolved
+        // name). FunctionAlias node.ty would be the cleaner signal; we don't
+        // have it cheaply here, so we accept any non-partial R_FUNCTION.
         true
     }
 
@@ -1721,6 +1740,13 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
         if std::path::Path::new(&format!("{this_dir}/{file}")).exists() {
             writeln!(out, "pub mod {module};").unwrap();
         }
+    }
+    // Hand-written port of the `NBASSC` `external "C"` bodies
+    // (`runtime/ASSCEXT_omc.cpp`); referenced from generated `NBASSC.rs` via
+    // `external_c_calls::external_c_impl_path` (`crate::NBASSCExt::*`). No
+    // MetaModelica source of its own. Declared when present in this crate.
+    if std::path::Path::new(&format!("{this_dir}/NBASSCExt.rs")).exists() {
+        writeln!(out, "pub mod NBASSCExt;").unwrap();
     }
     // Hand-written, test-only unit tests live in `src/unittests/` (declared by
     // its own `mod.rs`). Unlike `tests/*.rs` integration tests — which compile
@@ -7917,25 +7943,27 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             //       When the name *does* resolve (qualified path in `top_level`),
             //       the qualified form is checked against both sources so that
             //       e.g. `MetaModelica.valueEq` still matches.
-            // When the name resolves to a user function in the hierarchy, that
-            // function shadows any same-named builtin: do not consult the
-            // builtin table. Only fall back to the builtin classification
-            // when the name does not resolve to a user-defined function.
-            // A name like `stringEq` may "resolve" to a qname via the hierarchy
-            // scope-walk even though no user-defined function actually exists
-            // there (it's a MetaModelica builtin, registered in
-            // `fallibility::builtin_fallibility` rather than as a class node).
-            // In that case `is_known_infallible_user_fn` returns false (no node
-            // found), and we'd wrongly fall into the fallible-fn-item wrap that
-            // adds an outer `Arc<dyn Fn(...) -> Result<bool>>` — but the
-            // builtin actually returns plain `bool`, producing an E0271 at the
-            // formal-parameter coercion site. Check `is_infallible_builtin`
-            // first if available; otherwise consult the user-fn predicate.
-            let infallible_ref = is_infallible_builtin(name)
-                || match resolved_fn_qname.as_deref() {
-                    Some(q) => ctx.is_known_infallible_user_fn(q, top_level),
-                    None => false,
-                };
+            // A reference that denotes a real user function shadows any
+            // same-named builtin, so its analysis verdict is authoritative —
+            // consult `is_known_infallible_user_fn` and do NOT fall through to
+            // the builtin table. This matters because `is_infallible_builtin`
+            // strips the module prefix: a qualified user reference like
+            // `SBAtomicSet.cardinality` would otherwise match the Modelica
+            // `cardinality()` connector builtin and be Ok-wrapped with
+            // `fnptr!`, double-wrapping a now-fallible function (E0271).
+            //
+            // Only when the name does NOT denote a user function do we consult
+            // the builtin table. A name like `stringEq` may "resolve" to a
+            // qname via the hierarchy scope-walk even though no user-defined
+            // function exists there (it's a MetaModelica builtin registered in
+            // `fallibility::builtin_fallibility`, not a class node); `denotes_user_fn`
+            // returns false for it, so `is_infallible_builtin(name)` correctly
+            // classifies the bare/dotted builtin name.
+            let infallible_ref = match resolved_fn_qname.as_deref() {
+                Some(q) if ctx.denotes_user_fn(q, top_level) =>
+                    ctx.is_known_infallible_user_fn(q, top_level),
+                _ => is_infallible_builtin(name),
+            };
 
             // Some MetaModelica builtins share a name with a Rust language
             // construct (`print` is a macro, `String` is a struct, etc.).
@@ -8435,7 +8463,21 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 BinOpKind::Add => format!("{l} + {r}"),
                 BinOpKind::Sub => format!("{l} - {r}"),
                 BinOpKind::Mul => format!("{l} * {r}"),
-                BinOpKind::Div => format!("{l} / {r}"),
+                BinOpKind::Div =>
+                    // `/` is always Real division in MetaModelica, and a zero
+                    // divisor is a recoverable failure (the C runtime emits
+                    // `if (denom == 0) goto fail;` before every Real division).
+                    // Route runtime divisions through the checked helper so the
+                    // failure propagates via `?`; `crate::fallibility` marks the
+                    // `/` operator fallible to keep the enclosing function's
+                    // signature in sync. In a `const` initializer there is no
+                    // `?` target (and a constant divisor is statically known),
+                    // so keep the plain operator there.
+                    if is_const {
+                        format!("{l} / {r}")
+                    } else {
+                        ctx.q(&format!("metamodelica::real_div_checked({l}, {r})"))
+                    },
                 BinOpKind::Pow => {
                     // `Float::powf` (via `num_traits::Float` re-export) works on
                     // Real directly and returns Real. The general i32→Real
@@ -11961,25 +12003,35 @@ fn emit_call_arg_with_formal<'a>(
                 name.clone()
             };
             let bare = dotted.rsplit('.').next().unwrap_or(&dotted);
+            // A reference that denotes a real user function shadows any
+            // same-named builtin (including the value-form builtins below), so
+            // its analysis verdict is authoritative. Without this, a qualified
+            // user reference whose last segment collides with a builtin — e.g.
+            // `SBAtomicSet.cardinality` vs the `cardinality()` connector builtin
+            // (`is_infallible_builtin` strips the prefix) — would be Ok-wrapped
+            // and double-wrap a now-fallible function (E0271).
+            let user_q = resolve_call_qname(&dotted, ctx, top_level);
+            let is_user_fn = user_q.as_deref().is_some_and(|q| ctx.denotes_user_fn(q, top_level));
             // A builtin whose *call* form lowers to a method/operator (no
             // nameable `fn` item) but which has a dedicated runtime free
             // function for its value form (e.g. `listReverse` →
-            // `metamodelica::listReverse`). These are infallible by
-            // construction (see `builtin_value_fn`), so they take the same
-            // `fnptr!` Ok-wrapping path as other infallible references — but the
-            // referenced path must be the runtime free fn, not the bare
-            // (un-nameable) builtin name recovered from `raw`.
-            // Only the *infallible* value-form builtins belong on this
+            // `metamodelica::listReverse`). Only consult this when the
+            // reference is NOT a user function. The referenced path must be the
+            // runtime free fn, not the bare (un-nameable) builtin name from
+            // `raw`. Only the *infallible* value-form builtins belong on this
             // `fnptr!`-wrapping path (which adds `Ok(..)`); a fallible one
             // (e.g. `arrayGet`) already returns `Result` and is handled via
             // partial application / other paths, never wrongly Ok-wrapped here.
-            let value_fn_path: Option<&'static str> =
-                builtin_value_fn(bare).filter(|(_, _, inf)| *inf).map(|(p, _, _)| p);
-            let infallible = value_fn_path.is_some()
-                || is_infallible_builtin(bare)
-                || resolve_call_qname(&dotted, ctx, top_level)
-                    .as_deref()
-                    .is_some_and(|q| ctx.is_known_infallible_user_fn(q, top_level));
+            let value_fn_path: Option<&'static str> = if is_user_fn {
+                None
+            } else {
+                builtin_value_fn(bare).filter(|(_, _, inf)| *inf).map(|(p, _, _)| p)
+            };
+            let infallible = if is_user_fn {
+                ctx.is_known_infallible_user_fn(user_q.as_deref().unwrap(), top_level)
+            } else {
+                value_fn_path.is_some() || is_infallible_builtin(bare)
+            };
             if infallible {
                 // `raw` is the cloned form (`<path>.clone()` for a fn-item Var);
                 // strip the trailing `.clone()` to recover the path expression.

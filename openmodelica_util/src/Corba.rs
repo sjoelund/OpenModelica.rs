@@ -1,4 +1,20 @@
-// Auto-generated from MetaModelica source
+// Manually written file.
+//
+// Rust port of `OMCompiler/Compiler/Util/Corba.mo`'s `external "C"`
+// declarations. Upstream these bind `runtime/Corba_omc.cpp` (the real CORBA
+// connection, built only with `--with-omniORB`/`--with-MICO`) or, in a build
+// configured without CORBA, the `runtime/corbaimpl_stub_omc.c` stub.
+//
+// The Rust port is built WITHOUT CORBA, so this module mirrors the stub:
+//   * `Corba_haveCorba()` returns 0 → `haveCorba()` returns `false`.
+//   * Every other entry point prints the "CORBA disabled" message and
+//     `MMC_THROW()`s → here a recoverable MetaModelica failure (`bail!`).
+// Because `haveCorba()` reports false, omc selects ZMQ/stdin communication and
+// none of the failing entry points are ever reached at runtime.
+//
+// `Corba` is listed in `HANDWRITTEN_TOP_PACKAGES` (mmtorust/src/codegen.rs) so
+// its codegen is skipped in favour of this file.
+
 /*
  * This file is part of OpenModelica.
  *
@@ -33,50 +49,35 @@
  * See the full OSMC Public License conditions for more details.
  *
  */
-#![allow(warnings)]
-#![allow(unreachable_patterns, unreachable_code, non_camel_case_types, non_snake_case, dead_code, unused_imports, unused_variables, non_upper_case_globals, unused_mut)]
 
-use std::sync::Arc;
 use anyhow::{Result, bail};
-use loop_unwrap::unwrap_break_err;
-use metamodelica::*; // Built-in types and functions
-use const_str;
-use arcstr::{ArcStr, literal, format};
+use arcstr::ArcStr;
 
+/// `Corba_haveCorba` — the stub build reports CORBA unavailable.
 pub fn haveCorba() -> bool {
-    let mut b: bool = false;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_haveCorba"), lang: Some("C"), output_: Some(CREF_IDENT { name: "b", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 59, columnNumberStart: 55, lineNumberEnd: 59, columnNumberEnd: 92, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 59, columnNumberStart: 47, lineNumberEnd: 59, columnNumberEnd: 92, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    b
+    false
 }
 
-pub(crate) fn setObjectReferenceFilePath(mut inObjectReferenceFilePath: ArcStr) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_setObjectReferenceFilePath"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inObjectReferenceFilePath", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 64, columnNumberStart: 95, lineNumberEnd: 64, columnNumberEnd: 132, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 64, columnNumberStart: 87, lineNumberEnd: 64, columnNumberEnd: 132, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub(crate) fn setObjectReferenceFilePath(_inObjectReferenceFilePath: ArcStr) -> Result<()> {
+    bail!("CORBA disabled. Configure with --with-omniORB (or --with-MICO) and recompile to enable.");
 }
 
-pub(crate) fn setSessionName(mut inSessionName: ArcStr) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_setSessionName"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inSessionName", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 70, columnNumberStart: 71, lineNumberEnd: 70, columnNumberEnd: 108, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 70, columnNumberStart: 63, lineNumberEnd: 70, columnNumberEnd: 108, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub(crate) fn setSessionName(_inSessionName: ArcStr) -> Result<()> {
+    bail!("CORBA disabled. Configure with --with-omniORB (or --with-MICO) and recompile to enable.");
 }
 
 pub fn initialize() -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_initialize"), lang: Some("C"), output_: None, args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 75, columnNumberStart: 54, lineNumberEnd: 75, columnNumberEnd: 90, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 75, columnNumberStart: 46, lineNumberEnd: 75, columnNumberEnd: 90, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+    bail!("CORBA disabled. Configure with --with-omniORB (or --with-MICO) and recompile to enable.");
 }
 
 pub fn waitForCommand() -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_waitForCommand"), lang: Some("C"), output_: Some(CREF_IDENT { name: "outString", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 81, columnNumberStart: 68, lineNumberEnd: 81, columnNumberEnd: 104, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 81, columnNumberStart: 60, lineNumberEnd: 81, columnNumberEnd: 104, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(outString)
+    bail!("CORBA disabled. Configure with --with-omniORB (or --with-MICO) and recompile to enable.");
 }
 
-pub fn sendreply(mut inString: ArcStr) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_sendreply"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inString", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 87, columnNumberStart: 61, lineNumberEnd: 87, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 87, columnNumberStart: 53, lineNumberEnd: 87, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub fn sendreply(_inString: ArcStr) -> Result<()> {
+    bail!("CORBA disabled. Configure with --with-omniORB (or --with-MICO) and recompile to enable.");
 }
 
 pub fn close() -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_close"), lang: Some("C"), output_: None, args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 92, columnNumberStart: 49, lineNumberEnd: 92, columnNumberEnd: 85, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 92, columnNumberStart: 41, lineNumberEnd: 92, columnNumberEnd: 85, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+    bail!("CORBA disabled. Configure with --with-omniORB (or --with-MICO) and recompile to enable.");
 }
-

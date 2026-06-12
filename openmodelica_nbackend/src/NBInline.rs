@@ -809,7 +809,7 @@ pub(crate) const HEURISTIC_THRESHOLD: i32 = 10;
 
 fn defaultHeuristic(mut r#fn: Arc<Function::Function>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>>) -> Result<bool> {
     let mut b: bool;
-    b = InlineRating::resolve(InlineRating::fromFunction(r#fn, func_map)?) < metamodelica::OrderedFloat((HEURISTIC_THRESHOLD.clone()) as f64);
+    b = InlineRating::resolve(InlineRating::fromFunction(r#fn, func_map)?)? < metamodelica::OrderedFloat((HEURISTIC_THRESHOLD.clone()) as f64);
     Ok(b)
 }
 
@@ -844,20 +844,20 @@ pub mod InlineRating {
 
     pub(crate) fn toString(mut ir: Arc<InlineRating>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{resolved: ")); __mm_s.push_str(&*realString(resolve(ir.clone()))); __mm_s.push_str(&*literal!(" | input: ")); __mm_s.push_str(&*Array::toString(ir.input_rating.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), true, 0)?); __mm_s.push_str(&*literal!(" | constant: ")); __mm_s.push_str(&*intString(ir.constant_rating.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{resolved: ")); __mm_s.push_str(&*realString(resolve(ir.clone())?)); __mm_s.push_str(&*literal!(" | input: ")); __mm_s.push_str(&*Array::toString(ir.input_rating.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), true, 0)?); __mm_s.push_str(&*literal!(" | constant: ")); __mm_s.push_str(&*intString(ir.constant_rating.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
-    pub(crate) fn resolve(mut ir: Arc<InlineRating>) -> metamodelica::Real {
-        let mut r: metamodelica::Real = metamodelica::OrderedFloat((({
+    pub(crate) fn resolve(mut ir: Arc<InlineRating>) -> Result<metamodelica::Real> {
+        let mut r: metamodelica::Real = metamodelica::real_div_checked(metamodelica::OrderedFloat((({
         let mut __acc: i32 = 0;
         for mut v in (ir.input_rating.clone()).borrow().iter() {
             let __x = v.clone();
             __acc += __x;
         }
         __acc
-    })) as f64) / metamodelica::OrderedFloat((metamodelica::arrayLength(ir.input_rating.clone())) as f64) + intReal(ir.constant_rating.clone());
-        r
+    })) as f64), metamodelica::OrderedFloat((metamodelica::arrayLength(ir.input_rating.clone())) as f64))? + intReal(ir.constant_rating.clone());
+        Ok(r)
     }
 
     pub(crate) fn add(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>) -> Result<Arc<InlineRating>> {

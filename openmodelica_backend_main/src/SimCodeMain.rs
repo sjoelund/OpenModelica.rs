@@ -159,14 +159,14 @@ impl metamodelica::gc::MMTrace for TranslateModelKind {
 }
 pub(crate) use self::TranslateModelKind::{NORMAL,XML,FMU};
 
-pub(crate) fn createSimulationSettings(mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut inumberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr) -> SimCode::SimulationSettings {
+pub(crate) fn createSimulationSettings(mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut inumberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr) -> Result<SimCode::SimulationSettings> {
     let mut simSettings: SimCode::SimulationSettings;
     let mut stepSize: metamodelica::Real;
     let mut numberOfIntervals: i32;
     numberOfIntervals = if (inumberOfIntervals <= 0) {1} else {inumberOfIntervals};
-    stepSize = (stopTime - startTime) / intReal(numberOfIntervals);
+    stepSize = metamodelica::real_div_checked((stopTime - startTime), intReal(numberOfIntervals))?;
     simSettings = SimCode::SimulationSettings { startTime: startTime, stopTime: stopTime, numberOfIntervals: numberOfIntervals, stepSize: stepSize, tolerance: tolerance, method: (method).clone(), options: (options).clone(), outputFormat: (outputFormat).clone(), variableFilter: (variableFilter).clone(), cflags: (cflags).clone(), simflags: (simflags).clone() };
-    simSettings
+    Ok(simSettings)
 }
 
 fn generateModelCodeFMU(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE_lambda0: Option<Arc<BackendDAE::BackendDAE>>, mut inFMIDer: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>, mut inRemovedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut p: Absyn::Program, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut FMUType: ArcStr, mut filenamePrefix: ArcStr, mut fmuTargetName: ArcStr, mut simSettings: Option<SimCode::SimulationSettings>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr, metamodelica::Real, metamodelica::Real)> {
@@ -1579,7 +1579,7 @@ fn serializeNotify<T: Clone + 'static + metamodelica::gc::MMTrace>(mut data: T, 
     let mut raw_sz: metamodelica::Real;
     let mut nonSharedStringSize: metamodelica::Real;
     (sz, raw_sz, nonSharedStringSize) = System::getSizeOfData(data);
-    Error::addMessage(Error::SERIALIZED_SIZE.clone(), list![(name).clone(), (StringUtil::bytesToReadableUnit(sz, 4, metamodelica::OrderedFloat((500) as f64))).clone(), (StringUtil::bytesToReadableUnit(raw_sz, 4, metamodelica::OrderedFloat((500) as f64))).clone(), (StringUtil::bytesToReadableUnit(nonSharedStringSize, 4, metamodelica::OrderedFloat((500) as f64))).clone()])?;
+    Error::addMessage(Error::SERIALIZED_SIZE.clone(), list![(name).clone(), (StringUtil::bytesToReadableUnit(sz, 4, metamodelica::OrderedFloat((500) as f64))?).clone(), (StringUtil::bytesToReadableUnit(raw_sz, 4, metamodelica::OrderedFloat((500) as f64))?).clone(), (StringUtil::bytesToReadableUnit(nonSharedStringSize, 4, metamodelica::OrderedFloat((500) as f64))?).clone()])?;
     Ok(())
 }
 

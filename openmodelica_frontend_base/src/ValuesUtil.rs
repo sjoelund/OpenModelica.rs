@@ -301,7 +301,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                     let mut rv2: metamodelica::Real;
                     let mut rv3: metamodelica::Real;
                     rv2 = intReal(iv2.clone());
-                    rv3 = rv1.clone() / rv2.clone();
+                    rv3 = metamodelica::real_div_checked(rv1.clone(), rv2.clone())?;
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -313,7 +313,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                     let mut rv1: metamodelica::Real;
                     let mut rv3: metamodelica::Real;
                     rv1 = intReal(iv1.clone());
-                    rv3 = rv1.clone() / rv2.clone();
+                    rv3 = metamodelica::real_div_checked(rv1.clone(), rv2.clone())?;
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -323,7 +323,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP { .. }) => {
                     let mut rv3: metamodelica::Real;
-                    rv3 = rv1.clone() / rv2.clone();
+                    rv3 = metamodelica::real_div_checked(rv1.clone(), rv2.clone())?;
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -656,14 +656,14 @@ pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
             let mut r2: metamodelica::Real;
             r1 = intReal(i1.clone());
             r2 = intReal(i2.clone());
-            res = r1 / r2;
+            res = metamodelica::real_div_checked(r1, r2)?;
             res2 = divElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: res }), res2)
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: rest2 }) => {
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             let mut res: metamodelica::Real;
-            res = r1.clone() / r2.clone();
+            res = metamodelica::real_div_checked(r1.clone(), r2.clone())?;
             res2 = divElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: res }), res2)
         },
@@ -1218,7 +1218,7 @@ pub(crate) fn valueDivide(mut value1: Arc<Values::Value>, mut value2: Arc<Values
             Error::addMessage(Error::DIVISION_BY_ZERO.clone(), list![(literal!("0")).clone(), (realString(var_field!((*value2).real, Values::Value::REAL).clone())).clone()])?;
             bail!("fail")
         },
-        _ => Arc::new(Values::Value::REAL { real: valueReal(value1)? / valueReal(value2)? }),
+        _ => Arc::new(Values::Value::REAL { real: metamodelica::real_div_checked(valueReal(value1)?, valueReal(value2)?)? }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(result)

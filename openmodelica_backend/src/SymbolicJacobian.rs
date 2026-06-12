@@ -4541,7 +4541,7 @@ pub mod LinearJacobian {
             for mut idx in &*UnorderedMap::keyList(pivot_row.clone()) {
                 let mut idx = idx.clone();
                 value = UnorderedMap::getOrFail(idx.clone(), pivot_row.clone())?;
-                UnorderedMap::add(idx.clone(), value / piv_value, pivot_row.clone())?;
+                UnorderedMap::add(idx.clone(), metamodelica::real_div_checked(value, piv_value)?, pivot_row.clone())?;
             }
         }
         Ok(())

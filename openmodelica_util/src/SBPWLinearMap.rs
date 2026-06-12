@@ -262,7 +262,7 @@ pub(crate) fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinea
     aux_dom = metamodelica::arrayGet(map.dom.clone(), 1)?;
     dom_inv = image(map.clone(), aux_dom.clone())?;
     aux_map = metamodelica::arrayGet(map.lmap.clone(), 1)?;
-    map_inv = SBLinearMap::inverse(aux_map);
+    map_inv = SBLinearMap::inverse(aux_map)?;
     min = SBSet::minElem(aux_dom)?;
     g = SBLinearMap::gain(map_inv.clone());
     o = SBLinearMap::offset(map_inv);

@@ -4007,14 +4007,14 @@ fn simplifyAsub0(mut ie: Arc<DAE::Exp>, mut sub: i32, mut inSubExp: Arc<DAE::Exp
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::RCONST { real: rstart }, step: None, stop: Deref @ DAE::Exp::RCONST { real: rstop }, .. } => {
             let mut exp: Arc<DAE::Exp>;
             let mut rval: metamodelica::Real;
-            rval = (simplifyRangeReal(rstart.clone(), metamodelica::OrderedFloat(1.0_f64), rstop.clone())).get(sub)?;
+            rval = (simplifyRangeReal(rstart.clone(), metamodelica::OrderedFloat(1.0_f64), rstop.clone())?).get(sub)?;
             exp = Arc::new(DAE::Exp::RCONST { real: rval });
             exp
         },
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::RCONST { real: rstart }, step: Some(Deref @ DAE::Exp::RCONST { real: rstep }), stop: Deref @ DAE::Exp::RCONST { real: rstop }, .. } => {
             let mut exp: Arc<DAE::Exp>;
             let mut rval: metamodelica::Real;
-            rval = (simplifyRangeReal(rstart.clone(), rstep.clone(), rstop.clone())).get(sub)?;
+            rval = (simplifyRangeReal(rstart.clone(), rstep.clone(), rstop.clone())?).get(sub)?;
             exp = Arc::new(DAE::Exp::RCONST { real: rval });
             exp
         },
@@ -4636,21 +4636,21 @@ fn simplifyBinaryConst(mut inOperator1: Operator, mut inExp2: Arc<DAE::Exp>, mut
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
             let mut re3: metamodelica::Real;
-            re3 = re1.clone() / re2.clone();
+            re3 = metamodelica::real_div_checked(re1.clone(), re2.clone())?;
             Arc::new(DAE::Exp::RCONST { real: re3 })
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
             let mut e2_1: metamodelica::Real;
             let mut re3: metamodelica::Real;
             e2_1 = intReal(ie2.clone());
-            re3 = re1.clone() / e2_1;
+            re3 = metamodelica::real_div_checked(re1.clone(), e2_1)?;
             Arc::new(DAE::Exp::RCONST { real: re3 })
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
             let mut e1_1: metamodelica::Real;
             let mut re3: metamodelica::Real;
             e1_1 = intReal(ie1.clone());
-            re3 = e1_1 / re2.clone();
+            re3 = metamodelica::real_div_checked(e1_1, re2.clone())?;
             Arc::new(DAE::Exp::RCONST { real: re3 })
         },
         (DAE::Operator::POW { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
@@ -5449,7 +5449,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
                     let mut r: metamodelica::Real;
                     let mut r1 = (*r1).clone();
                     let true = (realAbs(r1.clone()) > metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
-                    r = metamodelica::OrderedFloat(1.0_f64) / r1.clone();
+                    r = metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), r1.clone())?;
                     r1 = metamodelica::OrderedFloat(1e12_f64) * r.clone();
                     let __rlit0 = (realMod(r1.clone(), metamodelica::OrderedFloat(1.0_f64)));
                     if !(__rlit0.eq(&metamodelica::OrderedFloat((0.0) as f64))) { bail!("pattern mismatch") }
@@ -5465,7 +5465,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
                     let mut r: metamodelica::Real;
                     let mut r1 = (*r1).clone();
                     let true = (realAbs(r1.clone()) > metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
-                    r = metamodelica::OrderedFloat(1.0_f64) / r1.clone();
+                    r = metamodelica::real_div_checked(metamodelica::OrderedFloat(1.0_f64), r1.clone())?;
                     r1 = metamodelica::OrderedFloat(1e12_f64) * r.clone();
                     let __rlit0 = (realMod(r1.clone(), metamodelica::OrderedFloat(1.0_f64)));
                     if !(__rlit0.eq(&metamodelica::OrderedFloat((0.0) as f64))) { bail!("pattern mismatch") }
@@ -6580,7 +6580,7 @@ pub fn simplifyRange(mut inStart: i32, mut inStep: i32, mut inStop: i32) -> Resu
     Ok(outValues)
 }
 
-pub fn simplifyRangeReal(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inStop: metamodelica::Real) -> Arc<metamodelica::List<metamodelica::Real>> {
+pub fn simplifyRangeReal(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inStop: metamodelica::Real) -> Result<Arc<metamodelica::List<metamodelica::Real>>> {
     let mut outValues: Arc<metamodelica::List<metamodelica::Real>>;
     outValues = 'mc: {
         let __mc_input = inStop;
@@ -6600,12 +6600,12 @@ pub fn simplifyRangeReal(mut inStart: metamodelica::Real, mut inStep: metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut steps: i32;
-            steps = Util::realRangeSize(inStart, inStep, inStop) - 1;
+            steps = Util::realRangeSize(inStart, inStep, inStop)? - 1;
             Ok(simplifyRangeReal2(inStart, inStep, steps.clone(), metamodelica::nil()))
         })() { break 'mc __v; }
-        panic!("matchcontinue: no arm matched")
+        bail!("matchcontinue: no arm matched")
     };
-    outValues
+    Ok(outValues)
 }
 
 fn simplifyRangeReal2(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inSteps: i32, mut inValues: Arc<metamodelica::List<metamodelica::Real>>) -> Arc<metamodelica::List<metamodelica::Real>> {

@@ -1509,7 +1509,7 @@ pub(crate) fn combineConstantNumbers(mut r#const: Arc<metamodelica::List<Arc<Exp
                 for mut exp in &*inv_const {
                     let mut exp = exp.clone();
                     tmp = getConstantValue(exp.clone())?;
-                    result = result / tmp;
+                    result = metamodelica::real_div_checked(result, tmp)?;
                 }
                 res = if (Type::isInteger(ty)?) {Arc::new(Expression::NFExpression::INTEGER { value: ((result).0.floor() as i32) })} else {Arc::new(Expression::NFExpression::REAL { value: result })};
             }

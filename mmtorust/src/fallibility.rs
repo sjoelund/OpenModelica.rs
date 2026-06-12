@@ -551,7 +551,20 @@ impl Walk {
         match e {
             INTEGER { .. } | REAL { .. } | STRING { .. } | BOOL { .. } | END | BREAK => {}
             CREF { .. } | CODE { .. } => {}
-            BINARY { exp1, exp2, .. } | LBINARY { exp1, exp2, .. } | RELATION { exp1, exp2, .. } => {
+            BINARY { exp1, op, exp2 } => {
+                // `/` (and its element-wise form `./`) is Real division, whose
+                // zero-divisor case is a recoverable MetaModelica failure — the
+                // C runtime emits `if (denom == 0) goto fail;` before every Real
+                // division. Codegen lowers it through `real_div_checked(..)?`
+                // (see `BinOpKind::Div` in codegen), so the surrounding function
+                // is fallible. This must agree with that lowering exactly, or
+                // `GenCtx::q` will panic on the analysis/codegen mismatch.
+                if matches!(op, Absyn::Operator::DIV | Absyn::Operator::DIV_EW) {
+                    self.has_fail = true;
+                }
+                self.scan_exp(exp1); self.scan_exp(exp2);
+            }
+            LBINARY { exp1, exp2, .. } | RELATION { exp1, exp2, .. } => {
                 self.scan_exp(exp1); self.scan_exp(exp2);
             }
             UNARY { exp, .. } | LUNARY { exp, .. } => self.scan_exp(exp),

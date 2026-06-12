@@ -222,7 +222,7 @@ pub fn union(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
 }
 
 pub(crate) fn card(mut set: Arc<SBSet>) -> Result<i32> {
-    let mut cardinality: i32 = UnorderedSet::fold(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::cardinality, Arc<SBAtomicSet::SBAtomicSet>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, i32) -> Result<i32> + 'static>), 0)?;
+    let mut cardinality: i32 = UnorderedSet::fold(set.asets.clone(), (std::sync::Arc::new(SBAtomicSet::cardinality) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, i32) -> Result<i32> + 'static>), 0)?;
     Ok(cardinality)
 }
 

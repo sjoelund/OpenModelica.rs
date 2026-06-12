@@ -5654,9 +5654,9 @@ pub(crate) fn analyseScheduledTaskGraph(mut scheduleIn: Arc<HpcOmSimCode::Schedu
                     cpCostsWoC = __pa3.clone();
                     criticalPathInfo = (HpcOmTaskGraph::dumpCriticalPathInfo((criticalPaths.clone(), cpCosts.clone()), (criticalPathsWoC.clone(), cpCostsWoC.clone()))?).clone();
                     (serTime, parTime, speedUp, speedUpMax) = predictExecutionTime(scheduleIn.clone(), Some(cpCostsWoC.clone()), numProcIn, taskGraphIn.clone(), taskGraphMetaIn.clone())?;
-                    serTime = HpcOmTaskGraph::roundReal(serTime.clone(), 2);
-                    parTime = HpcOmTaskGraph::roundReal(parTime.clone(), 2);
-                    cpCostsWoC = HpcOmTaskGraph::roundReal(cpCostsWoC.clone(), 2);
+                    serTime = HpcOmTaskGraph::roundReal(serTime.clone(), 2)?;
+                    parTime = HpcOmTaskGraph::roundReal(parTime.clone(), 2)?;
+                    cpCostsWoC = HpcOmTaskGraph::roundReal(cpCostsWoC.clone(), 2)?;
                     if Flags::isSet(Flags::HPCOM_DUMP.clone())? {
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("the serialCosts: ")); __mm_s.push_str(&*realString(serTime.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("the parallelCosts: ")); __mm_s.push_str(&*realString(parTime.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -5731,12 +5731,12 @@ fn analyseScheduledTaskGraphLevel(mut iLevelTasks: Arc<metamodelica::List<HpcOmS
     cpCostsWoC = __pa3.clone();
     levelSectionCosts = List::map1(iLevelTasks.clone(), (std::sync::Arc::new(getLevelListTaskCosts) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList, HpcOmTaskGraph::TaskGraphMeta) -> Result<Arc<metamodelica::List<metamodelica::Real>>> + 'static>), iTaskGraphMeta.clone())?;
     serTime = realSum(List::map(levelSectionCosts, (std::sync::Arc::new(realSum) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<metamodelica::Real> + 'static>))?)?;
-    serTime = HpcOmTaskGraph::roundReal(serTime, 2);
+    serTime = HpcOmTaskGraph::roundReal(serTime, 2)?;
     levelCosts = List::map(iLevelTasks, (std::sync::Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = iTaskGraphMeta; let __pe_b3 = iNumProc; move |__pe_a0| iParallelSectionCalculator(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList) -> Result<metamodelica::Real> + 'static>))?;
     parTime = realSum(levelCosts.clone())?;
-    parTime = HpcOmTaskGraph::roundReal(parTime, 2);
+    parTime = HpcOmTaskGraph::roundReal(parTime, 2)?;
     oCriticalPathInfo = (HpcOmTaskGraph::dumpCriticalPathInfo((criticalPaths, cpCosts), (criticalPathsWoC, cpCostsWoC))?).clone();
-    cpCostsWoC = HpcOmTaskGraph::roundReal(cpCostsWoC, 2);
+    cpCostsWoC = HpcOmTaskGraph::roundReal(cpCostsWoC, 2)?;
     if Flags::isSet(Flags::HPCOM_DUMP.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("the serialCosts: ")); __mm_s.push_str(&*realString(serTime)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("the parallelCosts: ")); __mm_s.push_str(&*realString(parTime)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -5857,7 +5857,7 @@ pub(crate) fn predictExecutionTime(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, 
     if intNe(metamodelica::arrayLength(taskGraphIn.clone()), 0) {
         serTime = getSerialExecutionTime(taskGraphMetaIn.clone())?;
         (_, parTime) = getFinishingTimesForSchedule(scheduleIn, numProc, taskGraphIn.clone(), taskGraphMetaIn)?;
-        speedUp = serTime / parTime;
+        speedUp = metamodelica::real_div_checked(serTime, parTime)?;
         helper = Util::getOptionOrDefault(cpCostsOption, (metamodelica::OrderedFloat(-1.0_f64)) * (serTime));
         speedUpMax = realDiv(serTime, helper);
     }

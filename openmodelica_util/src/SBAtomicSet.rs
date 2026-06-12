@@ -130,10 +130,10 @@ pub(crate) fn crossProd(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) 
     Ok(res)
 }
 
-pub(crate) fn cardinality(mut set: Arc<SBAtomicSet>, mut card: i32) -> i32 {
+pub(crate) fn cardinality(mut set: Arc<SBAtomicSet>, mut card: i32) -> Result<i32> {
     let mut card: i32 = card;
-    card = card + SBMultiInterval::cardinality(set.aset.clone());
-    card
+    card = card + SBMultiInterval::cardinality(set.aset.clone())?;
+    Ok(card)
 }
 
 pub fn aset(mut set: Arc<SBAtomicSet>) -> Arc<SBMultiInterval::SBMultiInterval> {

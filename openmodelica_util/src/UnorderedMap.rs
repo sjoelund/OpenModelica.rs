@@ -555,9 +555,9 @@ pub(crate) fn bucketCount<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clo
     count
 }
 
-pub(crate) fn loadFactor<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Real {
-    let mut load: metamodelica::Real = intReal(Vector::size(map.keys.clone())) / metamodelica::OrderedFloat((Vector::size(map.buckets.clone())) as f64);
-    load
+pub(crate) fn loadFactor<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<metamodelica::Real> {
+    let mut load: metamodelica::Real = metamodelica::real_div_checked(intReal(Vector::size(map.keys.clone())), metamodelica::OrderedFloat((Vector::size(map.buckets.clone())) as f64))?;
+    Ok(load)
 }
 
 pub(crate) fn rehash<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
@@ -641,7 +641,7 @@ fn addEntry<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static +
     let mut buckets: Arc<Vector::Vector<Arc<metamodelica::List<i32>>>> = map.buckets.clone();
     Vector::push(map.keys.clone(), key);
     Vector::push(map.values.clone(), value);
-    if loadFactor(map.clone()) > metamodelica::OrderedFloat((1) as f64) {
+    if loadFactor(map.clone())? > metamodelica::OrderedFloat((1) as f64) {
         rehash(map)?;
     } else {
         Vector::update(buckets.clone(), hash + 1, metamodelica::cons(Vector::size(map.keys.clone()), Vector::get(buckets, hash + 1)?))?;

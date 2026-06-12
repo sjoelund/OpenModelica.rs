@@ -814,7 +814,7 @@ pub(crate) fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Resul
             (crate::NFType::interned_INTEGER(), expl)
         },
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => {
-            expl = evalRangeReal(var_field!((*start).value, Expression::NFExpression::REAL).clone(), var_field!((*step).value, Expression::NFExpression::REAL).clone(), var_field!((*stop).value, Expression::NFExpression::REAL).clone());
+            expl = evalRangeReal(var_field!((*start).value, Expression::NFExpression::REAL).clone(), var_field!((*step).value, Expression::NFExpression::REAL).clone(), var_field!((*stop).value, Expression::NFExpression::REAL).clone())?;
             (crate::NFType::interned_REAL(), expl)
         },
         _ => {
@@ -837,7 +837,7 @@ pub(crate) fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Resul
             (crate::NFType::interned_INTEGER(), expl)
         },
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => {
-            expl = evalRangeReal(var_field!((*start).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat(1.0_f64), var_field!((*stop).value, Expression::NFExpression::REAL).clone());
+            expl = evalRangeReal(var_field!((*start).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat(1.0_f64), var_field!((*stop).value, Expression::NFExpression::REAL).clone())?;
             (crate::NFType::interned_REAL(), expl)
         },
         (Deref @ Expression::BOOLEAN { .. }, Deref @ Expression::BOOLEAN { .. }) => {
@@ -874,10 +874,10 @@ pub(crate) fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Resul
     Ok(exp)
 }
 
-pub(crate) fn evalRangeReal(mut start: metamodelica::Real, mut step: metamodelica::Real, mut stop: metamodelica::Real) -> Arc<metamodelica::List<Arc<Expression::NFExpression>>> {
+pub(crate) fn evalRangeReal(mut start: metamodelica::Real, mut step: metamodelica::Real, mut stop: metamodelica::Real) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut result: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut steps: i32;
-    steps = Util::realRangeSize(start, step, stop);
+    steps = Util::realRangeSize(start, step, stop)?;
     if steps == 0 {
         result = metamodelica::nil();
     } else if steps == 1 {
@@ -889,7 +889,7 @@ pub(crate) fn evalRangeReal(mut start: metamodelica::Real, mut step: metamodelic
         }
         result = metamodelica::cons(Arc::new(Expression::NFExpression::REAL { value: start }), result);
     }
-    result
+    Ok(result)
 }
 
 pub(crate) fn printFailedEvalError(mut name: ArcStr, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<()> {
@@ -1051,10 +1051,10 @@ pub(crate) fn evalBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut exp2: A
             exp
         },
         (_, Deref @ Expression::INTEGER { value: 1 }) => exp1.clone(),
-        (Deref @ Expression::REAL { .. }, Deref @ Expression::INTEGER { .. }) => Arc::new(Expression::NFExpression::REAL { value: var_field!((*exp1).value, Expression::NFExpression::REAL).clone() / metamodelica::OrderedFloat((var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) as f64) }),
-        (Deref @ Expression::INTEGER { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone()) as f64) / var_field!((*exp2).value, Expression::NFExpression::REAL).clone() }),
-        (Deref @ Expression::INTEGER { .. }, Deref @ Expression::INTEGER { .. }) => if (intMod(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone(), var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) == 0) {Arc::new(Expression::NFExpression::INTEGER { value: intDiv(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone(), var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) })} else {Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone()) as f64) / metamodelica::OrderedFloat((var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) as f64) })},
-        (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: var_field!((*exp1).value, Expression::NFExpression::REAL).clone() / var_field!((*exp2).value, Expression::NFExpression::REAL).clone() }),
+        (Deref @ Expression::REAL { .. }, Deref @ Expression::INTEGER { .. }) => Arc::new(Expression::NFExpression::REAL { value: metamodelica::real_div_checked(var_field!((*exp1).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat((var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) as f64))? }),
+        (Deref @ Expression::INTEGER { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: metamodelica::real_div_checked(metamodelica::OrderedFloat((var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone()) as f64), var_field!((*exp2).value, Expression::NFExpression::REAL).clone())? }),
+        (Deref @ Expression::INTEGER { .. }, Deref @ Expression::INTEGER { .. }) => if (intMod(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone(), var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) == 0) {Arc::new(Expression::NFExpression::INTEGER { value: intDiv(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone(), var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) })} else {Arc::new(Expression::NFExpression::REAL { value: metamodelica::real_div_checked(metamodelica::OrderedFloat((var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone()) as f64), metamodelica::OrderedFloat((var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) as f64))? })},
+        (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: metamodelica::real_div_checked(var_field!((*exp1).value, Expression::NFExpression::REAL).clone(), var_field!((*exp2).value, Expression::NFExpression::REAL).clone())? }),
         (Deref @ Expression::ARRAY { .. }, Deref @ Expression::ARRAY { .. }) if (metamodelica::arrayLength(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone()) == metamodelica::arrayLength(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone())) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b2 = target; move |__pe_a0, __pe_a1| evalBinaryDiv(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
         (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); let __pe_b2 = target; move |__pe_a0| evalBinaryDiv(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
         (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); let __pe_b2 = target; move |__pe_a1| evalBinaryDiv(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
@@ -2076,7 +2076,7 @@ pub(crate) fn evalBuiltinDiv(mut args: Arc<metamodelica::List<Arc<Expression::NF
                 }
                 bail!("fail");
             }
-            rx = rx.clone() / ry.clone();
+            rx = metamodelica::real_div_checked(rx.clone(), ry.clone())?;
             Arc::new(Expression::NFExpression::REAL { value: if (rx.clone() < metamodelica::OrderedFloat(0.0_f64)) {(rx.clone()).ceil()} else {(rx.clone()).floor()} })
         },
         _ => {
