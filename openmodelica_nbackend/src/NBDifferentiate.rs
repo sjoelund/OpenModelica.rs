@@ -1916,6 +1916,7 @@ pub(crate) fn differentiateFunction(mut func: Arc<Function::Function>, mut inter
             let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
             let mut outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
             let mut local_outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
+            let mut uninitialized: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
             let mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>> = metamodelica::nil();
             let mut node = (*node).clone();
             new_cls = (::match_deref::match_deref! { match &(Pointer::access(cls.clone())) {
@@ -1994,7 +1995,7 @@ pub(crate) fn differentiateFunction(mut func: Arc<Function::Function>, mut inter
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            assign_variant_field!(node => InstNode::InstNode::CLASS_NODE; cls = Pointer::create(new_cls.clone()));
+            Pointer::update(var_field!((*node).cls, InstNode::InstNode::CLASS_NODE).clone(), new_cls.clone());
             assign_field!(
                 der_func.derivatives = metamodelica::nil(),
                 der_func.derivedInputs = metamodelica::nil(),
@@ -2002,6 +2003,11 @@ pub(crate) fn differentiateFunction(mut func: Arc<Function::Function>, mut inter
             );
             cachedData = Arc::new(CachedData::CachedData::FUNCTION { funcs: list![der_func.clone()], typed: true, specialBuiltin: false });
             assign_field!(der_func.node = InstNode::newFuncCache(node.clone(), cachedData)?);
+            uninitialized = NFFunction::Function::checkUseBeforeAssignGenerated(der_func.clone())?;
+            if !(uninitialized.clone().is_empty()) {
+                assign_variant_field!(new_cls => Class::NFClass::INSTANCED_CLASS; sections = initializeUninitialized(var_field!((*new_cls).sections, Class::NFClass::INSTANCED_CLASS).clone(), uninitialized, (AbsynUtil::pathString(der_func.path.clone(), (literal!(".")).clone(), true, false)?).clone())?);
+                Pointer::update(var_field!((*node).cls, InstNode::InstNode::CLASS_NODE).clone(), new_cls.clone());
+            }
             assign_field!(diffArguments.funcMap = funcDiffArgs.funcMap.clone());
             new_cls.clone()
         },
@@ -2029,6 +2035,38 @@ pub(crate) fn differentiateFunction(mut func: Arc<Function::Function>, mut inter
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[AFTER ] ")); __mm_s.push_str(&*NFFunction::Function::toFlatString(der_func.clone(), BaseModelica::defaultFormat.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((der_func, diffArguments))
+}
+
+pub(crate) fn initializeUninitialized(mut sections: Arc<Sections::NFSections>, mut variables: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut fn_name: ArcStr) -> Result<Arc<Sections::NFSections>> {
+    let mut sections: Arc<Sections::NFSections> = sections;
+    let mut inits: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut zero: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
+    let mut rest: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
+    let () = (::match_deref::match_deref! { match &(sections.clone()) {
+        Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Cons { head: __esc_alg, tail: __esc_rest }, .. } => {
+            alg = (*__esc_alg).clone();
+            rest = (*__esc_rest).clone();
+            for mut var in &*variables.reverse() {
+                let mut var = var.clone();
+                ty = InstNode::getType(var.clone())?;
+                zero = (::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ Type::STRING => Arc::new(Expression::NFExpression::STRING { value: (literal!("")).clone() }),
+        _ => Expression::makeZero(ty.clone())?,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+                Error::addSourceMessage(Error::GENERATED_FUNCTION_DEFAULT_INIT.clone(), list![(InstNode::name(var.clone())?).clone(), (fn_name.clone()).clone(), (Expression::toString(zero.clone())?).clone()], InstNode::info(var.clone()))?;
+                inits = metamodelica::cons(Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: Expression::fromCref(ComponentRef::fromNode(var.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?, rhs: zero.clone(), ty: ty.clone(), source: alg.source.clone() }), inits.clone());
+            }
+            assign_field!(alg.statements = listAppend(inits, alg.statements.clone()));
+            assign_variant_field!(sections => Sections::NFSections::SECTIONS; algorithms = metamodelica::cons(alg.clone(), rest.clone()));
+            ()
+        },
+        _ => (),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(sections)
 }
 
 pub(crate) fn differentiateFunctionInterfaceNodes(mut interface_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>, mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>, mut keepOld: bool) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {

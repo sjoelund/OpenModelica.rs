@@ -1124,6 +1124,12 @@ pub static HIDE_RESULT_NOT_EVALUATED: ErrorTypes::Message = ErrorTypes::Message 
 
 pub static MISPLACED_EXTERNAL_ANNOTATION: ErrorTypes::Message = ErrorTypes::Message { id: 620, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("External function annotation should occur on the external-clause, not on the function.") };
 
+pub static GENERATED_FUNCTION_USE_BEFORE_ASSIGN: ErrorTypes::Message = ErrorTypes::Message { id: 621, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Variable %s is used before it is assigned a value in the generated function %s. Using an uninitialized variable is an error; this indicates an error in the symbolic differentiation, please report it.") };
+
+pub static GENERATED_FUNCTION_UNASSIGNED_OUTPUT: ErrorTypes::Message = ErrorTypes::Message { id: 622, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Output %s of the generated function %s is never assigned a value. Using an uninitialized variable is an error; this indicates an error in the symbolic differentiation, please report it.") };
+
+pub static GENERATED_FUNCTION_DEFAULT_INIT: ErrorTypes::Message = ErrorTypes::Message { id: 623, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Variable %s of the generated function %s will be initialized to %s because it could not be proven that it is always assigned before it is used.") };
+
 pub static MATCH_SHADOWING: ErrorTypes::Message = ErrorTypes::Message { id: 5001, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Local variable '%s' shadows another variable.") };
 
 pub static META_POLYMORPHIC: ErrorTypes::Message = ErrorTypes::Message { id: 5002, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s uses invalid subtypeof syntax. Only subtypeof Any is supported.") };

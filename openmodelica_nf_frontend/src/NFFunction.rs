@@ -2764,7 +2764,7 @@ pub mod Function {
         addUnassignedComponents(unassigned.clone(), r#fn.outputs.clone())?;
         addUnassignedComponents(unassigned.clone(), r#fn.locals.clone())?;
         body = getBody(r#fn)?;
-        checkUseBeforeAssign2(unassigned.clone(), body)?;
+        checkUseBeforeAssign2(unassigned.clone(), body, None)?;
         for mut var in &*Vector::toList(unassigned) {
             let mut var = var.clone();
             if InstNode::isOutput(var.clone()) {
@@ -2791,37 +2791,37 @@ pub mod Function {
         Ok(())
     }
 
-    pub(crate) fn checkUseBeforeAssign2(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<()> {
+    pub(crate) fn checkUseBeforeAssign2(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut generatedName: Option<ArcStr>) -> Result<()> {
         let mut info: SourceInfo;
         for mut stmt in &*statements {
             let mut stmt = stmt.clone();
             info = Statement::info(stmt.clone())?;
             let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSIGNMENT { .. } => {
-            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone())?;
-            markAssignedOutput(unassigned.clone(), var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone())?;
+            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone(), generatedName.clone())?;
+            markAssignedOutput(unassigned.clone(), var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), isSome(generatedName.clone()))?;
             ()
         },
         Deref @ Statement::FOR { .. } => {
             if isSome(var_field!((*stmt).range, Statement::NFStatement::FOR).clone()) {
-                checkUseBeforeAssignExp(unassigned.clone(), Util::getOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone())?, info.clone())?;
+                checkUseBeforeAssignExp(unassigned.clone(), Util::getOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone())?, info.clone(), generatedName.clone())?;
             }
-            checkUseBeforeAssign2(unassigned.clone(), var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?;
+            checkUseBeforeAssign2(unassigned.clone(), var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), generatedName.clone())?;
             ()
         },
         Deref @ Statement::IF { .. } => {
-            checkUseBeforeAssignIf(unassigned.clone(), var_field!((*stmt).branches, Statement::NFStatement::IF).clone(), info.clone())?;
+            checkUseBeforeAssignIf(unassigned.clone(), var_field!((*stmt).branches, Statement::NFStatement::IF).clone(), info.clone(), generatedName.clone())?;
             ()
         },
         Deref @ Statement::ASSERT { .. } => {
-            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).condition, Statement::NFStatement::ASSERT).clone(), info.clone())?;
-            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).message, Statement::NFStatement::ASSERT).clone(), info.clone())?;
-            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).level, Statement::NFStatement::ASSERT).clone(), info.clone())?;
+            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).condition, Statement::NFStatement::ASSERT).clone(), info.clone(), generatedName.clone())?;
+            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).message, Statement::NFStatement::ASSERT).clone(), info.clone(), generatedName.clone())?;
+            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).level, Statement::NFStatement::ASSERT).clone(), info.clone(), generatedName.clone())?;
             ()
         },
         Deref @ Statement::WHILE { .. } => {
-            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), info.clone())?;
-            checkUseBeforeAssign2(unassigned.clone(), var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())?;
+            checkUseBeforeAssignExp(unassigned.clone(), var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), info.clone(), generatedName.clone())?;
+            checkUseBeforeAssign2(unassigned.clone(), var_field!((*stmt).body, Statement::NFStatement::WHILE).clone(), generatedName.clone())?;
             ()
         },
         _ => (),
@@ -2831,13 +2831,17 @@ pub mod Function {
         Ok(())
     }
 
-    pub(crate) fn markAssignedOutput(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut assignedExp: Arc<Expression::NFExpression>) -> Result<()> {
+    pub(crate) fn markAssignedOutput(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut assignedExp: Arc<Expression::NFExpression>, mut byName: bool) -> Result<()> {
         let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut index: i32 = 0;
         let () = (::match_deref::match_deref! { match &(assignedExp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::isCref(var_field!((*assignedExp).cref, Expression::NFExpression::CREF).clone())) => {
             node = ComponentRef::node(ComponentRef::last(var_field!((*assignedExp).cref, Expression::NFExpression::CREF).clone()))?;
-            (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node; move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            if byName {
+                (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node; move |__pe_a1| InstNode::nameEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            } else {
+                (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node; move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            }
             if index > 0 {
                 Vector::remove(unassigned, index)?;
             }
@@ -2846,7 +2850,7 @@ pub mod Function {
         Deref @ Expression::TUPLE { .. } => {
             for mut e in &*var_field!((*assignedExp).elements, Expression::NFExpression::TUPLE).clone() {
                 let mut e = e.clone();
-                markAssignedOutput(unassigned.clone(), e.clone())?;
+                markAssignedOutput(unassigned.clone(), e.clone(), byName)?;
             }
             ()
         },
@@ -2856,18 +2860,18 @@ pub mod Function {
         Ok(())
     }
 
-    pub(crate) fn checkUseBeforeAssignIf(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn checkUseBeforeAssignIf(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>, mut info: SourceInfo, mut generatedName: Option<ArcStr>) -> Result<()> {
         let mut unassigned_branch: Arc<Vector::Vector<Arc<InstNode::InstNode>>>;
         let mut assigned: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
         let mut index: i32;
         for mut b in &*branches.clone() {
             let mut b = b.clone();
-            checkUseBeforeAssignExp(unassigned.clone(), Util::tuple21(b.clone()), info.clone())?;
+            checkUseBeforeAssignExp(unassigned.clone(), Util::tuple21(b.clone()), info.clone(), generatedName.clone())?;
         }
         for mut b in &*branches {
             let mut b = b.clone();
             unassigned_branch = Vector::copy(unassigned.clone());
-            checkUseBeforeAssign2(unassigned_branch.clone(), Util::tuple22(b.clone()))?;
+            checkUseBeforeAssign2(unassigned_branch.clone(), Util::tuple22(b.clone()), generatedName.clone())?;
             if Vector::size(unassigned.clone()) != Vector::size(unassigned_branch.clone()) {
                 assigned = listAppend(List::setDifferenceOnTrue(Vector::toList(unassigned.clone()), Vector::toList(unassigned_branch.clone()), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?, assigned.clone());
             }
@@ -2885,27 +2889,124 @@ pub mod Function {
         Ok(())
     }
 
-    pub(crate) fn checkUseBeforeAssignExp(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<()> {
-        Expression::apply(exp, (std::sync::Arc::new({ let __pe_b0 = unassigned; let __pe_b2 = info; move |__pe_a1| checkUseBeforeAssignExp_traverse(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+    pub(crate) fn checkUseBeforeAssignExp(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo, mut generatedName: Option<ArcStr>) -> Result<()> {
+        Expression::apply(exp, (std::sync::Arc::new({ let __pe_b0 = unassigned; let __pe_b2 = info; let __pe_b3 = generatedName; move |__pe_a1| checkUseBeforeAssignExp_traverse(__pe_b0.clone(), __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
         Ok(())
     }
 
-    pub(crate) fn checkUseBeforeAssignExp_traverse(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn checkUseBeforeAssignExp_traverse(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo, mut generatedName: Option<ArcStr>) -> Result<()> {
         let mut index: i32 = 0;
         let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut fn_name: ArcStr = arcstr::literal!("");
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::isCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())) => {
             node = ComponentRef::node(ComponentRef::last(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))?;
-            (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node.clone(); move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            if isSome(generatedName.clone()) {
+                (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node.clone(); move |__pe_a1| InstNode::nameEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            } else {
+                (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node.clone(); move |__pe_a1| Ok(InstNode::refEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            }
             if index > 0 {
                 Vector::remove(unassigned, index)?;
-                Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(InstNode::name(node)?).clone()], info)?;
+                let () = (match generatedName {
+        Some(mut __esc_fn_name) => {
+            fn_name = __esc_fn_name.clone();
+            Error::addSourceMessage(Error::GENERATED_FUNCTION_USE_BEFORE_ASSIGN.clone(), list![(InstNode::name(node)?).clone(), (fn_name.clone()).clone()], info)?;
+            ()
+        },
+        _ => {
+            Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(InstNode::name(node)?).clone()], info)?;
+            ()
+        },
+    });
             }
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
+        Ok(())
+    }
+
+    pub fn checkUseBeforeAssignGenerated(mut r#fn: Arc<Function>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
+        let mut uninitialized: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
+        let mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>;
+        let mut not_proven: Arc<Vector::Vector<Arc<InstNode::InstNode>>>;
+        let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
+        let mut fn_name: ArcStr;
+        let mut index: i32;
+        if isExternal(r#fn.clone())? || isBuiltin(r#fn.clone()) {
+            return Ok(uninitialized.clone());
+        }
+        body = getBody(r#fn.clone())?;
+        if body.clone().is_empty() {
+            return Ok(uninitialized.clone());
+        }
+        fn_name = (AbsynUtil::pathString(name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone();
+        unassigned = Vector::new(0);
+        addUnassignedComponents(unassigned.clone(), r#fn.outputs.clone())?;
+        addUnassignedComponents(unassigned.clone(), r#fn.locals.clone())?;
+        not_proven = Vector::copy(unassigned.clone());
+        checkUseBeforeAssign2(unassigned.clone(), body.clone(), Some((fn_name.clone()).clone()))?;
+        markProvenAssigned(not_proven.clone(), body)?;
+        for mut var in &*Vector::toList(unassigned.clone()) {
+            let mut var = var.clone();
+            if InstNode::isOutput(var.clone()) {
+                Error::addSourceMessage(Error::GENERATED_FUNCTION_UNASSIGNED_OUTPUT.clone(), list![(InstNode::name(var.clone())?).clone(), (fn_name.clone()).clone()], InstNode::info(var.clone()))?;
+            }
+        }
+        for mut var in &*Vector::toList(not_proven) {
+            let mut var = var.clone();
+            (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = var.clone(); move |__pe_a1| InstNode::nameEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+            if index <= 0 {
+                uninitialized = metamodelica::cons(var.clone(), uninitialized.clone());
+            }
+        }
+        Ok(uninitialized)
+    }
+
+    pub(crate) fn markProvenAssigned(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<()> {
+        for mut stmt in &*statements {
+            let mut stmt = stmt.clone();
+            let () = (::match_deref::match_deref! { match &(stmt.clone()) {
+        Deref @ Statement::ASSIGNMENT { .. } => {
+            markAssignedOutput(unassigned.clone(), var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), true)?;
+            ()
+        },
+        Deref @ Statement::IF { .. } => {
+            markProvenAssignedIf(unassigned.clone(), var_field!((*stmt).branches, Statement::NFStatement::IF).clone())?;
+            ()
+        },
+        _ => (),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+        }
+        Ok(())
+    }
+
+    pub(crate) fn markProvenAssignedIf(mut unassigned: Arc<Vector::Vector<Arc<InstNode::InstNode>>>, mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>) -> Result<()> {
+        let mut has_else: bool = false;
+        let mut unassigned_branch: Arc<Vector::Vector<Arc<InstNode::InstNode>>>;
+        let mut still_unassigned: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
+        let mut index: i32;
+        for mut b in &*branches {
+            let mut b = b.clone();
+            has_else = Expression::isTrue(Util::tuple21(b.clone()));
+            unassigned_branch = Vector::copy(unassigned.clone());
+            markProvenAssigned(unassigned_branch.clone(), Util::tuple22(b.clone()))?;
+            still_unassigned = listAppend(Vector::toList(unassigned_branch.clone()), still_unassigned.clone());
+        }
+        if has_else {
+            for mut node in &*Vector::toList(unassigned.clone()) {
+                let mut node = node.clone();
+                if !(List::isMemberOnTrue(node.clone(), still_unassigned.clone(), (std::sync::Arc::new(InstNode::nameEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?) {
+                    (_, index) = Vector::find(unassigned.clone(), (std::sync::Arc::new({ let __pe_b0 = node.clone(); move |__pe_a1| InstNode::nameEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+                    if index > 0 {
+                        Vector::remove(unassigned.clone(), index)?;
+                    }
+                }
+            }
+        }
         Ok(())
     }
 
