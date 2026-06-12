@@ -19,6 +19,16 @@ libc.workspace=true
 roxmltree.workspace=true
 # FMU extraction in the hand-written FMIExt.rs.
 zip = { version = "8.6.0", default-features = false, features = ["deflate"] }
+# Safe ZeroMQ bindings for the hand-written ZeroMQ.rs. Optional: the `zeromq`
+# feature (on by default) gates the interactive `--interactive=zmq` server.
+zmq = { workspace = true, optional = true }
+
+[features]
+default = ["zeromq"]
+# Enable the ZeroMQ interactive-server bindings (ZeroMQ.rs). When disabled, the
+# ZeroMQ.initialize call reports failure and the interactive ZMQ mode is
+# unavailable, but the build needs neither the zmq crate nor libzmq.
+zeromq = ["dep:zmq"]
 
 [build-dependencies]
 # Compiles src/runtime_error_shim.c (va_list error interception shim).

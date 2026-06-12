@@ -128,6 +128,11 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // reports false and the rest fail. Hand-written in
     // `openmodelica_util/src/Corba.rs`.
     "Corba",
+    // All bodies are `external "C"` wrappers over `runtime/zeromqimpl.c` (the
+    // interactive `--interactive=zmq` server socket used by OMEdit). Hand-
+    // written FFI against the system `libzmq.so.5` in
+    // `openmodelica_util/src/ZeroMQ.rs`.
+    "ZeroMQ",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
