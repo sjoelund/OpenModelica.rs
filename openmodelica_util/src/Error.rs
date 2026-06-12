@@ -1130,6 +1130,10 @@ pub static GENERATED_FUNCTION_UNASSIGNED_OUTPUT: ErrorTypes::Message = ErrorType
 
 pub static GENERATED_FUNCTION_DEFAULT_INIT: ErrorTypes::Message = ErrorTypes::Message { id: 623, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Variable %s of the generated function %s will be initialized to %s because it could not be proven that it is always assigned before it is used.") };
 
+pub static WARNING_DEF_USE_UNPROVEN: ErrorTypes::Message = ErrorTypes::Message { id: 624, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("%s was possibly used before it was defined (given a value): it is not defined on all control flow paths leading to the use. Per the Modelica specification using an uninitialized variable is an error.") };
+
+pub static UNASSIGNED_FUNCTION_OUTPUT_UNPROVEN: ErrorTypes::Message = ErrorTypes::Message { id: 625, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Output parameter %s was possibly not assigned a value: it is not assigned on all control flow paths. Per the Modelica specification using an uninitialized variable is an error.") };
+
 pub static MATCH_SHADOWING: ErrorTypes::Message = ErrorTypes::Message { id: 5001, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Local variable '%s' shadows another variable.") };
 
 pub static META_POLYMORPHIC: ErrorTypes::Message = ErrorTypes::Message { id: 5002, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s uses invalid subtypeof syntax. Only subtypeof Any is supported.") };

@@ -7475,9 +7475,20 @@ fn checkFunctionDefUse2(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>, mu
             return Ok(inUnbound)
         },
         (Deref @ metamodelica::List::Nil, Some(stmts), unbound, outputs) => {
+            let mut maybeUnbound: Arc<metamodelica::List<ArcStr>>;
+            let mut name: ArcStr = arcstr::literal!("");
             let mut unbound = (*unbound).clone();
-            (_, _, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), false, (false, false, unbound.clone()))?;
-            return Ok(List::fold1(outputs.clone(), (std::sync::Arc::new(checkOutputDefUse) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, SourceInfo, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), inInfo, unbound.clone())?)
+            (_, _, unbound, maybeUnbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), false, (false, false, unbound.clone(), metamodelica::nil()))?;
+            unbound = List::fold1(outputs.clone(), (std::sync::Arc::new(checkOutputDefUse) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, SourceInfo, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), inInfo.clone(), unbound.clone())?;
+            if Flags::isSet(Flags::CHECK_DEF_USE.clone())? {
+                for mut name in &*outputs.clone() {
+                    let mut name = name.clone();
+                    if listMember((name.clone()).clone(), maybeUnbound.clone()) {
+                        Error::addSourceMessage(Error::UNASSIGNED_FUNCTION_OUTPUT_UNPROVEN.clone(), list![(name.clone()).clone()], inInfo.clone())?;
+                    }
+                }
+            }
+            return Ok(unbound.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT { .. }, .. }, tail: rest }, _, unbound, _) => {
             let mut unbound = (*unbound).clone();
@@ -7526,138 +7537,187 @@ fn checkOutputDefUse(mut name: ArcStr, mut info: SourceInfo, mut inUnbound: Arc<
     Ok(outUnbound)
 }
 
-fn checkFunctionDefUseStmt(mut inStmt: Arc<DAE::Statement>, mut inLoop: bool, mut inUnbound: (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> {
-    let mut outUnbound: (bool, bool, Arc<metamodelica::List<ArcStr>>);
+fn checkFunctionDefUseStmt(mut inStmt: Arc<DAE::Statement>, mut inLoop: bool, mut inUnbound: (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+    let mut outUnbound: (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>);
     outUnbound = (::match_deref::match_deref! { match &((inStmt.clone(), inUnbound.clone())) {
-        (_, (true, _, _)) => {
+        (_, (true, _, _, _)) => {
             inUnbound
         },
-        (_, (false, true, _)) => {
+        (_, (false, true, _, _)) => {
             let mut info: SourceInfo;
             info = ElementSource::getElementSourceFileInfo(ElementSource::getStatementSource(inStmt)?);
             Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("InstUtil.checkFunctionDefUseStmt failed")).clone()], info)?;
             bail!("fail")
         },
-        (Deref @ DAE::Statement::STMT_ASSIGN { exp1: lhs, exp: rhs, source, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_ASSIGN { exp1: lhs, exp: rhs, source, .. }, (_, _, unbound, maybe)) => {
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info.clone()))?;
             unbound = __pa0.clone();
-            unbound = traverseCrefSubs(lhs.clone(), info, unbound.clone())?;
+            maybe = __pa1.clone();
+            (unbound, maybe) = traverseCrefSubs(lhs.clone(), info, unbound.clone(), maybe.clone())?;
             unbound = crefFiltering(lhs.clone(), unbound.clone())?;
-            (false, false, unbound.clone())
+            maybe = crefFiltering(lhs.clone(), maybe.clone())?;
+            (false, false, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: lhss, exp: rhs, source, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: lhss, exp: rhs, source, .. }, (_, _, unbound, maybe)) => {
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info.clone()))?;
             unbound = __pa0.clone();
-            unbound = List::fold1(lhss.clone(), (std::sync::Arc::new(traverseCrefSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, SourceInfo, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), info, unbound.clone())?;
+            maybe = __pa1.clone();
+            for mut l in &*lhss.clone() {
+                let mut l = l.clone();
+                (unbound, maybe) = traverseCrefSubs(l.clone(), info.clone(), unbound.clone(), maybe.clone())?;
+            }
             unbound = List::fold(lhss.clone(), (std::sync::Arc::new(crefFiltering) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), unbound.clone())?;
-            (false, false, unbound.clone())
+            maybe = List::fold(lhss.clone(), (std::sync::Arc::new(crefFiltering) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), maybe.clone())?;
+            (false, false, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs, exp: rhs, source, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs, exp: rhs, source, .. }, (_, _, unbound, maybe)) => {
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info.clone()))?;
             unbound = __pa0.clone();
-            unbound = traverseCrefSubs(lhs.clone(), info, unbound.clone())?;
+            maybe = __pa1.clone();
+            (unbound, maybe) = traverseCrefSubs(lhs.clone(), info, unbound.clone(), maybe.clone())?;
             unbound = crefFiltering(lhs.clone(), unbound.clone())?;
-            (false, false, unbound.clone())
+            maybe = crefFiltering(lhs.clone(), maybe.clone())?;
+            (false, false, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_IF { exp, statementLst: stmts, else_, source }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_IF { exp, statementLst: stmts, else_, source }, (_, _, unbound, maybe)) => {
             let mut b1: bool;
             let mut b2: bool;
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            (b1, b2, unbound) = checkFunctionDefUseElse(Arc::new(DAE::Else::ELSEIF { exp: exp.clone(), statementLst: stmts.clone(), else_: else_.clone() }), unbound.clone(), inLoop, info)?;
-            (b1, b2, unbound.clone())
+            (b1, b2, unbound, maybe) = checkFunctionDefUseElse(Arc::new(DAE::Else::ELSEIF { exp: exp.clone(), statementLst: stmts.clone(), else_: else_.clone() }), unbound.clone(), maybe.clone(), inLoop, info)?;
+            (b1, b2, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_FOR { iter, range: exp, statementLst: stmts, source, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_FOR { iter, range: exp, statementLst: stmts, source, .. }, (_, _, unbound, maybe)) => {
+            let mut maybeBody: Arc<metamodelica::List<ArcStr>>;
+            let mut unboundBefore: Arc<metamodelica::List<ArcStr>>;
             let mut b: bool;
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
             unbound = List::filter1OnTrue(unbound.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (iter.clone()).clone())?;
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
+            maybe = List::filter1OnTrue(maybe.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (iter.clone()).clone())?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info))?;
             unbound = __pa0.clone();
-            (_, b, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone()))?;
-            (b, b, unbound.clone())
+            maybe = __pa1.clone();
+            unboundBefore = unbound.clone();
+            (_, b, unbound, maybeBody) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone(), maybe.clone()))?;
+            maybe = List::unionOnTrue(maybe.clone(), maybeBody, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            maybe = List::unionOnTrue(maybe.clone(), List::setDifferenceOnTrue(unboundBefore, unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            (b, b, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_PARFOR { iter, range: exp, statementLst: stmts, source, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_PARFOR { iter, range: exp, statementLst: stmts, source, .. }, (_, _, unbound, maybe)) => {
+            let mut maybeBody: Arc<metamodelica::List<ArcStr>>;
+            let mut unboundBefore: Arc<metamodelica::List<ArcStr>>;
             let mut b: bool;
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
             unbound = List::filter1OnTrue(unbound.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (iter.clone()).clone())?;
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
+            maybe = List::filter1OnTrue(maybe.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (iter.clone()).clone())?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info))?;
             unbound = __pa0.clone();
-            (_, b, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone()))?;
-            (b, b, unbound.clone())
+            maybe = __pa1.clone();
+            unboundBefore = unbound.clone();
+            (_, b, unbound, maybeBody) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone(), maybe.clone()))?;
+            maybe = List::unionOnTrue(maybe.clone(), maybeBody, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            maybe = List::unionOnTrue(maybe.clone(), List::setDifferenceOnTrue(unboundBefore, unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            (b, b, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_WHILE { exp, statementLst: stmts, source }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_WHILE { exp, statementLst: stmts, source }, (_, _, unbound, maybe)) => {
+            let mut maybeBody: Arc<metamodelica::List<ArcStr>>;
+            let mut unboundBefore: Arc<metamodelica::List<ArcStr>>;
             let mut b: bool;
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info))?;
             unbound = __pa0.clone();
-            (_, b, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone()))?;
-            (b, b, unbound.clone())
+            maybe = __pa1.clone();
+            unboundBefore = unbound.clone();
+            (_, b, unbound, maybeBody) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone(), maybe.clone()))?;
+            maybe = List::unionOnTrue(maybe.clone(), maybeBody, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            maybe = List::unionOnTrue(maybe.clone(), List::setDifferenceOnTrue(unboundBefore, unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            (b, b, unbound.clone(), maybe.clone())
         },
         (Deref @ DAE::Statement::STMT_ASSERT { cond: Deref @ DAE::Exp::BCONST { bool: false }, .. }, _) => {
-            (true, true, metamodelica::nil())
+            (true, true, metamodelica::nil(), metamodelica::nil())
         },
-        (Deref @ DAE::Statement::STMT_ASSERT { cond: exp1, msg: exp2, source, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_ASSERT { cond: exp1, msg: exp2, source, .. }, (_, _, unbound, maybe)) => {
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp1.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp1.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info.clone()))?;
             unbound = __pa0.clone();
-            let (_, (__pa1, _)) = Expression::traverseExpTopDown(exp2.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
-            unbound = __pa1.clone();
-            (false, false, unbound.clone())
+            maybe = __pa1.clone();
+            let (_, (__pa2, __pa3, _)) = Expression::traverseExpTopDown(exp2.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info))?;
+            unbound = __pa2.clone();
+            maybe = __pa3.clone();
+            (false, false, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_TERMINATE { msg: exp, source }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_TERMINATE { msg: exp, source }, (_, _, unbound, maybe)) => {
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info))?;
             unbound = __pa0.clone();
-            (true, true, unbound.clone())
+            maybe = __pa1.clone();
+            (true, true, unbound.clone(), maybe.clone())
         },
         (Deref @ DAE::Statement::STMT_NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fail" }, expLst: Deref @ metamodelica::List::Nil, .. }, .. }, _) => {
-            (true, true, metamodelica::nil())
+            (true, true, metamodelica::nil(), metamodelica::nil())
         },
-        (Deref @ DAE::Statement::STMT_NORETCALL { exp, source }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_NORETCALL { exp, source }, (_, _, unbound, maybe)) => {
             let mut info: SourceInfo;
             let mut unbound = (*unbound).clone();
+            let mut maybe = (*maybe).clone();
             info = ElementSource::getElementSourceFileInfo(source.clone());
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info))?;
             unbound = __pa0.clone();
-            (false, false, unbound.clone())
+            maybe = __pa1.clone();
+            (false, false, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_BREAK { .. }, (_, _, unbound)) => {
-            (true, false, unbound.clone())
+        (Deref @ DAE::Statement::STMT_BREAK { .. }, (_, _, unbound, maybe)) => {
+            (true, false, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_RETURN { .. }, (_, _, unbound)) => {
-            (true, true, unbound.clone())
+        (Deref @ DAE::Statement::STMT_RETURN { .. }, (_, _, unbound, maybe)) => {
+            (true, true, unbound.clone(), maybe.clone())
         },
-        (Deref @ DAE::Statement::STMT_CONTINUE { .. }, (_, _, unbound)) => {
-            (false, false, unbound.clone())
+        (Deref @ DAE::Statement::STMT_CONTINUE { .. }, (_, _, unbound, maybe)) => {
+            (false, false, unbound.clone(), maybe.clone())
         },
         (Deref @ DAE::Statement::STMT_ARRAY_INIT { .. }, _) => {
             inUnbound
         },
-        (Deref @ DAE::Statement::STMT_FAILURE { body: stmts, .. }, (_, _, unbound)) => {
+        (Deref @ DAE::Statement::STMT_FAILURE { body: stmts, .. }, (_, _, unbound, maybe)) => {
+            let mut maybeBody: Arc<metamodelica::List<ArcStr>>;
+            let mut unboundBefore: Arc<metamodelica::List<ArcStr>>;
             let mut b: bool;
             let mut unbound = (*unbound).clone();
-            (_, b, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), inLoop, (false, false, unbound.clone()))?;
-            (b, b, unbound.clone())
+            let mut maybe = (*maybe).clone();
+            unboundBefore = unbound.clone();
+            (_, b, unbound, maybeBody) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), inLoop, (false, false, unbound.clone(), maybe.clone()))?;
+            maybe = List::unionOnTrue(maybe.clone(), maybeBody, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            maybe = List::unionOnTrue(maybe.clone(), List::setDifferenceOnTrue(unboundBefore, unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            (b, b, unbound.clone(), maybe.clone())
         },
         _ => {
             let mut r#str: ArcStr;
@@ -7673,37 +7733,55 @@ fn checkFunctionDefUseStmt(mut inStmt: Arc<DAE::Statement>, mut inLoop: bool, mu
     Ok(outUnbound)
 }
 
-fn checkFunctionDefUseElse(mut inElse: Arc<DAE::Else>, mut inUnbound: Arc<metamodelica::List<ArcStr>>, mut inLoop: bool, mut info: SourceInfo) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> {
-    let mut outUnbound: (bool, bool, Arc<metamodelica::List<ArcStr>>);
+fn checkFunctionDefUseElse(mut inElse: Arc<DAE::Else>, mut inUnbound: Arc<metamodelica::List<ArcStr>>, mut inMaybeUnbound: Arc<metamodelica::List<ArcStr>>, mut inLoop: bool, mut info: SourceInfo) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+    let mut outUnbound: (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>);
     outUnbound = (::match_deref::match_deref! { match &((inElse, inUnbound.clone(), inLoop)) {
         (Deref @ DAE::Else::NOELSE { .. }, _, _) => {
-            (false, false, inUnbound)
+            (false, false, inUnbound, inMaybeUnbound)
         },
-        (Deref @ DAE::Else::ELSEIF { exp, statementLst: stmts, else_ }, unbound, iloop) => {
+        (Deref @ DAE::Else::ELSEIF { exp, statementLst: stmts, else_ }, unbound, _) => {
             let mut unboundBranch: Arc<metamodelica::List<ArcStr>>;
+            let mut maybe: Arc<metamodelica::List<ArcStr>>;
+            let mut maybeBranch: Arc<metamodelica::List<ArcStr>>;
+            let mut assignedThen: Arc<metamodelica::List<ArcStr>>;
+            let mut assignedElse: Arc<metamodelica::List<ArcStr>>;
+            let mut proven: Arc<metamodelica::List<ArcStr>>;
+            let mut entryUnbound: Arc<metamodelica::List<ArcStr>>;
             let mut b1: bool;
             let mut b2: bool;
             let mut b3: bool;
             let mut b4: bool;
             let mut unbound = (*unbound).clone();
-            let mut iloop = (*iloop).clone();
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            maybe = inMaybeUnbound;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe, info.clone()))?;
             unbound = __pa0.clone();
-            (b1, b2, unboundBranch) = checkFunctionDefUseElse(else_.clone(), unbound.clone(), inLoop, info)?;
-            (b3, b4, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), inLoop, (false, false, unbound.clone()))?;
-            iloop = true;
-            unbound = if (iloop.clone()) {List::intersectionOnTrue(unboundBranch.clone(), unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?} else {unbound.clone()};
-            unbound = if (!(iloop.clone() || b1)) {List::union(unboundBranch, unbound.clone())} else {unbound.clone()};
+            maybe = __pa1.clone();
+            entryUnbound = unbound.clone();
+            (b1, b2, unboundBranch, maybeBranch) = checkFunctionDefUseElse(else_.clone(), unbound.clone(), maybe.clone(), inLoop, info)?;
+            (b3, b4, unbound, maybe) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), inLoop, (false, false, unbound.clone(), maybe))?;
+            assignedThen = if (b4) {metamodelica::nil()} else {List::setDifferenceOnTrue(entryUnbound.clone(), unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?};
+            assignedElse = if (b2) {metamodelica::nil()} else {List::setDifferenceOnTrue(entryUnbound, unboundBranch.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?};
+            if b2 && !(b4) {
+                proven = assignedThen.clone();
+            } else if b4 && !(b2) {
+                proven = assignedElse.clone();
+            } else {
+                proven = List::intersectionOnTrue(assignedThen.clone(), assignedElse.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            }
+            maybe = List::unionOnTrue(if (b4) {metamodelica::nil()} else {maybe}, if (b2) {metamodelica::nil()} else {maybeBranch}, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            maybe = List::unionOnTrue(maybe, List::setDifferenceOnTrue(List::unionOnTrue(assignedThen, assignedElse, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, proven, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            unbound = List::intersectionOnTrue(unboundBranch, unbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
             b1 = b1 && b3;
             b2 = b2 && b4;
-            (b1, b2, unbound.clone())
+            (b1, b2, unbound.clone(), maybe)
         },
         (Deref @ DAE::Else::ELSE { statementLst: stmts }, unbound, _) => {
+            let mut maybe: Arc<metamodelica::List<ArcStr>>;
             let mut b1: bool;
             let mut b2: bool;
             let mut unbound = (*unbound).clone();
-            (b1, b2, unbound) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), inLoop, (false, false, unbound.clone()))?;
-            (b1, b2, unbound.clone())
+            (b1, b2, unbound, maybe) = List::fold1(stmts.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), inLoop, (false, false, unbound.clone(), inMaybeUnbound))?;
+            (b1, b2, unbound.clone(), maybe)
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -7758,27 +7836,30 @@ fn patternFiltering(mut inPat: Arc<DAE::Pattern>, mut inLst: Arc<metamodelica::L
     Ok((outPat, unbound))
 }
 
-fn traverseCrefSubs(mut exp: Arc<DAE::Exp>, mut info: SourceInfo, mut inUnbound: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+fn traverseCrefSubs(mut exp: Arc<DAE::Exp>, mut info: SourceInfo, mut inUnbound: Arc<metamodelica::List<ArcStr>>, mut inMaybeUnbound: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut outUnbound: Arc<metamodelica::List<ArcStr>>;
-    outUnbound = (::match_deref::match_deref! { match &((exp, inUnbound.clone())) {
+    let mut outMaybeUnbound: Arc<metamodelica::List<ArcStr>>;
+    (outUnbound, outMaybeUnbound) = (::match_deref::match_deref! { match &((exp, inUnbound.clone())) {
         (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, unbound) => {
+            let mut maybe: Arc<metamodelica::List<ArcStr>>;
             let mut unbound = (*unbound).clone();
-            let (_, (__pa0, _)) = Expression::traverseExpTopDownCrefHelper(cr.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info))?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDownCrefHelper(cr.clone(), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), inMaybeUnbound, info))?;
             unbound = __pa0.clone();
-            unbound.clone()
+            maybe = __pa1.clone();
+            (unbound.clone(), maybe)
         },
         _ => {
-            inUnbound
+            (inUnbound, inMaybeUnbound)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(outUnbound)
+    Ok((outUnbound, outMaybeUnbound))
 }
 
-fn findUnboundVariableUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> {
+fn findUnboundVariableUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
-    let mut outTpl: (Arc<metamodelica::List<ArcStr>>, SourceInfo);
+    let mut outTpl: (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo);
     (outExp, cont, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
         (exp @ Deref @ DAE::Exp::SIZE { .. }, arg) => {
             (exp.clone(), false, arg.clone())
@@ -7786,38 +7867,92 @@ fn findUnboundVariableUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica
         (exp @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "isPresent" }, attr: Deref @ DAE::CallAttributes { builtin: true, .. }, .. }, arg) => {
             (exp.clone(), false, arg.clone())
         },
-        (Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, (_, info)) => {
+        (Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, (_, _, info)) => {
             Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(literal!("_")).clone()], info.clone())?;
             (inExp, true, inTpl)
         },
-        (exp @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, (unbound, info)) => {
+        (exp @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, (unbound, maybe, info)) => {
             let mut r#str: ArcStr;
-            let mut b: bool;
             let mut unbound = (*unbound).clone();
-            b = listMember((ComponentReferenceBasics::crefFirstIdent(cr.clone())?).clone(), unbound.clone());
+            let mut maybe = (*maybe).clone();
             r#str = (ComponentReferenceBasics::crefFirstIdent(cr.clone())?).clone();
-            Error::assertionOrAddSourceMessage(!(b), Error::WARNING_DEF_USE.clone(), list![(r#str.clone()).clone()], info.clone())?;
-            unbound = List::filter1OnTrue(unbound.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (r#str).clone())?;
-            (exp.clone(), true, (unbound.clone(), info.clone()))
+            if listMember((r#str.clone()).clone(), unbound.clone()) {
+                Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(r#str.clone()).clone()], info.clone())?;
+                unbound = List::filter1OnTrue(unbound.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (r#str).clone())?;
+            } else if listMember((r#str.clone()).clone(), maybe.clone()) {
+                if Flags::isSet(Flags::CHECK_DEF_USE.clone())? {
+                    Error::addSourceMessage(Error::WARNING_DEF_USE_UNPROVEN.clone(), list![(r#str.clone()).clone()], info.clone())?;
+                }
+                maybe = List::filter1OnTrue(maybe.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (r#str).clone())?;
+            }
+            (exp.clone(), true, (unbound.clone(), maybe.clone(), info.clone()))
         },
-        (exp @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, .. }, (unbound, info)) => {
-            let mut b: bool;
+        (exp @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, .. }, (unbound, maybe, info)) => {
             let mut unbound = (*unbound).clone();
-            b = listMember((name.clone()).clone(), unbound.clone());
-            Error::assertionOrAddSourceMessage(!(b), Error::WARNING_DEF_USE.clone(), list![(name.clone()).clone()], info.clone())?;
-            unbound = List::filter1OnTrue(unbound.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())?;
-            (exp.clone(), true, (unbound.clone(), info.clone()))
+            let mut maybe = (*maybe).clone();
+            if listMember((name.clone()).clone(), unbound.clone()) {
+                Error::addSourceMessage(Error::WARNING_DEF_USE.clone(), list![(name.clone()).clone()], info.clone())?;
+                unbound = List::filter1OnTrue(unbound.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())?;
+            } else if listMember((name.clone()).clone(), maybe.clone()) {
+                if Flags::isSet(Flags::CHECK_DEF_USE.clone())? {
+                    Error::addSourceMessage(Error::WARNING_DEF_USE_UNPROVEN.clone(), list![(name.clone()).clone()], info.clone())?;
+                }
+                maybe = List::filter1OnTrue(maybe.clone(), (std::sync::Arc::new(fnptr!(Util::stringNotEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())?;
+            }
+            (exp.clone(), true, (unbound.clone(), maybe.clone(), info.clone()))
         },
-        (exp @ Deref @ DAE::Exp::MATCHEXPRESSION { inputs, localDecls, cases, .. }, (unbound, info)) => {
+        (exp @ Deref @ DAE::Exp::MATCHEXPRESSION { inputs, localDecls, cases, .. }, (unbound, maybe, info)) => {
             let mut unboundLocal: Arc<metamodelica::List<ArcStr>>;
-            let mut unbounds: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+            let mut assigned: Arc<metamodelica::List<ArcStr>>;
+            let mut assignedUnion: Arc<metamodelica::List<ArcStr>>;
+            let mut proven: Arc<metamodelica::List<ArcStr>>;
+            let mut maybeMerged: Arc<metamodelica::List<ArcStr>>;
+            let mut caseUnbound: Arc<metamodelica::List<ArcStr>>;
+            let mut caseMaybe: Arc<metamodelica::List<ArcStr>>;
+            let mut caseReturns: bool;
+            let mut provenInit: bool;
+            let mut caseResults: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, bool)>>;
             let mut unbound = (*unbound).clone();
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::LIST { valList: inputs.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            let mut maybe = (*maybe).clone();
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::LIST { valList: inputs.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe.clone(), info.clone()))?;
             unbound = __pa0.clone();
+            maybe = __pa1.clone();
             unboundLocal = checkFunctionDefUse2(localDecls.clone(), None, unbound.clone(), metamodelica::nil(), info.clone())?;
-            unbounds = List::map1(cases.clone(), (std::sync::Arc::new(findUnboundVariableUseInCase) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), unboundLocal)?;
-            unbound = List::fold1r(unbounds, (std::sync::Arc::new(List::intersectionOnTrue) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), unbound.clone())?;
-            (exp.clone(), false, (unbound.clone(), info.clone()))
+            caseResults = ({
+        let mut __acc: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, bool)>> = metamodelica::nil();
+        for mut c in (cases.clone()).into_iter().cloned() {
+            let __x = findUnboundVariableUseInCase(c.clone(), unboundLocal.clone(), maybe.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            unbound = List::fold1r(({
+        let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+        for mut t in (caseResults.clone()).into_iter().cloned() {
+            let __x = Util::tuple31(t.clone());
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }), (std::sync::Arc::new(List::intersectionOnTrue) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), unbound.clone())?;
+            provenInit = true;
+            proven = metamodelica::nil();
+            assignedUnion = metamodelica::nil();
+            maybeMerged = metamodelica::nil();
+            for mut t in &*caseResults {
+                let mut t = t.clone();
+                (caseUnbound, caseMaybe, caseReturns) = t.clone();
+                if !(caseReturns) {
+                    assigned = List::setDifferenceOnTrue(unboundLocal.clone(), caseUnbound.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+                    proven = if (provenInit) {assigned.clone()} else {List::intersectionOnTrue(proven.clone(), assigned.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?};
+                    provenInit = false;
+                    assignedUnion = List::unionOnTrue(assignedUnion.clone(), assigned.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+                    maybeMerged = List::unionOnTrue(maybeMerged.clone(), caseMaybe.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+                }
+            }
+            if !(provenInit) {
+                maybe = List::unionOnTrue(maybeMerged, List::setDifferenceOnTrue(assignedUnion, proven, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
+            }
+            (exp.clone(), false, (unbound.clone(), maybe.clone(), info.clone()))
         },
         (exp, arg) => {
             (exp.clone(), true, arg.clone())
@@ -7827,22 +7962,29 @@ fn findUnboundVariableUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica
     Ok((outExp, cont, outTpl))
 }
 
-fn findUnboundVariableUseInCase(mut case_: Arc<DAE::MatchCase>, mut inUnbound: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut unbound: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    unbound = (::match_deref::match_deref! { match &((case_, inUnbound)) {
-        (Deref @ DAE::MatchCase { patterns, patternGuard, body, result, info, resultInfo, .. }, __esc_unbound) => {
-            unbound = (*__esc_unbound).clone();
+fn findUnboundVariableUseInCase(mut case_: Arc<DAE::MatchCase>, mut inUnbound: Arc<metamodelica::List<ArcStr>>, mut inMaybeUnbound: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, bool)> {
+    let mut outResult: (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, bool);
+    outResult = (::match_deref::match_deref! { match &((case_, inUnbound)) {
+        (Deref @ DAE::MatchCase { patterns, patternGuard, body, result, info, resultInfo, .. }, unbound) => {
+            let mut maybe: Arc<metamodelica::List<ArcStr>>;
+            let mut returned: bool;
+            let mut unbound = (*unbound).clone();
+            maybe = inMaybeUnbound;
             (_, unbound) = Patternm::traversePatternList(patterns.clone(), (std::sync::Arc::new(patternFiltering) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>)> + 'static>), unbound.clone())?;
-            let (_, (__pa0, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::META_OPTION { exp: patternGuard.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
+            (_, maybe) = Patternm::traversePatternList(patterns.clone(), (std::sync::Arc::new(patternFiltering) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>)> + 'static>), maybe)?;
+            let (_, (__pa0, __pa1, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::META_OPTION { exp: patternGuard.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe, info.clone()))?;
             unbound = __pa0.clone();
-            (_, _, unbound) = List::fold1(body.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone()))?;
-            let (_, (__pa1, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::META_OPTION { exp: result.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), resultInfo.clone()))?;
-            unbound = __pa1.clone();
-            unbound.clone()
+            maybe = __pa1.clone();
+            (_, returned, unbound, maybe) = List::fold1(body.clone(), (std::sync::Arc::new(checkFunctionDefUseStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, bool, (bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(bool, bool, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>), true, (false, false, unbound.clone(), maybe))?;
+            let (_, (__pa2, __pa3, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::META_OPTION { exp: result.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), maybe, resultInfo.clone()))?;
+            unbound = __pa2.clone();
+            maybe = __pa3.clone();
+            returned = returned || !(isSome(result.clone()));
+            (unbound.clone(), maybe, returned)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(unbound)
+    Ok(outResult)
 }
 
 pub(crate) fn checkParallelismWRTEnv(mut inEnv: FCore::Graph, mut inName: ArcStr, mut inAttr: SCode::Attributes, mut inInfo: SourceInfo) -> bool {

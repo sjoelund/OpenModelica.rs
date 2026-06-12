@@ -696,6 +696,8 @@ pub static FLOW_ALIAS_ELIMINATION: DebugFlag = DebugFlag { index: 198, name: lit
 
 pub static DUMP_CHECK_MODEL: DebugFlag = DebugFlag { index: 199, name: literal!("dumpCheckModel"), default: false, description: literal!("Dumps the variables and equations found by checkModel.") };
 
+pub static CHECK_DEF_USE: DebugFlag = DebugFlag { index: 200, name: literal!("checkDefUse"), default: false, description: literal!("Warns about variables in functions that cannot statically be proven to be defined (given a value) before they are used, e.g. variables only assigned on some control flow paths. Per the Modelica specification using an uninitialized variable is an error.") };
+
 // CONFIGURATION FLAGS
 pub(crate) static DEBUG: std::sync::LazyLock<ConfigFlag> = std::sync::LazyLock::new(|| { ConfigFlag { index: 1, name: (literal!("debug")).clone(), shortname: Some((literal!("d")).clone()), visibility: crate::Flags::FlagVisibility::EXTERNAL, defaultValue: FlagData::STRING_LIST_FLAG { data: metamodelica::nil() }, validOptions: None, description: (literal!("Sets debug flags. Use --help=debug to see available flags.")).clone() } });
 
