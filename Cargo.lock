@@ -301,6 +301,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "libopenmodelica_compiler"
+version = "0.1.0"
+dependencies = [
+ "arcstr",
+ "openmodelica_backend_main",
+]
+
+[[package]]
 name = "libz-sys"
 version = "1.1.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"

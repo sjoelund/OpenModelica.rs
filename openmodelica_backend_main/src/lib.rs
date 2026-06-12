@@ -12,3 +12,4 @@ pub mod Refactor;
 pub mod SimCodeMain;
 pub mod StaticScript;
 pub mod Globals;
+pub mod capi;

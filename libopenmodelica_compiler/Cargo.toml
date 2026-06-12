@@ -1,0 +1,15 @@
+[package]
+name = "libopenmodelica_compiler"
+version = "0.1.0"
+edition = "2024"
+
+# Builds `libOpenModelicaCompiler.so`, the shared library OMEdit links against
+# to drive the Rust omc in-process. The `extern "C"` surface lives in src/lib.rs
+# and wraps the safe embedding API in `openmodelica_backend_main::capi`.
+[lib]
+name = "OpenModelicaCompiler"
+crate-type = ["cdylib"]
+
+[dependencies]
+openmodelica_backend_main.workspace = true
+arcstr.workspace = true

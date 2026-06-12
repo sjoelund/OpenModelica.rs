@@ -1753,6 +1753,14 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
     if std::path::Path::new(&format!("{this_dir}/NBASSCExt.rs")).exists() {
         writeln!(out, "pub mod NBASSCExt;").unwrap();
     }
+    // Hand-written in-process embedding API (`openmodelica_backend_main/src/
+    // capi.rs`): a thin `pub` wrapper over `Main::init`/`readSettings`/
+    // `handleCommand` so the `libopenmodelica_compiler` cdylib can expose an
+    // `extern "C"` interface (libOpenModelicaCompiler.so) for OMEdit. No
+    // MetaModelica source of its own. Declared when present in this crate.
+    if std::path::Path::new(&format!("{this_dir}/capi.rs")).exists() {
+        writeln!(out, "pub mod capi;").unwrap();
+    }
     // Hand-written, test-only unit tests live in `src/unittests/` (declared by
     // its own `mod.rs`). Unlike `tests/*.rs` integration tests — which compile
     // as a *separate* crate and so can only reach `pub` items — these are an
