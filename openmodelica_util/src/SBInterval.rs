@@ -95,7 +95,7 @@ fn euclid(mut a: i32, mut b: i32) -> (i32, i32, i32, i32) {
         s1 = tmp;
     }
     d = r1;
-    m = s2.abs();
+    m = (s2).abs();
     ua = s1;
     vb = r1 - s1;
     (d, m, ua, vb)
@@ -252,7 +252,7 @@ pub(crate) fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut
             hi = (hi).floor();
         }
         if lo < metamodelica::OrderedFloat((0) as f64) {
-            lo = lo + step * (metamodelica::OrderedFloat((1) as f64) + (lo.abs() / step).floor());
+            lo = lo + step * (metamodelica::OrderedFloat((1) as f64) + ((lo).abs() / step).floor());
         }
         if hi < lo {
             res = newEmpty();

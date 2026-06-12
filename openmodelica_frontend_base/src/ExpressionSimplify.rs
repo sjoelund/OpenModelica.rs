@@ -2423,7 +2423,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "abs", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::RCONST { real: r }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
                     let mut r = (*r).clone();
-                    r = r.clone().abs();
+                    r = (r.clone()).abs();
                     Ok(Arc::new(DAE::Exp::RCONST { real: r.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2433,7 +2433,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "abs", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
                     let mut i = (*i).clone();
-                    i = i.clone().abs();
+                    i = (i.clone()).abs();
                     Ok(Arc::new(DAE::Exp::ICONST { integer: i.clone() }))
                 }
                 _ => bail!("nomatch"),

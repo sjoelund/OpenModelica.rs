@@ -1815,8 +1815,8 @@ pub(crate) fn evalNormalCall(mut r#fn: Arc<Function::Function>, mut args: Arc<me
 pub(crate) fn evalBuiltinAbs(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     result = (::match_deref::match_deref! { match &(arg.clone()) {
-        Deref @ Expression::INTEGER { .. } => Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*arg).value, Expression::NFExpression::INTEGER).clone().abs() }),
-        Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::REAL { value: var_field!((*arg).value, Expression::NFExpression::REAL).clone().abs() }),
+        Deref @ Expression::INTEGER { .. } => Arc::new(Expression::NFExpression::INTEGER { value: (var_field!((*arg).value, Expression::NFExpression::INTEGER).clone()).abs() }),
+        Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::REAL { value: (var_field!((*arg).value, Expression::NFExpression::REAL).clone()).abs() }),
         _ => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinAbs"), list![arg], metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")

@@ -1144,7 +1144,7 @@ fn checkNominalThresholdSingle(mut lst_values: Arc<metamodelica::List<Arc<Expres
         real_constants = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut val in (constants).into_iter().cloned() {
-            let __x = Expression::realValue(val.clone())?.abs();
+            let __x = (Expression::realValue(val.clone())?).abs();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

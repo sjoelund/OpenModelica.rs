@@ -2910,10 +2910,10 @@ pub(crate) fn computeNominal(mut exp: Arc<NFExpression>) -> Result<Arc<NFExpress
             Util::getOptionOrDefault(nominal, exp)
         },
         Deref @ INTEGER { .. } => {
-            Arc::new(NFExpression::INTEGER { value: var_field!((*exp).value, NFExpression::INTEGER).clone().abs() })
+            Arc::new(NFExpression::INTEGER { value: (var_field!((*exp).value, NFExpression::INTEGER).clone()).abs() })
         },
         Deref @ REAL { .. } => {
-            Arc::new(NFExpression::REAL { value: var_field!((*exp).value, NFExpression::REAL).clone().abs() })
+            Arc::new(NFExpression::REAL { value: (var_field!((*exp).value, NFExpression::REAL).clone()).abs() })
         },
         Deref @ UNARY { .. } => {
             var_field!((*exp).exp, NFExpression::UNARY).clone()

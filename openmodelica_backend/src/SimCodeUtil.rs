@@ -15658,10 +15658,10 @@ pub fn getExpNominal(mut expr: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(expr.clone()) {
         Deref @ DAE::Exp::ICONST { .. } => {
-            return Ok(Arc::new(DAE::Exp::RCONST { real: intReal(var_field!((*expr).integer, DAE::Exp::ICONST).clone()).abs() }))
+            return Ok(Arc::new(DAE::Exp::RCONST { real: (intReal(var_field!((*expr).integer, DAE::Exp::ICONST).clone())).abs() }))
         },
         Deref @ DAE::Exp::RCONST { .. } => {
-            return Ok(Arc::new(DAE::Exp::RCONST { real: var_field!((*expr).real, DAE::Exp::RCONST).clone().abs() }))
+            return Ok(Arc::new(DAE::Exp::RCONST { real: (var_field!((*expr).real, DAE::Exp::RCONST).clone()).abs() }))
         },
         Deref @ DAE::Exp::CREF { componentRef: cr, ty: t } => {
             let mut v: SimCodeVar::SimVar;
@@ -15671,7 +15671,7 @@ pub fn getExpNominal(mut expr: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             ::match_deref::match_deref! { match &(v.nominalValue.clone()) {
         Some(Deref @ DAE::Exp::RCONST { real: __esc_r1 }) => {
             r1 = (*__esc_r1).clone();
-            return Ok(Arc::new(DAE::Exp::RCONST { real: r1.clone().abs() }))
+            return Ok(Arc::new(DAE::Exp::RCONST { real: (r1.clone()).abs() }))
         },
         Some(__esc_e1) => {
             e1 = (*__esc_e1).clone();
@@ -15813,7 +15813,7 @@ pub fn getExpNominal(mut expr: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         (Deref @ DAE::Exp::RCONST { real: __esc_r1 }, Deref @ DAE::Exp::RCONST { real: __esc_r2 }) => {
             r1 = (*__esc_r1).clone();
             r2 = (*__esc_r2).clone();
-            return Ok(Arc::new(DAE::Exp::RCONST { real: std::cmp::max(metamodelica::OrderedFloat(1.0_f64), r1.clone() / r2.clone().abs()) }))
+            return Ok(Arc::new(DAE::Exp::RCONST { real: std::cmp::max(metamodelica::OrderedFloat(1.0_f64), (r1.clone() / r2.clone()).abs()) }))
         },
         _ => return Ok(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

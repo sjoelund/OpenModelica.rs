@@ -346,7 +346,7 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
         i = ({let __elt = is.borrow()[(dim-1) as usize].clone(); __elt});
         hi = metamodelica::OrderedFloat((SBInterval::upperBound(i.clone())) as f64);
         lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i)) as f64);
-        its = std::cmp::max(its, ((hi - lo) / offset.abs()).ceil());
+        its = std::cmp::max(its, ((hi - lo) / (offset).abs()).ceil());
         its
     }
 
@@ -380,7 +380,7 @@ pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SB
         a = metamodelica::OrderedFloat((0) as f64);
         b = ({let __elt = gain.borrow()[(1-1) as usize].clone(); __elt});
         for mut j in 1..=metamodelica::arrayLength(gain.clone()) {
-            a = realMax(a.clone(), ({let __elt = gain.borrow()[(j.clone()-1) as usize].clone(); __elt}) * ({let __elt = off.borrow()[(j.clone()-1) as usize].clone(); __elt}).abs());
+            a = realMax(a.clone(), ({let __elt = gain.borrow()[(j.clone()-1) as usize].clone(); __elt}) * (({let __elt = off.borrow()[(j.clone()-1) as usize].clone(); __elt})).abs());
             b = realMin(b.clone(), ({let __elt = gain.borrow()[(j.clone()-1) as usize].clone(); __elt}));
         }
         if a.clone() > metamodelica::OrderedFloat((0) as f64) {

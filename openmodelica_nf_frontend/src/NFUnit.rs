@@ -226,7 +226,7 @@ pub(crate) fn hash(mut inKey: Unit) -> Result<i32> {
 
 pub(crate) fn realAlmostEqRel(mut a: metamodelica::Real, mut b: metamodelica::Real, mut relTol: metamodelica::Real) -> bool {
     let mut c: bool;
-    c = if (a == b) {true} else {relTol > a - b.abs() / (a.abs() + b.abs())};
+    c = if (a == b) {true} else {relTol > (a - b).abs() / ((a).abs() + (b).abs())};
     c
 }
 

@@ -10649,7 +10649,12 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // `abs` is i32-or-Real overloaded. For both: with `num_traits::Float`
             // in scope `.abs()` resolves on Real directly and returns Real;
             // i32::abs returns i32. Same syntax either way.
-            Ok(format!("{arg}.abs()"))
+            //
+            // The argument must be parenthesized: `.abs()` is a postfix method
+            // call binding tighter than any binary operator, so a non-atomic
+            // argument like `abs(a - b)` would otherwise lower to `a - b.abs()`
+            // = `a - abs(b)` instead of `(a - b).abs()`.
+            Ok(format!("({arg}).abs()"))
         },
         "integer" | "realInt" => {
             // Modelica `integer(Real)` rounds toward -inf (floor).

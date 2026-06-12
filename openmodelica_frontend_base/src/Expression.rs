@@ -7804,10 +7804,10 @@ pub fn isZeroOrAlmostZero(mut inExp: Arc<DAE::Exp>, mut nominal: Arc<DAE::Exp>) 
             return Ok(intEq(ival.clone(), 0))
         },
         (Deref @ DAE::Exp::RCONST { real: rval }, Deref @ DAE::Exp::RCONST { real: rNom }) => {
-            return Ok(realLt(rval.clone().abs(), metamodelica::OrderedFloat(1e-6_f64) * rNom.clone().abs()))
+            return Ok(realLt((rval.clone()).abs(), metamodelica::OrderedFloat(1e-6_f64) * (rNom.clone()).abs()))
         },
         (Deref @ DAE::Exp::RCONST { real: rval }, _) => {
-            return Ok(realLt(rval.clone().abs(), metamodelica::OrderedFloat(1e-6_f64)))
+            return Ok(realLt((rval.clone()).abs(), metamodelica::OrderedFloat(1e-6_f64)))
         },
         (Deref @ DAE::Exp::CAST { exp: e, .. }, _) => {
             { (inExp, nominal) = (e.clone(), nominal); continue '__tco; }
