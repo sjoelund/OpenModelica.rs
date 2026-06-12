@@ -624,12 +624,26 @@ fn parse_fmi1(
                 "parameter" => arcstr::literal!("parameter"),
                 _ => arcstr::literal!(""),
             };
-            // FMI1 isFixed (fmi1_xml_get_variable_is_fixed): a start value
-            // is present AND the `fixed` attribute (default true) is set.
-            let is_fixed = match (vt.start, vt.node.attribute("fixed")) {
-                (None, _) => false,
-                (Some(_), None) => true,
-                (Some(_), Some(f)) => parse_xml_bool(f)?,
+            // FMI1 isFixed (fmi1_xml_get_variable_is_fixed = structKind==start
+            // && type->isFixed): a start value is present AND the `fixed`
+            // attribute (default true) is set.
+            //
+            // fmilib quirk: `fmi1_xml_handle_String` parses the `fixed`
+            // attribute but — unlike the Real/Integer/Boolean/Enumeration
+            // handlers — never assigns it back to `start->typeBase.isFixed`,
+            // which therefore keeps its init default of 0. So a String
+            // variable's isFixed is *always* false regardless of `start`/`fixed`.
+            // Mirror that, otherwise FMU-imported String parameters become
+            // fixed bindings (`= "x"`) instead of the unbound `(start="x")`
+            // declarations the C/fmilib oracle produces.
+            let is_fixed = if vt.tag == "String" {
+                false
+            } else {
+                match (vt.start, vt.node.attribute("fixed")) {
+                    (None, _) => false,
+                    (Some(_), None) => true,
+                    (Some(_), Some(f)) => parse_xml_bool(f)?,
+                }
             };
             variables.push(build_variable(
                 &sv, &vt, variability, causality, is_fixed,
