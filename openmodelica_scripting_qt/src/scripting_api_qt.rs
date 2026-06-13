@@ -172,7 +172,7 @@ pub extern "C" fn omc_seq_seq(s: *const OmcSeq, i: usize) -> *const OmcSeq {
 pub extern "C" fn omc_scripting_GC_expand_hp(size: i64) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (size as i32);
-        crate::OpenModelicaScriptingAPI::GC_expand_hp(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::GC_expand_hp(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -184,7 +184,7 @@ pub extern "C" fn omc_scripting_GC_expand_hp(size: i64) -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_GC_gcollect_and_unmap() {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::GC_gcollect_and_unmap()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::GC_gcollect_and_unmap()
     }));
     match __r {
         Ok(Ok(_)) => {},
@@ -197,7 +197,7 @@ pub extern "C" fn omc_scripting_GC_gcollect_and_unmap() {
 pub extern "C" fn omc_scripting_GC_set_max_heap_size(size: i64) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (size as i32);
-        crate::OpenModelicaScriptingAPI::GC_set_max_heap_size(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::GC_set_max_heap_size(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -212,7 +212,7 @@ pub extern "C" fn omc_scripting_addEquation(className: *const c_char, eq: *const
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(eq) };
         let __a2 = (isInitial != 0);
-        crate::OpenModelicaScriptingAPI::addEquation(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::addEquation(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -225,7 +225,7 @@ pub extern "C" fn omc_scripting_addEquation(className: *const c_char, eq: *const
 pub extern "C" fn omc_scripting_alarm(seconds: i64) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (seconds as i32);
-        crate::OpenModelicaScriptingAPI::alarm(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::alarm(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -238,7 +238,7 @@ pub extern "C" fn omc_scripting_alarm(seconds: i64) -> i64 {
 pub extern "C" fn omc_scripting_basename(path: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(path) };
-        crate::OpenModelicaScriptingAPI::basename(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::basename(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -252,7 +252,7 @@ pub extern "C" fn omc_scripting_buildEncryptedPackage(className: *const c_char, 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (encrypt != 0);
-        crate::OpenModelicaScriptingAPI::buildEncryptedPackage(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::buildEncryptedPackage(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -276,7 +276,7 @@ pub extern "C" fn omc_scripting_buildLabel(className: *const c_char, startTime: 
         let __a9 = unsafe { abi_str_in(variableFilter) };
         let __a10 = unsafe { abi_str_in(cflags) };
         let __a11 = unsafe { abi_str_in(simflags) };
-        crate::OpenModelicaScriptingAPI::buildLabel(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::buildLabel(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -294,7 +294,7 @@ pub extern "C" fn omc_scripting_buildModelFMU(className: *const c_char, version:
         let __a3 = unsafe { abi_str_in(fileNamePrefix) };
         let __a4 = std::sync::Arc::new(unsafe { seq_slice(platforms) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a5 = (includeResources != 0);
-        crate::OpenModelicaScriptingAPI::buildModelFMU(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::buildModelFMU(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -307,7 +307,7 @@ pub extern "C" fn omc_scripting_buildModelFMU(className: *const c_char, version:
 pub extern "C" fn omc_scripting_cd(newWorkingDirectory: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(newWorkingDirectory) };
-        crate::OpenModelicaScriptingAPI::cd(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::cd(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -321,7 +321,7 @@ pub extern "C" fn omc_scripting_checkAllModelsRecursive(className: *const c_char
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (checkProtected != 0);
-        crate::OpenModelicaScriptingAPI::checkAllModelsRecursive(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::checkAllModelsRecursive(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -335,7 +335,7 @@ pub extern "C" fn omc_scripting_checkCodeGraph(graphfile: *const c_char, codefil
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(graphfile) };
         let __a1 = unsafe { abi_str_in(codefile) };
-        crate::OpenModelicaScriptingAPI::checkCodeGraph(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::checkCodeGraph(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -349,7 +349,7 @@ pub extern "C" fn omc_scripting_checkInterfaceOfPackages(cl: *const c_char, depe
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
         let __a1 = std::sync::Arc::new(unsafe { seq_slice(dependencyMatrix) }.iter().map(|__o0| match __o0 { OmcVal::Seq(__sb) => std::sync::Arc::new(__sb.0.iter().map(|__o1| match __o1 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>()), _ => std::sync::Arc::new(metamodelica::List::Nil) }).collect::<metamodelica::List<std::sync::Arc<metamodelica::List<arcstr::ArcStr>>>>());
-        crate::OpenModelicaScriptingAPI::checkInterfaceOfPackages(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::checkInterfaceOfPackages(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -362,7 +362,7 @@ pub extern "C" fn omc_scripting_checkInterfaceOfPackages(cl: *const c_char, depe
 pub extern "C" fn omc_scripting_checkModel(className: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::checkModel(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::checkModel(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -376,7 +376,7 @@ pub extern "C" fn omc_scripting_checkTaskGraph(filename: *const c_char, reffilen
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
         let __a1 = unsafe { abi_str_in(reffilename) };
-        crate::OpenModelicaScriptingAPI::checkTaskGraph(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::checkTaskGraph(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -390,7 +390,7 @@ pub extern "C" fn omc_scripting_classAnnotationExists(className: *const c_char, 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(annotationName) };
-        crate::OpenModelicaScriptingAPI::classAnnotationExists(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::classAnnotationExists(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -402,7 +402,7 @@ pub extern "C" fn omc_scripting_classAnnotationExists(className: *const c_char, 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_clear() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::clear()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::clear()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -414,7 +414,7 @@ pub extern "C" fn omc_scripting_clear() -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_clearCommandLineOptions() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::clearCommandLineOptions()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::clearCommandLineOptions()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -426,7 +426,7 @@ pub extern "C" fn omc_scripting_clearCommandLineOptions() -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_clearDebugFlags() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::clearDebugFlags()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::clearDebugFlags()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -438,7 +438,7 @@ pub extern "C" fn omc_scripting_clearDebugFlags() -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_clearMessages() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::clearMessages()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::clearMessages()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -450,7 +450,7 @@ pub extern "C" fn omc_scripting_clearMessages() -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_clearProgram() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::clearProgram()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::clearProgram()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -462,7 +462,7 @@ pub extern "C" fn omc_scripting_clearProgram() -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_clearVariables() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::clearVariables()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::clearVariables()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -474,7 +474,7 @@ pub extern "C" fn omc_scripting_clearVariables() -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_closeSimulationResultFile() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::closeSimulationResultFile()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::closeSimulationResultFile()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -488,7 +488,7 @@ pub extern "C" fn omc_scripting_compareFiles(file1: *const c_char, file2: *const
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(file1) };
         let __a1 = unsafe { abi_str_in(file2) };
-        crate::OpenModelicaScriptingAPI::compareFiles(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::compareFiles(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -502,7 +502,7 @@ pub extern "C" fn omc_scripting_compareFilesAndMove(newFile: *const c_char, oldF
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(newFile) };
         let __a1 = unsafe { abi_str_in(oldFile) };
-        crate::OpenModelicaScriptingAPI::compareFilesAndMove(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::compareFilesAndMove(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -520,7 +520,7 @@ pub extern "C" fn omc_scripting_compareSimulationResults(filename: *const c_char
         let __a3 = metamodelica::OrderedFloat(relTol);
         let __a4 = metamodelica::OrderedFloat(absTol);
         let __a5 = std::sync::Arc::new(unsafe { seq_slice(vars) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
-        crate::OpenModelicaScriptingAPI::compareSimulationResults(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::compareSimulationResults(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -535,7 +535,7 @@ pub extern "C" fn omc_scripting_convertPackageToLibrary(packageToConvert: *const
         let __a0 = unsafe { abi_str_in(packageToConvert) };
         let __a1 = unsafe { abi_str_in(library) };
         let __a2 = unsafe { abi_str_in(libraryVersion) };
-        crate::OpenModelicaScriptingAPI::convertPackageToLibrary(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::convertPackageToLibrary(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -549,7 +549,7 @@ pub extern "C" fn omc_scripting_convertUnits(s1: *const c_char, s2: *const c_cha
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(s1) };
         let __a1 = unsafe { abi_str_in(s2) };
-        crate::OpenModelicaScriptingAPI::convertUnits(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::convertUnits(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Bool(*&__t0_0)); __s0.0.push(OmcVal::Real((&__t0_1).0)); __s0.0.push(OmcVal::Real((&__t0_2).0)); Box::into_raw(__s0) },
@@ -563,7 +563,7 @@ pub extern "C" fn omc_scripting_copy(source: *const c_char, destination: *const 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(source) };
         let __a1 = unsafe { abi_str_in(destination) };
-        crate::OpenModelicaScriptingAPI::copy(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::copy(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -578,7 +578,7 @@ pub extern "C" fn omc_scripting_copyClass(className: *const c_char, newClassName
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(newClassName) };
         let __a2 = unsafe { abi_str_in(withIn) };
-        crate::OpenModelicaScriptingAPI::copyClass(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::copyClass(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -590,7 +590,7 @@ pub extern "C" fn omc_scripting_copyClass(className: *const c_char, newClassName
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_countMessages() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::countMessages()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::countMessages()
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Int(*&__t0_0 as i64)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); __s0.0.push(OmcVal::Int(*&__t0_2 as i64)); Box::into_raw(__s0) },
@@ -603,7 +603,7 @@ pub extern "C" fn omc_scripting_countMessages() -> *mut OmcSeq {
 pub extern "C" fn omc_scripting_createModel(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::createModel(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::createModel(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -616,7 +616,7 @@ pub extern "C" fn omc_scripting_createModel(className: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_deleteClass(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::deleteClass(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::deleteClass(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -630,7 +630,7 @@ pub extern "C" fn omc_scripting_deleteComponent(componentName: *const c_char, cl
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(componentName) };
         let __a1 = unsafe { abi_str_in(classPath) };
-        crate::OpenModelicaScriptingAPI::deleteComponent(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::deleteComponent(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -643,7 +643,7 @@ pub extern "C" fn omc_scripting_deleteComponent(componentName: *const c_char, cl
 pub extern "C" fn omc_scripting_deleteFile(fileName: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::deleteFile(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::deleteFile(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -657,7 +657,7 @@ pub extern "C" fn omc_scripting_deleteInitialState(cl: *const c_char, state: *co
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
         let __a1 = unsafe { abi_str_in(state) };
-        crate::OpenModelicaScriptingAPI::deleteInitialState(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::deleteInitialState(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -677,7 +677,7 @@ pub extern "C" fn omc_scripting_deleteTransition(cl: *const c_char, from: *const
         let __a5 = (reset != 0);
         let __a6 = (synchronize != 0);
         let __a7 = (priority as i32);
-        crate::OpenModelicaScriptingAPI::deleteTransition(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::deleteTransition(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -693,7 +693,7 @@ pub extern "C" fn omc_scripting_deltaSimulationResults(filename: *const c_char, 
         let __a1 = unsafe { abi_str_in(reffilename) };
         let __a2 = unsafe { abi_str_in(method) };
         let __a3 = std::sync::Arc::new(unsafe { seq_slice(vars) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
-        crate::OpenModelicaScriptingAPI::deltaSimulationResults(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::deltaSimulationResults(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v).0,
@@ -713,7 +713,7 @@ pub extern "C" fn omc_scripting_diffSimulationResults(actualFile: *const c_char,
         let __a5 = metamodelica::OrderedFloat(rangeDelta);
         let __a6 = std::sync::Arc::new(unsafe { seq_slice(vars) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a7 = (keepEqualResults != 0);
-        crate::OpenModelicaScriptingAPI::diffSimulationResults(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::diffSimulationResults(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Bool(*&__t0_0)); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_1).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -731,7 +731,7 @@ pub extern "C" fn omc_scripting_diffSimulationResultsHtml(var: *const c_char, ac
         let __a3 = metamodelica::OrderedFloat(relTol);
         let __a4 = metamodelica::OrderedFloat(relTolDiffMinMax);
         let __a5 = metamodelica::OrderedFloat(rangeDelta);
-        crate::OpenModelicaScriptingAPI::diffSimulationResultsHtml(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::diffSimulationResultsHtml(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -744,7 +744,7 @@ pub extern "C" fn omc_scripting_diffSimulationResultsHtml(var: *const c_char, ac
 pub extern "C" fn omc_scripting_directoryExists(dirName: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(dirName) };
-        crate::OpenModelicaScriptingAPI::directoryExists(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::directoryExists(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -757,7 +757,7 @@ pub extern "C" fn omc_scripting_directoryExists(dirName: *const c_char) -> c_int
 pub extern "C" fn omc_scripting_dirname(path: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(path) };
-        crate::OpenModelicaScriptingAPI::dirname(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::dirname(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -769,7 +769,7 @@ pub extern "C" fn omc_scripting_dirname(path: *const c_char) -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_disableNewInstantiation() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::disableNewInstantiation()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::disableNewInstantiation()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -789,7 +789,7 @@ pub extern "C" fn omc_scripting_dumpXMLDAE(className: *const c_char, translation
         let __a5 = (dumpResiduals != 0);
         let __a6 = unsafe { abi_str_in(fileNamePrefix) };
         let __a7 = unsafe { abi_str_in(rewriteRulesFile) };
-        crate::OpenModelicaScriptingAPI::dumpXMLDAE(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::dumpXMLDAE(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Bool(*&__t0_0)); __s0.0.push(OmcVal::Str(cstr_of(&__t0_1))); Box::into_raw(__s0) },
@@ -802,7 +802,7 @@ pub extern "C" fn omc_scripting_dumpXMLDAE(className: *const c_char, translation
 pub extern "C" fn omc_scripting_echo(setEcho: c_int) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (setEcho != 0);
-        crate::OpenModelicaScriptingAPI::echo(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::echo(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -814,7 +814,7 @@ pub extern "C" fn omc_scripting_echo(setEcho: c_int) -> c_int {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_enableNewInstantiation() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::enableNewInstantiation()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::enableNewInstantiation()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -827,7 +827,7 @@ pub extern "C" fn omc_scripting_enableNewInstantiation() -> c_int {
 pub extern "C" fn omc_scripting_existClass(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::existClass(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::existClass(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -840,7 +840,7 @@ pub extern "C" fn omc_scripting_existClass(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_exit(status: i64) {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (status as i32);
-        crate::OpenModelicaScriptingAPI::exit(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::exit(__a0)
     }));
     match __r {
         Ok(Ok(_)) => {},
@@ -858,7 +858,7 @@ pub extern "C" fn omc_scripting_exportToFigaro(path: *const c_char, directory: *
         let __a3 = unsafe { abi_str_in(mode) };
         let __a4 = unsafe { abi_str_in(options) };
         let __a5 = unsafe { abi_str_in(processor) };
-        crate::OpenModelicaScriptingAPI::exportToFigaro(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::exportToFigaro(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -872,7 +872,7 @@ pub extern "C" fn omc_scripting_extendsFrom(className: *const c_char, baseClassN
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(baseClassName) };
-        crate::OpenModelicaScriptingAPI::extendsFrom(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::extendsFrom(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -890,7 +890,7 @@ pub extern "C" fn omc_scripting_filterSimulationResults(inFile: *const c_char, o
         let __a3 = (numberOfIntervals as i32);
         let __a4 = (removeDescription != 0);
         let __a5 = (hintReadAllVars != 0);
-        crate::OpenModelicaScriptingAPI::filterSimulationResults(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::filterSimulationResults(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -903,7 +903,7 @@ pub extern "C" fn omc_scripting_filterSimulationResults(inFile: *const c_char, o
 pub extern "C" fn omc_scripting_generateCode(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::generateCode(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateCode(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -918,7 +918,7 @@ pub extern "C" fn omc_scripting_generateEntryPoint(fileName: *const c_char, entr
         let __a0 = unsafe { abi_str_in(fileName) };
         let __a1 = unsafe { abi_str_in(entryPoint) };
         let __a2 = unsafe { abi_str_in(url) };
-        crate::OpenModelicaScriptingAPI::generateEntryPoint(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateEntryPoint(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(_)) => {},
@@ -931,7 +931,7 @@ pub extern "C" fn omc_scripting_generateEntryPoint(fileName: *const c_char, entr
 pub extern "C" fn omc_scripting_generateHeader(fileName: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::generateHeader(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateHeader(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -944,7 +944,7 @@ pub extern "C" fn omc_scripting_generateHeader(fileName: *const c_char) -> c_int
 pub extern "C" fn omc_scripting_generateJuliaHeader(fileName: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::generateJuliaHeader(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateJuliaHeader(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -958,7 +958,7 @@ pub extern "C" fn omc_scripting_generateScriptingAPI(cl: *const c_char, name: *c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
         let __a1 = unsafe { abi_str_in(name) };
-        crate::OpenModelicaScriptingAPI::generateScriptingAPI(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateScriptingAPI(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2, __t0_3) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Bool(*&__t0_0)); __s0.0.push(OmcVal::Str(cstr_of(&__t0_1))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_2))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_3))); Box::into_raw(__s0) },
@@ -972,7 +972,7 @@ pub extern "C" fn omc_scripting_generateSeparateCode(className: *const c_char, c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (cleanCache != 0);
-        crate::OpenModelicaScriptingAPI::generateSeparateCode(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateSeparateCode(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -985,7 +985,7 @@ pub extern "C" fn omc_scripting_generateSeparateCode(className: *const c_char, c
 pub extern "C" fn omc_scripting_generateSeparateCodeDependencies(stampSuffix: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(stampSuffix) };
-        crate::OpenModelicaScriptingAPI::generateSeparateCodeDependencies(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateSeparateCodeDependencies(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1000,7 +1000,7 @@ pub extern "C" fn omc_scripting_generateSeparateCodeDependenciesMakefile(filenam
         let __a0 = unsafe { abi_str_in(filename) };
         let __a1 = unsafe { abi_str_in(directory) };
         let __a2 = unsafe { abi_str_in(suffix) };
-        crate::OpenModelicaScriptingAPI::generateSeparateCodeDependenciesMakefile(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateSeparateCodeDependenciesMakefile(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -1013,7 +1013,7 @@ pub extern "C" fn omc_scripting_generateSeparateCodeDependenciesMakefile(filenam
 pub extern "C" fn omc_scripting_generateVerificationScenarios(path: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(path) };
-        crate::OpenModelicaScriptingAPI::generateVerificationScenarios(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::generateVerificationScenarios(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -1026,7 +1026,7 @@ pub extern "C" fn omc_scripting_generateVerificationScenarios(path: *const c_cha
 pub extern "C" fn omc_scripting_getAlgorithmCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getAlgorithmCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAlgorithmCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1039,7 +1039,7 @@ pub extern "C" fn omc_scripting_getAlgorithmCount(class_: *const c_char) -> i64 
 pub extern "C" fn omc_scripting_getAlgorithmItemsCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getAlgorithmItemsCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAlgorithmItemsCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1056,7 +1056,7 @@ pub extern "C" fn omc_scripting_getAllSubtypeOf(className: *const c_char, parent
         let __a2 = (qualified != 0);
         let __a3 = (includePartial != 0);
         let __a4 = (sort != 0);
-        crate::OpenModelicaScriptingAPI::getAllSubtypeOf(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAllSubtypeOf(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1069,7 +1069,7 @@ pub extern "C" fn omc_scripting_getAllSubtypeOf(className: *const c_char, parent
 pub extern "C" fn omc_scripting_getAnnotationCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getAnnotationCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAnnotationCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1084,7 +1084,7 @@ pub extern "C" fn omc_scripting_getAnnotationModifierValue(className: *const c_c
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(annotationName) };
         let __a2 = unsafe { abi_str_in(modifierName) };
-        crate::OpenModelicaScriptingAPI::getAnnotationModifierValue(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAnnotationModifierValue(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1098,7 +1098,7 @@ pub extern "C" fn omc_scripting_getAnnotationNamedModifiers(className: *const c_
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(annotationName) };
-        crate::OpenModelicaScriptingAPI::getAnnotationNamedModifiers(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAnnotationNamedModifiers(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1110,7 +1110,7 @@ pub extern "C" fn omc_scripting_getAnnotationNamedModifiers(className: *const c_
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getAnnotationVersion() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getAnnotationVersion()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAnnotationVersion()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1123,7 +1123,7 @@ pub extern "C" fn omc_scripting_getAnnotationVersion() -> *mut c_char {
 pub extern "C" fn omc_scripting_getAstAsCorbaString(fileName: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::getAstAsCorbaString(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAstAsCorbaString(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1135,7 +1135,7 @@ pub extern "C" fn omc_scripting_getAstAsCorbaString(fileName: *const c_char) -> 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getAvailableIndexReductionMethods() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getAvailableIndexReductionMethods()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailableIndexReductionMethods()
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_1).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -1147,7 +1147,7 @@ pub extern "C" fn omc_scripting_getAvailableIndexReductionMethods() -> *mut OmcS
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getAvailableLibraries() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getAvailableLibraries()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailableLibraries()
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1160,7 +1160,7 @@ pub extern "C" fn omc_scripting_getAvailableLibraries() -> *mut OmcSeq {
 pub extern "C" fn omc_scripting_getAvailableLibraryVersions(libraryName: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(libraryName) };
-        crate::OpenModelicaScriptingAPI::getAvailableLibraryVersions(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailableLibraryVersions(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1172,7 +1172,7 @@ pub extern "C" fn omc_scripting_getAvailableLibraryVersions(libraryName: *const 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getAvailableMatchingAlgorithms() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getAvailableMatchingAlgorithms()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailableMatchingAlgorithms()
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_1).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -1186,7 +1186,7 @@ pub extern "C" fn omc_scripting_getAvailablePackageConversionsFrom(pkg: *const c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(pkg) };
         let __a1 = unsafe { abi_str_in(version) };
-        crate::OpenModelicaScriptingAPI::getAvailablePackageConversionsFrom(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailablePackageConversionsFrom(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1200,7 +1200,7 @@ pub extern "C" fn omc_scripting_getAvailablePackageConversionsTo(pkg: *const c_c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(pkg) };
         let __a1 = unsafe { abi_str_in(version) };
-        crate::OpenModelicaScriptingAPI::getAvailablePackageConversionsTo(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailablePackageConversionsTo(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1214,7 +1214,7 @@ pub extern "C" fn omc_scripting_getAvailablePackageVersions(pkg: *const c_char, 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(pkg) };
         let __a1 = unsafe { abi_str_in(version) };
-        crate::OpenModelicaScriptingAPI::getAvailablePackageVersions(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailablePackageVersions(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1226,7 +1226,7 @@ pub extern "C" fn omc_scripting_getAvailablePackageVersions(pkg: *const c_char, 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getAvailableTearingMethods() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getAvailableTearingMethods()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getAvailableTearingMethods()
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_1).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -1240,7 +1240,7 @@ pub extern "C" fn omc_scripting_getBooleanClassAnnotation(className: *const c_ch
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(annotationName) };
-        crate::OpenModelicaScriptingAPI::getBooleanClassAnnotation(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getBooleanClassAnnotation(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -1253,7 +1253,7 @@ pub extern "C" fn omc_scripting_getBooleanClassAnnotation(className: *const c_ch
 pub extern "C" fn omc_scripting_getBuiltinType(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getBuiltinType(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getBuiltinType(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1265,7 +1265,7 @@ pub extern "C" fn omc_scripting_getBuiltinType(cl: *const c_char) -> *mut c_char
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getCFlags() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getCFlags()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getCFlags()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1277,7 +1277,7 @@ pub extern "C" fn omc_scripting_getCFlags() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getCXXCompiler() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getCXXCompiler()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getCXXCompiler()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1290,7 +1290,7 @@ pub extern "C" fn omc_scripting_getCXXCompiler() -> *mut c_char {
 pub extern "C" fn omc_scripting_getClassComment(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getClassComment(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getClassComment(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1303,7 +1303,7 @@ pub extern "C" fn omc_scripting_getClassComment(cl: *const c_char) -> *mut c_cha
 pub extern "C" fn omc_scripting_getClassInformation(cl: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getClassInformation(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getClassInformation(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2, __t0_3, __t0_4, __t0_5, __t0_6, __t0_7, __t0_8, __t0_9, __t0_10, __t0_11, __t0_12, __t0_13, __t0_14, __t0_15, __t0_16, __t0_17, __t0_18, __t0_19, __t0_20, __t0_21) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_1))); __s0.0.push(OmcVal::Bool(*&__t0_2)); __s0.0.push(OmcVal::Bool(*&__t0_3)); __s0.0.push(OmcVal::Bool(*&__t0_4)); __s0.0.push(OmcVal::Str(cstr_of(&__t0_5))); __s0.0.push(OmcVal::Bool(*&__t0_6)); __s0.0.push(OmcVal::Int(*&__t0_7 as i64)); __s0.0.push(OmcVal::Int(*&__t0_8 as i64)); __s0.0.push(OmcVal::Int(*&__t0_9 as i64)); __s0.0.push(OmcVal::Int(*&__t0_10 as i64)); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_11).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Bool(*&__t0_12)); __s0.0.push(OmcVal::Bool(*&__t0_13)); __s0.0.push(OmcVal::Str(cstr_of(&__t0_14))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_15))); __s0.0.push(OmcVal::Bool(*&__t0_16)); __s0.0.push(OmcVal::Str(cstr_of(&__t0_17))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_18))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_19))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_20))); __s0.0.push(OmcVal::Str(cstr_of(&__t0_21))); Box::into_raw(__s0) },
@@ -1322,7 +1322,7 @@ pub extern "C" fn omc_scripting_getClassNames(class_: *const c_char, recursive: 
         let __a4 = (builtin != 0);
         let __a5 = (showProtected != 0);
         let __a6 = (includeConstants != 0);
-        crate::OpenModelicaScriptingAPI::getClassNames(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getClassNames(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1335,7 +1335,7 @@ pub extern "C" fn omc_scripting_getClassNames(class_: *const c_char, recursive: 
 pub extern "C" fn omc_scripting_getClassRestriction(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getClassRestriction(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getClassRestriction(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1347,7 +1347,7 @@ pub extern "C" fn omc_scripting_getClassRestriction(cl: *const c_char) -> *mut c
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getCommandLineOptions() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getCommandLineOptions()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getCommandLineOptions()
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1359,7 +1359,7 @@ pub extern "C" fn omc_scripting_getCommandLineOptions() -> *mut OmcSeq {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getCompiler() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getCompiler()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getCompiler()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1373,7 +1373,7 @@ pub extern "C" fn omc_scripting_getComponentComment(className: *const c_char, co
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(componentName) };
-        crate::OpenModelicaScriptingAPI::getComponentComment(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getComponentComment(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1386,7 +1386,7 @@ pub extern "C" fn omc_scripting_getComponentComment(className: *const c_char, co
 pub extern "C" fn omc_scripting_getComponentCount(classPath: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(classPath) };
-        crate::OpenModelicaScriptingAPI::getComponentCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getComponentCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1400,7 +1400,7 @@ pub extern "C" fn omc_scripting_getComponentModifierNames(class_: *const c_char,
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(componentName) };
-        crate::OpenModelicaScriptingAPI::getComponentModifierNames(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getComponentModifierNames(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1414,7 +1414,7 @@ pub extern "C" fn omc_scripting_getComponentModifierValue(class_: *const c_char,
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(modifier) };
-        crate::OpenModelicaScriptingAPI::getComponentModifierValue(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getComponentModifierValue(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1428,7 +1428,7 @@ pub extern "C" fn omc_scripting_getComponentModifierValues(class_: *const c_char
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(modifier) };
-        crate::OpenModelicaScriptingAPI::getComponentModifierValues(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getComponentModifierValues(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1442,7 +1442,7 @@ pub extern "C" fn omc_scripting_getComponents(className: *const c_char, useQuote
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (useQuotes != 0);
-        crate::OpenModelicaScriptingAPI::getComponents(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getComponents(__a0, __a1)
     }));
     match __r {
         Ok(Ok(_)) => {},
@@ -1455,7 +1455,7 @@ pub extern "C" fn omc_scripting_getComponents(className: *const c_char, useQuote
 pub extern "C" fn omc_scripting_getConfigFlagValidOptions(flag: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(flag) };
-        crate::OpenModelicaScriptingAPI::getConfigFlagValidOptions(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getConfigFlagValidOptions(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Str(cstr_of(&__t0_1))); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_2).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -1468,7 +1468,7 @@ pub extern "C" fn omc_scripting_getConfigFlagValidOptions(flag: *const c_char) -
 pub extern "C" fn omc_scripting_getConnectionCount(className: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getConnectionCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getConnectionCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1481,7 +1481,7 @@ pub extern "C" fn omc_scripting_getConnectionCount(className: *const c_char) -> 
 pub extern "C" fn omc_scripting_getConnectionList(className: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getConnectionList(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getConnectionList(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (__e0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); } Box::into_raw(__s0) },
@@ -1494,7 +1494,7 @@ pub extern "C" fn omc_scripting_getConnectionList(className: *const c_char) -> *
 pub extern "C" fn omc_scripting_getConnectorCount(className: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getConnectorCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getConnectorCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1507,7 +1507,7 @@ pub extern "C" fn omc_scripting_getConnectorCount(className: *const c_char) -> i
 pub extern "C" fn omc_scripting_getConversionsFromVersions(pack: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(pack) };
-        crate::OpenModelicaScriptingAPI::getConversionsFromVersions(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getConversionsFromVersions(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_1).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -1520,7 +1520,7 @@ pub extern "C" fn omc_scripting_getConversionsFromVersions(pack: *const c_char) 
 pub extern "C" fn omc_scripting_getDefaultComponentName(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getDefaultComponentName(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDefaultComponentName(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1533,7 +1533,7 @@ pub extern "C" fn omc_scripting_getDefaultComponentName(cl: *const c_char) -> *m
 pub extern "C" fn omc_scripting_getDefaultComponentPrefixes(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getDefaultComponentPrefixes(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDefaultComponentPrefixes(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1545,7 +1545,7 @@ pub extern "C" fn omc_scripting_getDefaultComponentPrefixes(cl: *const c_char) -
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getDefaultOpenCLDevice() -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getDefaultOpenCLDevice()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDefaultOpenCLDevice()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1558,7 +1558,7 @@ pub extern "C" fn omc_scripting_getDefaultOpenCLDevice() -> i64 {
 pub extern "C" fn omc_scripting_getDefinitions(addFunctions: c_int) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (addFunctions != 0);
-        crate::OpenModelicaScriptingAPI::getDefinitions(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDefinitions(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1571,7 +1571,7 @@ pub extern "C" fn omc_scripting_getDefinitions(addFunctions: c_int) -> *mut c_ch
 pub extern "C" fn omc_scripting_getDerivedClassModifierNames(className: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getDerivedClassModifierNames(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDerivedClassModifierNames(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1585,7 +1585,7 @@ pub extern "C" fn omc_scripting_getDerivedClassModifierValue(className: *const c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(modifierName) };
-        crate::OpenModelicaScriptingAPI::getDerivedClassModifierValue(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDerivedClassModifierValue(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1598,7 +1598,7 @@ pub extern "C" fn omc_scripting_getDerivedClassModifierValue(className: *const c
 pub extern "C" fn omc_scripting_getDerivedUnits(baseUnit: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(baseUnit) };
-        crate::OpenModelicaScriptingAPI::getDerivedUnits(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDerivedUnits(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1611,7 +1611,7 @@ pub extern "C" fn omc_scripting_getDerivedUnits(baseUnit: *const c_char) -> *mut
 pub extern "C" fn omc_scripting_getDocumentationAnnotation(cl: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getDocumentationAnnotation(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getDocumentationAnnotation(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1624,7 +1624,7 @@ pub extern "C" fn omc_scripting_getDocumentationAnnotation(cl: *const c_char) ->
 pub extern "C" fn omc_scripting_getElementAnnotation(elementName: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(elementName) };
-        crate::OpenModelicaScriptingAPI::getElementAnnotation(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getElementAnnotation(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1638,7 +1638,7 @@ pub extern "C" fn omc_scripting_getElementModifierNames(className: *const c_char
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(elementName) };
-        crate::OpenModelicaScriptingAPI::getElementModifierNames(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getElementModifierNames(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1652,7 +1652,7 @@ pub extern "C" fn omc_scripting_getElementModifierValue(className: *const c_char
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(modifier) };
-        crate::OpenModelicaScriptingAPI::getElementModifierValue(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getElementModifierValue(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1666,7 +1666,7 @@ pub extern "C" fn omc_scripting_getElementModifierValues(className: *const c_cha
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(modifier) };
-        crate::OpenModelicaScriptingAPI::getElementModifierValues(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getElementModifierValues(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1680,7 +1680,7 @@ pub extern "C" fn omc_scripting_getElements(className: *const c_char, useQuotes:
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (useQuotes != 0);
-        crate::OpenModelicaScriptingAPI::getElements(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getElements(__a0, __a1)
     }));
     match __r {
         Ok(Ok(_)) => {},
@@ -1693,7 +1693,7 @@ pub extern "C" fn omc_scripting_getElements(className: *const c_char, useQuotes:
 pub extern "C" fn omc_scripting_getEnumerationLiterals(className: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getEnumerationLiterals(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getEnumerationLiterals(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1706,7 +1706,7 @@ pub extern "C" fn omc_scripting_getEnumerationLiterals(className: *const c_char)
 pub extern "C" fn omc_scripting_getEnvironmentVar(var: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(var) };
-        crate::OpenModelicaScriptingAPI::getEnvironmentVar(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getEnvironmentVar(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1719,7 +1719,7 @@ pub extern "C" fn omc_scripting_getEnvironmentVar(var: *const c_char) -> *mut c_
 pub extern "C" fn omc_scripting_getEquationCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getEquationCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getEquationCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1732,7 +1732,7 @@ pub extern "C" fn omc_scripting_getEquationCount(class_: *const c_char) -> i64 {
 pub extern "C" fn omc_scripting_getEquationItemsCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getEquationItemsCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getEquationItemsCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1745,7 +1745,7 @@ pub extern "C" fn omc_scripting_getEquationItemsCount(class_: *const c_char) -> 
 pub extern "C" fn omc_scripting_getErrorString(warningsAsErrors: c_int) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (warningsAsErrors != 0);
-        crate::OpenModelicaScriptingAPI::getErrorString(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getErrorString(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1760,7 +1760,7 @@ pub extern "C" fn omc_scripting_getExtendsModifierNames(className: *const c_char
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(extendsName) };
         let __a2 = (useQuotes != 0);
-        crate::OpenModelicaScriptingAPI::getExtendsModifierNames(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getExtendsModifierNames(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1772,7 +1772,7 @@ pub extern "C" fn omc_scripting_getExtendsModifierNames(className: *const c_char
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getHomeDirectoryPath() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getHomeDirectoryPath()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getHomeDirectoryPath()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1785,7 +1785,7 @@ pub extern "C" fn omc_scripting_getHomeDirectoryPath() -> *mut c_char {
 pub extern "C" fn omc_scripting_getImportCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getImportCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getImportCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1798,7 +1798,7 @@ pub extern "C" fn omc_scripting_getImportCount(class_: *const c_char) -> i64 {
 pub extern "C" fn omc_scripting_getImportedNames(class_: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getImportedNames(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getImportedNames(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_1).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); Box::into_raw(__s0) },
@@ -1810,7 +1810,7 @@ pub extern "C" fn omc_scripting_getImportedNames(class_: *const c_char) -> *mut 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getIndexReductionMethod() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getIndexReductionMethod()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getIndexReductionMethod()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1823,7 +1823,7 @@ pub extern "C" fn omc_scripting_getIndexReductionMethod() -> *mut c_char {
 pub extern "C" fn omc_scripting_getInheritanceCount(className: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getInheritanceCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInheritanceCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1836,7 +1836,7 @@ pub extern "C" fn omc_scripting_getInheritanceCount(className: *const c_char) ->
 pub extern "C" fn omc_scripting_getInheritedClasses(name: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(name) };
-        crate::OpenModelicaScriptingAPI::getInheritedClasses(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInheritedClasses(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1849,7 +1849,7 @@ pub extern "C" fn omc_scripting_getInheritedClasses(name: *const c_char) -> *mut
 pub extern "C" fn omc_scripting_getInitialAlgorithmCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getInitialAlgorithmCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInitialAlgorithmCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1862,7 +1862,7 @@ pub extern "C" fn omc_scripting_getInitialAlgorithmCount(class_: *const c_char) 
 pub extern "C" fn omc_scripting_getInitialAlgorithmItemsCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getInitialAlgorithmItemsCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInitialAlgorithmItemsCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1875,7 +1875,7 @@ pub extern "C" fn omc_scripting_getInitialAlgorithmItemsCount(class_: *const c_c
 pub extern "C" fn omc_scripting_getInitialEquationCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getInitialEquationCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInitialEquationCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1888,7 +1888,7 @@ pub extern "C" fn omc_scripting_getInitialEquationCount(class_: *const c_char) -
 pub extern "C" fn omc_scripting_getInitialEquationItemsCount(class_: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getInitialEquationItemsCount(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInitialEquationItemsCount(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -1901,7 +1901,7 @@ pub extern "C" fn omc_scripting_getInitialEquationItemsCount(class_: *const c_ch
 pub extern "C" fn omc_scripting_getInitialStates(cl: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getInitialStates(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInitialStates(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (__e0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); } Box::into_raw(__s0) },
@@ -1913,7 +1913,7 @@ pub extern "C" fn omc_scripting_getInitialStates(cl: *const c_char) -> *mut OmcS
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getInstallationDirectoryPath() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getInstallationDirectoryPath()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInstallationDirectoryPath()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1926,7 +1926,7 @@ pub extern "C" fn omc_scripting_getInstallationDirectoryPath() -> *mut c_char {
 pub extern "C" fn omc_scripting_getInstantiatedParametersAndValues(cls: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cls) };
-        crate::OpenModelicaScriptingAPI::getInstantiatedParametersAndValues(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getInstantiatedParametersAndValues(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -1938,7 +1938,7 @@ pub extern "C" fn omc_scripting_getInstantiatedParametersAndValues(cls: *const c
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getLanguageStandard() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getLanguageStandard()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getLanguageStandard()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1950,7 +1950,7 @@ pub extern "C" fn omc_scripting_getLanguageStandard() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getLinker() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getLinker()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getLinker()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1962,7 +1962,7 @@ pub extern "C" fn omc_scripting_getLinker() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getLinkerFlags() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getLinkerFlags()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getLinkerFlags()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -1974,7 +1974,7 @@ pub extern "C" fn omc_scripting_getLinkerFlags() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getLoadedLibraries() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getLoadedLibraries()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getLoadedLibraries()
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (__e0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); } Box::into_raw(__s0) },
@@ -1988,7 +1988,7 @@ pub extern "C" fn omc_scripting_getMMfileTotalDependencies(in_package_name: *con
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(in_package_name) };
         let __a1 = unsafe { abi_str_in(public_imports_dir) };
-        crate::OpenModelicaScriptingAPI::getMMfileTotalDependencies(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getMMfileTotalDependencies(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2000,7 +2000,7 @@ pub extern "C" fn omc_scripting_getMMfileTotalDependencies(in_package_name: *con
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getMatchingAlgorithm() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getMatchingAlgorithm()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getMatchingAlgorithm()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2012,7 +2012,7 @@ pub extern "C" fn omc_scripting_getMatchingAlgorithm() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getMemorySize() -> f64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getMemorySize()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getMemorySize()
     }));
     match __r {
         Ok(Ok(__v)) => (__v).0,
@@ -2028,7 +2028,7 @@ pub extern "C" fn omc_scripting_getModelInstance(className: *const c_char, conte
         let __a1 = unsafe { abi_str_in(context) };
         let __a2 = unsafe { abi_str_in(modifier) };
         let __a3 = (prettyPrint != 0);
-        crate::OpenModelicaScriptingAPI::getModelInstance(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getModelInstance(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2043,7 +2043,7 @@ pub extern "C" fn omc_scripting_getModelInstanceAnnotation(className: *const c_c
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = std::sync::Arc::new(unsafe { seq_slice(filter) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a2 = (prettyPrint != 0);
-        crate::OpenModelicaScriptingAPI::getModelInstanceAnnotation(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getModelInstanceAnnotation(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2057,7 +2057,7 @@ pub extern "C" fn omc_scripting_getModelInstanceAnnotationReference(className: *
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = std::sync::Arc::new(unsafe { seq_slice(filter) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
-        crate::OpenModelicaScriptingAPI::getModelInstanceAnnotationReference(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getModelInstanceAnnotationReference(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -2072,7 +2072,7 @@ pub extern "C" fn omc_scripting_getModelInstanceReference(className: *const c_ch
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(context) };
         let __a2 = unsafe { abi_str_in(modifier) };
-        crate::OpenModelicaScriptingAPI::getModelInstanceReference(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getModelInstanceReference(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -2084,7 +2084,7 @@ pub extern "C" fn omc_scripting_getModelInstanceReference(className: *const c_ch
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getModelicaPath() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getModelicaPath()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getModelicaPath()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2096,7 +2096,7 @@ pub extern "C" fn omc_scripting_getModelicaPath() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getNoSimplify() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getNoSimplify()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNoSimplify()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2110,7 +2110,7 @@ pub extern "C" fn omc_scripting_getNthAlgorithm(class_: *const c_char, index: i6
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthAlgorithm(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthAlgorithm(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2124,7 +2124,7 @@ pub extern "C" fn omc_scripting_getNthAlgorithmItem(class_: *const c_char, index
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthAlgorithmItem(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthAlgorithmItem(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2138,7 +2138,7 @@ pub extern "C" fn omc_scripting_getNthAnnotationString(class_: *const c_char, in
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthAnnotationString(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthAnnotationString(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2152,7 +2152,7 @@ pub extern "C" fn omc_scripting_getNthComponentCondition(className: *const c_cha
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (n as i32);
-        crate::OpenModelicaScriptingAPI::getNthComponentCondition(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthComponentCondition(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2166,7 +2166,7 @@ pub extern "C" fn omc_scripting_getNthConnection(className: *const c_char, index
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthConnection(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthConnection(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2180,7 +2180,7 @@ pub extern "C" fn omc_scripting_getNthEquation(class_: *const c_char, index: i64
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthEquation(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthEquation(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2194,7 +2194,7 @@ pub extern "C" fn omc_scripting_getNthEquationItem(class_: *const c_char, index:
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthEquationItem(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthEquationItem(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2208,7 +2208,7 @@ pub extern "C" fn omc_scripting_getNthImport(class_: *const c_char, index: i64) 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthImport(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthImport(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2222,7 +2222,7 @@ pub extern "C" fn omc_scripting_getNthInheritedClass(className: *const c_char, n
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (n as i32);
-        crate::OpenModelicaScriptingAPI::getNthInheritedClass(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthInheritedClass(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2236,7 +2236,7 @@ pub extern "C" fn omc_scripting_getNthInitialAlgorithm(class_: *const c_char, in
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthInitialAlgorithm(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthInitialAlgorithm(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2250,7 +2250,7 @@ pub extern "C" fn omc_scripting_getNthInitialAlgorithmItem(class_: *const c_char
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthInitialAlgorithmItem(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthInitialAlgorithmItem(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2264,7 +2264,7 @@ pub extern "C" fn omc_scripting_getNthInitialEquation(class_: *const c_char, ind
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthInitialEquation(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthInitialEquation(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2278,7 +2278,7 @@ pub extern "C" fn omc_scripting_getNthInitialEquationItem(class_: *const c_char,
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (index as i32);
-        crate::OpenModelicaScriptingAPI::getNthInitialEquationItem(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getNthInitialEquationItem(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2290,7 +2290,7 @@ pub extern "C" fn omc_scripting_getNthInitialEquationItem(class_: *const c_char,
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getOrderConnections() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getOrderConnections()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getOrderConnections()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2303,7 +2303,7 @@ pub extern "C" fn omc_scripting_getOrderConnections() -> c_int {
 pub extern "C" fn omc_scripting_getPackages(class_: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getPackages(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getPackages(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2316,7 +2316,7 @@ pub extern "C" fn omc_scripting_getPackages(class_: *const c_char) -> *mut OmcSe
 pub extern "C" fn omc_scripting_getParameterNames(class_: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getParameterNames(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getParameterNames(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2330,7 +2330,7 @@ pub extern "C" fn omc_scripting_getParameterValue(class_: *const c_char, paramet
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(parameterName) };
-        crate::OpenModelicaScriptingAPI::getParameterValue(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getParameterValue(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2346,7 +2346,7 @@ pub extern "C" fn omc_scripting_getReplaceableChoices(baseClass: *const c_char, 
         let __a1 = unsafe { abi_str_in(parentClass) };
         let __a2 = (includePartial != 0);
         let __a3 = (sort != 0);
-        crate::OpenModelicaScriptingAPI::getReplaceableChoices(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getReplaceableChoices(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (__e0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); } Box::into_raw(__s0) },
@@ -2358,7 +2358,7 @@ pub extern "C" fn omc_scripting_getReplaceableChoices(baseClass: *const c_char, 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getShowAnnotations() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getShowAnnotations()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getShowAnnotations()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2376,7 +2376,7 @@ pub extern "C" fn omc_scripting_getSimulationOptions(name: *const c_char, defaul
         let __a3 = metamodelica::OrderedFloat(defaultTolerance);
         let __a4 = (defaultNumberOfIntervals as i32);
         let __a5 = metamodelica::OrderedFloat(defaultInterval);
-        crate::OpenModelicaScriptingAPI::getSimulationOptions(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getSimulationOptions(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2, __t0_3, __t0_4) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Real((&__t0_1).0)); __s0.0.push(OmcVal::Real((&__t0_2).0)); __s0.0.push(OmcVal::Int(*&__t0_3 as i64)); __s0.0.push(OmcVal::Real((&__t0_4).0)); Box::into_raw(__s0) },
@@ -2389,7 +2389,7 @@ pub extern "C" fn omc_scripting_getSimulationOptions(name: *const c_char, defaul
 pub extern "C" fn omc_scripting_getSourceFile(class_: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::getSourceFile(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getSourceFile(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2401,7 +2401,7 @@ pub extern "C" fn omc_scripting_getSourceFile(class_: *const c_char) -> *mut c_c
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getTearingMethod() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getTearingMethod()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getTearingMethod()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2413,7 +2413,7 @@ pub extern "C" fn omc_scripting_getTearingMethod() -> *mut c_char {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getTempDirectoryPath() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getTempDirectoryPath()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getTempDirectoryPath()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2426,7 +2426,7 @@ pub extern "C" fn omc_scripting_getTempDirectoryPath() -> *mut c_char {
 pub extern "C" fn omc_scripting_getTimeStamp(cl: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getTimeStamp(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getTimeStamp(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Str(cstr_of(&__t0_1))); Box::into_raw(__s0) },
@@ -2442,7 +2442,7 @@ pub extern "C" fn omc_scripting_getTotalModel(className: *const c_char, stripAnn
         let __a1 = (stripAnnotations != 0);
         let __a2 = (stripComments != 0);
         let __a3 = (obfuscate != 0);
-        crate::OpenModelicaScriptingAPI::getTotalModel(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getTotalModel(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2455,7 +2455,7 @@ pub extern "C" fn omc_scripting_getTotalModel(className: *const c_char, stripAnn
 pub extern "C" fn omc_scripting_getTransitions(cl: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getTransitions(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getTransitions(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (__e0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); } Box::into_raw(__s0) },
@@ -2468,7 +2468,7 @@ pub extern "C" fn omc_scripting_getTransitions(cl: *const c_char) -> *mut OmcSeq
 pub extern "C" fn omc_scripting_getUsedClassNames(className: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::getUsedClassNames(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getUsedClassNames(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2481,7 +2481,7 @@ pub extern "C" fn omc_scripting_getUsedClassNames(className: *const c_char) -> *
 pub extern "C" fn omc_scripting_getUses(pack: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(pack) };
-        crate::OpenModelicaScriptingAPI::getUses(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getUses(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (__e0).as_ref() { __s1.0.push(OmcVal::Str(cstr_of(__e1))); } __s1 })); } Box::into_raw(__s0) },
@@ -2493,7 +2493,7 @@ pub extern "C" fn omc_scripting_getUses(pack: *const c_char) -> *mut OmcSeq {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_getVectorizationLimit() -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::getVectorizationLimit()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getVectorizationLimit()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -2506,7 +2506,7 @@ pub extern "C" fn omc_scripting_getVectorizationLimit() -> i64 {
 pub extern "C" fn omc_scripting_getVersion(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::getVersion(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::getVersion(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2519,7 +2519,7 @@ pub extern "C" fn omc_scripting_getVersion(cl: *const c_char) -> *mut c_char {
 pub extern "C" fn omc_scripting_help(topic: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(topic) };
-        crate::OpenModelicaScriptingAPI::help(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::help(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2534,7 +2534,7 @@ pub extern "C" fn omc_scripting_iconv(string: *const c_char, from: *const c_char
         let __a0 = unsafe { abi_str_in(string) };
         let __a1 = unsafe { abi_str_in(from) };
         let __a2 = unsafe { abi_str_in(to) };
-        crate::OpenModelicaScriptingAPI::iconv(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::iconv(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2554,7 +2554,7 @@ pub extern "C" fn omc_scripting_importFMU(filename: *const c_char, workdir: *con
         let __a5 = (generateInputConnectors != 0);
         let __a6 = (generateOutputConnectors != 0);
         let __a7 = unsafe { abi_str_in(modelName) };
-        crate::OpenModelicaScriptingAPI::importFMU(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::importFMU(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2573,7 +2573,7 @@ pub extern "C" fn omc_scripting_importFMUModelDescription(filename: *const c_cha
         let __a4 = (debugLogging != 0);
         let __a5 = (generateInputConnectors != 0);
         let __a6 = (generateOutputConnectors != 0);
-        crate::OpenModelicaScriptingAPI::importFMUModelDescription(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::importFMUModelDescription(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2586,7 +2586,7 @@ pub extern "C" fn omc_scripting_importFMUModelDescription(filename: *const c_cha
 pub extern "C" fn omc_scripting_inferBindings(path: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(path) };
-        crate::OpenModelicaScriptingAPI::inferBindings(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::inferBindings(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2601,7 +2601,7 @@ pub extern "C" fn omc_scripting_installPackage(pkg: *const c_char, version: *con
         let __a0 = unsafe { abi_str_in(pkg) };
         let __a1 = unsafe { abi_str_in(version) };
         let __a2 = (exactMatch != 0);
-        crate::OpenModelicaScriptingAPI::installPackage(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::installPackage(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2614,7 +2614,7 @@ pub extern "C" fn omc_scripting_installPackage(pkg: *const c_char, version: *con
 pub extern "C" fn omc_scripting_instantiateModel(className: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::instantiateModel(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::instantiateModel(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2627,7 +2627,7 @@ pub extern "C" fn omc_scripting_instantiateModel(className: *const c_char) -> *m
 pub extern "C" fn omc_scripting_isBlock(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isBlock(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isBlock(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2640,7 +2640,7 @@ pub extern "C" fn omc_scripting_isBlock(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isClass(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isClass(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isClass(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2653,7 +2653,7 @@ pub extern "C" fn omc_scripting_isClass(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isConnector(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isConnector(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isConnector(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2667,7 +2667,7 @@ pub extern "C" fn omc_scripting_isConstant(componentName: *const c_char, classNa
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(componentName) };
         let __a1 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::isConstant(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isConstant(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2680,7 +2680,7 @@ pub extern "C" fn omc_scripting_isConstant(componentName: *const c_char, classNa
 pub extern "C" fn omc_scripting_isEnumeration(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isEnumeration(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isEnumeration(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2693,7 +2693,7 @@ pub extern "C" fn omc_scripting_isEnumeration(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isExperiment(name: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(name) };
-        crate::OpenModelicaScriptingAPI::isExperiment(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isExperiment(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2708,7 +2708,7 @@ pub extern "C" fn omc_scripting_isExtendsModifierFinal(className: *const c_char,
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(extendsName) };
         let __a2 = unsafe { abi_str_in(modifierName) };
-        crate::OpenModelicaScriptingAPI::isExtendsModifierFinal(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isExtendsModifierFinal(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2721,7 +2721,7 @@ pub extern "C" fn omc_scripting_isExtendsModifierFinal(className: *const c_char,
 pub extern "C" fn omc_scripting_isFunction(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isFunction(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isFunction(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2734,7 +2734,7 @@ pub extern "C" fn omc_scripting_isFunction(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isModel(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isModel(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isModel(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2747,7 +2747,7 @@ pub extern "C" fn omc_scripting_isModel(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isOperator(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isOperator(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isOperator(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2760,7 +2760,7 @@ pub extern "C" fn omc_scripting_isOperator(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isOperatorFunction(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isOperatorFunction(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isOperatorFunction(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2773,7 +2773,7 @@ pub extern "C" fn omc_scripting_isOperatorFunction(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isOperatorRecord(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isOperatorRecord(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isOperatorRecord(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2786,7 +2786,7 @@ pub extern "C" fn omc_scripting_isOperatorRecord(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isOptimization(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isOptimization(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isOptimization(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2799,7 +2799,7 @@ pub extern "C" fn omc_scripting_isOptimization(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isPackage(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isPackage(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isPackage(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2813,7 +2813,7 @@ pub extern "C" fn omc_scripting_isParameter(componentName: *const c_char, classN
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(componentName) };
         let __a1 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::isParameter(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isParameter(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2826,7 +2826,7 @@ pub extern "C" fn omc_scripting_isParameter(componentName: *const c_char, classN
 pub extern "C" fn omc_scripting_isPartial(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isPartial(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isPartial(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2839,7 +2839,7 @@ pub extern "C" fn omc_scripting_isPartial(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isPrimitive(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::isPrimitive(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isPrimitive(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2853,7 +2853,7 @@ pub extern "C" fn omc_scripting_isProtected(componentName: *const c_char, classN
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(componentName) };
         let __a1 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::isProtected(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isProtected(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2867,7 +2867,7 @@ pub extern "C" fn omc_scripting_isProtectedClass(cl: *const c_char, c2: *const c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
         let __a1 = unsafe { abi_str_in(c2) };
-        crate::OpenModelicaScriptingAPI::isProtectedClass(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isProtectedClass(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2880,7 +2880,7 @@ pub extern "C" fn omc_scripting_isProtectedClass(cl: *const c_char, c2: *const c
 pub extern "C" fn omc_scripting_isRecord(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isRecord(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isRecord(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2893,7 +2893,7 @@ pub extern "C" fn omc_scripting_isRecord(cl: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isRedeclare(element: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(element) };
-        crate::OpenModelicaScriptingAPI::isRedeclare(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isRedeclare(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2906,7 +2906,7 @@ pub extern "C" fn omc_scripting_isRedeclare(element: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isReplaceable(element: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(element) };
-        crate::OpenModelicaScriptingAPI::isReplaceable(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isReplaceable(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2919,7 +2919,7 @@ pub extern "C" fn omc_scripting_isReplaceable(element: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_isShortDefinition(class_: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
-        crate::OpenModelicaScriptingAPI::isShortDefinition(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isShortDefinition(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2932,7 +2932,7 @@ pub extern "C" fn omc_scripting_isShortDefinition(class_: *const c_char) -> c_in
 pub extern "C" fn omc_scripting_isType(cl: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::isType(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::isType(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2946,7 +2946,7 @@ pub extern "C" fn omc_scripting_listFile(class_: *const c_char, nestedClasses: c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = (nestedClasses != 0);
-        crate::OpenModelicaScriptingAPI::listFile(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::listFile(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -2958,7 +2958,7 @@ pub extern "C" fn omc_scripting_listFile(class_: *const c_char, nestedClasses: c
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_listVariables() -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::listVariables()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::listVariables()
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -2974,7 +2974,7 @@ pub extern "C" fn omc_scripting_loadClassContentString(data: *const c_char, clas
         let __a1 = unsafe { abi_str_in(className) };
         let __a2 = (offsetX as i32);
         let __a3 = (offsetY as i32);
-        crate::OpenModelicaScriptingAPI::loadClassContentString(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadClassContentString(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -2992,7 +2992,7 @@ pub extern "C" fn omc_scripting_loadEncryptedPackage(fileName: *const c_char, wo
         let __a3 = (uses != 0);
         let __a4 = (notify != 0);
         let __a5 = (requireExactVersion != 0);
-        crate::OpenModelicaScriptingAPI::loadEncryptedPackage(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadEncryptedPackage(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3010,7 +3010,7 @@ pub extern "C" fn omc_scripting_loadFile(fileName: *const c_char, encoding: *con
         let __a3 = (notify != 0);
         let __a4 = (requireExactVersion != 0);
         let __a5 = (allowWithin != 0);
-        crate::OpenModelicaScriptingAPI::loadFile(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadFile(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3027,7 +3027,7 @@ pub extern "C" fn omc_scripting_loadFileInteractive(filename: *const c_char, enc
         let __a2 = (uses != 0);
         let __a3 = (notify != 0);
         let __a4 = (requireExactVersion != 0);
-        crate::OpenModelicaScriptingAPI::loadFileInteractive(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadFileInteractive(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -3041,7 +3041,7 @@ pub extern "C" fn omc_scripting_loadFileInteractiveQualified(filename: *const c_
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
         let __a1 = unsafe { abi_str_in(encoding) };
-        crate::OpenModelicaScriptingAPI::loadFileInteractiveQualified(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadFileInteractiveQualified(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -3060,7 +3060,7 @@ pub extern "C" fn omc_scripting_loadFiles(fileNames: *const OmcSeq, encoding: *c
         let __a4 = (notify != 0);
         let __a5 = (requireExactVersion != 0);
         let __a6 = (allowWithin != 0);
-        crate::OpenModelicaScriptingAPI::loadFiles(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadFiles(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3077,7 +3077,7 @@ pub extern "C" fn omc_scripting_loadModel(className: *const c_char, priorityVers
         let __a2 = (notify != 0);
         let __a3 = unsafe { abi_str_in(languageStandard) };
         let __a4 = (requireExactVersion != 0);
-        crate::OpenModelicaScriptingAPI::loadModel(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadModel(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3089,7 +3089,7 @@ pub extern "C" fn omc_scripting_loadModel(className: *const c_char, priorityVers
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_loadOMSimulator() -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::loadOMSimulator()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadOMSimulator()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3108,7 +3108,7 @@ pub extern "C" fn omc_scripting_loadString(data: *const c_char, filename: *const
         let __a4 = (uses != 0);
         let __a5 = (notify != 0);
         let __a6 = (requireExactVersion != 0);
-        crate::OpenModelicaScriptingAPI::loadString(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::loadString(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3121,7 +3121,7 @@ pub extern "C" fn omc_scripting_loadString(data: *const c_char, filename: *const
 pub extern "C" fn omc_scripting_mkdir(newDirectory: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(newDirectory) };
-        crate::OpenModelicaScriptingAPI::mkdir(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::mkdir(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3135,7 +3135,7 @@ pub extern "C" fn omc_scripting_modifierToJSON(modifier: *const c_char, prettyPr
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(modifier) };
         let __a1 = (prettyPrint != 0);
-        crate::OpenModelicaScriptingAPI::modifierToJSON(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::modifierToJSON(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -3149,7 +3149,7 @@ pub extern "C" fn omc_scripting_moveClass(className: *const c_char, offset: i64)
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = (offset as i32);
-        crate::OpenModelicaScriptingAPI::moveClass(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::moveClass(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3162,7 +3162,7 @@ pub extern "C" fn omc_scripting_moveClass(className: *const c_char, offset: i64)
 pub extern "C" fn omc_scripting_moveClassToBottom(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::moveClassToBottom(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::moveClassToBottom(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3175,7 +3175,7 @@ pub extern "C" fn omc_scripting_moveClassToBottom(className: *const c_char) -> c
 pub extern "C" fn omc_scripting_moveClassToTop(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::moveClassToTop(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::moveClassToTop(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3189,7 +3189,7 @@ pub extern "C" fn omc_scripting_newModel(className: *const c_char, withinPath: *
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(withinPath) };
-        crate::OpenModelicaScriptingAPI::newModel(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::newModel(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -3201,7 +3201,7 @@ pub extern "C" fn omc_scripting_newModel(className: *const c_char, withinPath: *
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_numProcessors() -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::numProcessors()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::numProcessors()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3214,7 +3214,7 @@ pub extern "C" fn omc_scripting_numProcessors() -> i64 {
 pub extern "C" fn omc_scripting_oms_RunFile(filename: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::oms_RunFile(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_RunFile(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3227,7 +3227,7 @@ pub extern "C" fn omc_scripting_oms_RunFile(filename: *const c_char) -> i64 {
 pub extern "C" fn omc_scripting_oms_addBus(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_addBus(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addBus(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3241,7 +3241,7 @@ pub extern "C" fn omc_scripting_oms_addConnection(crefA: *const c_char, crefB: *
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(crefA) };
         let __a1 = unsafe { abi_str_in(crefB) };
-        crate::OpenModelicaScriptingAPI::oms_addConnection(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addConnection(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3255,7 +3255,7 @@ pub extern "C" fn omc_scripting_oms_addConnectorToBus(busCref: *const c_char, co
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(busCref) };
         let __a1 = unsafe { abi_str_in(connectorCref) };
-        crate::OpenModelicaScriptingAPI::oms_addConnectorToBus(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addConnectorToBus(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3270,7 +3270,7 @@ pub extern "C" fn omc_scripting_oms_addConnectorToTLMBus(busCref: *const c_char,
         let __a0 = unsafe { abi_str_in(busCref) };
         let __a1 = unsafe { abi_str_in(connectorCref) };
         let __a2 = unsafe { abi_str_in(type_) };
-        crate::OpenModelicaScriptingAPI::oms_addConnectorToTLMBus(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addConnectorToTLMBus(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3286,7 +3286,7 @@ pub extern "C" fn omc_scripting_oms_addDynamicValueIndicator(signal: *const c_ch
         let __a1 = unsafe { abi_str_in(lower) };
         let __a2 = unsafe { abi_str_in(upper) };
         let __a3 = metamodelica::OrderedFloat(stepSize);
-        crate::OpenModelicaScriptingAPI::oms_addDynamicValueIndicator(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addDynamicValueIndicator(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3299,7 +3299,7 @@ pub extern "C" fn omc_scripting_oms_addDynamicValueIndicator(signal: *const c_ch
 pub extern "C" fn omc_scripting_oms_addEventIndicator(signal: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(signal) };
-        crate::OpenModelicaScriptingAPI::oms_addEventIndicator(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addEventIndicator(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3314,7 +3314,7 @@ pub extern "C" fn omc_scripting_oms_addExternalModel(cref: *const c_char, path: 
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(path) };
         let __a2 = unsafe { abi_str_in(startscript) };
-        crate::OpenModelicaScriptingAPI::oms_addExternalModel(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addExternalModel(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3328,7 +3328,7 @@ pub extern "C" fn omc_scripting_oms_addSignalsToResults(cref: *const c_char, reg
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(regex) };
-        crate::OpenModelicaScriptingAPI::oms_addSignalsToResults(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addSignalsToResults(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3344,7 +3344,7 @@ pub extern "C" fn omc_scripting_oms_addStaticValueIndicator(signal: *const c_cha
         let __a1 = metamodelica::OrderedFloat(lower);
         let __a2 = metamodelica::OrderedFloat(upper);
         let __a3 = metamodelica::OrderedFloat(stepSize);
-        crate::OpenModelicaScriptingAPI::oms_addStaticValueIndicator(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addStaticValueIndicator(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3358,7 +3358,7 @@ pub extern "C" fn omc_scripting_oms_addSubModel(cref: *const c_char, fmuPath: *c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(fmuPath) };
-        crate::OpenModelicaScriptingAPI::oms_addSubModel(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addSubModel(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3376,7 +3376,7 @@ pub extern "C" fn omc_scripting_oms_addTLMConnection(crefA: *const c_char, crefB
         let __a3 = metamodelica::OrderedFloat(alpha);
         let __a4 = metamodelica::OrderedFloat(linearimpedance);
         let __a5 = metamodelica::OrderedFloat(angularimpedance);
-        crate::OpenModelicaScriptingAPI::oms_addTLMConnection(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addTLMConnection(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3389,7 +3389,7 @@ pub extern "C" fn omc_scripting_oms_addTLMConnection(crefA: *const c_char, crefB
 pub extern "C" fn omc_scripting_oms_addTimeIndicator(signal: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(signal) };
-        crate::OpenModelicaScriptingAPI::oms_addTimeIndicator(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_addTimeIndicator(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3406,7 +3406,7 @@ pub extern "C" fn omc_scripting_oms_compareSimulationResults(filenameA: *const c
         let __a2 = unsafe { abi_str_in(var) };
         let __a3 = metamodelica::OrderedFloat(relTol);
         let __a4 = metamodelica::OrderedFloat(absTol);
-        crate::OpenModelicaScriptingAPI::oms_compareSimulationResults(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_compareSimulationResults(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3420,7 +3420,7 @@ pub extern "C" fn omc_scripting_oms_copySystem(source: *const c_char, target: *c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(source) };
         let __a1 = unsafe { abi_str_in(target) };
-        crate::OpenModelicaScriptingAPI::oms_copySystem(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_copySystem(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3433,7 +3433,7 @@ pub extern "C" fn omc_scripting_oms_copySystem(source: *const c_char, target: *c
 pub extern "C" fn omc_scripting_oms_delete(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_delete(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_delete(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3447,7 +3447,7 @@ pub extern "C" fn omc_scripting_oms_deleteConnection(crefA: *const c_char, crefB
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(crefA) };
         let __a1 = unsafe { abi_str_in(crefB) };
-        crate::OpenModelicaScriptingAPI::oms_deleteConnection(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_deleteConnection(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3461,7 +3461,7 @@ pub extern "C" fn omc_scripting_oms_deleteConnectorFromBus(busCref: *const c_cha
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(busCref) };
         let __a1 = unsafe { abi_str_in(connectorCref) };
-        crate::OpenModelicaScriptingAPI::oms_deleteConnectorFromBus(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_deleteConnectorFromBus(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3475,7 +3475,7 @@ pub extern "C" fn omc_scripting_oms_deleteConnectorFromTLMBus(busCref: *const c_
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(busCref) };
         let __a1 = unsafe { abi_str_in(connectorCref) };
-        crate::OpenModelicaScriptingAPI::oms_deleteConnectorFromTLMBus(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_deleteConnectorFromTLMBus(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3489,7 +3489,7 @@ pub extern "C" fn omc_scripting_oms_export(cref: *const c_char, filename: *const
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::oms_export(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_export(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3505,7 +3505,7 @@ pub extern "C" fn omc_scripting_oms_exportDependencyGraphs(cref: *const c_char, 
         let __a1 = unsafe { abi_str_in(initialization) };
         let __a2 = unsafe { abi_str_in(event) };
         let __a3 = unsafe { abi_str_in(simulation) };
-        crate::OpenModelicaScriptingAPI::oms_exportDependencyGraphs(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_exportDependencyGraphs(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3518,7 +3518,7 @@ pub extern "C" fn omc_scripting_oms_exportDependencyGraphs(cref: *const c_char, 
 pub extern "C" fn omc_scripting_oms_exportSnapshot(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_exportSnapshot(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_exportSnapshot(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3531,7 +3531,7 @@ pub extern "C" fn omc_scripting_oms_exportSnapshot(cref: *const c_char) -> *mut 
 pub extern "C" fn omc_scripting_oms_extractFMIKind(filename: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::oms_extractFMIKind(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_extractFMIKind(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Int(*&__t0_0 as i64)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3544,7 +3544,7 @@ pub extern "C" fn omc_scripting_oms_extractFMIKind(filename: *const c_char) -> *
 pub extern "C" fn omc_scripting_oms_getBoolean(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getBoolean(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getBoolean(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Bool(*&__t0_0)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3557,7 +3557,7 @@ pub extern "C" fn omc_scripting_oms_getBoolean(cref: *const c_char) -> *mut OmcS
 pub extern "C" fn omc_scripting_oms_getFixedStepSize(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getFixedStepSize(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getFixedStepSize(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3571,7 +3571,7 @@ pub extern "C" fn omc_scripting_oms_getInteger(cref: *const c_char, value: i64) 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = (value as i32);
-        crate::OpenModelicaScriptingAPI::oms_getInteger(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getInteger(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3584,7 +3584,7 @@ pub extern "C" fn omc_scripting_oms_getInteger(cref: *const c_char, value: i64) 
 pub extern "C" fn omc_scripting_oms_getModelState(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getModelState(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getModelState(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Int(*&__t0_0 as i64)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3597,7 +3597,7 @@ pub extern "C" fn omc_scripting_oms_getModelState(cref: *const c_char) -> *mut O
 pub extern "C" fn omc_scripting_oms_getReal(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getReal(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getReal(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3610,7 +3610,7 @@ pub extern "C" fn omc_scripting_oms_getReal(cref: *const c_char) -> *mut OmcSeq 
 pub extern "C" fn omc_scripting_oms_getSolver(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getSolver(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getSolver(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Int(*&__t0_0 as i64)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3623,7 +3623,7 @@ pub extern "C" fn omc_scripting_oms_getSolver(cref: *const c_char) -> *mut OmcSe
 pub extern "C" fn omc_scripting_oms_getStartTime(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getStartTime(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getStartTime(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3636,7 +3636,7 @@ pub extern "C" fn omc_scripting_oms_getStartTime(cref: *const c_char) -> *mut Om
 pub extern "C" fn omc_scripting_oms_getStopTime(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getStopTime(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getStopTime(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3649,7 +3649,7 @@ pub extern "C" fn omc_scripting_oms_getStopTime(cref: *const c_char) -> *mut Omc
 pub extern "C" fn omc_scripting_oms_getSubModelPath(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getSubModelPath(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getSubModelPath(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3662,7 +3662,7 @@ pub extern "C" fn omc_scripting_oms_getSubModelPath(cref: *const c_char) -> *mut
 pub extern "C" fn omc_scripting_oms_getSystemType(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getSystemType(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getSystemType(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Int(*&__t0_0 as i64)); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3675,7 +3675,7 @@ pub extern "C" fn omc_scripting_oms_getSystemType(cref: *const c_char) -> *mut O
 pub extern "C" fn omc_scripting_oms_getTolerance(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getTolerance(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getTolerance(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Real((&__t0_1).0)); __s0.0.push(OmcVal::Int(*&__t0_2 as i64)); Box::into_raw(__s0) },
@@ -3688,7 +3688,7 @@ pub extern "C" fn omc_scripting_oms_getTolerance(cref: *const c_char) -> *mut Om
 pub extern "C" fn omc_scripting_oms_getVariableStepSize(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_getVariableStepSize(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getVariableStepSize(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2, __t0_3) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Real((&__t0_0).0)); __s0.0.push(OmcVal::Real((&__t0_1).0)); __s0.0.push(OmcVal::Real((&__t0_2).0)); __s0.0.push(OmcVal::Int(*&__t0_3 as i64)); Box::into_raw(__s0) },
@@ -3700,7 +3700,7 @@ pub extern "C" fn omc_scripting_oms_getVariableStepSize(cref: *const c_char) -> 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_oms_getVersion() -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::oms_getVersion()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_getVersion()
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -3713,7 +3713,7 @@ pub extern "C" fn omc_scripting_oms_getVersion() -> *mut c_char {
 pub extern "C" fn omc_scripting_oms_importFile(filename: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::oms_importFile(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_importFile(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3727,7 +3727,7 @@ pub extern "C" fn omc_scripting_oms_importSnapshot(cref: *const c_char, snapshot
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(snapshot) };
-        crate::OpenModelicaScriptingAPI::oms_importSnapshot(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_importSnapshot(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3740,7 +3740,7 @@ pub extern "C" fn omc_scripting_oms_importSnapshot(cref: *const c_char, snapshot
 pub extern "C" fn omc_scripting_oms_initialize(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_initialize(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_initialize(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3753,7 +3753,7 @@ pub extern "C" fn omc_scripting_oms_initialize(cref: *const c_char) -> i64 {
 pub extern "C" fn omc_scripting_oms_instantiate(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_instantiate(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_instantiate(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3766,7 +3766,7 @@ pub extern "C" fn omc_scripting_oms_instantiate(cref: *const c_char) -> i64 {
 pub extern "C" fn omc_scripting_oms_list(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_list(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_list(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3779,7 +3779,7 @@ pub extern "C" fn omc_scripting_oms_list(cref: *const c_char) -> *mut OmcSeq {
 pub extern "C" fn omc_scripting_oms_listUnconnectedConnectors(cref: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_listUnconnectedConnectors(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_listUnconnectedConnectors(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3793,7 +3793,7 @@ pub extern "C" fn omc_scripting_oms_loadSnapshot(cref: *const c_char, snapshot: 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(snapshot) };
-        crate::OpenModelicaScriptingAPI::oms_loadSnapshot(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_loadSnapshot(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Str(cstr_of(&__t0_0))); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -3806,7 +3806,7 @@ pub extern "C" fn omc_scripting_oms_loadSnapshot(cref: *const c_char, snapshot: 
 pub extern "C" fn omc_scripting_oms_newModel(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_newModel(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_newModel(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3820,7 +3820,7 @@ pub extern "C" fn omc_scripting_oms_removeSignalsFromResults(cref: *const c_char
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(regex) };
-        crate::OpenModelicaScriptingAPI::oms_removeSignalsFromResults(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_removeSignalsFromResults(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3834,7 +3834,7 @@ pub extern "C" fn omc_scripting_oms_rename(cref: *const c_char, newCref: *const 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(newCref) };
-        crate::OpenModelicaScriptingAPI::oms_rename(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_rename(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3847,7 +3847,7 @@ pub extern "C" fn omc_scripting_oms_rename(cref: *const c_char, newCref: *const 
 pub extern "C" fn omc_scripting_oms_reset(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_reset(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_reset(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3861,7 +3861,7 @@ pub extern "C" fn omc_scripting_oms_setBoolean(cref: *const c_char, value: c_int
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = (value != 0);
-        crate::OpenModelicaScriptingAPI::oms_setBoolean(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setBoolean(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3874,7 +3874,7 @@ pub extern "C" fn omc_scripting_oms_setBoolean(cref: *const c_char, value: c_int
 pub extern "C" fn omc_scripting_oms_setCommandLineOption(cmd: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cmd) };
-        crate::OpenModelicaScriptingAPI::oms_setCommandLineOption(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setCommandLineOption(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3888,7 +3888,7 @@ pub extern "C" fn omc_scripting_oms_setFixedStepSize(cref: *const c_char, stepSi
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(stepSize);
-        crate::OpenModelicaScriptingAPI::oms_setFixedStepSize(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setFixedStepSize(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3902,7 +3902,7 @@ pub extern "C" fn omc_scripting_oms_setInteger(cref: *const c_char, value: i64) 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = (value as i32);
-        crate::OpenModelicaScriptingAPI::oms_setInteger(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setInteger(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3915,7 +3915,7 @@ pub extern "C" fn omc_scripting_oms_setInteger(cref: *const c_char, value: i64) 
 pub extern "C" fn omc_scripting_oms_setLogFile(filename: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::oms_setLogFile(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setLogFile(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3929,7 +3929,7 @@ pub extern "C" fn omc_scripting_oms_setLoggingInterval(cref: *const c_char, logg
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(loggingInterval);
-        crate::OpenModelicaScriptingAPI::oms_setLoggingInterval(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setLoggingInterval(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3942,7 +3942,7 @@ pub extern "C" fn omc_scripting_oms_setLoggingInterval(cref: *const c_char, logg
 pub extern "C" fn omc_scripting_oms_setLoggingLevel(logLevel: i64) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (logLevel as i32);
-        crate::OpenModelicaScriptingAPI::oms_setLoggingLevel(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setLoggingLevel(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3956,7 +3956,7 @@ pub extern "C" fn omc_scripting_oms_setReal(cref: *const c_char, value: f64) -> 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(value);
-        crate::OpenModelicaScriptingAPI::oms_setReal(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setReal(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3970,7 +3970,7 @@ pub extern "C" fn omc_scripting_oms_setRealInputDerivative(cref: *const c_char, 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(value);
-        crate::OpenModelicaScriptingAPI::oms_setRealInputDerivative(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setRealInputDerivative(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3985,7 +3985,7 @@ pub extern "C" fn omc_scripting_oms_setResultFile(cref: *const c_char, filename:
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(filename) };
         let __a2 = (bufferSize as i32);
-        crate::OpenModelicaScriptingAPI::oms_setResultFile(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setResultFile(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -3999,7 +3999,7 @@ pub extern "C" fn omc_scripting_oms_setSignalFilter(cref: *const c_char, regex: 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = unsafe { abi_str_in(regex) };
-        crate::OpenModelicaScriptingAPI::oms_setSignalFilter(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setSignalFilter(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4013,7 +4013,7 @@ pub extern "C" fn omc_scripting_oms_setStartTime(cref: *const c_char, startTime:
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(startTime);
-        crate::OpenModelicaScriptingAPI::oms_setStartTime(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setStartTime(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4027,7 +4027,7 @@ pub extern "C" fn omc_scripting_oms_setStopTime(cref: *const c_char, stopTime: f
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(stopTime);
-        crate::OpenModelicaScriptingAPI::oms_setStopTime(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setStopTime(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4052,7 +4052,7 @@ pub extern "C" fn omc_scripting_oms_setTLMPositionAndOrientation(cref: *const c_
         let __a10 = metamodelica::OrderedFloat(A31);
         let __a11 = metamodelica::OrderedFloat(A32);
         let __a12 = metamodelica::OrderedFloat(A33);
-        crate::OpenModelicaScriptingAPI::oms_setTLMPositionAndOrientation(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11, __a12)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setTLMPositionAndOrientation(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11, __a12)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4068,7 +4068,7 @@ pub extern "C" fn omc_scripting_oms_setTLMSocketData(cref: *const c_char, addres
         let __a1 = unsafe { abi_str_in(address) };
         let __a2 = (managerPort as i32);
         let __a3 = (monitorPort as i32);
-        crate::OpenModelicaScriptingAPI::oms_setTLMSocketData(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setTLMSocketData(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4081,7 +4081,7 @@ pub extern "C" fn omc_scripting_oms_setTLMSocketData(cref: *const c_char, addres
 pub extern "C" fn omc_scripting_oms_setTempDirectory(newTempDir: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(newTempDir) };
-        crate::OpenModelicaScriptingAPI::oms_setTempDirectory(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setTempDirectory(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4096,7 +4096,7 @@ pub extern "C" fn omc_scripting_oms_setTolerance(cref: *const c_char, absoluteTo
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(absoluteTolerance);
         let __a2 = metamodelica::OrderedFloat(relativeTolerance);
-        crate::OpenModelicaScriptingAPI::oms_setTolerance(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setTolerance(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4112,7 +4112,7 @@ pub extern "C" fn omc_scripting_oms_setVariableStepSize(cref: *const c_char, ini
         let __a1 = metamodelica::OrderedFloat(initialStepSize);
         let __a2 = metamodelica::OrderedFloat(minimumStepSize);
         let __a3 = metamodelica::OrderedFloat(maximumStepSize);
-        crate::OpenModelicaScriptingAPI::oms_setVariableStepSize(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setVariableStepSize(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4125,7 +4125,7 @@ pub extern "C" fn omc_scripting_oms_setVariableStepSize(cref: *const c_char, ini
 pub extern "C" fn omc_scripting_oms_setWorkingDirectory(newWorkingDir: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(newWorkingDir) };
-        crate::OpenModelicaScriptingAPI::oms_setWorkingDirectory(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_setWorkingDirectory(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4138,7 +4138,7 @@ pub extern "C" fn omc_scripting_oms_setWorkingDirectory(newWorkingDir: *const c_
 pub extern "C" fn omc_scripting_oms_simulate(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_simulate(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_simulate(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4152,7 +4152,7 @@ pub extern "C" fn omc_scripting_oms_stepUntil(cref: *const c_char, stopTime: f64
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
         let __a1 = metamodelica::OrderedFloat(stopTime);
-        crate::OpenModelicaScriptingAPI::oms_stepUntil(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_stepUntil(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4165,7 +4165,7 @@ pub extern "C" fn omc_scripting_oms_stepUntil(cref: *const c_char, stopTime: f64
 pub extern "C" fn omc_scripting_oms_terminate(cref: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cref) };
-        crate::OpenModelicaScriptingAPI::oms_terminate(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::oms_terminate(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4179,7 +4179,7 @@ pub extern "C" fn omc_scripting_parseEncryptedPackage(fileName: *const c_char, w
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
         let __a1 = unsafe { abi_str_in(workdir) };
-        crate::OpenModelicaScriptingAPI::parseEncryptedPackage(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::parseEncryptedPackage(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4193,7 +4193,7 @@ pub extern "C" fn omc_scripting_parseFile(filename: *const c_char, encoding: *co
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(filename) };
         let __a1 = unsafe { abi_str_in(encoding) };
-        crate::OpenModelicaScriptingAPI::parseFile(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::parseFile(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4207,7 +4207,7 @@ pub extern "C" fn omc_scripting_parseString(data: *const c_char, filename: *cons
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(data) };
         let __a1 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::parseString(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::parseString(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4238,7 +4238,7 @@ pub extern "C" fn omc_scripting_plotAll(externalWindow: c_int, fileName: *const 
         let __a16 = unsafe { abi_str_in(yAxis) };
         let __a17 = unsafe { abi_str_in(yLabelRight) };
         let __a18 = std::sync::Arc::new(unsafe { seq_slice(yRangeRight) }.iter().map(|__o0| match __o0 { OmcVal::Real(__x) => metamodelica::OrderedFloat(*__x), _ => metamodelica::OrderedFloat(0.0) }).collect::<metamodelica::List<metamodelica::Real>>());
-        crate::OpenModelicaScriptingAPI::plotAll(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11, __a12, __a13, __a14, __a15, __a16, __a17, __a18)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::plotAll(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11, __a12, __a13, __a14, __a15, __a16, __a17, __a18)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4252,7 +4252,7 @@ pub extern "C" fn omc_scripting_qualifyPath(classPath: *const c_char, path: *con
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(classPath) };
         let __a1 = unsafe { abi_str_in(path) };
-        crate::OpenModelicaScriptingAPI::qualifyPath(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::qualifyPath(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4265,7 +4265,7 @@ pub extern "C" fn omc_scripting_qualifyPath(classPath: *const c_char, path: *con
 pub extern "C" fn omc_scripting_readFile(fileName: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::readFile(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::readFile(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4278,7 +4278,7 @@ pub extern "C" fn omc_scripting_readFile(fileName: *const c_char) -> *mut c_char
 pub extern "C" fn omc_scripting_readSimulationResultSize(fileName: *const c_char) -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::readSimulationResultSize(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::readSimulationResultSize(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4293,7 +4293,7 @@ pub extern "C" fn omc_scripting_readSimulationResultVars(fileName: *const c_char
         let __a0 = unsafe { abi_str_in(fileName) };
         let __a1 = (readParameters != 0);
         let __a2 = (openmodelicaStyle != 0);
-        crate::OpenModelicaScriptingAPI::readSimulationResultVars(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::readSimulationResultVars(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4306,7 +4306,7 @@ pub extern "C" fn omc_scripting_readSimulationResultVars(fileName: *const c_char
 pub extern "C" fn omc_scripting_realpath(name: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(name) };
-        crate::OpenModelicaScriptingAPI::realpath(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::realpath(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4331,7 +4331,7 @@ pub extern "C" fn omc_scripting_reduceTerms(className: *const c_char, startTime:
         let __a10 = unsafe { abi_str_in(cflags) };
         let __a11 = unsafe { abi_str_in(simflags) };
         let __a12 = unsafe { abi_str_in(labelstoCancel) };
-        crate::OpenModelicaScriptingAPI::reduceTerms(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11, __a12)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::reduceTerms(__a0, __a1, __a2, __a3, __a4, __a5, __a6, __a7, __a8, __a9, __a10, __a11, __a12)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4344,7 +4344,7 @@ pub extern "C" fn omc_scripting_reduceTerms(className: *const c_char, startTime:
 pub extern "C" fn omc_scripting_refactorClass(className: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::refactorClass(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::refactorClass(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4357,7 +4357,7 @@ pub extern "C" fn omc_scripting_refactorClass(className: *const c_char) -> *mut 
 pub extern "C" fn omc_scripting_regularFileExists(fileName: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::regularFileExists(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::regularFileExists(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4370,7 +4370,7 @@ pub extern "C" fn omc_scripting_regularFileExists(fileName: *const c_char) -> c_
 pub extern "C" fn omc_scripting_releaseModelInstanceReference(handle: i64) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (handle as i32);
-        crate::OpenModelicaScriptingAPI::releaseModelInstanceReference(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::releaseModelInstanceReference(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4384,7 +4384,7 @@ pub extern "C" fn omc_scripting_reloadClass(name: *const c_char, encoding: *cons
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(name) };
         let __a1 = unsafe { abi_str_in(encoding) };
-        crate::OpenModelicaScriptingAPI::reloadClass(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::reloadClass(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4397,7 +4397,7 @@ pub extern "C" fn omc_scripting_reloadClass(name: *const c_char, encoding: *cons
 pub extern "C" fn omc_scripting_remove(path: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(path) };
-        crate::OpenModelicaScriptingAPI::remove(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::remove(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4412,7 +4412,7 @@ pub extern "C" fn omc_scripting_removeComponentModifiers(class_: *const c_char, 
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(componentName) };
         let __a2 = (keepRedeclares != 0);
-        crate::OpenModelicaScriptingAPI::removeComponentModifiers(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::removeComponentModifiers(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4427,7 +4427,7 @@ pub extern "C" fn omc_scripting_removeElementModifiers(className: *const c_char,
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(componentName) };
         let __a2 = (keepRedeclares != 0);
-        crate::OpenModelicaScriptingAPI::removeElementModifiers(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::removeElementModifiers(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4442,7 +4442,7 @@ pub extern "C" fn omc_scripting_removeExtendsModifiers(className: *const c_char,
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(baseClassName) };
         let __a2 = (keepRedeclares != 0);
-        crate::OpenModelicaScriptingAPI::removeExtendsModifiers(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::removeExtendsModifiers(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4456,7 +4456,7 @@ pub extern "C" fn omc_scripting_renameClass(oldName: *const c_char, newName: *co
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(oldName) };
         let __a1 = unsafe { abi_str_in(newName) };
-        crate::OpenModelicaScriptingAPI::renameClass(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::renameClass(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4469,7 +4469,7 @@ pub extern "C" fn omc_scripting_renameClass(oldName: *const c_char, newName: *co
 pub extern "C" fn omc_scripting_restoreAST(id: i64) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (id as i32);
-        crate::OpenModelicaScriptingAPI::restoreAST(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::restoreAST(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4485,7 +4485,7 @@ pub extern "C" fn omc_scripting_reverseLookup(name: *const c_char, scope: *const
         let __a1 = unsafe { abi_str_in(scope) };
         let __a2 = (exactMatch != 0);
         let __a3 = (prettyPrint != 0);
-        crate::OpenModelicaScriptingAPI::reverseLookup(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::reverseLookup(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4499,7 +4499,7 @@ pub extern "C" fn omc_scripting_rewriteBlockCall(className: *const c_char, inDef
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(inDefs) };
-        crate::OpenModelicaScriptingAPI::rewriteBlockCall(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::rewriteBlockCall(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4513,7 +4513,7 @@ pub extern "C" fn omc_scripting_runConversionScript(packageToConvert: *const c_c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(packageToConvert) };
         let __a1 = unsafe { abi_str_in(scriptFile) };
-        crate::OpenModelicaScriptingAPI::runConversionScript(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::runConversionScript(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4526,7 +4526,7 @@ pub extern "C" fn omc_scripting_runConversionScript(packageToConvert: *const c_c
 pub extern "C" fn omc_scripting_runScript(fileName: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::runScript(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::runScript(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4541,7 +4541,7 @@ pub extern "C" fn omc_scripting_runScriptParallel(scripts: *const OmcSeq, numThr
         let __a0 = std::sync::Arc::new(unsafe { seq_slice(scripts) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a1 = (numThreads as i32);
         let __a2 = (useThreads != 0);
-        crate::OpenModelicaScriptingAPI::runScriptParallel(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::runScriptParallel(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Bool(*__e0)); } Box::into_raw(__s0) },
@@ -4554,7 +4554,7 @@ pub extern "C" fn omc_scripting_runScriptParallel(scripts: *const OmcSeq, numThr
 pub extern "C" fn omc_scripting_save(className: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::save(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::save(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4567,7 +4567,7 @@ pub extern "C" fn omc_scripting_save(className: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_saveAll(fileName: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::saveAll(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::saveAll(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4581,7 +4581,7 @@ pub extern "C" fn omc_scripting_saveModel(fileName: *const c_char, className: *c
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
         let __a1 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::saveModel(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::saveModel(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4598,7 +4598,7 @@ pub extern "C" fn omc_scripting_saveTotalModel(fileName: *const c_char, classNam
         let __a2 = (stripAnnotations != 0);
         let __a3 = (stripComments != 0);
         let __a4 = (obfuscate != 0);
-        crate::OpenModelicaScriptingAPI::saveTotalModel(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::saveTotalModel(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4615,7 +4615,7 @@ pub extern "C" fn omc_scripting_saveTotalModelDebug(filename: *const c_char, cla
         let __a2 = (stripAnnotations != 0);
         let __a3 = (stripComments != 0);
         let __a4 = (obfuscate != 0);
-        crate::OpenModelicaScriptingAPI::saveTotalModelDebug(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::saveTotalModelDebug(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4629,7 +4629,7 @@ pub extern "C" fn omc_scripting_searchClassNames(searchText: *const c_char, find
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(searchText) };
         let __a1 = (findInText != 0);
-        crate::OpenModelicaScriptingAPI::searchClassNames(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::searchClassNames(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4642,7 +4642,7 @@ pub extern "C" fn omc_scripting_searchClassNames(searchText: *const c_char, find
 pub extern "C" fn omc_scripting_setCFlags(inString: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(inString) };
-        crate::OpenModelicaScriptingAPI::setCFlags(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setCFlags(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4655,7 +4655,7 @@ pub extern "C" fn omc_scripting_setCFlags(inString: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_setCXXCompiler(compiler: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(compiler) };
-        crate::OpenModelicaScriptingAPI::setCXXCompiler(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setCXXCompiler(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4669,7 +4669,7 @@ pub extern "C" fn omc_scripting_setClassComment(class_: *const c_char, filename:
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::setClassComment(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setClassComment(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4682,7 +4682,7 @@ pub extern "C" fn omc_scripting_setClassComment(class_: *const c_char, filename:
 pub extern "C" fn omc_scripting_setCommandLineOptions(options: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(options) };
-        crate::OpenModelicaScriptingAPI::setCommandLineOptions(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setCommandLineOptions(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4695,7 +4695,7 @@ pub extern "C" fn omc_scripting_setCommandLineOptions(options: *const c_char) ->
 pub extern "C" fn omc_scripting_setCompiler(compiler: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(compiler) };
-        crate::OpenModelicaScriptingAPI::setCompiler(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setCompiler(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4708,7 +4708,7 @@ pub extern "C" fn omc_scripting_setCompiler(compiler: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_setCompilerFlags(compilerFlags: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(compilerFlags) };
-        crate::OpenModelicaScriptingAPI::setCompilerFlags(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setCompilerFlags(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4723,7 +4723,7 @@ pub extern "C" fn omc_scripting_setComponentComment(className: *const c_char, co
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(componentName) };
         let __a2 = unsafe { abi_str_in(comment) };
-        crate::OpenModelicaScriptingAPI::setComponentComment(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setComponentComment(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4741,7 +4741,7 @@ pub extern "C" fn omc_scripting_setComponentProperties(className: *const c_char,
         let __a3 = std::sync::Arc::new(unsafe { seq_slice(variability) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a4 = std::sync::Arc::new(unsafe { seq_slice(innerOuter) }.iter().map(|__o0| match __o0 { OmcVal::Bool(__x) => *__x, _ => false }).collect::<metamodelica::List<bool>>());
         let __a5 = std::sync::Arc::new(unsafe { seq_slice(direction) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
-        crate::OpenModelicaScriptingAPI::setComponentProperties(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setComponentProperties(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4756,7 +4756,7 @@ pub extern "C" fn omc_scripting_setDocumentationAnnotation(class_: *const c_char
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(info) };
         let __a2 = unsafe { abi_str_in(revisions) };
-        crate::OpenModelicaScriptingAPI::setDocumentationAnnotation(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setDocumentationAnnotation(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4770,7 +4770,7 @@ pub extern "C" fn omc_scripting_setEnvironmentVar(var: *const c_char, value: *co
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(var) };
         let __a1 = unsafe { abi_str_in(value) };
-        crate::OpenModelicaScriptingAPI::setEnvironmentVar(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setEnvironmentVar(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4783,7 +4783,7 @@ pub extern "C" fn omc_scripting_setEnvironmentVar(var: *const c_char, value: *co
 pub extern "C" fn omc_scripting_setInstallationDirectoryPath(installationDirectoryPath: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(installationDirectoryPath) };
-        crate::OpenModelicaScriptingAPI::setInstallationDirectoryPath(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setInstallationDirectoryPath(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4796,7 +4796,7 @@ pub extern "C" fn omc_scripting_setInstallationDirectoryPath(installationDirecto
 pub extern "C" fn omc_scripting_setLinker(linker: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(linker) };
-        crate::OpenModelicaScriptingAPI::setLinker(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setLinker(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4809,7 +4809,7 @@ pub extern "C" fn omc_scripting_setLinker(linker: *const c_char) -> c_int {
 pub extern "C" fn omc_scripting_setLinkerFlags(linkerFlags: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(linkerFlags) };
-        crate::OpenModelicaScriptingAPI::setLinkerFlags(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setLinkerFlags(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4822,7 +4822,7 @@ pub extern "C" fn omc_scripting_setLinkerFlags(linkerFlags: *const c_char) -> c_
 pub extern "C" fn omc_scripting_setModelicaPath(modelicaPath: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(modelicaPath) };
-        crate::OpenModelicaScriptingAPI::setModelicaPath(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setModelicaPath(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4835,7 +4835,7 @@ pub extern "C" fn omc_scripting_setModelicaPath(modelicaPath: *const c_char) -> 
 pub extern "C" fn omc_scripting_setNoSimplify(noSimplify: c_int) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (noSimplify != 0);
-        crate::OpenModelicaScriptingAPI::setNoSimplify(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setNoSimplify(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4848,7 +4848,7 @@ pub extern "C" fn omc_scripting_setNoSimplify(noSimplify: c_int) -> c_int {
 pub extern "C" fn omc_scripting_setShowAnnotations(show: c_int) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (show != 0);
-        crate::OpenModelicaScriptingAPI::setShowAnnotations(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setShowAnnotations(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4862,7 +4862,7 @@ pub extern "C" fn omc_scripting_setSourceFile(class_: *const c_char, filename: *
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(class_) };
         let __a1 = unsafe { abi_str_in(filename) };
-        crate::OpenModelicaScriptingAPI::setSourceFile(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setSourceFile(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4875,7 +4875,7 @@ pub extern "C" fn omc_scripting_setSourceFile(class_: *const c_char, filename: *
 pub extern "C" fn omc_scripting_setTempDirectoryPath(tempDirectoryPath: *const c_char) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(tempDirectoryPath) };
-        crate::OpenModelicaScriptingAPI::setTempDirectoryPath(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::setTempDirectoryPath(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -4889,7 +4889,7 @@ pub extern "C" fn omc_scripting_solveLinearSystem(A: *const OmcSeq, B: *const Om
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = std::sync::Arc::new(unsafe { seq_slice(A) }.iter().map(|__o0| match __o0 { OmcVal::Seq(__sb) => std::sync::Arc::new(__sb.0.iter().map(|__o1| match __o1 { OmcVal::Real(__x) => metamodelica::OrderedFloat(*__x), _ => metamodelica::OrderedFloat(0.0) }).collect::<metamodelica::List<metamodelica::Real>>()), _ => std::sync::Arc::new(metamodelica::List::Nil) }).collect::<metamodelica::List<std::sync::Arc<metamodelica::List<metamodelica::Real>>>>());
         let __a1 = std::sync::Arc::new(unsafe { seq_slice(B) }.iter().map(|__o0| match __o0 { OmcVal::Real(__x) => metamodelica::OrderedFloat(*__x), _ => metamodelica::OrderedFloat(0.0) }).collect::<metamodelica::List<metamodelica::Real>>());
-        crate::OpenModelicaScriptingAPI::solveLinearSystem(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::solveLinearSystem(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Seq({ let mut __s1 = Box::new(OmcSeq::new()); for __e1 in (&__t0_0).as_ref() { __s1.0.push(OmcVal::Real((__e1).0)); } __s1 })); __s0.0.push(OmcVal::Int(*&__t0_1 as i64)); Box::into_raw(__s0) },
@@ -4902,7 +4902,7 @@ pub extern "C" fn omc_scripting_solveLinearSystem(A: *const OmcSeq, B: *const Om
 pub extern "C" fn omc_scripting_sortStrings(arr: *const OmcSeq) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = std::sync::Arc::new(unsafe { seq_slice(arr) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
-        crate::OpenModelicaScriptingAPI::sortStrings(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::sortStrings(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4915,7 +4915,7 @@ pub extern "C" fn omc_scripting_sortStrings(arr: *const OmcSeq) -> *mut OmcSeq {
 pub extern "C" fn omc_scripting_stat(fileName: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(fileName) };
-        crate::OpenModelicaScriptingAPI::stat(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::stat(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let (__t0_0, __t0_1, __t0_2) = __v; let mut __s0 = Box::new(OmcSeq::new()); __s0.0.push(OmcVal::Bool(*&__t0_0)); __s0.0.push(OmcVal::Real((&__t0_1).0)); __s0.0.push(OmcVal::Real((&__t0_2).0)); Box::into_raw(__s0) },
@@ -4927,7 +4927,7 @@ pub extern "C" fn omc_scripting_stat(fileName: *const c_char) -> *mut OmcSeq {
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_storeAST() -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::storeAST()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::storeAST()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -4942,7 +4942,7 @@ pub extern "C" fn omc_scripting_stringReplace(r#str: *const c_char, source: *con
         let __a0 = unsafe { abi_str_in(r#str) };
         let __a1 = unsafe { abi_str_in(source) };
         let __a2 = unsafe { abi_str_in(target) };
-        crate::OpenModelicaScriptingAPI::stringReplace(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::stringReplace(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4956,7 +4956,7 @@ pub extern "C" fn omc_scripting_stringSplit(string: *const c_char, token: *const
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(string) };
         let __a1 = unsafe { abi_str_in(token) };
-        crate::OpenModelicaScriptingAPI::stringSplit(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::stringSplit(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4969,7 +4969,7 @@ pub extern "C" fn omc_scripting_stringSplit(string: *const c_char, token: *const
 pub extern "C" fn omc_scripting_stringTypeName(r#str: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(r#str) };
-        crate::OpenModelicaScriptingAPI::stringTypeName(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::stringTypeName(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -4983,7 +4983,7 @@ pub extern "C" fn omc_scripting_strtok(string: *const c_char, token: *const c_ch
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(string) };
         let __a1 = unsafe { abi_str_in(token) };
-        crate::OpenModelicaScriptingAPI::strtok(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::strtok(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -4997,7 +4997,7 @@ pub extern "C" fn omc_scripting_system(callStr: *const c_char, outputFile: *cons
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(callStr) };
         let __a1 = unsafe { abi_str_in(outputFile) };
-        crate::OpenModelicaScriptingAPI::system(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::system(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -5011,7 +5011,7 @@ pub extern "C" fn omc_scripting_system_parallel(callStr: *const OmcSeq, numThrea
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = std::sync::Arc::new(unsafe { seq_slice(callStr) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a1 = (numThreads as i32);
-        crate::OpenModelicaScriptingAPI::system_parallel(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::system_parallel(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Int(*__e0 as i64)); } Box::into_raw(__s0) },
@@ -5023,7 +5023,7 @@ pub extern "C" fn omc_scripting_system_parallel(callStr: *const OmcSeq, numThrea
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_threadWorkFailed() {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::threadWorkFailed()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::threadWorkFailed()
     }));
     match __r {
         Ok(Ok(_)) => {},
@@ -5036,7 +5036,7 @@ pub extern "C" fn omc_scripting_threadWorkFailed() {
 pub extern "C" fn omc_scripting_translateGraphics(className: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
-        crate::OpenModelicaScriptingAPI::translateGraphics(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::translateGraphics(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -5054,7 +5054,7 @@ pub extern "C" fn omc_scripting_translateModelFMU(className: *const c_char, vers
         let __a3 = unsafe { abi_str_in(fileNamePrefix) };
         let __a4 = std::sync::Arc::new(unsafe { seq_slice(platforms) }.iter().map(|__o0| match __o0 { OmcVal::Str(__c) => arcstr::ArcStr::from(__c.to_string_lossy().as_ref()), _ => arcstr::ArcStr::new() }).collect::<metamodelica::List<arcstr::ArcStr>>());
         let __a5 = (includeResources != 0);
-        crate::OpenModelicaScriptingAPI::translateModelFMU(__a0, __a1, __a2, __a3, __a4, __a5)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::translateModelFMU(__a0, __a1, __a2, __a3, __a4, __a5)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5068,7 +5068,7 @@ pub extern "C" fn omc_scripting_translateResidualsDAE(className: *const c_char, 
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(className) };
         let __a1 = unsafe { abi_str_in(fileNamePrefix) };
-        crate::OpenModelicaScriptingAPI::translateResidualsDAE(__a0, __a1)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::translateResidualsDAE(__a0, __a1)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5081,7 +5081,7 @@ pub extern "C" fn omc_scripting_translateResidualsDAE(className: *const c_char, 
 pub extern "C" fn omc_scripting_typeNameString(cl: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::typeNameString(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::typeNameString(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -5094,7 +5094,7 @@ pub extern "C" fn omc_scripting_typeNameString(cl: *const c_char) -> *mut c_char
 pub extern "C" fn omc_scripting_typeNameStrings(cl: *const c_char) -> *mut OmcSeq {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(cl) };
-        crate::OpenModelicaScriptingAPI::typeNameStrings(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::typeNameStrings(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => { let mut __s0 = Box::new(OmcSeq::new()); for __e0 in (__v).as_ref() { __s0.0.push(OmcVal::Str(cstr_of(__e0))); } Box::into_raw(__s0) },
@@ -5106,7 +5106,7 @@ pub extern "C" fn omc_scripting_typeNameStrings(cl: *const c_char) -> *mut OmcSe
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_unloadOMSimulator() -> i64 {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::unloadOMSimulator()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::unloadOMSimulator()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as i64),
@@ -5122,7 +5122,7 @@ pub extern "C" fn omc_scripting_updateConnectionAnnotation(className: *const c_c
         let __a1 = unsafe { abi_str_in(from) };
         let __a2 = unsafe { abi_str_in(to) };
         let __a3 = unsafe { abi_str_in(annotate) };
-        crate::OpenModelicaScriptingAPI::updateConnectionAnnotation(__a0, __a1, __a2, __a3)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::updateConnectionAnnotation(__a0, __a1, __a2, __a3)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5139,7 +5139,7 @@ pub extern "C" fn omc_scripting_updateConnectionNames(className: *const c_char, 
         let __a2 = unsafe { abi_str_in(to) };
         let __a3 = unsafe { abi_str_in(fromNew) };
         let __a4 = unsafe { abi_str_in(toNew) };
-        crate::OpenModelicaScriptingAPI::updateConnectionNames(__a0, __a1, __a2, __a3, __a4)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::updateConnectionNames(__a0, __a1, __a2, __a3, __a4)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5158,7 +5158,7 @@ pub extern "C" fn omc_scripting_updateEquation(className: *const c_char, oldEq: 
         let __a4 = (matchShallow != 0);
         let __a5 = (matchDescription != 0);
         let __a6 = (mergeDescription != 0);
-        crate::OpenModelicaScriptingAPI::updateEquation(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::updateEquation(__a0, __a1, __a2, __a3, __a4, __a5, __a6)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5170,7 +5170,7 @@ pub extern "C" fn omc_scripting_updateEquation(className: *const c_char, oldEq: 
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_scripting_updatePackageIndex() -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::OpenModelicaScriptingAPI::updatePackageIndex()
+        openmodelica_backend_main::OpenModelicaScriptingAPI::updatePackageIndex()
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5183,7 +5183,7 @@ pub extern "C" fn omc_scripting_updatePackageIndex() -> c_int {
 pub extern "C" fn omc_scripting_upgradeInstalledPackages(installNewestVersions: c_int) -> c_int {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = (installNewestVersions != 0);
-        crate::OpenModelicaScriptingAPI::upgradeInstalledPackages(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::upgradeInstalledPackages(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
@@ -5196,7 +5196,7 @@ pub extern "C" fn omc_scripting_upgradeInstalledPackages(installNewestVersions: 
 pub extern "C" fn omc_scripting_uriToFilename(uri: *const c_char) -> *mut c_char {
     let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let __a0 = unsafe { abi_str_in(uri) };
-        crate::OpenModelicaScriptingAPI::uriToFilename(__a0)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::uriToFilename(__a0)
     }));
     match __r {
         Ok(Ok(__v)) => abi_cstring(&__v),
@@ -5211,7 +5211,7 @@ pub extern "C" fn omc_scripting_writeFile(fileName: *const c_char, data: *const 
         let __a0 = unsafe { abi_str_in(fileName) };
         let __a1 = unsafe { abi_str_in(data) };
         let __a2 = (append != 0);
-        crate::OpenModelicaScriptingAPI::writeFile(__a0, __a1, __a2)
+        openmodelica_backend_main::OpenModelicaScriptingAPI::writeFile(__a0, __a1, __a2)
     }));
     match __r {
         Ok(Ok(__v)) => (__v as c_int),
