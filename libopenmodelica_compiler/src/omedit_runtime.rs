@@ -119,7 +119,10 @@ pub extern "C" fn omc_new_matlab4_reader(
                 r.nrows = nrows;
                 r.startTime = start;
                 r.stopTime = stop;
-                r.fileName = ptr::null_mut();
+                // Consumers (e.g. OMEdit's getVariableInformation) read this
+                // directly and `strcmp` it, so it must be a valid C string like
+                // the C reader's `omc_strdup(filename)`, not null.
+                r.fileName = dup_cstr(&fname);
                 r.params = ptr::null_mut();
                 r.var_offset = 0;
                 r.readAll = 0;
@@ -129,7 +132,10 @@ pub extern "C" fn omc_new_matlab4_reader(
             ptr::null()
         }
         Ok(Err(e)) => {
-            unsafe { (*reader).file = ptr::null_mut() };
+            unsafe {
+                (*reader).file = ptr::null_mut();
+                (*reader).fileName = ptr::null_mut();
+            }
             MAT_ERR.with(|c| {
                 let msg = CString::new(e).unwrap_or_default();
                 let p = msg.as_ptr();
@@ -138,7 +144,10 @@ pub extern "C" fn omc_new_matlab4_reader(
             })
         }
         Err(_) => {
-            unsafe { (*reader).file = ptr::null_mut() };
+            unsafe {
+                (*reader).file = ptr::null_mut();
+                (*reader).fileName = ptr::null_mut();
+            }
             c"matlab4 reader panicked".as_ptr()
         }
     }
@@ -164,7 +173,15 @@ pub extern "C" fn omc_free_matlab4_reader(reader: *mut ModelicaMatReader) {
         }
     }
     drop(state);
-    unsafe { (*reader).file = ptr::null_mut() };
+    unsafe {
+        // Mirror the C reader: free the malloc'd `fileName` set on open.
+        let fname = (*reader).fileName;
+        if !fname.is_null() {
+            libc::free(fname as *mut c_void);
+            (*reader).fileName = ptr::null_mut();
+        }
+        (*reader).file = ptr::null_mut();
+    }
 }
 
 /// SAFETY helper: borrow the boxed state behind `reader.file`, or `None`.
