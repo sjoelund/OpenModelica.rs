@@ -17,7 +17,9 @@
 //! Single-threaded by contract (see [`openmodelica_backend_main::capi`]): all of
 //! OMEdit's init/command calls run on one thread.
 
-use std::ffi::{c_char, c_int, c_void};
+use std::cell::RefCell;
+use std::ffi::{CString, c_char, c_int, c_void};
+use std::panic::catch_unwind;
 use std::ptr;
 use std::sync::atomic::{AtomicPtr, Ordering};
 
@@ -174,3 +176,27 @@ pub extern "C" fn omc_Main_handleCommand(
 /// Windows).
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_Main_setWindowsPaths(_thread_data: *mut c_void, _in_om_home: *mut c_void) {}
+
+// OMEdit calls this Settings runtime symbol once at startup (OMEditApplication,
+// via settingsimpl.h) to discover OPENMODELICAHOME. Providing it here lets OMEdit
+// drop `-lomcruntime` entirely (the MMC value runtime) — the only other symbols
+// it pulled from there (ModelInstanceReference_get/release) are exported above.
+thread_local! {
+    static INSTALL_DIR: RefCell<Option<CString>> = const { RefCell::new(None) };
+}
+
+/// `const char* SettingsImpl__getInstallationDirectoryPath(void)` — returns the
+/// installation directory (OPENMODELICAHOME). The returned pointer is owned by
+/// the library and stays valid until the next call on the same thread; OMEdit
+/// copies it immediately.
+#[unsafe(no_mangle)]
+pub extern "C" fn SettingsImpl__getInstallationDirectoryPath() -> *const c_char {
+    let dir = match catch_unwind(openmodelica_util::Settings::getInstallationDirectoryPath) {
+        Ok(Ok(s)) => s,
+        _ => return ptr::null(),
+    };
+    INSTALL_DIR.with(|cell| {
+        *cell.borrow_mut() = CString::new(dir.as_bytes()).ok();
+        cell.borrow().as_ref().map_or(ptr::null(), |c| c.as_ptr())
+    })
+}

@@ -41,18 +41,25 @@ echo ">>> 3/4 qmake (OMEDIT_RUST_OMC=1 enables the OMC_RUST_ABI switch)"
 cd "$OMEDIT"
 OMEDIT_RUST_OMC=1 qmake6 -r
 
-echo ">>> 4/4 building OMEdit"
+echo ">>> 4/5 building OMEdit"
 OMEDIT_RUST_OMC=1 make -j"$JOBS"
+
+echo ">>> 5/5 installing OMEdit into $OMBUILDDIR/bin"
+# The binary's rpath ($ORIGIN/../lib) resolves the omc libraries only from the
+# build tree's bin/, so install it there (overwriting the stock C build, backed
+# up once). Running the OMEdit/bin/ copy directly would need LD_LIBRARY_PATH.
+mkdir -p "$OMBUILDDIR/bin"
+[ -f "$OMBUILDDIR/bin/OMEdit" ] && [ ! -f "$OMBUILDDIR/bin/OMEdit.cbak" ] && \
+  cp -a "$OMBUILDDIR/bin/OMEdit" "$OMBUILDDIR/bin/OMEdit.cbak" && echo "    backed up build/bin/OMEdit -> OMEdit.cbak"
+cp -a "$OMEDIT/bin/OMEdit" "$OMBUILDDIR/bin/OMEdit"
 
 cat <<EOF
 
-OMEdit built: $OMEDIT/bin/OMEdit
-Run it with the build tree's libraries on the path, e.g.:
+OMEdit installed: $OMBUILDDIR/bin/OMEdit  (run it from here so its rpath finds the omc libs)
 
-  OPENMODELICAHOME=$OMBUILDDIR \\
-  LD_LIBRARY_PATH=$LIB:$OMBUILDDIR/lib:$OMBUILDDIR/lib/$HOST_SHORT \\
-  $OMEDIT/bin/OMEdit
+  OPENMODELICAHOME=$OMBUILDDIR $OMBUILDDIR/bin/OMEdit
 
 (add QT_QPA_PLATFORM=offscreen for a headless smoke test).
-To restore the stock C build, copy the *.cbak files back over the installed ones.
+To restore the stock C build, copy the *.cbak files back over the installed ones
+(the .so, the scripting-API headers, and build/bin/OMEdit).
 EOF
