@@ -3,6 +3,12 @@ name = "openmodelica_backend_main"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+# Compile the generated typed OMEdit interface ABI (src/scripting_api_qt.rs,
+# the `extern "C"` wrappers behind OpenModelicaScriptingAPIQt). Enabled only by
+# the libOpenModelicaCompiler cdylib; the openmodelica binary does not need it.
+scripting_qt = []
+
 [dependencies]
 openmodelica_tpl.workspace = true
 openmodelica_error.workspace = true

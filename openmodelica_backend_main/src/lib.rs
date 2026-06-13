@@ -13,3 +13,5 @@ pub mod SimCodeMain;
 pub mod StaticScript;
 pub mod Globals;
 pub mod capi;
+#[cfg(feature = "scripting_qt")]
+pub mod scripting_api_qt;

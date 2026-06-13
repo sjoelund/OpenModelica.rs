@@ -1619,6 +1619,16 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
         write_if_changed(&format!("{dir}/lib.rs"), &lib_content)?;
     }
     phase_times.push(("lib.rs serial pass", _pp.elapsed()));
+
+    // Typed OMEdit interface (OpenModelicaScriptingAPIQt): a Rust C-ABI module
+    // plus the Qt C++ class, generated from the resolved scripting-API
+    // signatures. Best-effort: a partial source set without the package, or a
+    // missing builtin file, just skips it.
+    let _pp = std::time::Instant::now();
+    if let Err(e) = emit_scripting_api_qt(hier, output_dir) {
+        eprintln!("[mmtorust] WARNING: scripting-api Qt interface not generated: {e}");
+    }
+    phase_times.push(("scripting-api Qt interface", _pp.elapsed()));
     let all_file_elapsed = all_file_t0.elapsed();
     if trace_codegen {
         eprintln!("[mmtorust] codegen done all files ({:.2}s)", all_file_elapsed.as_secs_f64());
@@ -1698,6 +1708,88 @@ fn write_if_changed(path: &str, content: &str) -> std::io::Result<()> {
     std::fs::write(path, content)
 }
 
+/// Generate the typed OMEdit interface (`OpenModelicaScriptingAPIQt`) for the
+/// Rust port: the C-ABI module `scripting_api_qt.rs` (in the owning crate's
+/// `src`) and the Qt C++ class + ABI header (in a sibling `qt/` directory).
+///
+/// The `_res`-struct field names OMEdit accesses by name are recovered by
+/// parsing the `OpenModelica.Scripting` definitions from the builtin
+/// (`NFModelicaBuiltin.mo`), located relative to the package's own source file —
+/// the generated `OpenModelicaScriptingAPI.mo` wrapper has discarded them.
+fn emit_scripting_api_qt(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::Result<()> {
+    use crate::scripting_api_qt;
+    let Some(node) = hier.top_level.get("OpenModelicaScriptingAPI") else {
+        return Ok(()); // not in this source set
+    };
+    let NodeKind::Class(c) = &node.kind else { return Ok(()) };
+
+    let dir = match &c.crate_name {
+        Some(cn) => format!("{cn}/src"),
+        None => output_dir.to_owned(),
+    };
+    let crate_root = dir.strip_suffix("/src").unwrap_or(&dir).to_owned();
+    let qt_dir = format!("{crate_root}/qt");
+
+    // Derive the builtin path from the package's own .mo location:
+    //   …/OMCompiler/Compiler/Script/OpenModelicaScriptingAPI.mo
+    //   …/OMCompiler/Compiler/FrontEnd/NFModelicaBuiltin.mo
+    let src_file = c.info.fileName.to_string();
+    let marker = "/Compiler/";
+    let output_names = match src_file.find(marker) {
+        Some(i) => {
+            let base = &src_file[..i + marker.len()];
+            // The NF builtin is the source of truth for the current (new-frontend)
+            // compiler; fall back to the old-frontend file if it is absent.
+            let candidates = [
+                format!("{base}NFFrontEnd/NFModelicaBuiltin.mo"),
+                format!("{base}FrontEnd/ModelicaBuiltin.mo"),
+            ];
+            let builtin = candidates
+                .iter()
+                .find(|p| std::path::Path::new(p).exists())
+                .cloned()
+                .unwrap_or_else(|| candidates[0].clone());
+            match std::fs::read_to_string(&builtin) {
+                Ok(code) => match openmodelica_ast::parser::parse(
+                    &code,
+                    &builtin,
+                    &builtin,
+                    openmodelica_ast::parser::Grammar::MetaModelica,
+                    false,
+                    0.0,
+                ) {
+                    Ok(program) => scripting_api_qt::extract_output_names(&program),
+                    Err(e) => {
+                        eprintln!("[mmtorust] scripting-api: parse of {builtin} failed: {e}; tuple field names fall back to res1..");
+                        HashMap::new()
+                    }
+                },
+                Err(e) => {
+                    eprintln!("[mmtorust] scripting-api: cannot read {builtin}: {e}; tuple field names fall back to res1..");
+                    HashMap::new()
+                }
+            }
+        }
+        None => HashMap::new(),
+    };
+
+    let generated = scripting_api_qt::generate(node, &output_names);
+    if !generated.skipped.is_empty() {
+        eprintln!(
+            "[mmtorust] scripting-api: skipped {} function(s) outside the supported Qt type space: {}",
+            generated.skipped.len(),
+            generated.skipped.join(", ")
+        );
+    }
+
+    std::fs::create_dir_all(&qt_dir)?;
+    write_if_changed(&format!("{dir}/scripting_api_qt.rs"), &generated.rust_abi)?;
+    write_if_changed(&format!("{qt_dir}/OpenModelicaScriptingAPIQtABI.h"), &generated.abi_header)?;
+    write_if_changed(&format!("{qt_dir}/OpenModelicaScriptingAPIQt.h"), &generated.qt_header)?;
+    write_if_changed(&format!("{qt_dir}/OpenModelicaScriptingAPIQt.cpp"), &generated.qt_source)?;
+    Ok(())
+}
+
 fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: &str) -> String {
     let mut out = String::new();
     writeln!(out, "// Auto-generated lib file").unwrap();
@@ -1760,6 +1852,16 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
     // MetaModelica source of its own. Declared when present in this crate.
     if std::path::Path::new(&format!("{this_dir}/capi.rs")).exists() {
         writeln!(out, "pub mod capi;").unwrap();
+    }
+    // Generated typed OMEdit interface ABI (`scripting_api_qt.rs`, emitted by
+    // `emit_scripting_api_qt`): the `extern "C"` wrappers behind
+    // OpenModelicaScriptingAPIQt. Only the `libOpenModelicaCompiler` cdylib
+    // needs it (OMEdit links it); the `openmodelica` binary does not, so it is
+    // gated behind the `scripting_qt` feature the cdylib enables. (Intended to
+    // become its own crate once the scripting functions it calls are `pub`.)
+    if std::path::Path::new(&format!("{this_dir}/scripting_api_qt.rs")).exists() {
+        writeln!(out, "#[cfg(feature = \"scripting_qt\")]").unwrap();
+        writeln!(out, "pub mod scripting_api_qt;").unwrap();
     }
     // Hand-written, test-only unit tests live in `src/unittests/` (declared by
     // its own `mod.rs`). Unlike `tests/*.rs` integration tests — which compile
@@ -23151,7 +23253,7 @@ fn escape_ident_segment(name: &str) -> String {
 /// path) and its bare references (`emit_var`'s bare-name path), so the mangle
 /// stays consistent; the codegen's own bare `None`/`Some(..)`/`Ok(..)`/`Err(..)`
 /// emissions are literal strings that never pass through here.
-fn escape_ident(name: &str) -> String {
+pub(crate) fn escape_ident(name: &str) -> String {
     if !name.contains("::") && !name.contains('\'') && !name.starts_with("MetaModelica") {
         match name {
             "None" | "Some" | "Ok" | "Err" => return format!("{name}_"),

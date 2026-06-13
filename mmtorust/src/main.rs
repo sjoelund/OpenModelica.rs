@@ -16,6 +16,7 @@ mod dep_analysis;
 mod unused_functions;
 mod const_patterns;
 mod mutable_cycles;
+mod scripting_api_qt;
 use rayon::prelude::*;
 
 fn start_compilation(results: Vec<Absyn::Program>, fix: bool) {

@@ -26,6 +26,13 @@ use openmodelica_backend_main::capi;
 use std::ffi::{CStr, CString, c_char, c_int};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+// Re-export the generated typed OMEdit interface ABI (the `extern "C"` wrappers
+// behind OpenModelicaScriptingAPIQt). The `pub use` makes the `#[no_mangle]`
+// symbols reachable from this cdylib's crate root so the linker keeps them in
+// `libOpenModelicaCompiler.so` (an rlib's `#[no_mangle]` items are otherwise
+// liable to be dropped if nothing references them).
+pub use openmodelica_backend_main::scripting_api_qt::*;
+
 /// Initialise the compiler runtime on the calling thread.
 ///
 /// Returns `0` on success and `-1` on failure (initialisation error or a
