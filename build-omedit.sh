@@ -14,17 +14,19 @@ set -euo pipefail
 RUST="$(cd "$(dirname "$0")" && pwd)"
 OMBUILDDIR="${OMBUILDDIR:-/projects/OpenModelica/build}"
 OMEDIT="${OMEDIT:-/projects/OpenModelica/OMEdit}"
+OMPLOT="${OMPLOT:-/projects/OpenModelica/OMPlot/OMPlot/OMPlotGUI}"
 HOST_SHORT="${HOST_SHORT:-$(gcc -dumpmachine)}"
 JOBS="${JOBS:-12}"
+export OMEDIT_RUST_OMC=1  # enables the rust_omc / OMC_RUST_ABI switch in OMEdit + OMPlot
 
 INC="$OMBUILDDIR/include/omc/scripting-API"
 LIB="$OMBUILDDIR/lib/$HOST_SHORT/omc"
 
-echo ">>> 1/4 building libOpenModelicaCompiler.so (release)"
+echo ">>> 1/5 building libOpenModelicaCompiler.so (release)"
 cd "$RUST"
 cargo build -j"$JOBS" --release -p libopenmodelica_compiler
 
-echo ">>> 2/4 installing the Rust OMC interface + embedding header into $INC"
+echo ">>> 2/5 installing the Rust OMC interface + embedding header into $INC"
 mkdir -p "$INC" "$LIB"
 # Back up the C-omc versions once, so the stock build can be restored.
 for f in "$LIB/libOpenModelicaCompiler.so" \
@@ -37,12 +39,19 @@ cp "$RUST/openmodelica_scripting_qt/qt/OpenModelicaScriptingAPIQtABI.h" "$INC/"
 cp "$RUST/libopenmodelica_compiler/include/omc_rust_embedding.h"        "$INC/"
 cp "$RUST/target/release/libOpenModelicaCompiler.so" "$LIB/libOpenModelicaCompiler.so"
 
-echo ">>> 3/4 qmake (OMEDIT_RUST_OMC=1 enables the OMC_RUST_ABI switch)"
-cd "$OMEDIT"
-OMEDIT_RUST_OMC=1 qmake6 -r
+echo ">>> 3/5 building libOMPlot.so against the Rust readers (no C runtime)"
+# Force a clean relink: a LIBS-only change does not re-trigger the .so link rule.
+cd "$OMPLOT"
+rm -f Makefile Makefile.lib ../bin/libOMPlot.so* ../bin/OMPlot
+make -f Makefile.unix -j"$JOBS"                # builds lib (+ standalone exe) and installs to build/
+cp -a ../bin/libOMPlot* "$LIB/" 2>/dev/null || true
+cp -p ../bin/OMPlot "$OMBUILDDIR/bin/" 2>/dev/null || true
 
-echo ">>> 4/5 building OMEdit"
-OMEDIT_RUST_OMC=1 make -j"$JOBS"
+echo ">>> 4/5 qmake + building OMEdit (OMC_RUST_ABI switch)"
+cd "$OMEDIT"
+qmake6 -r
+rm -f bin/OMEdit OMEditGUI/OMEdit                # force relink (LIBS changed)
+make -j"$JOBS"
 
 echo ">>> 5/5 installing OMEdit into $OMBUILDDIR/bin"
 # The binary's rpath ($ORIGIN/../lib) resolves the omc libraries only from the

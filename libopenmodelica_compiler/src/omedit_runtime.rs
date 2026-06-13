@@ -235,6 +235,25 @@ pub extern "C" fn omc_matlab4_val(
     }
 }
 
+/// Interpolate `n` variables at `time` into `res[0..n]` (libOMPlot's parametric
+/// path). Returns 0 on success, non-zero if any lookup fails.
+#[unsafe(no_mangle)]
+pub extern "C" fn omc_matlab4_read_vars_val(
+    res: *mut c_double,
+    reader: *mut ModelicaMatReader,
+    var: *mut *mut ModelicaMatVariable_t,
+    n: c_int,
+    time: c_double,
+) -> c_int {
+    for k in 0..n as isize {
+        let v = unsafe { *var.offset(k) };
+        if omc_matlab4_val(unsafe { res.offset(k) }, reader, v, time) != 0 {
+            return 1;
+        }
+    }
+    0
+}
+
 /// Print every variable name to `stream` (debug aid; OMEdit's animation path
 /// calls it). Mirrors the C `omc_matlab4_print_all_vars` loosely.
 #[unsafe(no_mangle)]
