@@ -31,6 +31,17 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 // below; the `#[no_mangle]` entry points are exported from this cdylib directly.
 mod mmc_compat;
 
+// SimulationRuntime metadata tables OMEdit reads (FLAG_*, *_METHOD_*,
+// OMC_LOG_STREAM_*); generated from the C runtime by gen/gen-sim-tables.sh so
+// OMEdit needs no OpenModelica C runtime library for them.
+mod sim_metadata;
+
+// The rest of the SimulationRuntime C ABI OMEdit uses (result-file readers, the
+// realtime clock, ryu number formatting), backed by the Rust port so OMEdit
+// needs no OpenModelica C runtime library. The `#[no_mangle]` symbols are
+// exported from this cdylib directly.
+mod omedit_runtime;
+
 // Re-export the generated typed OMEdit interface ABI (the `extern "C"` wrappers
 // behind OpenModelicaScriptingAPIQt, in the `openmodelica_scripting_qt` crate).
 // The `pub use` makes the `#[no_mangle]` symbols reachable from this cdylib's

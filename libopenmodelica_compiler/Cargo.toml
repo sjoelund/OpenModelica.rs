@@ -13,7 +13,9 @@ crate-type = ["cdylib"]
 [dependencies]
 openmodelica_backend_main.workspace = true
 openmodelica_scripting_qt.workspace = true
+openmodelica_script_util.workspace = true
 openmodelica_util.workspace = true
+metamodelica.workspace = true
 arcstr.workspace = true
 # Used by the MetaModelica-ABI compatibility shims (src/mmc_compat.rs) to
 # allocate/free the malloc-boxed values shared with OMEdit (the header's

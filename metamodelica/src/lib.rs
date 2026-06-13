@@ -598,6 +598,20 @@ pub fn realString(r: Real) -> ArcStr {
     ArcStr::from(ryu_to_hr(&std::format!("{:e}", v), true))
 }
 
+/// Port of the C runtime's `ryu_hr_tdzp` (`3rdParty/ryu/ryu/om_format.c`): the
+/// shortest round-trip representation in OMEdit's display variant (`ryu_to_hr`
+/// with `real_output=false`). Used by OMEdit's `StringHandler::number` to format
+/// numbers for display, exposed to it through the embedding cdylib.
+pub fn ryu_hr_tdzp(d: f64) -> String {
+    if d.is_infinite() {
+        return if d < 0.0 { "-inf".to_owned() } else { "inf".to_owned() };
+    }
+    if d.is_nan() {
+        return "NaN".to_owned();
+    }
+    ryu_to_hr(&std::format!("{:e}", d), false)
+}
+
 /// Port of `ryu_to_hr` from `3rdParty/ryu/ryu/om_format.c`: convert a
 /// shortest-form scientific representation (`8.13e2`) to the minimal
 /// decimal or exponential rendering omc uses everywhere it prints Reals.

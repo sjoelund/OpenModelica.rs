@@ -306,7 +306,9 @@ version = "0.1.0"
 dependencies = [
  "arcstr",
  "libc",
+ "metamodelica",
  "openmodelica_backend_main",
+ "openmodelica_script_util",
  "openmodelica_scripting_qt",
  "openmodelica_util",
 ]
