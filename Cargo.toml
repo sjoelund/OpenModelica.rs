@@ -13,7 +13,7 @@ overflow-checks = false
 
 [workspace]
 resolver = "3"
-members = ["mmtorust", "openmodelica", "openmodelica_util", "metamodelica", "metamodelica_derive", "openmodelica_frontend", "openmodelica_frontend_base", "openmodelica_backend", "openmodelica_backend_tools", "openmodelica_backend_types", "openmodelica_simcode_types", "openmodelica_backend_util", "openmodelica_nbackend", "openmodelica_susan", "openmodelica_tpl", "openmodelica_codegen_graphml", "openmodelica_nf_frontend", "openmodelica_util_datatypes_basic", "openmodelica_ast", "openmodelica_error", "openmodelica_frontend_types", "openmodelica_frontend_dump", "openmodelica_ast_collections", "openmodelica_dump_extra", "openmodelica_frontend_inst", "openmodelica_script_util", "openmodelica_program_util", "openmodelica_simcode_util", "openmodelica_codegen_cfunctions", "openmodelica_codegen_c", "openmodelica_codegen_fmu", "openmodelica_codegen_fmu_c", "openmodelica_codegen_fmu_omsi", "openmodelica_codegen_xml", "openmodelica_codegen", "openmodelica_codegen_cpp_common", "openmodelica_codegen_cpp_omsi", "openmodelica_codegen_cpp_ext", "openmodelica_codegen_cpp_omsi_ext", "openmodelica_codegen_cpp", "openmodelica_backend_main", "openmodelica_scripting_qt", "libopenmodelica_compiler"]
+members = ["mmtorust", "openmodelica", "openmodelica_util", "metamodelica", "metamodelica_derive", "openmodelica_frontend", "openmodelica_frontend_base", "openmodelica_backend", "openmodelica_backend_tools", "openmodelica_backend_types", "openmodelica_simcode_types", "openmodelica_backend_util", "openmodelica_nbackend", "openmodelica_susan", "openmodelica_tpl", "openmodelica_codegen_graphml", "openmodelica_nf_frontend", "openmodelica_util_datatypes_basic", "openmodelica_ast", "openmodelica_error", "openmodelica_frontend_types", "openmodelica_frontend_dump", "openmodelica_ast_collections", "openmodelica_dump_extra", "openmodelica_frontend_inst", "openmodelica_script_util", "openmodelica_program_util", "openmodelica_simcode_util", "openmodelica_codegen_cfunctions", "openmodelica_codegen_c", "openmodelica_codegen_fmu", "openmodelica_codegen_fmu_c", "openmodelica_codegen_fmu_omsi", "openmodelica_codegen_xml", "openmodelica_codegen", "openmodelica_codegen_cpp_common", "openmodelica_codegen_cpp_omsi", "openmodelica_codegen_cpp_ext", "openmodelica_codegen_cpp_omsi_ext", "openmodelica_codegen_cpp", "openmodelica_codegen_wasmer", "openmodelica_backend_main", "openmodelica_scripting_qt", "libopenmodelica_compiler"]
 [workspace.dependencies]
 anyhow = "1.0.102"
 arcstr = "1.2.0"
@@ -49,6 +49,14 @@ serde_json = "1"
 # openmodelica_util. zmq-sys locates libzmq via the LIBZMQ_*_DIR env vars set
 # in .cargo/config.toml (this image has no libzmq.pc).
 zmq = "0.10"
+# WebAssembly JIT backend for the `wasm-jit` simCodeTarget
+# (openmodelica_codegen_wasmer): wasm-encoder emits the module, wasmtime
+# JIT-compiles and runs it in-process, replacing the C->.so->dlopen path of
+# -d=gen. wasmtime errors are wrapped with anyhow::anyhow! (its re-exported
+# anyhow does not unify with ours under these features).
+wasm-encoder = "0.252"
+wasmtime = { version = "45", default-features = false, features = ["std", "cranelift", "runtime"] }
+openmodelica_codegen_wasmer = {path = "openmodelica_codegen_wasmer"}
 # Cycle-collecting garbage collector for reference cycles closed through
 # mutable cells (Mutable/Pointer). Only the `unsync` half is used: MetaModelica
 # payloads are deliberately not Send (Rc-based arrays, non-Send callbacks), so

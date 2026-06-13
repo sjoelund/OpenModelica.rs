@@ -20,6 +20,7 @@ openmodelica_codegen_fmu_c.workspace=true
 openmodelica_codegen_fmu_omsi.workspace=true
 openmodelica_codegen_c.workspace=true
 openmodelica_codegen_cfunctions.workspace=true
+openmodelica_codegen_wasmer.workspace=true
 openmodelica_codegen_cpp.workspace=true
 openmodelica_codegen_cpp_ext.workspace=true
 openmodelica_codegen_cpp_omsi_ext.workspace=true

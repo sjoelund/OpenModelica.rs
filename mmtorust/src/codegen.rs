@@ -133,6 +133,14 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // written FFI against the system `libzmq.so.5` in
     // `openmodelica_util/src/ZeroMQ.rs`.
     "ZeroMQ",
+    // The `wasm-jit` simCodeTarget code generators. Both bodies are
+    // placeholders in the .mo sources; the real implementation is hand-written
+    // in Rust (`openmodelica_codegen_wasmer`): CodegenWasmerFunctions lowers
+    // SimCodeFunction bodies to a WebAssembly module (via `wasm-encoder`) and
+    // JIT-runs them with `wasmtime` for -d=gen, replacing the C->.so->dlopen
+    // path. CodegenWasmer is a placeholder for the future simulation target.
+    "CodegenWasmerFunctions",
+    "CodegenWasmer",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.

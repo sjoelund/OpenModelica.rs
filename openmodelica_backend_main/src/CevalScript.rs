@@ -56,6 +56,7 @@ use openmodelica_backend_tools::GenerateAPIFunctionsTpl;
 use openmodelica_backend_tools::Unparsing;
 use openmodelica_codegen::CodegenMidToC;
 use openmodelica_codegen_cfunctions::CodegenCFunctions;
+use openmodelica_codegen_wasmer::CodegenWasmerFunctions;
 use openmodelica_error::ErrorExt;
 use openmodelica_error::ErrorTypes;
 use openmodelica_frontend::Builtin;
@@ -2485,7 +2486,9 @@ pub(crate) fn cevalGenerateFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                     pathstr = (generateFunctionName(path.clone())?).clone();
                     fileName = (generateFunctionFileName(path.clone())?).clone();
                     translateFunctions(program.clone(), (fileName.clone()).clone(), Some(mainFunction.clone()), dependencies.clone(), metarecordTypes.clone(), metamodelica::nil())?;
-                    compileModel((fileName.clone()).clone(), metamodelica::nil(), (literal!("")).clone(), metamodelica::nil())?;
+                    if Config::simCodeTarget()? != literal!("wasm-jit") {
+                        compileModel((fileName.clone()).clone(), metamodelica::nil(), (literal!("")).clone(), metamodelica::nil())?;
+                    }
                     Ok((cache.clone(), pathstr.clone(), fileName.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2951,12 +2954,16 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                     p = SymbolTable::getAbsyn();
                     (cache, funcstr, fileName) = cevalGenerateFunction(cache.clone(), env.clone(), p.clone(), funcpath.clone())?;
                     print_debug = Flags::isSet(Flags::DYN_LOAD.clone())?;
-                    libHandle = System::loadLibrary(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone(), true, print_debug.clone())?;
-                    funcHandle = System::lookupFunction(libHandle.clone(), (stringAppend((literal!("in_")).clone(), (funcstr.clone()).clone())).clone())?;
                     execStatReset()?;
-                    newval = DynLoad::executeFunction(funcHandle.clone(), vallst.clone(), print_debug.clone())?;
+                    if Config::simCodeTarget()? == literal!("wasm-jit") {
+                        newval = CodegenWasmerFunctions::loadAndExecute((fileName.clone()).clone(), (funcstr.clone()).clone(), vallst.clone());
+                    } else {
+                        libHandle = System::loadLibrary(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone(), true, print_debug.clone())?;
+                        funcHandle = System::lookupFunction(libHandle.clone(), (stringAppend((literal!("in_")).clone(), (funcstr.clone()).clone())).clone())?;
+                        newval = DynLoad::executeFunction(funcHandle.clone(), vallst.clone(), print_debug.clone())?;
+                        System::freeLibrary(libHandle.clone(), print_debug.clone())?;
+                    }
                     execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("executeFunction(")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
-                    System::freeLibrary(libHandle.clone(), print_debug.clone())?;
                     let __pa1 = ::match_deref::match_deref! { match &(ProgramUtil::getPathedClassInProgram(funcpath.clone(), p.clone(), false, false)?) {
                         Deref @ Absyn::Class { restriction: Absyn::Restriction::R_FUNCTION { functionRestriction: _ }, info: __pa1, .. } => __pa1.clone(),
                         _ => bail!("pattern mismatch"),
@@ -3589,7 +3596,9 @@ pub(crate) fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, 
             SimCodeFunctionUtil::checkValidMainFunction((name.clone()).clone(), mainFunction.clone())?;
             makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs, libs, libPaths, true, false)?;
             fnCode = SimCodeFunction::FunctionCode { name: (name.clone()).clone(), mainFunction: Some(mainFunction.clone()), functions: fns.clone(), literals: literals, externalFunctionIncludes: includes.clone(), makefileParams: makefileParams, extraRecordDecls: extraRecordDecls };
-            if Config::simCodeTarget()? == literal!("MidC") {
+            if Config::simCodeTarget()? == literal!("wasm-jit") {
+                CodegenWasmerFunctions::translateFunctions(fnCode);
+            } else if Config::simCodeTarget()? == literal!("MidC") {
                 Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctionHeaderFiles) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode)?;
                 midfuncs = DAEToMid::DAEFunctionsToMid(metamodelica::cons(mainFunction, fns))?;
                 midCode = Tpl::tplCallWithFailError((std::sync::Arc::new(CodegenMidToC::genProgram) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, MidCode::Program) -> Result<Tpl::Text> + 'static>), MidCode::Program { name: (name.clone()).clone(), functions: midfuncs }, Tpl::emptyTxt.clone())?;
