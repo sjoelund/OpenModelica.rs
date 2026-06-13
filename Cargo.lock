@@ -306,6 +306,8 @@ version = "0.1.0"
 dependencies = [
  "arcstr",
  "openmodelica_backend_main",
+ "openmodelica_scripting_qt",
+ "openmodelica_util",
 ]
 
 [[package]]
@@ -1066,6 +1068,15 @@ dependencies = [
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
  "zip",
+]
+
+[[package]]
+name = "openmodelica_scripting_qt"
+version = "0.1.0"
+dependencies = [
+ "arcstr",
+ "metamodelica",
+ "openmodelica_backend_main",
 ]
 
 [[package]]

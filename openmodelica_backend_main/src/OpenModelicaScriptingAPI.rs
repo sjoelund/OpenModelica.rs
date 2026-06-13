@@ -22,7 +22,7 @@ use openmodelica_frontend_types::Values;
 
 pub(crate) static dummyMsg: Absyn::Msg = Absyn::Msg::MSG { info: SourceInfo { fileName: literal!("<interactive>"), isReadOnly: false, lineNumberStart: 1, columnNumberStart: 1, lineNumberEnd: 1, columnNumberEnd: 1, lastModification: metamodelica::OrderedFloat(0.0_f64) } };
 
-pub(crate) fn oms_getVersion() -> Result<ArcStr> {
+pub fn oms_getVersion() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getVersion")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -32,7 +32,7 @@ pub(crate) fn oms_getVersion() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn oms_terminate(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_terminate(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_terminate")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -42,7 +42,7 @@ pub(crate) fn oms_terminate(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_stepUntil(mut cref: ArcStr, mut stopTime: metamodelica::Real) -> Result<i32> {
+pub fn oms_stepUntil(mut cref: ArcStr, mut stopTime: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_stepUntil")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: stopTime })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -52,7 +52,7 @@ pub(crate) fn oms_stepUntil(mut cref: ArcStr, mut stopTime: metamodelica::Real) 
     Ok(res)
 }
 
-pub(crate) fn oms_simulate(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_simulate(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_simulate")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -62,7 +62,7 @@ pub(crate) fn oms_simulate(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_setWorkingDirectory(mut newWorkingDir: ArcStr) -> Result<i32> {
+pub fn oms_setWorkingDirectory(mut newWorkingDir: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setWorkingDirectory")).clone(), list![Arc::new(Values::Value::STRING { string: (newWorkingDir).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -72,7 +72,7 @@ pub(crate) fn oms_setWorkingDirectory(mut newWorkingDir: ArcStr) -> Result<i32> 
     Ok(res)
 }
 
-pub(crate) fn oms_setVariableStepSize(mut cref: ArcStr, mut initialStepSize: metamodelica::Real, mut minimumStepSize: metamodelica::Real, mut maximumStepSize: metamodelica::Real) -> Result<i32> {
+pub fn oms_setVariableStepSize(mut cref: ArcStr, mut initialStepSize: metamodelica::Real, mut minimumStepSize: metamodelica::Real, mut maximumStepSize: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setVariableStepSize")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: initialStepSize }), Arc::new(Values::Value::REAL { real: minimumStepSize }), Arc::new(Values::Value::REAL { real: maximumStepSize })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -82,7 +82,7 @@ pub(crate) fn oms_setVariableStepSize(mut cref: ArcStr, mut initialStepSize: met
     Ok(res)
 }
 
-pub(crate) fn oms_setTolerance(mut cref: ArcStr, mut absoluteTolerance: metamodelica::Real, mut relativeTolerance: metamodelica::Real) -> Result<i32> {
+pub fn oms_setTolerance(mut cref: ArcStr, mut absoluteTolerance: metamodelica::Real, mut relativeTolerance: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setTolerance")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: absoluteTolerance }), Arc::new(Values::Value::REAL { real: relativeTolerance })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -92,7 +92,7 @@ pub(crate) fn oms_setTolerance(mut cref: ArcStr, mut absoluteTolerance: metamode
     Ok(res)
 }
 
-pub(crate) fn oms_setTLMSocketData(mut cref: ArcStr, mut address: ArcStr, mut managerPort: i32, mut monitorPort: i32) -> Result<i32> {
+pub fn oms_setTLMSocketData(mut cref: ArcStr, mut address: ArcStr, mut managerPort: i32, mut monitorPort: i32) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setTLMSocketData")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (address).clone() }), Arc::new(Values::Value::INTEGER { integer: managerPort }), Arc::new(Values::Value::INTEGER { integer: monitorPort })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -102,7 +102,7 @@ pub(crate) fn oms_setTLMSocketData(mut cref: ArcStr, mut address: ArcStr, mut ma
     Ok(res)
 }
 
-pub(crate) fn oms_setTLMPositionAndOrientation(mut cref: ArcStr, mut x1: metamodelica::Real, mut x2: metamodelica::Real, mut x3: metamodelica::Real, mut A11: metamodelica::Real, mut A12: metamodelica::Real, mut A13: metamodelica::Real, mut A21: metamodelica::Real, mut A22: metamodelica::Real, mut A23: metamodelica::Real, mut A31: metamodelica::Real, mut A32: metamodelica::Real, mut A33: metamodelica::Real) -> Result<i32> {
+pub fn oms_setTLMPositionAndOrientation(mut cref: ArcStr, mut x1: metamodelica::Real, mut x2: metamodelica::Real, mut x3: metamodelica::Real, mut A11: metamodelica::Real, mut A12: metamodelica::Real, mut A13: metamodelica::Real, mut A21: metamodelica::Real, mut A22: metamodelica::Real, mut A23: metamodelica::Real, mut A31: metamodelica::Real, mut A32: metamodelica::Real, mut A33: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setTLMPositionAndOrientation")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: x1 }), Arc::new(Values::Value::REAL { real: x2 }), Arc::new(Values::Value::REAL { real: x3 }), Arc::new(Values::Value::REAL { real: A11 }), Arc::new(Values::Value::REAL { real: A12 }), Arc::new(Values::Value::REAL { real: A13 }), Arc::new(Values::Value::REAL { real: A21 }), Arc::new(Values::Value::REAL { real: A22 }), Arc::new(Values::Value::REAL { real: A23 }), Arc::new(Values::Value::REAL { real: A31 }), Arc::new(Values::Value::REAL { real: A32 }), Arc::new(Values::Value::REAL { real: A33 })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -112,7 +112,7 @@ pub(crate) fn oms_setTLMPositionAndOrientation(mut cref: ArcStr, mut x1: metamod
     Ok(res)
 }
 
-pub(crate) fn oms_setTempDirectory(mut newTempDir: ArcStr) -> Result<i32> {
+pub fn oms_setTempDirectory(mut newTempDir: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setTempDirectory")).clone(), list![Arc::new(Values::Value::STRING { string: (newTempDir).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -122,7 +122,7 @@ pub(crate) fn oms_setTempDirectory(mut newTempDir: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_setStopTime(mut cref: ArcStr, mut stopTime: metamodelica::Real) -> Result<i32> {
+pub fn oms_setStopTime(mut cref: ArcStr, mut stopTime: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setStopTime")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: stopTime })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -132,7 +132,7 @@ pub(crate) fn oms_setStopTime(mut cref: ArcStr, mut stopTime: metamodelica::Real
     Ok(res)
 }
 
-pub(crate) fn oms_setStartTime(mut cref: ArcStr, mut startTime: metamodelica::Real) -> Result<i32> {
+pub fn oms_setStartTime(mut cref: ArcStr, mut startTime: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setStartTime")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: startTime })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -142,7 +142,7 @@ pub(crate) fn oms_setStartTime(mut cref: ArcStr, mut startTime: metamodelica::Re
     Ok(res)
 }
 
-pub(crate) fn oms_setSignalFilter(mut cref: ArcStr, mut regex: ArcStr) -> Result<i32> {
+pub fn oms_setSignalFilter(mut cref: ArcStr, mut regex: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setSignalFilter")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (regex).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -152,7 +152,7 @@ pub(crate) fn oms_setSignalFilter(mut cref: ArcStr, mut regex: ArcStr) -> Result
     Ok(res)
 }
 
-pub(crate) fn oms_setResultFile(mut cref: ArcStr, mut filename: ArcStr, mut bufferSize: i32) -> Result<i32> {
+pub fn oms_setResultFile(mut cref: ArcStr, mut filename: ArcStr, mut bufferSize: i32) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setResultFile")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::INTEGER { integer: bufferSize })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -162,7 +162,7 @@ pub(crate) fn oms_setResultFile(mut cref: ArcStr, mut filename: ArcStr, mut buff
     Ok(res)
 }
 
-pub(crate) fn oms_setRealInputDerivative(mut cref: ArcStr, mut value: metamodelica::Real) -> Result<i32> {
+pub fn oms_setRealInputDerivative(mut cref: ArcStr, mut value: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setRealInputDerivative")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: value })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -172,7 +172,7 @@ pub(crate) fn oms_setRealInputDerivative(mut cref: ArcStr, mut value: metamodeli
     Ok(res)
 }
 
-pub(crate) fn oms_setReal(mut cref: ArcStr, mut value: metamodelica::Real) -> Result<i32> {
+pub fn oms_setReal(mut cref: ArcStr, mut value: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setReal")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: value })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -182,7 +182,7 @@ pub(crate) fn oms_setReal(mut cref: ArcStr, mut value: metamodelica::Real) -> Re
     Ok(res)
 }
 
-pub(crate) fn oms_setLoggingLevel(mut logLevel: i32) -> Result<i32> {
+pub fn oms_setLoggingLevel(mut logLevel: i32) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setLoggingLevel")).clone(), list![Arc::new(Values::Value::INTEGER { integer: logLevel })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -192,7 +192,7 @@ pub(crate) fn oms_setLoggingLevel(mut logLevel: i32) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_setLoggingInterval(mut cref: ArcStr, mut loggingInterval: metamodelica::Real) -> Result<i32> {
+pub fn oms_setLoggingInterval(mut cref: ArcStr, mut loggingInterval: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setLoggingInterval")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: loggingInterval })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -202,7 +202,7 @@ pub(crate) fn oms_setLoggingInterval(mut cref: ArcStr, mut loggingInterval: meta
     Ok(res)
 }
 
-pub(crate) fn oms_setLogFile(mut filename: ArcStr) -> Result<i32> {
+pub fn oms_setLogFile(mut filename: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setLogFile")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -212,7 +212,7 @@ pub(crate) fn oms_setLogFile(mut filename: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_setInteger(mut cref: ArcStr, mut value: i32) -> Result<i32> {
+pub fn oms_setInteger(mut cref: ArcStr, mut value: i32) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setInteger")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::INTEGER { integer: value })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -222,7 +222,7 @@ pub(crate) fn oms_setInteger(mut cref: ArcStr, mut value: i32) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_setFixedStepSize(mut cref: ArcStr, mut stepSize: metamodelica::Real) -> Result<i32> {
+pub fn oms_setFixedStepSize(mut cref: ArcStr, mut stepSize: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setFixedStepSize")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::REAL { real: stepSize })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -232,7 +232,7 @@ pub(crate) fn oms_setFixedStepSize(mut cref: ArcStr, mut stepSize: metamodelica:
     Ok(res)
 }
 
-pub(crate) fn oms_setCommandLineOption(mut cmd: ArcStr) -> Result<i32> {
+pub fn oms_setCommandLineOption(mut cmd: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setCommandLineOption")).clone(), list![Arc::new(Values::Value::STRING { string: (cmd).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -242,7 +242,7 @@ pub(crate) fn oms_setCommandLineOption(mut cmd: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_setBoolean(mut cref: ArcStr, mut value: bool) -> Result<i32> {
+pub fn oms_setBoolean(mut cref: ArcStr, mut value: bool) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_setBoolean")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::BOOL { boolean: value })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -252,7 +252,7 @@ pub(crate) fn oms_setBoolean(mut cref: ArcStr, mut value: bool) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_RunFile(mut filename: ArcStr) -> Result<i32> {
+pub fn oms_RunFile(mut filename: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_RunFile")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -262,7 +262,7 @@ pub(crate) fn oms_RunFile(mut filename: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_reset(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_reset(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_reset")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -272,7 +272,7 @@ pub(crate) fn oms_reset(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_rename(mut cref: ArcStr, mut newCref: ArcStr) -> Result<i32> {
+pub fn oms_rename(mut cref: ArcStr, mut newCref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_rename")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (newCref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -282,7 +282,7 @@ pub(crate) fn oms_rename(mut cref: ArcStr, mut newCref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_removeSignalsFromResults(mut cref: ArcStr, mut regex: ArcStr) -> Result<i32> {
+pub fn oms_removeSignalsFromResults(mut cref: ArcStr, mut regex: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_removeSignalsFromResults")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (regex).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -292,7 +292,7 @@ pub(crate) fn oms_removeSignalsFromResults(mut cref: ArcStr, mut regex: ArcStr) 
     Ok(res)
 }
 
-pub(crate) fn oms_newModel(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_newModel(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_newModel")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -302,7 +302,7 @@ pub(crate) fn oms_newModel(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_loadSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> Result<(ArcStr, i32)> {
+pub fn oms_loadSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> Result<(ArcStr, i32)> {
     let mut res1: ArcStr;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_loadSnapshot")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (snapshot).clone() })], dummyMsg.clone())?) {
@@ -314,7 +314,7 @@ pub(crate) fn oms_loadSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> Result
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_listUnconnectedConnectors(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
+pub fn oms_listUnconnectedConnectors(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     let mut res1: ArcStr;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_listUnconnectedConnectors")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -326,7 +326,7 @@ pub(crate) fn oms_listUnconnectedConnectors(mut cref: ArcStr) -> Result<(ArcStr,
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_list(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
+pub fn oms_list(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     let mut res1: ArcStr;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_list")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -338,7 +338,7 @@ pub(crate) fn oms_list(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_instantiate(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_instantiate(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_instantiate")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -348,7 +348,7 @@ pub(crate) fn oms_instantiate(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_initialize(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_initialize(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_initialize")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -358,7 +358,7 @@ pub(crate) fn oms_initialize(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_importSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> Result<i32> {
+pub fn oms_importSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_importSnapshot")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (snapshot).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -368,7 +368,7 @@ pub(crate) fn oms_importSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> Resu
     Ok(res)
 }
 
-pub(crate) fn oms_importFile(mut filename: ArcStr) -> Result<(ArcStr, i32)> {
+pub fn oms_importFile(mut filename: ArcStr) -> Result<(ArcStr, i32)> {
     let mut res1: ArcStr;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_importFile")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
@@ -380,7 +380,7 @@ pub(crate) fn oms_importFile(mut filename: ArcStr) -> Result<(ArcStr, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getVariableStepSize(mut cref: ArcStr) -> Result<(metamodelica::Real, metamodelica::Real, metamodelica::Real, i32)> {
+pub fn oms_getVariableStepSize(mut cref: ArcStr) -> Result<(metamodelica::Real, metamodelica::Real, metamodelica::Real, i32)> {
     let mut res1: metamodelica::Real;
     let mut res2: metamodelica::Real;
     let mut res3: metamodelica::Real;
@@ -396,7 +396,7 @@ pub(crate) fn oms_getVariableStepSize(mut cref: ArcStr) -> Result<(metamodelica:
     Ok((res1, res2, res3, res4))
 }
 
-pub(crate) fn oms_getTolerance(mut cref: ArcStr) -> Result<(metamodelica::Real, metamodelica::Real, i32)> {
+pub fn oms_getTolerance(mut cref: ArcStr) -> Result<(metamodelica::Real, metamodelica::Real, i32)> {
     let mut res1: metamodelica::Real;
     let mut res2: metamodelica::Real;
     let mut res3: i32;
@@ -410,7 +410,7 @@ pub(crate) fn oms_getTolerance(mut cref: ArcStr) -> Result<(metamodelica::Real, 
     Ok((res1, res2, res3))
 }
 
-pub(crate) fn oms_getSystemType(mut cref: ArcStr) -> Result<(i32, i32)> {
+pub fn oms_getSystemType(mut cref: ArcStr) -> Result<(i32, i32)> {
     let mut res1: i32;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getSystemType")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -422,7 +422,7 @@ pub(crate) fn oms_getSystemType(mut cref: ArcStr) -> Result<(i32, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getSubModelPath(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
+pub fn oms_getSubModelPath(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     let mut res1: ArcStr;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getSubModelPath")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -434,7 +434,7 @@ pub(crate) fn oms_getSubModelPath(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getStopTime(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
+pub fn oms_getStopTime(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
     let mut res1: metamodelica::Real;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getStopTime")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -446,7 +446,7 @@ pub(crate) fn oms_getStopTime(mut cref: ArcStr) -> Result<(metamodelica::Real, i
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getStartTime(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
+pub fn oms_getStartTime(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
     let mut res1: metamodelica::Real;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getStartTime")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -458,7 +458,7 @@ pub(crate) fn oms_getStartTime(mut cref: ArcStr) -> Result<(metamodelica::Real, 
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getSolver(mut cref: ArcStr) -> Result<(i32, i32)> {
+pub fn oms_getSolver(mut cref: ArcStr) -> Result<(i32, i32)> {
     let mut res1: i32;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getSolver")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -470,7 +470,7 @@ pub(crate) fn oms_getSolver(mut cref: ArcStr) -> Result<(i32, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getReal(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
+pub fn oms_getReal(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
     let mut res1: metamodelica::Real;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getReal")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -482,7 +482,7 @@ pub(crate) fn oms_getReal(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)>
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getModelState(mut cref: ArcStr) -> Result<(i32, i32)> {
+pub fn oms_getModelState(mut cref: ArcStr) -> Result<(i32, i32)> {
     let mut res1: i32;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getModelState")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -494,7 +494,7 @@ pub(crate) fn oms_getModelState(mut cref: ArcStr) -> Result<(i32, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getInteger(mut cref: ArcStr, mut value: i32) -> Result<i32> {
+pub fn oms_getInteger(mut cref: ArcStr, mut value: i32) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getInteger")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::INTEGER { integer: value })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -504,7 +504,7 @@ pub(crate) fn oms_getInteger(mut cref: ArcStr, mut value: i32) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_getFixedStepSize(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
+pub fn oms_getFixedStepSize(mut cref: ArcStr) -> Result<(metamodelica::Real, i32)> {
     let mut res1: metamodelica::Real;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getFixedStepSize")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -516,7 +516,7 @@ pub(crate) fn oms_getFixedStepSize(mut cref: ArcStr) -> Result<(metamodelica::Re
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_getBoolean(mut cref: ArcStr) -> Result<(bool, i32)> {
+pub fn oms_getBoolean(mut cref: ArcStr) -> Result<(bool, i32)> {
     let mut res1: bool;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_getBoolean")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -528,7 +528,7 @@ pub(crate) fn oms_getBoolean(mut cref: ArcStr) -> Result<(bool, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_extractFMIKind(mut filename: ArcStr) -> Result<(i32, i32)> {
+pub fn oms_extractFMIKind(mut filename: ArcStr) -> Result<(i32, i32)> {
     let mut res1: i32;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_extractFMIKind")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
@@ -540,7 +540,7 @@ pub(crate) fn oms_extractFMIKind(mut filename: ArcStr) -> Result<(i32, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_exportSnapshot(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
+pub fn oms_exportSnapshot(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     let mut res1: ArcStr;
     let mut res2: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_exportSnapshot")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
@@ -552,7 +552,7 @@ pub(crate) fn oms_exportSnapshot(mut cref: ArcStr) -> Result<(ArcStr, i32)> {
     Ok((res1, res2))
 }
 
-pub(crate) fn oms_exportDependencyGraphs(mut cref: ArcStr, mut initialization: ArcStr, mut event: ArcStr, mut simulation: ArcStr) -> Result<i32> {
+pub fn oms_exportDependencyGraphs(mut cref: ArcStr, mut initialization: ArcStr, mut event: ArcStr, mut simulation: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_exportDependencyGraphs")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (initialization).clone() }), Arc::new(Values::Value::STRING { string: (event).clone() }), Arc::new(Values::Value::STRING { string: (simulation).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -562,7 +562,7 @@ pub(crate) fn oms_exportDependencyGraphs(mut cref: ArcStr, mut initialization: A
     Ok(res)
 }
 
-pub(crate) fn oms_export(mut cref: ArcStr, mut filename: ArcStr) -> Result<i32> {
+pub fn oms_export(mut cref: ArcStr, mut filename: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_export")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -572,7 +572,7 @@ pub(crate) fn oms_export(mut cref: ArcStr, mut filename: ArcStr) -> Result<i32> 
     Ok(res)
 }
 
-pub(crate) fn oms_deleteConnectorFromTLMBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> Result<i32> {
+pub fn oms_deleteConnectorFromTLMBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_deleteConnectorFromTLMBus")).clone(), list![Arc::new(Values::Value::STRING { string: (busCref).clone() }), Arc::new(Values::Value::STRING { string: (connectorCref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -582,7 +582,7 @@ pub(crate) fn oms_deleteConnectorFromTLMBus(mut busCref: ArcStr, mut connectorCr
     Ok(res)
 }
 
-pub(crate) fn oms_deleteConnectorFromBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> Result<i32> {
+pub fn oms_deleteConnectorFromBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_deleteConnectorFromBus")).clone(), list![Arc::new(Values::Value::STRING { string: (busCref).clone() }), Arc::new(Values::Value::STRING { string: (connectorCref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -592,7 +592,7 @@ pub(crate) fn oms_deleteConnectorFromBus(mut busCref: ArcStr, mut connectorCref:
     Ok(res)
 }
 
-pub(crate) fn oms_deleteConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> Result<i32> {
+pub fn oms_deleteConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_deleteConnection")).clone(), list![Arc::new(Values::Value::STRING { string: (crefA).clone() }), Arc::new(Values::Value::STRING { string: (crefB).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -602,7 +602,7 @@ pub(crate) fn oms_deleteConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> Resu
     Ok(res)
 }
 
-pub(crate) fn oms_delete(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_delete(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_delete")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -612,7 +612,7 @@ pub(crate) fn oms_delete(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_copySystem(mut source: ArcStr, mut target: ArcStr) -> Result<i32> {
+pub fn oms_copySystem(mut source: ArcStr, mut target: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_copySystem")).clone(), list![Arc::new(Values::Value::STRING { string: (source).clone() }), Arc::new(Values::Value::STRING { string: (target).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -622,7 +622,7 @@ pub(crate) fn oms_copySystem(mut source: ArcStr, mut target: ArcStr) -> Result<i
     Ok(res)
 }
 
-pub(crate) fn oms_compareSimulationResults(mut filenameA: ArcStr, mut filenameB: ArcStr, mut var: ArcStr, mut relTol: metamodelica::Real, mut absTol: metamodelica::Real) -> Result<i32> {
+pub fn oms_compareSimulationResults(mut filenameA: ArcStr, mut filenameB: ArcStr, mut var: ArcStr, mut relTol: metamodelica::Real, mut absTol: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_compareSimulationResults")).clone(), list![Arc::new(Values::Value::STRING { string: (filenameA).clone() }), Arc::new(Values::Value::STRING { string: (filenameB).clone() }), Arc::new(Values::Value::STRING { string: (var).clone() }), Arc::new(Values::Value::REAL { real: relTol }), Arc::new(Values::Value::REAL { real: absTol })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -632,7 +632,7 @@ pub(crate) fn oms_compareSimulationResults(mut filenameA: ArcStr, mut filenameB:
     Ok(res)
 }
 
-pub(crate) fn oms_addTLMConnection(mut crefA: ArcStr, mut crefB: ArcStr, mut delay: metamodelica::Real, mut alpha: metamodelica::Real, mut linearimpedance: metamodelica::Real, mut angularimpedance: metamodelica::Real) -> Result<i32> {
+pub fn oms_addTLMConnection(mut crefA: ArcStr, mut crefB: ArcStr, mut delay: metamodelica::Real, mut alpha: metamodelica::Real, mut linearimpedance: metamodelica::Real, mut angularimpedance: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addTLMConnection")).clone(), list![Arc::new(Values::Value::STRING { string: (crefA).clone() }), Arc::new(Values::Value::STRING { string: (crefB).clone() }), Arc::new(Values::Value::REAL { real: delay }), Arc::new(Values::Value::REAL { real: alpha }), Arc::new(Values::Value::REAL { real: linearimpedance }), Arc::new(Values::Value::REAL { real: angularimpedance })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -642,7 +642,7 @@ pub(crate) fn oms_addTLMConnection(mut crefA: ArcStr, mut crefB: ArcStr, mut del
     Ok(res)
 }
 
-pub(crate) fn oms_addTimeIndicator(mut signal: ArcStr) -> Result<i32> {
+pub fn oms_addTimeIndicator(mut signal: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addTimeIndicator")).clone(), list![Arc::new(Values::Value::STRING { string: (signal).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -652,7 +652,7 @@ pub(crate) fn oms_addTimeIndicator(mut signal: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_addSubModel(mut cref: ArcStr, mut fmuPath: ArcStr) -> Result<i32> {
+pub fn oms_addSubModel(mut cref: ArcStr, mut fmuPath: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addSubModel")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (fmuPath).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -662,7 +662,7 @@ pub(crate) fn oms_addSubModel(mut cref: ArcStr, mut fmuPath: ArcStr) -> Result<i
     Ok(res)
 }
 
-pub(crate) fn oms_addStaticValueIndicator(mut signal: ArcStr, mut lower: metamodelica::Real, mut upper: metamodelica::Real, mut stepSize: metamodelica::Real) -> Result<i32> {
+pub fn oms_addStaticValueIndicator(mut signal: ArcStr, mut lower: metamodelica::Real, mut upper: metamodelica::Real, mut stepSize: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addStaticValueIndicator")).clone(), list![Arc::new(Values::Value::STRING { string: (signal).clone() }), Arc::new(Values::Value::REAL { real: lower }), Arc::new(Values::Value::REAL { real: upper }), Arc::new(Values::Value::REAL { real: stepSize })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -672,7 +672,7 @@ pub(crate) fn oms_addStaticValueIndicator(mut signal: ArcStr, mut lower: metamod
     Ok(res)
 }
 
-pub(crate) fn oms_addSignalsToResults(mut cref: ArcStr, mut regex: ArcStr) -> Result<i32> {
+pub fn oms_addSignalsToResults(mut cref: ArcStr, mut regex: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addSignalsToResults")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (regex).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -682,7 +682,7 @@ pub(crate) fn oms_addSignalsToResults(mut cref: ArcStr, mut regex: ArcStr) -> Re
     Ok(res)
 }
 
-pub(crate) fn oms_addExternalModel(mut cref: ArcStr, mut path: ArcStr, mut startscript: ArcStr) -> Result<i32> {
+pub fn oms_addExternalModel(mut cref: ArcStr, mut path: ArcStr, mut startscript: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addExternalModel")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() }), Arc::new(Values::Value::STRING { string: (path).clone() }), Arc::new(Values::Value::STRING { string: (startscript).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -692,7 +692,7 @@ pub(crate) fn oms_addExternalModel(mut cref: ArcStr, mut path: ArcStr, mut start
     Ok(res)
 }
 
-pub(crate) fn oms_addEventIndicator(mut signal: ArcStr) -> Result<i32> {
+pub fn oms_addEventIndicator(mut signal: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addEventIndicator")).clone(), list![Arc::new(Values::Value::STRING { string: (signal).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -702,7 +702,7 @@ pub(crate) fn oms_addEventIndicator(mut signal: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn oms_addDynamicValueIndicator(mut signal: ArcStr, mut lower: ArcStr, mut upper: ArcStr, mut stepSize: metamodelica::Real) -> Result<i32> {
+pub fn oms_addDynamicValueIndicator(mut signal: ArcStr, mut lower: ArcStr, mut upper: ArcStr, mut stepSize: metamodelica::Real) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addDynamicValueIndicator")).clone(), list![Arc::new(Values::Value::STRING { string: (signal).clone() }), Arc::new(Values::Value::STRING { string: (lower).clone() }), Arc::new(Values::Value::STRING { string: (upper).clone() }), Arc::new(Values::Value::REAL { real: stepSize })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -712,7 +712,7 @@ pub(crate) fn oms_addDynamicValueIndicator(mut signal: ArcStr, mut lower: ArcStr
     Ok(res)
 }
 
-pub(crate) fn oms_addConnectorToTLMBus(mut busCref: ArcStr, mut connectorCref: ArcStr, mut type_: ArcStr) -> Result<i32> {
+pub fn oms_addConnectorToTLMBus(mut busCref: ArcStr, mut connectorCref: ArcStr, mut type_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addConnectorToTLMBus")).clone(), list![Arc::new(Values::Value::STRING { string: (busCref).clone() }), Arc::new(Values::Value::STRING { string: (connectorCref).clone() }), Arc::new(Values::Value::STRING { string: (type_).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -722,7 +722,7 @@ pub(crate) fn oms_addConnectorToTLMBus(mut busCref: ArcStr, mut connectorCref: A
     Ok(res)
 }
 
-pub(crate) fn oms_addConnectorToBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> Result<i32> {
+pub fn oms_addConnectorToBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addConnectorToBus")).clone(), list![Arc::new(Values::Value::STRING { string: (busCref).clone() }), Arc::new(Values::Value::STRING { string: (connectorCref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -732,7 +732,7 @@ pub(crate) fn oms_addConnectorToBus(mut busCref: ArcStr, mut connectorCref: ArcS
     Ok(res)
 }
 
-pub(crate) fn oms_addConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> Result<i32> {
+pub fn oms_addConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addConnection")).clone(), list![Arc::new(Values::Value::STRING { string: (crefA).clone() }), Arc::new(Values::Value::STRING { string: (crefB).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -742,7 +742,7 @@ pub(crate) fn oms_addConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> Result<
     Ok(res)
 }
 
-pub(crate) fn oms_addBus(mut cref: ArcStr) -> Result<i32> {
+pub fn oms_addBus(mut cref: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("oms_addBus")).clone(), list![Arc::new(Values::Value::STRING { string: (cref).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -752,7 +752,7 @@ pub(crate) fn oms_addBus(mut cref: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn unloadOMSimulator() -> Result<i32> {
+pub fn unloadOMSimulator() -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("unloadOMSimulator")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -762,7 +762,7 @@ pub(crate) fn unloadOMSimulator() -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn loadOMSimulator() -> Result<i32> {
+pub fn loadOMSimulator() -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadOMSimulator")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -772,7 +772,7 @@ pub(crate) fn loadOMSimulator() -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn reverseLookup(mut name: ArcStr, mut scope: ArcStr, mut exactMatch: bool, mut prettyPrint: bool) -> Result<ArcStr> {
+pub fn reverseLookup(mut name: ArcStr, mut scope: ArcStr, mut exactMatch: bool, mut prettyPrint: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("reverseLookup")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((name).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((scope).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: exactMatch }), Arc::new(Values::Value::BOOL { boolean: prettyPrint })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -782,7 +782,7 @@ pub(crate) fn reverseLookup(mut name: ArcStr, mut scope: ArcStr, mut exactMatch:
     Ok(res)
 }
 
-pub(crate) fn getDefinitions(mut addFunctions: bool) -> Result<ArcStr> {
+pub fn getDefinitions(mut addFunctions: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDefinitions")).clone(), list![Arc::new(Values::Value::BOOL { boolean: addFunctions })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -792,7 +792,7 @@ pub(crate) fn getDefinitions(mut addFunctions: bool) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn qualifyPath(mut classPath: ArcStr, mut path: ArcStr) -> Result<ArcStr> {
+pub fn qualifyPath(mut classPath: ArcStr, mut path: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut res_path: Arc<Absyn::Path>;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("qualifyPath")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((classPath).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((path).clone())? }) })], dummyMsg.clone())?) {
@@ -804,7 +804,7 @@ pub(crate) fn qualifyPath(mut classPath: ArcStr, mut path: ArcStr) -> Result<Arc
     Ok(res)
 }
 
-pub(crate) fn restoreAST(mut id: i32) -> Result<bool> {
+pub fn restoreAST(mut id: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("restoreAST")).clone(), list![Arc::new(Values::Value::INTEGER { integer: id })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -814,7 +814,7 @@ pub(crate) fn restoreAST(mut id: i32) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn storeAST() -> Result<i32> {
+pub fn storeAST() -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("storeAST")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -824,7 +824,7 @@ pub(crate) fn storeAST() -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn modifierToJSON(mut modifier: ArcStr, mut prettyPrint: bool) -> Result<ArcStr> {
+pub fn modifierToJSON(mut modifier: ArcStr, mut prettyPrint: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("modifierToJSON")).clone(), list![Arc::new(Values::Value::STRING { string: (modifier).clone() }), Arc::new(Values::Value::BOOL { boolean: prettyPrint })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -834,7 +834,7 @@ pub(crate) fn modifierToJSON(mut modifier: ArcStr, mut prettyPrint: bool) -> Res
     Ok(res)
 }
 
-pub(crate) fn releaseModelInstanceReference(mut handle: i32) -> Result<bool> {
+pub fn releaseModelInstanceReference(mut handle: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("releaseModelInstanceReference")).clone(), list![Arc::new(Values::Value::INTEGER { integer: handle })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -844,7 +844,7 @@ pub(crate) fn releaseModelInstanceReference(mut handle: i32) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getModelInstanceAnnotationReference(mut className: ArcStr, mut filter: Arc<metamodelica::List<ArcStr>>) -> Result<i32> {
+pub fn getModelInstanceAnnotationReference(mut className: ArcStr, mut filter: Arc<metamodelica::List<ArcStr>>) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstanceAnnotationReference")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -861,7 +861,7 @@ pub(crate) fn getModelInstanceAnnotationReference(mut className: ArcStr, mut fil
     Ok(res)
 }
 
-pub(crate) fn getModelInstanceReference(mut className: ArcStr, mut context: ArcStr, mut modifier: ArcStr) -> Result<i32> {
+pub fn getModelInstanceReference(mut className: ArcStr, mut context: ArcStr, mut modifier: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstanceReference")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((context).clone())? }) }), Arc::new(Values::Value::STRING { string: (modifier).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -871,7 +871,7 @@ pub(crate) fn getModelInstanceReference(mut className: ArcStr, mut context: ArcS
     Ok(res)
 }
 
-pub(crate) fn getModelInstanceAnnotation(mut className: ArcStr, mut filter: Arc<metamodelica::List<ArcStr>>, mut prettyPrint: bool) -> Result<ArcStr> {
+pub fn getModelInstanceAnnotation(mut className: ArcStr, mut filter: Arc<metamodelica::List<ArcStr>>, mut prettyPrint: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstanceAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -888,7 +888,7 @@ pub(crate) fn getModelInstanceAnnotation(mut className: ArcStr, mut filter: Arc<
     Ok(res)
 }
 
-pub(crate) fn getModelInstance(mut className: ArcStr, mut context: ArcStr, mut modifier: ArcStr, mut prettyPrint: bool) -> Result<ArcStr> {
+pub fn getModelInstance(mut className: ArcStr, mut context: ArcStr, mut modifier: ArcStr, mut prettyPrint: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelInstance")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((context).clone())? }) }), Arc::new(Values::Value::STRING { string: (modifier).clone() }), Arc::new(Values::Value::BOOL { boolean: prettyPrint })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -898,7 +898,7 @@ pub(crate) fn getModelInstance(mut className: ArcStr, mut context: ArcStr, mut m
     Ok(res)
 }
 
-pub(crate) fn convertPackageToLibrary(mut packageToConvert: ArcStr, mut library: ArcStr, mut libraryVersion: ArcStr) -> Result<bool> {
+pub fn convertPackageToLibrary(mut packageToConvert: ArcStr, mut library: ArcStr, mut libraryVersion: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("convertPackageToLibrary")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((packageToConvert).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((library).clone())? }) }), Arc::new(Values::Value::STRING { string: (libraryVersion).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -908,7 +908,7 @@ pub(crate) fn convertPackageToLibrary(mut packageToConvert: ArcStr, mut library:
     Ok(res)
 }
 
-pub(crate) fn runConversionScript(mut packageToConvert: ArcStr, mut scriptFile: ArcStr) -> Result<bool> {
+pub fn runConversionScript(mut packageToConvert: ArcStr, mut scriptFile: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("runConversionScript")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((packageToConvert).clone())? }) }), Arc::new(Values::Value::STRING { string: (scriptFile).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -918,7 +918,7 @@ pub(crate) fn runConversionScript(mut packageToConvert: ArcStr, mut scriptFile: 
     Ok(res)
 }
 
-pub(crate) fn generateScriptingAPI(mut cl: ArcStr, mut name: ArcStr) -> Result<(bool, ArcStr, ArcStr, ArcStr)> {
+pub fn generateScriptingAPI(mut cl: ArcStr, mut name: ArcStr) -> Result<(bool, ArcStr, ArcStr, ArcStr)> {
     let mut res1: bool;
     let mut res2: ArcStr;
     let mut res3: ArcStr;
@@ -934,7 +934,7 @@ pub(crate) fn generateScriptingAPI(mut cl: ArcStr, mut name: ArcStr) -> Result<(
     Ok((res1, res2, res3, res4))
 }
 
-pub(crate) fn deleteInitialState(mut cl: ArcStr, mut state: ArcStr) -> Result<bool> {
+pub fn deleteInitialState(mut cl: ArcStr, mut state: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("deleteInitialState")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) }), Arc::new(Values::Value::STRING { string: (state).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -944,7 +944,7 @@ pub(crate) fn deleteInitialState(mut cl: ArcStr, mut state: ArcStr) -> Result<bo
     Ok(res)
 }
 
-pub(crate) fn getInitialStates(mut cl: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub fn getInitialStates(mut cl: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInitialStates")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?;
@@ -969,7 +969,7 @@ pub(crate) fn getInitialStates(mut cl: ArcStr) -> Result<Arc<metamodelica::List<
     Ok(res)
 }
 
-pub(crate) fn deleteTransition(mut cl: ArcStr, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32) -> Result<bool> {
+pub fn deleteTransition(mut cl: ArcStr, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("deleteTransition")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) }), Arc::new(Values::Value::STRING { string: (from).clone() }), Arc::new(Values::Value::STRING { string: (to).clone() }), Arc::new(Values::Value::STRING { string: (condition).clone() }), Arc::new(Values::Value::BOOL { boolean: immediate }), Arc::new(Values::Value::BOOL { boolean: reset }), Arc::new(Values::Value::BOOL { boolean: synchronize }), Arc::new(Values::Value::INTEGER { integer: priority })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -979,7 +979,7 @@ pub(crate) fn deleteTransition(mut cl: ArcStr, mut from: ArcStr, mut to: ArcStr,
     Ok(res)
 }
 
-pub(crate) fn getTransitions(mut cl: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub fn getTransitions(mut cl: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getTransitions")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?;
@@ -1004,7 +1004,7 @@ pub(crate) fn getTransitions(mut cl: ArcStr) -> Result<Arc<metamodelica::List<Ar
     Ok(res)
 }
 
-pub(crate) fn getEnumerationLiterals(mut className: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getEnumerationLiterals(mut className: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getEnumerationLiterals")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?;
@@ -1022,7 +1022,7 @@ pub(crate) fn getEnumerationLiterals(mut className: ArcStr) -> Result<Arc<metamo
     Ok(res)
 }
 
-pub(crate) fn getDefaultComponentPrefixes(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn getDefaultComponentPrefixes(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDefaultComponentPrefixes")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1032,7 +1032,7 @@ pub(crate) fn getDefaultComponentPrefixes(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getDefaultComponentName(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn getDefaultComponentName(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDefaultComponentName")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1042,7 +1042,7 @@ pub(crate) fn getDefaultComponentName(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getClassInformation(mut cl: ArcStr) -> Result<(ArcStr, ArcStr, bool, bool, bool, ArcStr, bool, i32, i32, i32, i32, Arc<metamodelica::List<ArcStr>>, bool, bool, ArcStr, ArcStr, bool, ArcStr, ArcStr, ArcStr, ArcStr, ArcStr)> {
+pub fn getClassInformation(mut cl: ArcStr) -> Result<(ArcStr, ArcStr, bool, bool, bool, ArcStr, bool, i32, i32, i32, i32, Arc<metamodelica::List<ArcStr>>, bool, bool, ArcStr, ArcStr, bool, ArcStr, ArcStr, ArcStr, ArcStr, ArcStr)> {
     let mut res1: ArcStr;
     let mut res2: ArcStr;
     let mut res3: bool;
@@ -1106,7 +1106,7 @@ pub(crate) fn getClassInformation(mut cl: ArcStr) -> Result<(ArcStr, ArcStr, boo
     Ok((res1, res2, res3, res4, res5, res6, res7, res8, res9, res10, res11, res12, res13, res14, res15, res16, res17, res18, res19, res20, res21, res22))
 }
 
-pub(crate) fn sortStrings(mut arr: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn sortStrings(mut arr: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("sortStrings")).clone(), list![ValuesMake::makeArray(({
@@ -1131,7 +1131,7 @@ pub(crate) fn sortStrings(mut arr: Arc<metamodelica::List<ArcStr>>) -> Result<Ar
     Ok(res)
 }
 
-pub(crate) fn checkInterfaceOfPackages(mut cl: ArcStr, mut dependencyMatrix: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<bool> {
+pub fn checkInterfaceOfPackages(mut cl: ArcStr, mut dependencyMatrix: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("checkInterfaceOfPackages")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -1155,7 +1155,7 @@ pub(crate) fn checkInterfaceOfPackages(mut cl: ArcStr, mut dependencyMatrix: Arc
     Ok(res)
 }
 
-pub(crate) fn GC_set_max_heap_size(mut size: i32) -> Result<bool> {
+pub fn GC_set_max_heap_size(mut size: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("GC_set_max_heap_size")).clone(), list![Arc::new(Values::Value::INTEGER { integer: size })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1165,7 +1165,7 @@ pub(crate) fn GC_set_max_heap_size(mut size: i32) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn GC_expand_hp(mut size: i32) -> Result<bool> {
+pub fn GC_expand_hp(mut size: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("GC_expand_hp")).clone(), list![Arc::new(Values::Value::INTEGER { integer: size })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1175,7 +1175,7 @@ pub(crate) fn GC_expand_hp(mut size: i32) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn GC_gcollect_and_unmap() -> Result<()> {
+pub fn GC_gcollect_and_unmap() -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("GC_gcollect_and_unmap")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
@@ -1183,7 +1183,7 @@ pub(crate) fn GC_gcollect_and_unmap() -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn getMemorySize() -> Result<metamodelica::Real> {
+pub fn getMemorySize() -> Result<metamodelica::Real> {
     let mut res: metamodelica::Real;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getMemorySize")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::REAL { real: __pa0 }) => __pa0.clone(),
@@ -1193,7 +1193,7 @@ pub(crate) fn getMemorySize() -> Result<metamodelica::Real> {
     Ok(res)
 }
 
-pub(crate) fn threadWorkFailed() -> Result<()> {
+pub fn threadWorkFailed() -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("threadWorkFailed")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
@@ -1201,7 +1201,7 @@ pub(crate) fn threadWorkFailed() -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn exit(mut status: i32) -> Result<()> {
+pub fn exit(mut status: i32) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("exit")).clone(), list![Arc::new(Values::Value::INTEGER { integer: status })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
@@ -1209,7 +1209,7 @@ pub(crate) fn exit(mut status: i32) -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn runScriptParallel(mut scripts: Arc<metamodelica::List<ArcStr>>, mut numThreads: i32, mut useThreads: bool) -> Result<Arc<metamodelica::List<bool>>> {
+pub fn runScriptParallel(mut scripts: Arc<metamodelica::List<ArcStr>>, mut numThreads: i32, mut useThreads: bool) -> Result<Arc<metamodelica::List<bool>>> {
     let mut res: Arc<metamodelica::List<bool>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("runScriptParallel")).clone(), list![ValuesMake::makeArray(({
@@ -1234,7 +1234,7 @@ pub(crate) fn runScriptParallel(mut scripts: Arc<metamodelica::List<ArcStr>>, mu
     Ok(res)
 }
 
-pub(crate) fn numProcessors() -> Result<i32> {
+pub fn numProcessors() -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("numProcessors")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -1244,7 +1244,7 @@ pub(crate) fn numProcessors() -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn generateEntryPoint(mut fileName: ArcStr, mut entryPoint: ArcStr, mut url: ArcStr) -> Result<()> {
+pub fn generateEntryPoint(mut fileName: ArcStr, mut entryPoint: ArcStr, mut url: ArcStr) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateEntryPoint")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((entryPoint).clone())? }) }), Arc::new(Values::Value::STRING { string: (url).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
@@ -1252,7 +1252,7 @@ pub(crate) fn generateEntryPoint(mut fileName: ArcStr, mut entryPoint: ArcStr, m
     Ok(())
 }
 
-pub(crate) fn getDerivedClassModifierValue(mut className: ArcStr, mut modifierName: ArcStr) -> Result<ArcStr> {
+pub fn getDerivedClassModifierValue(mut className: ArcStr, mut modifierName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDerivedClassModifierValue")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modifierName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1262,7 +1262,7 @@ pub(crate) fn getDerivedClassModifierValue(mut className: ArcStr, mut modifierNa
     Ok(res)
 }
 
-pub(crate) fn getDerivedClassModifierNames(mut className: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getDerivedClassModifierNames(mut className: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDerivedClassModifierNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?;
@@ -1280,7 +1280,7 @@ pub(crate) fn getDerivedClassModifierNames(mut className: ArcStr) -> Result<Arc<
     Ok(res)
 }
 
-pub(crate) fn getConversionsFromVersions(mut pack: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub fn getConversionsFromVersions(mut pack: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: Arc<metamodelica::List<ArcStr>>;
     let mut res2: Arc<metamodelica::List<ArcStr>>;
     let mut res1_arr: Arc<Values::Value>;
@@ -1316,7 +1316,7 @@ pub(crate) fn getConversionsFromVersions(mut pack: ArcStr) -> Result<(Arc<metamo
     Ok((res1, res2))
 }
 
-pub(crate) fn getUses(mut pack: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub fn getUses(mut pack: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getUses")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((pack).clone())? }) })], dummyMsg.clone())?;
@@ -1341,7 +1341,7 @@ pub(crate) fn getUses(mut pack: ArcStr) -> Result<Arc<metamodelica::List<Arc<met
     Ok(res)
 }
 
-pub(crate) fn upgradeInstalledPackages(mut installNewestVersions: bool) -> Result<bool> {
+pub fn upgradeInstalledPackages(mut installNewestVersions: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("upgradeInstalledPackages")).clone(), list![Arc::new(Values::Value::BOOL { boolean: installNewestVersions })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1351,7 +1351,7 @@ pub(crate) fn upgradeInstalledPackages(mut installNewestVersions: bool) -> Resul
     Ok(res)
 }
 
-pub(crate) fn getAvailablePackageConversionsFrom(mut pkg: ArcStr, mut version: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAvailablePackageConversionsFrom(mut pkg: ArcStr, mut version: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAvailablePackageConversionsFrom")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((pkg).clone())? }) }), Arc::new(Values::Value::STRING { string: (version).clone() })], dummyMsg.clone())?;
@@ -1369,7 +1369,7 @@ pub(crate) fn getAvailablePackageConversionsFrom(mut pkg: ArcStr, mut version: A
     Ok(res)
 }
 
-pub(crate) fn getAvailablePackageConversionsTo(mut pkg: ArcStr, mut version: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAvailablePackageConversionsTo(mut pkg: ArcStr, mut version: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAvailablePackageConversionsTo")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((pkg).clone())? }) }), Arc::new(Values::Value::STRING { string: (version).clone() })], dummyMsg.clone())?;
@@ -1387,7 +1387,7 @@ pub(crate) fn getAvailablePackageConversionsTo(mut pkg: ArcStr, mut version: Arc
     Ok(res)
 }
 
-pub(crate) fn getAvailablePackageVersions(mut pkg: ArcStr, mut version: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAvailablePackageVersions(mut pkg: ArcStr, mut version: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAvailablePackageVersions")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((pkg).clone())? }) }), Arc::new(Values::Value::STRING { string: (version).clone() })], dummyMsg.clone())?;
@@ -1405,7 +1405,7 @@ pub(crate) fn getAvailablePackageVersions(mut pkg: ArcStr, mut version: ArcStr) 
     Ok(res)
 }
 
-pub(crate) fn updatePackageIndex() -> Result<bool> {
+pub fn updatePackageIndex() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("updatePackageIndex")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1415,7 +1415,7 @@ pub(crate) fn updatePackageIndex() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool) -> Result<bool> {
+pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("installPackage")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((pkg).clone())? }) }), Arc::new(Values::Value::STRING { string: (version).clone() }), Arc::new(Values::Value::BOOL { boolean: exactMatch })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1425,7 +1425,7 @@ pub(crate) fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatc
     Ok(res)
 }
 
-pub(crate) fn getAvailableLibraryVersions(mut libraryName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAvailableLibraryVersions(mut libraryName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAvailableLibraryVersions")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((libraryName).clone())? }) })], dummyMsg.clone())?;
@@ -1443,7 +1443,7 @@ pub(crate) fn getAvailableLibraryVersions(mut libraryName: ArcStr) -> Result<Arc
     Ok(res)
 }
 
-pub(crate) fn getAvailableLibraries() -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAvailableLibraries() -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAvailableLibraries")).clone(), metamodelica::nil(), dummyMsg.clone())?;
@@ -1461,7 +1461,7 @@ pub(crate) fn getAvailableLibraries() -> Result<Arc<metamodelica::List<ArcStr>>>
     Ok(res)
 }
 
-pub(crate) fn searchClassNames(mut searchText: ArcStr, mut findInText: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn searchClassNames(mut searchText: ArcStr, mut findInText: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("searchClassNames")).clone(), list![Arc::new(Values::Value::STRING { string: (searchText).clone() }), Arc::new(Values::Value::BOOL { boolean: findInText })], dummyMsg.clone())?;
@@ -1476,7 +1476,7 @@ pub(crate) fn searchClassNames(mut searchText: ArcStr, mut findInText: bool) -> 
     Ok(res)
 }
 
-pub(crate) fn extendsFrom(mut className: ArcStr, mut baseClassName: ArcStr) -> Result<bool> {
+pub fn extendsFrom(mut className: ArcStr, mut baseClassName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("extendsFrom")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((baseClassName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1486,7 +1486,7 @@ pub(crate) fn extendsFrom(mut className: ArcStr, mut baseClassName: ArcStr) -> R
     Ok(res)
 }
 
-pub(crate) fn getBooleanClassAnnotation(mut className: ArcStr, mut annotationName: ArcStr) -> Result<bool> {
+pub fn getBooleanClassAnnotation(mut className: ArcStr, mut annotationName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getBooleanClassAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((annotationName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1496,7 +1496,7 @@ pub(crate) fn getBooleanClassAnnotation(mut className: ArcStr, mut annotationNam
     Ok(res)
 }
 
-pub(crate) fn classAnnotationExists(mut className: ArcStr, mut annotationName: ArcStr) -> Result<bool> {
+pub fn classAnnotationExists(mut className: ArcStr, mut annotationName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("classAnnotationExists")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((annotationName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1506,7 +1506,7 @@ pub(crate) fn classAnnotationExists(mut className: ArcStr, mut annotationName: A
     Ok(res)
 }
 
-pub(crate) fn getAnnotationModifierValue(mut className: ArcStr, mut annotationName: ArcStr, mut modifierName: ArcStr) -> Result<ArcStr> {
+pub fn getAnnotationModifierValue(mut className: ArcStr, mut annotationName: ArcStr, mut modifierName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAnnotationModifierValue")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (annotationName).clone() }), Arc::new(Values::Value::STRING { string: (modifierName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1516,7 +1516,7 @@ pub(crate) fn getAnnotationModifierValue(mut className: ArcStr, mut annotationNa
     Ok(res)
 }
 
-pub(crate) fn getAnnotationNamedModifiers(mut className: ArcStr, mut annotationName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAnnotationNamedModifiers(mut className: ArcStr, mut annotationName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAnnotationNamedModifiers")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (annotationName).clone() })], dummyMsg.clone())?;
@@ -1534,7 +1534,7 @@ pub(crate) fn getAnnotationNamedModifiers(mut className: ArcStr, mut annotationN
     Ok(res)
 }
 
-pub(crate) fn getSimulationOptions(mut name: ArcStr, mut defaultStartTime: metamodelica::Real, mut defaultStopTime: metamodelica::Real, mut defaultTolerance: metamodelica::Real, mut defaultNumberOfIntervals: i32, mut defaultInterval: metamodelica::Real) -> Result<(metamodelica::Real, metamodelica::Real, metamodelica::Real, i32, metamodelica::Real)> {
+pub fn getSimulationOptions(mut name: ArcStr, mut defaultStartTime: metamodelica::Real, mut defaultStopTime: metamodelica::Real, mut defaultTolerance: metamodelica::Real, mut defaultNumberOfIntervals: i32, mut defaultInterval: metamodelica::Real) -> Result<(metamodelica::Real, metamodelica::Real, metamodelica::Real, i32, metamodelica::Real)> {
     let mut res1: metamodelica::Real;
     let mut res2: metamodelica::Real;
     let mut res3: metamodelica::Real;
@@ -1552,7 +1552,7 @@ pub(crate) fn getSimulationOptions(mut name: ArcStr, mut defaultStartTime: metam
     Ok((res1, res2, res3, res4, res5))
 }
 
-pub(crate) fn isExperiment(mut name: ArcStr) -> Result<bool> {
+pub fn isExperiment(mut name: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isExperiment")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((name).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1562,7 +1562,7 @@ pub(crate) fn isExperiment(mut name: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getNthInheritedClass(mut className: ArcStr, mut n: i32) -> Result<ArcStr> {
+pub fn getNthInheritedClass(mut className: ArcStr, mut n: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut res_path: Arc<Absyn::Path>;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthInheritedClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: n })], dummyMsg.clone())?) {
@@ -1574,7 +1574,7 @@ pub(crate) fn getNthInheritedClass(mut className: ArcStr, mut n: i32) -> Result<
     Ok(res)
 }
 
-pub(crate) fn getInheritedClasses(mut name: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getInheritedClasses(mut name: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInheritedClasses")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((name).clone())? }) })], dummyMsg.clone())?;
@@ -1589,7 +1589,7 @@ pub(crate) fn getInheritedClasses(mut name: ArcStr) -> Result<Arc<metamodelica::
     Ok(res)
 }
 
-pub(crate) fn getInheritanceCount(mut className: ArcStr) -> Result<i32> {
+pub fn getInheritanceCount(mut className: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInheritanceCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -1599,7 +1599,7 @@ pub(crate) fn getInheritanceCount(mut className: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn isProtected(mut componentName: ArcStr, mut className: ArcStr) -> Result<bool> {
+pub fn isProtected(mut componentName: ArcStr, mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isProtected")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1609,7 +1609,7 @@ pub(crate) fn isProtected(mut componentName: ArcStr, mut className: ArcStr) -> R
     Ok(res)
 }
 
-pub(crate) fn isConstant(mut componentName: ArcStr, mut className: ArcStr) -> Result<bool> {
+pub fn isConstant(mut componentName: ArcStr, mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isConstant")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1619,7 +1619,7 @@ pub(crate) fn isConstant(mut componentName: ArcStr, mut className: ArcStr) -> Re
     Ok(res)
 }
 
-pub(crate) fn isParameter(mut componentName: ArcStr, mut className: ArcStr) -> Result<bool> {
+pub fn isParameter(mut componentName: ArcStr, mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isParameter")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1629,7 +1629,7 @@ pub(crate) fn isParameter(mut componentName: ArcStr, mut className: ArcStr) -> R
     Ok(res)
 }
 
-pub(crate) fn isPrimitive(mut className: ArcStr) -> Result<bool> {
+pub fn isPrimitive(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isPrimitive")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1639,7 +1639,7 @@ pub(crate) fn isPrimitive(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getBuiltinType(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn getBuiltinType(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getBuiltinType")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1649,7 +1649,7 @@ pub(crate) fn getBuiltinType(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn isProtectedClass(mut cl: ArcStr, mut c2: ArcStr) -> Result<bool> {
+pub fn isProtectedClass(mut cl: ArcStr, mut c2: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isProtectedClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) }), Arc::new(Values::Value::STRING { string: (c2).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1659,7 +1659,7 @@ pub(crate) fn isProtectedClass(mut cl: ArcStr, mut c2: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isOperatorFunction(mut cl: ArcStr) -> Result<bool> {
+pub fn isOperatorFunction(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isOperatorFunction")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1669,7 +1669,7 @@ pub(crate) fn isOperatorFunction(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isOperatorRecord(mut cl: ArcStr) -> Result<bool> {
+pub fn isOperatorRecord(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isOperatorRecord")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1679,7 +1679,7 @@ pub(crate) fn isOperatorRecord(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isOperator(mut cl: ArcStr) -> Result<bool> {
+pub fn isOperator(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isOperator")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1689,7 +1689,7 @@ pub(crate) fn isOperator(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isEnumeration(mut cl: ArcStr) -> Result<bool> {
+pub fn isEnumeration(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isEnumeration")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1699,7 +1699,7 @@ pub(crate) fn isEnumeration(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isOptimization(mut cl: ArcStr) -> Result<bool> {
+pub fn isOptimization(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isOptimization")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1709,7 +1709,7 @@ pub(crate) fn isOptimization(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isConnector(mut cl: ArcStr) -> Result<bool> {
+pub fn isConnector(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isConnector")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1719,7 +1719,7 @@ pub(crate) fn isConnector(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isModel(mut cl: ArcStr) -> Result<bool> {
+pub fn isModel(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1729,7 +1729,7 @@ pub(crate) fn isModel(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isRedeclare(mut element: ArcStr) -> Result<bool> {
+pub fn isRedeclare(mut element: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isRedeclare")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((element).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1739,7 +1739,7 @@ pub(crate) fn isRedeclare(mut element: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isReplaceable(mut element: ArcStr) -> Result<bool> {
+pub fn isReplaceable(mut element: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isReplaceable")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((element).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1749,7 +1749,7 @@ pub(crate) fn isReplaceable(mut element: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isPartial(mut cl: ArcStr) -> Result<bool> {
+pub fn isPartial(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isPartial")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1759,7 +1759,7 @@ pub(crate) fn isPartial(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isFunction(mut cl: ArcStr) -> Result<bool> {
+pub fn isFunction(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isFunction")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1769,7 +1769,7 @@ pub(crate) fn isFunction(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isBlock(mut cl: ArcStr) -> Result<bool> {
+pub fn isBlock(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isBlock")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1779,7 +1779,7 @@ pub(crate) fn isBlock(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isRecord(mut cl: ArcStr) -> Result<bool> {
+pub fn isRecord(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isRecord")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1789,7 +1789,7 @@ pub(crate) fn isRecord(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isClass(mut cl: ArcStr) -> Result<bool> {
+pub fn isClass(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1799,7 +1799,7 @@ pub(crate) fn isClass(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isPackage(mut cl: ArcStr) -> Result<bool> {
+pub fn isPackage(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isPackage")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1809,7 +1809,7 @@ pub(crate) fn isPackage(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn isType(mut cl: ArcStr) -> Result<bool> {
+pub fn isType(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isType")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1819,7 +1819,7 @@ pub(crate) fn isType(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getClassRestriction(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn getClassRestriction(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getClassRestriction")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1829,7 +1829,7 @@ pub(crate) fn getClassRestriction(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn existClass(mut cl: ArcStr) -> Result<bool> {
+pub fn existClass(mut cl: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("existClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1839,7 +1839,7 @@ pub(crate) fn existClass(mut cl: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn basename(mut path: ArcStr) -> Result<ArcStr> {
+pub fn basename(mut path: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("basename")).clone(), list![Arc::new(Values::Value::STRING { string: (path).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1849,7 +1849,7 @@ pub(crate) fn basename(mut path: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn dirname(mut path: ArcStr) -> Result<ArcStr> {
+pub fn dirname(mut path: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("dirname")).clone(), list![Arc::new(Values::Value::STRING { string: (path).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1859,7 +1859,7 @@ pub(crate) fn dirname(mut path: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getClassComment(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn getClassComment(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getClassComment")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1869,7 +1869,7 @@ pub(crate) fn getClassComment(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn typeNameStrings(mut cl: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn typeNameStrings(mut cl: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("typeNameStrings")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?;
@@ -1887,7 +1887,7 @@ pub(crate) fn typeNameStrings(mut cl: ArcStr) -> Result<Arc<metamodelica::List<A
     Ok(res)
 }
 
-pub(crate) fn typeNameString(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn typeNameString(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("typeNameString")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1897,7 +1897,7 @@ pub(crate) fn typeNameString(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn stringTypeName(mut r#str: ArcStr) -> Result<ArcStr> {
+pub fn stringTypeName(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut res_path: Arc<Absyn::Path>;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("stringTypeName")).clone(), list![Arc::new(Values::Value::STRING { string: (r#str).clone() })], dummyMsg.clone())?) {
@@ -1909,7 +1909,7 @@ pub(crate) fn stringTypeName(mut r#str: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getTimeStamp(mut cl: ArcStr) -> Result<(metamodelica::Real, ArcStr)> {
+pub fn getTimeStamp(mut cl: ArcStr) -> Result<(metamodelica::Real, ArcStr)> {
     let mut res1: metamodelica::Real;
     let mut res2: ArcStr;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getTimeStamp")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
@@ -1921,7 +1921,7 @@ pub(crate) fn getTimeStamp(mut cl: ArcStr) -> Result<(metamodelica::Real, ArcStr
     Ok((res1, res2))
 }
 
-pub(crate) fn setDocumentationAnnotation(mut class_: ArcStr, mut info: ArcStr, mut revisions: ArcStr) -> Result<bool> {
+pub fn setDocumentationAnnotation(mut class_: ArcStr, mut info: ArcStr, mut revisions: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setDocumentationAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::STRING { string: (info).clone() }), Arc::new(Values::Value::STRING { string: (revisions).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -1931,7 +1931,7 @@ pub(crate) fn setDocumentationAnnotation(mut class_: ArcStr, mut info: ArcStr, m
     Ok(res)
 }
 
-pub(crate) fn getDocumentationAnnotation(mut cl: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getDocumentationAnnotation(mut cl: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDocumentationAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?;
@@ -1949,7 +1949,7 @@ pub(crate) fn getDocumentationAnnotation(mut cl: ArcStr) -> Result<Arc<metamodel
     Ok(res)
 }
 
-pub(crate) fn iconv(mut string: ArcStr, mut from: ArcStr, mut to: ArcStr) -> Result<ArcStr> {
+pub fn iconv(mut string: ArcStr, mut from: ArcStr, mut to: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("iconv")).clone(), list![Arc::new(Values::Value::STRING { string: (string).clone() }), Arc::new(Values::Value::STRING { string: (from).clone() }), Arc::new(Values::Value::STRING { string: (to).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -1959,7 +1959,7 @@ pub(crate) fn iconv(mut string: ArcStr, mut from: ArcStr, mut to: ArcStr) -> Res
     Ok(res)
 }
 
-pub(crate) fn getNthImport(mut class_: ArcStr, mut index: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getNthImport(mut class_: ArcStr, mut index: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthImport")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?;
@@ -1977,7 +1977,7 @@ pub(crate) fn getNthImport(mut class_: ArcStr, mut index: i32) -> Result<Arc<met
     Ok(res)
 }
 
-pub(crate) fn getImportedNames(mut class_: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub fn getImportedNames(mut class_: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: Arc<metamodelica::List<ArcStr>>;
     let mut res2: Arc<metamodelica::List<ArcStr>>;
     let mut res1_arr: Arc<Values::Value>;
@@ -2013,7 +2013,7 @@ pub(crate) fn getImportedNames(mut class_: ArcStr) -> Result<(Arc<metamodelica::
     Ok((res1, res2))
 }
 
-pub(crate) fn getMMfileTotalDependencies(mut in_package_name: ArcStr, mut public_imports_dir: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getMMfileTotalDependencies(mut in_package_name: ArcStr, mut public_imports_dir: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getMMfileTotalDependencies")).clone(), list![Arc::new(Values::Value::STRING { string: (in_package_name).clone() }), Arc::new(Values::Value::STRING { string: (public_imports_dir).clone() })], dummyMsg.clone())?;
@@ -2031,7 +2031,7 @@ pub(crate) fn getMMfileTotalDependencies(mut in_package_name: ArcStr, mut public
     Ok(res)
 }
 
-pub(crate) fn getImportCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getImportCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getImportCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2041,7 +2041,7 @@ pub(crate) fn getImportCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthAnnotationString(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthAnnotationString(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthAnnotationString")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2051,7 +2051,7 @@ pub(crate) fn getNthAnnotationString(mut class_: ArcStr, mut index: i32) -> Resu
     Ok(res)
 }
 
-pub(crate) fn getAnnotationCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getAnnotationCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAnnotationCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2061,7 +2061,7 @@ pub(crate) fn getAnnotationCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthInitialEquationItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthInitialEquationItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthInitialEquationItem")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2071,7 +2071,7 @@ pub(crate) fn getNthInitialEquationItem(mut class_: ArcStr, mut index: i32) -> R
     Ok(res)
 }
 
-pub(crate) fn getInitialEquationItemsCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getInitialEquationItemsCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInitialEquationItemsCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2081,7 +2081,7 @@ pub(crate) fn getInitialEquationItemsCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthEquationItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthEquationItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthEquationItem")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2091,7 +2091,7 @@ pub(crate) fn getNthEquationItem(mut class_: ArcStr, mut index: i32) -> Result<A
     Ok(res)
 }
 
-pub(crate) fn getEquationItemsCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getEquationItemsCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getEquationItemsCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2101,7 +2101,7 @@ pub(crate) fn getEquationItemsCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthInitialEquation(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthInitialEquation(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthInitialEquation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2111,7 +2111,7 @@ pub(crate) fn getNthInitialEquation(mut class_: ArcStr, mut index: i32) -> Resul
     Ok(res)
 }
 
-pub(crate) fn getInitialEquationCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getInitialEquationCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInitialEquationCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2121,7 +2121,7 @@ pub(crate) fn getInitialEquationCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthEquation(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthEquation(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthEquation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2131,7 +2131,7 @@ pub(crate) fn getNthEquation(mut class_: ArcStr, mut index: i32) -> Result<ArcSt
     Ok(res)
 }
 
-pub(crate) fn getEquationCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getEquationCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getEquationCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2141,7 +2141,7 @@ pub(crate) fn getEquationCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthInitialAlgorithmItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthInitialAlgorithmItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthInitialAlgorithmItem")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2151,7 +2151,7 @@ pub(crate) fn getNthInitialAlgorithmItem(mut class_: ArcStr, mut index: i32) -> 
     Ok(res)
 }
 
-pub(crate) fn getInitialAlgorithmItemsCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getInitialAlgorithmItemsCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInitialAlgorithmItemsCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2161,7 +2161,7 @@ pub(crate) fn getInitialAlgorithmItemsCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthAlgorithmItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthAlgorithmItem(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthAlgorithmItem")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2171,7 +2171,7 @@ pub(crate) fn getNthAlgorithmItem(mut class_: ArcStr, mut index: i32) -> Result<
     Ok(res)
 }
 
-pub(crate) fn getAlgorithmItemsCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getAlgorithmItemsCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAlgorithmItemsCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2181,7 +2181,7 @@ pub(crate) fn getAlgorithmItemsCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthInitialAlgorithm(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthInitialAlgorithm(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthInitialAlgorithm")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2191,7 +2191,7 @@ pub(crate) fn getNthInitialAlgorithm(mut class_: ArcStr, mut index: i32) -> Resu
     Ok(res)
 }
 
-pub(crate) fn getInitialAlgorithmCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getInitialAlgorithmCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInitialAlgorithmCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2201,7 +2201,7 @@ pub(crate) fn getInitialAlgorithmCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getNthAlgorithm(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
+pub fn getNthAlgorithm(mut class_: ArcStr, mut index: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthAlgorithm")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2211,7 +2211,7 @@ pub(crate) fn getNthAlgorithm(mut class_: ArcStr, mut index: i32) -> Result<ArcS
     Ok(res)
 }
 
-pub(crate) fn getAlgorithmCount(mut class_: ArcStr) -> Result<i32> {
+pub fn getAlgorithmCount(mut class_: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAlgorithmCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2221,7 +2221,7 @@ pub(crate) fn getAlgorithmCount(mut class_: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn updateEquation(mut className: ArcStr, mut oldEq: ArcStr, mut newEq: ArcStr, mut matchAll: bool, mut matchShallow: bool, mut matchDescription: bool, mut mergeDescription: bool) -> Result<bool> {
+pub fn updateEquation(mut className: ArcStr, mut oldEq: ArcStr, mut newEq: ArcStr, mut matchAll: bool, mut matchShallow: bool, mut matchDescription: bool, mut mergeDescription: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("updateEquation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (oldEq).clone() }), Arc::new(Values::Value::STRING { string: (newEq).clone() }), Arc::new(Values::Value::BOOL { boolean: matchAll }), Arc::new(Values::Value::BOOL { boolean: matchShallow }), Arc::new(Values::Value::BOOL { boolean: matchDescription }), Arc::new(Values::Value::BOOL { boolean: mergeDescription })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2231,7 +2231,7 @@ pub(crate) fn updateEquation(mut className: ArcStr, mut oldEq: ArcStr, mut newEq
     Ok(res)
 }
 
-pub(crate) fn addEquation(mut className: ArcStr, mut eq: ArcStr, mut isInitial: bool) -> Result<bool> {
+pub fn addEquation(mut className: ArcStr, mut eq: ArcStr, mut isInitial: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("addEquation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (eq).clone() }), Arc::new(Values::Value::BOOL { boolean: isInitial })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2241,7 +2241,7 @@ pub(crate) fn addEquation(mut className: ArcStr, mut eq: ArcStr, mut isInitial: 
     Ok(res)
 }
 
-pub(crate) fn getConnectionList(mut className: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub fn getConnectionList(mut className: ArcStr) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getConnectionList")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?;
@@ -2266,7 +2266,7 @@ pub(crate) fn getConnectionList(mut className: ArcStr) -> Result<Arc<metamodelic
     Ok(res)
 }
 
-pub(crate) fn getNthConnection(mut className: ArcStr, mut index: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getNthConnection(mut className: ArcStr, mut index: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthConnection")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: index })], dummyMsg.clone())?;
@@ -2284,7 +2284,7 @@ pub(crate) fn getNthConnection(mut className: ArcStr, mut index: i32) -> Result<
     Ok(res)
 }
 
-pub(crate) fn getConnectionCount(mut className: ArcStr) -> Result<i32> {
+pub fn getConnectionCount(mut className: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getConnectionCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2294,7 +2294,7 @@ pub(crate) fn getConnectionCount(mut className: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn updateConnectionNames(mut className: ArcStr, mut from: ArcStr, mut to: ArcStr, mut fromNew: ArcStr, mut toNew: ArcStr) -> Result<bool> {
+pub fn updateConnectionNames(mut className: ArcStr, mut from: ArcStr, mut to: ArcStr, mut fromNew: ArcStr, mut toNew: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("updateConnectionNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (from).clone() }), Arc::new(Values::Value::STRING { string: (to).clone() }), Arc::new(Values::Value::STRING { string: (fromNew).clone() }), Arc::new(Values::Value::STRING { string: (toNew).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2304,7 +2304,7 @@ pub(crate) fn updateConnectionNames(mut className: ArcStr, mut from: ArcStr, mut
     Ok(res)
 }
 
-pub(crate) fn updateConnectionAnnotation(mut className: ArcStr, mut from: ArcStr, mut to: ArcStr, mut annotate: ArcStr) -> Result<bool> {
+pub fn updateConnectionAnnotation(mut className: ArcStr, mut from: ArcStr, mut to: ArcStr, mut annotate: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("updateConnectionAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (from).clone() }), Arc::new(Values::Value::STRING { string: (to).clone() }), Arc::new(Values::Value::STRING { string: (annotate).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2314,7 +2314,7 @@ pub(crate) fn updateConnectionAnnotation(mut className: ArcStr, mut from: ArcStr
     Ok(res)
 }
 
-pub(crate) fn getConnectorCount(mut className: ArcStr) -> Result<i32> {
+pub fn getConnectorCount(mut className: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getConnectorCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2324,7 +2324,7 @@ pub(crate) fn getConnectorCount(mut className: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn setComponentProperties(mut className: ArcStr, mut componentName: ArcStr, mut prefixArray: Arc<metamodelica::List<bool>>, mut variability: Arc<metamodelica::List<ArcStr>>, mut innerOuter: Arc<metamodelica::List<bool>>, mut direction: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
+pub fn setComponentProperties(mut className: ArcStr, mut componentName: ArcStr, mut prefixArray: Arc<metamodelica::List<bool>>, mut variability: Arc<metamodelica::List<ArcStr>>, mut innerOuter: Arc<metamodelica::List<bool>>, mut direction: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setComponentProperties")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -2362,7 +2362,7 @@ pub(crate) fn setComponentProperties(mut className: ArcStr, mut componentName: A
     Ok(res)
 }
 
-pub(crate) fn setComponentComment(mut className: ArcStr, mut componentName: ArcStr, mut comment: ArcStr) -> Result<bool> {
+pub fn setComponentComment(mut className: ArcStr, mut componentName: ArcStr, mut comment: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setComponentComment")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) }), Arc::new(Values::Value::STRING { string: (comment).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2372,7 +2372,7 @@ pub(crate) fn setComponentComment(mut className: ArcStr, mut componentName: ArcS
     Ok(res)
 }
 
-pub(crate) fn getComponentComment(mut className: ArcStr, mut componentName: ArcStr) -> Result<ArcStr> {
+pub fn getComponentComment(mut className: ArcStr, mut componentName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponentComment")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2382,7 +2382,7 @@ pub(crate) fn getComponentComment(mut className: ArcStr, mut componentName: ArcS
     Ok(res)
 }
 
-pub(crate) fn removeExtendsModifiers(mut className: ArcStr, mut baseClassName: ArcStr, mut keepRedeclares: bool) -> Result<bool> {
+pub fn removeExtendsModifiers(mut className: ArcStr, mut baseClassName: ArcStr, mut keepRedeclares: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("removeExtendsModifiers")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((baseClassName).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: keepRedeclares })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2392,7 +2392,7 @@ pub(crate) fn removeExtendsModifiers(mut className: ArcStr, mut baseClassName: A
     Ok(res)
 }
 
-pub(crate) fn getInstantiatedParametersAndValues(mut cls: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getInstantiatedParametersAndValues(mut cls: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInstantiatedParametersAndValues")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cls).clone())? }) })], dummyMsg.clone())?;
@@ -2410,7 +2410,7 @@ pub(crate) fn getInstantiatedParametersAndValues(mut cls: ArcStr) -> Result<Arc<
     Ok(res)
 }
 
-pub(crate) fn getElementAnnotation(mut elementName: ArcStr) -> Result<ArcStr> {
+pub fn getElementAnnotation(mut elementName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getElementAnnotation")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((elementName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2420,7 +2420,7 @@ pub(crate) fn getElementAnnotation(mut elementName: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getNthComponentCondition(mut className: ArcStr, mut n: i32) -> Result<ArcStr> {
+pub fn getNthComponentCondition(mut className: ArcStr, mut n: i32) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthComponentCondition")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: n })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2430,7 +2430,7 @@ pub(crate) fn getNthComponentCondition(mut className: ArcStr, mut n: i32) -> Res
     Ok(res)
 }
 
-pub(crate) fn getComponentCount(mut classPath: ArcStr) -> Result<i32> {
+pub fn getComponentCount(mut classPath: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponentCount")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((classPath).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2440,7 +2440,7 @@ pub(crate) fn getComponentCount(mut classPath: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn isExtendsModifierFinal(mut className: ArcStr, mut extendsName: ArcStr, mut modifierName: ArcStr) -> Result<bool> {
+pub fn isExtendsModifierFinal(mut className: ArcStr, mut extendsName: ArcStr, mut modifierName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isExtendsModifierFinal")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((extendsName).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modifierName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2450,7 +2450,7 @@ pub(crate) fn isExtendsModifierFinal(mut className: ArcStr, mut extendsName: Arc
     Ok(res)
 }
 
-pub(crate) fn removeElementModifiers(mut className: ArcStr, mut componentName: ArcStr, mut keepRedeclares: bool) -> Result<bool> {
+pub fn removeElementModifiers(mut className: ArcStr, mut componentName: ArcStr, mut keepRedeclares: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("removeElementModifiers")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (componentName).clone() }), Arc::new(Values::Value::BOOL { boolean: keepRedeclares })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2460,7 +2460,7 @@ pub(crate) fn removeElementModifiers(mut className: ArcStr, mut componentName: A
     Ok(res)
 }
 
-pub(crate) fn getElementModifierValues(mut className: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
+pub fn getElementModifierValues(mut className: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getElementModifierValues")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modifier).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2470,7 +2470,7 @@ pub(crate) fn getElementModifierValues(mut className: ArcStr, mut modifier: ArcS
     Ok(res)
 }
 
-pub(crate) fn getElementModifierValue(mut className: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
+pub fn getElementModifierValue(mut className: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getElementModifierValue")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modifier).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2480,7 +2480,7 @@ pub(crate) fn getElementModifierValue(mut className: ArcStr, mut modifier: ArcSt
     Ok(res)
 }
 
-pub(crate) fn getExtendsModifierNames(mut className: ArcStr, mut extendsName: ArcStr, mut useQuotes: bool) -> Result<ArcStr> {
+pub fn getExtendsModifierNames(mut className: ArcStr, mut extendsName: ArcStr, mut useQuotes: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getExtendsModifierNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((extendsName).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: useQuotes })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2490,7 +2490,7 @@ pub(crate) fn getExtendsModifierNames(mut className: ArcStr, mut extendsName: Ar
     Ok(res)
 }
 
-pub(crate) fn getElementModifierNames(mut className: ArcStr, mut elementName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getElementModifierNames(mut className: ArcStr, mut elementName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getElementModifierNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (elementName).clone() })], dummyMsg.clone())?;
@@ -2508,7 +2508,7 @@ pub(crate) fn getElementModifierNames(mut className: ArcStr, mut elementName: Ar
     Ok(res)
 }
 
-pub(crate) fn removeComponentModifiers(mut class_: ArcStr, mut componentName: ArcStr, mut keepRedeclares: bool) -> Result<bool> {
+pub fn removeComponentModifiers(mut class_: ArcStr, mut componentName: ArcStr, mut keepRedeclares: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("removeComponentModifiers")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::STRING { string: (componentName).clone() }), Arc::new(Values::Value::BOOL { boolean: keepRedeclares })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2518,7 +2518,7 @@ pub(crate) fn removeComponentModifiers(mut class_: ArcStr, mut componentName: Ar
     Ok(res)
 }
 
-pub(crate) fn getComponentModifierValues(mut class_: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
+pub fn getComponentModifierValues(mut class_: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponentModifierValues")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modifier).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2528,7 +2528,7 @@ pub(crate) fn getComponentModifierValues(mut class_: ArcStr, mut modifier: ArcSt
     Ok(res)
 }
 
-pub(crate) fn getComponentModifierValue(mut class_: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
+pub fn getComponentModifierValue(mut class_: ArcStr, mut modifier: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponentModifierValue")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modifier).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2538,7 +2538,7 @@ pub(crate) fn getComponentModifierValue(mut class_: ArcStr, mut modifier: ArcStr
     Ok(res)
 }
 
-pub(crate) fn getComponentModifierNames(mut class_: ArcStr, mut componentName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getComponentModifierNames(mut class_: ArcStr, mut componentName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponentModifierNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::STRING { string: (componentName).clone() })], dummyMsg.clone())?;
@@ -2556,7 +2556,7 @@ pub(crate) fn getComponentModifierNames(mut class_: ArcStr, mut componentName: A
     Ok(res)
 }
 
-pub(crate) fn getElements(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
+pub fn getElements(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getElements")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: useQuotes })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
@@ -2564,7 +2564,7 @@ pub(crate) fn getElements(mut className: ArcStr, mut useQuotes: bool) -> Result<
     Ok(())
 }
 
-pub(crate) fn getComponents(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
+pub fn getComponents(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponents")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: useQuotes })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
@@ -2572,7 +2572,7 @@ pub(crate) fn getComponents(mut className: ArcStr, mut useQuotes: bool) -> Resul
     Ok(())
 }
 
-pub(crate) fn getParameterValue(mut class_: ArcStr, mut parameterName: ArcStr) -> Result<ArcStr> {
+pub fn getParameterValue(mut class_: ArcStr, mut parameterName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getParameterValue")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::STRING { string: (parameterName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2582,7 +2582,7 @@ pub(crate) fn getParameterValue(mut class_: ArcStr, mut parameterName: ArcStr) -
     Ok(res)
 }
 
-pub(crate) fn getParameterNames(mut class_: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getParameterNames(mut class_: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getParameterNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?;
@@ -2600,7 +2600,7 @@ pub(crate) fn getParameterNames(mut class_: ArcStr) -> Result<Arc<metamodelica::
     Ok(res)
 }
 
-pub(crate) fn deleteComponent(mut componentName: ArcStr, mut classPath: ArcStr) -> Result<bool> {
+pub fn deleteComponent(mut componentName: ArcStr, mut classPath: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("deleteComponent")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((componentName).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((classPath).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2610,7 +2610,7 @@ pub(crate) fn deleteComponent(mut componentName: ArcStr, mut classPath: ArcStr) 
     Ok(res)
 }
 
-pub(crate) fn closeSimulationResultFile() -> Result<bool> {
+pub fn closeSimulationResultFile() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("closeSimulationResultFile")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2620,7 +2620,7 @@ pub(crate) fn closeSimulationResultFile() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn checkCodeGraph(mut graphfile: ArcStr, mut codefile: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn checkCodeGraph(mut graphfile: ArcStr, mut codefile: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("checkCodeGraph")).clone(), list![Arc::new(Values::Value::STRING { string: (graphfile).clone() }), Arc::new(Values::Value::STRING { string: (codefile).clone() })], dummyMsg.clone())?;
@@ -2638,7 +2638,7 @@ pub(crate) fn checkCodeGraph(mut graphfile: ArcStr, mut codefile: ArcStr) -> Res
     Ok(res)
 }
 
-pub(crate) fn checkTaskGraph(mut filename: ArcStr, mut reffilename: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn checkTaskGraph(mut filename: ArcStr, mut reffilename: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("checkTaskGraph")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (reffilename).clone() })], dummyMsg.clone())?;
@@ -2656,7 +2656,7 @@ pub(crate) fn checkTaskGraph(mut filename: ArcStr, mut reffilename: ArcStr) -> R
     Ok(res)
 }
 
-pub(crate) fn diffSimulationResultsHtml(mut var: ArcStr, mut actualFile: ArcStr, mut expectedFile: ArcStr, mut relTol: metamodelica::Real, mut relTolDiffMinMax: metamodelica::Real, mut rangeDelta: metamodelica::Real) -> Result<ArcStr> {
+pub fn diffSimulationResultsHtml(mut var: ArcStr, mut actualFile: ArcStr, mut expectedFile: ArcStr, mut relTol: metamodelica::Real, mut relTolDiffMinMax: metamodelica::Real, mut rangeDelta: metamodelica::Real) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("diffSimulationResultsHtml")).clone(), list![Arc::new(Values::Value::STRING { string: (var).clone() }), Arc::new(Values::Value::STRING { string: (actualFile).clone() }), Arc::new(Values::Value::STRING { string: (expectedFile).clone() }), Arc::new(Values::Value::REAL { real: relTol }), Arc::new(Values::Value::REAL { real: relTolDiffMinMax }), Arc::new(Values::Value::REAL { real: rangeDelta })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2666,7 +2666,7 @@ pub(crate) fn diffSimulationResultsHtml(mut var: ArcStr, mut actualFile: ArcStr,
     Ok(res)
 }
 
-pub(crate) fn diffSimulationResults(mut actualFile: ArcStr, mut expectedFile: ArcStr, mut diffPrefix: ArcStr, mut relTol: metamodelica::Real, mut relTolDiffMinMax: metamodelica::Real, mut rangeDelta: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>, mut keepEqualResults: bool) -> Result<(bool, Arc<metamodelica::List<ArcStr>>)> {
+pub fn diffSimulationResults(mut actualFile: ArcStr, mut expectedFile: ArcStr, mut diffPrefix: ArcStr, mut relTol: metamodelica::Real, mut relTolDiffMinMax: metamodelica::Real, mut rangeDelta: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>, mut keepEqualResults: bool) -> Result<(bool, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: bool;
     let mut res2: Arc<metamodelica::List<ArcStr>>;
     let mut res2_arr: Arc<Values::Value>;
@@ -2697,7 +2697,7 @@ pub(crate) fn diffSimulationResults(mut actualFile: ArcStr, mut expectedFile: Ar
     Ok((res1, res2))
 }
 
-pub(crate) fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut method: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>) -> Result<metamodelica::Real> {
+pub fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut method: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>) -> Result<metamodelica::Real> {
     let mut res: metamodelica::Real;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("deltaSimulationResults")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (reffilename).clone() }), Arc::new(Values::Value::STRING { string: (method).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -2714,7 +2714,7 @@ pub(crate) fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcS
     Ok(res)
 }
 
-pub(crate) fn compareSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut logfilename: ArcStr, mut relTol: metamodelica::Real, mut absTol: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn compareSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut logfilename: ArcStr, mut relTol: metamodelica::Real, mut absTol: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("compareSimulationResults")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (reffilename).clone() }), Arc::new(Values::Value::STRING { string: (logfilename).clone() }), Arc::new(Values::Value::REAL { real: relTol }), Arc::new(Values::Value::REAL { real: absTol }), ValuesMake::makeArray(({
@@ -2739,7 +2739,7 @@ pub(crate) fn compareSimulationResults(mut filename: ArcStr, mut reffilename: Ar
     Ok(res)
 }
 
-pub(crate) fn filterSimulationResults(mut inFile: ArcStr, mut outFile: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>, mut numberOfIntervals: i32, mut removeDescription: bool, mut hintReadAllVars: bool) -> Result<bool> {
+pub fn filterSimulationResults(mut inFile: ArcStr, mut outFile: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>, mut numberOfIntervals: i32, mut removeDescription: bool, mut hintReadAllVars: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("filterSimulationResults")).clone(), list![Arc::new(Values::Value::STRING { string: (inFile).clone() }), Arc::new(Values::Value::STRING { string: (outFile).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -2756,7 +2756,7 @@ pub(crate) fn filterSimulationResults(mut inFile: ArcStr, mut outFile: ArcStr, m
     Ok(res)
 }
 
-pub(crate) fn readSimulationResultVars(mut fileName: ArcStr, mut readParameters: bool, mut openmodelicaStyle: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn readSimulationResultVars(mut fileName: ArcStr, mut readParameters: bool, mut openmodelicaStyle: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("readSimulationResultVars")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::BOOL { boolean: readParameters }), Arc::new(Values::Value::BOOL { boolean: openmodelicaStyle })], dummyMsg.clone())?;
@@ -2774,7 +2774,7 @@ pub(crate) fn readSimulationResultVars(mut fileName: ArcStr, mut readParameters:
     Ok(res)
 }
 
-pub(crate) fn readSimulationResultSize(mut fileName: ArcStr) -> Result<i32> {
+pub fn readSimulationResultSize(mut fileName: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("readSimulationResultSize")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -2784,7 +2784,7 @@ pub(crate) fn readSimulationResultSize(mut fileName: ArcStr) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn plotAll(mut externalWindow: bool, mut fileName: ArcStr, mut title: ArcStr, mut grid: ArcStr, mut logX: bool, mut logY: bool, mut xLabel: ArcStr, mut yLabel: ArcStr, mut xRange: Arc<metamodelica::List<metamodelica::Real>>, mut yRange: Arc<metamodelica::List<metamodelica::Real>>, mut curveWidth: metamodelica::Real, mut curveStyle: i32, mut legendPosition: ArcStr, mut footer: ArcStr, mut autoScale: bool, mut forceOMPlot: bool, mut yAxis: ArcStr, mut yLabelRight: ArcStr, mut yRangeRight: Arc<metamodelica::List<metamodelica::Real>>) -> Result<bool> {
+pub fn plotAll(mut externalWindow: bool, mut fileName: ArcStr, mut title: ArcStr, mut grid: ArcStr, mut logX: bool, mut logY: bool, mut xLabel: ArcStr, mut yLabel: ArcStr, mut xRange: Arc<metamodelica::List<metamodelica::Real>>, mut yRange: Arc<metamodelica::List<metamodelica::Real>>, mut curveWidth: metamodelica::Real, mut curveStyle: i32, mut legendPosition: ArcStr, mut footer: ArcStr, mut autoScale: bool, mut forceOMPlot: bool, mut yAxis: ArcStr, mut yLabelRight: ArcStr, mut yRangeRight: Arc<metamodelica::List<metamodelica::Real>>) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("plotAll")).clone(), list![Arc::new(Values::Value::BOOL { boolean: externalWindow }), Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::STRING { string: (title).clone() }), Arc::new(Values::Value::STRING { string: (grid).clone() }), Arc::new(Values::Value::BOOL { boolean: logX }), Arc::new(Values::Value::BOOL { boolean: logY }), Arc::new(Values::Value::STRING { string: (xLabel).clone() }), Arc::new(Values::Value::STRING { string: (yLabel).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -2815,7 +2815,7 @@ pub(crate) fn plotAll(mut externalWindow: bool, mut fileName: ArcStr, mut title:
     Ok(res)
 }
 
-pub(crate) fn getReplaceableChoices(mut baseClass: ArcStr, mut parentClass: ArcStr, mut includePartial: bool, mut sort: bool) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub fn getReplaceableChoices(mut baseClass: ArcStr, mut parentClass: ArcStr, mut includePartial: bool, mut sort: bool) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getReplaceableChoices")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((baseClass).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((parentClass).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: includePartial }), Arc::new(Values::Value::BOOL { boolean: sort })], dummyMsg.clone())?;
@@ -2840,7 +2840,7 @@ pub(crate) fn getReplaceableChoices(mut baseClass: ArcStr, mut parentClass: ArcS
     Ok(res)
 }
 
-pub(crate) fn getAllSubtypeOf(mut className: ArcStr, mut parentClass: ArcStr, mut qualified: bool, mut includePartial: bool, mut sort: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getAllSubtypeOf(mut className: ArcStr, mut parentClass: ArcStr, mut qualified: bool, mut includePartial: bool, mut sort: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAllSubtypeOf")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((parentClass).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: qualified }), Arc::new(Values::Value::BOOL { boolean: includePartial }), Arc::new(Values::Value::BOOL { boolean: sort })], dummyMsg.clone())?;
@@ -2855,7 +2855,7 @@ pub(crate) fn getAllSubtypeOf(mut className: ArcStr, mut parentClass: ArcStr, mu
     Ok(res)
 }
 
-pub(crate) fn getPackages(mut class_: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getPackages(mut class_: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getPackages")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?;
@@ -2870,7 +2870,7 @@ pub(crate) fn getPackages(mut class_: ArcStr) -> Result<Arc<metamodelica::List<A
     Ok(res)
 }
 
-pub(crate) fn getUsedClassNames(mut className: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getUsedClassNames(mut className: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getUsedClassNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?;
@@ -2885,7 +2885,7 @@ pub(crate) fn getUsedClassNames(mut className: ArcStr) -> Result<Arc<metamodelic
     Ok(res)
 }
 
-pub(crate) fn getClassNames(mut class_: ArcStr, mut recursive: bool, mut qualified: bool, mut sort: bool, mut builtin: bool, mut showProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getClassNames(mut class_: ArcStr, mut recursive: bool, mut qualified: bool, mut sort: bool, mut builtin: bool, mut showProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getClassNames")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: recursive }), Arc::new(Values::Value::BOOL { boolean: qualified }), Arc::new(Values::Value::BOOL { boolean: sort }), Arc::new(Values::Value::BOOL { boolean: builtin }), Arc::new(Values::Value::BOOL { boolean: showProtected }), Arc::new(Values::Value::BOOL { boolean: includeConstants })], dummyMsg.clone())?;
@@ -2900,7 +2900,7 @@ pub(crate) fn getClassNames(mut class_: ArcStr, mut recursive: bool, mut qualifi
     Ok(res)
 }
 
-pub(crate) fn setClassComment(mut class_: ArcStr, mut filename: ArcStr) -> Result<bool> {
+pub fn setClassComment(mut class_: ArcStr, mut filename: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setClassComment")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2910,7 +2910,7 @@ pub(crate) fn setClassComment(mut class_: ArcStr, mut filename: ArcStr) -> Resul
     Ok(res)
 }
 
-pub(crate) fn isShortDefinition(mut class_: ArcStr) -> Result<bool> {
+pub fn isShortDefinition(mut class_: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("isShortDefinition")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2920,7 +2920,7 @@ pub(crate) fn isShortDefinition(mut class_: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn setSourceFile(mut class_: ArcStr, mut filename: ArcStr) -> Result<bool> {
+pub fn setSourceFile(mut class_: ArcStr, mut filename: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setSourceFile")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2930,7 +2930,7 @@ pub(crate) fn setSourceFile(mut class_: ArcStr, mut filename: ArcStr) -> Result<
     Ok(res)
 }
 
-pub(crate) fn getSourceFile(mut class_: ArcStr) -> Result<ArcStr> {
+pub fn getSourceFile(mut class_: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getSourceFile")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2940,7 +2940,7 @@ pub(crate) fn getSourceFile(mut class_: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn refactorClass(mut className: ArcStr) -> Result<ArcStr> {
+pub fn refactorClass(mut className: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("refactorClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -2950,7 +2950,7 @@ pub(crate) fn refactorClass(mut className: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn deleteClass(mut className: ArcStr) -> Result<bool> {
+pub fn deleteClass(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("deleteClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2960,7 +2960,7 @@ pub(crate) fn deleteClass(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn renameClass(mut oldName: ArcStr, mut newName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn renameClass(mut oldName: ArcStr, mut newName: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("renameClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((oldName).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((newName).clone())? }) })], dummyMsg.clone())?;
@@ -2975,7 +2975,7 @@ pub(crate) fn renameClass(mut oldName: ArcStr, mut newName: ArcStr) -> Result<Ar
     Ok(res)
 }
 
-pub(crate) fn copyClass(mut className: ArcStr, mut newClassName: ArcStr, mut withIn: ArcStr) -> Result<bool> {
+pub fn copyClass(mut className: ArcStr, mut newClassName: ArcStr, mut withIn: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("copyClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (newClassName).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((withIn).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2985,7 +2985,7 @@ pub(crate) fn copyClass(mut className: ArcStr, mut newClassName: ArcStr, mut wit
     Ok(res)
 }
 
-pub(crate) fn moveClassToBottom(mut className: ArcStr) -> Result<bool> {
+pub fn moveClassToBottom(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("moveClassToBottom")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -2995,7 +2995,7 @@ pub(crate) fn moveClassToBottom(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn moveClassToTop(mut className: ArcStr) -> Result<bool> {
+pub fn moveClassToTop(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("moveClassToTop")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3005,7 +3005,7 @@ pub(crate) fn moveClassToTop(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn moveClass(mut className: ArcStr, mut offset: i32) -> Result<bool> {
+pub fn moveClass(mut className: ArcStr, mut offset: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("moveClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: offset })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3015,7 +3015,7 @@ pub(crate) fn moveClass(mut className: ArcStr, mut offset: i32) -> Result<bool> 
     Ok(res)
 }
 
-pub(crate) fn newModel(mut className: ArcStr, mut withinPath: ArcStr) -> Result<bool> {
+pub fn newModel(mut className: ArcStr, mut withinPath: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("newModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((withinPath).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3025,7 +3025,7 @@ pub(crate) fn newModel(mut className: ArcStr, mut withinPath: ArcStr) -> Result<
     Ok(res)
 }
 
-pub(crate) fn createModel(mut className: ArcStr) -> Result<bool> {
+pub fn createModel(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("createModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3035,7 +3035,7 @@ pub(crate) fn createModel(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn translateResidualsDAE(mut className: ArcStr, mut fileNamePrefix: ArcStr) -> Result<bool> {
+pub fn translateResidualsDAE(mut className: ArcStr, mut fileNamePrefix: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("translateResidualsDAE")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (fileNamePrefix).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3045,7 +3045,7 @@ pub(crate) fn translateResidualsDAE(mut className: ArcStr, mut fileNamePrefix: A
     Ok(res)
 }
 
-pub(crate) fn reduceTerms(mut className: ArcStr, mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut numberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut fileNamePrefix: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr, mut labelstoCancel: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn reduceTerms(mut className: ArcStr, mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut numberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut fileNamePrefix: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr, mut labelstoCancel: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("reduceTerms")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::REAL { real: startTime }), Arc::new(Values::Value::REAL { real: stopTime }), Arc::new(Values::Value::INTEGER { integer: numberOfIntervals }), Arc::new(Values::Value::REAL { real: tolerance }), Arc::new(Values::Value::STRING { string: (method).clone() }), Arc::new(Values::Value::STRING { string: (fileNamePrefix).clone() }), Arc::new(Values::Value::STRING { string: (options).clone() }), Arc::new(Values::Value::STRING { string: (outputFormat).clone() }), Arc::new(Values::Value::STRING { string: (variableFilter).clone() }), Arc::new(Values::Value::STRING { string: (cflags).clone() }), Arc::new(Values::Value::STRING { string: (simflags).clone() }), Arc::new(Values::Value::STRING { string: (labelstoCancel).clone() })], dummyMsg.clone())?;
@@ -3063,7 +3063,7 @@ pub(crate) fn reduceTerms(mut className: ArcStr, mut startTime: metamodelica::Re
     Ok(res)
 }
 
-pub(crate) fn buildLabel(mut className: ArcStr, mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut numberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut fileNamePrefix: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn buildLabel(mut className: ArcStr, mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut numberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut fileNamePrefix: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("buildLabel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::REAL { real: startTime }), Arc::new(Values::Value::REAL { real: stopTime }), Arc::new(Values::Value::INTEGER { integer: numberOfIntervals }), Arc::new(Values::Value::REAL { real: tolerance }), Arc::new(Values::Value::STRING { string: (method).clone() }), Arc::new(Values::Value::STRING { string: (fileNamePrefix).clone() }), Arc::new(Values::Value::STRING { string: (options).clone() }), Arc::new(Values::Value::STRING { string: (outputFormat).clone() }), Arc::new(Values::Value::STRING { string: (variableFilter).clone() }), Arc::new(Values::Value::STRING { string: (cflags).clone() }), Arc::new(Values::Value::STRING { string: (simflags).clone() })], dummyMsg.clone())?;
@@ -3081,7 +3081,7 @@ pub(crate) fn buildLabel(mut className: ArcStr, mut startTime: metamodelica::Rea
     Ok(res)
 }
 
-pub(crate) fn buildEncryptedPackage(mut className: ArcStr, mut encrypt: bool) -> Result<bool> {
+pub fn buildEncryptedPackage(mut className: ArcStr, mut encrypt: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("buildEncryptedPackage")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: encrypt })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3091,7 +3091,7 @@ pub(crate) fn buildEncryptedPackage(mut className: ArcStr, mut encrypt: bool) ->
     Ok(res)
 }
 
-pub(crate) fn buildModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuType: ArcStr, mut fileNamePrefix: ArcStr, mut platforms: Arc<metamodelica::List<ArcStr>>, mut includeResources: bool) -> Result<ArcStr> {
+pub fn buildModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuType: ArcStr, mut fileNamePrefix: ArcStr, mut platforms: Arc<metamodelica::List<ArcStr>>, mut includeResources: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("buildModelFMU")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (version).clone() }), Arc::new(Values::Value::STRING { string: (fmuType).clone() }), Arc::new(Values::Value::STRING { string: (fileNamePrefix).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -3108,7 +3108,7 @@ pub(crate) fn buildModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuT
     Ok(res)
 }
 
-pub(crate) fn translateModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuType: ArcStr, mut fileNamePrefix: ArcStr, mut platforms: Arc<metamodelica::List<ArcStr>>, mut includeResources: bool) -> Result<bool> {
+pub fn translateModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuType: ArcStr, mut fileNamePrefix: ArcStr, mut platforms: Arc<metamodelica::List<ArcStr>>, mut includeResources: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("translateModelFMU")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (version).clone() }), Arc::new(Values::Value::STRING { string: (fmuType).clone() }), Arc::new(Values::Value::STRING { string: (fileNamePrefix).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -3125,7 +3125,7 @@ pub(crate) fn translateModelFMU(mut className: ArcStr, mut version: ArcStr, mut 
     Ok(res)
 }
 
-pub(crate) fn importFMUModelDescription(mut filename: ArcStr, mut workdir: ArcStr, mut loglevel: i32, mut fullPath: bool, mut debugLogging: bool, mut generateInputConnectors: bool, mut generateOutputConnectors: bool) -> Result<ArcStr> {
+pub fn importFMUModelDescription(mut filename: ArcStr, mut workdir: ArcStr, mut loglevel: i32, mut fullPath: bool, mut debugLogging: bool, mut generateInputConnectors: bool, mut generateOutputConnectors: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("importFMUModelDescription")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (workdir).clone() }), Arc::new(Values::Value::INTEGER { integer: loglevel }), Arc::new(Values::Value::BOOL { boolean: fullPath }), Arc::new(Values::Value::BOOL { boolean: debugLogging }), Arc::new(Values::Value::BOOL { boolean: generateInputConnectors }), Arc::new(Values::Value::BOOL { boolean: generateOutputConnectors })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3135,7 +3135,7 @@ pub(crate) fn importFMUModelDescription(mut filename: ArcStr, mut workdir: ArcSt
     Ok(res)
 }
 
-pub(crate) fn importFMU(mut filename: ArcStr, mut workdir: ArcStr, mut loglevel: i32, mut fullPath: bool, mut debugLogging: bool, mut generateInputConnectors: bool, mut generateOutputConnectors: bool, mut modelName: ArcStr) -> Result<ArcStr> {
+pub fn importFMU(mut filename: ArcStr, mut workdir: ArcStr, mut loglevel: i32, mut fullPath: bool, mut debugLogging: bool, mut generateInputConnectors: bool, mut generateOutputConnectors: bool, mut modelName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("importFMU")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (workdir).clone() }), Arc::new(Values::Value::INTEGER { integer: loglevel }), Arc::new(Values::Value::BOOL { boolean: fullPath }), Arc::new(Values::Value::BOOL { boolean: debugLogging }), Arc::new(Values::Value::BOOL { boolean: generateInputConnectors }), Arc::new(Values::Value::BOOL { boolean: generateOutputConnectors }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((modelName).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3145,7 +3145,7 @@ pub(crate) fn importFMU(mut filename: ArcStr, mut workdir: ArcStr, mut loglevel:
     Ok(res)
 }
 
-pub(crate) fn solveLinearSystem(mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut B: Arc<metamodelica::List<metamodelica::Real>>) -> Result<(Arc<metamodelica::List<metamodelica::Real>>, i32)> {
+pub fn solveLinearSystem(mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut B: Arc<metamodelica::List<metamodelica::Real>>) -> Result<(Arc<metamodelica::List<metamodelica::Real>>, i32)> {
     let mut res1: Arc<metamodelica::List<metamodelica::Real>>;
     let mut res2: i32;
     let mut res1_arr: Arc<Values::Value>;
@@ -3190,7 +3190,7 @@ pub(crate) fn solveLinearSystem(mut A: Arc<metamodelica::List<Arc<metamodelica::
     Ok((res1, res2))
 }
 
-pub(crate) fn getLoadedLibraries() -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub fn getLoadedLibraries() -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getLoadedLibraries")).clone(), metamodelica::nil(), dummyMsg.clone())?;
@@ -3215,7 +3215,7 @@ pub(crate) fn getLoadedLibraries() -> Result<Arc<metamodelica::List<Arc<metamode
     Ok(res)
 }
 
-pub(crate) fn uriToFilename(mut uri: ArcStr) -> Result<ArcStr> {
+pub fn uriToFilename(mut uri: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("uriToFilename")).clone(), list![Arc::new(Values::Value::STRING { string: (uri).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3225,7 +3225,7 @@ pub(crate) fn uriToFilename(mut uri: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn realpath(mut name: ArcStr) -> Result<ArcStr> {
+pub fn realpath(mut name: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("realpath")).clone(), list![Arc::new(Values::Value::STRING { string: (name).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3235,7 +3235,7 @@ pub(crate) fn realpath(mut name: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn rewriteBlockCall(mut className: ArcStr, mut inDefs: ArcStr) -> Result<bool> {
+pub fn rewriteBlockCall(mut className: ArcStr, mut inDefs: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("rewriteBlockCall")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((inDefs).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3245,7 +3245,7 @@ pub(crate) fn rewriteBlockCall(mut className: ArcStr, mut inDefs: ArcStr) -> Res
     Ok(res)
 }
 
-pub(crate) fn generateVerificationScenarios(mut path: ArcStr) -> Result<bool> {
+pub fn generateVerificationScenarios(mut path: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateVerificationScenarios")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((path).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3255,7 +3255,7 @@ pub(crate) fn generateVerificationScenarios(mut path: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn inferBindings(mut path: ArcStr) -> Result<bool> {
+pub fn inferBindings(mut path: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("inferBindings")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((path).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3265,7 +3265,7 @@ pub(crate) fn inferBindings(mut path: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn exportToFigaro(mut path: ArcStr, mut directory: ArcStr, mut database: ArcStr, mut mode: ArcStr, mut options: ArcStr, mut processor: ArcStr) -> Result<bool> {
+pub fn exportToFigaro(mut path: ArcStr, mut directory: ArcStr, mut database: ArcStr, mut mode: ArcStr, mut options: ArcStr, mut processor: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("exportToFigaro")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((path).clone())? }) }), Arc::new(Values::Value::STRING { string: (directory).clone() }), Arc::new(Values::Value::STRING { string: (database).clone() }), Arc::new(Values::Value::STRING { string: (mode).clone() }), Arc::new(Values::Value::STRING { string: (options).clone() }), Arc::new(Values::Value::STRING { string: (processor).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3275,7 +3275,7 @@ pub(crate) fn exportToFigaro(mut path: ArcStr, mut directory: ArcStr, mut databa
     Ok(res)
 }
 
-pub(crate) fn listFile(mut class_: ArcStr, mut nestedClasses: bool) -> Result<ArcStr> {
+pub fn listFile(mut class_: ArcStr, mut nestedClasses: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("listFile")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((class_).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: nestedClasses })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3285,7 +3285,7 @@ pub(crate) fn listFile(mut class_: ArcStr, mut nestedClasses: bool) -> Result<Ar
     Ok(res)
 }
 
-pub(crate) fn stringReplace(mut r#str: ArcStr, mut source: ArcStr, mut target: ArcStr) -> Result<ArcStr> {
+pub fn stringReplace(mut r#str: ArcStr, mut source: ArcStr, mut target: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("stringReplace")).clone(), list![Arc::new(Values::Value::STRING { string: (r#str).clone() }), Arc::new(Values::Value::STRING { string: (source).clone() }), Arc::new(Values::Value::STRING { string: (target).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3295,7 +3295,7 @@ pub(crate) fn stringReplace(mut r#str: ArcStr, mut source: ArcStr, mut target: A
     Ok(res)
 }
 
-pub(crate) fn stringSplit(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn stringSplit(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("stringSplit")).clone(), list![Arc::new(Values::Value::STRING { string: (string).clone() }), Arc::new(Values::Value::STRING { string: (token).clone() })], dummyMsg.clone())?;
@@ -3313,7 +3313,7 @@ pub(crate) fn stringSplit(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<m
     Ok(res)
 }
 
-pub(crate) fn strtok(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn strtok(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("strtok")).clone(), list![Arc::new(Values::Value::STRING { string: (string).clone() }), Arc::new(Values::Value::STRING { string: (token).clone() })], dummyMsg.clone())?;
@@ -3331,7 +3331,7 @@ pub(crate) fn strtok(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<metamo
     Ok(res)
 }
 
-pub(crate) fn listVariables() -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn listVariables() -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("listVariables")).clone(), metamodelica::nil(), dummyMsg.clone())?;
@@ -3346,7 +3346,7 @@ pub(crate) fn listVariables() -> Result<Arc<metamodelica::List<ArcStr>>> {
     Ok(res)
 }
 
-pub(crate) fn getDerivedUnits(mut baseUnit: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getDerivedUnits(mut baseUnit: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDerivedUnits")).clone(), list![Arc::new(Values::Value::STRING { string: (baseUnit).clone() })], dummyMsg.clone())?;
@@ -3364,7 +3364,7 @@ pub(crate) fn getDerivedUnits(mut baseUnit: ArcStr) -> Result<Arc<metamodelica::
     Ok(res)
 }
 
-pub(crate) fn convertUnits(mut s1: ArcStr, mut s2: ArcStr) -> Result<(bool, metamodelica::Real, metamodelica::Real)> {
+pub fn convertUnits(mut s1: ArcStr, mut s2: ArcStr) -> Result<(bool, metamodelica::Real, metamodelica::Real)> {
     let mut res1: bool;
     let mut res2: metamodelica::Real;
     let mut res3: metamodelica::Real;
@@ -3378,7 +3378,7 @@ pub(crate) fn convertUnits(mut s1: ArcStr, mut s2: ArcStr) -> Result<(bool, meta
     Ok((res1, res2, res3))
 }
 
-pub(crate) fn dumpXMLDAE(mut className: ArcStr, mut translationLevel: ArcStr, mut addOriginalAdjacencyMatrix: bool, mut addSolvingInfo: bool, mut addMathMLCode: bool, mut dumpResiduals: bool, mut fileNamePrefix: ArcStr, mut rewriteRulesFile: ArcStr) -> Result<(bool, ArcStr)> {
+pub fn dumpXMLDAE(mut className: ArcStr, mut translationLevel: ArcStr, mut addOriginalAdjacencyMatrix: bool, mut addSolvingInfo: bool, mut addMathMLCode: bool, mut dumpResiduals: bool, mut fileNamePrefix: ArcStr, mut rewriteRulesFile: ArcStr) -> Result<(bool, ArcStr)> {
     let mut res1: bool;
     let mut res2: ArcStr;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("dumpXMLDAE")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::STRING { string: (translationLevel).clone() }), Arc::new(Values::Value::BOOL { boolean: addOriginalAdjacencyMatrix }), Arc::new(Values::Value::BOOL { boolean: addSolvingInfo }), Arc::new(Values::Value::BOOL { boolean: addMathMLCode }), Arc::new(Values::Value::BOOL { boolean: dumpResiduals }), Arc::new(Values::Value::STRING { string: (fileNamePrefix).clone() }), Arc::new(Values::Value::STRING { string: (rewriteRulesFile).clone() })], dummyMsg.clone())?) {
@@ -3390,7 +3390,7 @@ pub(crate) fn dumpXMLDAE(mut className: ArcStr, mut translationLevel: ArcStr, mu
     Ok((res1, res2))
 }
 
-pub(crate) fn translateGraphics(mut className: ArcStr) -> Result<ArcStr> {
+pub fn translateGraphics(mut className: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("translateGraphics")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3400,7 +3400,7 @@ pub(crate) fn translateGraphics(mut className: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn save(mut className: ArcStr) -> Result<bool> {
+pub fn save(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("save")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3410,7 +3410,7 @@ pub(crate) fn save(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn saveTotalModelDebug(mut filename: ArcStr, mut className: ArcStr, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<bool> {
+pub fn saveTotalModelDebug(mut filename: ArcStr, mut className: ArcStr, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("saveTotalModelDebug")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: stripAnnotations }), Arc::new(Values::Value::BOOL { boolean: stripComments }), Arc::new(Values::Value::BOOL { boolean: obfuscate })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3420,7 +3420,7 @@ pub(crate) fn saveTotalModelDebug(mut filename: ArcStr, mut className: ArcStr, m
     Ok(res)
 }
 
-pub(crate) fn getTotalModel(mut className: ArcStr, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<ArcStr> {
+pub fn getTotalModel(mut className: ArcStr, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getTotalModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: stripAnnotations }), Arc::new(Values::Value::BOOL { boolean: stripComments }), Arc::new(Values::Value::BOOL { boolean: obfuscate })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3430,7 +3430,7 @@ pub(crate) fn getTotalModel(mut className: ArcStr, mut stripAnnotations: bool, m
     Ok(res)
 }
 
-pub(crate) fn saveTotalModel(mut fileName: ArcStr, mut className: ArcStr, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<bool> {
+pub fn saveTotalModel(mut fileName: ArcStr, mut className: ArcStr, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("saveTotalModel")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: stripAnnotations }), Arc::new(Values::Value::BOOL { boolean: stripComments }), Arc::new(Values::Value::BOOL { boolean: obfuscate })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3440,7 +3440,7 @@ pub(crate) fn saveTotalModel(mut fileName: ArcStr, mut className: ArcStr, mut st
     Ok(res)
 }
 
-pub(crate) fn saveModel(mut fileName: ArcStr, mut className: ArcStr) -> Result<bool> {
+pub fn saveModel(mut fileName: ArcStr, mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("saveModel")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3450,7 +3450,7 @@ pub(crate) fn saveModel(mut fileName: ArcStr, mut className: ArcStr) -> Result<b
     Ok(res)
 }
 
-pub(crate) fn deleteFile(mut fileName: ArcStr) -> Result<bool> {
+pub fn deleteFile(mut fileName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("deleteFile")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3460,7 +3460,7 @@ pub(crate) fn deleteFile(mut fileName: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn loadModel(mut className: ArcStr, mut priorityVersion: Arc<metamodelica::List<ArcStr>>, mut notify: bool, mut languageStandard: ArcStr, mut requireExactVersion: bool) -> Result<bool> {
+pub fn loadModel(mut className: ArcStr, mut priorityVersion: Arc<metamodelica::List<ArcStr>>, mut notify: bool, mut languageStandard: ArcStr, mut requireExactVersion: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -3477,7 +3477,7 @@ pub(crate) fn loadModel(mut className: ArcStr, mut priorityVersion: Arc<metamode
     Ok(res)
 }
 
-pub(crate) fn generateCode(mut className: ArcStr) -> Result<bool> {
+pub fn generateCode(mut className: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateCode")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3487,7 +3487,7 @@ pub(crate) fn generateCode(mut className: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn instantiateModel(mut className: ArcStr) -> Result<ArcStr> {
+pub fn instantiateModel(mut className: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("instantiateModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3497,7 +3497,7 @@ pub(crate) fn instantiateModel(mut className: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn checkAllModelsRecursive(mut className: ArcStr, mut checkProtected: bool) -> Result<ArcStr> {
+pub fn checkAllModelsRecursive(mut className: ArcStr, mut checkProtected: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("checkAllModelsRecursive")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: checkProtected })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3507,7 +3507,7 @@ pub(crate) fn checkAllModelsRecursive(mut className: ArcStr, mut checkProtected:
     Ok(res)
 }
 
-pub(crate) fn checkModel(mut className: ArcStr) -> Result<ArcStr> {
+pub fn checkModel(mut className: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("checkModel")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3517,7 +3517,7 @@ pub(crate) fn checkModel(mut className: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn remove(mut path: ArcStr) -> Result<bool> {
+pub fn remove(mut path: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("remove")).clone(), list![Arc::new(Values::Value::STRING { string: (path).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3527,7 +3527,7 @@ pub(crate) fn remove(mut path: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn copy(mut source: ArcStr, mut destination: ArcStr) -> Result<bool> {
+pub fn copy(mut source: ArcStr, mut destination: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("copy")).clone(), list![Arc::new(Values::Value::STRING { string: (source).clone() }), Arc::new(Values::Value::STRING { string: (destination).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3537,7 +3537,7 @@ pub(crate) fn copy(mut source: ArcStr, mut destination: ArcStr) -> Result<bool> 
     Ok(res)
 }
 
-pub(crate) fn mkdir(mut newDirectory: ArcStr) -> Result<bool> {
+pub fn mkdir(mut newDirectory: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("mkdir")).clone(), list![Arc::new(Values::Value::STRING { string: (newDirectory).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3547,7 +3547,7 @@ pub(crate) fn mkdir(mut newDirectory: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn cd(mut newWorkingDirectory: ArcStr) -> Result<ArcStr> {
+pub fn cd(mut newWorkingDirectory: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("cd")).clone(), list![Arc::new(Values::Value::STRING { string: (newWorkingDirectory).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3557,7 +3557,7 @@ pub(crate) fn cd(mut newWorkingDirectory: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getAstAsCorbaString(mut fileName: ArcStr) -> Result<ArcStr> {
+pub fn getAstAsCorbaString(mut fileName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAstAsCorbaString")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3567,7 +3567,7 @@ pub(crate) fn getAstAsCorbaString(mut fileName: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getLanguageStandard() -> Result<ArcStr> {
+pub fn getLanguageStandard() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getLanguageStandard")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3577,7 +3577,7 @@ pub(crate) fn getLanguageStandard() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getOrderConnections() -> Result<bool> {
+pub fn getOrderConnections() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getOrderConnections")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3587,7 +3587,7 @@ pub(crate) fn getOrderConnections() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getShowAnnotations() -> Result<bool> {
+pub fn getShowAnnotations() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getShowAnnotations")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3597,7 +3597,7 @@ pub(crate) fn getShowAnnotations() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn setShowAnnotations(mut show: bool) -> Result<bool> {
+pub fn setShowAnnotations(mut show: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setShowAnnotations")).clone(), list![Arc::new(Values::Value::BOOL { boolean: show })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3607,7 +3607,7 @@ pub(crate) fn setShowAnnotations(mut show: bool) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getDefaultOpenCLDevice() -> Result<i32> {
+pub fn getDefaultOpenCLDevice() -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getDefaultOpenCLDevice")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -3617,7 +3617,7 @@ pub(crate) fn getDefaultOpenCLDevice() -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn getVectorizationLimit() -> Result<i32> {
+pub fn getVectorizationLimit() -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getVectorizationLimit")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -3627,7 +3627,7 @@ pub(crate) fn getVectorizationLimit() -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn setNoSimplify(mut noSimplify: bool) -> Result<bool> {
+pub fn setNoSimplify(mut noSimplify: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setNoSimplify")).clone(), list![Arc::new(Values::Value::BOOL { boolean: noSimplify })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3637,7 +3637,7 @@ pub(crate) fn setNoSimplify(mut noSimplify: bool) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getNoSimplify() -> Result<bool> {
+pub fn getNoSimplify() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNoSimplify")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3647,7 +3647,7 @@ pub(crate) fn getNoSimplify() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getAnnotationVersion() -> Result<ArcStr> {
+pub fn getAnnotationVersion() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getAnnotationVersion")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3657,7 +3657,7 @@ pub(crate) fn getAnnotationVersion() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn echo(mut setEcho: bool) -> Result<bool> {
+pub fn echo(mut setEcho: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("echo")).clone(), list![Arc::new(Values::Value::BOOL { boolean: setEcho })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3667,7 +3667,7 @@ pub(crate) fn echo(mut setEcho: bool) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn runScript(mut fileName: ArcStr) -> Result<ArcStr> {
+pub fn runScript(mut fileName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("runScript")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3677,7 +3677,7 @@ pub(crate) fn runScript(mut fileName: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn clearMessages() -> Result<bool> {
+pub fn clearMessages() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("clearMessages")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3687,7 +3687,7 @@ pub(crate) fn clearMessages() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn countMessages() -> Result<(i32, i32, i32)> {
+pub fn countMessages() -> Result<(i32, i32, i32)> {
     let mut res1: i32;
     let mut res2: i32;
     let mut res3: i32;
@@ -3701,7 +3701,7 @@ pub(crate) fn countMessages() -> Result<(i32, i32, i32)> {
     Ok((res1, res2, res3))
 }
 
-pub(crate) fn getErrorString(mut warningsAsErrors: bool) -> Result<ArcStr> {
+pub fn getErrorString(mut warningsAsErrors: bool) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getErrorString")).clone(), list![Arc::new(Values::Value::BOOL { boolean: warningsAsErrors })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3711,7 +3711,7 @@ pub(crate) fn getErrorString(mut warningsAsErrors: bool) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn alarm(mut seconds: i32) -> Result<i32> {
+pub fn alarm(mut seconds: i32) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("alarm")).clone(), list![Arc::new(Values::Value::INTEGER { integer: seconds })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -3721,7 +3721,7 @@ pub(crate) fn alarm(mut seconds: i32) -> Result<i32> {
     Ok(res)
 }
 
-pub(crate) fn compareFiles(mut file1: ArcStr, mut file2: ArcStr) -> Result<bool> {
+pub fn compareFiles(mut file1: ArcStr, mut file2: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("compareFiles")).clone(), list![Arc::new(Values::Value::STRING { string: (file1).clone() }), Arc::new(Values::Value::STRING { string: (file2).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3731,7 +3731,7 @@ pub(crate) fn compareFiles(mut file1: ArcStr, mut file2: ArcStr) -> Result<bool>
     Ok(res)
 }
 
-pub(crate) fn compareFilesAndMove(mut newFile: ArcStr, mut oldFile: ArcStr) -> Result<bool> {
+pub fn compareFilesAndMove(mut newFile: ArcStr, mut oldFile: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("compareFilesAndMove")).clone(), list![Arc::new(Values::Value::STRING { string: (newFile).clone() }), Arc::new(Values::Value::STRING { string: (oldFile).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3741,7 +3741,7 @@ pub(crate) fn compareFilesAndMove(mut newFile: ArcStr, mut oldFile: ArcStr) -> R
     Ok(res)
 }
 
-pub(crate) fn writeFile(mut fileName: ArcStr, mut data: ArcStr, mut append: bool) -> Result<bool> {
+pub fn writeFile(mut fileName: ArcStr, mut data: ArcStr, mut append: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("writeFile")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::STRING { string: (data).clone() }), Arc::new(Values::Value::BOOL { boolean: append })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3751,7 +3751,7 @@ pub(crate) fn writeFile(mut fileName: ArcStr, mut data: ArcStr, mut append: bool
     Ok(res)
 }
 
-pub(crate) fn readFile(mut fileName: ArcStr) -> Result<ArcStr> {
+pub fn readFile(mut fileName: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("readFile")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3761,7 +3761,7 @@ pub(crate) fn readFile(mut fileName: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn stat(mut fileName: ArcStr) -> Result<(bool, metamodelica::Real, metamodelica::Real)> {
+pub fn stat(mut fileName: ArcStr) -> Result<(bool, metamodelica::Real, metamodelica::Real)> {
     let mut res1: bool;
     let mut res2: metamodelica::Real;
     let mut res3: metamodelica::Real;
@@ -3775,7 +3775,7 @@ pub(crate) fn stat(mut fileName: ArcStr) -> Result<(bool, metamodelica::Real, me
     Ok((res1, res2, res3))
 }
 
-pub(crate) fn directoryExists(mut dirName: ArcStr) -> Result<bool> {
+pub fn directoryExists(mut dirName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("directoryExists")).clone(), list![Arc::new(Values::Value::STRING { string: (dirName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3785,7 +3785,7 @@ pub(crate) fn directoryExists(mut dirName: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn regularFileExists(mut fileName: ArcStr) -> Result<bool> {
+pub fn regularFileExists(mut fileName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("regularFileExists")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3795,7 +3795,7 @@ pub(crate) fn regularFileExists(mut fileName: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getVersion(mut cl: ArcStr) -> Result<ArcStr> {
+pub fn getVersion(mut cl: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getVersion")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((cl).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3805,7 +3805,7 @@ pub(crate) fn getVersion(mut cl: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn clearCommandLineOptions() -> Result<bool> {
+pub fn clearCommandLineOptions() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("clearCommandLineOptions")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3815,7 +3815,7 @@ pub(crate) fn clearCommandLineOptions() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getConfigFlagValidOptions(mut flag: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<ArcStr>>)> {
+pub fn getConfigFlagValidOptions(mut flag: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: Arc<metamodelica::List<ArcStr>>;
     let mut res2: ArcStr;
     let mut res3: Arc<metamodelica::List<ArcStr>>;
@@ -3853,7 +3853,7 @@ pub(crate) fn getConfigFlagValidOptions(mut flag: ArcStr) -> Result<(Arc<metamod
     Ok((res1, res2, res3))
 }
 
-pub(crate) fn getCommandLineOptions() -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn getCommandLineOptions() -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getCommandLineOptions")).clone(), metamodelica::nil(), dummyMsg.clone())?;
@@ -3871,7 +3871,7 @@ pub(crate) fn getCommandLineOptions() -> Result<Arc<metamodelica::List<ArcStr>>>
     Ok(res)
 }
 
-pub(crate) fn setCommandLineOptions(mut options: ArcStr) -> Result<bool> {
+pub fn setCommandLineOptions(mut options: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setCommandLineOptions")).clone(), list![Arc::new(Values::Value::STRING { string: (options).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -3881,7 +3881,7 @@ pub(crate) fn setCommandLineOptions(mut options: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getAvailableTearingMethods() -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub fn getAvailableTearingMethods() -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: Arc<metamodelica::List<ArcStr>>;
     let mut res2: Arc<metamodelica::List<ArcStr>>;
     let mut res1_arr: Arc<Values::Value>;
@@ -3917,7 +3917,7 @@ pub(crate) fn getAvailableTearingMethods() -> Result<(Arc<metamodelica::List<Arc
     Ok((res1, res2))
 }
 
-pub(crate) fn getTearingMethod() -> Result<ArcStr> {
+pub fn getTearingMethod() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getTearingMethod")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3927,7 +3927,7 @@ pub(crate) fn getTearingMethod() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getAvailableIndexReductionMethods() -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub fn getAvailableIndexReductionMethods() -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: Arc<metamodelica::List<ArcStr>>;
     let mut res2: Arc<metamodelica::List<ArcStr>>;
     let mut res1_arr: Arc<Values::Value>;
@@ -3963,7 +3963,7 @@ pub(crate) fn getAvailableIndexReductionMethods() -> Result<(Arc<metamodelica::L
     Ok((res1, res2))
 }
 
-pub(crate) fn getIndexReductionMethod() -> Result<ArcStr> {
+pub fn getIndexReductionMethod() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getIndexReductionMethod")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -3973,7 +3973,7 @@ pub(crate) fn getIndexReductionMethod() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getAvailableMatchingAlgorithms() -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub fn getAvailableMatchingAlgorithms() -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut res1: Arc<metamodelica::List<ArcStr>>;
     let mut res2: Arc<metamodelica::List<ArcStr>>;
     let mut res1_arr: Arc<Values::Value>;
@@ -4009,7 +4009,7 @@ pub(crate) fn getAvailableMatchingAlgorithms() -> Result<(Arc<metamodelica::List
     Ok((res1, res2))
 }
 
-pub(crate) fn getMatchingAlgorithm() -> Result<ArcStr> {
+pub fn getMatchingAlgorithm() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getMatchingAlgorithm")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4019,7 +4019,7 @@ pub(crate) fn getMatchingAlgorithm() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn clearDebugFlags() -> Result<bool> {
+pub fn clearDebugFlags() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("clearDebugFlags")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4029,7 +4029,7 @@ pub(crate) fn clearDebugFlags() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn disableNewInstantiation() -> Result<bool> {
+pub fn disableNewInstantiation() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("disableNewInstantiation")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4039,7 +4039,7 @@ pub(crate) fn disableNewInstantiation() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn enableNewInstantiation() -> Result<bool> {
+pub fn enableNewInstantiation() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("enableNewInstantiation")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4049,7 +4049,7 @@ pub(crate) fn enableNewInstantiation() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn setCompilerFlags(mut compilerFlags: ArcStr) -> Result<bool> {
+pub fn setCompilerFlags(mut compilerFlags: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setCompilerFlags")).clone(), list![Arc::new(Values::Value::STRING { string: (compilerFlags).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4059,7 +4059,7 @@ pub(crate) fn setCompilerFlags(mut compilerFlags: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getHomeDirectoryPath() -> Result<ArcStr> {
+pub fn getHomeDirectoryPath() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getHomeDirectoryPath")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4069,7 +4069,7 @@ pub(crate) fn getHomeDirectoryPath() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getModelicaPath() -> Result<ArcStr> {
+pub fn getModelicaPath() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getModelicaPath")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4079,7 +4079,7 @@ pub(crate) fn getModelicaPath() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setModelicaPath(mut modelicaPath: ArcStr) -> Result<bool> {
+pub fn setModelicaPath(mut modelicaPath: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setModelicaPath")).clone(), list![Arc::new(Values::Value::STRING { string: (modelicaPath).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4089,7 +4089,7 @@ pub(crate) fn setModelicaPath(mut modelicaPath: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getInstallationDirectoryPath() -> Result<ArcStr> {
+pub fn getInstallationDirectoryPath() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getInstallationDirectoryPath")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4099,7 +4099,7 @@ pub(crate) fn getInstallationDirectoryPath() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setInstallationDirectoryPath(mut installationDirectoryPath: ArcStr) -> Result<bool> {
+pub fn setInstallationDirectoryPath(mut installationDirectoryPath: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setInstallationDirectoryPath")).clone(), list![Arc::new(Values::Value::STRING { string: (installationDirectoryPath).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4109,7 +4109,7 @@ pub(crate) fn setInstallationDirectoryPath(mut installationDirectoryPath: ArcStr
     Ok(res)
 }
 
-pub(crate) fn setEnvironmentVar(mut var: ArcStr, mut value: ArcStr) -> Result<bool> {
+pub fn setEnvironmentVar(mut var: ArcStr, mut value: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setEnvironmentVar")).clone(), list![Arc::new(Values::Value::STRING { string: (var).clone() }), Arc::new(Values::Value::STRING { string: (value).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4119,7 +4119,7 @@ pub(crate) fn setEnvironmentVar(mut var: ArcStr, mut value: ArcStr) -> Result<bo
     Ok(res)
 }
 
-pub(crate) fn getEnvironmentVar(mut var: ArcStr) -> Result<ArcStr> {
+pub fn getEnvironmentVar(mut var: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getEnvironmentVar")).clone(), list![Arc::new(Values::Value::STRING { string: (var).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4129,7 +4129,7 @@ pub(crate) fn getEnvironmentVar(mut var: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn getTempDirectoryPath() -> Result<ArcStr> {
+pub fn getTempDirectoryPath() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getTempDirectoryPath")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4139,7 +4139,7 @@ pub(crate) fn getTempDirectoryPath() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setTempDirectoryPath(mut tempDirectoryPath: ArcStr) -> Result<bool> {
+pub fn setTempDirectoryPath(mut tempDirectoryPath: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setTempDirectoryPath")).clone(), list![Arc::new(Values::Value::STRING { string: (tempDirectoryPath).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4149,7 +4149,7 @@ pub(crate) fn setTempDirectoryPath(mut tempDirectoryPath: ArcStr) -> Result<bool
     Ok(res)
 }
 
-pub(crate) fn setCXXCompiler(mut compiler: ArcStr) -> Result<bool> {
+pub fn setCXXCompiler(mut compiler: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setCXXCompiler")).clone(), list![Arc::new(Values::Value::STRING { string: (compiler).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4159,7 +4159,7 @@ pub(crate) fn setCXXCompiler(mut compiler: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getCXXCompiler() -> Result<ArcStr> {
+pub fn getCXXCompiler() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getCXXCompiler")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4169,7 +4169,7 @@ pub(crate) fn getCXXCompiler() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setCFlags(mut inString: ArcStr) -> Result<bool> {
+pub fn setCFlags(mut inString: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setCFlags")).clone(), list![Arc::new(Values::Value::STRING { string: (inString).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4179,7 +4179,7 @@ pub(crate) fn setCFlags(mut inString: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getCFlags() -> Result<ArcStr> {
+pub fn getCFlags() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getCFlags")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4189,7 +4189,7 @@ pub(crate) fn getCFlags() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setCompiler(mut compiler: ArcStr) -> Result<bool> {
+pub fn setCompiler(mut compiler: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setCompiler")).clone(), list![Arc::new(Values::Value::STRING { string: (compiler).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4199,7 +4199,7 @@ pub(crate) fn setCompiler(mut compiler: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getCompiler() -> Result<ArcStr> {
+pub fn getCompiler() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getCompiler")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4209,7 +4209,7 @@ pub(crate) fn getCompiler() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setLinkerFlags(mut linkerFlags: ArcStr) -> Result<bool> {
+pub fn setLinkerFlags(mut linkerFlags: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setLinkerFlags")).clone(), list![Arc::new(Values::Value::STRING { string: (linkerFlags).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4219,7 +4219,7 @@ pub(crate) fn setLinkerFlags(mut linkerFlags: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getLinkerFlags() -> Result<ArcStr> {
+pub fn getLinkerFlags() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getLinkerFlags")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4229,7 +4229,7 @@ pub(crate) fn getLinkerFlags() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn setLinker(mut linker: ArcStr) -> Result<bool> {
+pub fn setLinker(mut linker: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("setLinker")).clone(), list![Arc::new(Values::Value::STRING { string: (linker).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4239,7 +4239,7 @@ pub(crate) fn setLinker(mut linker: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn getLinker() -> Result<ArcStr> {
+pub fn getLinker() -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getLinker")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4249,7 +4249,7 @@ pub(crate) fn getLinker() -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn generateSeparateCodeDependenciesMakefile(mut filename: ArcStr, mut directory: ArcStr, mut suffix: ArcStr) -> Result<bool> {
+pub fn generateSeparateCodeDependenciesMakefile(mut filename: ArcStr, mut directory: ArcStr, mut suffix: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateSeparateCodeDependenciesMakefile")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (directory).clone() }), Arc::new(Values::Value::STRING { string: (suffix).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4259,7 +4259,7 @@ pub(crate) fn generateSeparateCodeDependenciesMakefile(mut filename: ArcStr, mut
     Ok(res)
 }
 
-pub(crate) fn generateSeparateCodeDependencies(mut stampSuffix: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn generateSeparateCodeDependencies(mut stampSuffix: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateSeparateCodeDependencies")).clone(), list![Arc::new(Values::Value::STRING { string: (stampSuffix).clone() })], dummyMsg.clone())?;
@@ -4277,7 +4277,7 @@ pub(crate) fn generateSeparateCodeDependencies(mut stampSuffix: ArcStr) -> Resul
     Ok(res)
 }
 
-pub(crate) fn generateSeparateCode(mut className: ArcStr, mut cleanCache: bool) -> Result<bool> {
+pub fn generateSeparateCode(mut className: ArcStr, mut cleanCache: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateSeparateCode")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: cleanCache })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4287,7 +4287,7 @@ pub(crate) fn generateSeparateCode(mut className: ArcStr, mut cleanCache: bool) 
     Ok(res)
 }
 
-pub(crate) fn generateJuliaHeader(mut fileName: ArcStr) -> Result<bool> {
+pub fn generateJuliaHeader(mut fileName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateJuliaHeader")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4297,7 +4297,7 @@ pub(crate) fn generateJuliaHeader(mut fileName: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn generateHeader(mut fileName: ArcStr) -> Result<bool> {
+pub fn generateHeader(mut fileName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateHeader")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4307,7 +4307,7 @@ pub(crate) fn generateHeader(mut fileName: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn clearVariables() -> Result<bool> {
+pub fn clearVariables() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("clearVariables")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4317,7 +4317,7 @@ pub(crate) fn clearVariables() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn clearProgram() -> Result<bool> {
+pub fn clearProgram() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("clearProgram")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4327,7 +4327,7 @@ pub(crate) fn clearProgram() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn clear() -> Result<bool> {
+pub fn clear() -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("clear")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4337,7 +4337,7 @@ pub(crate) fn clear() -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn help(mut topic: ArcStr) -> Result<ArcStr> {
+pub fn help(mut topic: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("help")).clone(), list![Arc::new(Values::Value::STRING { string: (topic).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
@@ -4347,7 +4347,7 @@ pub(crate) fn help(mut topic: ArcStr) -> Result<ArcStr> {
     Ok(res)
 }
 
-pub(crate) fn saveAll(mut fileName: ArcStr) -> Result<bool> {
+pub fn saveAll(mut fileName: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("saveAll")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4357,7 +4357,7 @@ pub(crate) fn saveAll(mut fileName: ArcStr) -> Result<bool> {
     Ok(res)
 }
 
-pub(crate) fn system_parallel(mut callStr: Arc<metamodelica::List<ArcStr>>, mut numThreads: i32) -> Result<Arc<metamodelica::List<i32>>> {
+pub fn system_parallel(mut callStr: Arc<metamodelica::List<ArcStr>>, mut numThreads: i32) -> Result<Arc<metamodelica::List<i32>>> {
     let mut res: Arc<metamodelica::List<i32>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("system_parallel")).clone(), list![ValuesMake::makeArray(({
@@ -4382,7 +4382,7 @@ pub(crate) fn system_parallel(mut callStr: Arc<metamodelica::List<ArcStr>>, mut 
     Ok(res)
 }
 
-pub(crate) fn system(mut callStr: ArcStr, mut outputFile: ArcStr) -> Result<i32> {
+pub fn system(mut callStr: ArcStr, mut outputFile: ArcStr) -> Result<i32> {
     let mut res: i32;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("system")).clone(), list![Arc::new(Values::Value::STRING { string: (callStr).clone() }), Arc::new(Values::Value::STRING { string: (outputFile).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -4392,7 +4392,7 @@ pub(crate) fn system(mut callStr: ArcStr, mut outputFile: ArcStr) -> Result<i32>
     Ok(res)
 }
 
-pub(crate) fn loadFileInteractive(mut filename: ArcStr, mut encoding: ArcStr, mut uses: bool, mut notify: bool, mut requireExactVersion: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn loadFileInteractive(mut filename: ArcStr, mut encoding: ArcStr, mut uses: bool, mut notify: bool, mut requireExactVersion: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadFileInteractive")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (encoding).clone() }), Arc::new(Values::Value::BOOL { boolean: uses }), Arc::new(Values::Value::BOOL { boolean: notify }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion })], dummyMsg.clone())?;
@@ -4407,7 +4407,7 @@ pub(crate) fn loadFileInteractive(mut filename: ArcStr, mut encoding: ArcStr, mu
     Ok(res)
 }
 
-pub(crate) fn loadFileInteractiveQualified(mut filename: ArcStr, mut encoding: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn loadFileInteractiveQualified(mut filename: ArcStr, mut encoding: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadFileInteractiveQualified")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (encoding).clone() })], dummyMsg.clone())?;
@@ -4422,7 +4422,7 @@ pub(crate) fn loadFileInteractiveQualified(mut filename: ArcStr, mut encoding: A
     Ok(res)
 }
 
-pub(crate) fn parseFile(mut filename: ArcStr, mut encoding: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn parseFile(mut filename: ArcStr, mut encoding: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("parseFile")).clone(), list![Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (encoding).clone() })], dummyMsg.clone())?;
@@ -4437,7 +4437,7 @@ pub(crate) fn parseFile(mut filename: ArcStr, mut encoding: ArcStr) -> Result<Ar
     Ok(res)
 }
 
-pub(crate) fn parseString(mut data: ArcStr, mut filename: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn parseString(mut data: ArcStr, mut filename: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("parseString")).clone(), list![Arc::new(Values::Value::STRING { string: (data).clone() }), Arc::new(Values::Value::STRING { string: (filename).clone() })], dummyMsg.clone())?;
@@ -4452,7 +4452,7 @@ pub(crate) fn parseString(mut data: ArcStr, mut filename: ArcStr) -> Result<Arc<
     Ok(res)
 }
 
-pub(crate) fn loadClassContentString(mut data: ArcStr, mut className: ArcStr, mut offsetX: i32, mut offsetY: i32) -> Result<bool> {
+pub fn loadClassContentString(mut data: ArcStr, mut className: ArcStr, mut offsetX: i32, mut offsetY: i32) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadClassContentString")).clone(), list![Arc::new(Values::Value::STRING { string: (data).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: offsetX }), Arc::new(Values::Value::INTEGER { integer: offsetY })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4462,7 +4462,7 @@ pub(crate) fn loadClassContentString(mut data: ArcStr, mut className: ArcStr, mu
     Ok(res)
 }
 
-pub(crate) fn loadString(mut data: ArcStr, mut filename: ArcStr, mut encoding: ArcStr, mut merge: bool, mut uses: bool, mut notify: bool, mut requireExactVersion: bool) -> Result<bool> {
+pub fn loadString(mut data: ArcStr, mut filename: ArcStr, mut encoding: ArcStr, mut merge: bool, mut uses: bool, mut notify: bool, mut requireExactVersion: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadString")).clone(), list![Arc::new(Values::Value::STRING { string: (data).clone() }), Arc::new(Values::Value::STRING { string: (filename).clone() }), Arc::new(Values::Value::STRING { string: (encoding).clone() }), Arc::new(Values::Value::BOOL { boolean: merge }), Arc::new(Values::Value::BOOL { boolean: uses }), Arc::new(Values::Value::BOOL { boolean: notify }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4472,7 +4472,7 @@ pub(crate) fn loadString(mut data: ArcStr, mut filename: ArcStr, mut encoding: A
     Ok(res)
 }
 
-pub(crate) fn reloadClass(mut name: ArcStr, mut encoding: ArcStr) -> Result<bool> {
+pub fn reloadClass(mut name: ArcStr, mut encoding: ArcStr) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("reloadClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((name).clone())? }) }), Arc::new(Values::Value::STRING { string: (encoding).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4482,7 +4482,7 @@ pub(crate) fn reloadClass(mut name: ArcStr, mut encoding: ArcStr) -> Result<bool
     Ok(res)
 }
 
-pub(crate) fn loadEncryptedPackage(mut fileName: ArcStr, mut workdir: ArcStr, mut skipUnzip: bool, mut uses: bool, mut notify: bool, mut requireExactVersion: bool) -> Result<bool> {
+pub fn loadEncryptedPackage(mut fileName: ArcStr, mut workdir: ArcStr, mut skipUnzip: bool, mut uses: bool, mut notify: bool, mut requireExactVersion: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadEncryptedPackage")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::STRING { string: (workdir).clone() }), Arc::new(Values::Value::BOOL { boolean: skipUnzip }), Arc::new(Values::Value::BOOL { boolean: uses }), Arc::new(Values::Value::BOOL { boolean: notify }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
@@ -4492,7 +4492,7 @@ pub(crate) fn loadEncryptedPackage(mut fileName: ArcStr, mut workdir: ArcStr, mu
     Ok(res)
 }
 
-pub(crate) fn parseEncryptedPackage(mut fileName: ArcStr, mut workdir: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub fn parseEncryptedPackage(mut fileName: ArcStr, mut workdir: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut res: Arc<metamodelica::List<ArcStr>>;
     let mut res_arr: Arc<Values::Value>;
     (_, res_arr) = CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("parseEncryptedPackage")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::STRING { string: (workdir).clone() })], dummyMsg.clone())?;
@@ -4507,7 +4507,7 @@ pub(crate) fn parseEncryptedPackage(mut fileName: ArcStr, mut workdir: ArcStr) -
     Ok(res)
 }
 
-pub(crate) fn loadFiles(mut fileNames: Arc<metamodelica::List<ArcStr>>, mut encoding: ArcStr, mut numThreads: i32, mut uses: bool, mut notify: bool, mut requireExactVersion: bool, mut allowWithin: bool) -> Result<bool> {
+pub fn loadFiles(mut fileNames: Arc<metamodelica::List<ArcStr>>, mut encoding: ArcStr, mut numThreads: i32, mut uses: bool, mut notify: bool, mut requireExactVersion: bool, mut allowWithin: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadFiles")).clone(), list![ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -4524,7 +4524,7 @@ pub(crate) fn loadFiles(mut fileNames: Arc<metamodelica::List<ArcStr>>, mut enco
     Ok(res)
 }
 
-pub(crate) fn loadFile(mut fileName: ArcStr, mut encoding: ArcStr, mut uses: bool, mut notify: bool, mut requireExactVersion: bool, mut allowWithin: bool) -> Result<bool> {
+pub fn loadFile(mut fileName: ArcStr, mut encoding: ArcStr, mut uses: bool, mut notify: bool, mut requireExactVersion: bool, mut allowWithin: bool) -> Result<bool> {
     let mut res: bool;
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("loadFile")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName).clone() }), Arc::new(Values::Value::STRING { string: (encoding).clone() }), Arc::new(Values::Value::BOOL { boolean: uses }), Arc::new(Values::Value::BOOL { boolean: notify }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion }), Arc::new(Values::Value::BOOL { boolean: allowWithin })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),

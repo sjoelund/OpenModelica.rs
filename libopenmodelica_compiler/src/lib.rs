@@ -27,11 +27,17 @@ use std::ffi::{CStr, CString, c_char, c_int};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 // Re-export the generated typed OMEdit interface ABI (the `extern "C"` wrappers
-// behind OpenModelicaScriptingAPIQt). The `pub use` makes the `#[no_mangle]`
-// symbols reachable from this cdylib's crate root so the linker keeps them in
-// `libOpenModelicaCompiler.so` (an rlib's `#[no_mangle]` items are otherwise
-// liable to be dropped if nothing references them).
-pub use openmodelica_backend_main::scripting_api_qt::*;
+// behind OpenModelicaScriptingAPIQt, in the `openmodelica_scripting_qt` crate).
+// The `pub use` makes the `#[no_mangle]` symbols reachable from this cdylib's
+// crate root so the linker keeps them in `libOpenModelicaCompiler.so` (an rlib's
+// `#[no_mangle]` items are otherwise liable to be dropped if nothing references
+// them).
+pub use openmodelica_scripting_qt::scripting_api_qt::*;
+
+// Re-export the plot/loadModel callback registration entry points (implemented
+// in `openmodelica_util::System`) for the same reason — OMEdit registers its
+// callbacks through these so omc can drive plot windows / model loading.
+pub use openmodelica_util::System::{omc_set_loadmodel_callback, omc_set_plot_callback};
 
 /// Initialise the compiler runtime on the calling thread.
 ///

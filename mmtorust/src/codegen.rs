@@ -1723,11 +1723,15 @@ fn emit_scripting_api_qt(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std:
     };
     let NodeKind::Class(c) = &node.kind else { return Ok(()) };
 
-    let dir = match &c.crate_name {
-        Some(cn) => format!("{cn}/src"),
-        None => output_dir.to_owned(),
-    };
-    let crate_root = dir.strip_suffix("/src").unwrap_or(&dir).to_owned();
+    // The interface is its own crate (`openmodelica_scripting_qt`): a thin,
+    // hand-written `lib.rs` (`pub mod scripting_api_qt;`) plus this generated
+    // module, depending on `openmodelica_backend_main`. Keeping it separate
+    // means the `openmodelica` binary never compiles it and no cargo feature is
+    // involved. Paths are relative to mmtorust's working directory (the
+    // workspace root), as elsewhere in codegen.
+    let _ = output_dir;
+    let crate_root = "openmodelica_scripting_qt".to_string();
+    let dir = format!("{crate_root}/src");
     let qt_dir = format!("{crate_root}/qt");
 
     // Derive the builtin path from the package's own .mo location:
@@ -1782,6 +1786,7 @@ fn emit_scripting_api_qt(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std:
         );
     }
 
+    std::fs::create_dir_all(&dir)?;
     std::fs::create_dir_all(&qt_dir)?;
     write_if_changed(&format!("{dir}/scripting_api_qt.rs"), &generated.rust_abi)?;
     write_if_changed(&format!("{qt_dir}/OpenModelicaScriptingAPIQtABI.h"), &generated.abi_header)?;
@@ -1853,16 +1858,9 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
     if std::path::Path::new(&format!("{this_dir}/capi.rs")).exists() {
         writeln!(out, "pub mod capi;").unwrap();
     }
-    // Generated typed OMEdit interface ABI (`scripting_api_qt.rs`, emitted by
-    // `emit_scripting_api_qt`): the `extern "C"` wrappers behind
-    // OpenModelicaScriptingAPIQt. Only the `libOpenModelicaCompiler` cdylib
-    // needs it (OMEdit links it); the `openmodelica` binary does not, so it is
-    // gated behind the `scripting_qt` feature the cdylib enables. (Intended to
-    // become its own crate once the scripting functions it calls are `pub`.)
-    if std::path::Path::new(&format!("{this_dir}/scripting_api_qt.rs")).exists() {
-        writeln!(out, "#[cfg(feature = \"scripting_qt\")]").unwrap();
-        writeln!(out, "pub mod scripting_api_qt;").unwrap();
-    }
+    // (The typed OMEdit interface ABI lives in its own hand-maintained crate,
+    // `openmodelica_scripting_qt`, written by `emit_scripting_api_qt`; it is not
+    // declared here.)
     // Hand-written, test-only unit tests live in `src/unittests/` (declared by
     // its own `mod.rs`). Unlike `tests/*.rs` integration tests — which compile
     // as a *separate* crate and so can only reach `pub` items — these are an

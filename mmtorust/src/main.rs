@@ -119,6 +119,18 @@ fn start_compilation(results: Vec<Absyn::Program>, fix: bool) {
     let total_fns = info.total_functions;
     let crate_local = total_fns.saturating_sub(vis.keep_public.len());
     hier.keep_public = vis.keep_public;
+    // The typed OMEdit interface (`openmodelica_scripting_qt`, see
+    // `codegen::emit_scripting_api_qt`) is a separate crate whose generated
+    // wrappers call every `OpenModelicaScriptingAPI` function across the crate
+    // boundary. The visibility pass only sees MetaModelica callers (none
+    // cross-crate), so it would narrow them to `pub(crate)`; force them `pub`.
+    if let Some(node) = hier.top_level.get("OpenModelicaScriptingAPI") {
+        for (name, child) in &node.children {
+            if matches!(child.ty, hierarchy::Ty::Function { .. }) {
+                hier.keep_public.insert(format!("OpenModelicaScriptingAPI.{name}"));
+            }
+        }
+    }
     println!(
         "Visibility analysis: {} functions kept `pub`, ~{} narrowable to `pub(crate)`; {:.2}s",
         hier.keep_public.len(),

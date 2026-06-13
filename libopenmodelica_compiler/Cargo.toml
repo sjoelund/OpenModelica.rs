@@ -11,5 +11,7 @@ name = "OpenModelicaCompiler"
 crate-type = ["cdylib"]
 
 [dependencies]
-openmodelica_backend_main = { workspace = true, features = ["scripting_qt"] }
+openmodelica_backend_main.workspace = true
+openmodelica_scripting_qt.workspace = true
+openmodelica_util.workspace = true
 arcstr.workspace = true

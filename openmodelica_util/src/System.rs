@@ -578,23 +578,107 @@ pub fn spawnCall(_path: ArcStr, _str: ArcStr) -> i32 {
 
 // ───────────────────────────────── plot / loadModel callbacks ─────────────────
 
+// In the in-process embedding (libOpenModelicaCompiler.so, used by OMEdit) the
+// host registers C callbacks omc invokes when an evaluated script runs
+// `plot(...)` / `loadModel(...)`. The C runtime stored them on `threadData`
+// (`SystemImpl__plotCallBack` in runtime/systemimpl.c reads `threadData->plotCB`);
+// here a process-global registry holds them, set through the `omc_set_*_callback`
+// C entry points the OMEdit C++ shim calls before evaluating a command.
+
+/// Matches the C `PlotCallback` (`gc/omc_gc.h`): the host class pointer, an
+/// external-window flag, then 18 string arguments.
+pub type PlotCallback = unsafe extern "C" fn(
+    *mut std::ffi::c_void,
+    libc::c_int,
+    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
+    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
+    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
+    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
+    *const libc::c_char, *const libc::c_char,
+);
+
+/// Matches the C `LoadModelCallback`: the host class pointer and a model name.
+pub type LoadModelCallback = unsafe extern "C" fn(*mut std::ffi::c_void, *const libc::c_char);
+
+struct PlotReg {
+    class_ptr: usize,
+    cb: PlotCallback,
+}
+struct LoadReg {
+    class_ptr: usize,
+    cb: LoadModelCallback,
+}
+// The host pointer is stored as `usize` so the statics are `Send`; the function
+// pointers are themselves `Send`/`Sync`.
+static PLOT_CB: std::sync::Mutex<Option<PlotReg>> = std::sync::Mutex::new(None);
+static LOAD_CB: std::sync::Mutex<Option<LoadReg>> = std::sync::Mutex::new(None);
+
+/// Register (or, with a null `cb`, clear) the plot callback. `Option<fn>` is
+/// ABI-identical to the function pointer, so a null pointer arrives as `None`.
+#[unsafe(no_mangle)]
+pub extern "C" fn omc_set_plot_callback(class_ptr: *mut std::ffi::c_void, cb: Option<PlotCallback>) {
+    *PLOT_CB.lock().unwrap() = cb.map(|cb| PlotReg { class_ptr: class_ptr as usize, cb });
+}
+
+/// Register (or clear) the loadModel callback. See [`omc_set_plot_callback`].
+#[unsafe(no_mangle)]
+pub extern "C" fn omc_set_loadmodel_callback(
+    class_ptr: *mut std::ffi::c_void,
+    cb: Option<LoadModelCallback>,
+) {
+    *LOAD_CB.lock().unwrap() = cb.map(|cb| LoadReg { class_ptr: class_ptr as usize, cb });
+}
+
 pub fn plotCallBackDefined() -> bool {
-    // The C runtime returns true iff `omc_PlotCallback` has been set via
-    // CORBA. We have no callback infrastructure in pure Rust yet.
-    false
+    PLOT_CB.lock().unwrap().is_some()
 }
 
 pub fn plotCallBack(
-    _externalWindow: bool, _filename: ArcStr, _title: ArcStr, _grid: ArcStr, _plotType: ArcStr,
-    _logX: ArcStr, _logY: ArcStr, _xLabel: ArcStr, _yLabel: ArcStr, _x1: ArcStr, _x2: ArcStr,
-    _y1: ArcStr, _y2: ArcStr, _curveWidth: ArcStr, _curveStyle: ArcStr, _legendPosition: ArcStr,
-    _footer: ArcStr, _autoScale: ArcStr, _variables: ArcStr,
+    externalWindow: bool, filename: ArcStr, title: ArcStr, grid: ArcStr, plotType: ArcStr,
+    logX: ArcStr, logY: ArcStr, xLabel: ArcStr, yLabel: ArcStr, x1: ArcStr, x2: ArcStr,
+    y1: ArcStr, y2: ArcStr, curveWidth: ArcStr, curveStyle: ArcStr, legendPosition: ArcStr,
+    footer: ArcStr, autoScale: ArcStr, variables: ArcStr,
 ) {
-    // No-op while plotCallBackDefined() is hard-coded to false.
+    // Copy the (Copy) registration out and release the lock before calling: the
+    // host callback may re-enter the compiler, which must not deadlock here.
+    let reg = match PLOT_CB.lock().unwrap().as_ref() {
+        Some(r) => (r.class_ptr, r.cb),
+        None => return,
+    };
+    let cs = |s: &str| std::ffi::CString::new(s.replace('\0', " ")).unwrap_or_default();
+    let (f, ti, g, pt, lx, ly, xl, yl, a1, a2, b1, b2, cw, cstyle, lp, ft, asc, vars) = (
+        cs(&filename), cs(&title), cs(&grid), cs(&plotType), cs(&logX), cs(&logY),
+        cs(&xLabel), cs(&yLabel), cs(&x1), cs(&x2), cs(&y1), cs(&y2),
+        cs(&curveWidth), cs(&curveStyle), cs(&legendPosition), cs(&footer),
+        cs(&autoScale), cs(&variables),
+    );
+    // SAFETY: `reg.1` was registered by the host as a valid C callback paired
+    // with `reg.0` (its class pointer); the CStrings outlive the call.
+    unsafe {
+        (reg.1)(
+            reg.0 as *mut std::ffi::c_void, externalWindow as libc::c_int,
+            f.as_ptr(), ti.as_ptr(), g.as_ptr(), pt.as_ptr(),
+            lx.as_ptr(), ly.as_ptr(), xl.as_ptr(), yl.as_ptr(),
+            a1.as_ptr(), a2.as_ptr(), b1.as_ptr(), b2.as_ptr(),
+            cw.as_ptr(), cstyle.as_ptr(), lp.as_ptr(), ft.as_ptr(),
+            asc.as_ptr(), vars.as_ptr(),
+        );
+    }
 }
 
-pub fn loadModelCallBackDefined() -> bool { false }
-pub fn loadModelCallBack(_modelName: ArcStr) {}
+pub fn loadModelCallBackDefined() -> bool {
+    LOAD_CB.lock().unwrap().is_some()
+}
+
+pub fn loadModelCallBack(modelName: ArcStr) {
+    let reg = match LOAD_CB.lock().unwrap().as_ref() {
+        Some(r) => (r.class_ptr, r.cb),
+        None => return,
+    };
+    let name = std::ffi::CString::new(modelName.replace('\0', " ")).unwrap_or_default();
+    // SAFETY: as in `plotCallBack`.
+    unsafe { (reg.1)(reg.0 as *mut std::ffi::c_void, name.as_ptr()) }
+}
 
 // ───────────────────────────────── directory ops ──────────────────────────────
 

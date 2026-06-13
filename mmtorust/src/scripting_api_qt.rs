@@ -334,7 +334,11 @@ fn gen_rust_wrapper(s: &mut String, f: &Func) {
         writeln!(&mut conv, "        let {local} = {};", abi_in(ty, &arg_ident(n), 0)).unwrap();
         call_args.push(local);
     }
-    let call = format!("crate::OpenModelicaScriptingAPI::{}({})", crate::codegen::escape_ident(&f.name), call_args.join(", "));
+    let call = format!(
+        "openmodelica_backend_main::OpenModelicaScriptingAPI::{}({})",
+        crate::codegen::escape_ident(&f.name),
+        call_args.join(", ")
+    );
 
     writeln!(s, "    let __r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {{").unwrap();
     s.push_str(&conv);
