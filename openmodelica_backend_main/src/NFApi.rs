@@ -912,13 +912,13 @@ pub(crate) fn buildModelInstanceAnnotationJSON(mut classPath: Arc<Path>, mut fil
 
 pub(crate) fn storeModelInstanceReference(mut json: Arc<JSON::JSON>) -> i32 {
     let mut handle: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("ModelInstanceReference_store"), lang: Some("C"), output_: Some(CREF_IDENT { name: "handle", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "json", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Script/NFApi.mo", isReadOnly: false, lineNumberStart: 976, columnNumberStart: 79, lineNumberEnd: 976, columnNumberEnd: 93, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Script/NFApi.mo", isReadOnly: false, lineNumberStart: 976, columnNumberStart: 71, lineNumberEnd: 976, columnNumberEnd: 93, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+    handle = crate::ModelInstanceReference::store(json.clone());
     handle
 }
 
 pub(crate) fn releaseModelInstanceReferenceImpl(mut handle: i32) -> bool {
     let mut success: bool = false;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("ModelInstanceReference_release"), lang: Some("C"), output_: Some(CREF_IDENT { name: "success", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "handle", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Script/NFApi.mo", isReadOnly: false, lineNumberStart: 982, columnNumberStart: 84, lineNumberEnd: 982, columnNumberEnd: 98, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Script/NFApi.mo", isReadOnly: false, lineNumberStart: 982, columnNumberStart: 76, lineNumberEnd: 982, columnNumberEnd: 98, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+    success = crate::ModelInstanceReference::release(handle.clone());
     success
 }
 

@@ -13,3 +13,4 @@ pub mod SimCodeMain;
 pub mod StaticScript;
 pub mod Globals;
 pub mod capi;
+pub mod ModelInstanceReference;

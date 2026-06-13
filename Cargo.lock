@@ -305,6 +305,7 @@ name = "libopenmodelica_compiler"
 version = "0.1.0"
 dependencies = [
  "arcstr",
+ "libc",
  "openmodelica_backend_main",
  "openmodelica_scripting_qt",
  "openmodelica_util",

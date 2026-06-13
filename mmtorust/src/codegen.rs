@@ -1858,6 +1858,15 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
     if std::path::Path::new(&format!("{this_dir}/capi.rs")).exists() {
         writeln!(out, "pub mod capi;").unwrap();
     }
+    // Hand-written in-memory model-instance reference store + JSON walker
+    // (`openmodelica_backend_main/src/ModelInstanceReference.rs`), the Rust port
+    // of `runtime/ModelInstanceReference_omc.c` (issue #15219). `NFApi` calls
+    // its `store`/`release` via `external_c_calls::external_c_impl_path`; OMEdit
+    // calls its `ModelInstanceReference_get` + `omc_json_*` C ABI in-process. No
+    // MetaModelica source of its own. Declared when present in this crate.
+    if std::path::Path::new(&format!("{this_dir}/ModelInstanceReference.rs")).exists() {
+        writeln!(out, "pub mod ModelInstanceReference;").unwrap();
+    }
     // (The typed OMEdit interface ABI lives in its own hand-maintained crate,
     // `openmodelica_scripting_qt`, written by `emit_scripting_api_qt`; it is not
     // declared here.)

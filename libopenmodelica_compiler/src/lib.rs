@@ -26,6 +26,11 @@ use openmodelica_backend_main::capi;
 use std::ffi::{CStr, CString, c_char, c_int};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+// MetaModelica-ABI compatibility shims (`omc_Main_init` / `omc_Main_handleCommand`
+// / GC + Windows no-ops) OMEdit links against. Implemented over the embedding ABI
+// below; the `#[no_mangle]` entry points are exported from this cdylib directly.
+mod mmc_compat;
+
 // Re-export the generated typed OMEdit interface ABI (the `extern "C"` wrappers
 // behind OpenModelicaScriptingAPIQt, in the `openmodelica_scripting_qt` crate).
 // The `pub use` makes the `#[no_mangle]` symbols reachable from this cdylib's
@@ -39,16 +44,52 @@ pub use openmodelica_scripting_qt::scripting_api_qt::*;
 // callbacks through these so omc can drive plot windows / model loading.
 pub use openmodelica_util::System::{omc_set_loadmodel_callback, omc_set_plot_callback};
 
+// Re-export the in-memory model-instance reference C ABI (issue #15219):
+// `ModelInstanceReference_get`/`_release` plus the `omc_json_*` walker that
+// OMEdit uses to read a model instance's boxed JSON value directly in-process,
+// avoiding JSON string (de)serialisation. Same `pub use` rationale as above —
+// keep the `#[no_mangle]` symbols in `libOpenModelicaCompiler.so`.
+pub use openmodelica_backend_main::ModelInstanceReference::*;
+
 /// Initialise the compiler runtime on the calling thread.
 ///
 /// Returns `0` on success and `-1` on failure (initialisation error or a
 /// panic). The installation directory is taken from the `OPENMODELICAHOME`
 /// environment variable, as in a normal omc startup. No command-line flags are
-/// passed; a richer init taking `argc`/`argv` can be added when OMEdit needs to
-/// forward flags.
+/// passed; use [`omc_compiler_init_args`] to forward flags (e.g. `+locale=…`).
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_compiler_init() -> c_int {
     match catch_unwind(|| capi::init(&[])) {
+        Ok(Ok(())) => 0,
+        Ok(Err(_)) | Err(_) => -1,
+    }
+}
+
+/// Like [`omc_compiler_init`] but forwarding the command-line arguments the
+/// embedder wants applied (`argv[0..argc]`, without the executable name), the
+/// same list `omc_Main_init` receives in a normal startup — e.g. `+locale=sv_SE`.
+/// Returns `0` on success, `-1` on failure or panic. Null/`argc <= 0` behaves
+/// like [`omc_compiler_init`].
+#[unsafe(no_mangle)]
+pub extern "C" fn omc_compiler_init_args(argv: *const *const c_char, argc: c_int) -> c_int {
+    let args: Vec<ArcStr> = if argv.is_null() || argc <= 0 {
+        Vec::new()
+    } else {
+        (0..argc as isize)
+            .filter_map(|i| {
+                // SAFETY: caller guarantees `argv` holds `argc` valid (or null)
+                // NUL-terminated C strings.
+                let p = unsafe { *argv.offset(i) };
+                if p.is_null() {
+                    None
+                } else {
+                    let bytes = unsafe { CStr::from_ptr(p) }.to_bytes();
+                    Some(ArcStr::from(String::from_utf8_lossy(bytes)))
+                }
+            })
+            .collect()
+    };
+    match catch_unwind(AssertUnwindSafe(|| capi::init(&args))) {
         Ok(Ok(())) => 0,
         Ok(Err(_)) | Err(_) => -1,
     }
@@ -63,6 +104,20 @@ pub extern "C" fn omc_compiler_init() -> c_int {
 /// the reply string itself (the same way the interactive server does).
 #[unsafe(no_mangle)]
 pub extern "C" fn omc_compiler_eval(command: *const c_char) -> *mut c_char {
+    omc_compiler_eval_keep(command, std::ptr::null_mut())
+}
+
+/// Like [`omc_compiler_eval`] but also reports whether the session should keep
+/// running: `*keep_running` is set to 0 after `quit()` and 1 otherwise (mirroring
+/// `omc_Main_handleCommand`'s boolean result). `keep_running` may be null.
+#[unsafe(no_mangle)]
+pub extern "C" fn omc_compiler_eval_keep(
+    command: *const c_char,
+    keep_running: *mut c_int,
+) -> *mut c_char {
+    if !keep_running.is_null() {
+        unsafe { *keep_running = 1 };
+    }
     if command.is_null() {
         return std::ptr::null_mut();
     }
@@ -70,13 +125,16 @@ pub extern "C" fn omc_compiler_eval(command: *const c_char) -> *mut c_char {
     let cmd_bytes = unsafe { CStr::from_ptr(command) }.to_bytes();
     let cmd = ArcStr::from(String::from_utf8_lossy(cmd_bytes));
 
-    let reply = match catch_unwind(AssertUnwindSafe(|| capi::eval(cmd))) {
-        Ok(Ok((_keep_running, reply))) => reply,
+    let (keep, reply) = match catch_unwind(AssertUnwindSafe(|| capi::eval(cmd))) {
+        Ok(Ok((keep, reply))) => (keep, reply),
         // Evaluation failure: surface the error text rather than a bare null so
         // the embedder gets a diagnostic, matching omc's interactive behaviour.
-        Ok(Err(e)) => ArcStr::from(format!("Error: {e}")),
+        Ok(Err(e)) => (true, ArcStr::from(format!("Error: {e}"))),
         Err(_) => return std::ptr::null_mut(),
     };
+    if !keep_running.is_null() {
+        unsafe { *keep_running = if keep { 1 } else { 0 } };
+    }
 
     // NUL bytes cannot appear in a C string; replace any (there should be none
     // in a textual reply) so construction cannot fail.

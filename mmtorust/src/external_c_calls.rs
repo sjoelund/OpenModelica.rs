@@ -755,6 +755,12 @@ pub fn external_c_impl_path(c_name: &str) -> Option<&'static str> {
         // through the dynamically loaded `in_*` entry point. Only called from
         // `DynLoad.executeFunction` (same crate), hence the `crate::` path.
         "DynLoad_executeFunction" => Some("crate::DynLoadExt::executeFunction"),
+        // In-memory model-instance reference store (runtime/
+        // ModelInstanceReference_omc.c, issue #15219). Hand-written in
+        // `openmodelica_backend_main/src/ModelInstanceReference.rs`; only
+        // `NFApi` (same crate) declares these externals, so `crate::` resolves.
+        "ModelInstanceReference_store" => Some("crate::ModelInstanceReference::store"),
+        "ModelInstanceReference_release" => Some("crate::ModelInstanceReference::release"),
         _ => None,
     }
 }
