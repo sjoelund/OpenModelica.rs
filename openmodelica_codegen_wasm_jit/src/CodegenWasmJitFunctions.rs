@@ -72,6 +72,9 @@ enum SigTy {
     Int,
     Real,
     Bool,
+    /// A `String`. Represented at the wasm level as an `i32` handle (pointer)
+    /// into the shared runtime heap; the bytes live in linear memory.
+    Str,
 }
 
 impl SigTy {
@@ -80,6 +83,7 @@ impl SigTy {
             SigTy::Int => 'I',
             SigTy::Real => 'R',
             SigTy::Bool => 'B',
+            SigTy::Str => 'S',
         }
     }
     fn from_code(c: char) -> Result<SigTy> {
@@ -87,14 +91,20 @@ impl SigTy {
             'I' => SigTy::Int,
             'R' => SigTy::Real,
             'B' => SigTy::Bool,
+            'S' => SigTy::Str,
             other => bail!("CodegenWasmJit: unknown signature type code {other:?}"),
         })
     }
     fn wty(self) -> WTy {
         match self {
-            SigTy::Int | SigTy::Bool => WTy::I32,
+            SigTy::Int | SigTy::Bool | SigTy::Str => WTy::I32,
             SigTy::Real => WTy::F64,
         }
+    }
+    /// Whether this is a reference-counted heap value (needs ARC on
+    /// assignment / at scope exit).
+    fn is_heap(self) -> bool {
+        matches!(self, SigTy::Str)
     }
 }
 
@@ -123,6 +133,36 @@ const BUILTINS: &[(&str, &[WTy], WTy)] = &[
 
 fn builtin_index(name: &str) -> Option<u32> {
     BUILTINS.iter().position(|(n, _, _)| *n == name).map(|i| i as u32)
+}
+
+/// Heap-runtime functions imported from the precompiled runtime module `"rt"`
+/// (see `openmodelica_codegen_wasm_jit_runtime`), in a fixed order so their wasm
+/// function indices are stable. They are imported *after* the [`BUILTINS`], so
+/// function index `i` is `rt_index(RT_BUILTINS[i].0)`. The result column is a
+/// slice so void functions (`rt_retain`/`rt_release`) can be expressed. The
+/// runtime's `memory` is imported separately (it is not a function).
+const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
+    ("rt_retain", &[WTy::I32], &[]),
+    ("rt_release", &[WTy::I32], &[]),
+    ("rt_str_new", &[WTy::I32], &[WTy::I32]),
+    ("rt_str_len", &[WTy::I32], &[WTy::I32]),
+    ("rt_str_data", &[WTy::I32], &[WTy::I32]),
+    ("rt_concat", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_streq", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_strcmp", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_substring", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_int_string", &[WTy::I32], &[WTy::I32]),
+    ("rt_real_string", &[WTy::F64], &[WTy::I32]),
+    ("rt_bool_string", &[WTy::I32], &[WTy::I32]),
+];
+
+/// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
+fn rt_index(name: &str) -> u32 {
+    let pos = RT_BUILTINS
+        .iter()
+        .position(|(n, _, _)| *n == name)
+        .unwrap_or_else(|| panic!("CodegenWasmJit: unknown runtime function {name}"));
+    (BUILTINS.len() + pos) as u32
 }
 
 /// `_`-mangled name of a function path, matching `CevalScript`'s
@@ -164,7 +204,11 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
         funcs.push(&**f);
     }
 
-    let base = BUILTINS.len() as u32;
+    // Imported functions occupy the low function indices: the `env` math
+    // builtins, then the `rt` heap-runtime functions; generated functions
+    // follow. (The imported `memory` has its own index space and does not
+    // shift function indices.)
+    let base = (BUILTINS.len() + RT_BUILTINS.len()) as u32;
     // Map mangled function name -> (local id, signature) so CALLs can resolve.
     let mut by_name: HashMap<String, FnInfo> = HashMap::new();
     let mut sigs: Vec<FnSig> = Vec::with_capacity(funcs.len());
@@ -174,19 +218,33 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
         sigs.push(sig);
     }
 
-    // Type section: one type per builtin, then one per generated function.
+    // Type section: one type per env builtin, per rt builtin, then per
+    // generated function (matching the import + function order).
     let mut types = we::TypeSection::new();
     for (_, params, result) in BUILTINS {
         types.ty().function(params.iter().map(|w| w.val()), [result.val()]);
+    }
+    for (_, params, results) in RT_BUILTINS {
+        types.ty().function(params.iter().map(|w| w.val()), results.iter().map(|w| w.val()));
     }
     for sig in &sigs {
         types.ty().function(sig.params.iter().map(|w| w.val()), sig.results.iter().map(|w| w.val()));
     }
 
-    // Import section: all builtins from module "env", using type index i.
+    // Import section: the runtime's shared linear memory, the `env` math
+    // builtins, then the `rt` heap-runtime functions. Type indices line up with
+    // the type section above.
     let mut imports = we::ImportSection::new();
+    imports.import(
+        "rt",
+        "memory",
+        we::MemoryType { minimum: 0, maximum: None, memory64: false, shared: false, page_size_log2: None },
+    );
     for (i, (name, _, _)) in BUILTINS.iter().enumerate() {
         imports.import("env", *name, we::EntityType::Function(i as u32));
+    }
+    for (j, (name, _, _)) in RT_BUILTINS.iter().enumerate() {
+        imports.import("rt", *name, we::EntityType::Function((BUILTINS.len() + j) as u32));
     }
 
     // Function + code sections.
@@ -256,8 +314,8 @@ fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
         DAE::Type::T_BOOL { .. } => SigTy::Bool,
         // An enumeration value is its 1-based Integer index.
         DAE::Type::T_ENUMERATION { .. } => SigTy::Int,
+        DAE::Type::T_STRING { .. } => SigTy::Str,
         DAE::Type::T_SUBTYPE_BASIC { .. } => bail!("CodegenWasmJit: subtype-basic types not yet supported"),
-        DAE::Type::T_STRING { .. } => bail!("CodegenWasmJit: String not yet supported"),
         other => bail!("CodegenWasmJit: non-scalar type not supported: {other:?}"),
     })
 }
@@ -645,12 +703,41 @@ fn exp_wty_hint(ctx: &FnCtx, exp: &DAE::Exp) -> Result<WTy> {
 }
 
 fn operator_wty(op: &DAE::Operator) -> Result<WTy> {
+    Ok(operator_sigty(op)?.wty())
+}
+
+/// The `SigTy` an arithmetic operator works on / produces. Unlike
+/// [`operator_wty`] this distinguishes Integer/Boolean and, crucially, String
+/// (so `+` on Strings can be lowered to `rt_concat` rather than `i32.add`).
+fn operator_sigty(op: &DAE::Operator) -> Result<SigTy> {
     use DAE::Operator as O;
     let ty = match op {
         O::ADD { ty } | O::SUB { ty } | O::MUL { ty } | O::DIV { ty } | O::POW { ty } | O::UMINUS { ty } => ty,
         other => bail!("CodegenWasmJit: cannot determine type of operator {other:?}"),
     };
-    Ok(sig_ty(ty)?.wty())
+    sig_ty(ty)
+}
+
+/// The `SigTy` of an expression, from the DAE type annotations it carries (the
+/// component reference's `ty`, a call's result `attr.ty`, a literal's kind, …).
+/// Used where the *Modelica* type matters beyond the wasm representation — e.g.
+/// dispatching `String(x)` on the argument type, or telling an Integer `i32`
+/// from a String handle `i32`.
+fn exp_sigty(exp: &DAE::Exp) -> Result<SigTy> {
+    use DAE::Exp as E;
+    Ok(match exp {
+        E::ICONST { .. } | E::ENUM_LITERAL { .. } => SigTy::Int,
+        E::BCONST { .. } => SigTy::Bool,
+        E::RCONST { .. } => SigTy::Real,
+        E::SCONST { .. } => SigTy::Str,
+        E::CREF { ty, .. } => sig_ty(ty)?,
+        E::CALL { attr, .. } => sig_ty(&attr.ty)?,
+        E::CAST { ty, .. } => sig_ty(ty)?,
+        E::BINARY { operator, .. } | E::UNARY { operator, .. } => operator_sigty(operator)?,
+        E::RELATION { .. } | E::LBINARY { .. } | E::LUNARY { .. } => SigTy::Bool,
+        E::IFEXP { expThen, .. } => exp_sigty(expThen)?,
+        other => bail!("CodegenWasmJit: cannot determine type of expression {other:?}"),
+    })
 }
 
 fn compile_unary(ctx: &mut FnCtx, op: &DAE::Operator, exp: &DAE::Exp) -> Result<WTy> {
@@ -676,6 +763,17 @@ fn compile_unary(ctx: &mut FnCtx, op: &DAE::Operator, exp: &DAE::Exp) -> Result<
 
 fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::Exp) -> Result<WTy> {
     use DAE::Operator as O;
+    // String `+` is concatenation: both operands are String handles, the result
+    // is a fresh String handle from the runtime.
+    if operator_sigty(op)? == SigTy::Str {
+        let O::ADD { .. } = op else {
+            bail!("CodegenWasmJit: unsupported String operator {op:?}");
+        };
+        compile_exp(ctx, e1)?;
+        compile_exp(ctx, e2)?;
+        ctx.emit(we::Instruction::Call(rt_index("rt_concat")));
+        return Ok(WTy::I32);
+    }
     let wty = operator_wty(op)?;
     // POW has no wasm instruction: route to the host `pow` import.
     if matches!(op, O::POW { .. }) {
@@ -711,6 +809,31 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
 
 fn compile_relation(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::Exp) -> Result<WTy> {
     use DAE::Operator as O;
+    // String comparisons go through the runtime: equality via `rt_streq`,
+    // ordering via `rt_strcmp` (which returns -1/0/1) compared against 0.
+    if relation_operand_sigty(op)? == SigTy::Str {
+        compile_exp(ctx, e1)?;
+        compile_exp(ctx, e2)?;
+        match op {
+            O::EQUAL { .. } => ctx.emit(we::Instruction::Call(rt_index("rt_streq"))),
+            O::NEQUAL { .. } => {
+                ctx.emit(we::Instruction::Call(rt_index("rt_streq")));
+                ctx.emit(we::Instruction::I32Eqz);
+            }
+            O::LESS { .. } | O::LESSEQ { .. } | O::GREATER { .. } | O::GREATEREQ { .. } => {
+                ctx.emit(we::Instruction::Call(rt_index("rt_strcmp")));
+                ctx.emit(we::Instruction::I32Const(0));
+                ctx.emit(match op {
+                    O::LESS { .. } => we::Instruction::I32LtS,
+                    O::LESSEQ { .. } => we::Instruction::I32LeS,
+                    O::GREATER { .. } => we::Instruction::I32GtS,
+                    _ => we::Instruction::I32GeS,
+                });
+            }
+            other => bail!("CodegenWasmJit: unsupported String relation {other:?}"),
+        }
+        return Ok(WTy::I32);
+    }
     let operand_wty = operand_type_of_relation(op)?;
     let a = compile_exp(ctx, e1)?;
     coerce(ctx, a, operand_wty);
@@ -736,12 +859,18 @@ fn compile_relation(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE
 }
 
 fn operand_type_of_relation(op: &DAE::Operator) -> Result<WTy> {
+    Ok(relation_operand_sigty(op)?.wty())
+}
+
+/// The `SigTy` of a relational operator's operands (distinguishes String, whose
+/// comparisons go through the runtime, from numeric ones).
+fn relation_operand_sigty(op: &DAE::Operator) -> Result<SigTy> {
     use DAE::Operator as O;
     let ty = match op {
         O::LESS { ty } | O::LESSEQ { ty } | O::GREATER { ty } | O::GREATEREQ { ty } | O::EQUAL { ty } | O::NEQUAL { ty } => ty,
         other => bail!("CodegenWasmJit: not a relational operator: {other:?}"),
     };
-    Ok(sig_ty(ty)?.wty())
+    sig_ty(ty)
 }
 
 /// Compile a `CALL`, leaving its result value(s) on the stack; returns their
@@ -899,8 +1028,110 @@ fn compile_math_builtin(
             ctx.emit(we::Instruction::I32RemS);
             Ok(WTy::I32)
         }
+        // Number → String formatting via the runtime: a scalar becomes a freshly
+        // allocated (refcount 1) String handle. The typed builtin names are
+        // unambiguous; `String(x)` dispatches on the argument's Modelica type.
+        "intString" => {
+            need_args(&argv, 1, name)?;
+            format_scalar_string(ctx, argv[0], SigTy::Int)
+        }
+        "boolString" => {
+            need_args(&argv, 1, name)?;
+            format_scalar_string(ctx, argv[0], SigTy::Bool)
+        }
+        "realString" if argv.len() == 1 => emit_real_string(ctx, argv[0]),
+        "String" => emit_string_builtin(ctx, &argv),
+        // `s1 + s2` arrives as a BINARY ADD (handled in `compile_binary`); the
+        // explicit builtin form is `stringAppend`.
+        "stringAppend" => {
+            need_args(&argv, 2, name)?;
+            compile_exp(ctx, argv[0])?;
+            compile_exp(ctx, argv[1])?;
+            ctx.emit(we::Instruction::Call(rt_index("rt_concat")));
+            Ok(WTy::I32)
+        }
+        "stringLength" => {
+            need_args(&argv, 1, name)?;
+            compile_exp(ctx, argv[0])?;
+            ctx.emit(we::Instruction::Call(rt_index("rt_str_len")));
+            Ok(WTy::I32) // Integer
+        }
+        "stringEqual" => {
+            need_args(&argv, 2, name)?;
+            compile_exp(ctx, argv[0])?;
+            compile_exp(ctx, argv[1])?;
+            ctx.emit(we::Instruction::Call(rt_index("rt_streq")));
+            Ok(WTy::I32) // Boolean
+        }
+        // `substring(s, i, j)` — 1-based inclusive.
+        "substring" => {
+            need_args(&argv, 3, name)?;
+            compile_exp(ctx, argv[0])?;
+            let i = compile_exp(ctx, argv[1])?;
+            coerce(ctx, i, WTy::I32);
+            let j = compile_exp(ctx, argv[2])?;
+            coerce(ctx, j, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_substring")));
+            Ok(WTy::I32)
+        }
         other => bail!("CodegenWasmJit: builtin function `{other}` not yet supported"),
     }
+}
+
+/// `String(x[, significantDigits][, minimumLength, leftJustified])` — the
+/// Modelica builtin. The frontend supplies the formatting defaults explicitly:
+/// `String(i, minLength, leftJustified)` for Integer/Boolean and
+/// `String(r, significantDigits, minLength, leftJustified)` for Real.
+///
+/// Only the default formatting (no padding) is handled here; a non-zero
+/// `minimumLength` (right/left justification) and Real `significantDigits`
+/// precision need printf-style formatting to stay byte-identical to the C
+/// target, so those fall back cleanly (the module is not written → META_FAIL →
+/// the C target runs instead). `String(value)` with no format args is also
+/// accepted.
+fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<WTy> {
+    let vty = exp_sigty(argv[0])?;
+    // A `minimumLength` of literal 0 means no padding, so the formatting args
+    // can be ignored. Anything else needs justification/precision support.
+    let no_padding = |min_len: &DAE::Exp| matches!(min_len, DAE::Exp::ICONST { integer: 0 });
+    match (vty, argv.len()) {
+        (SigTy::Str, 1) => compile_exp(ctx, argv[0]), // String(s) is the identity
+        (SigTy::Int, 1) | (SigTy::Bool, 1) => format_scalar_string(ctx, argv[0], vty),
+        (SigTy::Real, 1) => format_scalar_string(ctx, argv[0], vty),
+        // String(int|bool, minLength, leftJustified)
+        (SigTy::Int, 3) | (SigTy::Bool, 3) if no_padding(argv[1]) => format_scalar_string(ctx, argv[0], vty),
+        // String(real, significantDigits, minLength, leftJustified): only the
+        // shortest-round-trip default (significantDigits handled by the C target).
+        other => bail!("CodegenWasmJit: String() with formatting args not yet supported ({other:?})"),
+    }
+}
+
+/// Format a scalar of the given `SigTy` to a String handle via the runtime.
+fn format_scalar_string(ctx: &mut FnCtx, arg: &DAE::Exp, ty: SigTy) -> Result<WTy> {
+    match ty {
+        SigTy::Int => {
+            let w = compile_exp(ctx, arg)?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_int_string")));
+            Ok(WTy::I32)
+        }
+        SigTy::Bool => {
+            let w = compile_exp(ctx, arg)?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_bool_string")));
+            Ok(WTy::I32)
+        }
+        SigTy::Real => emit_real_string(ctx, arg),
+        SigTy::Str => compile_exp(ctx, arg),
+    }
+}
+
+/// `realString(r)` / `String(r)` with default formatting.
+fn emit_real_string(ctx: &mut FnCtx, arg: &DAE::Exp) -> Result<WTy> {
+    let w = compile_exp(ctx, arg)?;
+    coerce(ctx, w, WTy::F64);
+    ctx.emit(we::Instruction::Call(rt_index("rt_real_string")));
+    Ok(WTy::I32)
 }
 
 fn unary_f64(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>], instr: we::Instruction<'static>) -> Result<()> {

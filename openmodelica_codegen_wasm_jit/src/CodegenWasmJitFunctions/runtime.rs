@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
 use anyhow::{Result, anyhow, bail};
+use arcstr::ArcStr;
 use metamodelica::List;
 
 use openmodelica_frontend_types::Values;
@@ -45,7 +46,10 @@ struct JitCache {
     engine: wasmtime::Engine,
     /// Host-imported math builtins (module `"env"`); identical for every module,
     /// so built once and reused for every instantiation.
-    linker: wasmtime::Linker<()>,
+    env_linker: wasmtime::Linker<()>,
+    /// The static linear-memory runtime ([`RUNTIME_WASM`]), compiled once. A
+    /// fresh instance is created per call to give each evaluation its own heap.
+    runtime_module: wasmtime::Module,
     modules: Mutex<HashMap<Vec<u8>, wasmtime::Module>>,
 }
 
@@ -53,11 +57,12 @@ fn jit_cache() -> &'static JitCache {
     static CACHE: OnceLock<JitCache> = OnceLock::new();
     CACHE.get_or_init(|| {
         let engine = wasmtime::Engine::default();
-        let mut linker = wasmtime::Linker::new(&engine);
+        let mut env_linker = wasmtime::Linker::new(&engine);
         // The builtin set is fixed and cannot collide; a failure here is a
         // programming error in `add_host_builtins`, not a runtime condition.
-        add_host_builtins(&mut linker).expect("register wasm-jit host builtins");
-        JitCache { engine, linker, modules: Mutex::new(HashMap::new()) }
+        add_host_builtins(&mut env_linker).expect("register wasm-jit host builtins");
+        let runtime_module = wasmtime::Module::new(&engine, RUNTIME_WASM).expect("compile wasm-jit runtime");
+        JitCache { engine, env_linker, runtime_module, modules: Mutex::new(HashMap::new()) }
     })
 }
 
@@ -160,12 +165,26 @@ pub(super) fn load_and_execute(
     let sig = read_sig(&format!("{file_name}.wasm.sig"))?;
     let bytes = std::fs::read(&wasm_path)?;
 
-    // Reuse the shared engine/linker and the per-content compiled module; only
-    // the store and instance are per-call (see `JitCache`).
+    // Reuse the shared engine/env-linker and the per-content compiled module.
+    // Each call gets a fresh runtime instance (its own heap/linear memory); the
+    // generated module imports the runtime's `memory` and `rt_*` exports under
+    // module name "rt", plus the `env` math builtins.
     let cache = jit_cache();
     let module = get_or_compile_module(cache, &bytes)?;
     let mut store = wasmtime::Store::new(&cache.engine, ());
-    let instance = wt(cache.linker.instantiate(&mut store, &module))?;
+    let rt_inst = wt(cache.env_linker.instantiate(&mut store, &cache.runtime_module))?;
+    let mut linker = cache.env_linker.clone();
+    wt(linker.instance(&mut store, "rt", rt_inst))?;
+    let instance = wt(linker.instantiate(&mut store, &module))?;
+
+    // Runtime entry points needed to marshal strings in and out of the heap.
+    let memory = rt_inst
+        .get_memory(&mut store, "memory")
+        .ok_or_else(|| anyhow!("CodegenWasmJit: runtime has no `memory` export"))?;
+    let rt_str_new = wt(rt_inst.get_typed_func::<i32, i32>(&mut store, "rt_str_new"))?;
+    let rt_str_len = wt(rt_inst.get_typed_func::<i32, i32>(&mut store, "rt_str_len"))?;
+    let rt_str_data = wt(rt_inst.get_typed_func::<i32, i32>(&mut store, "rt_str_data"))?;
+
     let func = instance
         .get_func(&mut store, "main")
         .ok_or_else(|| anyhow!("CodegenWasmJit: module has no `main` export"))?;
@@ -180,6 +199,17 @@ pub(super) fn load_and_execute(
         params.push(match ty {
             SigTy::Real => wasmtime::Val::F64(value_as_f64(a)?.to_bits()),
             SigTy::Int | SigTy::Bool => wasmtime::Val::I32(value_as_i32(a)?),
+            SigTy::Str => {
+                let v: &Values::Value = a;
+                let Values::Value::STRING { string } = v else {
+                    bail!("CodegenWasmJit: expected a String argument, got {v:?}");
+                };
+                let b = string.as_bytes();
+                let h = wt(rt_str_new.call(&mut store, b.len() as i32))?;
+                let d = wt(rt_str_data.call(&mut store, h))? as usize;
+                memory.write(&mut store, d, b).map_err(|e| anyhow!("CodegenWasmJit: memory write: {e}"))?;
+                wasmtime::Val::I32(h)
+            }
         });
     }
 
@@ -204,6 +234,15 @@ pub(super) fn load_and_execute(
             SigTy::Real => Values::Value::REAL {
                 real: metamodelica::Real::from(val.f64().ok_or_else(|| anyhow!("CodegenWasmJit: expected f64 result"))?),
             },
+            SigTy::Str => {
+                let h = val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 string handle result"))?;
+                let len = wt(rt_str_len.call(&mut store, h))? as usize;
+                let d = wt(rt_str_data.call(&mut store, h))? as usize;
+                let mut buf = vec![0u8; len];
+                memory.read(&store, d, &mut buf).map_err(|e| anyhow!("CodegenWasmJit: memory read: {e}"))?;
+                let s = std::str::from_utf8(&buf).map_err(|e| anyhow!("CodegenWasmJit: non-utf8 result string: {e}"))?;
+                Values::Value::STRING { string: ArcStr::from(s) }
+            }
         }));
     }
 
