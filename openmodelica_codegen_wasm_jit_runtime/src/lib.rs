@@ -554,6 +554,125 @@ pub extern "C" fn rt_array_extreme_f64(obj: u32, want_max: i32) -> f64 {
 }
 
 // ---------------------------------------------------------------------------
+// Element-wise array arithmetic (numeric: Integer in i32, Real in f64)
+// ---------------------------------------------------------------------------
+//
+// `op`: 0 add, 1 sub, 2 mul, 3 div. These produce a *fresh* array with the same
+// kind/dimensions as the (first) array operand; the codegen releases the
+// operand arrays afterwards. Used for `a .+ b` / `a + b` (`ADD_ARR` …), scalar
+// broadcast (`a * s`, `s - a`, …) and unary negation.
+
+const OP_ADD: u32 = 0;
+const OP_SUB: u32 = 1;
+const OP_MUL: u32 = 2;
+
+fn ew_i32(x: i32, y: i32, op: u32) -> i32 {
+    match op {
+        OP_ADD => x.wrapping_add(y),
+        OP_SUB => x.wrapping_sub(y),
+        OP_MUL => x.wrapping_mul(y),
+        _ => {
+            if y == 0 {
+                core::arch::wasm32::unreachable();
+            }
+            x.wrapping_div(y)
+        }
+    }
+}
+
+fn ew_f64(x: f64, y: f64, op: u32) -> f64 {
+    match op {
+        OP_ADD => x + y,
+        OP_SUB => x - y,
+        OP_MUL => x * y,
+        _ => x / y,
+    }
+}
+
+/// A fresh array with the same kind and dimensions as `obj`, zeroed data.
+fn array_like(obj: u32) -> u32 {
+    let kind = unsafe { load_u32(obj + ARR_KIND_OFF) };
+    let ndims = rt_array_ndims(obj);
+    let res = rt_array_new(kind, ndims, rt_array_total(obj));
+    for axis in 0..ndims {
+        unsafe { store_u32(res + ARR_DIMS_OFF + axis * 4, load_u32(obj + ARR_DIMS_OFF + axis * 4)) };
+    }
+    res
+}
+
+/// `a op b` element-wise (i32 elements), `a` and `b` the same shape.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_ew_i32(a: u32, b: u32, op: u32) -> u32 {
+    let res = array_like(a);
+    let (da, db, dr) = (arr_data(a), arr_data(b), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        let v = ew_i32(unsafe { load_i32(da + i * 4) }, unsafe { load_i32(db + i * 4) }, op);
+        unsafe { store_u32(dr + i * 4, v as u32) };
+    }
+    res
+}
+
+/// `a op b` element-wise (f64 elements).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_ew_f64(a: u32, b: u32, op: u32) -> u32 {
+    let res = array_like(a);
+    let (da, db, dr) = (arr_data(a), arr_data(b), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        let v = ew_f64(unsafe { load_f64(da + i * 8) }, unsafe { load_f64(db + i * 8) }, op);
+        unsafe { store_f64(dr + i * 8, v) };
+    }
+    res
+}
+
+/// Broadcast a scalar over an i32-element array: `rev ? (s op a[i]) : (a[i] op s)`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_scalar_i32(a: u32, s: i32, op: u32, rev: u32) -> u32 {
+    let res = array_like(a);
+    let (da, dr) = (arr_data(a), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        let x = unsafe { load_i32(da + i * 4) };
+        let v = if rev != 0 { ew_i32(s, x, op) } else { ew_i32(x, s, op) };
+        unsafe { store_u32(dr + i * 4, v as u32) };
+    }
+    res
+}
+
+/// Broadcast a scalar over an f64-element array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_scalar_f64(a: u32, s: f64, op: u32, rev: u32) -> u32 {
+    let res = array_like(a);
+    let (da, dr) = (arr_data(a), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        let x = unsafe { load_f64(da + i * 8) };
+        let v = if rev != 0 { ew_f64(s, x, op) } else { ew_f64(x, s, op) };
+        unsafe { store_f64(dr + i * 8, v) };
+    }
+    res
+}
+
+/// Negate every element of an i32-element array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_neg_i32(a: u32) -> u32 {
+    let res = array_like(a);
+    let (da, dr) = (arr_data(a), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        unsafe { store_u32(dr + i * 4, (load_i32(da + i * 4)).wrapping_neg() as u32) };
+    }
+    res
+}
+
+/// Negate every element of an f64-element array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_neg_f64(a: u32) -> u32 {
+    let res = array_like(a);
+    let (da, dr) = (arr_data(a), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        unsafe { store_f64(dr + i * 8, -load_f64(da + i * 8)) };
+    }
+    res
+}
+
+// ---------------------------------------------------------------------------
 // Strings
 // ---------------------------------------------------------------------------
 

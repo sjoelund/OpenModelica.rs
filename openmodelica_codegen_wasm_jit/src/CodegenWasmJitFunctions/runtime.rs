@@ -931,6 +931,72 @@ mod tests {
         assert!((rval(&r) - 1.0).abs() < 1e-12);
     }
 
+    /// Element-wise array arithmetic: array op array, scalar broadcast (both
+    /// operand orders) and negation, over Real and Integer elements.
+    #[test]
+    fn precompiled_runtime_array_elementwise() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let ew_f64 = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_ew_f64").unwrap();
+        let scalar_f64 = inst.get_typed_func::<(i32, f64, i32, i32), i32>(&mut store, "rt_array_scalar_f64").unwrap();
+        let neg_i32 = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_neg_i32").unwrap();
+
+        // Build a Real[3] from a slice.
+        let mut mk_f64 = |store: &mut Store, vals: &[f64]| -> i32 {
+            let a = arr_new.call(&mut *store, (1, 1, vals.len() as i32)).unwrap();
+            set_dim.call(&mut *store, (a, 0, vals.len() as i32)).unwrap();
+            for (k, v) in vals.iter().enumerate() {
+                let addr = elem_ptr.call(&mut *store, (a, k as i32 + 1)).unwrap() as usize;
+                mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+            }
+            a
+        };
+        let mut read_f64 = |store: &mut Store, h: i32, n: usize| -> Vec<f64> {
+            (0..n)
+                .map(|k| {
+                    let addr = elem_ptr.call(&mut *store, (h, k as i32 + 1)).unwrap() as usize;
+                    let mut b = [0u8; 8];
+                    mem.read(&*store, addr, &mut b).unwrap();
+                    f64::from_le_bytes(b)
+                })
+                .collect()
+        };
+
+        let a = mk_f64(&mut store, &[1.0, 2.0, 3.0]);
+        let b = mk_f64(&mut store, &[10.0, 20.0, 30.0]);
+
+        // a + b = {11, 22, 33}.
+        let sum = ew_f64.call(&mut store, (a, b, 0)).unwrap();
+        assert_eq!(read_f64(&mut store, sum, 3), [11.0, 22.0, 33.0]);
+        // a * 2 = {2, 4, 6}.
+        let scaled = scalar_f64.call(&mut store, (a, 2.0, 2, 0)).unwrap();
+        assert_eq!(read_f64(&mut store, scaled, 3), [2.0, 4.0, 6.0]);
+        // 10 - a = {9, 8, 7} (rev = 1).
+        let sub = scalar_f64.call(&mut store, (a, 10.0, 1, 1)).unwrap();
+        assert_eq!(read_f64(&mut store, sub, 3), [9.0, 8.0, 7.0]);
+
+        // Integer negation: -{1,-2,3} = {-1,2,-3}.
+        let ai = arr_new.call(&mut store, (0, 1, 3)).unwrap();
+        set_dim.call(&mut store, (ai, 0, 3)).unwrap();
+        for (k, v) in [1i32, -2, 3].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (ai, k as i32 + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &v.to_le_bytes()).unwrap();
+        }
+        let neg = neg_i32.call(&mut store, ai).unwrap();
+        for (k, want) in [-1i32, 2, -3].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (neg, k as i32 + 1)).unwrap() as usize;
+            let mut buf = [0u8; 4];
+            mem.read(&store, addr, &mut buf).unwrap();
+            assert_eq!(i32::from_le_bytes(buf), *want);
+        }
+    }
+
     /// The record runtime: a self-describing object with a String + Integer
     /// field. `rt_record_copy` must retain the (immutable) string and give
     /// independent scalar storage; `rt_record_release` must release the string

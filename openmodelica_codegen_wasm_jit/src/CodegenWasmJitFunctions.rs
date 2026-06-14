@@ -309,6 +309,14 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_record_new", &[WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_record_release", &[WTy::I32], &[]),
     ("rt_record_copy", &[WTy::I32], &[WTy::I32]),
+    // Element-wise array arithmetic (op: 0 add, 1 sub, 2 mul, 3 div): array op
+    // array, scalar broadcast (`rev` swaps operand order), and negation.
+    ("rt_array_ew_i32", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_ew_f64", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_scalar_i32", &[WTy::I32, WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_scalar_f64", &[WTy::I32, WTy::F64, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_neg_i32", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_neg_f64", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1612,6 +1620,20 @@ fn exp_sigty(exp: &DAE::Exp) -> Result<SigTy> {
 }
 
 fn compile_unary(ctx: &mut FnCtx, op: &DAE::Operator, exp: &DAE::Exp) -> Result<WTy> {
+    // Array negation `-a`: negate every element into a fresh array.
+    if let DAE::Operator::UMINUS_ARR { ty } = op {
+        let SigTy::Array { elem, .. } = sig_ty(ty)? else {
+            bail!("CodegenWasmJit: UMINUS_ARR with non-array type {ty:?}");
+        };
+        let rt = if elem.wty() == WTy::F64 { "rt_array_neg_f64" } else { "rt_array_neg_i32" };
+        compile_exp(ctx, exp)?; // owned array
+        let at = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(at));
+        ctx.emit(we::Instruction::LocalGet(at));
+        ctx.emit(we::Instruction::Call(rt_index(rt)));
+        release_temp_array(ctx, at);
+        return Ok(WTy::I32);
+    }
     let DAE::Operator::UMINUS { ty } = op else {
         bail!("CodegenWasmJit: unsupported unary operator {op:?}");
     };
@@ -1634,6 +1656,23 @@ fn compile_unary(ctx: &mut FnCtx, op: &DAE::Operator, exp: &DAE::Exp) -> Result<
 
 fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::Exp) -> Result<WTy> {
     use DAE::Operator as O;
+    // Element-wise array arithmetic (same-shape arrays) and scalar broadcast.
+    // Handled before the scalar paths because `operator_sigty` does not classify
+    // the array operators.
+    match op {
+        O::ADD_ARR { ty } => return compile_array_ew(ctx, e1, e2, OP_ADD, ty),
+        O::SUB_ARR { ty } => return compile_array_ew(ctx, e1, e2, OP_SUB, ty),
+        O::MUL_ARR { ty } => return compile_array_ew(ctx, e1, e2, OP_MUL, ty),
+        O::DIV_ARR { ty } => return compile_array_ew(ctx, e1, e2, OP_DIV, ty),
+        // `a + s` / `a * s` (commutative — the array operand is found by type).
+        O::ADD_ARRAY_SCALAR { ty } => return compile_array_scalar(ctx, e1, e2, OP_ADD, false, ty),
+        O::MUL_ARRAY_SCALAR { ty } => return compile_array_scalar(ctx, e1, e2, OP_MUL, false, ty),
+        // `s - a`, `a / s`, `s / a`.
+        O::SUB_SCALAR_ARRAY { ty } => return compile_array_scalar(ctx, e1, e2, OP_SUB, true, ty),
+        O::DIV_ARRAY_SCALAR { ty } => return compile_array_scalar(ctx, e1, e2, OP_DIV, false, ty),
+        O::DIV_SCALAR_ARRAY { ty } => return compile_array_scalar(ctx, e1, e2, OP_DIV, true, ty),
+        _ => {}
+    }
     // String `+` is concatenation: both operands are String handles, the result
     // is a fresh String handle from the runtime.
     if operator_sigty(op)? == SigTy::Str {
@@ -2351,6 +2390,60 @@ fn compile_range_array(ctx: &mut FnCtx, ty: &DAE::Type, start: &DAE::Exp, step: 
     ctx.emit(we::Instruction::End); // block
     ctx.emit(we::Instruction::LocalGet(arr));
     Ok(())
+}
+
+// Element-wise / broadcast op codes — must match the runtime's `OP_*`.
+const OP_ADD: i32 = 0;
+const OP_SUB: i32 = 1;
+const OP_MUL: i32 = 2;
+const OP_DIV: i32 = 3;
+
+/// Element-wise `a op b` over two same-shape arrays: produces a fresh array; the
+/// operand arrays are released after.
+fn compile_array_ew(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp, op_code: i32, ty: &DAE::Type) -> Result<WTy> {
+    let SigTy::Array { elem, .. } = sig_ty(ty)? else {
+        bail!("CodegenWasmJit: element-wise array op with non-array type {ty:?}");
+    };
+    let rt = if elem.wty() == WTy::F64 { "rt_array_ew_f64" } else { "rt_array_ew_i32" };
+    compile_exp(ctx, e1)?;
+    let at = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(at));
+    compile_exp(ctx, e2)?;
+    let bt = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(bt));
+    ctx.emit(we::Instruction::LocalGet(at));
+    ctx.emit(we::Instruction::LocalGet(bt));
+    ctx.emit(we::Instruction::I32Const(op_code));
+    ctx.emit(we::Instruction::Call(rt_index(rt)));
+    release_temp_array(ctx, at);
+    release_temp_array(ctx, bt);
+    Ok(WTy::I32)
+}
+
+/// Scalar broadcast over an array: `rev ? (s op a[i]) : (a[i] op s)`. The array
+/// and scalar operands are found by type (so commutative forms accept either
+/// order); the array operand is released after.
+fn compile_array_scalar(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp, op_code: i32, rev: bool, ty: &DAE::Type) -> Result<WTy> {
+    let SigTy::Array { elem, .. } = sig_ty(ty)? else {
+        bail!("CodegenWasmJit: array-scalar op with non-array type {ty:?}");
+    };
+    let elem_wty = elem.wty();
+    let rt = if elem_wty == WTy::F64 { "rt_array_scalar_f64" } else { "rt_array_scalar_i32" };
+    let (arr_e, scal_e) = if matches!(exp_sigty(e1)?, SigTy::Array { .. }) { (e1, e2) } else { (e2, e1) };
+    compile_exp(ctx, arr_e)?;
+    let at = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(at));
+    let sw = compile_exp(ctx, scal_e)?;
+    coerce(ctx, sw, elem_wty);
+    let st = ctx.alloc_temp(elem_wty);
+    ctx.emit(we::Instruction::LocalSet(st));
+    ctx.emit(we::Instruction::LocalGet(at));
+    ctx.emit(we::Instruction::LocalGet(st));
+    ctx.emit(we::Instruction::I32Const(op_code));
+    ctx.emit(we::Instruction::I32Const(rev as i32));
+    ctx.emit(we::Instruction::Call(rt_index(rt)));
+    release_temp_array(ctx, at);
+    Ok(WTy::I32)
 }
 
 /// Lower `a[i, j, ...]` (full subscripting of an N-D array to a scalar element).
