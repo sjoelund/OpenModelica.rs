@@ -657,6 +657,34 @@ pub extern "C" fn rt_array_matmul_i32(a: u32, b: u32) -> u32 {
     result
 }
 
+/// `base ^ n` for an integer exponent, replicating the C runtime's
+/// `real_int_pow` (exponentiation by squaring) bit-for-bit so that scalar
+/// `x ^ <integer literal>` stays byte-identical with the C target — which uses
+/// this form rather than a generic `pow` for integer exponents (`x*x`, `x*x*x`,
+/// `(x*x)*(x*x)` and `real_int_pow` for the rest all reduce to this squaring
+/// sequence). Negative exponents return the reciprocal; `0 ^ (negative)` is
+/// undefined and traps.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_real_int_pow(mut base: f64, mut n: i32) -> f64 {
+    let mut result = 1.0f64;
+    let neg = n < 0;
+    if neg {
+        if base == 0.0 {
+            core::arch::wasm32::unreachable();
+        }
+        n = -n;
+    }
+    while n != 0 {
+        if n % 2 != 0 {
+            result *= base;
+            n -= 1;
+        }
+        base *= base;
+        n /= 2;
+    }
+    if neg { 1.0 / result } else { result }
+}
+
 // ---------------------------------------------------------------------------
 // Records (heterogeneous, self-describing via an inline heap-field table)
 // ---------------------------------------------------------------------------
@@ -872,12 +900,15 @@ pub extern "C" fn rt_array_extreme_f64(obj: u32, want_max: i32) -> f64 {
 const OP_ADD: u32 = 0;
 const OP_SUB: u32 = 1;
 const OP_MUL: u32 = 2;
+const OP_DIV: u32 = 3;
+const OP_POW: u32 = 4;
 
 fn ew_i32(x: i32, y: i32, op: u32) -> i32 {
     match op {
         OP_ADD => x.wrapping_add(y),
         OP_SUB => x.wrapping_sub(y),
         OP_MUL => x.wrapping_mul(y),
+        OP_POW => libm::pow(x as f64, y as f64) as i32,
         _ => {
             if y == 0 {
                 core::arch::wasm32::unreachable();
@@ -892,7 +923,8 @@ fn ew_f64(x: f64, y: f64, op: u32) -> f64 {
         OP_ADD => x + y,
         OP_SUB => x - y,
         OP_MUL => x * y,
-        _ => x / y,
+        OP_DIV => x / y,
+        _ => libm::pow(x, y),
     }
 }
 

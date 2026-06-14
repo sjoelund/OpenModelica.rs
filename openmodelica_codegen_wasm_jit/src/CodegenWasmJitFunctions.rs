@@ -335,6 +335,9 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // a fresh array (rank a.ndims + b.ndims - 2).
     ("rt_array_matmul_f64", &[WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_array_matmul_i32", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    // `base ^ n` for an integer exponent (matches the C `real_int_pow` so scalar
+    // integer powers stay byte-identical instead of going through generic pow).
+    ("rt_real_int_pow", &[WTy::F64, WTy::I32], &[WTy::F64]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1574,6 +1577,21 @@ fn operator_wty(op: &DAE::Operator) -> Result<WTy> {
     Ok(operator_sigty(op)?.wty())
 }
 
+/// The integer value of a `Real` literal exponent, or `None` if it is not an
+/// integral `RCONST` — mirrors the frontend's `Expression.realExpIntLit`, which
+/// the C target uses to pick the `real_int_pow` (repeated-multiply) path for
+/// scalar integer powers. Matching it exactly keeps the choice (and the output)
+/// in lockstep with the C target.
+fn real_exp_int_lit(e: &DAE::Exp) -> Option<i32> {
+    if let DAE::Exp::RCONST { real } = e {
+        let r = real.into_inner();
+        let i = r.floor() as i32;
+        if r == i as f64 { Some(i) } else { None }
+    } else {
+        None
+    }
+}
+
 /// The `SigTy` an arithmetic operator works on / produces. Unlike
 /// [`operator_wty`] this distinguishes Integer/Boolean and, crucially, String
 /// (so `+` on Strings can be lowered to `rt_concat` rather than `i32.add`).
@@ -1687,6 +1705,11 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
         // (matrix·matrix / matrix·vector / vector·matrix → a fresh array).
         O::MUL_SCALAR_PRODUCT { .. } => return compile_dot(ctx, e1, e2),
         O::MUL_MATRIX_PRODUCT { .. } => return compile_matmul(ctx, e1, e2),
+        // Element-wise power: `a .^ b` (POW_ARR2), `a .^ s` (POW_ARRAY_SCALAR)
+        // and `s .^ a` (POW_SCALAR_ARRAY). The per-element `pow` runs in-wasm.
+        O::POW_ARR2 { ty } => return compile_array_ew(ctx, e1, e2, OP_POW, ty),
+        O::POW_ARRAY_SCALAR { ty } => return compile_array_scalar(ctx, e1, e2, OP_POW, false, ty),
+        O::POW_SCALAR_ARRAY { ty } => return compile_array_scalar(ctx, e1, e2, OP_POW, true, ty),
         _ => {}
     }
     // String `+` is concatenation: both operands are String handles, the result
@@ -1699,8 +1722,22 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
         return Ok(WTy::I32);
     }
     let wty = operator_wty(op)?;
-    // POW has no wasm instruction: route to the host `pow` import.
+    // POW has no wasm instruction. An integer-literal exponent goes through the
+    // runtime `rt_real_int_pow` (exponentiation by squaring) to match the C
+    // target's integer-power optimization byte-for-byte; everything else routes
+    // to the host `pow` import.
     if matches!(op, O::POW { .. }) {
+        if let Some(n) = real_exp_int_lit(e2) {
+            let a = compile_exp(ctx, e1)?;
+            coerce(ctx, a, WTy::F64);
+            ctx.emit(we::Instruction::I32Const(n));
+            ctx.emit(we::Instruction::Call(rt_index("rt_real_int_pow")));
+            if wty == WTy::I32 {
+                ctx.emit(we::Instruction::I32TruncF64S);
+                return Ok(WTy::I32);
+            }
+            return Ok(WTy::F64);
+        }
         let a = compile_exp(ctx, e1)?;
         coerce(ctx, a, WTy::F64);
         let b = compile_exp(ctx, e2)?;
@@ -2487,6 +2524,7 @@ const OP_ADD: i32 = 0;
 const OP_SUB: i32 = 1;
 const OP_MUL: i32 = 2;
 const OP_DIV: i32 = 3;
+const OP_POW: i32 = 4;
 
 /// Element-wise `a op b` over two same-shape arrays: produces a fresh array; the
 /// operand arrays are released after.

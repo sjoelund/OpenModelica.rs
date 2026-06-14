@@ -1232,6 +1232,24 @@ mod tests {
         assert_eq!(rf(&mut store, r, 1), 14.0);
     }
 
+    /// `rt_real_int_pow` (scalar integer power by squaring): exact values,
+    /// the zero / negative-exponent cases, and the reciprocal branch.
+    #[test]
+    fn precompiled_runtime_real_int_pow() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let pow = inst.get_typed_func::<(f64, i32), f64>(&mut store, "rt_real_int_pow").unwrap();
+        assert_eq!(pow.call(&mut store, (2.0, 10)).unwrap(), 1024.0);
+        assert_eq!(pow.call(&mut store, (10.0, 3)).unwrap(), 1000.0);
+        assert_eq!(pow.call(&mut store, (1.5, 4)).unwrap(), 5.0625);
+        assert_eq!(pow.call(&mut store, (7.0, 0)).unwrap(), 1.0);
+        assert_eq!(pow.call(&mut store, (2.0, 1)).unwrap(), 2.0);
+        assert_eq!(pow.call(&mut store, (2.0, -2)).unwrap(), 0.25);
+        assert_eq!(pow.call(&mut store, (4.0, -1)).unwrap(), 0.25);
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {
