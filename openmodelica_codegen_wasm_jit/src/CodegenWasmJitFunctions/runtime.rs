@@ -12,6 +12,7 @@ use anyhow::{Result, anyhow, bail};
 use arcstr::ArcStr;
 use metamodelica::List;
 
+use openmodelica_ast::Absyn;
 use openmodelica_frontend_types::Values;
 
 use super::SigTy;
@@ -193,6 +194,7 @@ pub(super) fn load_and_execute(
         arr_total: wt(rt_inst.get_typed_func(&mut store, "rt_array_total"))?,
         arr_dim: wt(rt_inst.get_typed_func(&mut store, "rt_array_dim"))?,
         arr_elem_ptr: wt(rt_inst.get_typed_func(&mut store, "rt_array_elem_ptr"))?,
+        rec_new: wt(rt_inst.get_typed_func(&mut store, "rt_record_new"))?,
     };
 
     let func = instance
@@ -244,6 +246,7 @@ struct RtFns {
     arr_total: wasmtime::TypedFunc<i32, i32>,
     arr_dim: wasmtime::TypedFunc<(i32, i32), i32>,
     arr_elem_ptr: wasmtime::TypedFunc<(i32, i32), i32>,
+    rec_new: wasmtime::TypedFunc<(i32, i32), i32>,
 }
 
 type Store = wasmtime::Store<()>;
@@ -258,7 +261,39 @@ fn marshal_in(store: &mut Store, rt: &RtFns, ty: &SigTy, v: &Values::Value) -> R
         SigTy::Int | SigTy::Bool => wasmtime::Val::I32(value_as_i32(v)?),
         SigTy::Str => wasmtime::Val::I32(str_to_handle(store, rt, v)?),
         SigTy::Array { elem, rank } => wasmtime::Val::I32(array_to_handle(store, rt, elem, *rank, v)?),
+        SigTy::Record { fields, .. } => wasmtime::Val::I32(record_to_handle(store, rt, fields, v)?),
     })
+}
+
+/// Materialize a `Values.RECORD` into a fresh runtime record object, returning
+/// its handle. Fields are matched to the type's components by name and written
+/// at their layout offsets; the inline heap-field table is filled so the object
+/// is self-describing for release/copy.
+fn record_to_handle(store: &mut Store, rt: &RtFns, fields: &[(ArcStr, SigTy)], v: &Values::Value) -> Result<i32> {
+    let Values::Value::RECORD { orderd, comp, .. } = v else {
+        bail!("CodegenWasmJit: expected a record argument, got {v:?}");
+    };
+    let layout = super::record_layout(fields);
+    let obj = wt(rt.rec_new.call(&mut *store, (layout.heap.len() as i32, layout.size as i32)))?;
+    // Inline heap-field table.
+    for (k, (kind, foff)) in layout.heap.iter().enumerate() {
+        let base = obj as usize + 8 + k * 8;
+        write_bytes(store, rt, base, &(*kind).to_le_bytes())?;
+        write_bytes(store, rt, base + 4, &(*foff).to_le_bytes())?;
+    }
+    // Match the provided values to fields by name.
+    let names: Vec<&ArcStr> = (&**comp).into_iter().collect();
+    let vals: Vec<&Arc<Values::Value>> = (&**orderd).into_iter().collect();
+    let by_name: std::collections::HashMap<&str, &Values::Value> =
+        names.iter().zip(vals.iter()).map(|(n, v)| (n.as_str(), &***v)).collect();
+    for (i, (fname, fty)) in fields.iter().enumerate() {
+        let fv = by_name
+            .get(fname.as_str())
+            .ok_or_else(|| anyhow!("CodegenWasmJit: record argument missing field `{fname}`"))?;
+        let addr = obj as usize + layout.data_off as usize + layout.field_off[i] as usize;
+        write_elem(store, rt, fty, addr, fv)?;
+    }
+    Ok(obj)
 }
 
 /// Materialize a `Values.STRING` into a fresh runtime string, returning its handle.
@@ -328,6 +363,10 @@ fn write_elem(store: &mut Store, rt: &RtFns, elem: &SigTy, addr: usize, v: &Valu
             let h = array_to_handle(store, rt, elem, *rank, v)?;
             write_bytes(store, rt, addr, &h.to_le_bytes())?;
         }
+        SigTy::Record { fields, .. } => {
+            let h = record_to_handle(store, rt, fields, v)?;
+            write_bytes(store, rt, addr, &h.to_le_bytes())?;
+        }
     }
     Ok(())
 }
@@ -356,7 +395,42 @@ fn marshal_out(store: &mut Store, rt: &RtFns, ty: &SigTy, val: &wasmtime::Val) -
             let h = val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 array handle result"))?;
             read_array(store, rt, elem, h)?
         }
+        SigTy::Record { path, fields } => {
+            let h = val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 record handle result"))?;
+            record_to_value(store, rt, path, fields, h)?
+        }
     })
+}
+
+/// Read a runtime record handle into a `Values.RECORD`, reading each field at
+/// its layout offset.
+fn record_to_value(store: &mut Store, rt: &RtFns, path: &ArcStr, fields: &[(ArcStr, SigTy)], h: i32) -> Result<Values::Value> {
+    let layout = super::record_layout(fields);
+    let mut comp = Vec::with_capacity(fields.len());
+    let mut orderd = Vec::with_capacity(fields.len());
+    for (i, (fname, fty)) in fields.iter().enumerate() {
+        let addr = h as usize + layout.data_off as usize + layout.field_off[i] as usize;
+        orderd.push(Arc::new(read_elem(store, rt, fty, addr)?));
+        comp.push(fname.clone());
+    }
+    Ok(Values::Value::RECORD {
+        record_: path_from_dotted(path),
+        orderd: Arc::new(List::from_iter(orderd)),
+        comp: Arc::new(List::from_iter(comp)),
+        index: -1,
+    })
+}
+
+/// Rebuild an `Absyn.Path` from a dotted record name (`"A.B.C"`).
+fn path_from_dotted(s: &str) -> Arc<Absyn::Path> {
+    let parts: Vec<&str> = s.split('.').collect();
+    let mut it = parts.iter().rev();
+    let last = it.next().copied().unwrap_or("");
+    let mut p = Absyn::Path::IDENT { name: ArcStr::from(last) };
+    for name in it {
+        p = Absyn::Path::QUALIFIED { name: ArcStr::from(*name), path: Arc::new(p) };
+    }
+    Arc::new(p)
 }
 
 /// Read a runtime string handle's bytes into a `String`.
@@ -400,6 +474,10 @@ fn read_elem(store: &mut Store, rt: &RtFns, elem: &SigTy, addr: usize) -> Result
         SigTy::Array { elem, .. } => {
             let h = i32::from_le_bytes(read_bytes::<4>(store, rt, addr)?);
             read_array(store, rt, elem, h)?
+        }
+        SigTy::Record { path, fields } => {
+            let h = i32::from_le_bytes(read_bytes::<4>(store, rt, addr)?);
+            record_to_value(store, rt, path, fields, h)?
         }
     })
 }
@@ -851,5 +929,51 @@ mod tests {
         })]));
         let r = load_and_execute(&path, "main", &args).unwrap();
         assert!((rval(&r) - 1.0).abs() < 1e-12);
+    }
+
+    /// The record runtime: a self-describing object with a String + Integer
+    /// field. `rt_record_copy` must retain the (immutable) string and give
+    /// independent scalar storage; `rt_record_release` must release the string
+    /// once per record (no double free, no leak).
+    #[test]
+    fn precompiled_runtime_record() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let rec_new = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_record_new").unwrap();
+        let rec_copy = inst.get_typed_func::<i32, i32>(&mut store, "rt_record_copy").unwrap();
+        let rec_release = inst.get_typed_func::<i32, ()>(&mut store, "rt_record_release").unwrap();
+        let int_string = inst.get_typed_func::<i32, i32>(&mut store, "rt_int_string").unwrap();
+
+        // Layout for `{String s; Integer k;}`: nheap=1, data_off=align8(8+8)=16,
+        // s at +0 (4 bytes), k at +4 → size = 16 + align8(8) = 24.
+        let w32 = |store: &mut Store, addr: usize, v: i32| mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+        let r32 = |store: &Store, addr: usize| {
+            let mut b = [0u8; 4];
+            mem.read(store, addr, &mut b).unwrap();
+            i32::from_le_bytes(b)
+        };
+
+        let r = rec_new.call(&mut store, (1, 24)).unwrap();
+        // Inline heap table: (EK_STR=3, field_off=0) at obj+8.
+        w32(&mut store, r as usize + 8, 3);
+        w32(&mut store, r as usize + 12, 0);
+        let s = int_string.call(&mut store, 7).unwrap();
+        w32(&mut store, r as usize + 16, s); // s field
+        w32(&mut store, r as usize + 20, 42); // k field
+
+        // Copy: independent scalar storage, shared (retained) string.
+        let dup = rec_copy.call(&mut store, r).unwrap();
+        assert_ne!(dup, r);
+        assert_eq!(r32(&store, dup as usize + 16), s, "string field shared by retain");
+        w32(&mut store, dup as usize + 20, 99); // mutate copy's k
+        assert_eq!(r32(&store, r as usize + 20), 42, "original k unchanged");
+
+        // Releasing both records releases the shared string exactly to zero
+        // (a double free or use-after-free would trap).
+        rec_release.call(&mut store, dup).unwrap();
+        rec_release.call(&mut store, r).unwrap();
     }
 }

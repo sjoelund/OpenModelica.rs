@@ -48,7 +48,7 @@ use metamodelica::List;
 
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
-use openmodelica_frontend_types::{DAE, Values};
+use openmodelica_frontend_types::{ClassInf, DAE, Values};
 use openmodelica_simcode_types::SimCodeFunction;
 
 use wasm_encoder as we;
@@ -97,6 +97,10 @@ enum SigTy {
     /// An N-dimensional array of `elem` with `rank` dimensions: an `i32` handle
     /// to a runtime array object (flat row-major storage).
     Array { elem: Arc<SigTy>, rank: u32 },
+    /// A record: an `i32` handle to a runtime record object. `path` is the
+    /// record's class name (for `Values.RECORD`); `fields` are its components in
+    /// declaration order (name + type), which fix the field layout.
+    Record { path: ArcStr, fields: Arc<Vec<(ArcStr, SigTy)>> },
 }
 
 impl SigTy {
@@ -117,11 +121,25 @@ impl SigTy {
                 }
                 elem.write_code(out);
             }
+            // `{path;name:code;name:code…}` — a record, brace-delimited so the
+            // reader can consume one whole (possibly nested) record type. Names
+            // and dotted paths never contain `{};:` so those are safe delimiters.
+            SigTy::Record { path, fields } => {
+                out.push('{');
+                out.push_str(path);
+                for (name, code) in fields.iter() {
+                    out.push(';');
+                    out.push_str(name);
+                    out.push(':');
+                    code.write_code(out);
+                }
+                out.push('}');
+            }
         }
     }
     fn wty(&self) -> WTy {
         match self {
-            SigTy::Int | SigTy::Bool | SigTy::Str | SigTy::Array { .. } => WTy::I32,
+            SigTy::Int | SigTy::Bool | SigTy::Str | SigTy::Array { .. } | SigTy::Record { .. } => WTy::I32,
             SigTy::Real => WTy::F64,
         }
     }
@@ -134,6 +152,7 @@ impl SigTy {
             SigTy::Bool => 2,
             SigTy::Str => 3,
             SigTy::Array { .. } => 4,
+            SigTy::Record { .. } => 5,
         }
     }
     /// The runtime release entry point for a heap value of this type, or `None`
@@ -142,6 +161,7 @@ impl SigTy {
         match self {
             SigTy::Str => Some("rt_release"),
             SigTy::Array { .. } => Some("rt_array_release"),
+            SigTy::Record { .. } => Some("rt_record_release"),
             _ => None,
         }
     }
@@ -180,6 +200,31 @@ fn parse_sig_type(chars: &mut std::iter::Peekable<std::str::Chars>) -> Result<Si
                 rank += 1;
             }
             Ok(SigTy::Array { elem: Arc::new(parse_sig_type(chars)?), rank })
+        }
+        // `{path;name:code;…}` — a record (see [`SigTy::write_code`]).
+        Some('{') => {
+            let mut path = String::new();
+            while !matches!(chars.peek(), Some(&';') | Some(&'}') | None) {
+                path.push(chars.next().unwrap());
+            }
+            let mut fields = Vec::new();
+            while chars.peek() == Some(&';') {
+                chars.next(); // ';'
+                let mut name = String::new();
+                loop {
+                    match chars.next() {
+                        Some(':') => break,
+                        Some(c) => name.push(c),
+                        None => bail!("CodegenWasmJit: unterminated record field in signature"),
+                    }
+                }
+                fields.push((ArcStr::from(name.as_str()), parse_sig_type(chars)?));
+            }
+            match chars.next() {
+                Some('}') => {}
+                other => bail!("CodegenWasmJit: expected `}}` in record signature, got {other:?}"),
+            }
+            Ok(SigTy::Record { path: ArcStr::from(path.as_str()), fields: Arc::new(fields) })
         }
         other => bail!("CodegenWasmJit: malformed signature type code {other:?}"),
     }
@@ -258,6 +303,12 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_product_f64", &[WTy::I32], &[WTy::F64]),
     ("rt_array_extreme_i32", &[WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_array_extreme_f64", &[WTy::I32, WTy::I32], &[WTy::F64]),
+    // Records: allocate (nheap, total size; refcount 1, zeroed), refcount release
+    // (frees nested heap fields via the inline table), and value-semantics copy.
+    // Field access needs no call — the codegen loads/stores at a constant offset.
+    ("rt_record_new", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_record_release", &[WTy::I32], &[]),
+    ("rt_record_copy", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -307,7 +358,14 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
     };
     funcs.push(&**main);
     for f in &*fn_code.functions {
-        funcs.push(&**f);
+        // Skip non-plain-FUNCTION dependencies. Record constructors arrive here
+        // as `RECORD_CONSTRUCTOR`, but record construction is lowered inline
+        // (`E::RECORD`), so they are never called as wasm functions; external /
+        // function-pointer dependencies cannot be JITed and, if actually called,
+        // fail loudly at that call site instead.
+        if matches!(&**f, SimCodeFunction::Function::Function::FUNCTION { .. }) {
+            funcs.push(&**f);
+        }
     }
 
     // Imported functions occupy the low function indices: the `env` math
@@ -465,6 +523,20 @@ fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
                 SigTy::Array { elem, rank } => SigTy::Array { elem, rank: rank + ndims },
                 elem => SigTy::Array { elem: Arc::new(elem), rank: ndims },
             }
+        }
+        // A record class: an ordered set of component fields. MetaModelica
+        // uniontypes / metarecords (`T_METARECORD`) are a different runtime
+        // representation and are not handled here.
+        DAE::Type::T_COMPLEX { complexClassType, varLst, .. } => {
+            let ClassInf::State::RECORD { path } = complexClassType else {
+                bail!("CodegenWasmJit: non-record complex type not supported: {complexClassType:?}");
+            };
+            let path_str = AbsynUtil::pathString(path.clone(), arcstr::literal!("."), true, false)?;
+            let mut fields = Vec::new();
+            for v in &**varLst {
+                fields.push((v.name.clone(), sig_ty(&v.ty)?));
+            }
+            SigTy::Record { path: path_str, fields: Arc::new(fields) }
         }
         DAE::Type::T_SUBTYPE_BASIC { .. } => bail!("CodegenWasmJit: subtype-basic types not yet supported"),
         other => bail!("CodegenWasmJit: type not supported: {other:?}"),
@@ -739,6 +811,28 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     let DAE::Exp::CREF { componentRef, .. } = lhs else {
         bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
     };
+    // `r.field := rhs` on a record local.
+    if let DAE::ComponentRef::CREF_QUAL { ident, subscriptLst, componentRef: inner, .. } = &**componentRef {
+        if !subscriptLst.is_empty() {
+            bail!("CodegenWasmJit: assignment to subscripted record base `{ident}[..]` not supported");
+        }
+        let DAE::ComponentRef::CREF_IDENT { ident: field, subscriptLst: fsubs, .. } = &**inner else {
+            bail!("CodegenWasmJit: assignment to nested record field `{componentRef:?}` not supported");
+        };
+        if !fsubs.is_empty() {
+            bail!("CodegenWasmJit: assignment to subscripted record field `{field}[..]` not supported");
+        }
+        let base = ident.to_string();
+        let (idx, sty) = ctx
+            .locals
+            .get(&base)
+            .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{base}`"))?
+            .clone();
+        let SigTy::Record { fields, .. } = sty else {
+            bail!("CodegenWasmJit: field assignment to non-record local `{base}`");
+        };
+        return compile_record_field_assign(ctx, idx, &fields, field, rhs);
+    }
     let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
         bail!("CodegenWasmJit: assignment to qualified/record lhs not supported");
     };
@@ -761,19 +855,22 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     }
 
     let src_wty = compile_exp(ctx, rhs)?;
-    // Value semantics for arrays: a whole-array assignment from anything that is
-    // not a fresh constructor/call result would otherwise share the source's
-    // buffer (the rhs is a retained alias), so mutating the destination later
-    // would corrupt the source — copy it to a private buffer. A fresh rhs is
-    // already privately owned and is moved in.
-    if matches!(dst_sty, SigTy::Array { .. }) && !array_rhs_is_fresh(rhs) {
-        let t = ctx.alloc_temp(WTy::I32);
-        ctx.emit(we::Instruction::LocalSet(t));
-        ctx.emit(we::Instruction::LocalGet(t));
-        ctx.emit(we::Instruction::Call(rt_index("rt_array_copy")));
-        // Release the alias we copied from (the rhs's +1 reference).
-        ctx.emit(we::Instruction::LocalGet(t));
-        ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
+    // Value semantics for arrays and records: a whole-value assignment from
+    // anything that is not a fresh constructor/call result would otherwise share
+    // the source's mutable buffer (the rhs is a retained alias), so mutating the
+    // destination later would corrupt the source — copy it to a private object.
+    // A fresh rhs is already privately owned and is moved in. (Strings are
+    // immutable, so they are shared via the retain on read — no copy.)
+    if let Some((copy_fn, rel_fn)) = value_copy_fns(&dst_sty) {
+        if !value_rhs_is_fresh(rhs) {
+            let t = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(t));
+            ctx.emit(we::Instruction::LocalGet(t));
+            ctx.emit(we::Instruction::Call(rt_index(copy_fn)));
+            // Release the alias we copied from (the rhs's +1 reference).
+            ctx.emit(we::Instruction::LocalGet(t));
+            ctx.emit(we::Instruction::Call(rt_index(rel_fn)));
+        }
     }
     if let Some(release_fn) = dst_sty.release_fn() {
         // Release-on-overwrite: free the previous value the local held *after*
@@ -789,16 +886,257 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     Ok(())
 }
 
-/// Whether a whole-array rhs expression produces a freshly-owned array (so it
-/// can be moved into the destination without copying). Constructors, ranges and
-/// call results are fresh; a variable reference / shared literal aliases.
-fn array_rhs_is_fresh(e: &DAE::Exp) -> bool {
+/// The (copy, release) runtime entry points for a mutable value type that needs
+/// a private copy on aliasing assignment, or `None` for scalars and immutable
+/// strings.
+fn value_copy_fns(ty: &SigTy) -> Option<(&'static str, &'static str)> {
+    match ty {
+        SigTy::Array { .. } => Some(("rt_array_copy", "rt_array_release")),
+        SigTy::Record { .. } => Some(("rt_record_copy", "rt_record_release")),
+        _ => None,
+    }
+}
+
+/// Whether a whole-value rhs expression produces a freshly-owned array/record
+/// (so it can be moved into the destination without copying). Constructors,
+/// ranges and call results are fresh; a variable reference / shared literal
+/// aliases an existing object.
+fn value_rhs_is_fresh(e: &DAE::Exp) -> bool {
     use DAE::Exp as E;
     match e {
-        E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::CALL { .. } => true,
-        E::SHARED_LITERAL { exp, .. } | E::CAST { exp, .. } => array_rhs_is_fresh(exp),
+        E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::CALL { .. } | E::RECORD { .. } => true,
+        E::SHARED_LITERAL { exp, .. } | E::CAST { exp, .. } => value_rhs_is_fresh(exp),
         _ => false,
     }
+}
+
+// -------------------------------------------------------------------------
+// Record object layout (mirrors the runtime's record object)
+// -------------------------------------------------------------------------
+
+/// Byte size of one record field: Real is 8, everything else (Integer/Boolean
+/// and every heap handle) is 4.
+fn field_size(t: &SigTy) -> u32 {
+    if matches!(t, SigTy::Real) { 8 } else { 4 }
+}
+
+fn align_up(n: u32, a: u32) -> u32 {
+    (n + a - 1) & !(a - 1)
+}
+
+/// The byte layout of a record object's payload. `data_off` is the offset from
+/// the object base to the first field (after the refcount, `nheap`, and the
+/// inline heap-field table); `field_off[i]` is field `i`'s offset within the
+/// field-data area; `heap` lists `(elem_kind, field_off)` for the heap fields
+/// (the inline release table); `size` is the total payload to allocate. Must
+/// agree with `rec_data_off` / the field layout in the runtime.
+struct RecordLayout {
+    data_off: u32,
+    size: u32,
+    field_off: Vec<u32>,
+    heap: Vec<(u32, u32)>,
+}
+
+fn record_layout(fields: &[(ArcStr, SigTy)]) -> RecordLayout {
+    let nheap = fields.iter().filter(|(_, t)| t.is_heap()).count() as u32;
+    let data_off = align_up(8 + nheap * 8, 8);
+    let mut off = 0u32;
+    let mut field_off = Vec::with_capacity(fields.len());
+    let mut heap = Vec::new();
+    for (_, t) in fields {
+        let sz = field_size(t);
+        off = align_up(off, sz);
+        field_off.push(off);
+        if t.is_heap() {
+            heap.push((t.elem_kind(), off));
+        }
+        off += sz;
+    }
+    RecordLayout { data_off, size: data_off + align_up(off, 8), field_off, heap }
+}
+
+/// Resolve a record field by name to `(absolute offset from the object base,
+/// field type)`.
+fn record_field(fields: &[(ArcStr, SigTy)], name: &str) -> Result<(u32, SigTy)> {
+    let layout = record_layout(fields);
+    for (i, (fname, fty)) in fields.iter().enumerate() {
+        if fname.as_str() == name {
+            return Ok((layout.data_off + layout.field_off[i], fty.clone()));
+        }
+    }
+    bail!("CodegenWasmJit: record has no field `{name}`");
+}
+
+fn mem_arg(offset: u32, align_log2: u32) -> we::MemArg {
+    we::MemArg { offset: offset as u64, align: align_log2, memory_index: 0 }
+}
+
+/// Load a `wty` value from `(address on stack) + offset` (record field read).
+fn field_load(ctx: &mut FnCtx, wty: WTy, offset: u32) {
+    match wty {
+        WTy::I32 => ctx.emit(we::Instruction::I32Load(mem_arg(offset, 2))),
+        WTy::F64 => ctx.emit(we::Instruction::F64Load(mem_arg(offset, 3))),
+    }
+}
+
+/// Store a `wty` value to `(address on stack) + offset` (record field write).
+fn field_store(ctx: &mut FnCtx, wty: WTy, offset: u32) {
+    match wty {
+        WTy::I32 => ctx.emit(we::Instruction::I32Store(mem_arg(offset, 2))),
+        WTy::F64 => ctx.emit(we::Instruction::F64Store(mem_arg(offset, 3))),
+    }
+}
+
+/// Construct a record (`E::RECORD`): allocate the object, fill the inline
+/// heap-field table, then store each field value (matched to the type's fields
+/// by name, so out-of-order constructor arguments are handled). Leaves the owned
+/// (+1) record handle on the stack.
+/// Emit a record construction: allocate the object, fill the inline heap-field
+/// table, then store each field value (`field_exps` in declaration order). The
+/// record owns heap field values. Leaves the owned (+1) record handle on the
+/// stack.
+fn emit_record_construction(ctx: &mut FnCtx, fields: &[(ArcStr, SigTy)], field_exps: &[&Arc<DAE::Exp>]) -> Result<()> {
+    let layout = record_layout(fields);
+    ctx.emit(we::Instruction::I32Const(layout.heap.len() as i32));
+    ctx.emit(we::Instruction::I32Const(layout.size as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_record_new")));
+    let obj = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(obj));
+
+    // Inline heap-field table: (elem_kind, field_off) for each heap field.
+    for (k, (kind, foff)) in layout.heap.iter().enumerate() {
+        let base = 8 + k as u32 * 8;
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::I32Const(*kind as i32));
+        ctx.emit(we::Instruction::I32Store(mem_arg(base, 2)));
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::I32Const(*foff as i32));
+        ctx.emit(we::Instruction::I32Store(mem_arg(base + 4, 2)));
+    }
+    for (i, (_, fty)) in fields.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(obj));
+        let w = compile_exp(ctx, field_exps[i])?;
+        coerce(ctx, w, fty.wty());
+        field_store(ctx, fty.wty(), layout.data_off + layout.field_off[i]);
+    }
+    ctx.emit(we::Instruction::LocalGet(obj));
+    Ok(())
+}
+
+/// A record literal `R(field=…, …)` (`E::RECORD`): the field values are matched
+/// to the type's declaration order by component name.
+fn compile_record(ctx: &mut FnCtx, ty: &DAE::Type, exps: &Arc<List<Arc<DAE::Exp>>>, comp: &Arc<List<ArcStr>>) -> Result<()> {
+    let SigTy::Record { fields, .. } = sig_ty(ty)? else {
+        bail!("CodegenWasmJit: record constructor with non-record type {ty:?}");
+    };
+    let expv: Vec<&Arc<DAE::Exp>> = (&**exps).into_iter().collect();
+    let compv: Vec<&ArcStr> = (&**comp).into_iter().collect();
+    if expv.len() != compv.len() || expv.len() != fields.len() {
+        bail!("CodegenWasmJit: record constructor arity mismatch ({} values, {} fields)", expv.len(), fields.len());
+    }
+    let mut field_exps = Vec::with_capacity(fields.len());
+    for (fname, _) in fields.iter() {
+        let pos = compv
+            .iter()
+            .position(|n| n.as_str() == fname.as_str())
+            .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: record constructor missing field `{fname}`"))?;
+        field_exps.push(expv[pos]);
+    }
+    emit_record_construction(ctx, &fields, &field_exps)
+}
+
+/// A record-constructor *call* `R(v1, v2, …)` (a `CALL` whose result is a record
+/// and which is not a generated function): the positional arguments are the
+/// fields in declaration order.
+fn compile_record_call(ctx: &mut FnCtx, ty: &DAE::Type, args: &Arc<List<Arc<DAE::Exp>>>) -> Result<()> {
+    let SigTy::Record { fields, .. } = sig_ty(ty)? else {
+        bail!("CodegenWasmJit: record constructor call with non-record type {ty:?}");
+    };
+    let argv: Vec<&Arc<DAE::Exp>> = (&**args).into_iter().collect();
+    if argv.len() != fields.len() {
+        bail!("CodegenWasmJit: record constructor call arity mismatch ({} args, {} fields)", argv.len(), fields.len());
+    }
+    emit_record_construction(ctx, &fields, &argv)
+}
+
+/// Read field `name` of the record produced by `exp` (`E::RSUB`). The record
+/// expression is owned (retained if it was a variable) and released after the
+/// field is read; a heap field is retained so the returned value is owned.
+fn compile_rsub(ctx: &mut FnCtx, exp: &DAE::Exp, name: &str) -> Result<WTy> {
+    let SigTy::Record { fields, .. } = exp_sigty(exp)? else {
+        bail!("CodegenWasmJit: field access `.{name}` on a non-record expression");
+    };
+    let (off, fty) = record_field(&fields, name)?;
+    compile_exp(ctx, exp)?; // owned record handle
+    let rec = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(rec));
+    ctx.emit(we::Instruction::LocalGet(rec));
+    field_load(ctx, fty.wty(), off);
+    if fty.is_heap() {
+        // Retain the field (owned read), then release the record temp.
+        let fv = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalTee(fv));
+        ctx.emit(we::Instruction::LocalGet(fv));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+    }
+    ctx.emit(we::Instruction::LocalGet(rec));
+    ctx.emit(we::Instruction::Call(rt_index("rt_record_release")));
+    Ok(fty.wty())
+}
+
+/// Assign `rhs` into field `name` of record local `rec_idx` (`r.field := rhs`),
+/// in place. A heap field's previous value is released after the new owned value
+/// is computed; an array/record field assigned from an alias is copied for value
+/// semantics (like a whole-value assignment).
+fn compile_record_field_assign(ctx: &mut FnCtx, rec_idx: u32, fields: &[(ArcStr, SigTy)], name: &str, rhs: &DAE::Exp) -> Result<()> {
+    let (off, fty) = record_field(fields, name)?;
+    let Some(release_fn) = fty.release_fn() else {
+        // Scalar field: store directly.
+        ctx.emit(we::Instruction::LocalGet(rec_idx));
+        let w = compile_exp(ctx, rhs)?;
+        coerce(ctx, w, fty.wty());
+        field_store(ctx, fty.wty(), off);
+        return Ok(());
+    };
+    // Heap field: compute the new owned value into a temp.
+    let w = compile_exp(ctx, rhs)?;
+    coerce(ctx, w, fty.wty());
+    let val_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(val_t));
+    // Value semantics: a mutable array/record from a non-fresh source aliases it.
+    if let Some((copy_fn, rel_fn)) = value_copy_fns(&fty) {
+        if !value_rhs_is_fresh(rhs) {
+            ctx.emit(we::Instruction::LocalGet(val_t));
+            ctx.emit(we::Instruction::Call(rt_index(copy_fn)));
+            ctx.emit(we::Instruction::LocalGet(val_t));
+            ctx.emit(we::Instruction::Call(rt_index(rel_fn)));
+            ctx.emit(we::Instruction::LocalSet(val_t));
+        }
+    }
+    // Release the previous field value (now that the new one is computed).
+    ctx.emit(we::Instruction::LocalGet(rec_idx));
+    field_load(ctx, fty.wty(), off);
+    ctx.emit(we::Instruction::Call(rt_index(release_fn)));
+    // Store the new owned value into the field.
+    ctx.emit(we::Instruction::LocalGet(rec_idx));
+    ctx.emit(we::Instruction::LocalGet(val_t));
+    field_store(ctx, fty.wty(), off);
+    Ok(())
+}
+
+/// Read field `name` of record local `rec_idx` (a `CREF_QUAL` `r.field`). The
+/// local owns the record (borrowed here), so only a heap field is retained.
+fn compile_record_local_field(ctx: &mut FnCtx, rec_idx: u32, fields: &[(ArcStr, SigTy)], name: &str) -> Result<WTy> {
+    let (off, fty) = record_field(fields, name)?;
+    ctx.emit(we::Instruction::LocalGet(rec_idx));
+    field_load(ctx, fty.wty(), off);
+    if fty.is_heap() {
+        let fv = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalTee(fv));
+        ctx.emit(we::Instruction::LocalGet(fv));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+    }
+    Ok(fty.wty())
 }
 
 /// Element assignment `a[i,...] := rhs`, in place. `arr_idx` is the array local
@@ -1050,9 +1388,31 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             Ok(WTy::I32)
         }
         E::CREF { componentRef, .. } => {
+            // `r.field` on a record local: read the field (a heap field is
+            // retained; the record local keeps its own reference).
+            if let DAE::ComponentRef::CREF_QUAL { ident, subscriptLst, componentRef: inner, .. } = &**componentRef {
+                if !subscriptLst.is_empty() {
+                    bail!("CodegenWasmJit: subscripted record base `{ident}[..]` not supported");
+                }
+                let DAE::ComponentRef::CREF_IDENT { ident: field, subscriptLst: fsubs, .. } = &**inner else {
+                    bail!("CodegenWasmJit: nested record field access `{componentRef:?}` not supported");
+                };
+                if !fsubs.is_empty() {
+                    bail!("CodegenWasmJit: subscripted record field `{field}[..]` not supported");
+                }
+                let base = ident.to_string();
+                let (idx, sty) = ctx
+                    .locals
+                    .get(&base)
+                    .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{base}`"))?
+                    .clone();
+                let SigTy::Record { fields, .. } = sty else {
+                    bail!("CodegenWasmJit: field access on non-record local `{base}`");
+                };
+                return compile_record_local_field(ctx, idx, &fields, field);
+            }
             // A scalar/whole-value reference, or a subscripted array element.
             let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
-                // CREF_QUAL etc. (record fields) are not supported yet.
                 bail!("CodegenWasmJit: unsupported component reference {componentRef:?}");
             };
             let name = ident.to_string();
@@ -1152,6 +1512,13 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             compile_size(ctx, exp, sz.as_deref())?;
             Ok(WTy::I32)
         }
+        // Record constructor `R(field=…, …)`.
+        E::RECORD { ty, exps, comp, .. } => {
+            compile_record(ctx, ty, exps, comp)?;
+            Ok(WTy::I32)
+        }
+        // Record field access on an expression result: `f().field`.
+        E::RSUB { exp, fieldName, .. } => compile_rsub(ctx, exp, fieldName),
         other => bail!("CodegenWasmJit: expression not yet supported: {other:?}"),
     }
 }
@@ -1164,18 +1531,18 @@ fn exp_wty_hint(ctx: &FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         E::RCONST { .. } => WTy::F64,
         E::ICONST { .. } | E::BCONST { .. } | E::ENUM_LITERAL { .. } | E::SCONST { .. } | E::RELATION { .. } | E::LBINARY { .. } | E::LUNARY { .. } => WTy::I32,
         E::CAST { ty, .. } => sig_ty(ty)?.wty(),
-        E::CREF { componentRef, .. } => {
-            let ident = cref_ident(componentRef)?;
-            ctx.locals.get(&ident).map(|(_, s)| s.wty()).unwrap_or(WTy::F64)
-        }
+        // The CREF carries its (possibly field) type directly — handles a plain
+        // local and a `r.field` reference alike.
+        E::CREF { ty, .. } => sig_ty(ty)?.wty(),
         E::BINARY { operator, .. } => operator_wty(operator)?,
         E::UNARY { operator, .. } => operator_wty(operator)?,
         E::IFEXP { expThen, .. } => exp_wty_hint(ctx, expThen)?,
         E::CALL { attr, .. } => sig_ty(&attr.ty)?.wty(),
         E::SHARED_LITERAL { exp, .. } => exp_wty_hint(ctx, exp)?,
-        // Array handles and `size(a, d)` are `i32`; an array element's wasm type
-        // comes from the element type.
-        E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::SIZE { .. } => WTy::I32,
+        // Array/record handles and `size(a, d)` are `i32`; an array element's /
+        // record field's wasm type comes from its element / field type.
+        E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::SIZE { .. } | E::RECORD { .. } => WTy::I32,
+        E::RSUB { ty, .. } => sig_ty(ty)?.wty(),
         E::ASUB { .. } => exp_sigty(exp).map(|s| s.wty()).unwrap_or(WTy::I32),
         _ => WTy::F64,
     })
@@ -1233,6 +1600,8 @@ fn exp_sigty(exp: &DAE::Exp) -> Result<SigTy> {
         // `size(a, d)` is a scalar Integer; `size(a)` is the dimension vector.
         E::SIZE { sz: Some(_), .. } => SigTy::Int,
         E::SIZE { sz: None, .. } => SigTy::Array { elem: Arc::new(SigTy::Int), rank: 1 },
+        // A record constructor / field access carry their type directly.
+        E::RECORD { ty, .. } | E::RSUB { ty, .. } => sig_ty(ty)?,
         other => bail!("CodegenWasmJit: cannot determine type of expression {other:?}"),
     })
 }
@@ -1394,6 +1763,13 @@ fn compile_call(
         }
         ctx.emit(we::Instruction::Call(index));
         return Ok(results);
+    }
+    // A call whose result is a record and which is not a generated function is a
+    // record constructor `R(v1, …)` (the constructor function itself is not
+    // emitted — construction is lowered inline).
+    if let Ok(rty @ SigTy::Record { .. }) = sig_ty(&attr.ty) {
+        compile_record_call(ctx, &attr.ty, args)?;
+        return Ok(vec![rty]);
     }
     // Otherwise it must be a (builtin) math/string function.
     let name = AbsynUtil::pathLastIdent(Arc::new(path.clone()))?.to_string();
@@ -1755,9 +2131,11 @@ fn format_scalar_string(ctx: &mut FnCtx, arg: &DAE::Exp, ty: SigTy) -> Result<Si
             compile_exp(ctx, arg)?;
             Ok(SigTy::Str)
         }
-        // `String(array)` is not a scalar conversion (the frontend would not
-        // produce it here); reject rather than mis-format.
-        SigTy::Array { .. } => bail!("CodegenWasmJit: String() of an array is not supported"),
+        // `String(array)` / `String(record)` are not scalar conversions (the
+        // frontend would not produce them here); reject rather than mis-format.
+        SigTy::Array { .. } | SigTy::Record { .. } => {
+            bail!("CodegenWasmJit: String() of an array/record is not supported")
+        }
     }
 }
 

@@ -168,6 +168,7 @@ const EK_REAL: u32 = 1;
 const EK_BOOL: u32 = 2;
 const EK_STR: u32 = 3;
 const EK_ARRAY: u32 = 4;
+const EK_RECORD: u32 = 5;
 
 const ARR_KIND_OFF: u32 = 4;
 const ARR_NDIMS_OFF: u32 = 8;
@@ -179,8 +180,35 @@ const ARR_DIMS_OFF: u32 = 16;
 fn elem_stride(kind: u32) -> u32 {
     match kind {
         EK_REAL => 8,
-        EK_INT | EK_BOOL | EK_STR | EK_ARRAY => 4,
+        // Integer/Boolean and every heap *handle* (String / array / record) are 4.
+        EK_INT | EK_BOOL | EK_STR | EK_ARRAY | EK_RECORD => 4,
         _ => 4,
+    }
+}
+
+/// Release one heap handle of the given element/field kind (no-op for a scalar
+/// kind). Shared by array-element and record-field cleanup.
+fn release_kind(kind: u32, handle: u32) {
+    match kind {
+        EK_STR => rt_release(handle),
+        EK_ARRAY => rt_array_release(handle),
+        EK_RECORD => rt_record_release(handle),
+        _ => {}
+    }
+}
+
+/// Value-semantics copy of one heap handle of the given kind: immutable strings
+/// are shared with a retain, mutable arrays/records are deep-copied. Returns the
+/// (possibly new) handle to store back.
+fn copy_kind(kind: u32, handle: u32) -> u32 {
+    match kind {
+        EK_STR => {
+            rt_retain(handle);
+            handle
+        }
+        EK_ARRAY => rt_array_copy(handle),
+        EK_RECORD => rt_record_copy(handle),
+        _ => handle,
     }
 }
 
@@ -286,15 +314,11 @@ pub extern "C" fn rt_array_copy(obj: u32) -> u32 {
     unsafe {
         core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, (total * stride) as usize);
     }
-    // Adjust refcounts of the (now shared) heap element handles.
-    if kind == EK_STR {
+    // Adjust the (now byte-copied) heap element handles: retain strings, deep-copy
+    // mutable arrays/records so the copy shares no mutable storage.
+    if kind == EK_STR || kind == EK_ARRAY || kind == EK_RECORD {
         for i in 0..total {
-            rt_retain(unsafe { load_u32(dst + i * 4) });
-        }
-    } else if kind == EK_ARRAY {
-        // Deep-copy nested arrays so they are not shared mutable storage.
-        for i in 0..total {
-            let copied = rt_array_copy(unsafe { load_u32(dst + i * 4) });
+            let copied = copy_kind(kind, unsafe { load_u32(dst + i * 4) });
             unsafe { store_u32(dst + i * 4, copied) };
         }
     }
@@ -317,18 +341,108 @@ pub extern "C" fn rt_array_release(obj: u32) {
     }
     let kind = unsafe { load_u32(obj + ARR_KIND_OFF) };
     // Heap element kinds hold handles that must be released first.
-    if kind == EK_STR || kind == EK_ARRAY {
+    if kind == EK_STR || kind == EK_ARRAY || kind == EK_RECORD {
         let data = arr_data(obj);
         for i in 0..rt_array_total(obj) {
-            let handle = unsafe { load_u32(data + i * 4) };
-            if kind == EK_STR {
-                rt_release(handle);
-            } else {
-                rt_array_release(handle);
-            }
+            release_kind(kind, unsafe { load_u32(data + i * 4) });
         }
     }
     rt_free(obj);
+}
+
+// ---------------------------------------------------------------------------
+// Records (heterogeneous, self-describing via an inline heap-field table)
+// ---------------------------------------------------------------------------
+//
+// A record object is
+//   `[refcount:u32][nheap:u32][ (elem_kind:u32, field_off:u32) × nheap ]
+//    [pad to 8][field data...]`.
+// The fixed fields (Integer/Boolean=4, Real=8, heap handle=4) are laid out by
+// the codegen in declaration order at `field_off` bytes into the field-data
+// area, which begins at `rec_data_off(nheap)`. The inline table lists only the
+// *heap* fields (string / array / nested record) — their element kind and offset
+// — so the generic `rt_record_release`/`rt_record_copy` can free or deep-copy
+// nested heap values without a per-type runtime descriptor. Field *access* needs
+// no runtime call: the codegen loads/stores at the constant `data_off + off`.
+//
+// `elem_kind` here is the same tag set as arrays (`EK_*`), so `release_kind` /
+// `copy_kind` are shared.
+
+const REC_NHEAP_OFF: u32 = 4;
+
+/// Byte offset from the object base to the field-data area, given the number of
+/// heap fields (each table entry is 8 bytes; the area is 8-aligned so Real
+/// fields stay aligned).
+fn rec_data_off(nheap: u32) -> u32 {
+    align8(8 + nheap * 8)
+}
+
+/// Allocate a zero-initialized record object: `nheap` heap fields and `size`
+/// total payload bytes (refcount 1; the heap-field table and field data are left
+/// zero — the codegen fills the table and the fields). Zeroing means heap fields
+/// start as the null handle, so releasing a partially built record is safe.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_record_new(nheap: u32, size: u32) -> u32 {
+    let obj = rt_alloc(size);
+    unsafe {
+        store_u32(obj, 1); // refcount
+        store_u32(obj + REC_NHEAP_OFF, nheap);
+        for off in (8..size).step_by(4) {
+            store_u32(obj + off, 0);
+        }
+    }
+    obj
+}
+
+/// Decrement a record's reference count, freeing it at zero (no-op on null).
+/// Before freeing, every heap field listed in the inline table is released
+/// according to its kind (recursing into nested records/arrays).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_record_release(obj: u32) {
+    if obj == 0 {
+        return;
+    }
+    let rc = unsafe { load_u32(obj) } - 1;
+    unsafe { store_u32(obj, rc) };
+    if rc != 0 {
+        return;
+    }
+    let nheap = unsafe { load_u32(obj + REC_NHEAP_OFF) };
+    let data = obj + rec_data_off(nheap);
+    for k in 0..nheap {
+        let kind = unsafe { load_u32(obj + 8 + k * 8) };
+        let off = unsafe { load_u32(obj + 8 + k * 8 + 4) };
+        release_kind(kind, unsafe { load_u32(data + off) });
+    }
+    rt_free(obj);
+}
+
+/// Value-semantics copy of a record: a fresh object (refcount 1) with the same
+/// layout and independent storage. Scalar fields are byte-copied; heap fields
+/// are retained (strings) or deep-copied (arrays/records). The null handle
+/// copies to null.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_record_copy(obj: u32) -> u32 {
+    if obj == 0 {
+        return 0;
+    }
+    // Payload size = allocation size minus the allocator's `HEADER` word, which
+    // `rt_alloc` stored just before the object.
+    let payload = unsafe { load_u32(obj - HEADER as u32) } - HEADER as u32;
+    let dup = rt_alloc(payload);
+    unsafe {
+        core::ptr::copy_nonoverlapping(obj as *const u8, dup as *mut u8, payload as usize);
+        store_u32(dup, 1); // fresh refcount
+    }
+    let nheap = unsafe { load_u32(obj + REC_NHEAP_OFF) };
+    let data = dup + rec_data_off(nheap);
+    for k in 0..nheap {
+        let kind = unsafe { load_u32(dup + 8 + k * 8) };
+        let off = unsafe { load_u32(dup + 8 + k * 8 + 4) };
+        let copied = copy_kind(kind, unsafe { load_u32(data + off) });
+        unsafe { store_u32(data + off, copied) };
+    }
+    dup
 }
 
 // ---------------------------------------------------------------------------
