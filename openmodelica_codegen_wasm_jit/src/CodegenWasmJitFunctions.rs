@@ -1505,6 +1505,11 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             compile_array_literal(ctx, ty, exp)?;
             Ok(WTy::I32)
         }
+        // A range used as an array value, e.g. `a := 1:n` or `1:2:m`.
+        E::RANGE { ty, start, step, stop } => {
+            compile_range_array(ctx, ty, start, step.as_deref(), stop)?;
+            Ok(WTy::I32)
+        }
         // Array subscription `a[i]` (single index into a 1-D array).
         E::ASUB { exp, sub } => compile_index(ctx, exp, sub),
         // `size(a)` / `size(a, d)`.
@@ -2256,6 +2261,98 @@ fn compile_array_literal(ctx: &mut FnCtx, ty: &DAE::Type, whole: &DAE::Exp) -> R
     Ok(())
 }
 
+/// Lower a range used as an array value (`start:step:stop`, step default 1).
+/// The element count is `(stop - start) / step + 1`, clamped to ≥ 0 (an empty
+/// range yields a zero-length array), and a fill loop writes each element. Only
+/// Integer-element ranges are handled; Real ranges need the C runtime's
+/// element-count rounding to stay byte-identical, so they fail loudly.
+fn compile_range_array(ctx: &mut FnCtx, ty: &DAE::Type, start: &DAE::Exp, step: Option<&DAE::Exp>, stop: &DAE::Exp) -> Result<()> {
+    let SigTy::Array { elem, .. } = sig_ty(ty)? else {
+        bail!("CodegenWasmJit: range with non-array type {ty:?}");
+    };
+    if !matches!(*elem, SigTy::Int) {
+        bail!("CodegenWasmJit: only Integer ranges are supported as array values (element {elem:?})");
+    }
+    let start_t = ctx.alloc_temp(WTy::I32);
+    let w = compile_exp(ctx, start)?;
+    coerce(ctx, w, WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(start_t));
+    let step_t = ctx.alloc_temp(WTy::I32);
+    match step {
+        Some(e) => {
+            let w = compile_exp(ctx, e)?;
+            coerce(ctx, w, WTy::I32);
+        }
+        None => ctx.emit(we::Instruction::I32Const(1)),
+    }
+    ctx.emit(we::Instruction::LocalSet(step_t));
+    let stop_t = ctx.alloc_temp(WTy::I32);
+    let w = compile_exp(ctx, stop)?;
+    coerce(ctx, w, WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(stop_t));
+
+    // n = (stop - start) / step + 1, then n = max(n, 0).
+    let n_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalGet(stop_t));
+    ctx.emit(we::Instruction::LocalGet(start_t));
+    ctx.emit(we::Instruction::I32Sub);
+    ctx.emit(we::Instruction::LocalGet(step_t));
+    ctx.emit(we::Instruction::I32DivS);
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalSet(n_t));
+    // n = (n > 0) ? n : 0
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::I32GtS);
+    ctx.emit(we::Instruction::Select);
+    ctx.emit(we::Instruction::LocalSet(n_t));
+
+    let arr = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(SigTy::Int.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(arr));
+    ctx.emit(we::Instruction::LocalGet(arr));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+
+    // for k in 0..n: arr[k] = start + k*step
+    let k_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalSet(k_t));
+    ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::I32GeS);
+    ctx.emit(we::Instruction::BrIf(1));
+    ctx.emit(we::Instruction::LocalGet(arr));
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    ctx.emit(we::Instruction::LocalGet(start_t));
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::LocalGet(step_t));
+    ctx.emit(we::Instruction::I32Mul);
+    ctx.emit(we::Instruction::I32Add);
+    elem_store(ctx, &SigTy::Int);
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalSet(k_t));
+    ctx.emit(we::Instruction::Br(0));
+    ctx.emit(we::Instruction::End); // loop
+    ctx.emit(we::Instruction::End); // block
+    ctx.emit(we::Instruction::LocalGet(arr));
+    Ok(())
+}
+
 /// Lower `a[i, j, ...]` (full subscripting of an N-D array to a scalar element).
 /// `base` produces the owned array handle; `subs` must be one `INDEX` per
 /// dimension (slicing / partial indexing is not yet supported). Returns the
@@ -2344,23 +2441,50 @@ fn release_temp_array(ctx: &mut FnCtx, t: u32) {
     ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
 }
 
-/// Lower `size(a, d)` (a dimension size) or reject `size(a)` (the dimension
-/// vector, an array result) for now. `a`'s owned handle is released after.
+/// Lower `size(a, d)` (a single dimension size, scalar Integer) or `size(a)`
+/// (the whole dimension vector, an `Integer[ndims]`). `a`'s owned handle is
+/// released after.
 fn compile_size(ctx: &mut FnCtx, exp: &DAE::Exp, sz: Option<&DAE::Exp>) -> Result<()> {
-    let Some(d) = sz else {
-        bail!("CodegenWasmJit: size(a) (the dimension vector) is not yet supported; use size(a, d)");
-    };
-    if !matches!(exp_sigty(exp)?, SigTy::Array { .. }) {
+    let SigTy::Array { rank, .. } = exp_sigty(exp)? else {
         bail!("CodegenWasmJit: size() of a non-array expression");
-    }
+    };
     compile_exp(ctx, exp)?; // owned array handle
     let arr_t = ctx.alloc_temp(WTy::I32);
     ctx.emit(we::Instruction::LocalSet(arr_t));
-    ctx.emit(we::Instruction::LocalGet(arr_t));
-    let w = compile_exp(ctx, d)?;
-    coerce(ctx, w, WTy::I32);
-    ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
-    release_temp_array(ctx, arr_t); // leaves the dim value
+
+    if let Some(d) = sz {
+        // size(a, d): one dimension.
+        ctx.emit(we::Instruction::LocalGet(arr_t));
+        let w = compile_exp(ctx, d)?;
+        coerce(ctx, w, WTy::I32);
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
+        release_temp_array(ctx, arr_t); // leaves the dim value
+        return Ok(());
+    }
+
+    // size(a): build a fresh Integer[rank] whose element i is size(a, i). The
+    // result rank equals `a`'s number of dimensions, known statically.
+    let res = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(SigTy::Int.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(1)); // ndims of the result vector
+    ctx.emit(we::Instruction::I32Const(rank as i32)); // total = number of axes
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(res));
+    ctx.emit(we::Instruction::LocalGet(res));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::I32Const(rank as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+    for axis in 1..=rank {
+        ctx.emit(we::Instruction::LocalGet(res));
+        ctx.emit(we::Instruction::I32Const(axis as i32));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+        ctx.emit(we::Instruction::LocalGet(arr_t));
+        ctx.emit(we::Instruction::I32Const(axis as i32));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
+        elem_store(ctx, &SigTy::Int);
+    }
+    release_temp_array(ctx, arr_t);
+    ctx.emit(we::Instruction::LocalGet(res));
     Ok(())
 }
 
