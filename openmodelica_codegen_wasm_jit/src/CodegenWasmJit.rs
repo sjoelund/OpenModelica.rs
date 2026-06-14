@@ -490,8 +490,16 @@ fn build_sim_model(sim_code: &SimCode::SimCode) -> Result<SimModel> {
     for f in &model_fns {
         bodies.push(compile_function(f, &by_name, &mut literals)?);
     }
+    // Parameter bindings (`parameter Real c = 0.5`) are not in
+    // `parameterEquations` for constant bindings — the C target reads them from
+    // `_init.xml`. Initialize every parameter from its binding expression
+    // (`SimVar.initialValue`) in declaration order (the backend sorts dependent
+    // parameters so a binding only references earlier ones), then run
+    // `parameterEquations` for any computed parameters.
+    let param_bindings = collect_param_bindings(vars);
+
     // Equation functions.
-    bodies.push(build_eq_fn("parameterEquations", flatten_eqs(&sim_code.parameterEquations), &var_map, &eq_index, &by_name, &mut literals)?);
+    bodies.push(build_eq_fn_with_prelude("parameterEquations", &param_bindings, flatten_eqs(&sim_code.parameterEquations), &var_map, &eq_index, &by_name, &mut literals)?);
     bodies.push(build_eq_fn("initialEquations", flatten_eqs(&sim_code.initialEquations), &var_map, &eq_index, &by_name, &mut literals)?);
     bodies.push(build_eq_fn("odeEquations", flatten_eqs_ll(&sim_code.odeEquations), &var_map, &eq_index, &by_name, &mut literals)?);
     bodies.push(build_eq_fn("algebraicEquations", flatten_eqs_ll(&sim_code.algebraicEquations), &var_map, &eq_index, &by_name, &mut literals)?);
@@ -595,8 +603,35 @@ fn flatten_eqs_ll(
 /// Build one equation function (`SimData* -> ()`), lowering each equation in
 /// order. Unsupported equation kinds (systems, array assigns) fail loudly so a
 /// model that needs them is rejected rather than silently mis-simulated.
+/// Collect parameter binding assignments (`cref := initialValue`) from all
+/// parameter `SimVar`s that have a binding, in declaration order.
+fn collect_param_bindings(vars: &SimCodeVar::SimVars) -> Vec<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> {
+    let mut out = Vec::new();
+    for p in lst(&vars.paramVars)
+        .chain(lst(&vars.intParamVars))
+        .chain(lst(&vars.boolParamVars))
+    {
+        if let Some(v) = &p.initialValue {
+            out.push((p.name.clone(), v.clone()));
+        }
+    }
+    out
+}
+
 fn build_eq_fn(
     which: &str,
+    eqs: Vec<Arc<SimCode::SimEqSystem>>,
+    var_map: &SimVarMap,
+    eq_index: &HashMap<i32, Arc<SimCode::SimEqSystem>>,
+    by_name: &HashMap<String, FnInfo>,
+    literals: &mut Vec<Vec<u8>>,
+) -> Result<we::Function> {
+    build_eq_fn_with_prelude(which, &[], eqs, var_map, eq_index, by_name, literals)
+}
+
+fn build_eq_fn_with_prelude(
+    which: &str,
+    prelude: &[(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)],
     eqs: Vec<Arc<SimCode::SimEqSystem>>,
     var_map: &SimVarMap,
     eq_index: &HashMap<i32, Arc<SimCode::SimEqSystem>>,
@@ -609,6 +644,10 @@ fn build_eq_fn(
         starts: var_map.starts.clone(),
     };
     let mut ctx = FnCtx::new_sim(sim, by_name, literals);
+    for (cref, exp) in prelude {
+        let lhs = DAE::Exp::CREF { componentRef: cref.clone(), ty: t_real() };
+        ctx.sim_assign(&lhs, exp).map_err(|e| anyhow!("in {which} binding: {e}"))?;
+    }
     for eq in &eqs {
         lower_equation(&mut ctx, eq, eq_index)
             .map_err(|e| anyhow!("in {which}: {e}"))?;
