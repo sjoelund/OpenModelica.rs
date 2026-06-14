@@ -1379,20 +1379,7 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         // passive data segment with `memory.init`, so the value is owned exactly
         // like any other heap-producing expression.
         E::SCONST { string } => {
-            let bytes = string.as_bytes().to_vec();
-            let len = bytes.len() as u32;
-            let seg = ctx.literals.len() as u32;
-            ctx.literals.push(bytes);
-            let obj = ctx.alloc_temp(WTy::I32);
-            ctx.emit(we::Instruction::I32Const(len as i32));
-            ctx.emit(we::Instruction::Call(rt_index("rt_str_new")));
-            ctx.emit(we::Instruction::LocalTee(obj));
-            // memory.init dest=rt_str_data(obj), src_offset=0, size=len
-            ctx.emit(we::Instruction::Call(rt_index("rt_str_data")));
-            ctx.emit(we::Instruction::I32Const(0));
-            ctx.emit(we::Instruction::I32Const(len as i32));
-            ctx.emit(we::Instruction::MemoryInit { mem: 0, data_index: seg });
-            ctx.emit(we::Instruction::LocalGet(obj));
+            emit_str_literal(ctx, string.as_bytes());
             Ok(WTy::I32)
         }
         E::CREF { componentRef, .. } => {
@@ -2062,7 +2049,15 @@ fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy
     // stringify the index. Carrying enum names would need the literal table
     // threaded through from the DAE type into the sidecar/runtime.
     if exp_is_enumeration(argv[0]) {
-        bail!("CodegenWasmJit: String(Enumeration) needs the enumeration literal name, which the wasm-jit value model (an enum is its Integer index) does not carry");
+        let Some(names) = exp_enum_names(argv[0]) else {
+            bail!("CodegenWasmJit: String(Enumeration) on an enum literal whose names are not in scope");
+        };
+        emit_enum_string(ctx, argv[0], &names)?;
+        // String(e, minimumLength, leftJustified): pad the name like any scalar.
+        if let [_, min_len, left_just] = argv {
+            return apply_string_padding(ctx, min_len, left_just);
+        }
+        return Ok(SigTy::Str);
     }
     let vty = exp_sigty(argv[0])?;
     // `String(String, …)` is the identity: the C target ignores the
@@ -2089,6 +2084,65 @@ fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy
 /// Whether `exp` has an enumeration type (so `String(exp)` would need the
 /// literal name). Covers the expression forms that carry a `DAE.Type`; anything
 /// else is not an enumeration value.
+/// Emit a String literal: materialize a fresh (refcount 1) String from a passive
+/// data segment with `memory.init`, leaving the owned handle on the stack.
+fn emit_str_literal(ctx: &mut FnCtx, bytes: &[u8]) {
+    let len = bytes.len() as u32;
+    let seg = ctx.literals.len() as u32;
+    ctx.literals.push(bytes.to_vec());
+    let obj = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(len as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_str_new")));
+    ctx.emit(we::Instruction::LocalTee(obj));
+    // memory.init dest=rt_str_data(obj), src_offset=0, size=len
+    ctx.emit(we::Instruction::Call(rt_index("rt_str_data")));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::I32Const(len as i32));
+    ctx.emit(we::Instruction::MemoryInit { mem: 0, data_index: seg });
+    ctx.emit(we::Instruction::LocalGet(obj));
+}
+
+/// The enumeration literal names of `exp`'s type (unqualified, indexed 1-based
+/// by the enum value), or `None` if `exp` is not an enumeration carried by a
+/// type we can read the names from.
+fn exp_enum_names(exp: &DAE::Exp) -> Option<Vec<ArcStr>> {
+    use DAE::Exp as E;
+    let names_of = |ty: &DAE::Type| match ty {
+        DAE::Type::T_ENUMERATION { names, .. } => Some((&**names).into_iter().cloned().collect()),
+        _ => None,
+    };
+    match exp {
+        E::CREF { ty, .. } | E::CAST { ty, .. } => names_of(ty),
+        E::CALL { attr, .. } => names_of(&attr.ty),
+        E::SHARED_LITERAL { exp, .. } => exp_enum_names(exp),
+        _ => None,
+    }
+}
+
+/// `String(e)` for an enumeration value `e`: render the literal *name* (matching
+/// `Ceval.cevalBuiltinString`). The value is the 1-based index; emit a switch
+/// that materializes the matching name literal (an out-of-range index traps).
+/// Leaves an owned (+1) String handle on the stack.
+fn emit_enum_string(ctx: &mut FnCtx, arg: &DAE::Exp, names: &[ArcStr]) -> Result<()> {
+    let idx_t = ctx.alloc_temp(WTy::I32);
+    let w = compile_exp(ctx, arg)?;
+    coerce(ctx, w, WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(idx_t));
+    ctx.emit(we::Instruction::Block(we::BlockType::Result(we::ValType::I32)));
+    for (k, name) in names.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(idx_t));
+        ctx.emit(we::Instruction::I32Const(k as i32 + 1));
+        ctx.emit(we::Instruction::I32Eq);
+        ctx.emit(we::Instruction::If(we::BlockType::Empty));
+        emit_str_literal(ctx, name.as_bytes());
+        ctx.emit(we::Instruction::Br(1)); // break out of the Block with the handle
+        ctx.emit(we::Instruction::End); // if
+    }
+    ctx.emit(we::Instruction::Unreachable); // index out of range
+    ctx.emit(we::Instruction::End); // block (result = the handle)
+    Ok(())
+}
+
 fn exp_is_enumeration(exp: &DAE::Exp) -> bool {
     use DAE::Exp as E;
     let is_enum = |ty: &DAE::Type| matches!(ty, DAE::Type::T_ENUMERATION { .. });
@@ -2114,11 +2168,18 @@ fn emit_padded_scalar_string(
 ) -> Result<SigTy> {
     // Leaves an owned (+1) string handle on the stack.
     format_scalar_string(ctx, val, vty)?;
+    apply_string_padding(ctx, min_len, left_just)
+}
+
+/// Pad the owned String handle on the stack to `min_len` (space-padded,
+/// left-justified per `left_just`), a no-op for a literal-zero `min_len`. The
+/// unpadded handle is released; a fresh owned padded handle is left.
+fn apply_string_padding(ctx: &mut FnCtx, min_len: &DAE::Exp, left_just: &DAE::Exp) -> Result<SigTy> {
     if let DAE::Exp::ICONST { integer: 0 } = min_len {
         return Ok(SigTy::Str);
     }
-    // Move the owned, unpadded handle into a temp: `rt_str_pad` borrows it and
-    // returns a fresh owned handle, so the unpadded one is released afterwards.
+    // `rt_str_pad` borrows the unpadded handle and returns a fresh owned one, so
+    // the unpadded one is released afterwards.
     let t = ctx.alloc_temp(WTy::I32);
     ctx.emit(we::Instruction::LocalSet(t));
     ctx.emit(we::Instruction::LocalGet(t));
