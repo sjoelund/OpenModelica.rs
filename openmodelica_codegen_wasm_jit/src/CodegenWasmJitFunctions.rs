@@ -328,6 +328,13 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // `cat(dim, a1, ..., an)`: (dim, n, handles) where `handles` is an Integer
     // array of the `n` input array handles. Returns a fresh concatenated array.
     ("rt_array_cat", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    // Scalar (dot) product `v1 * v2` of two numeric vectors -> a scalar.
+    ("rt_array_dot_f64", &[WTy::I32, WTy::I32], &[WTy::F64]),
+    ("rt_array_dot_i32", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    // Matrix product `a * b` (matrix·matrix / matrix·vector / vector·matrix) ->
+    // a fresh array (rank a.ndims + b.ndims - 2).
+    ("rt_array_matmul_f64", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_matmul_i32", &[WTy::I32, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1574,6 +1581,9 @@ fn operator_sigty(op: &DAE::Operator) -> Result<SigTy> {
     use DAE::Operator as O;
     let ty = match op {
         O::ADD { ty } | O::SUB { ty } | O::MUL { ty } | O::DIV { ty } | O::POW { ty } | O::UMINUS { ty } => ty,
+        // Scalar/matrix products carry the element (scalar-product) or result
+        // (matrix-product) type; `sig_ty` yields the produced value's `SigTy`.
+        O::MUL_SCALAR_PRODUCT { ty } | O::MUL_MATRIX_PRODUCT { ty } => ty,
         other => bail!("CodegenWasmJit: cannot determine type of operator {other:?}"),
     };
     sig_ty(ty)
@@ -1673,6 +1683,10 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
         O::SUB_SCALAR_ARRAY { ty } => return compile_array_scalar(ctx, e1, e2, OP_SUB, true, ty),
         O::DIV_ARRAY_SCALAR { ty } => return compile_array_scalar(ctx, e1, e2, OP_DIV, false, ty),
         O::DIV_SCALAR_ARRAY { ty } => return compile_array_scalar(ctx, e1, e2, OP_DIV, true, ty),
+        // `v1 * v2` dot product (scalar result) and `a * b` matrix product
+        // (matrix·matrix / matrix·vector / vector·matrix → a fresh array).
+        O::MUL_SCALAR_PRODUCT { .. } => return compile_dot(ctx, e1, e2),
+        O::MUL_MATRIX_PRODUCT { .. } => return compile_matmul(ctx, e1, e2),
         _ => {}
     }
     // String `+` is concatenation: both operands are String handles, the result
@@ -2493,6 +2507,49 @@ fn compile_array_ew(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp, op_code: i32,
     ctx.emit(we::Instruction::Call(rt_index(rt)));
     release_temp_array(ctx, at);
     release_temp_array(ctx, bt);
+    Ok(WTy::I32)
+}
+
+/// `v1 * v2` scalar (dot) product of two numeric vectors → a scalar. Both
+/// operand arrays are released; the scalar result is left on the stack.
+fn compile_dot(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp) -> Result<WTy> {
+    let elem = array_elem(e1)?.ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: scalar-product operand is not an array"))?;
+    let f64mode = elem.wty() == WTy::F64;
+    let rt = if f64mode { "rt_array_dot_f64" } else { "rt_array_dot_i32" };
+    compile_exp(ctx, e1)?;
+    let at = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(at));
+    compile_exp(ctx, e2)?;
+    let bt = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(bt));
+    ctx.emit(we::Instruction::LocalGet(at));
+    ctx.emit(we::Instruction::LocalGet(bt));
+    ctx.emit(we::Instruction::Call(rt_index(rt)));
+    release_temp_array(ctx, at);
+    release_temp_array(ctx, bt);
+    Ok(if f64mode { WTy::F64 } else { WTy::I32 })
+}
+
+/// `a * b` matrix product (matrix·matrix / matrix·vector / vector·matrix). The
+/// runtime computes the result shape from the operand ranks; both operands are
+/// released and the fresh result array handle is left on the stack.
+fn compile_matmul(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp) -> Result<WTy> {
+    let elem = array_elem(e1)?.ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: matrix-product operand is not an array"))?;
+    let rt = if elem.wty() == WTy::F64 { "rt_array_matmul_f64" } else { "rt_array_matmul_i32" };
+    compile_exp(ctx, e1)?;
+    let at = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(at));
+    compile_exp(ctx, e2)?;
+    let bt = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(bt));
+    ctx.emit(we::Instruction::LocalGet(at));
+    ctx.emit(we::Instruction::LocalGet(bt));
+    ctx.emit(we::Instruction::Call(rt_index(rt)));
+    let result_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(result_t));
+    release_temp_array(ctx, at);
+    release_temp_array(ctx, bt);
+    ctx.emit(we::Instruction::LocalGet(result_t));
     Ok(WTy::I32)
 }
 

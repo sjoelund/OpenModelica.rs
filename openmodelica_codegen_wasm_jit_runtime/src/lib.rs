@@ -567,6 +567,96 @@ pub extern "C" fn rt_array_cat(dim: u32, n: u32, handles: u32) -> u32 {
     result
 }
 
+/// Scalar (dot) product of two equal-length numeric vectors `sum a[i]*b[i]`.
+/// The runtime counterpart of `v1 * v2` (`MUL_SCALAR_PRODUCT`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_dot_f64(a: u32, b: u32) -> f64 {
+    let n = rt_array_total(a);
+    let (da, db) = (arr_data(a), arr_data(b));
+    let mut acc = 0.0f64;
+    for i in 0..n {
+        acc += unsafe { load_f64(da + i * 8) * load_f64(db + i * 8) };
+    }
+    acc
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_dot_i32(a: u32, b: u32) -> i32 {
+    let n = rt_array_total(a);
+    let (da, db) = (arr_data(a), arr_data(b));
+    let mut acc = 0i32;
+    for i in 0..n {
+        acc = acc.wrapping_add(unsafe { load_i32(da + i * 4).wrapping_mul(load_i32(db + i * 4)) });
+    }
+    acc
+}
+
+// Inner dimensions for a rank-agnostic matrix product `a * b` where each operand
+// is a vector (treated as 1×n / n×1) or a matrix: `a` is logically m×k row-major,
+// `b` is k×p row-major, the result m×p. A vector `a` has m = 1, a matrix has
+// m = dim 1; `k` is always `a`'s last dim; a vector `b` has p = 1, a matrix has
+// p = dim 2. The result rank is `a.ndims + b.ndims - 2` (matrix·matrix → 2,
+// matrix·vector / vector·matrix → 1), sized m*p along its single axis when 1-D.
+fn matmul_shape(a: u32, b: u32) -> (u32, u32, u32, u32) {
+    let a_nd = rt_array_ndims(a);
+    let b_nd = rt_array_ndims(b);
+    let m = if a_nd == 2 { rt_array_dim(a, 1) } else { 1 };
+    let k = rt_array_dim(a, a_nd as i32);
+    let p = if b_nd == 2 { rt_array_dim(b, 2) } else { 1 };
+    let res_nd = a_nd + b_nd - 2;
+    (m, k, p, res_nd)
+}
+
+fn matmul_result(kind: u32, m: u32, p: u32, res_nd: u32) -> u32 {
+    let result = rt_array_new(kind, res_nd, m * p);
+    if res_nd == 2 {
+        rt_array_set_dim(result, 0, m);
+        rt_array_set_dim(result, 1, p);
+    } else {
+        rt_array_set_dim(result, 0, m * p);
+    }
+    result
+}
+
+/// Matrix product `a * b` for Real operands (`MUL_MATRIX_PRODUCT`), handling
+/// matrix·matrix, matrix·vector and vector·matrix uniformly (see `matmul_shape`).
+/// Returns a fresh array; the operands are read only.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_matmul_f64(a: u32, b: u32) -> u32 {
+    let (m, k, p, res_nd) = matmul_shape(a, b);
+    let result = matmul_result(EK_REAL, m, p, res_nd);
+    let (da, db, dr) = (arr_data(a), arr_data(b), arr_data(result));
+    for i in 0..m {
+        for j in 0..p {
+            let mut acc = 0.0f64;
+            for t in 0..k {
+                acc += unsafe { load_f64(da + (i * k + t) * 8) * load_f64(db + (t * p + j) * 8) };
+            }
+            unsafe { store_f64(dr + (i * p + j) * 8, acc) };
+        }
+    }
+    result
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_matmul_i32(a: u32, b: u32) -> u32 {
+    let (m, k, p, res_nd) = matmul_shape(a, b);
+    let result = matmul_result(EK_INT, m, p, res_nd);
+    let (da, db, dr) = (arr_data(a), arr_data(b), arr_data(result));
+    for i in 0..m {
+        for j in 0..p {
+            let mut acc = 0i32;
+            for t in 0..k {
+                acc = acc.wrapping_add(unsafe {
+                    load_i32(da + (i * k + t) * 4).wrapping_mul(load_i32(db + (t * p + j) * 4))
+                });
+            }
+            unsafe { store_u32(dr + (i * p + j) * 4, acc as u32) };
+        }
+    }
+    result
+}
+
 // ---------------------------------------------------------------------------
 // Records (heterogeneous, self-describing via an inline heap-field table)
 // ---------------------------------------------------------------------------

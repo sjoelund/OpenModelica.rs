@@ -1177,6 +1177,61 @@ mod tests {
         }
     }
 
+    /// `rt_array_dot_f64` and `rt_array_matmul_f64`: a vector dot product, a
+    /// matrix·vector, and a non-square matrix·matrix product.
+    #[test]
+    fn precompiled_runtime_array_matmul() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let ndims = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_ndims").unwrap();
+        let dot = inst.get_typed_func::<(i32, i32), f64>(&mut store, "rt_array_dot_f64").unwrap();
+        let matmul = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_matmul_f64").unwrap();
+        let rf = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 8];
+            mem.read(&*store, addr, &mut b).unwrap();
+            f64::from_le_bytes(b)
+        };
+        // An n-D Real array from flat row-major data + dims.
+        let arr = |store: &mut Store, dims: &[i32], vals: &[f64]| -> i32 {
+            let h = arr_new.call(&mut *store, (1, dims.len() as i32, vals.len() as i32)).unwrap();
+            for (a, d) in dims.iter().enumerate() {
+                set_dim.call(&mut *store, (h, a as i32, *d)).unwrap();
+            }
+            for (k, v) in vals.iter().enumerate() {
+                let addr = elem_ptr.call(&mut *store, (h, k as i32 + 1)).unwrap() as usize;
+                mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+            }
+            h
+        };
+
+        // {1,2,3} . {4,5,6} = 32.
+        let a = arr(&mut store, &[3], &[1.0, 2.0, 3.0]);
+        let b = arr(&mut store, &[3], &[4.0, 5.0, 6.0]);
+        assert_eq!(dot.call(&mut store, (a, b)).unwrap(), 32.0);
+
+        // [[1,2],[3,4]] * {5,6} = {17,39} (matrix·vector → rank-1).
+        let m = arr(&mut store, &[2, 2], &[1.0, 2.0, 3.0, 4.0]);
+        let v = arr(&mut store, &[2], &[5.0, 6.0]);
+        let r = matmul.call(&mut store, (m, v)).unwrap();
+        assert_eq!(ndims.call(&mut store, r).unwrap(), 1);
+        assert_eq!((rf(&mut store, r, 1), rf(&mut store, r, 2)), (17.0, 39.0));
+
+        // [[1,2,3]] (1x3) * [[1],[2],[3]] (3x1) = [[14]] (1x1).
+        let p = arr(&mut store, &[1, 3], &[1.0, 2.0, 3.0]);
+        let q = arr(&mut store, &[3, 1], &[1.0, 2.0, 3.0]);
+        let r = matmul.call(&mut store, (p, q)).unwrap();
+        assert_eq!((dim.call(&mut store, (r, 1)).unwrap(), dim.call(&mut store, (r, 2)).unwrap()), (1, 1));
+        assert_eq!(rf(&mut store, r, 1), 14.0);
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {
