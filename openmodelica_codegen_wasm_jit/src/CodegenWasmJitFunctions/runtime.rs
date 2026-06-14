@@ -5,7 +5,8 @@
 // because the calling convention is just scalar wasm params/results plus the
 // `.wasm.sig` sidecar, with no MMC heap to build.
 
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex, OnceLock};
 
 use anyhow::{Result, anyhow, bail};
 use metamodelica::List;
@@ -18,6 +19,58 @@ use super::SigTy;
 /// with ours under the feature set we build with; flatten via the message.
 fn wt<T>(r: std::result::Result<T, wasmtime::Error>) -> Result<T> {
     r.map_err(|e| anyhow!("{e:?}"))
+}
+
+/// Process-wide JIT cache shared across all `load_and_execute` calls.
+///
+/// Building a `wasmtime::Engine` and (especially) compiling a module with
+/// Cranelift are the expensive steps; both are independent of the call
+/// arguments, so we do them once and reuse the results. Only the `Store` and
+/// `Instance` are rebuilt per call — they are cheap and a fresh instance keeps
+/// each evaluation isolated (no leftover globals/linear memory between calls).
+///
+/// Compiled modules are keyed by their wasm *bytes*, not by file name: a
+/// function redefined in an interactive session is re-translated to different
+/// bytes and so compiles afresh, while repeated evaluation of the same function
+/// hits the cache.
+struct JitCache {
+    engine: wasmtime::Engine,
+    /// Host-imported math builtins (module `"env"`); identical for every module,
+    /// so built once and reused for every instantiation.
+    linker: wasmtime::Linker<()>,
+    modules: Mutex<HashMap<Vec<u8>, wasmtime::Module>>,
+}
+
+fn jit_cache() -> &'static JitCache {
+    static CACHE: OnceLock<JitCache> = OnceLock::new();
+    CACHE.get_or_init(|| {
+        let engine = wasmtime::Engine::default();
+        let mut linker = wasmtime::Linker::new(&engine);
+        // The builtin set is fixed and cannot collide; a failure here is a
+        // programming error in `add_host_builtins`, not a runtime condition.
+        add_host_builtins(&mut linker).expect("register wasm-jit host builtins");
+        JitCache { engine, linker, modules: Mutex::new(HashMap::new()) }
+    })
+}
+
+/// Return the compiled module for `bytes`, compiling and caching it on a miss.
+///
+/// Compilation runs outside the lock so that concurrent compiles of *different*
+/// modules do not serialise; if two threads race to compile the *same* module
+/// the first insert wins and the duplicate result is discarded (both are
+/// equivalent).
+fn get_or_compile_module(cache: &JitCache, bytes: &[u8]) -> Result<wasmtime::Module> {
+    if let Some(module) = cache.modules.lock().unwrap().get(bytes) {
+        return Ok(module.clone());
+    }
+    let module = wt(wasmtime::Module::new(&cache.engine, bytes))?;
+    Ok(cache
+        .modules
+        .lock()
+        .unwrap()
+        .entry(bytes.to_vec())
+        .or_insert(module)
+        .clone())
 }
 
 /// Parsed `.wasm.sig` sidecar: scalar types of the main function's inputs and
@@ -75,7 +128,7 @@ fn value_as_f64(v: &Values::Value) -> Result<f64> {
         Values::Value::INTEGER { integer } => *integer as f64,
         Values::Value::BOOL { boolean } => *boolean as i64 as f64,
         Values::Value::ENUM_LITERAL { index, .. } => *index as f64,
-        other => bail!("CodegenWasmer: cannot pass {other:?} to a wasm function"),
+        other => bail!("CodegenWasmJit: cannot pass {other:?} to a wasm function"),
     })
 }
 
@@ -86,7 +139,7 @@ fn value_as_i32(v: &Values::Value) -> Result<i32> {
         Values::Value::BOOL { boolean } => *boolean as i32,
         Values::Value::ENUM_LITERAL { index, .. } => *index,
         Values::Value::REAL { real } => real.into_inner() as i32,
-        other => bail!("CodegenWasmer: cannot pass {other:?} to a wasm function"),
+        other => bail!("CodegenWasmJit: cannot pass {other:?} to a wasm function"),
     })
 }
 
@@ -99,20 +152,20 @@ pub(super) fn load_and_execute(
     let sig = read_sig(&format!("{file_name}.wasm.sig"))?;
     let bytes = std::fs::read(&wasm_path)?;
 
-    let engine = wasmtime::Engine::default();
-    let module = wt(wasmtime::Module::new(&engine, &bytes))?;
-    let mut linker = wasmtime::Linker::new(&engine);
-    add_host_builtins(&mut linker)?;
-    let mut store = wasmtime::Store::new(&engine, ());
-    let instance = wt(linker.instantiate(&mut store, &module))?;
+    // Reuse the shared engine/linker and the per-content compiled module; only
+    // the store and instance are per-call (see `JitCache`).
+    let cache = jit_cache();
+    let module = get_or_compile_module(cache, &bytes)?;
+    let mut store = wasmtime::Store::new(&cache.engine, ());
+    let instance = wt(cache.linker.instantiate(&mut store, &module))?;
     let func = instance
         .get_func(&mut store, "main")
-        .ok_or_else(|| anyhow!("CodegenWasmer: module has no `main` export"))?;
+        .ok_or_else(|| anyhow!("CodegenWasmJit: module has no `main` export"))?;
 
     // Marshal the arguments according to the input signature.
     let argv: Vec<&Arc<Values::Value>> = (&**args).into_iter().collect();
     if argv.len() != sig.inputs.len() {
-        bail!("CodegenWasmer: function expects {} arguments, got {}", sig.inputs.len(), argv.len());
+        bail!("CodegenWasmJit: function expects {} arguments, got {}", sig.inputs.len(), argv.len());
     }
     let mut params: Vec<wasmtime::Val> = Vec::with_capacity(argv.len());
     for (a, ty) in argv.iter().zip(sig.inputs.iter()) {
@@ -128,20 +181,20 @@ pub(super) fn load_and_execute(
     wt(func.call(&mut store, &params, &mut results))?;
 
     if results.len() != sig.outputs.len() {
-        bail!("CodegenWasmer: wasm returned {} values but signature has {}", results.len(), sig.outputs.len());
+        bail!("CodegenWasmJit: wasm returned {} values but signature has {}", results.len(), sig.outputs.len());
     }
 
     let mut out: Vec<Arc<Values::Value>> = Vec::with_capacity(results.len());
     for (val, ty) in results.iter().zip(sig.outputs.iter()) {
         out.push(Arc::new(match ty {
             SigTy::Int => Values::Value::INTEGER {
-                integer: val.i32().ok_or_else(|| anyhow!("CodegenWasmer: expected i32 result"))?,
+                integer: val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 result"))?,
             },
             SigTy::Bool => Values::Value::BOOL {
-                boolean: val.i32().ok_or_else(|| anyhow!("CodegenWasmer: expected i32 result"))? != 0,
+                boolean: val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 result"))? != 0,
             },
             SigTy::Real => Values::Value::REAL {
-                real: metamodelica::Real::from(val.f64().ok_or_else(|| anyhow!("CodegenWasmer: expected f64 result"))?),
+                real: metamodelica::Real::from(val.f64().ok_or_else(|| anyhow!("CodegenWasmJit: expected f64 result"))?),
             },
         }));
     }
@@ -263,6 +316,37 @@ mod tests {
             }
             other => panic!("expected TUPLE, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn cache_reuse_and_redefinition() {
+        // First definition of `main(a,b) = a + b`. Running it twice must give
+        // the same answer (the second call hits the compiled-module cache).
+        let base = emit(
+            "wjit_cache",
+            &[we::ValType::I32, we::ValType::I32],
+            &[we::ValType::I32],
+            "II\nI\n",
+            &[we::Instruction::LocalGet(0), we::Instruction::LocalGet(1), we::Instruction::I32Add, we::Instruction::End],
+        );
+        let args = Arc::new(List::from_iter([
+            Arc::new(Values::Value::INTEGER { integer: 5 }),
+            Arc::new(Values::Value::INTEGER { integer: 7 }),
+        ]));
+        assert_eq!(ival(&load_and_execute(&base, "main", &args).unwrap()), 12);
+        assert_eq!(ival(&load_and_execute(&base, "main", &args).unwrap()), 12);
+
+        // Redefine the same basename to `main(a,b) = a * b` (different bytes).
+        // The cache is keyed by content, so this must recompile rather than
+        // reuse the stale `+` module.
+        emit(
+            "wjit_cache",
+            &[we::ValType::I32, we::ValType::I32],
+            &[we::ValType::I32],
+            "II\nI\n",
+            &[we::Instruction::LocalGet(0), we::Instruction::LocalGet(1), we::Instruction::I32Mul, we::Instruction::End],
+        );
+        assert_eq!(ival(&load_and_execute(&base, "main", &args).unwrap()), 35);
     }
 
     #[test]
