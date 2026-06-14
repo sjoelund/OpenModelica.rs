@@ -1,4 +1,4 @@
-// Manually written file (the `CodegenWasmerFunctions` MetaModelica package is a
+// Manually written file (the `CodegenWasmJitFunctions` MetaModelica package is a
 // placeholder; see HANDWRITTEN_TOP_PACKAGES in mmtorust/src/codegen.rs).
 //
 // The `wasm-jit` simCodeTarget, function half. Counterpart of
@@ -87,7 +87,7 @@ impl SigTy {
             'I' => SigTy::Int,
             'R' => SigTy::Real,
             'B' => SigTy::Bool,
-            other => bail!("CodegenWasmer: unknown signature type code {other:?}"),
+            other => bail!("CodegenWasmJit: unknown signature type code {other:?}"),
         })
     }
     fn wty(self) -> WTy {
@@ -157,7 +157,7 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
     // then the dependencies.
     let mut funcs: Vec<&SimCodeFunction::Function::Function> = Vec::new();
     let Some(main) = &fn_code.mainFunction else {
-        bail!("CodegenWasmer: function code has no main function");
+        bail!("CodegenWasmJit: function code has no main function");
     };
     funcs.push(&**main);
     for f in &*fn_code.functions {
@@ -218,7 +218,7 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
 /// The mangled name and wasm signature of a generated function.
 fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String, FnSig)> {
     let SimCodeFunction::Function::Function::FUNCTION { name, outVars, functionArguments, .. } = f else {
-        bail!("CodegenWasmer: only plain Modelica/MetaModelica FUNCTIONs are supported (no external/record-constructor)");
+        bail!("CodegenWasmJit: only plain Modelica/MetaModelica FUNCTIONs are supported (no external/record-constructor)");
     };
     let params = var_wtys(functionArguments)?;
     let results = var_wtys(outVars)?;
@@ -228,7 +228,7 @@ fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String
 /// The input/output scalar `SigTy`s of the main function, for the sidecar.
 fn main_sig_types(f: &SimCodeFunction::Function::Function) -> Result<(Vec<SigTy>, Vec<SigTy>)> {
     let SimCodeFunction::Function::Function::FUNCTION { outVars, functionArguments, .. } = f else {
-        bail!("CodegenWasmer: only plain FUNCTIONs are supported");
+        bail!("CodegenWasmJit: only plain FUNCTIONs are supported");
     };
     Ok((var_sigtys(functionArguments)?, var_sigtys(outVars)?))
 }
@@ -241,7 +241,7 @@ fn var_sigtys(vars: &Arc<List<Arc<SimCodeFunction::Variable::Variable>>>) -> Res
     let mut out = Vec::new();
     for v in &**vars {
         let SimCodeFunction::Variable::Variable::VARIABLE { ty, .. } = &**v else {
-            bail!("CodegenWasmer: unsupported variable kind (function pointer)");
+            bail!("CodegenWasmJit: unsupported variable kind (function pointer)");
         };
         out.push(sig_ty(ty)?);
     }
@@ -256,9 +256,9 @@ fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
         DAE::Type::T_BOOL { .. } => SigTy::Bool,
         // An enumeration value is its 1-based Integer index.
         DAE::Type::T_ENUMERATION { .. } => SigTy::Int,
-        DAE::Type::T_SUBTYPE_BASIC { .. } => bail!("CodegenWasmer: subtype-basic types not yet supported"),
-        DAE::Type::T_STRING { .. } => bail!("CodegenWasmer: String not yet supported"),
-        other => bail!("CodegenWasmer: non-scalar type not supported: {other:?}"),
+        DAE::Type::T_SUBTYPE_BASIC { .. } => bail!("CodegenWasmJit: subtype-basic types not yet supported"),
+        DAE::Type::T_STRING { .. } => bail!("CodegenWasmJit: String not yet supported"),
+        other => bail!("CodegenWasmJit: non-scalar type not supported: {other:?}"),
     })
 }
 
@@ -301,7 +301,7 @@ fn compile_function(
 ) -> Result<we::Function> {
     let SimCodeFunction::Function::Function::FUNCTION { outVars, functionArguments, variableDeclarations, body, .. } = f
     else {
-        bail!("CodegenWasmer: only plain FUNCTIONs are supported");
+        bail!("CodegenWasmJit: only plain FUNCTIONs are supported");
     };
 
     let mut locals: HashMap<String, (u32, WTy)> = HashMap::new();
@@ -362,7 +362,7 @@ fn push_outputs(ctx: &mut FnCtx) {
 /// Name and wasm type of a `VARIABLE`. Only `CREF_IDENT` scalars are supported.
 fn var_name_ty(v: &SimCodeFunction::Variable::Variable) -> Result<(String, WTy)> {
     let SimCodeFunction::Variable::Variable::VARIABLE { name, ty, .. } = v else {
-        bail!("CodegenWasmer: function-pointer variables not supported");
+        bail!("CodegenWasmJit: function-pointer variables not supported");
     };
     Ok((cref_ident(name)?, sig_ty(ty)?.wty()))
 }
@@ -373,12 +373,12 @@ fn cref_ident(cr: &DAE::ComponentRef) -> Result<String> {
     match cr {
         DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } => {
             if !subscriptLst.is_empty() {
-                bail!("CodegenWasmer: subscripted component reference (arrays not supported)");
+                bail!("CodegenWasmJit: subscripted component reference (arrays not supported)");
             }
             Ok(ident.to_string())
         }
-        DAE::ComponentRef::CREF_QUAL { .. } => bail!("CodegenWasmer: qualified component reference (records not supported)"),
-        other => bail!("CodegenWasmer: unsupported component reference {other:?}"),
+        DAE::ComponentRef::CREF_QUAL { .. } => bail!("CodegenWasmJit: qualified component reference (records not supported)"),
+        other => bail!("CodegenWasmJit: unsupported component reference {other:?}"),
     }
 }
 
@@ -395,13 +395,13 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
         S::STMT_ASSIGN { exp1, exp, .. } => {
             // The lhs must be a scalar local.
             let DAE::Exp::CREF { componentRef, .. } = &**exp1 else {
-                bail!("CodegenWasmer: assignment to non-cref lhs not supported");
+                bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
             };
             let ident = cref_ident(componentRef)?;
             let (idx, dst_wty) = *ctx
                 .locals
                 .get(&ident)
-                .ok_or_else(|| anyhow::anyhow!("CodegenWasmer: assignment to unknown variable `{ident}`"))?;
+                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{ident}`"))?;
             let src_wty = compile_exp(ctx, exp)?;
             coerce(ctx, src_wty, dst_wty);
             ctx.emit(we::Instruction::LocalSet(idx));
@@ -456,7 +456,7 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
             Ok(())
         }
         S::STMT_FOR { iter, range, statementLst, type_, .. } => compile_for(ctx, iter, range, statementLst, type_),
-        other => bail!("CodegenWasmer: statement not yet supported: {other:?}"),
+        other => bail!("CodegenWasmJit: statement not yet supported: {other:?}"),
     }
 }
 
@@ -490,7 +490,7 @@ fn compile_for(
     _ty: &DAE::Type,
 ) -> Result<()> {
     let DAE::Exp::RANGE { start, step, stop, .. } = range else {
-        bail!("CodegenWasmer: for-loop over non-range expression not supported");
+        bail!("CodegenWasmJit: for-loop over non-range expression not supported");
     };
     // Allocate the iterator local and stop/step locals.
     let it = ctx.alloc_temp(WTy::I32);
@@ -562,7 +562,7 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             let (idx, wty) = *ctx
                 .locals
                 .get(&ident)
-                .ok_or_else(|| anyhow::anyhow!("CodegenWasmer: reference to unknown variable `{ident}`"))?;
+                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{ident}`"))?;
             ctx.emit(we::Instruction::LocalGet(idx));
             Ok(wty)
         }
@@ -576,7 +576,7 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         E::LUNARY { operator, exp } => {
             // `not` — the only logical unary.
             let DAE::Operator::NOT { .. } = operator else {
-                bail!("CodegenWasmer: unsupported logical unary operator {operator:?}");
+                bail!("CodegenWasmJit: unsupported logical unary operator {operator:?}");
             };
             let w = compile_exp(ctx, exp)?;
             coerce(ctx, w, WTy::I32);
@@ -592,7 +592,7 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             match operator {
                 DAE::Operator::AND { .. } => ctx.emit(we::Instruction::I32And),
                 DAE::Operator::OR { .. } => ctx.emit(we::Instruction::I32Or),
-                other => bail!("CodegenWasmer: unsupported logical binary operator {other:?}"),
+                other => bail!("CodegenWasmJit: unsupported logical binary operator {other:?}"),
             }
             Ok(WTy::I32)
         }
@@ -616,11 +616,11 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             let results = compile_call(ctx, path, expLst, attr)?;
             match results.len() {
                 1 => Ok(results[0]),
-                0 => bail!("CodegenWasmer: call to {} used in expression position returns no value", mangle(path)?),
-                _ => bail!("CodegenWasmer: call to {} returns multiple values; not usable in expression position", mangle(path)?),
+                0 => bail!("CodegenWasmJit: call to {} used in expression position returns no value", mangle(path)?),
+                _ => bail!("CodegenWasmJit: call to {} returns multiple values; not usable in expression position", mangle(path)?),
             }
         }
-        other => bail!("CodegenWasmer: expression not yet supported: {other:?}"),
+        other => bail!("CodegenWasmJit: expression not yet supported: {other:?}"),
     }
 }
 
@@ -648,14 +648,14 @@ fn operator_wty(op: &DAE::Operator) -> Result<WTy> {
     use DAE::Operator as O;
     let ty = match op {
         O::ADD { ty } | O::SUB { ty } | O::MUL { ty } | O::DIV { ty } | O::POW { ty } | O::UMINUS { ty } => ty,
-        other => bail!("CodegenWasmer: cannot determine type of operator {other:?}"),
+        other => bail!("CodegenWasmJit: cannot determine type of operator {other:?}"),
     };
     Ok(sig_ty(ty)?.wty())
 }
 
 fn compile_unary(ctx: &mut FnCtx, op: &DAE::Operator, exp: &DAE::Exp) -> Result<WTy> {
     let DAE::Operator::UMINUS { ty } = op else {
-        bail!("CodegenWasmer: unsupported unary operator {op:?}");
+        bail!("CodegenWasmJit: unsupported unary operator {op:?}");
     };
     let wty = sig_ty(ty)?.wty();
     let w = compile_exp(ctx, exp)?;
@@ -704,7 +704,7 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
         (O::MUL { .. }, WTy::I32) => ctx.emit(we::Instruction::I32Mul),
         (O::DIV { .. }, WTy::F64) => ctx.emit(we::Instruction::F64Div),
         (O::DIV { .. }, WTy::I32) => ctx.emit(we::Instruction::I32DivS),
-        (other, _) => bail!("CodegenWasmer: unsupported binary operator {other:?}"),
+        (other, _) => bail!("CodegenWasmJit: unsupported binary operator {other:?}"),
     }
     Ok(wty)
 }
@@ -729,7 +729,7 @@ fn compile_relation(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE
         (O::EQUAL { .. }, WTy::I32) => we::Instruction::I32Eq,
         (O::NEQUAL { .. }, WTy::F64) => we::Instruction::F64Ne,
         (O::NEQUAL { .. }, WTy::I32) => we::Instruction::I32Ne,
-        (other, _) => bail!("CodegenWasmer: unsupported relational operator {other:?}"),
+        (other, _) => bail!("CodegenWasmJit: unsupported relational operator {other:?}"),
     };
     ctx.emit(instr);
     Ok(WTy::I32)
@@ -739,7 +739,7 @@ fn operand_type_of_relation(op: &DAE::Operator) -> Result<WTy> {
     use DAE::Operator as O;
     let ty = match op {
         O::LESS { ty } | O::LESSEQ { ty } | O::GREATER { ty } | O::GREATEREQ { ty } | O::EQUAL { ty } | O::NEQUAL { ty } => ty,
-        other => bail!("CodegenWasmer: not a relational operator: {other:?}"),
+        other => bail!("CodegenWasmJit: not a relational operator: {other:?}"),
     };
     Ok(sig_ty(ty)?.wty())
 }
@@ -761,7 +761,7 @@ fn compile_call(
         let index = info.index;
         let argv: Vec<&Arc<DAE::Exp>> = (&**args).into_iter().collect();
         if argv.len() != params.len() {
-            bail!("CodegenWasmer: call to {mangled} expects {} args, got {}", params.len(), argv.len());
+            bail!("CodegenWasmJit: call to {mangled} expects {} args, got {}", params.len(), argv.len());
         }
         for (a, p) in argv.iter().zip(params.iter()) {
             let w = compile_exp(ctx, a)?;
@@ -779,7 +779,7 @@ fn compile_call(
 /// result values left on the stack (to be dropped).
 fn compile_call_drop(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<usize> {
     let DAE::Exp::CALL { path, expLst, attr } = exp else {
-        bail!("CodegenWasmer: no-return statement is not a call: {exp:?}");
+        bail!("CodegenWasmJit: no-return statement is not a call: {exp:?}");
     };
     Ok(compile_call(ctx, path, expLst, attr)?.len())
 }
@@ -799,7 +799,7 @@ fn compile_math_builtin(
     if let Some(bi) = builtin_index(name) {
         let (_, params, result) = BUILTINS[bi as usize];
         if argv.len() != params.len() {
-            bail!("CodegenWasmer: builtin {name} expects {} args", params.len());
+            bail!("CodegenWasmJit: builtin {name} expects {} args", params.len());
         }
         for (a, p) in argv.iter().zip(params.iter()) {
             let w = compile_exp(ctx, a)?;
@@ -899,7 +899,7 @@ fn compile_math_builtin(
             ctx.emit(we::Instruction::I32RemS);
             Ok(WTy::I32)
         }
-        other => bail!("CodegenWasmer: builtin function `{other}` not yet supported"),
+        other => bail!("CodegenWasmJit: builtin function `{other}` not yet supported"),
     }
 }
 
@@ -913,7 +913,7 @@ fn unary_f64(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>], instr: we::Instruction<'s
 
 fn need_args(argv: &[&Arc<DAE::Exp>], n: usize, name: &str) -> Result<()> {
     if argv.len() != n {
-        bail!("CodegenWasmer: builtin {name} expects {n} args, got {}", argv.len());
+        bail!("CodegenWasmJit: builtin {name} expects {n} args, got {}", argv.len());
     }
     Ok(())
 }
@@ -932,7 +932,7 @@ fn coerce(ctx: &mut FnCtx, from: WTy, to: WTy) {
 // MetaModelica entry points (called from CevalScript)
 // -------------------------------------------------------------------------
 
-/// `CodegenWasmerFunctions.translateFunctions`: lower `fnCode` to a wasm module
+/// `CodegenWasmJitFunctions.translateFunctions`: lower `fnCode` to a wasm module
 /// written to `<name>.wasm` (+ `<name>.wasm.sig`). Infallible at the call site
 /// (the MetaModelica declaration cannot fail); on a lowering error nothing is
 /// written and the subsequent `loadAndExecute` returns `Values.META_FAIL`, so
@@ -940,7 +940,7 @@ fn coerce(ctx: &mut FnCtx, from: WTy, to: WTy) {
 /// error is logged to stderr so it is not silently lost.
 pub fn translateFunctions(fnCode: SimCodeFunction::FunctionCode) {
     if let Err(e) = translate_functions_inner(&fnCode) {
-        eprintln!("CodegenWasmer: cannot JIT function `{}`: {e:#}", fnCode.name);
+        eprintln!("CodegenWasmJit: cannot JIT function `{}`: {e:#}", fnCode.name);
         // Remove any stale artefacts from a previous target so loadAndExecute
         // does not pick up an unrelated module.
         let _ = std::fs::remove_file(format!("{}.wasm", fnCode.name));
@@ -959,7 +959,7 @@ fn translate_functions_inner(fn_code: &SimCodeFunction::FunctionCode) -> Result<
     Ok(())
 }
 
-/// `CodegenWasmerFunctions.loadAndExecute`: instantiate `<fileName>.wasm` and
+/// `CodegenWasmJitFunctions.loadAndExecute`: instantiate `<fileName>.wasm` and
 /// call the exported `main`, marshalling `args` in and the result out. Returns
 /// `Values.META_FAIL` on any failure (missing/invalid module, a wasm trap from
 /// a failed assertion or division by zero, …), mirroring `DynLoad.executeFunction`.
@@ -967,7 +967,7 @@ pub fn loadAndExecute(fileName: ArcStr, name: ArcStr, args: Arc<List<Arc<Values:
     match runtime::load_and_execute(&fileName, &name, &args) {
         Ok(v) => v,
         Err(e) => {
-            eprintln!("CodegenWasmer: execution of `{name}` failed: {e:#}");
+            eprintln!("CodegenWasmJit: execution of `{name}` failed: {e:#}");
             Arc::new(Values::Value::META_FAIL)
         }
     }

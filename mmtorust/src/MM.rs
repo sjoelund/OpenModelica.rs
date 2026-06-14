@@ -234,7 +234,7 @@ fn interface_to_crate(interface: &str) -> Option<String> {
         "codegen_cpp_ext" => Some("openmodelica_codegen_cpp_ext".to_owned()),
         "codegen_cpp_omsi_ext" => Some("openmodelica_codegen_cpp_omsi_ext".to_owned()),
         "backend_main" => Some("openmodelica_backend_main".to_owned()),
-        "codegen_wasmer" => Some("openmodelica_codegen_wasmer".to_owned()),
+        "codegen_wasm_jit" => Some("openmodelica_codegen_wasm_jit".to_owned()),
         _ => None,
     }
 }

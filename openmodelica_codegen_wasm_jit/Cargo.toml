@@ -1,5 +1,5 @@
 [package]
-name = "openmodelica_codegen_wasmer"
+name = "openmodelica_codegen_wasm_jit"
 version = "0.1.0"
 edition = "2024"
 

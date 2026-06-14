@@ -863,7 +863,7 @@ dependencies = [
  "openmodelica_codegen_cpp_omsi_ext",
  "openmodelica_codegen_fmu_c",
  "openmodelica_codegen_fmu_omsi",
- "openmodelica_codegen_wasmer",
+ "openmodelica_codegen_wasm_jit",
  "openmodelica_codegen_xml",
  "openmodelica_dump_extra",
  "openmodelica_error",
@@ -1227,7 +1227,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "openmodelica_codegen_wasmer"
+name = "openmodelica_codegen_wasm_jit"
 version = "0.1.0"
 dependencies = [
  "anyhow",

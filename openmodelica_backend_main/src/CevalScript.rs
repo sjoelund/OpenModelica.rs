@@ -56,7 +56,7 @@ use openmodelica_backend_tools::GenerateAPIFunctionsTpl;
 use openmodelica_backend_tools::Unparsing;
 use openmodelica_codegen::CodegenMidToC;
 use openmodelica_codegen_cfunctions::CodegenCFunctions;
-use openmodelica_codegen_wasmer::CodegenWasmerFunctions;
+use openmodelica_codegen_wasm_jit::CodegenWasmJitFunctions;
 use openmodelica_error::ErrorExt;
 use openmodelica_error::ErrorTypes;
 use openmodelica_frontend::Builtin;
@@ -2956,7 +2956,7 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                     print_debug = Flags::isSet(Flags::DYN_LOAD.clone())?;
                     execStatReset()?;
                     if Config::simCodeTarget()? == literal!("wasm-jit") {
-                        newval = CodegenWasmerFunctions::loadAndExecute((fileName.clone()).clone(), (funcstr.clone()).clone(), vallst.clone());
+                        newval = CodegenWasmJitFunctions::loadAndExecute((fileName.clone()).clone(), (funcstr.clone()).clone(), vallst.clone());
                     } else {
                         libHandle = System::loadLibrary(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone(), true, print_debug.clone())?;
                         funcHandle = System::lookupFunction(libHandle.clone(), (stringAppend((literal!("in_")).clone(), (funcstr.clone()).clone())).clone())?;
@@ -3597,7 +3597,7 @@ pub(crate) fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, 
             makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs, libs, libPaths, true, false)?;
             fnCode = SimCodeFunction::FunctionCode { name: (name.clone()).clone(), mainFunction: Some(mainFunction.clone()), functions: fns.clone(), literals: literals, externalFunctionIncludes: includes.clone(), makefileParams: makefileParams, extraRecordDecls: extraRecordDecls };
             if Config::simCodeTarget()? == literal!("wasm-jit") {
-                CodegenWasmerFunctions::translateFunctions(fnCode);
+                CodegenWasmJitFunctions::translateFunctions(fnCode);
             } else if Config::simCodeTarget()? == literal!("MidC") {
                 Tpl::tplString((std::sync::Arc::new(CodegenCFunctions::translateFunctionHeaderFiles) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCodeFunction::FunctionCode) -> Result<Tpl::Text> + 'static>), fnCode)?;
                 midfuncs = DAEToMid::DAEFunctionsToMid(metamodelica::cons(mainFunction, fns))?;
