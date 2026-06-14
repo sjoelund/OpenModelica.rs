@@ -29,11 +29,14 @@
 //
 // When the `wasm-jit` target is selected it is authoritative: a construct this
 // codegen cannot lower is a hard, visible failure (a panic naming the reason),
-// NOT a silent degradation to the C target — see `translateFunctions`. Known
-// gaps that therefore panic today: `String(Real, significantDigits, …)` and any
-// non-zero `minimumLength` padding/justification (need printf-style formatting
-// to stay byte-identical to the C target), and structured values (arrays,
-// records, lists).
+// NOT a silent degradation to the C target — see `translateFunctions`. Scalars,
+// arrays (element-wise/structural ops, slicing, reductions) and records (nested,
+// array-valued fields, value-semantic construction) are supported; default
+// variable bindings are initialized like the C target's `varInit`. Known gaps
+// that still panic today: `String(Real, significantDigits, …)` and any non-zero
+// `minimumLength` padding/justification (need printf-style formatting to stay
+// byte-identical to the C target), MetaModelica lists, external functions, and
+// the remaining items in `HANDOFF.md`.
 
 // The two entry points keep their MetaModelica camelCase names so the generated
 // `CevalScript` caller resolves them; the rest of the module is idiomatic Rust.
@@ -859,27 +862,10 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     let DAE::Exp::CREF { componentRef, .. } = lhs else {
         bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
     };
-    // `r.field := rhs` on a record local.
-    if let DAE::ComponentRef::CREF_QUAL { ident, subscriptLst, componentRef: inner, .. } = &**componentRef {
-        if !subscriptLst.is_empty() {
-            bail!("CodegenWasmJit: assignment to subscripted record base `{ident}[..]` not supported");
-        }
-        let DAE::ComponentRef::CREF_IDENT { ident: field, subscriptLst: fsubs, .. } = &**inner else {
-            bail!("CodegenWasmJit: assignment to nested record field `{componentRef:?}` not supported");
-        };
-        if !fsubs.is_empty() {
-            bail!("CodegenWasmJit: assignment to subscripted record field `{field}[..]` not supported");
-        }
-        let base = ident.to_string();
-        let (idx, sty) = ctx
-            .locals
-            .get(&base)
-            .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{base}`"))?
-            .clone();
-        let SigTy::Record { fields, .. } = sty else {
-            bail!("CodegenWasmJit: field assignment to non-record local `{base}`");
-        };
-        return compile_record_field_assign(ctx, idx, &fields, field, rhs);
+    // A qualified-cref assignment `base[..].f1[..].….fn[..] := rhs`: navigate to
+    // the record holding the final field, then store into it.
+    if let DAE::ComponentRef::CREF_QUAL { .. } = &**componentRef {
+        return compile_cref_assign_qual(ctx, componentRef, rhs);
     }
     let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
         bail!("CodegenWasmJit: assignment to qualified/record lhs not supported");
@@ -1062,9 +1048,27 @@ fn emit_record_construction(ctx: &mut FnCtx, fields: &[(ArcStr, SigTy)], field_e
         ctx.emit(we::Instruction::I32Store(mem_arg(base + 4, 2)));
     }
     for (i, (_, fty)) in fields.iter().enumerate() {
-        ctx.emit(we::Instruction::LocalGet(obj));
         let w = compile_exp(ctx, field_exps[i])?;
         coerce(ctx, w, fty.wty());
+        // Value semantics: a record/array field built from a non-fresh source
+        // (a variable, a field read) aliases that source's mutable object — copy
+        // it so the record owns a private value. Fresh constructors/calls/ranges
+        // are already privately owned and move in. (Strings are immutable.)
+        if let Some((copy_fn, rel_fn)) = value_copy_fns(fty) {
+            if !value_rhs_is_fresh(field_exps[i]) {
+                let t = ctx.alloc_temp(WTy::I32);
+                ctx.emit(we::Instruction::LocalSet(t));
+                ctx.emit(we::Instruction::LocalGet(t));
+                ctx.emit(we::Instruction::Call(rt_index(copy_fn)));
+                ctx.emit(we::Instruction::LocalGet(t));
+                ctx.emit(we::Instruction::Call(rt_index(rel_fn)));
+            }
+        }
+        // Store the owned (private) value into the field: address then value.
+        let vt = ctx.alloc_temp(fty.wty());
+        ctx.emit(we::Instruction::LocalSet(vt));
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::LocalGet(vt));
         field_store(ctx, fty.wty(), layout.data_off + layout.field_off[i]);
     }
     ctx.emit(we::Instruction::LocalGet(obj));
@@ -1172,19 +1176,207 @@ fn compile_record_field_assign(ctx: &mut FnCtx, rec_idx: u32, fields: &[(ArcStr,
     Ok(())
 }
 
-/// Read field `name` of record local `rec_idx` (a `CREF_QUAL` `r.field`). The
-/// local owns the record (borrowed here), so only a heap field is retained.
-fn compile_record_local_field(ctx: &mut FnCtx, rec_idx: u32, fields: &[(ArcStr, SigTy)], name: &str) -> Result<WTy> {
+/// Push an owned record handle for the head of a qualified cref onto a fresh
+/// temp: either a record local (retained, so the local keeps its reference) or
+/// an array-of-records local subscripted down to a single record element.
+/// Returns the temp holding the owned handle and the record's fields; the caller
+/// is responsible for releasing the temp.
+fn push_owned_record_base(
+    ctx: &mut FnCtx,
+    ident: &str,
+    subs: &Arc<List<Arc<DAE::Subscript>>>,
+) -> Result<(u32, Arc<Vec<(ArcStr, SigTy)>>)> {
+    let (idx, sty) = ctx
+        .locals
+        .get(ident)
+        .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{ident}`"))?
+        .clone();
+    if subs.is_empty() {
+        let SigTy::Record { fields, .. } = sty else {
+            bail!("CodegenWasmJit: field access on non-record local `{ident}`");
+        };
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+        let t = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(t));
+        Ok((t, fields))
+    } else {
+        let SigTy::Array { elem, rank } = sty else {
+            bail!("CodegenWasmJit: subscripting non-array local `{ident}`");
+        };
+        let SigTy::Record { fields, .. } = &*elem else {
+            bail!("CodegenWasmJit: indexed base `{ident}[..]` is not an array of records");
+        };
+        let fields = fields.clone();
+        if !is_scalar_index(subs, rank) {
+            bail!("CodegenWasmJit: slicing an array of records before field access is not supported");
+        }
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+        let idx_exps = index_subscripts(subs, rank)?;
+        index_loaded(ctx, &elem, &idx_exps)?; // owned record element on the stack
+        let t = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(t));
+        Ok((t, fields))
+    }
+}
+
+/// Read field `name` from the owned record handle in temp `rec`, consuming it
+/// (the record is released). Leaves the field value in a fresh temp and returns
+/// `(value_temp, field_type)`; a heap field value is retained so it is owned.
+fn take_field(
+    ctx: &mut FnCtx,
+    rec: u32,
+    fields: &[(ArcStr, SigTy)],
+    name: &str,
+) -> Result<(u32, SigTy)> {
     let (off, fty) = record_field(fields, name)?;
-    ctx.emit(we::Instruction::LocalGet(rec_idx));
+    let vt = ctx.alloc_temp(fty.wty());
+    ctx.emit(we::Instruction::LocalGet(rec));
     field_load(ctx, fty.wty(), off);
+    ctx.emit(we::Instruction::LocalSet(vt));
     if fty.is_heap() {
-        let fv = ctx.alloc_temp(WTy::I32);
-        ctx.emit(we::Instruction::LocalTee(fv));
-        ctx.emit(we::Instruction::LocalGet(fv));
+        // Own the field value before releasing the record that holds it.
+        ctx.emit(we::Instruction::LocalGet(vt));
         ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
     }
-    Ok(fty.wty())
+    ctx.emit(we::Instruction::LocalGet(rec));
+    ctx.emit(we::Instruction::Call(rt_index("rt_record_release")));
+    Ok((vt, fty))
+}
+
+/// Descend one qualified-cref step into field `field[fsubs]` of the record in
+/// temp `rec`, producing an owned record handle for the field in a fresh temp.
+/// Used by the read/assign navigators for an intermediate `.field.` segment that
+/// must resolve to a (sub-)record. Returns `(record_temp, that record's fields)`.
+fn step_into_record(
+    ctx: &mut FnCtx,
+    rec: u32,
+    fields: &[(ArcStr, SigTy)],
+    field: &str,
+    fsubs: &Arc<List<Arc<DAE::Subscript>>>,
+) -> Result<(u32, Arc<Vec<(ArcStr, SigTy)>>)> {
+    let (vt, fty) = take_field(ctx, rec, fields, field)?;
+    if fsubs.is_empty() {
+        let SigTy::Record { fields: f2, .. } = fty else {
+            bail!("CodegenWasmJit: field access on non-record field `{field}`");
+        };
+        Ok((vt, f2))
+    } else {
+        let SigTy::Array { elem, rank } = fty else {
+            bail!("CodegenWasmJit: subscripting non-array field `{field}`");
+        };
+        let SigTy::Record { fields: f2, .. } = &*elem else {
+            bail!("CodegenWasmJit: field access on non-record array element `{field}`");
+        };
+        let f2 = f2.clone();
+        if !is_scalar_index(fsubs, rank) {
+            bail!("CodegenWasmJit: slicing an array of records before field access is not supported");
+        }
+        ctx.emit(we::Instruction::LocalGet(vt)); // owned array handle
+        let idx_exps = index_subscripts(fsubs, rank)?;
+        index_loaded(ctx, &elem, &idx_exps)?; // owned record element
+        let t = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(t));
+        Ok((t, f2))
+    }
+}
+
+/// Read a qualified cref `base[..].f1[..].….fn[..]` (`E::CREF` with a
+/// `CREF_QUAL` head), descending through nested records (and arrays of records)
+/// to the final field, which may itself be subscripted (a scalar index or a
+/// slice). Leaves the owned field value on the stack.
+fn compile_cref_read_qual(ctx: &mut FnCtx, cref: &DAE::ComponentRef) -> Result<WTy> {
+    let DAE::ComponentRef::CREF_QUAL { ident, subscriptLst, componentRef: rest, .. } = cref else {
+        bail!("CodegenWasmJit: compile_cref_read_qual on non-qualified cref");
+    };
+    let (mut rec, mut fields) = push_owned_record_base(ctx, ident, subscriptLst)?;
+    let mut cur: &DAE::ComponentRef = rest;
+    loop {
+        match cur {
+            DAE::ComponentRef::CREF_IDENT { ident: field, subscriptLst: fsubs, .. } => {
+                let (vt, fty) = take_field(ctx, rec, &fields, field)?;
+                if fsubs.is_empty() {
+                    ctx.emit(we::Instruction::LocalGet(vt));
+                    return Ok(fty.wty());
+                }
+                let SigTy::Array { elem, rank } = fty else {
+                    bail!("CodegenWasmJit: subscripting non-array field `{field}`");
+                };
+                ctx.emit(we::Instruction::LocalGet(vt)); // owned array handle
+                return if is_scalar_index(fsubs, rank) {
+                    let idx_exps = index_subscripts(fsubs, rank)?;
+                    index_loaded(ctx, &elem, &idx_exps)
+                } else {
+                    slice_loaded(ctx, fsubs)
+                };
+            }
+            DAE::ComponentRef::CREF_QUAL { ident: field, subscriptLst: fsubs, componentRef: inner, .. } => {
+                let (t, f2) = step_into_record(ctx, rec, &fields, field, fsubs)?;
+                rec = t;
+                fields = f2;
+                cur = inner;
+            }
+            other => bail!("CodegenWasmJit: unsupported component reference {other:?}"),
+        }
+    }
+}
+
+/// Navigate a qualified cref to the record that directly contains its final
+/// field, returning `(owned record temp, that record's fields, final field
+/// name, final field subscripts)`. The caller releases the returned temp.
+fn navigate_qual<'c>(
+    ctx: &mut FnCtx,
+    cref: &'c DAE::ComponentRef,
+) -> Result<(u32, Arc<Vec<(ArcStr, SigTy)>>, &'c str, &'c Arc<List<Arc<DAE::Subscript>>>)> {
+    let DAE::ComponentRef::CREF_QUAL { ident, subscriptLst, componentRef: rest, .. } = cref else {
+        bail!("CodegenWasmJit: navigate_qual on non-qualified cref");
+    };
+    let (mut rec, mut fields) = push_owned_record_base(ctx, ident, subscriptLst)?;
+    let mut cur: &DAE::ComponentRef = rest;
+    loop {
+        match cur {
+            DAE::ComponentRef::CREF_IDENT { ident: field, subscriptLst: fsubs, .. } => {
+                return Ok((rec, fields, field, fsubs));
+            }
+            DAE::ComponentRef::CREF_QUAL { ident: field, subscriptLst: fsubs, componentRef: inner, .. } => {
+                let (t, f2) = step_into_record(ctx, rec, &fields, field, fsubs)?;
+                rec = t;
+                fields = f2;
+                cur = inner;
+            }
+            other => bail!("CodegenWasmJit: unsupported component reference {other:?}"),
+        }
+    }
+}
+
+/// Assign `rhs` into a qualified cref `base[..].f1[..].….fn[..]`. Navigates to
+/// the record holding the final field and stores in place (a scalar/heap field,
+/// or an element of an array-valued field).
+fn compile_cref_assign_qual(ctx: &mut FnCtx, cref: &DAE::ComponentRef, rhs: &DAE::Exp) -> Result<()> {
+    let (rec, fields, leaf, lsubs) = navigate_qual(ctx, cref)?;
+    if lsubs.is_empty() {
+        compile_record_field_assign(ctx, rec, &fields, leaf, rhs)?;
+    } else {
+        // `…field[i] := rhs`: element assignment into the field's (privately
+        // owned) array, in place.
+        let (off, fty) = record_field(&fields, leaf)?;
+        let SigTy::Array { elem, rank } = fty else {
+            bail!("CodegenWasmJit: subscripted field `{leaf}` is not an array");
+        };
+        let arr_t = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalGet(rec));
+        field_load(ctx, WTy::I32, off);
+        ctx.emit(we::Instruction::LocalSet(arr_t));
+        let idx_exps = index_subscripts(lsubs, rank)?;
+        compile_elem_assign(ctx, arr_t, &elem, &idx_exps, rhs)?;
+    }
+    // Release the navigated record handle (owned by us).
+    ctx.emit(we::Instruction::LocalGet(rec));
+    ctx.emit(we::Instruction::Call(rt_index("rt_record_release")));
+    Ok(())
 }
 
 /// Element assignment `a[i,...] := rhs`, in place. `arr_idx` is the array local
@@ -1676,28 +1868,10 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             Ok(WTy::I32)
         }
         E::CREF { componentRef, .. } => {
-            // `r.field` on a record local: read the field (a heap field is
-            // retained; the record local keeps its own reference).
-            if let DAE::ComponentRef::CREF_QUAL { ident, subscriptLst, componentRef: inner, .. } = &**componentRef {
-                if !subscriptLst.is_empty() {
-                    bail!("CodegenWasmJit: subscripted record base `{ident}[..]` not supported");
-                }
-                let DAE::ComponentRef::CREF_IDENT { ident: field, subscriptLst: fsubs, .. } = &**inner else {
-                    bail!("CodegenWasmJit: nested record field access `{componentRef:?}` not supported");
-                };
-                if !fsubs.is_empty() {
-                    bail!("CodegenWasmJit: subscripted record field `{field}[..]` not supported");
-                }
-                let base = ident.to_string();
-                let (idx, sty) = ctx
-                    .locals
-                    .get(&base)
-                    .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{base}`"))?
-                    .clone();
-                let SigTy::Record { fields, .. } = sty else {
-                    bail!("CodegenWasmJit: field access on non-record local `{base}`");
-                };
-                return compile_record_local_field(ctx, idx, &fields, field);
+            // A qualified cref `base[..].f1[..].….fn[..]`: descend through nested
+            // records (and arrays of records) to the final field.
+            if let DAE::ComponentRef::CREF_QUAL { .. } = &**componentRef {
+                return compile_cref_read_qual(ctx, componentRef);
             }
             // A scalar/whole-value reference, or a subscripted array element.
             let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
