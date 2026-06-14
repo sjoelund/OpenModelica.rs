@@ -761,6 +761,25 @@ pub extern "C" fn rt_array_outer_f64(a: u32, b: u32) -> u32 {
     res
 }
 
+/// Convert an Integer-element array to a fresh Real-element array (element-wise
+/// `i32 as f64`), preserving the shape. Implements the implicit `Integer[] ->
+/// Real[]` cast the frontend inserts (assignment, mixed arithmetic, division,
+/// which always yields Real, …).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_int_to_real(a: u32) -> u32 {
+    let nd = rt_array_ndims(a);
+    let total = rt_array_total(a);
+    let res = rt_array_new(EK_REAL, nd, total);
+    for axis in 0..nd {
+        rt_array_set_dim(res, axis, rt_array_dim(a, axis as i32 + 1));
+    }
+    let (da, dr) = (arr_data(a), arr_data(res));
+    for i in 0..total {
+        unsafe { store_f64(dr + i * 8, load_i32(da + i * 4) as f64) };
+    }
+    res
+}
+
 /// `promote(a, n)`: add trailing size-1 dimensions so the array has `n`
 /// dimensions (n >= ndims(a)); the element data is unchanged (row-major), only
 /// the shape grows. Used by the dynamic-size expansions of `outerProduct` etc.

@@ -353,6 +353,8 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_skew_f64", &[WTy::I32], &[WTy::I32]),
     // promote(a, n): add trailing size-1 dimensions to reach rank n.
     ("rt_array_promote", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    // Integer[] -> Real[] element-wise cast (the implicit numeric array cast).
+    ("rt_array_int_to_real", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1482,8 +1484,29 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             }
         }
         E::CAST { ty, exp } => {
+            let target = sig_ty(ty)?;
+            // Array casts: the only implicit numeric array cast is Integer[] ->
+            // Real[] (e.g. `Real r := intArray`, mixed arithmetic, and division
+            // which always yields Real). It must rebuild the array with f64
+            // elements — a scalar `coerce` would leave the i32 data misread as
+            // f64. Any other array cast is representationally a no-op (the handle
+            // already has the right element layout).
+            if let SigTy::Array { elem: tgt_elem, .. } = &target {
+                let src_is_int = matches!(exp_sigty(exp), Ok(SigTy::Array { ref elem, .. }) if elem.wty() == WTy::I32);
+                if tgt_elem.wty() == WTy::F64 && src_is_int {
+                    compile_exp(ctx, exp)?; // owned Integer array
+                    let at = ctx.alloc_temp(WTy::I32);
+                    ctx.emit(we::Instruction::LocalSet(at));
+                    ctx.emit(we::Instruction::LocalGet(at));
+                    ctx.emit(we::Instruction::Call(rt_index("rt_array_int_to_real")));
+                    release_temp_array(ctx, at);
+                } else {
+                    compile_exp(ctx, exp)?;
+                }
+                return Ok(WTy::I32);
+            }
             let from = compile_exp(ctx, exp)?;
-            let to = sig_ty(ty)?.wty();
+            let to = target.wty();
             coerce(ctx, from, to);
             Ok(to)
         }
