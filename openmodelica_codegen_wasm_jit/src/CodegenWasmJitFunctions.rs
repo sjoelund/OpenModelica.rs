@@ -1440,121 +1440,57 @@ fn emit_range_iter(
     Ok((it, step_l, stop_l))
 }
 
-/// Lower an iterator reduction over a single Integer range. The folding forms
-/// `sum/product/min/max(expr for id in range)` (`foldExp` present) build
-/// `acc = default; for id in range { acc = foldExp(acc, expr) }`, where
-/// `foldExp` reads the accumulator (`resultName`) and per-iteration value
-/// (`foldName`) as locals. The `array(...)` comprehension (`foldExp` absent —
-/// `{expr for id in range}` over a non-constant range) builds a fresh vector of
-/// the per-iteration values. Multi-iterator / guarded reductions, and non-scalar
-/// (heap) elements, bail loudly.
-fn compile_reduction(
+/// Evaluate an Integer range into a fresh local holding its element count,
+/// `max(0, (stop - start)/step + 1)`. Used to size an array comprehension.
+fn emit_range_count(
     ctx: &mut FnCtx,
-    info: &DAE::ReductionInfo,
-    expr: &DAE::Exp,
-    iterators: &DAE::ReductionIterators,
-) -> Result<WTy> {
-    let iters: Vec<&Arc<DAE::ReductionIterator>> = (&**iterators).into_iter().collect();
-    if iters.len() != 1 {
-        bail!("CodegenWasmJit: multi-iterator reductions not supported");
+    start: &DAE::Exp,
+    step: &Option<Arc<DAE::Exp>>,
+    stop: &DAE::Exp,
+) -> Result<u32> {
+    let cnt = ctx.alloc_temp(WTy::I32);
+    let pw = compile_exp(ctx, stop)?;
+    coerce(ctx, pw, WTy::I32);
+    let sw = compile_exp(ctx, start)?;
+    coerce(ctx, sw, WTy::I32);
+    ctx.emit(we::Instruction::I32Sub);
+    match step {
+        Some(e) => {
+            let w = compile_exp(ctx, e)?;
+            coerce(ctx, w, WTy::I32);
+        }
+        None => ctx.emit(we::Instruction::I32Const(1)),
     }
-    let iter = iters[0];
-    if iter.guardExp.is_some() {
-        bail!("CodegenWasmJit: reduction with a guard condition not supported");
-    }
+    ctx.emit(we::Instruction::I32DivS);
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalSet(cnt));
+    // clamp a negative count (empty range) to 0.
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalGet(cnt));
+    ctx.emit(we::Instruction::LocalGet(cnt));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::I32LtS);
+    ctx.emit(we::Instruction::Select);
+    ctx.emit(we::Instruction::LocalSet(cnt));
+    Ok(cnt)
+}
+
+/// Emit nested `for` loops over the given Integer-range iterators (the first is
+/// the outermost), running `body` at the innermost point. Each iterator's
+/// optional `guardExp` wraps the inner work in an `if`, so a filtered-out
+/// combination is skipped. Relative branch depths make the nesting compose.
+fn emit_red_nest(
+    ctx: &mut FnCtx,
+    iters: &[&Arc<DAE::ReductionIterator>],
+    body: &mut dyn FnMut(&mut FnCtx) -> Result<()>,
+) -> Result<()> {
+    let Some((iter, rest)) = iters.split_first() else {
+        return body(ctx);
+    };
     let DAE::Exp::RANGE { start, step, stop, .. } = &*iter.exp else {
         bail!("CodegenWasmJit: reduction over a non-range iterator not supported");
     };
-
-    let Some(fold) = &info.foldExp else {
-        // `array(...)` comprehension: build a 1-D vector of the iteration values.
-        // Its element type is the per-iteration expression's type (`info.exprType`
-        // is the whole array type here, unlike the folding forms).
-        let elem_sty = exp_sigty(expr)?;
-        if elem_sty.is_heap() {
-            bail!("CodegenWasmJit: array comprehension with non-scalar elements not supported");
-        }
-        let elem_wty = elem_sty.wty();
-        let (it, step_l, stop_l) = emit_range_iter(ctx, &iter.id, start, step, stop)?;
-        // count = max(0, (stop - start_of_it)/step + 1); `it` still holds start.
-        let count = ctx.alloc_temp(WTy::I32);
-        ctx.emit(we::Instruction::LocalGet(stop_l));
-        ctx.emit(we::Instruction::LocalGet(it));
-        ctx.emit(we::Instruction::I32Sub);
-        ctx.emit(we::Instruction::LocalGet(step_l));
-        ctx.emit(we::Instruction::I32DivS);
-        ctx.emit(we::Instruction::I32Const(1));
-        ctx.emit(we::Instruction::I32Add);
-        ctx.emit(we::Instruction::LocalSet(count));
-        // clamp negative counts (empty range) to 0.
-        ctx.emit(we::Instruction::I32Const(0));
-        ctx.emit(we::Instruction::LocalGet(count));
-        ctx.emit(we::Instruction::LocalGet(count));
-        ctx.emit(we::Instruction::I32Const(0));
-        ctx.emit(we::Instruction::I32LtS);
-        ctx.emit(we::Instruction::Select);
-        ctx.emit(we::Instruction::LocalSet(count));
-        // result = rt_array_new(elem_kind, 1, count); set dim 0 = count.
-        let res = ctx.alloc_temp(WTy::I32);
-        ctx.emit(we::Instruction::I32Const(elem_sty.elem_kind() as i32));
-        ctx.emit(we::Instruction::I32Const(1));
-        ctx.emit(we::Instruction::LocalGet(count));
-        ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
-        ctx.emit(we::Instruction::LocalSet(res));
-        ctx.emit(we::Instruction::LocalGet(res));
-        ctx.emit(we::Instruction::I32Const(0));
-        ctx.emit(we::Instruction::LocalGet(count));
-        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
-        // idx = 0; for it in range { res[idx+1] = expr; idx += 1 }.
-        let idx = ctx.alloc_temp(WTy::I32);
-        ctx.emit(we::Instruction::I32Const(0));
-        ctx.emit(we::Instruction::LocalSet(idx));
-        ctx.emit(we::Instruction::Block(we::BlockType::Empty));
-        ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
-        ctx.emit(we::Instruction::LocalGet(it));
-        ctx.emit(we::Instruction::LocalGet(stop_l));
-        ctx.emit(we::Instruction::I32GtS);
-        ctx.emit(we::Instruction::BrIf(1));
-        ctx.emit(we::Instruction::LocalGet(res));
-        ctx.emit(we::Instruction::LocalGet(idx));
-        ctx.emit(we::Instruction::I32Const(1));
-        ctx.emit(we::Instruction::I32Add);
-        ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
-        let w = compile_exp(ctx, expr)?;
-        coerce(ctx, w, elem_wty);
-        elem_store(ctx, &elem_sty);
-        ctx.emit(we::Instruction::LocalGet(it));
-        ctx.emit(we::Instruction::LocalGet(step_l));
-        ctx.emit(we::Instruction::I32Add);
-        ctx.emit(we::Instruction::LocalSet(it));
-        ctx.emit(we::Instruction::LocalGet(idx));
-        ctx.emit(we::Instruction::I32Const(1));
-        ctx.emit(we::Instruction::I32Add);
-        ctx.emit(we::Instruction::LocalSet(idx));
-        ctx.emit(we::Instruction::Br(0));
-        ctx.emit(we::Instruction::End); // loop
-        ctx.emit(we::Instruction::End); // block
-        ctx.emit(we::Instruction::LocalGet(res));
-        return Ok(WTy::I32);
-    };
-
-    // Folding reduction (sum/product/min/max): acc = default; acc = fold(acc, expr).
-    let Some(default) = &info.defaultValue else {
-        bail!("CodegenWasmJit: reduction without a default value not supported");
-    };
-    let elem_sty = sig_ty(&info.exprType)?;
-    if elem_sty.is_heap() {
-        bail!("CodegenWasmJit: non-scalar reduction result not supported");
-    }
-    let elem_wty = elem_sty.wty();
-    let acc = ctx.alloc_temp(elem_wty);
-    let foldval = ctx.alloc_temp(elem_wty);
-    ctx.locals.insert(info.resultName.to_string(), (acc, elem_sty.clone()));
-    ctx.locals.insert(info.foldName.to_string(), (foldval, elem_sty.clone()));
-
-    emit_value_const(ctx, default, elem_wty)?;
-    ctx.emit(we::Instruction::LocalSet(acc));
-
     let (it, step_l, stop_l) = emit_range_iter(ctx, &iter.id, start, step, stop)?;
     ctx.emit(we::Instruction::Block(we::BlockType::Empty));
     ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
@@ -1562,13 +1498,16 @@ fn compile_reduction(
     ctx.emit(we::Instruction::LocalGet(stop_l));
     ctx.emit(we::Instruction::I32GtS);
     ctx.emit(we::Instruction::BrIf(1));
-    // foldval = expr; acc = foldExp(acc, foldval).
-    let w = compile_exp(ctx, expr)?;
-    coerce(ctx, w, elem_wty);
-    ctx.emit(we::Instruction::LocalSet(foldval));
-    let fw = compile_exp(ctx, fold)?;
-    coerce(ctx, fw, elem_wty);
-    ctx.emit(we::Instruction::LocalSet(acc));
+    match &iter.guardExp {
+        Some(guard) => {
+            let w = compile_exp(ctx, guard)?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::If(we::BlockType::Empty));
+            emit_red_nest(ctx, rest, &mut *body)?;
+            ctx.emit(we::Instruction::End);
+        }
+        None => emit_red_nest(ctx, rest, &mut *body)?,
+    }
     ctx.emit(we::Instruction::LocalGet(it));
     ctx.emit(we::Instruction::LocalGet(step_l));
     ctx.emit(we::Instruction::I32Add);
@@ -1576,9 +1515,128 @@ fn compile_reduction(
     ctx.emit(we::Instruction::Br(0));
     ctx.emit(we::Instruction::End); // loop
     ctx.emit(we::Instruction::End); // block
+    Ok(())
+}
 
-    ctx.emit(we::Instruction::LocalGet(acc));
-    Ok(elem_wty)
+/// Lower an iterator reduction over Integer ranges. The folding forms
+/// `sum/product/min/max(expr for i in A, j in B, ...)` (`foldExp` present) build
+/// `acc = default; for i,j,... { acc = foldExp(acc, expr) }`, where `foldExp`
+/// reads the accumulator (`resultName`) and per-iteration value (`foldName`) as
+/// locals — so the same mechanism covers all four. The `array(...)`
+/// comprehension (`foldExp` absent — `{expr for i in A, j in B}`) builds a fresh
+/// array: its dimensions are the iterator counts in reverse order (the last
+/// iterator is the outermost), filled row-major. Per-iterator `guardExp`s are
+/// honored in the folding forms (a guarded array comprehension — a MetaModelica
+/// list form — and non-scalar/heap elements bail loudly).
+fn compile_reduction(
+    ctx: &mut FnCtx,
+    info: &DAE::ReductionInfo,
+    expr: &DAE::Exp,
+    iterators: &DAE::ReductionIterators,
+) -> Result<WTy> {
+    let iters: Vec<&Arc<DAE::ReductionIterator>> = (&**iterators).into_iter().collect();
+    if iters.is_empty() {
+        bail!("CodegenWasmJit: reduction with no iterators");
+    }
+
+    if let Some(fold) = &info.foldExp {
+        // Folding reduction. `info.exprType` is the (scalar) accumulator type.
+        let elem_sty = sig_ty(&info.exprType)?;
+        if elem_sty.is_heap() {
+            bail!("CodegenWasmJit: non-scalar reduction result not supported");
+        }
+        let elem_wty = elem_sty.wty();
+        let Some(default) = &info.defaultValue else {
+            bail!("CodegenWasmJit: reduction without a default value not supported");
+        };
+        let acc = ctx.alloc_temp(elem_wty);
+        let foldval = ctx.alloc_temp(elem_wty);
+        ctx.locals.insert(info.resultName.to_string(), (acc, elem_sty.clone()));
+        ctx.locals.insert(info.foldName.to_string(), (foldval, elem_sty.clone()));
+        emit_value_const(ctx, default, elem_wty)?;
+        ctx.emit(we::Instruction::LocalSet(acc));
+        emit_red_nest(ctx, &iters, &mut |ctx| {
+            let w = compile_exp(ctx, expr)?;
+            coerce(ctx, w, elem_wty);
+            ctx.emit(we::Instruction::LocalSet(foldval));
+            let fw = compile_exp(ctx, fold)?;
+            coerce(ctx, fw, elem_wty);
+            ctx.emit(we::Instruction::LocalSet(acc));
+            Ok(())
+        })?;
+        ctx.emit(we::Instruction::LocalGet(acc));
+        return Ok(elem_wty);
+    }
+
+    // `array(...)` comprehension. The element type is the per-iteration
+    // expression's type (`info.exprType` is the whole array type here).
+    if iters.iter().any(|it| it.guardExp.is_some()) {
+        bail!("CodegenWasmJit: guarded array comprehension not supported");
+    }
+    let elem_sty = exp_sigty(expr)?;
+    if elem_sty.is_heap() {
+        bail!("CodegenWasmJit: array comprehension with non-scalar elements not supported");
+    }
+    let elem_wty = elem_sty.wty();
+    let n = iters.len() as u32;
+
+    // Per-iterator element counts (forward order).
+    let mut counts = Vec::with_capacity(iters.len());
+    for it in &iters {
+        let DAE::Exp::RANGE { start, step, stop, .. } = &*it.exp else {
+            bail!("CodegenWasmJit: array comprehension over a non-range iterator not supported");
+        };
+        counts.push(emit_range_count(ctx, start, step, stop)?);
+    }
+    // total = product of the counts.
+    let total = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::LocalSet(total));
+    for c in &counts {
+        ctx.emit(we::Instruction::LocalGet(total));
+        ctx.emit(we::Instruction::LocalGet(*c));
+        ctx.emit(we::Instruction::I32Mul);
+        ctx.emit(we::Instruction::LocalSet(total));
+    }
+    // Allocate the result; its dimensions are the counts in reverse iterator
+    // order (the last iterator is the outermost / slowest-varying dimension).
+    let res = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(elem_sty.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(n as i32));
+    ctx.emit(we::Instruction::LocalGet(total));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(res));
+    for d in 0..n {
+        let c = counts[(n - 1 - d) as usize];
+        ctx.emit(we::Instruction::LocalGet(res));
+        ctx.emit(we::Instruction::I32Const(d as i32));
+        ctx.emit(we::Instruction::LocalGet(c));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+    }
+    // Fill row-major: nest with the last iterator outermost so the running index
+    // advances with the first iterator fastest.
+    let idx = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalSet(idx));
+    let rev: Vec<&Arc<DAE::ReductionIterator>> = iters.iter().rev().cloned().collect();
+    let store_sty = elem_sty.clone();
+    emit_red_nest(ctx, &rev, &mut |ctx| {
+        ctx.emit(we::Instruction::LocalGet(res));
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+        let w = compile_exp(ctx, expr)?;
+        coerce(ctx, w, elem_wty);
+        elem_store(ctx, &store_sty);
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::LocalSet(idx));
+        Ok(())
+    })?;
+    ctx.emit(we::Instruction::LocalGet(res));
+    Ok(WTy::I32)
 }
 
 // -------------------------------------------------------------------------
