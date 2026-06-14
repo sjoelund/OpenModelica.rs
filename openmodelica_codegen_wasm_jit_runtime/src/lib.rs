@@ -350,6 +350,135 @@ pub extern "C" fn rt_array_release(obj: u32) {
     rt_free(obj);
 }
 
+/// Slice / partial-index a source array into a fresh (refcount-1) array, the
+/// runtime counterpart of `a[i, :, lo:hi, ...]` on an array whose dimensions
+/// are not known at codegen time (constant-dimension slices are scalarized by
+/// the frontend and lowered element-by-element instead).
+///
+/// `spec` is an Integer array of `2 * nspec` words describing the first `nspec`
+/// source axes (0-based): `spec[2*s]` is the axis kind and `spec[2*s+1]` its
+/// value —
+///   * kind 0 = INDEX  → value is the fixed 1-based index; the axis is dropped
+///     from the result (rank-reducing).
+///   * kind 1 = WHOLE  → value unused; the axis is kept at full size.
+///   * kind 2 = SLICE  → value is a handle to an Integer array of 1-based
+///     indices; the axis is kept, sized to that index array's length.
+/// Source axes `>= nspec` are treated as WHOLE (trailing `a[i]` on a matrix).
+///
+/// The result's element kind matches the source; heap elements are deep-copied
+/// (`copy_kind`, matching `rt_array_copy`) so the slice shares no mutable
+/// storage. The source array is read only — the caller still owns and releases
+/// it (and the per-axis SLICE index arrays).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_slice(src: u32, nspec: u32, spec: u32) -> u32 {
+    let kind = unsafe { load_u32(src + ARR_KIND_OFF) };
+    let src_ndims = rt_array_ndims(src);
+    let spec_data = arr_data(spec);
+    // Per-source-axis kind/value, with axes past `nspec` defaulting to WHOLE.
+    let ax_kind = |s: u32| -> u32 {
+        if s < nspec { unsafe { load_u32(spec_data + (2 * s) * 4) } } else { 1 }
+    };
+    let ax_val = |s: u32| -> u32 {
+        if s < nspec { unsafe { load_u32(spec_data + (2 * s + 1) * 4) } } else { 0 }
+    };
+
+    // Result rank/shape: one axis per kept (WHOLE/SLICE) source axis.
+    let mut res_ndims = 0u32;
+    let mut res_total = 1u32;
+    for s in 0..src_ndims {
+        match ax_kind(s) {
+            0 => {} // INDEX: dropped
+            1 => {
+                res_total *= rt_array_dim(src, s as i32 + 1);
+                res_ndims += 1;
+            }
+            _ => {
+                res_total *= rt_array_total(ax_val(s)); // SLICE index-array length
+                res_ndims += 1;
+            }
+        }
+    }
+    let result = rt_array_new(kind, res_ndims, res_total);
+    {
+        let mut rk = 0u32;
+        for s in 0..src_ndims {
+            match ax_kind(s) {
+                0 => {}
+                1 => {
+                    rt_array_set_dim(result, rk, rt_array_dim(src, s as i32 + 1));
+                    rk += 1;
+                }
+                _ => {
+                    rt_array_set_dim(result, rk, rt_array_total(ax_val(s)));
+                    rk += 1;
+                }
+            }
+        }
+    }
+
+    // Scratch: 0-based source coordinate per source axis (INDEX axes fixed once)
+    // followed by the result coordinate per result axis (recomputed per element).
+    let scratch = rt_alloc((src_ndims + res_ndims) * 4);
+    let src_coord = scratch;
+    let res_coord = scratch + src_ndims * 4;
+    for s in 0..src_ndims {
+        let c = if ax_kind(s) == 0 { ax_val(s) - 1 } else { 0 };
+        unsafe { store_u32(src_coord + s * 4, c) };
+    }
+
+    let stride = elem_stride(kind);
+    let src_base = arr_data(src);
+    let dst_base = arr_data(result);
+    let heap = matches!(kind, EK_STR | EK_ARRAY | EK_RECORD);
+    for r in 0..res_total {
+        // Decompose `r` into per-result-axis coordinates (row-major).
+        let mut rem = r;
+        let mut rk = res_ndims;
+        while rk > 0 {
+            rk -= 1;
+            let d = unsafe { load_u32(result + ARR_DIMS_OFF + rk * 4) };
+            unsafe { store_u32(res_coord + rk * 4, rem % d) };
+            rem /= d;
+        }
+        // Map result coordinates back onto the source axes.
+        let mut rk = 0u32;
+        for s in 0..src_ndims {
+            match ax_kind(s) {
+                0 => {} // fixed
+                1 => {
+                    let c = unsafe { load_u32(res_coord + rk * 4) };
+                    unsafe { store_u32(src_coord + s * 4, c) };
+                    rk += 1;
+                }
+                _ => {
+                    let idx_arr = ax_val(s);
+                    let pos = unsafe { load_u32(res_coord + rk * 4) };
+                    // SLICE index array holds 1-based source indices (Integer).
+                    let one_based = unsafe { load_u32(arr_data(idx_arr) + pos * 4) };
+                    unsafe { store_u32(src_coord + s * 4, one_based - 1) };
+                    rk += 1;
+                }
+            }
+        }
+        // Row-major source linear index from the source coordinates.
+        let mut lin = 0u32;
+        for s in 0..src_ndims {
+            lin = lin * rt_array_dim(src, s as i32 + 1) + unsafe { load_u32(src_coord + s * 4) };
+        }
+        let sp = src_base + lin * stride;
+        let dp = dst_base + r * stride;
+        unsafe {
+            core::ptr::copy_nonoverlapping(sp as *const u8, dp as *mut u8, stride as usize);
+            if heap {
+                store_u32(dp, copy_kind(kind, load_u32(dp)));
+            }
+        }
+    }
+
+    rt_free(scratch);
+    result
+}
+
 // ---------------------------------------------------------------------------
 // Records (heterogeneous, self-describing via an inline heap-field table)
 // ---------------------------------------------------------------------------

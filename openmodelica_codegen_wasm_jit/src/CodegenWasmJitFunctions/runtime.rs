@@ -1031,6 +1031,76 @@ mod tests {
         }
     }
 
+    /// `rt_array_slice` on a 3x3 Real matrix: a row slice `m[2,:]` (INDEX,
+    /// WHOLE), a column slice `m[:,2]` (WHOLE, INDEX, strided), and an explicit
+    /// index-array slice `m[1,{3,1}]` (INDEX, SLICE). The spec is an Integer
+    /// array of (kind, value) pairs as the codegen builds it.
+    #[test]
+    fn precompiled_runtime_array_slice() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let ndims = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_ndims").unwrap();
+        let slice = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_slice").unwrap();
+
+        // m = [[1,2,3],[4,5,6],[7,8,9]] Real, row-major.
+        let m = arr_new.call(&mut store, (1, 2, 9)).unwrap();
+        set_dim.call(&mut store, (m, 0, 3)).unwrap();
+        set_dim.call(&mut store, (m, 1, 3)).unwrap();
+        for k in 0..9 {
+            let addr = elem_ptr.call(&mut store, (m, k + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &((k + 1) as f64).to_le_bytes()).unwrap();
+        }
+        let rf = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 8];
+            mem.read(&*store, addr, &mut b).unwrap();
+            f64::from_le_bytes(b)
+        };
+        // Build a 2-axis (kind, value) Integer spec array.
+        let make_spec = |store: &mut Store, pairs: &[(i32, i32)]| -> i32 {
+            let s = arr_new.call(&mut *store, (0, 1, pairs.len() as i32 * 2)).unwrap();
+            for (i, (k, v)) in pairs.iter().enumerate() {
+                let ka = elem_ptr.call(&mut *store, (s, i as i32 * 2 + 1)).unwrap() as usize;
+                mem.write(&mut *store, ka, &k.to_le_bytes()).unwrap();
+                let va = elem_ptr.call(&mut *store, (s, i as i32 * 2 + 2)).unwrap() as usize;
+                mem.write(&mut *store, va, &v.to_le_bytes()).unwrap();
+            }
+            s
+        };
+
+        // Row slice m[2,:] = {4,5,6}: axis0 INDEX 2, axis1 WHOLE.
+        let sp = make_spec(&mut store, &[(0, 2), (1, 0)]);
+        let row = slice.call(&mut store, (m, 2, sp)).unwrap();
+        assert_eq!(ndims.call(&mut store, row).unwrap(), 1);
+        assert_eq!(dim.call(&mut store, (row, 1)).unwrap(), 3);
+        assert_eq!((rf(&mut store, row, 1), rf(&mut store, row, 2), rf(&mut store, row, 3)), (4.0, 5.0, 6.0));
+
+        // Column slice m[:,2] = {2,5,8}: axis0 WHOLE, axis1 INDEX 2.
+        let sp = make_spec(&mut store, &[(1, 0), (0, 2)]);
+        let col = slice.call(&mut store, (m, 2, sp)).unwrap();
+        assert_eq!(dim.call(&mut store, (col, 1)).unwrap(), 3);
+        assert_eq!((rf(&mut store, col, 1), rf(&mut store, col, 2), rf(&mut store, col, 3)), (2.0, 5.0, 8.0));
+
+        // Index-array slice m[1,{3,1}] = {3,1}: axis0 INDEX 1, axis1 SLICE {3,1}.
+        let idx = arr_new.call(&mut store, (0, 1, 2)).unwrap();
+        set_dim.call(&mut store, (idx, 0, 2)).unwrap();
+        let a0 = elem_ptr.call(&mut store, (idx, 1)).unwrap() as usize;
+        mem.write(&mut store, a0, &3i32.to_le_bytes()).unwrap();
+        let a1 = elem_ptr.call(&mut store, (idx, 2)).unwrap() as usize;
+        mem.write(&mut store, a1, &1i32.to_le_bytes()).unwrap();
+        let sp = make_spec(&mut store, &[(0, 1), (2, idx)]);
+        let pick = slice.call(&mut store, (m, 2, sp)).unwrap();
+        assert_eq!(dim.call(&mut store, (pick, 1)).unwrap(), 2);
+        assert_eq!((rf(&mut store, pick, 1), rf(&mut store, pick, 2)), (3.0, 1.0));
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {
