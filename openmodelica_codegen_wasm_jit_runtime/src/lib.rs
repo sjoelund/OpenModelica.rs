@@ -1629,3 +1629,51 @@ fn ryu_to_hr(d2s_str: &str, real_output: bool) -> String {
     }
     out
 }
+
+// ---------------------------------------------------------------------------
+// Simulation primitives (wasm-jit simulation target)
+//
+// All model state lives in one `SimData` block (allocated with `rt_alloc`) of
+// contiguous little-endian f64 slots, laid out as:
+//
+//   [ time | states[nStates] | ders[nStates] | algs[nAlgs] | params[nParams] ]
+//
+// `time` is at offset 0, `states` at offset 8, `ders` at `8 + 8*nStates`, etc.
+// Every offset is a compile-time constant in the generated model module, which
+// receives the block pointer as a function argument and accesses a variable
+// with a single `f64.load`/`f64.store` at a constant offset. The runtime only
+// needs the two operations that loop over the (runtime-sized) state vector:
+// the integrator step and the per-step result copy.
+//
+// A result-buffer row is exactly the time-variant prefix
+// `[ time | states | ders | algs ]` (`n_reals = 1 + 2*nStates + nAlgs` f64),
+// so emitting a row is a copy of the first `n_reals` f64 of the block. The
+// parameters tail is written once (after initialization) by the host.
+// ---------------------------------------------------------------------------
+
+/// Forward-Euler update of the state vector in place: `state[i] += h * der[i]`
+/// for `i in 0..n_states`. States start at `sim_data + 8`, derivatives at
+/// `sim_data + 8 + 8*n_states`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_euler_step(sim_data: u32, n_states: u32, h: f64) {
+    let states = sim_data + 8;
+    let ders = states + n_states * 8;
+    for i in 0..n_states {
+        unsafe {
+            let s = load_f64(states + i * 8);
+            let d = load_f64(ders + i * 8);
+            store_f64(states + i * 8, s + h * d);
+        }
+    }
+}
+
+/// Copy one time-variant result row — the `n_reals` (= `1 + 2*nStates + nAlgs`)
+/// f64 prefix of `SimData` — into the result buffer `buf` at row `row`
+/// (row-major: row `r` occupies `buf[r*n_reals .. (r+1)*n_reals]`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_sim_store_row(buf: u32, row: u32, sim_data: u32, n_reals: u32) {
+    let dst = buf + row * n_reals * 8;
+    for i in 0..n_reals {
+        unsafe { store_f64(dst + i * 8, load_f64(sim_data + i * 8)) };
+    }
+}

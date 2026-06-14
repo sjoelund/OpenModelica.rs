@@ -107,7 +107,7 @@ fn read_sig(path: &str) -> Result<Sig> {
 
 /// Register the host-imported math builtins (module `"env"`), matching
 /// `super::BUILTINS` one-for-one.
-fn add_host_builtins(linker: &mut wasmtime::Linker<()>) -> Result<()> {
+pub(crate) fn add_host_builtins(linker: &mut wasmtime::Linker<()>) -> Result<()> {
     macro_rules! f1 {
         ($name:literal, $f:expr) => {
             wt(linker.func_wrap("env", $name, |x: f64| -> f64 { ($f)(x) }))?;

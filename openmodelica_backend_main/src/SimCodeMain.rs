@@ -76,6 +76,7 @@ use openmodelica_codegen_cpp_omsi_ext::CodegenOMSICpp;
 use openmodelica_codegen_fmu_c::CodegenFMU;
 use openmodelica_codegen_fmu_omsi::CodegenOMSIC;
 use openmodelica_codegen_fmu_omsi::CodegenOMSI_common;
+use openmodelica_codegen_wasm_jit::CodegenWasmJit;
 use openmodelica_codegen_xml::CodegenXML;
 use openmodelica_error::ErrorExt;
 use openmodelica_frontend::Builtin;
@@ -593,6 +594,10 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
         },
         Deref @ "XML" => {
             Tpl::tplNoret((std::sync::Arc::new(CodegenXML::translateModel) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCode::SimCode) -> Result<Tpl::Text> + 'static>), simCode.clone())?;
+            ()
+        },
+        Deref @ "wasm-jit" => {
+            CodegenWasmJit::translateModel(simCode.clone());
             ()
         },
         Deref @ "None" => {

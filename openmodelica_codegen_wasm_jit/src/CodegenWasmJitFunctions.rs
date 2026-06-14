@@ -56,19 +56,19 @@ use openmodelica_simcode_types::SimCodeFunction;
 
 use wasm_encoder as we;
 
-mod runtime;
+pub(crate) mod runtime;
 
 /// A wasm value type. MetaModelica `Integer` is the port's `i32`
 /// ([[funcbuiltin-i32-intmaxlit]]); `Boolean` and `Enumeration` indices also
 /// live in an `i32`; `Real` is an `f64`.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum WTy {
+pub(crate) enum WTy {
     I32,
     F64,
 }
 
 impl WTy {
-    fn val(self) -> we::ValType {
+    pub(crate) fn val(self) -> we::ValType {
         match self {
             WTy::I32 => we::ValType::I32,
             WTy::F64 => we::ValType::F64,
@@ -91,7 +91,7 @@ impl WTy {
 /// sizes in its header so a single `rt_array_release` frees nested heap
 /// elements and indexing/`size` work for any rank.
 #[derive(Clone, PartialEq, Eq, Debug)]
-enum SigTy {
+pub(crate) enum SigTy {
     Int,
     Real,
     Bool,
@@ -140,7 +140,7 @@ impl SigTy {
             }
         }
     }
-    fn wty(&self) -> WTy {
+    pub(crate) fn wty(&self) -> WTy {
         match self {
             SigTy::Int | SigTy::Bool | SigTy::Str | SigTy::Array { .. } | SigTy::Record { .. } => WTy::I32,
             SigTy::Real => WTy::F64,
@@ -239,7 +239,7 @@ fn parse_sig_type(chars: &mut std::iter::Peekable<std::str::Chars>) -> Result<Si
 /// imports cost nothing at runtime. Builtins implementable with a single wasm
 /// instruction (`sqrt`, `abs`, `floor`, `ceil`, `min`, `max`, …) are emitted
 /// inline instead and are not in this table.
-const BUILTINS: &[(&str, &[WTy], WTy)] = &[
+pub(crate) const BUILTINS: &[(&str, &[WTy], WTy)] = &[
     ("pow", &[WTy::F64, WTy::F64], WTy::F64),
     ("atan2", &[WTy::F64, WTy::F64], WTy::F64),
     ("sin", &[WTy::F64], WTy::F64),
@@ -282,7 +282,7 @@ fn builtin_index(name: &str) -> Option<u32> {
 /// `rt_assert(msg, file, sline, scol, eline, ecol, isReadOnly)` records a pending
 /// assertion failure (the message and source-info handles) for `load_and_execute`
 /// to route to the error buffer; the generated code then traps (`unreachable`).
-const ENV_EXTRA: &[(&str, &[WTy], &[WTy])] = &[(
+pub(crate) const ENV_EXTRA: &[(&str, &[WTy], &[WTy])] = &[(
     "rt_assert",
     &[WTy::I32, WTy::I32, WTy::I32, WTy::I32, WTy::I32, WTy::I32, WTy::I32],
     &[],
@@ -304,7 +304,7 @@ fn env_extra_index(name: &str) -> u32 {
 /// function index `i` is `rt_index(RT_BUILTINS[i].0)`. The result column is a
 /// slice so void functions (`rt_retain`/`rt_release`) can be expressed. The
 /// runtime's `memory` is imported separately (it is not a function).
-const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
+pub(crate) const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_retain", &[WTy::I32], &[]),
     ("rt_release", &[WTy::I32], &[]),
     ("rt_str_new", &[WTy::I32], &[WTy::I32]),
@@ -398,10 +398,20 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_int_to_real", &[WTy::I32], &[WTy::I32]),
     // Element-wise logical `not` over a Boolean array.
     ("rt_array_not_i32", &[WTy::I32], &[WTy::I32]),
+    // Simulation primitives (wasm-jit simulation target). `rt_euler_step` does
+    // the in-place forward-Euler update `state[i] += h*der[i]`; `rt_sim_store_row`
+    // copies the `n_reals`-f64 time-variant prefix of the `SimData` block into
+    // the result buffer at a row index. See `CodegenWasmJit` and the runtime.
+    ("rt_euler_step", &[WTy::I32, WTy::I32, WTy::F64], &[]),
+    ("rt_sim_store_row", &[WTy::I32, WTy::I32, WTy::I32, WTy::I32], &[]),
+    // Raw allocator (used by the emitted `simulate` loop to allocate the result
+    // buffer). The function half reaches the allocator only indirectly (via
+    // `rt_str_new`/`rt_array_new`), so it is imported here for the first time.
+    ("rt_alloc", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
-fn rt_index(name: &str) -> u32 {
+pub(crate) fn rt_index(name: &str) -> u32 {
     let pos = RT_BUILTINS
         .iter()
         .position(|(n, _, _)| *n == name)
@@ -412,7 +422,7 @@ fn rt_index(name: &str) -> u32 {
 /// `_`-mangled name of a function path, matching `CevalScript`'s
 /// `generateFunctionName` (`AbsynUtil.pathStringUnquoteReplaceDot(path, "_")`).
 /// Used as the key that resolves a `CALL` to one of the generated functions.
-fn mangle(path: &Absyn::Path) -> Result<String> {
+pub(crate) fn mangle(path: &Absyn::Path) -> Result<String> {
     Ok(AbsynUtil::pathStringUnquoteReplaceDot(Arc::new(path.clone()), arcstr::literal!("_"))?.to_string())
 }
 
@@ -424,16 +434,16 @@ fn mangle(path: &Absyn::Path) -> Result<String> {
 /// (`SigTy`, so String parameters/results are distinguishable for reference
 /// counting; the wasm value types are `SigTy::wty`).
 #[derive(Clone)]
-struct FnSig {
-    params: Vec<SigTy>,
-    results: Vec<SigTy>,
+pub(crate) struct FnSig {
+    pub(crate) params: Vec<SigTy>,
+    pub(crate) results: Vec<SigTy>,
 }
 
 /// Everything the second pass needs to resolve a `CALL` to another generated
 /// function: its final wasm function index and signature.
-struct FnInfo {
-    index: u32,
-    sig: FnSig,
+pub(crate) struct FnInfo {
+    pub(crate) index: u32,
+    pub(crate) sig: FnSig,
 }
 
 /// Build the wasm module for `fnCode`. Returns the encoded module bytes and the
@@ -552,7 +562,7 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
 }
 
 /// The mangled name and wasm signature of a generated function.
-fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String, FnSig)> {
+pub(crate) fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String, FnSig)> {
     use SimCodeFunction::Function::Function as F;
     match f {
         F::FUNCTION { name, outVars, functionArguments, .. } => {
@@ -576,7 +586,7 @@ fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String
 /// functions — `output := extName(inputs)`, all-scalar args/result, no
 /// output-pointer arguments — qualify; arrays, output-arg style, or an unknown
 /// `extName` are left to fail loudly (the array/library ABI is future work).
-fn external_known(f: &SimCodeFunction::Function::Function) -> bool {
+pub(crate) fn external_known(f: &SimCodeFunction::Function::Function) -> bool {
     use SimCodeFunction::SimExtArg::SimExtArg as A;
     let SimCodeFunction::Function::Function::EXTERNAL_FUNCTION { extName, funArgs, outVars, extReturn, extArgs, .. } = f else {
         return false;
@@ -661,7 +671,7 @@ fn variable_sigty(ty: &DAE::Type, inst_dims: &Arc<List<Arc<DAE::Dimension>>>) ->
 }
 
 /// Map a `DAE.Type` to a `SigTy`, or fail for types not yet supported.
-fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
+pub(crate) fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
     Ok(match ty {
         DAE::Type::T_INTEGER { .. } => SigTy::Int,
         DAE::Type::T_REAL { .. } => SigTy::Real,
@@ -704,7 +714,7 @@ fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
 // -------------------------------------------------------------------------
 
 /// Per-function compilation state.
-struct FnCtx<'a> {
+pub(crate) struct FnCtx<'a> {
     /// ident -> (local index, Modelica type). Inputs are the wasm params
     /// (indices `0..n_params`); outputs and locals follow.
     locals: HashMap<String, (u32, SigTy)>,
@@ -731,6 +741,40 @@ struct FnCtx<'a> {
     /// skipped by `release_heap_locals` — currently the `for x in array` iterator,
     /// which aliases an element of the array that outlives the loop.
     borrowed_locals: Vec<u32>,
+    /// Set when lowering *simulation* equations (the `CodegenWasmJit` target): a
+    /// resolver that maps model component references not bound as wasm locals to
+    /// slots in the shared `SimData` block. `None` for ordinary function bodies.
+    pub(crate) sim: Option<SimCtx>,
+}
+
+/// Resolver for model variables when lowering simulation equations. Component
+/// references that are not function-local wasm slots (states, state
+/// derivatives, algebraics, parameters, `time`) are read/written through the
+/// `SimData` block whose base pointer is held in the wasm local `data_local`
+/// (the equation function's first parameter); every variable lives at a
+/// compile-time-constant byte offset. See `CodegenWasmJit`.
+pub(crate) struct SimCtx {
+    /// wasm local index holding the `SimData` base pointer.
+    pub(crate) data_local: u32,
+    /// Canonical cref key (`super::sim_cref_key`) -> slot in `SimData`.
+    pub(crate) vars: HashMap<String, SimSlot>,
+    /// Canonical cref key -> its `start` value expression (for `$START.<cref>`),
+    /// `None` when the variable has no explicit start (defaults to the type's
+    /// zero). Stored separately from `vars` because `$START` reads the start
+    /// attribute, not the live value.
+    pub(crate) starts: HashMap<String, Option<Arc<DAE::Exp>>>,
+}
+
+/// A scalar model variable's location within the `SimData` block.
+#[derive(Clone, Copy)]
+pub(crate) struct SimSlot {
+    /// Byte offset of the value within the `SimData` block.
+    pub(crate) off: u32,
+    /// Value type — `F64` for Real, `I32` for Integer/Boolean.
+    pub(crate) wty: WTy,
+    /// Alias negation: the cref is a negated alias of the variable at `off`, so
+    /// a read negates and a write is rejected (aliases are never assigned).
+    pub(crate) negate: bool,
 }
 
 impl<'a> FnCtx<'a> {
@@ -761,9 +805,54 @@ impl<'a> FnCtx<'a> {
         self.extra_locals.push(wty.val());
         idx
     }
+
+    /// Build a context for lowering one *simulation* equation function (see
+    /// `CodegenWasmJit`). The function takes the `SimData` base pointer as its
+    /// single parameter (wasm local 0); all model variables resolve through
+    /// `sim` rather than wasm locals. `by_name` resolves calls to model
+    /// functions (Modelica functions used by the equations); `literals` is the
+    /// module-wide String-literal pool.
+    pub(crate) fn new_sim(
+        sim: SimCtx,
+        by_name: &'a HashMap<String, FnInfo>,
+        literals: &'a mut Vec<Vec<u8>>,
+    ) -> Self {
+        FnCtx {
+            locals: HashMap::new(),
+            extra_locals: Vec::new(),
+            n_params: 1, // local 0 = SimData pointer
+            outputs: Vec::new(),
+            by_name,
+            literals,
+            instrs: Vec::new(),
+            ctrl_depth: 0,
+            loops: Vec::new(),
+            borrowed_locals: Vec::new(),
+            sim: Some(sim),
+        }
+    }
+
+    /// Lower one equation `cref := rhs` into this context.
+    pub(crate) fn sim_assign(&mut self, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()> {
+        compile_assign(self, lhs, rhs)
+    }
+
+    /// Lower a list of algorithm statements into this context.
+    pub(crate) fn sim_stmts(&mut self, stmts: &Arc<List<Arc<DAE::Statement>>>) -> Result<()> {
+        compile_stmts(self, stmts)
+    }
+
+    /// Finish a hand-assembled (simulation) function body: append the final
+    /// `end`, and return its extra-local declarations and instruction stream
+    /// ready for `we::Function::new`. The caller has already emitted any
+    /// `return`/fall-through value handling appropriate for the function.
+    pub(crate) fn finish_sim(mut self) -> (Vec<we::ValType>, Vec<we::Instruction<'static>>) {
+        self.emit(we::Instruction::End);
+        (self.extra_locals, self.instrs)
+    }
 }
 
-fn compile_function(
+pub(crate) fn compile_function(
     f: &SimCodeFunction::Function::Function,
     by_name: &HashMap<String, FnInfo>,
     literals: &mut Vec<Vec<u8>>,
@@ -803,7 +892,7 @@ fn compile_function(
         intern_local(v, &mut idx, &mut extra_locals, &mut locals, &mut array_allocs)?;
     }
 
-    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new(), ctrl_depth: 0, loops: Vec::new(), borrowed_locals: Vec::new() };
+    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new(), ctrl_depth: 0, loops: Vec::new(), borrowed_locals: Vec::new(), sim: None };
     // Allocate every array local/output up front so it is a real (possibly empty)
     // array object, never a null handle — matching the C runtime, where the array
     // descriptor always exists. Unknown (`:`) dimensions start at size 0 and are
@@ -875,7 +964,7 @@ fn compile_external_function(
         idx += 1;
     }
 
-    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new(), ctrl_depth: 0, loops: Vec::new(), borrowed_locals: Vec::new() };
+    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new(), ctrl_depth: 0, loops: Vec::new(), borrowed_locals: Vec::new(), sim: None };
 
     // The external-call arguments, as ordinary expressions over the inputs.
     let mut args: Vec<Arc<DAE::Exp>> = Vec::new();
@@ -1127,6 +1216,11 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     let DAE::Exp::CREF { componentRef, .. } = lhs else {
         bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
     };
+    // Simulation mode: assigning to a model variable writes into the shared
+    // `SimData` block. Returns false for an ordinary wasm local handled below.
+    if compile_sim_cref_assign(ctx, componentRef, rhs)? {
+        return Ok(());
+    }
     // A qualified-cref assignment `base[..].f1[..].….fn[..] := rhs`: navigate to
     // the record holding the final field, then store into it.
     if let DAE::ComponentRef::CREF_QUAL { .. } = &**componentRef {
@@ -1333,7 +1427,7 @@ fn record_field(fields: &[(ArcStr, SigTy)], name: &str) -> Result<(u32, SigTy)> 
     bail!("CodegenWasmJit: record has no field `{name}`");
 }
 
-fn mem_arg(offset: u32, align_log2: u32) -> we::MemArg {
+pub(crate) fn mem_arg(offset: u32, align_log2: u32) -> we::MemArg {
     we::MemArg { offset: offset as u64, align: align_log2, memory_index: 0 }
 }
 
@@ -2312,6 +2406,167 @@ fn compile_reduction(
 
 /// Compile an expression, leaving exactly one value on the wasm stack; returns
 /// its type.
+/// Canonical string key for a component reference, used to match equation crefs
+/// against the `SimVars` model-variable names (`CodegenWasmJit`). Identifiers
+/// are joined with `.`; constant integer subscripts are appended as `[i]` (the
+/// SimCode is scalarized, so a scalar element's subscripts are part of its
+/// identity). The `$DER`/`$PRE`/`$START` qualifier idents are kept verbatim so
+/// `der(x)` (cref `$DER.x`) keys distinctly from `x`.
+pub(crate) fn sim_cref_key(cr: &DAE::ComponentRef) -> Result<String> {
+    let mut s = String::new();
+    sim_cref_key_into(cr, &mut s)?;
+    Ok(s)
+}
+
+fn sim_cref_key_into(cr: &DAE::ComponentRef, s: &mut String) -> Result<()> {
+    use DAE::ComponentRef as C;
+    match cr {
+        C::CREF_IDENT { ident, subscriptLst, .. } => {
+            s.push_str(ident);
+            sim_subs_into(subscriptLst, s)?;
+        }
+        C::CREF_QUAL { ident, subscriptLst, componentRef, .. } => {
+            s.push_str(ident);
+            sim_subs_into(subscriptLst, s)?;
+            s.push('.');
+            sim_cref_key_into(componentRef, s)?;
+        }
+        other => bail!("CodegenWasmJit: unsupported component reference in simulation: {other:?}"),
+    }
+    Ok(())
+}
+
+fn sim_subs_into(subs: &Arc<List<Arc<DAE::Subscript>>>, s: &mut String) -> Result<()> {
+    for sub in &**subs {
+        match &**sub {
+            DAE::Subscript::INDEX { exp } => match &**exp {
+                DAE::Exp::ICONST { integer } => {
+                    s.push('[');
+                    s.push_str(&integer.to_string());
+                    s.push(']');
+                }
+                DAE::Exp::ENUM_LITERAL { index, .. } => {
+                    s.push('[');
+                    s.push_str(&index.to_string());
+                    s.push(']');
+                }
+                other => bail!("CodegenWasmJit: non-constant subscript in simulation cref: {other:?}"),
+            },
+            other => bail!("CodegenWasmJit: unsupported subscript in simulation cref: {other:?}"),
+        }
+    }
+    Ok(())
+}
+
+/// In simulation mode, try to read a model variable from the `SimData` block.
+/// Returns `Some(wty)` when `cref` resolved to a model variable (state,
+/// derivative, algebraic, parameter, `time`, or a `$START`/`$PRE` access), or
+/// `None` when it is an ordinary wasm local (a lowering temporary / iterator)
+/// that the normal cref path should handle.
+fn compile_sim_cref_read(ctx: &mut FnCtx, cref: &DAE::ComponentRef) -> Result<Option<WTy>> {
+    if ctx.sim.is_none() {
+        return Ok(None);
+    }
+    // `time` is the only built-in scalar; it lives at offset 0 of `SimData`.
+    if let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = cref {
+        if subscriptLst.is_empty() {
+            if ident.as_str() == "time" {
+                let data = ctx.sim.as_ref().unwrap().data_local;
+                ctx.emit(we::Instruction::LocalGet(data));
+                ctx.emit(we::Instruction::F64Load(mem_arg(0, 3)));
+                return Ok(Some(WTy::F64));
+            }
+            // A real wasm local (e.g. a `for` iterator) shadows model lookup.
+            if ctx.locals.contains_key(ident.as_str()) {
+                return Ok(None);
+            }
+        }
+    }
+    // `$START.<cref>`: read the variable's start-attribute expression (used by
+    // the initial-equation system). `$PRE.<cref>`: the value at the last event;
+    // for the continuous models handled so far it equals the current value, so
+    // we read the live slot (discrete/event handling is future work).
+    if let DAE::ComponentRef::CREF_QUAL { ident, componentRef, .. } = cref {
+        match ident.as_str() {
+            "$START" => {
+                let key = sim_cref_key(componentRef)?;
+                let start = ctx.sim.as_ref().unwrap().starts.get(&key).cloned();
+                return match start {
+                    Some(Some(exp)) => Ok(Some(compile_exp(ctx, &exp)?)),
+                    Some(None) => {
+                        // No explicit start: the type default (0.0 for Real).
+                        ctx.emit(we::Instruction::F64Const(0.0.into()));
+                        Ok(Some(WTy::F64))
+                    }
+                    None => bail!("CodegenWasmJit: $START for unknown variable `{key}`"),
+                };
+            }
+            "$PRE" => return compile_sim_cref_read(ctx, componentRef),
+            _ => {}
+        }
+    }
+    let key = sim_cref_key(cref)?;
+    let slot = match ctx.sim.as_ref().unwrap().vars.get(&key) {
+        Some(s) => *s,
+        None => bail!("CodegenWasmJit: simulation reference to unknown variable `{key}`"),
+    };
+    let data = ctx.sim.as_ref().unwrap().data_local;
+    ctx.emit(we::Instruction::LocalGet(data));
+    match slot.wty {
+        WTy::F64 => {
+            ctx.emit(we::Instruction::F64Load(mem_arg(slot.off, 3)));
+            if slot.negate {
+                ctx.emit(we::Instruction::F64Neg);
+            }
+        }
+        WTy::I32 => {
+            ctx.emit(we::Instruction::I32Load(mem_arg(slot.off, 2)));
+            if slot.negate {
+                // Integer negate; a Boolean negated alias uses `!` but is stored
+                // as 0/1 — handled when Boolean aliases are added.
+                ctx.emit(we::Instruction::I32Const(0));
+                ctx.emit(we::Instruction::I32Sub);
+            }
+        }
+    }
+    Ok(Some(slot.wty))
+}
+
+/// In simulation mode, try to assign to a model variable in the `SimData`
+/// block. Returns `true` when `cref` resolved to a writable model variable.
+/// Aliases are never assigned (they are removed by the backend); `$START`/`time`
+/// are not assignment targets in the equation systems handled here.
+fn compile_sim_cref_assign(ctx: &mut FnCtx, cref: &DAE::ComponentRef, rhs: &DAE::Exp) -> Result<bool> {
+    if ctx.sim.is_none() {
+        return Ok(false);
+    }
+    // Plain idents that are wasm locals are handled by the normal path.
+    if let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = cref {
+        if subscriptLst.is_empty() && ctx.locals.contains_key(ident.as_str()) {
+            return Ok(false);
+        }
+    }
+    let key = sim_cref_key(cref)?;
+    let slot = match ctx.sim.as_ref().unwrap().vars.get(&key) {
+        Some(s) => *s,
+        None => bail!("CodegenWasmJit: simulation assignment to unknown variable `{key}`"),
+    };
+    if slot.negate {
+        bail!("CodegenWasmJit: assignment to negated alias `{key}`");
+    }
+    let data = ctx.sim.as_ref().unwrap().data_local;
+    // Stack order for a store is [addr, value]: push the base, evaluate the rhs,
+    // coerce to the slot type, then store at the constant offset.
+    ctx.emit(we::Instruction::LocalGet(data));
+    let rw = compile_exp(ctx, rhs)?;
+    coerce(ctx, rw, slot.wty);
+    match slot.wty {
+        WTy::F64 => ctx.emit(we::Instruction::F64Store(mem_arg(slot.off, 3))),
+        WTy::I32 => ctx.emit(we::Instruction::I32Store(mem_arg(slot.off, 2))),
+    }
+    Ok(true)
+}
+
 fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
     use DAE::Exp as E;
     match exp {
@@ -2343,6 +2598,13 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             Ok(WTy::I32)
         }
         E::CREF { componentRef, .. } => {
+            // Simulation mode: model variables (states, derivatives, algebraics,
+            // parameters, `time`, `$START`/`$PRE`) live in the shared `SimData`
+            // block, not in wasm locals. Resolve those first; `None` means an
+            // ordinary local that the normal path below handles.
+            if let Some(wty) = compile_sim_cref_read(ctx, componentRef)? {
+                return Ok(wty);
+            }
             // A qualified cref `base[..].f1[..].….fn[..]`: descend through nested
             // records (and arrays of records) to the final field.
             if let DAE::ComponentRef::CREF_QUAL { .. } = &**componentRef {

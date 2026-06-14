@@ -77,6 +77,7 @@ use openmodelica_backend_tools::TotalModelDebug;
 use openmodelica_backend_tools::Uncertainties;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen_fmu_c::CodegenFMU;
+use openmodelica_codegen_wasm_jit::CodegenWasmJit;
 use openmodelica_dump_extra::BlockCallRewrite;
 use openmodelica_error::ErrorExt;
 use openmodelica_frontend::AbsynJLDumpTpl;
@@ -1930,7 +1931,11 @@ pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: F
                         sim_call = stringAppendList(list![(literal!("\"")).clone(), (exeDir.clone()).clone(), (executableSuffixedExe.clone()).clone(), (literal!("\"")).clone(), (literal!(" ")).clone(), (simflags.clone()).clone()]);
                         System::realtimeTick(ClockIndexes::RT_CLOCK_SIMULATE_SIMULATION.clone())?;
                         SimulationResults::close();
-                        resI = System::systemCallRestrictedEnv((sim_call.clone()).clone(), (logFile.clone()).clone())?;
+                        if Config::simCodeTarget()? == literal!("wasm-jit") {
+                            resI = CodegenWasmJit::runSimulation((executable.clone()).clone(), (result_file.clone()).clone(), (simflags.clone()).clone());
+                        } else {
+                            resI = System::systemCallRestrictedEnv((sim_call.clone()).clone(), (logFile.clone()).clone())?;
+                        }
                         timeSimulation = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_SIMULATION.clone())?;
                     } else {
                         result_file = (literal!("")).clone();
@@ -7694,7 +7699,9 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
                     }
                     if success {
                         if '__try9: {
-                            unwrap_break_err!(CevalScript::compileModel((filenameprefix.clone()).clone(), libsAndLibDirs.clone(), (literal!("")).clone(), metamodelica::nil()), '__try9);
+                            if unwrap_break_err!(Config::simCodeTarget(), '__try9) != literal!("wasm-jit") {
+                                        unwrap_break_err!(CevalScript::compileModel((filenameprefix.clone()).clone(), libsAndLibDirs.clone(), (literal!("")).clone(), metamodelica::nil()), '__try9);
+                            }
                             Ok::<(), anyhow::Error>(())
                         }.is_err() {
                             success = false;
