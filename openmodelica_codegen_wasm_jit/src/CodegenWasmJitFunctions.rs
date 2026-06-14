@@ -355,6 +355,8 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_promote", &[WTy::I32, WTy::I32], &[WTy::I32]),
     // Integer[] -> Real[] element-wise cast (the implicit numeric array cast).
     ("rt_array_int_to_real", &[WTy::I32], &[WTy::I32]),
+    // Element-wise logical `not` over a Boolean array.
+    ("rt_array_not_i32", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1516,6 +1518,11 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             let DAE::Operator::NOT { .. } = operator else {
                 bail!("CodegenWasmJit: unsupported logical unary operator {operator:?}");
             };
+            // Element-wise `not` over a Boolean array.
+            if matches!(exp_sigty(exp), Ok(SigTy::Array { .. })) {
+                emit_unary_array(ctx, exp, "rt_array_not_i32")?;
+                return Ok(WTy::I32);
+            }
             let w = compile_exp(ctx, exp)?;
             coerce(ctx, w, WTy::I32);
             ctx.emit(we::Instruction::I32Eqz);
@@ -1523,6 +1530,16 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         }
         E::BINARY { exp1, operator, exp2 } => compile_binary(ctx, exp1, operator, exp2),
         E::LBINARY { exp1, operator, exp2 } => {
+            // Element-wise `and`/`or` over Boolean arrays (operands are array
+            // handles, not i32 truth values — a scalar I32And would corrupt them).
+            if matches!(exp_sigty(exp1), Ok(SigTy::Array { .. })) {
+                let (op_code, ty) = match operator {
+                    DAE::Operator::AND { ty } => (OP_AND, ty),
+                    DAE::Operator::OR { ty } => (OP_OR, ty),
+                    other => bail!("CodegenWasmJit: unsupported logical array operator {other:?}"),
+                };
+                return compile_array_ew(ctx, exp1, exp2, op_code, ty);
+            }
             let a = compile_exp(ctx, exp1)?;
             coerce(ctx, a, WTy::I32);
             let b = compile_exp(ctx, exp2)?;
@@ -2665,6 +2682,8 @@ const OP_SUB: i32 = 1;
 const OP_MUL: i32 = 2;
 const OP_DIV: i32 = 3;
 const OP_POW: i32 = 4;
+const OP_AND: i32 = 5;
+const OP_OR: i32 = 6;
 
 /// Element-wise `a op b` over two same-shape arrays: produces a fresh array; the
 /// operand arrays are released after.

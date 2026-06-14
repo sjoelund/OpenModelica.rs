@@ -1370,6 +1370,58 @@ mod tests {
         }
     }
 
+    /// Integer[] -> Real[] cast, and element-wise Boolean and/or/not.
+    #[test]
+    fn precompiled_runtime_int_to_real_and_logical() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let i2r = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_int_to_real").unwrap();
+        let ew = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_ew_i32").unwrap();
+        let notf = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_not_i32").unwrap();
+        // i32 vector {dims, vals}.
+        let iv = |store: &mut Store, vals: &[i32]| -> i32 {
+            let h = arr_new.call(&mut *store, (0, 1, vals.len() as i32)).unwrap();
+            set_dim.call(&mut *store, (h, 0, vals.len() as i32)).unwrap();
+            for (k, v) in vals.iter().enumerate() {
+                let addr = elem_ptr.call(&mut *store, (h, k as i32 + 1)).unwrap() as usize;
+                mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+            }
+            h
+        };
+        let ri = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 4];
+            mem.read(&*store, addr, &mut b).unwrap();
+            i32::from_le_bytes(b)
+        };
+        let rf = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 8];
+            mem.read(&*store, addr, &mut b).unwrap();
+            f64::from_le_bytes(b)
+        };
+        // {7,8,9} -> {7.0,8.0,9.0}.
+        let iarr = iv(&mut store, &[7, 8, 9]);
+        let r = i2r.call(&mut store, iarr).unwrap();
+        assert_eq!((rf(&mut store, r, 1), rf(&mut store, r, 3)), (7.0, 9.0));
+        // {1,0,1} and {1,1,0} = {1,0,0}; or = {1,1,1}.
+        let a = iv(&mut store, &[1, 0, 1]);
+        let b = iv(&mut store, &[1, 1, 0]);
+        let and = ew.call(&mut store, (a, b, 5)).unwrap(); // OP_AND
+        assert_eq!((ri(&mut store, and, 1), ri(&mut store, and, 2), ri(&mut store, and, 3)), (1, 0, 0));
+        let or = ew.call(&mut store, (a, b, 6)).unwrap(); // OP_OR
+        assert_eq!((ri(&mut store, or, 1), ri(&mut store, or, 2), ri(&mut store, or, 3)), (1, 1, 1));
+        // not {1,0,1} = {0,1,0}.
+        let n = notf.call(&mut store, a).unwrap();
+        assert_eq!((ri(&mut store, n, 1), ri(&mut store, n, 2), ri(&mut store, n, 3)), (0, 1, 0));
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {

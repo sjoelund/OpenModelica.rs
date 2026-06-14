@@ -1124,6 +1124,8 @@ const OP_SUB: u32 = 1;
 const OP_MUL: u32 = 2;
 const OP_DIV: u32 = 3;
 const OP_POW: u32 = 4;
+const OP_AND: u32 = 5;
+const OP_OR: u32 = 6;
 
 fn ew_i32(x: i32, y: i32, op: u32) -> i32 {
     match op {
@@ -1131,6 +1133,8 @@ fn ew_i32(x: i32, y: i32, op: u32) -> i32 {
         OP_SUB => x.wrapping_sub(y),
         OP_MUL => x.wrapping_mul(y),
         OP_POW => libm::pow(x as f64, y as f64) as i32,
+        OP_AND => x & y,
+        OP_OR => x | y,
         _ => {
             if y == 0 {
                 core::arch::wasm32::unreachable();
@@ -1218,6 +1222,17 @@ pub extern "C" fn rt_array_neg_i32(a: u32) -> u32 {
     let (da, dr) = (arr_data(a), arr_data(res));
     for i in 0..rt_array_total(a) {
         unsafe { store_u32(dr + i * 4, (load_i32(da + i * 4)).wrapping_neg() as u32) };
+    }
+    res
+}
+
+/// Logical `not` of every Boolean element (element-wise `x == 0`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_not_i32(a: u32) -> u32 {
+    let res = array_like(a);
+    let (da, dr) = (arr_data(a), arr_data(res));
+    for i in 0..rt_array_total(a) {
+        unsafe { store_u32(dr + i * 4, (load_i32(da + i * 4) == 0) as u32) };
     }
     res
 }
