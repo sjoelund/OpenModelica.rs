@@ -132,7 +132,39 @@ fn add_host_builtins(linker: &mut wasmtime::Linker<()>) -> Result<()> {
     f1!("exp", f64::exp);
     f1!("log", f64::ln);
     f1!("log10", f64::log10);
+    // `rt_assert` (see `super::ENV_EXTRA`): record the failing assertion's message
+    // and source-info handles so `load_and_execute` can route them to the error
+    // buffer after the generated code traps. The handles point into the shared
+    // linear memory, which is still live when `load_and_execute` reads them.
+    wt(linker.func_wrap(
+        "env",
+        "rt_assert",
+        |msg: i32, file: i32, sline: i32, scol: i32, eline: i32, ecol: i32, read_only: i32| {
+            PENDING_ASSERT.with(|p| {
+                *p.borrow_mut() = Some(PendingAssert { msg, file, sline, scol, eline, ecol, read_only: read_only != 0 });
+            });
+        },
+    ))?;
     Ok(())
+}
+
+/// A failing assertion recorded by the `rt_assert` host import, to be reported by
+/// [`load_and_execute`] after the wasm trap. The `msg`/`file` fields are handles
+/// into the shared linear memory (read with [`read_rt_string`]).
+struct PendingAssert {
+    msg: i32,
+    file: i32,
+    sline: i32,
+    scol: i32,
+    eline: i32,
+    ecol: i32,
+    read_only: bool,
+}
+
+thread_local! {
+    /// The most recent assertion recorded by `rt_assert` on this thread, consumed
+    /// by [`load_and_execute`]. Single-threaded per call, so a plain cell suffices.
+    static PENDING_ASSERT: std::cell::RefCell<Option<PendingAssert>> = const { std::cell::RefCell::new(None) };
 }
 
 /// Extract a numeric argument as an `f64`, accepting any scalar `Values.Value`.
@@ -214,7 +246,22 @@ pub(super) fn load_and_execute(
     // Result buffer sized to the function's declared results.
     let n_results = func.ty(&store).results().len();
     let mut results = vec![wasmtime::Val::I32(0); n_results];
-    wt(func.call(&mut store, &params, &mut results))?;
+    // Clear any stale pending assertion before the call (defensive — each call
+    // consumes its own).
+    PENDING_ASSERT.with(|p| *p.borrow_mut() = None);
+    let call_res = func.call(&mut store, &params, &mut results);
+    if call_res.is_err() {
+        // A failed `assert` records its message + source info via the `rt_assert`
+        // host import, then traps. Route it to the error buffer (matching the C
+        // target's `[info] Error: <msg>`) and return `META_FAIL` directly — this
+        // is an expected runtime failure, not an internal error, so it should not
+        // be reported as a wasm trap on stderr by `loadAndExecute`.
+        if let Some(pa) = PENDING_ASSERT.with(|p| p.borrow_mut().take()) {
+            report_pending_assert(&mut store, &rt, &pa)?;
+            return Ok(Arc::new(Values::Value::META_FAIL));
+        }
+    }
+    wt(call_res)?;
 
     if results.len() != sig.outputs.len() {
         bail!("CodegenWasmJit: wasm returned {} values but signature has {}", results.len(), sig.outputs.len());
@@ -230,6 +277,39 @@ pub(super) fn load_and_execute(
         1 => out.pop().unwrap(),
         _ => Arc::new(Values::Value::TUPLE { valueLst: Arc::new(List::from_iter(out)) }),
     })
+}
+
+/// Read a runtime String (handle into the shared linear memory) into a Rust
+/// `String`. Used to report a failed assertion's message after the trap (the
+/// memory is still live).
+fn read_rt_str(store: &mut Store, rt: &RtFns, handle: i32) -> Result<String> {
+    let len = wt(rt.str_len.call(&mut *store, handle))? as usize;
+    let data = wt(rt.str_data.call(&mut *store, handle))? as usize;
+    let mut buf = vec![0u8; len];
+    rt.mem.read(&*store, data, &mut buf).map_err(|e| anyhow!("CodegenWasmJit: {e}"))?;
+    Ok(String::from_utf8_lossy(&buf).into_owned())
+}
+
+/// Route a failed assertion's message and source info to the global error buffer
+/// via `Error::addSourceMessage`, reproducing the C target's
+/// `[file:l:c-l:c:writable] Error: <msg>` output. The `%s`-templated
+/// `COMPILER_ERROR` message renders the assertion message verbatim at `Error`
+/// severity.
+fn report_pending_assert(store: &mut Store, rt: &RtFns, pa: &PendingAssert) -> Result<()> {
+    use openmodelica_util::Error;
+    let msg = read_rt_str(store, rt, pa.msg)?;
+    let file = read_rt_str(store, rt, pa.file)?;
+    let info = metamodelica::SourceInfo {
+        fileName: ArcStr::from(file),
+        isReadOnly: pa.read_only,
+        lineNumberStart: pa.sline,
+        columnNumberStart: pa.scol,
+        lineNumberEnd: pa.eline,
+        columnNumberEnd: pa.ecol,
+        lastModification: metamodelica::OrderedFloat(0.0),
+    };
+    Error::addSourceMessage(Error::COMPILER_ERROR.clone(), metamodelica::cons(ArcStr::from(msg), metamodelica::nil()), info)?;
+    Ok(())
 }
 
 /// The runtime entry points (and shared memory) the host needs to build/read

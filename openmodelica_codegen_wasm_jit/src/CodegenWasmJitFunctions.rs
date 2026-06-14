@@ -260,6 +260,31 @@ fn builtin_index(name: &str) -> Option<u32> {
     BUILTINS.iter().position(|(n, _, _)| *n == name).map(|i| i as u32)
 }
 
+/// Extra host imports (module `"env"`) that the generated code calls but which
+/// are *not* pure-math `BUILTINS` — they have their own signatures and host-side
+/// effects. Imported *after* the [`BUILTINS`] and the [`RT_BUILTINS`] (so the
+/// `rt_*` indices are unaffected), just before the generated functions. The host
+/// closures live in `runtime::add_host_builtins`.
+///
+/// `rt_assert(msg, file, sline, scol, eline, ecol, isReadOnly)` records a pending
+/// assertion failure (the message and source-info handles) for `load_and_execute`
+/// to route to the error buffer; the generated code then traps (`unreachable`).
+const ENV_EXTRA: &[(&str, &[WTy], &[WTy])] = &[(
+    "rt_assert",
+    &[WTy::I32, WTy::I32, WTy::I32, WTy::I32, WTy::I32, WTy::I32, WTy::I32],
+    &[],
+)];
+
+/// Absolute wasm function index of an `ENV_EXTRA` import (after the `BUILTINS`
+/// and `RT_BUILTINS`).
+fn env_extra_index(name: &str) -> u32 {
+    let pos = ENV_EXTRA
+        .iter()
+        .position(|(n, _, _)| *n == name)
+        .unwrap_or_else(|| panic!("CodegenWasmJit: unknown env-extra import `{name}`"));
+    (BUILTINS.len() + RT_BUILTINS.len() + pos) as u32
+}
+
 /// Heap-runtime functions imported from the precompiled runtime module `"rt"`
 /// (see `openmodelica_codegen_wasm_jit_runtime`), in a fixed order so their wasm
 /// function indices are stable. They are imported *after* the [`BUILTINS`], so
@@ -423,7 +448,7 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
     // builtins, then the `rt` heap-runtime functions; generated functions
     // follow. (The imported `memory` has its own index space and does not
     // shift function indices.)
-    let base = (BUILTINS.len() + RT_BUILTINS.len()) as u32;
+    let base = (BUILTINS.len() + RT_BUILTINS.len() + ENV_EXTRA.len()) as u32;
     // Map mangled function name -> (local id, signature) so CALLs can resolve.
     let mut by_name: HashMap<String, FnInfo> = HashMap::new();
     let mut sigs: Vec<FnSig> = Vec::with_capacity(funcs.len());
@@ -440,6 +465,9 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
         types.ty().function(params.iter().map(|w| w.val()), [result.val()]);
     }
     for (_, params, results) in RT_BUILTINS {
+        types.ty().function(params.iter().map(|w| w.val()), results.iter().map(|w| w.val()));
+    }
+    for (_, params, results) in ENV_EXTRA {
         types.ty().function(params.iter().map(|w| w.val()), results.iter().map(|w| w.val()));
     }
     for sig in &sigs {
@@ -460,6 +488,9 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
     }
     for (j, (name, _, _)) in RT_BUILTINS.iter().enumerate() {
         imports.import("rt", *name, we::EntityType::Function((BUILTINS.len() + j) as u32));
+    }
+    for (k, (name, _, _)) in ENV_EXTRA.iter().enumerate() {
+        imports.import("env", *name, we::EntityType::Function((BUILTINS.len() + RT_BUILTINS.len() + k) as u32));
     }
 
     // Compile the function bodies first (collecting any String literals into a
@@ -1605,14 +1636,30 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
             }
             Ok(())
         }
-        S::STMT_ASSERT { cond, .. } => {
-            // Trap on a failed assertion: the wasm call fails and loadAndExecute
-            // returns META_FAIL, matching a runtime assertion failure. The
-            // message/level are not yet propagated (they need strings).
+        S::STMT_ASSERT { cond, msg, source, .. } => {
+            // `if (!cond) { rt_assert(msg, file, line/col…); unreachable }`. In a
+            // function context the C target always emits `omc_assert` (an error
+            // that throws — the assertion level is irrelevant here), so a failed
+            // assert routes its message + source info to the error buffer (host
+            // import `rt_assert`, read back by `load_and_execute`) and then traps;
+            // `loadAndExecute` returns `META_FAIL`, matching the C target's
+            // `[file:l:c-l:c:writable] Error: <msg>` output.
             let c = compile_exp(ctx, cond)?;
             coerce(ctx, c, WTy::I32);
             ctx.emit(we::Instruction::I32Eqz);
             ctx.emit(we::Instruction::If(we::BlockType::Empty));
+            let mw = compile_exp(ctx, msg)?; // owned String handle
+            if mw != WTy::I32 {
+                bail!("CodegenWasmJit: assert message is not a String");
+            }
+            let info = &source.info;
+            emit_str_literal(ctx, info.fileName.as_bytes()); // file String handle
+            ctx.emit(we::Instruction::I32Const(info.lineNumberStart));
+            ctx.emit(we::Instruction::I32Const(info.columnNumberStart));
+            ctx.emit(we::Instruction::I32Const(info.lineNumberEnd));
+            ctx.emit(we::Instruction::I32Const(info.columnNumberEnd));
+            ctx.emit(we::Instruction::I32Const(info.isReadOnly as i32));
+            ctx.emit(we::Instruction::Call(env_extra_index("rt_assert")));
             ctx.emit(we::Instruction::Unreachable);
             ctx.emit(we::Instruction::End);
             Ok(())
