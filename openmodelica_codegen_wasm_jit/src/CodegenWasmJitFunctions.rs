@@ -1386,6 +1386,201 @@ fn compile_for(
     Ok(())
 }
 
+/// Emit a constant from a (scalar) `Values.Value` and coerce it to `wty`. Used
+/// for a reduction's default/identity value.
+fn emit_value_const(ctx: &mut FnCtx, v: &Values::Value, wty: WTy) -> Result<()> {
+    let from = match v {
+        Values::Value::INTEGER { integer } => {
+            ctx.emit(we::Instruction::I32Const(*integer));
+            WTy::I32
+        }
+        Values::Value::BOOL { boolean } => {
+            ctx.emit(we::Instruction::I32Const(*boolean as i32));
+            WTy::I32
+        }
+        Values::Value::REAL { real } => {
+            ctx.emit(we::Instruction::F64Const(real.into_inner().into()));
+            WTy::F64
+        }
+        other => bail!("CodegenWasmJit: unsupported reduction default value {other:?}"),
+    };
+    coerce(ctx, from, wty);
+    Ok(())
+}
+
+/// Bind a single Integer-range reduction/comprehension iterator: evaluate
+/// `start`/`step`/`stop` into fresh locals, register `id` as the iterator local
+/// (initialized to `start`), and return `(it, step_l, stop_l)`. A positive step
+/// is assumed (matching `compile_for`).
+fn emit_range_iter(
+    ctx: &mut FnCtx,
+    id: &ArcStr,
+    start: &DAE::Exp,
+    step: &Option<Arc<DAE::Exp>>,
+    stop: &DAE::Exp,
+) -> Result<(u32, u32, u32)> {
+    let it = ctx.alloc_temp(WTy::I32);
+    ctx.locals.insert(id.to_string(), (it, SigTy::Int));
+    let step_l = ctx.alloc_temp(WTy::I32);
+    let stop_l = ctx.alloc_temp(WTy::I32);
+    let sw = compile_exp(ctx, start)?;
+    coerce(ctx, sw, WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(it));
+    match step {
+        Some(e) => {
+            let w = compile_exp(ctx, e)?;
+            coerce(ctx, w, WTy::I32);
+        }
+        None => ctx.emit(we::Instruction::I32Const(1)),
+    }
+    ctx.emit(we::Instruction::LocalSet(step_l));
+    let pw = compile_exp(ctx, stop)?;
+    coerce(ctx, pw, WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(stop_l));
+    Ok((it, step_l, stop_l))
+}
+
+/// Lower an iterator reduction over a single Integer range. The folding forms
+/// `sum/product/min/max(expr for id in range)` (`foldExp` present) build
+/// `acc = default; for id in range { acc = foldExp(acc, expr) }`, where
+/// `foldExp` reads the accumulator (`resultName`) and per-iteration value
+/// (`foldName`) as locals. The `array(...)` comprehension (`foldExp` absent —
+/// `{expr for id in range}` over a non-constant range) builds a fresh vector of
+/// the per-iteration values. Multi-iterator / guarded reductions, and non-scalar
+/// (heap) elements, bail loudly.
+fn compile_reduction(
+    ctx: &mut FnCtx,
+    info: &DAE::ReductionInfo,
+    expr: &DAE::Exp,
+    iterators: &DAE::ReductionIterators,
+) -> Result<WTy> {
+    let iters: Vec<&Arc<DAE::ReductionIterator>> = (&**iterators).into_iter().collect();
+    if iters.len() != 1 {
+        bail!("CodegenWasmJit: multi-iterator reductions not supported");
+    }
+    let iter = iters[0];
+    if iter.guardExp.is_some() {
+        bail!("CodegenWasmJit: reduction with a guard condition not supported");
+    }
+    let DAE::Exp::RANGE { start, step, stop, .. } = &*iter.exp else {
+        bail!("CodegenWasmJit: reduction over a non-range iterator not supported");
+    };
+
+    let Some(fold) = &info.foldExp else {
+        // `array(...)` comprehension: build a 1-D vector of the iteration values.
+        // Its element type is the per-iteration expression's type (`info.exprType`
+        // is the whole array type here, unlike the folding forms).
+        let elem_sty = exp_sigty(expr)?;
+        if elem_sty.is_heap() {
+            bail!("CodegenWasmJit: array comprehension with non-scalar elements not supported");
+        }
+        let elem_wty = elem_sty.wty();
+        let (it, step_l, stop_l) = emit_range_iter(ctx, &iter.id, start, step, stop)?;
+        // count = max(0, (stop - start_of_it)/step + 1); `it` still holds start.
+        let count = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalGet(stop_l));
+        ctx.emit(we::Instruction::LocalGet(it));
+        ctx.emit(we::Instruction::I32Sub);
+        ctx.emit(we::Instruction::LocalGet(step_l));
+        ctx.emit(we::Instruction::I32DivS);
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::LocalSet(count));
+        // clamp negative counts (empty range) to 0.
+        ctx.emit(we::Instruction::I32Const(0));
+        ctx.emit(we::Instruction::LocalGet(count));
+        ctx.emit(we::Instruction::LocalGet(count));
+        ctx.emit(we::Instruction::I32Const(0));
+        ctx.emit(we::Instruction::I32LtS);
+        ctx.emit(we::Instruction::Select);
+        ctx.emit(we::Instruction::LocalSet(count));
+        // result = rt_array_new(elem_kind, 1, count); set dim 0 = count.
+        let res = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::I32Const(elem_sty.elem_kind() as i32));
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::LocalGet(count));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+        ctx.emit(we::Instruction::LocalSet(res));
+        ctx.emit(we::Instruction::LocalGet(res));
+        ctx.emit(we::Instruction::I32Const(0));
+        ctx.emit(we::Instruction::LocalGet(count));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+        // idx = 0; for it in range { res[idx+1] = expr; idx += 1 }.
+        let idx = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::I32Const(0));
+        ctx.emit(we::Instruction::LocalSet(idx));
+        ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+        ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
+        ctx.emit(we::Instruction::LocalGet(it));
+        ctx.emit(we::Instruction::LocalGet(stop_l));
+        ctx.emit(we::Instruction::I32GtS);
+        ctx.emit(we::Instruction::BrIf(1));
+        ctx.emit(we::Instruction::LocalGet(res));
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+        let w = compile_exp(ctx, expr)?;
+        coerce(ctx, w, elem_wty);
+        elem_store(ctx, &elem_sty);
+        ctx.emit(we::Instruction::LocalGet(it));
+        ctx.emit(we::Instruction::LocalGet(step_l));
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::LocalSet(it));
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::LocalSet(idx));
+        ctx.emit(we::Instruction::Br(0));
+        ctx.emit(we::Instruction::End); // loop
+        ctx.emit(we::Instruction::End); // block
+        ctx.emit(we::Instruction::LocalGet(res));
+        return Ok(WTy::I32);
+    };
+
+    // Folding reduction (sum/product/min/max): acc = default; acc = fold(acc, expr).
+    let Some(default) = &info.defaultValue else {
+        bail!("CodegenWasmJit: reduction without a default value not supported");
+    };
+    let elem_sty = sig_ty(&info.exprType)?;
+    if elem_sty.is_heap() {
+        bail!("CodegenWasmJit: non-scalar reduction result not supported");
+    }
+    let elem_wty = elem_sty.wty();
+    let acc = ctx.alloc_temp(elem_wty);
+    let foldval = ctx.alloc_temp(elem_wty);
+    ctx.locals.insert(info.resultName.to_string(), (acc, elem_sty.clone()));
+    ctx.locals.insert(info.foldName.to_string(), (foldval, elem_sty.clone()));
+
+    emit_value_const(ctx, default, elem_wty)?;
+    ctx.emit(we::Instruction::LocalSet(acc));
+
+    let (it, step_l, stop_l) = emit_range_iter(ctx, &iter.id, start, step, stop)?;
+    ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
+    ctx.emit(we::Instruction::LocalGet(it));
+    ctx.emit(we::Instruction::LocalGet(stop_l));
+    ctx.emit(we::Instruction::I32GtS);
+    ctx.emit(we::Instruction::BrIf(1));
+    // foldval = expr; acc = foldExp(acc, foldval).
+    let w = compile_exp(ctx, expr)?;
+    coerce(ctx, w, elem_wty);
+    ctx.emit(we::Instruction::LocalSet(foldval));
+    let fw = compile_exp(ctx, fold)?;
+    coerce(ctx, fw, elem_wty);
+    ctx.emit(we::Instruction::LocalSet(acc));
+    ctx.emit(we::Instruction::LocalGet(it));
+    ctx.emit(we::Instruction::LocalGet(step_l));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalSet(it));
+    ctx.emit(we::Instruction::Br(0));
+    ctx.emit(we::Instruction::End); // loop
+    ctx.emit(we::Instruction::End); // block
+
+    ctx.emit(we::Instruction::LocalGet(acc));
+    Ok(elem_wty)
+}
+
 // -------------------------------------------------------------------------
 // Expression compilation
 // -------------------------------------------------------------------------
@@ -1599,6 +1794,9 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         }
         // Record field access on an expression result: `f().field`.
         E::RSUB { exp, fieldName, .. } => compile_rsub(ctx, exp, fieldName),
+        E::REDUCTION { reductionInfo, expr, iterators } => {
+            compile_reduction(ctx, reductionInfo, expr, iterators)
+        }
         other => bail!("CodegenWasmJit: expression not yet supported: {other:?}"),
     }
 }
@@ -1622,6 +1820,7 @@ fn exp_wty_hint(ctx: &FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         // Array/record handles and `size(a, d)` are `i32`; an array element's /
         // record field's wasm type comes from its element / field type.
         E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::SIZE { .. } | E::RECORD { .. } => WTy::I32,
+        E::REDUCTION { reductionInfo, .. } => sig_ty(&reductionInfo.exprType)?.wty(),
         E::RSUB { ty, .. } => sig_ty(ty)?.wty(),
         E::ASUB { .. } => exp_sigty(exp).map(|s| s.wty()).unwrap_or(WTy::I32),
         _ => WTy::F64,
@@ -1689,6 +1888,8 @@ fn exp_sigty(exp: &DAE::Exp) -> Result<SigTy> {
         E::SHARED_LITERAL { exp, .. } => exp_sigty(exp)?,
         // Array-valued expressions carry their (array) type directly.
         E::ARRAY { ty, .. } | E::MATRIX { ty, .. } | E::RANGE { ty, .. } => sig_ty(ty)?,
+        // A reduction's result type is its element/fold type.
+        E::REDUCTION { reductionInfo, .. } => sig_ty(&reductionInfo.exprType)?,
         // `a[subs]`: subscripting reduces the rank by the number of subscripts
         // (a full index yields the scalar element).
         E::ASUB { exp, sub } => {
