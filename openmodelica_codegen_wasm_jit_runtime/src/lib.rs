@@ -249,6 +249,43 @@ pub extern "C" fn rt_array_elem_ptr(obj: u32, index: i32) -> u32 {
     arr_data(obj) + (index as u32 - 1) * elem_stride(kind)
 }
 
+/// Value-semantics copy of an array: a fresh array (refcount 1) with the same
+/// kind/dimensions and independent storage, so mutating either does not affect
+/// the other. Strings are immutable, so a String element is shared with a
+/// retain; a nested *array* element is deep-copied (recursively) to preserve
+/// value semantics. The null handle copies to null.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_copy(obj: u32) -> u32 {
+    if obj == 0 {
+        return 0;
+    }
+    let kind = unsafe { load_u32(obj + ARR_KIND_OFF) };
+    let ndims = rt_array_ndims(obj);
+    let total = rt_array_total(obj);
+    let dup = rt_array_new(kind, ndims, total);
+    for axis in 0..ndims {
+        unsafe { store_u32(dup + ARR_DIMS_OFF + axis * 4, load_u32(obj + ARR_DIMS_OFF + axis * 4)) };
+    }
+    let (src, dst) = (arr_data(obj), arr_data(dup));
+    let stride = elem_stride(kind);
+    unsafe {
+        core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, (total * stride) as usize);
+    }
+    // Adjust refcounts of the (now shared) heap element handles.
+    if kind == EK_STR {
+        for i in 0..total {
+            rt_retain(unsafe { load_u32(dst + i * 4) });
+        }
+    } else if kind == EK_ARRAY {
+        // Deep-copy nested arrays so they are not shared mutable storage.
+        for i in 0..total {
+            let copied = rt_array_copy(unsafe { load_u32(dst + i * 4) });
+            unsafe { store_u32(dst + i * 4, copied) };
+        }
+    }
+    dup
+}
+
 /// Decrement an array's reference count, freeing it at zero (no-op on null).
 /// Before freeing, any contained heap elements are released according to the
 /// element kind, so nested strings / arrays are not leaked. Recurses through

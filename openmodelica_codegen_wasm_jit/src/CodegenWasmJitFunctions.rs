@@ -247,6 +247,8 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_dim", &[WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_array_elem_ptr", &[WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_array_release", &[WTy::I32], &[]),
+    // Value-semantics copy (for whole-array assignment from a variable source).
+    ("rt_array_copy", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -516,34 +518,30 @@ fn compile_function(
     let n_params = idx;
     let mut extra_locals: Vec<we::ValType> = Vec::new();
     let mut outputs: Vec<(u32, SigTy)> = Vec::new();
+    // Array locals/outputs to allocate at function entry (see `emit_array_alloc`):
+    // (local index, element type, dimension specs). Inputs are excluded — they
+    // are passed in already built.
+    let mut array_allocs: Vec<(u32, Arc<SigTy>, Vec<Arc<DAE::Dimension>>)> = Vec::new();
     // Outputs next, then local declarations. An output is often also listed in
     // `variableDeclarations` (the function body assigns to it through the same
     // name); it must map to a single local, so a name already allocated as an
     // input or output is reused rather than given a fresh slot.
     for v in &**outVars {
-        let (name, sty) = var_name_ty(v)?;
-        let slot = locals
-            .entry(name)
-            .or_insert_with(|| {
-                extra_locals.push(sty.wty().val());
-                let s = (idx, sty);
-                idx += 1;
-                s
-            })
-            .clone();
+        let slot = intern_local(v, &mut idx, &mut extra_locals, &mut locals, &mut array_allocs)?;
         outputs.push(slot);
     }
     for v in &**variableDeclarations {
-        let (name, sty) = var_name_ty(v)?;
-        locals.entry(name).or_insert_with(|| {
-            extra_locals.push(sty.wty().val());
-            let s = (idx, sty);
-            idx += 1;
-            s
-        });
+        intern_local(v, &mut idx, &mut extra_locals, &mut locals, &mut array_allocs)?;
     }
 
     let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new() };
+    // Allocate every array local/output up front so it is a real (possibly empty)
+    // array object, never a null handle — matching the C runtime, where the array
+    // descriptor always exists. Unknown (`:`) dimensions start at size 0 and are
+    // resized by the first whole-array assignment.
+    for (slot, elem, dims) in &array_allocs {
+        emit_array_alloc(&mut ctx, *slot, elem, dims)?;
+    }
     compile_stmts(&mut ctx, body)?;
     // Fall-through return: release heap locals, push the output locals and end.
     release_heap_locals(&mut ctx);
@@ -556,6 +554,114 @@ fn compile_function(
         func.instruction(i);
     }
     Ok(func)
+}
+
+/// Intern a function variable into the locals map (allocating a wasm local slot
+/// on first sight of the name), returning its `(index, type)`. Array variables
+/// are additionally recorded in `array_allocs` (once per slot) for entry-time
+/// allocation.
+fn intern_local(
+    v: &SimCodeFunction::Variable::Variable,
+    idx: &mut u32,
+    extra_locals: &mut Vec<we::ValType>,
+    locals: &mut HashMap<String, (u32, SigTy)>,
+    array_allocs: &mut Vec<(u32, Arc<SigTy>, Vec<Arc<DAE::Dimension>>)>,
+) -> Result<(u32, SigTy)> {
+    let (name, sty) = var_name_ty(v)?;
+    let slot = locals
+        .entry(name)
+        .or_insert_with(|| {
+            extra_locals.push(sty.wty().val());
+            let s = (*idx, sty.clone());
+            *idx += 1;
+            s
+        })
+        .clone();
+    if let SigTy::Array { elem, .. } = &slot.1 {
+        if !array_allocs.iter().any(|(i, ..)| *i == slot.0) {
+            array_allocs.push((slot.0, elem.clone(), var_array_dims(v)?));
+        }
+    }
+    Ok(slot)
+}
+
+/// The dimension list of an array `VARIABLE`, consistent with [`variable_sigty`]:
+/// a `T_ARRAY` `ty` carries the dimensions (flattened across nesting); otherwise
+/// they live in `instDims`.
+fn var_array_dims(v: &SimCodeFunction::Variable::Variable) -> Result<Vec<Arc<DAE::Dimension>>> {
+    let SimCodeFunction::Variable::Variable::VARIABLE { ty, instDims, .. } = v else {
+        bail!("CodegenWasmJit: function-pointer variables not supported");
+    };
+    let from_ty = type_array_dims(ty);
+    Ok(if from_ty.is_empty() { (&**instDims).into_iter().cloned().collect() } else { from_ty })
+}
+
+/// The dimensions carried by a `T_ARRAY` type, flattening nested `T_ARRAY`s
+/// (outer dims first). Empty for a non-array type.
+fn type_array_dims(ty: &DAE::Type) -> Vec<Arc<DAE::Dimension>> {
+    match ty {
+        DAE::Type::T_ARRAY { ty, dims } => {
+            let mut out: Vec<Arc<DAE::Dimension>> = (&**dims).into_iter().cloned().collect();
+            out.extend(type_array_dims(ty));
+            out
+        }
+        _ => Vec::new(),
+    }
+}
+
+/// Allocate an array local at function entry: evaluate each dimension to an
+/// `i32` (unknown `:` dims start at 0), build the runtime array of the right
+/// element kind, set the dimension sizes, and store the handle in `slot`.
+fn emit_array_alloc(ctx: &mut FnCtx, slot: u32, elem: &SigTy, dims: &[Arc<DAE::Dimension>]) -> Result<()> {
+    if dims.is_empty() {
+        bail!("CodegenWasmJit: array local with no dimensions");
+    }
+    // Evaluate each dimension into a scratch local (reused for the total and the
+    // per-axis size).
+    let mut dim_temps = Vec::with_capacity(dims.len());
+    for d in dims {
+        let t = ctx.alloc_temp(WTy::I32);
+        emit_dim_value(ctx, d)?;
+        ctx.emit(we::Instruction::LocalSet(t));
+        dim_temps.push(t);
+    }
+    // total = product of the dimension sizes.
+    ctx.emit(we::Instruction::LocalGet(dim_temps[0]));
+    for t in &dim_temps[1..] {
+        ctx.emit(we::Instruction::LocalGet(*t));
+        ctx.emit(we::Instruction::I32Mul);
+    }
+    let total_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(total_t));
+    // obj = rt_array_new(elem_kind, rank, total); store into the local.
+    ctx.emit(we::Instruction::I32Const(elem.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(dims.len() as i32));
+    ctx.emit(we::Instruction::LocalGet(total_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(slot));
+    for (axis, t) in dim_temps.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(slot));
+        ctx.emit(we::Instruction::I32Const(axis as i32));
+        ctx.emit(we::Instruction::LocalGet(*t));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+    }
+    Ok(())
+}
+
+/// Emit the `i32` size of one array dimension. An unknown (`:`) dimension is 0
+/// (an empty array, resized on first whole-array assignment).
+fn emit_dim_value(ctx: &mut FnCtx, dim: &DAE::Dimension) -> Result<()> {
+    match dim {
+        DAE::Dimension::DIM_INTEGER { integer } => ctx.emit(we::Instruction::I32Const(*integer)),
+        DAE::Dimension::DIM_BOOLEAN => ctx.emit(we::Instruction::I32Const(2)),
+        DAE::Dimension::DIM_ENUM { size, .. } => ctx.emit(we::Instruction::I32Const(*size)),
+        DAE::Dimension::DIM_UNKNOWN => ctx.emit(we::Instruction::I32Const(0)),
+        DAE::Dimension::DIM_EXP { exp } => {
+            let w = compile_exp(ctx, exp)?;
+            coerce(ctx, w, WTy::I32);
+        }
+    }
+    Ok(())
 }
 
 fn push_outputs(ctx: &mut FnCtx) {
@@ -618,11 +724,8 @@ fn compile_stmts(ctx: &mut FnCtx, stmts: &Arc<List<Arc<DAE::Statement>>>) -> Res
     Ok(())
 }
 
-/// Assign `rhs` to a whole-variable lhs (scalar or whole array/string local).
-/// The rhs leaves an owned value on the stack (a fresh +1 reference for heap
-/// values — see `compile_exp`); for a heap destination the previous value is
-/// released first (release-on-overwrite). Element assignment `a[i] := x` (a
-/// subscripted lhs) is not yet supported.
+/// Assign `rhs` to a lhs: a whole-variable (scalar / whole array / string) or a
+/// subscripted array element (`a[i,...] := x`, written in place).
 fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()> {
     let DAE::Exp::CREF { componentRef, .. } = lhs else {
         bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
@@ -630,16 +733,39 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
         bail!("CodegenWasmJit: assignment to qualified/record lhs not supported");
     };
-    if !subscriptLst.is_empty() {
-        bail!("CodegenWasmJit: element assignment `a[i] := x` not yet supported");
-    }
     let name = ident.to_string();
     let (idx, dst_sty) = ctx
         .locals
         .get(&name)
         .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{name}`"))?
         .clone();
+
+    if !subscriptLst.is_empty() {
+        // Element assignment `a[i,...] := x` — written in place into the local's
+        // own (private) array, so no copy-on-write is needed (Modelica arrays are
+        // mutable value objects; aliasing is broken at whole-array assignment).
+        let SigTy::Array { elem, rank } = dst_sty else {
+            bail!("CodegenWasmJit: subscripting non-array local `{name}`");
+        };
+        let idx_exps = index_subscripts(subscriptLst, rank)?;
+        return compile_elem_assign(ctx, idx, &elem, &idx_exps, rhs);
+    }
+
     let src_wty = compile_exp(ctx, rhs)?;
+    // Value semantics for arrays: a whole-array assignment from anything that is
+    // not a fresh constructor/call result would otherwise share the source's
+    // buffer (the rhs is a retained alias), so mutating the destination later
+    // would corrupt the source — copy it to a private buffer. A fresh rhs is
+    // already privately owned and is moved in.
+    if matches!(dst_sty, SigTy::Array { .. }) && !array_rhs_is_fresh(rhs) {
+        let t = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(t));
+        ctx.emit(we::Instruction::LocalGet(t));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_copy")));
+        // Release the alias we copied from (the rhs's +1 reference).
+        ctx.emit(we::Instruction::LocalGet(t));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
+    }
     if let Some(release_fn) = dst_sty.release_fn() {
         // Release-on-overwrite: free the previous value the local held *after*
         // computing the new one (which may read the old value, as in `s := s + x`),
@@ -654,17 +780,86 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     Ok(())
 }
 
+/// Whether a whole-array rhs expression produces a freshly-owned array (so it
+/// can be moved into the destination without copying). Constructors, ranges and
+/// call results are fresh; a variable reference / shared literal aliases.
+fn array_rhs_is_fresh(e: &DAE::Exp) -> bool {
+    use DAE::Exp as E;
+    match e {
+        E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::CALL { .. } => true,
+        E::SHARED_LITERAL { exp, .. } | E::CAST { exp, .. } => array_rhs_is_fresh(exp),
+        _ => false,
+    }
+}
+
+/// Element assignment `a[i,...] := rhs`, in place. `arr_idx` is the array local
+/// (which privately owns its buffer). For a heap element the previous handle in
+/// the slot is released and the new owned value moved in; the old value is
+/// released only *after* the rhs is computed, in case the rhs reads it.
+fn compile_elem_assign(ctx: &mut FnCtx, arr_idx: u32, elem: &SigTy, idx_exps: &[Arc<DAE::Exp>], rhs: &DAE::Exp) -> Result<()> {
+    emit_elem_addr(ctx, arr_idx, idx_exps)?;
+    let addr_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(addr_t));
+    if let Some(release_fn) = elem.release_fn() {
+        let w = compile_exp(ctx, rhs)?;
+        coerce(ctx, w, elem.wty());
+        let val_t = ctx.alloc_temp(elem.wty());
+        ctx.emit(we::Instruction::LocalSet(val_t));
+        // Release the previous element handle now that the new value is computed.
+        ctx.emit(we::Instruction::LocalGet(addr_t));
+        elem_load(ctx, elem);
+        ctx.emit(we::Instruction::Call(rt_index(release_fn)));
+        // Store the new owned handle into the slot.
+        ctx.emit(we::Instruction::LocalGet(addr_t));
+        ctx.emit(we::Instruction::LocalGet(val_t));
+        elem_store(ctx, elem);
+    } else {
+        ctx.emit(we::Instruction::LocalGet(addr_t));
+        let w = compile_exp(ctx, rhs)?;
+        coerce(ctx, w, elem.wty());
+        elem_store(ctx, elem);
+    }
+    Ok(())
+}
+
+/// Emit the byte address of array element `a[idx_exps...]`, reading the array
+/// handle from local `arr_idx` (the local owns it — no retain/release). Leaves
+/// the address on the stack. Same row-major linear index as [`index_loaded`].
+fn emit_elem_addr(ctx: &mut FnCtx, arr_idx: u32, idx_exps: &[Arc<DAE::Exp>]) -> Result<()> {
+    let acc = ctx.alloc_temp(WTy::I32);
+    let w = compile_exp(ctx, &idx_exps[0])?;
+    coerce(ctx, w, WTy::I32);
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Sub);
+    ctx.emit(we::Instruction::LocalSet(acc));
+    for (axis0, ie) in idx_exps.iter().enumerate().skip(1) {
+        ctx.emit(we::Instruction::LocalGet(acc));
+        ctx.emit(we::Instruction::LocalGet(arr_idx));
+        ctx.emit(we::Instruction::I32Const(axis0 as i32 + 1));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
+        ctx.emit(we::Instruction::I32Mul);
+        let w = compile_exp(ctx, ie)?;
+        coerce(ctx, w, WTy::I32);
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Sub);
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::LocalSet(acc));
+    }
+    ctx.emit(we::Instruction::LocalGet(arr_idx));
+    ctx.emit(we::Instruction::LocalGet(acc));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    Ok(())
+}
+
 fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
     use DAE::Statement as S;
     match stmt {
         S::STMT_ASSIGN { exp1, exp, .. } => compile_assign(ctx, exp1, exp),
-        // Whole-array assignment (`r := {...}`, `r := other`). The rhs produces
-        // an owned array handle; the lhs is a whole array local, so this is the
-        // same release-on-overwrite store as a heap `STMT_ASSIGN`. NOTE: an alias
-        // assignment `r := other` shares the handle rather than copying; this is
-        // observationally correct only while array *elements* cannot be mutated
-        // (element assignment is not yet implemented — it will need copy-on-write
-        // / copy-on-assign to preserve Modelica value semantics).
+        // Whole-array assignment (`r := {...}`, `r := other`); `compile_assign`
+        // copies when the source is a variable (value semantics) and moves a
+        // fresh constructor/call result.
         S::STMT_ASSIGN_ARR { lhs, exp, .. } => compile_assign(ctx, lhs, exp),
         S::STMT_IF { exp, statementLst, else_, .. } => {
             let c = compile_exp(ctx, exp)?;

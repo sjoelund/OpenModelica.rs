@@ -559,6 +559,28 @@ mod tests {
             mem.write(&mut store, addr, &h.to_le_bytes()).unwrap();
         }
         arr_release.call(&mut store, s).unwrap();
+
+        // rt_array_copy gives independent storage (value semantics): mutating the
+        // copy must not change the original.
+        let arr_copy = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_copy").unwrap();
+        let orig = arr_new.call(&mut store, (1, 1, 3)).unwrap();
+        set_dim.call(&mut store, (orig, 0, 3)).unwrap();
+        for k in 1..=3i32 {
+            let addr = elem_ptr.call(&mut store, (orig, k)).unwrap() as usize;
+            mem.write(&mut store, addr, &(k as f64).to_le_bytes()).unwrap();
+        }
+        let dup = arr_copy.call(&mut store, orig).unwrap();
+        assert_ne!(dup, orig);
+        // Mutate the copy's first element.
+        let addr = elem_ptr.call(&mut store, (dup, 1)).unwrap() as usize;
+        mem.write(&mut store, addr, &(99.0f64).to_le_bytes()).unwrap();
+        // Original is unchanged.
+        let addr = elem_ptr.call(&mut store, (orig, 1)).unwrap() as usize;
+        let mut buf = [0u8; 8];
+        mem.read(&store, addr, &mut buf).unwrap();
+        assert_eq!(f64::from_le_bytes(buf), 1.0);
+        arr_release.call(&mut store, dup).unwrap();
+        arr_release.call(&mut store, orig).unwrap();
     }
 
     /// `rt_real_format` (`String(Real, significantDigits, minimumLength,
