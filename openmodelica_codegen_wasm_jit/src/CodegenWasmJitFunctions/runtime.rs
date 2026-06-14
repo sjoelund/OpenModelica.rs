@@ -132,6 +132,18 @@ fn add_host_builtins(linker: &mut wasmtime::Linker<()>) -> Result<()> {
     f1!("exp", f64::exp);
     f1!("log", f64::ln);
     f1!("log10", f64::log10);
+    // libm `external "C"` math functions (see `super::BUILTINS`). Routed to the
+    // host's libm via `f64`'s methods, matching the C target's libm.
+    f1!("cbrt", f64::cbrt);
+    f1!("expm1", f64::exp_m1);
+    f1!("log1p", f64::ln_1p);
+    f1!("exp2", f64::exp2);
+    f1!("log2", f64::log2);
+    f1!("asinh", f64::asinh);
+    f1!("acosh", f64::acosh);
+    f1!("atanh", f64::atanh);
+    f2!("hypot", f64::hypot);
+    f2!("fmod", |a: f64, b: f64| a % b);
     // `rt_assert` (see `super::ENV_EXTRA`): record the failing assertion's message
     // and source-info handles so `load_and_execute` can route them to the error
     // buffer after the generated code traps. The handles point into the shared

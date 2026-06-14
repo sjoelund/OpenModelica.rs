@@ -254,6 +254,19 @@ const BUILTINS: &[(&str, &[WTy], WTy)] = &[
     ("exp", &[WTy::F64], WTy::F64),
     ("log", &[WTy::F64], WTy::F64),
     ("log10", &[WTy::F64], WTy::F64),
+    // libm functions reached as `external "C"` math functions (these are *not*
+    // inlined to a Modelica builtin by the frontend, unlike sin/cos/exp/…), routed
+    // to the host's libm via `external_function` lowering.
+    ("cbrt", &[WTy::F64], WTy::F64),
+    ("expm1", &[WTy::F64], WTy::F64),
+    ("log1p", &[WTy::F64], WTy::F64),
+    ("exp2", &[WTy::F64], WTy::F64),
+    ("log2", &[WTy::F64], WTy::F64),
+    ("asinh", &[WTy::F64], WTy::F64),
+    ("acosh", &[WTy::F64], WTy::F64),
+    ("atanh", &[WTy::F64], WTy::F64),
+    ("hypot", &[WTy::F64, WTy::F64], WTy::F64),
+    ("fmod", &[WTy::F64, WTy::F64], WTy::F64),
 ];
 
 fn builtin_index(name: &str) -> Option<u32> {
@@ -434,12 +447,12 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
     };
     funcs.push(&**main);
     for f in &*fn_code.functions {
-        // Skip non-plain-FUNCTION dependencies. Record constructors arrive here
-        // as `RECORD_CONSTRUCTOR`, but record construction is lowered inline
-        // (`E::RECORD`), so they are never called as wasm functions; external /
-        // function-pointer dependencies cannot be JITed and, if actually called,
-        // fail loudly at that call site instead.
-        if matches!(&**f, SimCodeFunction::Function::Function::FUNCTION { .. }) {
+        // Plain Modelica functions, plus known scalar-math external functions
+        // (lowered to a host-builtin call). Record constructors arrive as
+        // `RECORD_CONSTRUCTOR` but are lowered inline (`E::RECORD`), and unknown
+        // external / function-pointer dependencies cannot be JITed and, if
+        // actually called, fail loudly at that call site instead.
+        if matches!(&**f, SimCodeFunction::Function::Function::FUNCTION { .. }) || external_known(f) {
             funcs.push(&**f);
         }
     }
@@ -540,20 +553,81 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
 
 /// The mangled name and wasm signature of a generated function.
 fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String, FnSig)> {
-    let SimCodeFunction::Function::Function::FUNCTION { name, outVars, functionArguments, .. } = f else {
-        bail!("CodegenWasmJit: only plain Modelica/MetaModelica FUNCTIONs are supported (no external/record-constructor)");
+    use SimCodeFunction::Function::Function as F;
+    match f {
+        F::FUNCTION { name, outVars, functionArguments, .. } => {
+            let params = var_sigtys(functionArguments)?;
+            let results = var_sigtys(outVars)?;
+            Ok((mangle(name)?, FnSig { params, results }))
+        }
+        // A known scalar-math `external "C"`/"builtin" function is lowered to a
+        // wasm function calling the corresponding host import ([Approach C]).
+        F::EXTERNAL_FUNCTION { name, outVars, funArgs, .. } if external_known(f) => {
+            let params = var_sigtys(funArgs)?;
+            let results = var_sigtys(outVars)?;
+            Ok((mangle(name)?, FnSig { params, results }))
+        }
+        _ => bail!("CodegenWasmJit: only plain Modelica/MetaModelica FUNCTIONs and known scalar-math external functions are supported"),
+    }
+}
+
+/// Whether an `external "C"`/"builtin" function maps to a known host math builtin
+/// we can route (Approach C, name-based). Only simple return-style scalar
+/// functions — `output := extName(inputs)`, all-scalar args/result, no
+/// output-pointer arguments — qualify; arrays, output-arg style, or an unknown
+/// `extName` are left to fail loudly (the array/library ABI is future work).
+fn external_known(f: &SimCodeFunction::Function::Function) -> bool {
+    use SimCodeFunction::SimExtArg::SimExtArg as A;
+    let SimCodeFunction::Function::Function::EXTERNAL_FUNCTION { extName, funArgs, outVars, extReturn, extArgs, .. } = f else {
+        return false;
     };
-    let params = var_sigtys(functionArguments)?;
-    let results = var_sigtys(outVars)?;
-    Ok((mangle(name)?, FnSig { params, results }))
+    // One output, produced as the C call's return value (not via an output ptr).
+    if (&**outVars).into_iter().count() != 1 || matches!(&**extReturn, A::SIMNOEXTARG) {
+        return false;
+    }
+    // Every external-call argument must be an input (or a constant exp), never an
+    // output pointer or a size argument.
+    let args_ok = (&**extArgs).into_iter().all(|a| match &**a {
+        A::SIMEXTARG { isInput, .. } => *isInput,
+        A::SIMEXTARGEXP { .. } => true,
+        _ => false,
+    });
+    if !args_ok {
+        return false;
+    }
+    let (Ok(ins), Ok(outs)) = (var_sigtys(funArgs), var_sigtys(outVars)) else {
+        return false;
+    };
+    supported_external(extName, &ins, &outs[0])
+}
+
+/// Whether external function `ext_name` with input types `ins` and result type
+/// `out` is one this codegen can route (Approach C, name-based). Covers scalar
+/// libm math (host builtins / inline) and the pure `ModelicaStrings` functions
+/// that map directly to existing runtime string ops.
+fn supported_external(ext_name: &str, ins: &[SigTy], out: &SigTy) -> bool {
+    let scalar = |s: &SigTy| matches!(s, SigTy::Int | SigTy::Real | SigTy::Bool);
+    match ext_name {
+        // `Modelica.Utilities.Strings.length` → `rt_str_len`.
+        "ModelicaStrings_length" => matches!(ins, [SigTy::Str]) && matches!(out, SigTy::Int),
+        // `Modelica.Utilities.Strings.substring` → `rt_substring` (1-based incl.).
+        "ModelicaStrings_substring" => matches!(ins, [SigTy::Str, SigTy::Int, SigTy::Int]) && matches!(out, SigTy::Str),
+        // Scalar math: a host transcendental or single-instruction math function.
+        _ if builtin_index(ext_name).is_some() || matches!(ext_name, "sqrt" | "fabs" | "floor" | "ceil") => {
+            ins.iter().all(scalar) && scalar(out)
+        }
+        _ => false,
+    }
 }
 
 /// The input/output scalar `SigTy`s of the main function, for the sidecar.
 fn main_sig_types(f: &SimCodeFunction::Function::Function) -> Result<(Vec<SigTy>, Vec<SigTy>)> {
-    let SimCodeFunction::Function::Function::FUNCTION { outVars, functionArguments, .. } = f else {
-        bail!("CodegenWasmJit: only plain FUNCTIONs are supported");
-    };
-    Ok((var_sigtys(functionArguments)?, var_sigtys(outVars)?))
+    use SimCodeFunction::Function::Function as F;
+    match f {
+        F::FUNCTION { outVars, functionArguments, .. } => Ok((var_sigtys(functionArguments)?, var_sigtys(outVars)?)),
+        F::EXTERNAL_FUNCTION { outVars, funArgs, .. } if external_known(f) => Ok((var_sigtys(funArgs)?, var_sigtys(outVars)?)),
+        _ => bail!("CodegenWasmJit: only plain FUNCTIONs and known scalar-math external functions are supported"),
+    }
 }
 
 fn var_sigtys(vars: &Arc<List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Vec<SigTy>> {
@@ -694,6 +768,9 @@ fn compile_function(
     by_name: &HashMap<String, FnInfo>,
     literals: &mut Vec<Vec<u8>>,
 ) -> Result<we::Function> {
+    if matches!(f, SimCodeFunction::Function::Function::EXTERNAL_FUNCTION { .. }) {
+        return compile_external_function(f, by_name, literals);
+    }
     let SimCodeFunction::Function::Function::FUNCTION { outVars, functionArguments, variableDeclarations, body, .. } = f
     else {
         bail!("CodegenWasmJit: only plain FUNCTIONs are supported");
@@ -762,6 +839,118 @@ fn compile_function(
         func.instruction(i);
     }
     Ok(func)
+}
+
+/// Lower a known scalar-math `external "C"`/"builtin" function (see
+/// [`external_known`]) to a wasm function body that calls the corresponding host
+/// builtin: `output := extName(extArgs…)`. The inputs are the wasm parameters;
+/// the external-call arguments (`extArgs`) reference them (or are constant
+/// expressions). Only the return-value form is reached here.
+fn compile_external_function(
+    f: &SimCodeFunction::Function::Function,
+    by_name: &HashMap<String, FnInfo>,
+    literals: &mut Vec<Vec<u8>>,
+) -> Result<we::Function> {
+    use SimCodeFunction::SimExtArg::SimExtArg as A;
+    let SimCodeFunction::Function::Function::EXTERNAL_FUNCTION { funArgs, outVars, extName, extArgs, .. } = f else {
+        bail!("CodegenWasmJit: compile_external_function on a non-external function");
+    };
+
+    let mut locals: HashMap<String, (u32, SigTy)> = HashMap::new();
+    let mut idx: u32 = 0;
+    for v in &**funArgs {
+        let (name, sty) = var_name_ty(v)?;
+        locals.insert(name, (idx, sty));
+        idx += 1;
+    }
+    let n_params = idx;
+    let mut extra_locals: Vec<we::ValType> = Vec::new();
+    let mut outputs: Vec<(u32, SigTy)> = Vec::new();
+    for v in &**outVars {
+        let (name, sty) = var_name_ty(v)?;
+        extra_locals.push(sty.wty().val());
+        let slot = (idx, sty.clone());
+        locals.insert(name, slot.clone());
+        outputs.push(slot);
+        idx += 1;
+    }
+
+    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new(), ctrl_depth: 0, loops: Vec::new(), borrowed_locals: Vec::new() };
+
+    // The external-call arguments, as ordinary expressions over the inputs.
+    let mut args: Vec<Arc<DAE::Exp>> = Vec::new();
+    for a in &**extArgs {
+        match &**a {
+            A::SIMEXTARG { cref, type_, .. } => {
+                args.push(Arc::new(DAE::Exp::CREF { componentRef: cref.clone(), ty: type_.clone() }));
+            }
+            A::SIMEXTARGEXP { exp, .. } => args.push(exp.clone()),
+            other => bail!("CodegenWasmJit: unsupported external-call argument {other:?}"),
+        }
+    }
+
+    let result = emit_known_external_call(&mut ctx, extName, &args)?;
+    let (out_idx, out_sty) = ctx.outputs[0].clone();
+    coerce(&mut ctx, result.wty(), out_sty.wty());
+    ctx.emit(we::Instruction::LocalSet(out_idx));
+    // Release heap parameters (e.g. a String input consumed by the callee), as a
+    // normal function body would; the output is excluded and moved out.
+    release_heap_locals(&mut ctx);
+    push_outputs(&mut ctx);
+    ctx.emit(we::Instruction::End);
+
+    let FnCtx { extra_locals, instrs, .. } = ctx;
+    let mut func = we::Function::new(extra_locals.into_iter().map(|t| (1u32, t)));
+    for i in &instrs {
+        func.instruction(i);
+    }
+    Ok(func)
+}
+
+/// Emit a call to a known math `extName` over already-lowered argument
+/// expressions, leaving the (scalar Real) result on the stack. Mirrors the
+/// host-builtin path of [`compile_math_builtin`]: an imported transcendental
+/// ([`BUILTINS`]) or a single-instruction math function emitted inline.
+fn emit_known_external_call(ctx: &mut FnCtx, ext_name: &str, args: &[Arc<DAE::Exp>]) -> Result<SigTy> {
+    // `ModelicaStrings_*` functions that map directly to existing runtime string
+    // ops (same lowering as the corresponding Modelica string builtins, so the
+    // argument ARC is handled identically).
+    match ext_name {
+        "ModelicaStrings_length" => {
+            str_unop(ctx, &args[0], "rt_str_len")?;
+            return Ok(SigTy::Int);
+        }
+        "ModelicaStrings_substring" => {
+            str_substring(ctx, &args[0], &args[1], &args[2])?;
+            return Ok(SigTy::Str);
+        }
+        _ => {}
+    }
+    if let Some(bi) = builtin_index(ext_name) {
+        let (_, params, _) = BUILTINS[bi as usize];
+        if args.len() != params.len() {
+            bail!("CodegenWasmJit: external `{ext_name}` expects {} args, got {}", params.len(), args.len());
+        }
+        for (a, p) in args.iter().zip(params.iter()) {
+            let w = compile_exp(ctx, a)?;
+            coerce(ctx, w, *p);
+        }
+        ctx.emit(we::Instruction::Call(bi));
+        return Ok(SigTy::Real);
+    }
+    if args.len() != 1 {
+        bail!("CodegenWasmJit: external `{ext_name}` expects 1 arg, got {}", args.len());
+    }
+    let w = compile_exp(ctx, &args[0])?;
+    coerce(ctx, w, WTy::F64);
+    match ext_name {
+        "sqrt" => ctx.emit(we::Instruction::F64Sqrt),
+        "fabs" => ctx.emit(we::Instruction::F64Abs),
+        "floor" => ctx.emit(we::Instruction::F64Floor),
+        "ceil" => ctx.emit(we::Instruction::F64Ceil),
+        other => bail!("CodegenWasmJit: external math function `{other}` not supported"),
+    }
+    Ok(SigTy::Real)
 }
 
 /// Intern a function variable into the locals map (allocating a wasm local slot
