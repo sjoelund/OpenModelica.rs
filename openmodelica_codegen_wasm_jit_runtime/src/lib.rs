@@ -292,6 +292,34 @@ pub extern "C" fn rt_array_elem_ptr(obj: u32, index: i32) -> u32 {
     arr_data(obj) + (index as u32 - 1) * elem_stride(kind)
 }
 
+/// Copy every element of `src` into `dst` starting at the 0-based element
+/// offset `dst_off`. Heap elements are copied with value semantics (`copy_kind`:
+/// strings retained, arrays/records deep-copied), so the destination owns its
+/// own references. The two arrays must share the same element kind — the codegen
+/// guarantees this when flattening a nested array constructor whose elements are
+/// themselves arrays (`{v, w}` of vectors). Used by `compile_array_literal`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_blit(dst: u32, dst_off: u32, src: u32) {
+    if src == 0 {
+        return;
+    }
+    let kind = unsafe { load_u32(src + ARR_KIND_OFF) };
+    let stride = elem_stride(kind);
+    let n = rt_array_total(src);
+    let sdata = arr_data(src);
+    let ddata = arr_data(dst) + dst_off * stride;
+    for i in 0..n {
+        let s = sdata + i * stride;
+        let d = ddata + i * stride;
+        if kind == EK_REAL {
+            unsafe { store_f64(d, load_f64(s)) };
+        } else {
+            let v = unsafe { load_u32(s) };
+            unsafe { store_u32(d, copy_kind(kind, v)) };
+        }
+    }
+}
+
 /// Value-semantics copy of an array: a fresh array (refcount 1) with the same
 /// kind/dimensions and independent storage, so mutating either does not affect
 /// the other. Strings are immutable, so a String element is shared with a

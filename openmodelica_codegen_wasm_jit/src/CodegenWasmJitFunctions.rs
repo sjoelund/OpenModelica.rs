@@ -408,6 +408,9 @@ pub(crate) const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // buffer). The function half reaches the allocator only indirectly (via
     // `rt_str_new`/`rt_array_new`), so it is imported here for the first time.
     ("rt_alloc", &[WTy::I32], &[WTy::I32]),
+    // Copy all elements of `src` into `dst` at a 0-based element offset (used to
+    // build an array constructor whose elements are themselves arrays).
+    ("rt_array_blit", &[WTy::I32, WTy::I32, WTy::I32], &[]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -3760,11 +3763,12 @@ fn compile_array_literal(ctx: &mut FnCtx, ty: &DAE::Type, whole: &DAE::Exp) -> R
         bail!("CodegenWasmJit: array constructor rank {rank} does not match {} dimensions", dims.len());
     }
     let total: u32 = dims.iter().product();
+    // The top-level structure (`ARRAY`/`MATRIX` nodes) is flattened to its
+    // outermost element expressions. Each is either a scalar (one element) or an
+    // array-valued expression (a sub-array, e.g. `{v, w}` of vectors) whose
+    // elements are blitted in. (Scalar leaves remain the common case.)
     let mut leaves = Vec::new();
     flatten_array_exp(whole, &mut leaves);
-    if leaves.len() as u32 != total {
-        bail!("CodegenWasmJit: array constructor has {} elements but type implies {total}", leaves.len());
-    }
 
     // obj = rt_array_new(elem_kind, rank, total); set each dimension size.
     let obj = ctx.alloc_temp(WTy::I32);
@@ -3779,17 +3783,89 @@ fn compile_array_literal(ctx: &mut FnCtx, ty: &DAE::Type, whole: &DAE::Exp) -> R
         ctx.emit(we::Instruction::I32Const(*d as i32));
         ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
     }
-    // Store each leaf at its row-major position (1-based linear index).
-    for (k, leaf) in leaves.iter().enumerate() {
-        ctx.emit(we::Instruction::LocalGet(obj));
-        ctx.emit(we::Instruction::I32Const(k as i32 + 1));
-        ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
-        let w = compile_exp(ctx, leaf)?;
-        coerce(ctx, w, elem.wty());
-        elem_store(ctx, &elem);
+    // Store each leaf at its row-major position. A scalar leaf occupies one
+    // element; an array-valued leaf contributes its whole (row-major) contents.
+    let mut k: u32 = 0; // running 0-based element index
+    for leaf in &leaves {
+        match leaf_array_count(leaf)? {
+            None => {
+                // Scalar element.
+                ctx.emit(we::Instruction::LocalGet(obj));
+                ctx.emit(we::Instruction::I32Const(k as i32 + 1));
+                ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+                let w = compile_exp(ctx, leaf)?;
+                coerce(ctx, w, elem.wty());
+                elem_store(ctx, &elem);
+                k += 1;
+            }
+            Some(n) => {
+                // Array-valued element: evaluate to an owned handle, blit its
+                // elements into the result at the running offset, then release it.
+                let h = ctx.alloc_temp(WTy::I32);
+                compile_exp(ctx, leaf)?;
+                ctx.emit(we::Instruction::LocalSet(h));
+                ctx.emit(we::Instruction::LocalGet(obj));
+                ctx.emit(we::Instruction::I32Const(k as i32));
+                ctx.emit(we::Instruction::LocalGet(h));
+                ctx.emit(we::Instruction::Call(rt_index("rt_array_blit")));
+                ctx.emit(we::Instruction::LocalGet(h));
+                ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
+                k += n;
+            }
+        }
+    }
+    if k != total {
+        bail!("CodegenWasmJit: array constructor produced {k} elements but type implies {total}");
     }
     ctx.emit(we::Instruction::LocalGet(obj));
     Ok(())
+}
+
+/// The number of scalar elements an array constructor *leaf* contributes:
+/// `None` for a scalar leaf, `Some(n)` for an array-valued leaf (a sub-array of
+/// `n` elements, from its constant dimensions). Fails if the leaf is an array of
+/// non-constant size (the dynamic case is not handled in a constructor).
+fn leaf_array_count(exp: &DAE::Exp) -> Result<Option<u32>> {
+    match exp_dae_type(exp) {
+        Some(ty) if matches!(&*ty, DAE::Type::T_ARRAY { .. }) => {
+            Ok(Some(const_dims(&ty)?.iter().product()))
+        }
+        _ => Ok(None),
+    }
+}
+
+/// The DAE type an expression carries, for the cases that can appear as an
+/// array-constructor leaf. `None` when no type annotation is readily available
+/// (treated as a scalar leaf by [`leaf_array_count`]).
+fn exp_dae_type(exp: &DAE::Exp) -> Option<Arc<DAE::Type>> {
+    use DAE::Exp as E;
+    match exp {
+        E::CREF { ty, .. } | E::CAST { ty, .. } | E::ARRAY { ty, .. } | E::MATRIX { ty, .. } | E::RANGE { ty, .. } => {
+            Some(ty.clone())
+        }
+        E::CALL { attr, .. } => Some(attr.ty.clone()),
+        E::SHARED_LITERAL { exp, .. } => exp_dae_type(exp),
+        E::BINARY { operator, .. } | E::UNARY { operator, .. } => operator_dae_type(operator),
+        _ => None,
+    }
+}
+
+/// The result DAE type carried by an arithmetic operator (for the array-valued
+/// operators that can appear as a constructor leaf). `None` for operators that
+/// do not carry a usable type here.
+fn operator_dae_type(op: &DAE::Operator) -> Option<Arc<DAE::Type>> {
+    use DAE::Operator as O;
+    match op {
+        O::ADD { ty } | O::SUB { ty } | O::MUL { ty } | O::DIV { ty } | O::POW { ty } | O::UMINUS { ty }
+        | O::MUL_SCALAR_PRODUCT { ty } | O::MUL_MATRIX_PRODUCT { ty }
+        | O::UMINUS_ARR { ty } | O::ADD_ARR { ty } | O::SUB_ARR { ty } | O::MUL_ARR { ty } | O::DIV_ARR { ty }
+        | O::MUL_ARRAY_SCALAR { ty } | O::ADD_ARRAY_SCALAR { ty } | O::SUB_SCALAR_ARRAY { ty }
+        | O::DIV_ARRAY_SCALAR { ty } | O::DIV_SCALAR_ARRAY { ty }
+        | O::POW_ARRAY_SCALAR { ty } | O::POW_SCALAR_ARRAY { ty } | O::POW_ARR { ty } | O::POW_ARR2 { ty } => {
+            Some(ty.clone())
+        }
+        _ => None,
+    }
 }
 
 /// Lower a range used as an array value (`start:step:stop`, step default 1).
