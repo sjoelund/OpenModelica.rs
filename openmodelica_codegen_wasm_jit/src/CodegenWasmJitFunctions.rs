@@ -325,6 +325,9 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // (src, nspec, spec) where `spec` is an Integer array of (kind, value) pairs
     // per source axis (kind 0 INDEX, 1 WHOLE, 2 SLICE). Returns a fresh array.
     ("rt_array_slice", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    // `cat(dim, a1, ..., an)`: (dim, n, handles) where `handles` is an Integer
+    // array of the `n` input array handles. Returns a fresh concatenated array.
+    ("rt_array_cat", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -2876,6 +2879,49 @@ fn compile_array_builtin(
             ctx.emit(we::Instruction::LocalGet(at));
             ctx.emit(we::Instruction::Call(rt_index("rt_array_transpose")));
             release_temp_array(ctx, at);
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        // cat(dim, a1, ..., an): concatenate arrays along dimension `dim` into a
+        // fresh array. The inputs are passed to the runtime as an Integer array
+        // of handles; both the handle array and the inputs are released after.
+        "cat" if argv.len() >= 2 => {
+            let n = (argv.len() - 1) as u32;
+            let dim_t = ctx.alloc_temp(WTy::I32);
+            let w = compile_exp(ctx, argv[0])?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(dim_t));
+            // Integer[n] array of the input handles.
+            let handles_t = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::I32Const(0)); // EK_INT
+            ctx.emit(we::Instruction::I32Const(1)); // ndims
+            ctx.emit(we::Instruction::I32Const(n as i32)); // total
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+            ctx.emit(we::Instruction::LocalSet(handles_t));
+            let mut in_temps = Vec::with_capacity(n as usize);
+            for (i, a) in argv[1..].iter().enumerate() {
+                if array_elem(a)?.is_none() {
+                    bail!("CodegenWasmJit: cat argument is not an array");
+                }
+                ctx.emit(we::Instruction::LocalGet(handles_t));
+                ctx.emit(we::Instruction::I32Const(i as i32 + 1));
+                ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+                compile_exp(ctx, a)?; // owned input array handle
+                let t = ctx.alloc_temp(WTy::I32);
+                ctx.emit(we::Instruction::LocalTee(t));
+                ctx.emit(we::Instruction::I32Store(mem_arg(0, 2)));
+                in_temps.push(t);
+            }
+            ctx.emit(we::Instruction::LocalGet(dim_t));
+            ctx.emit(we::Instruction::I32Const(n as i32));
+            ctx.emit(we::Instruction::LocalGet(handles_t));
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_cat")));
+            let result_t = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(result_t));
+            for t in in_temps {
+                release_temp_array(ctx, t);
+            }
+            release_temp_array(ctx, handles_t);
+            ctx.emit(we::Instruction::LocalGet(result_t));
             Ok(Some(sig_ty(&attr.ty)?))
         }
         // ndims(a) -> Integer.

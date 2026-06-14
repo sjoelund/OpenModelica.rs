@@ -1101,6 +1101,82 @@ mod tests {
         assert_eq!((rf(&mut store, pick, 1), rf(&mut store, pick, 2)), (3.0, 1.0));
     }
 
+    /// `rt_array_cat` on Real arrays: a 1-D 3-way concat along dim 1, and a 2-D
+    /// concat along dim 2 (strided copy into the result).
+    #[test]
+    fn precompiled_runtime_array_cat() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let total = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_total").unwrap();
+        let cat = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_cat").unwrap();
+        let rf = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 8];
+            mem.read(&*store, addr, &mut b).unwrap();
+            f64::from_le_bytes(b)
+        };
+        // Build a 1-D Real vector from a slice of values.
+        let vec = |store: &mut Store, vals: &[f64]| -> i32 {
+            let h = arr_new.call(&mut *store, (1, 1, vals.len() as i32)).unwrap();
+            set_dim.call(&mut *store, (h, 0, vals.len() as i32)).unwrap();
+            for (k, v) in vals.iter().enumerate() {
+                let addr = elem_ptr.call(&mut *store, (h, k as i32 + 1)).unwrap() as usize;
+                mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+            }
+            h
+        };
+        // An Integer array of handles for the cat call.
+        let handles = |store: &mut Store, hs: &[i32]| -> i32 {
+            let h = arr_new.call(&mut *store, (0, 1, hs.len() as i32)).unwrap();
+            for (k, v) in hs.iter().enumerate() {
+                let addr = elem_ptr.call(&mut *store, (h, k as i32 + 1)).unwrap() as usize;
+                mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+            }
+            h
+        };
+
+        // cat(1, {1}, {2,3}, {4,5,6}) = {1,2,3,4,5,6}.
+        let a = vec(&mut store, &[1.0]);
+        let b = vec(&mut store, &[2.0, 3.0]);
+        let c = vec(&mut store, &[4.0, 5.0, 6.0]);
+        let hs = handles(&mut store, &[a, b, c]);
+        let r = cat.call(&mut store, (1, 3, hs)).unwrap();
+        assert_eq!(total.call(&mut store, r).unwrap(), 6);
+        for k in 0..6 {
+            assert_eq!(rf(&mut store, r, k + 1), (k + 1) as f64);
+        }
+
+        // cat(2, [[1,2],[3,4]], [[5],[6]]) = [[1,2,5],[3,4,6]] (strided copy).
+        let m = arr_new.call(&mut store, (1, 2, 4)).unwrap();
+        set_dim.call(&mut store, (m, 0, 2)).unwrap();
+        set_dim.call(&mut store, (m, 1, 2)).unwrap();
+        for (k, v) in [1.0f64, 2.0, 3.0, 4.0].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (m, k as i32 + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &v.to_le_bytes()).unwrap();
+        }
+        let p = arr_new.call(&mut store, (1, 2, 2)).unwrap();
+        set_dim.call(&mut store, (p, 0, 2)).unwrap();
+        set_dim.call(&mut store, (p, 1, 1)).unwrap();
+        for (k, v) in [5.0f64, 6.0].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (p, k as i32 + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &v.to_le_bytes()).unwrap();
+        }
+        let hs = handles(&mut store, &[m, p]);
+        let r = cat.call(&mut store, (2, 2, hs)).unwrap();
+        assert_eq!((dim.call(&mut store, (r, 1)).unwrap(), dim.call(&mut store, (r, 2)).unwrap()), (2, 3));
+        // row-major [[1,2,5],[3,4,6]] = 1,2,5,3,4,6.
+        for (k, want) in [1.0f64, 2.0, 5.0, 3.0, 4.0, 6.0].iter().enumerate() {
+            assert_eq!(rf(&mut store, r, k as i32 + 1), *want);
+        }
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {

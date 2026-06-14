@@ -479,6 +479,94 @@ pub extern "C" fn rt_array_slice(src: u32, nspec: u32, spec: u32) -> u32 {
     result
 }
 
+/// Concatenate `n` arrays along dimension `dim` (1-based) into a fresh
+/// (refcount-1) array — the runtime counterpart of `cat(dim, a1, ..., an)`.
+/// `handles` is an Integer array of the `n` input array handles. The inputs
+/// share rank and element kind and agree on every dimension except `dim`; the
+/// result keeps that shape with its `dim` size the sum of the inputs' `dim`
+/// sizes. Elements are copied row-major with a running offset along `dim`; heap
+/// elements are deep-copied (`copy_kind`) for value semantics. The inputs are
+/// read only — the caller still owns and releases them.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_cat(dim: u32, n: u32, handles: u32) -> u32 {
+    let hdata = arr_data(handles);
+    let first = unsafe { load_u32(hdata) };
+    let kind = unsafe { load_u32(first + ARR_KIND_OFF) };
+    let ndims = rt_array_ndims(first);
+    let axis = dim - 1; // 0-based concatenation axis
+
+    // Result total: product of dims, where the `axis` dim is the sum over inputs.
+    let mut total = 1u32;
+    for a in 0..ndims {
+        let d = if a == axis {
+            let mut s = 0u32;
+            for c in 0..n {
+                s += rt_array_dim(unsafe { load_u32(hdata + c * 4) }, a as i32 + 1);
+            }
+            s
+        } else {
+            rt_array_dim(first, a as i32 + 1)
+        };
+        total *= d;
+    }
+    let result = rt_array_new(kind, ndims, total);
+    for a in 0..ndims {
+        let d = if a == axis {
+            let mut s = 0u32;
+            for c in 0..n {
+                s += rt_array_dim(unsafe { load_u32(hdata + c * 4) }, a as i32 + 1);
+            }
+            s
+        } else {
+            rt_array_dim(first, a as i32 + 1)
+        };
+        rt_array_set_dim(result, a, d);
+    }
+
+    let scratch = rt_alloc(ndims * 4); // per-axis source coordinate
+    let stride = elem_stride(kind);
+    let heap = matches!(kind, EK_STR | EK_ARRAY | EK_RECORD);
+    let dst_base = arr_data(result);
+    let mut off = 0u32; // running offset of this input along `axis`
+    for c in 0..n {
+        let src = unsafe { load_u32(hdata + c * 4) };
+        let src_total = rt_array_total(src);
+        let src_base = arr_data(src);
+        for e in 0..src_total {
+            // Decompose `e` into per-axis source coordinates (row-major).
+            let mut rem = e;
+            let mut a = ndims;
+            while a > 0 {
+                a -= 1;
+                let d = rt_array_dim(src, a as i32 + 1);
+                unsafe { store_u32(scratch + a * 4, rem % d) };
+                rem /= d;
+            }
+            // Shift the concatenation axis by this input's running offset.
+            let shifted = unsafe { load_u32(scratch + axis * 4) } + off;
+            unsafe { store_u32(scratch + axis * 4, shifted) };
+            // Recompose into the result linear index (row-major over result dims).
+            let mut r = 0u32;
+            for a in 0..ndims {
+                let rd = unsafe { load_u32(result + ARR_DIMS_OFF + a * 4) };
+                r = r * rd + unsafe { load_u32(scratch + a * 4) };
+            }
+            let sp = src_base + e * stride;
+            let dp = dst_base + r * stride;
+            unsafe {
+                core::ptr::copy_nonoverlapping(sp as *const u8, dp as *mut u8, stride as usize);
+                if heap {
+                    store_u32(dp, copy_kind(kind, load_u32(dp)));
+                }
+            }
+        }
+        off += rt_array_dim(src, dim as i32);
+    }
+
+    rt_free(scratch);
+    result
+}
+
 // ---------------------------------------------------------------------------
 // Records (heterogeneous, self-describing via an inline heap-field table)
 // ---------------------------------------------------------------------------
