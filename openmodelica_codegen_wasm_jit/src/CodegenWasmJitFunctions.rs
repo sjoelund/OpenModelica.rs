@@ -249,6 +249,15 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_release", &[WTy::I32], &[]),
     // Value-semantics copy (for whole-array assignment from a variable source).
     ("rt_array_copy", &[WTy::I32], &[WTy::I32]),
+    // Element-wise builtins: fill (zeros/ones), and reductions sum/product/min/max.
+    ("rt_array_fill_i32", &[WTy::I32, WTy::I32], &[]),
+    ("rt_array_fill_f64", &[WTy::I32, WTy::F64], &[]),
+    ("rt_array_sum_i32", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_sum_f64", &[WTy::I32], &[WTy::F64]),
+    ("rt_array_product_i32", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_product_f64", &[WTy::I32], &[WTy::F64]),
+    ("rt_array_extreme_i32", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_extreme_f64", &[WTy::I32, WTy::I32], &[WTy::F64]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1409,6 +1418,14 @@ fn compile_math_builtin(
     attr: &DAE::CallAttributes,
 ) -> Result<SigTy> {
     let argv: Vec<&Arc<DAE::Exp>> = (&**args).into_iter().collect();
+
+    // Array-valued / array-reducing builtins (fill/zeros/ones, sum/product, the
+    // one-array forms of min/max, ndims) take precedence over the scalar math
+    // handling below (which also defines the two-argument min/max).
+    if let Some(sig) = compile_array_builtin(ctx, name, &argv, attr)? {
+        return Ok(sig);
+    }
+
     let result_sig = sig_ty(&attr.ty).unwrap_or(SigTy::Real);
     let result_wty = result_sig.wty();
 
@@ -1966,6 +1983,169 @@ fn compile_size(ctx: &mut FnCtx, exp: &DAE::Exp, sz: Option<&DAE::Exp>) -> Resul
     coerce(ctx, w, WTy::I32);
     ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
     release_temp_array(ctx, arr_t); // leaves the dim value
+    Ok(())
+}
+
+/// The scalar element type of an array-typed expression, or `None` if it is not
+/// an array (so an overloaded builtin can fall through to its scalar form).
+fn array_elem(e: &DAE::Exp) -> Result<Option<Arc<SigTy>>> {
+    Ok(match exp_sigty(e)? {
+        SigTy::Array { elem, .. } => Some(elem),
+        _ => None,
+    })
+}
+
+/// Lower the array builtins. Returns `Some(result type)` if `name` is one of
+/// them (with the right argument shape), else `None` so the scalar math handler
+/// runs. Numeric only (Integer/Boolean/Real elements); a heap-element array
+/// (e.g. `sum` of a `String[]`, which is not valid Modelica anyway) is rejected
+/// by the runtime dispatch picking an i32/f64 path.
+fn compile_array_builtin(
+    ctx: &mut FnCtx,
+    name: &str,
+    argv: &[&Arc<DAE::Exp>],
+    attr: &DAE::CallAttributes,
+) -> Result<Option<SigTy>> {
+    match name {
+        // fill(s, d1, ..., dk): array of the given dims, every element = s.
+        "fill" => {
+            if argv.len() < 2 {
+                bail!("CodegenWasmJit: fill expects a value and at least one dimension");
+            }
+            let arr_ty = sig_ty(&attr.ty)?;
+            let SigTy::Array { elem, .. } = &arr_ty else {
+                bail!("CodegenWasmJit: fill result is not an array ({arr_ty:?})");
+            };
+            let obj = emit_alloc_from_exprs(ctx, elem, &argv[1..])?;
+            emit_fill_value(ctx, obj, elem, argv[0])?;
+            ctx.emit(we::Instruction::LocalGet(obj));
+            Ok(Some(arr_ty))
+        }
+        // zeros(d...) / ones(d...): like fill with a constant 0 / 1.
+        "zeros" | "ones" => {
+            if argv.is_empty() {
+                bail!("CodegenWasmJit: {name} expects at least one dimension");
+            }
+            let arr_ty = sig_ty(&attr.ty)?;
+            let SigTy::Array { elem, .. } = &arr_ty else {
+                bail!("CodegenWasmJit: {name} result is not an array ({arr_ty:?})");
+            };
+            let obj = emit_alloc_from_exprs(ctx, elem, argv)?;
+            emit_fill_const(ctx, obj, elem, if name == "ones" { 1 } else { 0 });
+            ctx.emit(we::Instruction::LocalGet(obj));
+            Ok(Some(arr_ty))
+        }
+        // sum(a) / product(a) over all elements -> scalar of the element type.
+        "sum" | "product" if argv.len() == 1 => match array_elem(argv[0])? {
+            None => Ok(None),
+            Some(elem) => {
+                let rt = match (name, elem.wty()) {
+                    ("sum", WTy::F64) => "rt_array_sum_f64",
+                    ("sum", WTy::I32) => "rt_array_sum_i32",
+                    (_, WTy::F64) => "rt_array_product_f64",
+                    (_, WTy::I32) => "rt_array_product_i32",
+                };
+                emit_array_reduce(ctx, argv[0], rt, None)?;
+                Ok(Some((*elem).clone()))
+            }
+        },
+        // min(a) / max(a) of a single array (the two-argument forms are scalar
+        // and handled by the math builtins).
+        "min" | "max" if argv.len() == 1 => match array_elem(argv[0])? {
+            None => Ok(None),
+            Some(elem) => {
+                let rt = if elem.wty() == WTy::F64 { "rt_array_extreme_f64" } else { "rt_array_extreme_i32" };
+                emit_array_reduce(ctx, argv[0], rt, Some(if name == "max" { 1 } else { 0 }))?;
+                Ok(Some((*elem).clone()))
+            }
+        },
+        // ndims(a) -> Integer.
+        "ndims" if argv.len() == 1 => {
+            if array_elem(argv[0])?.is_none() {
+                bail!("CodegenWasmJit: ndims of a non-array expression");
+            }
+            emit_array_reduce(ctx, argv[0], "rt_array_ndims", None)?;
+            Ok(Some(SigTy::Int))
+        }
+        _ => Ok(None),
+    }
+}
+
+/// Allocate a fresh array of element type `elem` whose dimensions are the given
+/// expressions (evaluated at runtime). Returns the scratch local holding the
+/// owned array handle.
+fn emit_alloc_from_exprs(ctx: &mut FnCtx, elem: &SigTy, dim_exprs: &[&Arc<DAE::Exp>]) -> Result<u32> {
+    let rank = dim_exprs.len() as u32;
+    let mut dim_temps = Vec::with_capacity(dim_exprs.len());
+    for de in dim_exprs {
+        let t = ctx.alloc_temp(WTy::I32);
+        let w = compile_exp(ctx, de)?;
+        coerce(ctx, w, WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(t));
+        dim_temps.push(t);
+    }
+    ctx.emit(we::Instruction::LocalGet(dim_temps[0]));
+    for t in &dim_temps[1..] {
+        ctx.emit(we::Instruction::LocalGet(*t));
+        ctx.emit(we::Instruction::I32Mul);
+    }
+    let total_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(total_t));
+    let obj = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(elem.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(rank as i32));
+    ctx.emit(we::Instruction::LocalGet(total_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(obj));
+    for (axis, t) in dim_temps.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::I32Const(axis as i32));
+        ctx.emit(we::Instruction::LocalGet(*t));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+    }
+    Ok(obj)
+}
+
+/// Fill every element of array `obj` with the value of `val` (the `fill` value).
+fn emit_fill_value(ctx: &mut FnCtx, obj: u32, elem: &SigTy, val: &DAE::Exp) -> Result<()> {
+    ctx.emit(we::Instruction::LocalGet(obj));
+    let w = compile_exp(ctx, val)?;
+    coerce(ctx, w, elem.wty());
+    ctx.emit(we::Instruction::Call(rt_index(fill_fn(elem))));
+    Ok(())
+}
+
+/// Fill every element of array `obj` with the integer constant `k` (for
+/// `zeros`/`ones`), converted to the element's wasm type.
+fn emit_fill_const(ctx: &mut FnCtx, obj: u32, elem: &SigTy, k: i32) {
+    ctx.emit(we::Instruction::LocalGet(obj));
+    match elem.wty() {
+        WTy::I32 => ctx.emit(we::Instruction::I32Const(k)),
+        WTy::F64 => ctx.emit(we::Instruction::F64Const((k as f64).into())),
+    }
+    ctx.emit(we::Instruction::Call(rt_index(fill_fn(elem))));
+}
+
+fn fill_fn(elem: &SigTy) -> &'static str {
+    match elem.wty() {
+        WTy::F64 => "rt_array_fill_f64",
+        WTy::I32 => "rt_array_fill_i32",
+    }
+}
+
+/// Reduce an array to a scalar via runtime function `rt_fn` (optionally with an
+/// extra `i32` argument, e.g. the min/max selector). The array operand is owned
+/// (released after); the scalar result is left on the stack.
+fn emit_array_reduce(ctx: &mut FnCtx, arr: &DAE::Exp, rt_fn: &str, extra: Option<i32>) -> Result<()> {
+    compile_exp(ctx, arr)?; // owned array handle
+    let a_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(a_t));
+    ctx.emit(we::Instruction::LocalGet(a_t));
+    if let Some(k) = extra {
+        ctx.emit(we::Instruction::I32Const(k));
+    }
+    ctx.emit(we::Instruction::Call(rt_index(rt_fn)));
+    release_temp_array(ctx, a_t); // leaves the scalar result
     Ok(())
 }
 

@@ -583,6 +583,40 @@ mod tests {
         arr_release.call(&mut store, orig).unwrap();
     }
 
+    /// The numeric array builtins (`fill`/`zeros`/`ones`, `sum`/`product`,
+    /// `min`/`max`) over a Real array.
+    #[test]
+    fn precompiled_runtime_array_builtins() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let fill_f64 = inst.get_typed_func::<(i32, f64), ()>(&mut store, "rt_array_fill_f64").unwrap();
+        let sum_f64 = inst.get_typed_func::<i32, f64>(&mut store, "rt_array_sum_f64").unwrap();
+        let product_f64 = inst.get_typed_func::<i32, f64>(&mut store, "rt_array_product_f64").unwrap();
+        let extreme_f64 = inst.get_typed_func::<(i32, i32), f64>(&mut store, "rt_array_extreme_f64").unwrap();
+
+        // fill a Real[3] with 2.5 -> sum 7.5, product 15.625.
+        let a = arr_new.call(&mut store, (1, 1, 3)).unwrap();
+        set_dim.call(&mut store, (a, 0, 3)).unwrap();
+        fill_f64.call(&mut store, (a, 2.5)).unwrap();
+        assert_eq!(sum_f64.call(&mut store, a).unwrap(), 7.5);
+        assert_eq!(product_f64.call(&mut store, a).unwrap(), 2.5 * 2.5 * 2.5);
+
+        // Distinct values for min/max.
+        for (k, v) in [(1, 3.0), (2, 1.0), (3, 4.0)] {
+            let addr = elem_ptr.call(&mut store, (a, k)).unwrap() as usize;
+            mem.write(&mut store, addr, &(v as f64).to_le_bytes()).unwrap();
+        }
+        assert_eq!(extreme_f64.call(&mut store, (a, 0)).unwrap(), 1.0); // min
+        assert_eq!(extreme_f64.call(&mut store, (a, 1)).unwrap(), 4.0); // max
+    }
+
     /// `rt_real_format` (`String(Real, significantDigits, minimumLength,
     /// leftJustified)`) must match the canonical `printf`-`%g` formatter that
     /// `Ceval.cevalBuiltinString` / the C target use, and `rt_str_pad`

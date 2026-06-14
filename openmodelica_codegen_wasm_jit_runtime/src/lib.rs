@@ -65,6 +65,21 @@ unsafe fn store_u32(addr: u32, v: u32) {
     unsafe { core::ptr::write_unaligned(addr as *mut u32, v) }
 }
 
+#[inline]
+unsafe fn load_i32(addr: u32) -> i32 {
+    unsafe { core::ptr::read_unaligned(addr as *const i32) }
+}
+
+#[inline]
+unsafe fn load_f64(addr: u32) -> f64 {
+    unsafe { core::ptr::read_unaligned(addr as *const f64) }
+}
+
+#[inline]
+unsafe fn store_f64(addr: u32, v: f64) {
+    unsafe { core::ptr::write_unaligned(addr as *mut f64, v) }
+}
+
 // ---------------------------------------------------------------------------
 // Allocator + reference counting
 // ---------------------------------------------------------------------------
@@ -314,6 +329,114 @@ pub extern "C" fn rt_array_release(obj: u32) {
         }
     }
     rt_free(obj);
+}
+
+// ---------------------------------------------------------------------------
+// Array builtins (numeric: Integer/Boolean live in i32, Real in f64)
+// ---------------------------------------------------------------------------
+//
+// These operate element-wise over the flat row-major data and so are
+// independent of rank. The codegen picks the i32 vs f64 variant from the
+// element type; `fill` is used for `fill`/`zeros`/`ones`, the reductions for
+// `sum`/`product`/`min`/`max`. The array's `total` is the element count.
+
+/// `fill(v, ...)` for an i32-element (Integer/Boolean) array: set every element.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_fill_i32(obj: u32, v: i32) {
+    let data = arr_data(obj);
+    for i in 0..rt_array_total(obj) {
+        unsafe { store_u32(data + i * 4, v as u32) };
+    }
+}
+
+/// `fill(v, ...)` for a Real array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_fill_f64(obj: u32, v: f64) {
+    let data = arr_data(obj);
+    for i in 0..rt_array_total(obj) {
+        unsafe { store_f64(data + i * 8, v) };
+    }
+}
+
+/// `sum(a)` over an i32-element array (wrapping, like Modelica Integer arithmetic).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_sum_i32(obj: u32) -> i32 {
+    let data = arr_data(obj);
+    let mut acc = 0i32;
+    for i in 0..rt_array_total(obj) {
+        acc = acc.wrapping_add(unsafe { load_i32(data + i * 4) });
+    }
+    acc
+}
+
+/// `sum(a)` over a Real array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_sum_f64(obj: u32) -> f64 {
+    let data = arr_data(obj);
+    let mut acc = 0.0f64;
+    for i in 0..rt_array_total(obj) {
+        acc += unsafe { load_f64(data + i * 8) };
+    }
+    acc
+}
+
+/// `product(a)` over an i32-element array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_product_i32(obj: u32) -> i32 {
+    let data = arr_data(obj);
+    let mut acc = 1i32;
+    for i in 0..rt_array_total(obj) {
+        acc = acc.wrapping_mul(unsafe { load_i32(data + i * 4) });
+    }
+    acc
+}
+
+/// `product(a)` over a Real array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_product_f64(obj: u32) -> f64 {
+    let data = arr_data(obj);
+    let mut acc = 1.0f64;
+    for i in 0..rt_array_total(obj) {
+        acc *= unsafe { load_f64(data + i * 8) };
+    }
+    acc
+}
+
+/// `min(a)`/`max(a)` over an i32-element array. An empty array is a runtime
+/// error in Modelica, so it traps (→ META_FAIL). `want_max != 0` selects max.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_extreme_i32(obj: u32, want_max: i32) -> i32 {
+    let total = rt_array_total(obj);
+    if total == 0 {
+        core::arch::wasm32::unreachable();
+    }
+    let data = arr_data(obj);
+    let mut acc = unsafe { load_i32(data) };
+    for i in 1..total {
+        let x = unsafe { load_i32(data + i * 4) };
+        if (want_max != 0 && x > acc) || (want_max == 0 && x < acc) {
+            acc = x;
+        }
+    }
+    acc
+}
+
+/// `min(a)`/`max(a)` over a Real array (see `rt_array_extreme_i32`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_extreme_f64(obj: u32, want_max: i32) -> f64 {
+    let total = rt_array_total(obj);
+    if total == 0 {
+        core::arch::wasm32::unreachable();
+    }
+    let data = arr_data(obj);
+    let mut acc = unsafe { load_f64(data) };
+    for i in 1..total {
+        let x = unsafe { load_f64(data + i * 8) };
+        if (want_max != 0 && x > acc) || (want_max == 0 && x < acc) {
+            acc = x;
+        }
+    }
+    acc
 }
 
 // ---------------------------------------------------------------------------
