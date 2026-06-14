@@ -318,6 +318,9 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_neg_i32", &[WTy::I32], &[WTy::I32]),
     ("rt_array_neg_f64", &[WTy::I32], &[WTy::I32]),
     ("rt_array_transpose", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_identity", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_diagonal", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_linspace", &[WTy::F64, WTy::F64, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -2716,6 +2719,37 @@ fn compile_array_builtin(
                 Ok(Some((*elem).clone()))
             }
         },
+        // identity(n): n×n Integer identity matrix.
+        "identity" if argv.len() == 1 => {
+            let w = compile_exp(ctx, argv[0])?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_identity")));
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        // diagonal(v): n×n matrix with the vector v on the diagonal.
+        "diagonal" if argv.len() == 1 => {
+            if array_elem(argv[0])?.is_none() {
+                bail!("CodegenWasmJit: diagonal of a non-array expression");
+            }
+            compile_exp(ctx, argv[0])?;
+            let vt = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(vt));
+            ctx.emit(we::Instruction::LocalGet(vt));
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_diagonal")));
+            release_temp_array(ctx, vt);
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        // linspace(x1, x2, n): n evenly-spaced Reals from x1 to x2.
+        "linspace" if argv.len() == 3 => {
+            let w = compile_exp(ctx, argv[0])?;
+            coerce(ctx, w, WTy::F64);
+            let w = compile_exp(ctx, argv[1])?;
+            coerce(ctx, w, WTy::F64);
+            let w = compile_exp(ctx, argv[2])?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_linspace")));
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
         // transpose(a): a fresh n×m array (the operand 2-D array is released).
         "transpose" if argv.len() == 1 => {
             if array_elem(argv[0])?.is_none() {

@@ -709,6 +709,57 @@ pub extern "C" fn rt_array_transpose(a: u32) -> u32 {
     res
 }
 
+/// `identity(n)`: the `n x n` Integer identity matrix (1 on the diagonal, 0
+/// elsewhere — the rest is left zero by `rt_array_new`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_identity(n: u32) -> u32 {
+    let res = rt_array_new(EK_INT, 2, n * n);
+    rt_array_set_dim(res, 0, n);
+    rt_array_set_dim(res, 1, n);
+    let d = arr_data(res);
+    for i in 0..n {
+        unsafe { store_u32(d + (i * n + i) * 4, 1) };
+    }
+    res
+}
+
+/// `diagonal(v)`: the `n x n` matrix with vector `v` (length `n`) on the diagonal
+/// and zeros elsewhere. Same element kind as `v`; heap diagonal entries are
+/// value-copied.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_diagonal(v: u32) -> u32 {
+    let kind = unsafe { load_u32(v + ARR_KIND_OFF) };
+    let stride = elem_stride(kind);
+    let n = rt_array_total(v);
+    let res = rt_array_new(kind, 2, n * n);
+    rt_array_set_dim(res, 0, n);
+    rt_array_set_dim(res, 1, n);
+    let (sv, dv) = (arr_data(v), arr_data(res));
+    for i in 0..n {
+        let dst = dv + (i * n + i) * stride;
+        unsafe { core::ptr::copy_nonoverlapping((sv + i * stride) as *const u8, dst as *mut u8, stride as usize) };
+        if kind == EK_STR || kind == EK_ARRAY || kind == EK_RECORD {
+            let copied = copy_kind(kind, unsafe { load_u32(dst) });
+            unsafe { store_u32(dst, copied) };
+        }
+    }
+    res
+}
+
+/// `linspace(x1, x2, n)`: a Real vector of `n` points evenly spaced from `x1` to
+/// `x2` inclusive (`x1 + (x2-x1)*i/(n-1)`). For `n == 1` the single point is `x1`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_linspace(x1: f64, x2: f64, n: u32) -> u32 {
+    let res = rt_array_new(EK_REAL, 1, n);
+    rt_array_set_dim(res, 0, n);
+    let d = arr_data(res);
+    for i in 0..n {
+        let v = if n <= 1 { x1 } else { x1 + (x2 - x1) * (i as f64) / ((n - 1) as f64) };
+        unsafe { store_f64(d + i * 8, v) };
+    }
+    res
+}
+
 // ---------------------------------------------------------------------------
 // Strings
 // ---------------------------------------------------------------------------

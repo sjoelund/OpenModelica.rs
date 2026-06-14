@@ -1031,6 +1031,54 @@ mod tests {
         }
     }
 
+    /// The matrix-constructor builtins: identity, diagonal, linspace.
+    #[test]
+    fn precompiled_runtime_array_constructors() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let identity = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_identity").unwrap();
+        let diagonal = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_diagonal").unwrap();
+        let linspace = inst.get_typed_func::<(f64, f64, i32), i32>(&mut store, "rt_array_linspace").unwrap();
+        let ri = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 4];
+            mem.read(&*store, addr, &mut b).unwrap();
+            i32::from_le_bytes(b)
+        };
+        let rf = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 8];
+            mem.read(&*store, addr, &mut b).unwrap();
+            f64::from_le_bytes(b)
+        };
+
+        // identity(3): 3x3, diagonal 1, rest 0 (row-major 1,0,0,0,1,0,0,0,1).
+        let id = identity.call(&mut store, 3).unwrap();
+        assert_eq!((dim.call(&mut store, (id, 1)).unwrap(), dim.call(&mut store, (id, 2)).unwrap()), (3, 3));
+        assert_eq!((ri(&mut store, id, 1), ri(&mut store, id, 2), ri(&mut store, id, 5)), (1, 0, 1));
+
+        // diagonal({7,8,9}): 3x3 with 7,8,9 on the diagonal.
+        let v = arr_new.call(&mut store, (0, 1, 3)).unwrap();
+        set_dim.call(&mut store, (v, 0, 3)).unwrap();
+        for (k, n) in [7i32, 8, 9].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (v, k as i32 + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &n.to_le_bytes()).unwrap();
+        }
+        let dg = diagonal.call(&mut store, v).unwrap();
+        assert_eq!((ri(&mut store, dg, 1), ri(&mut store, dg, 5), ri(&mut store, dg, 9), ri(&mut store, dg, 2)), (7, 8, 9, 0));
+
+        // linspace(0, 1, 5) = {0, 0.25, 0.5, 0.75, 1.0}.
+        let ls = linspace.call(&mut store, (0.0, 1.0, 5)).unwrap();
+        assert_eq!((rf(&mut store, ls, 1), rf(&mut store, ls, 2), rf(&mut store, ls, 5)), (0.0, 0.25, 1.0));
+    }
+
     /// The record runtime: a self-describing object with a String + Integer
     /// field. `rt_record_copy` must retain the (immutable) string and give
     /// independent scalar storage; `rt_record_release` must release the string
