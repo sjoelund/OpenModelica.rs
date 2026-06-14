@@ -343,6 +343,16 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_real_pow", &[WTy::F64, WTy::F64], &[WTy::F64]),
     // Integer `mod(x,y)` — floored modulo (result takes the divisor's sign).
     ("rt_mod_int", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    // Shape / geometric array builtins: vector / matrix reshape, symmetric,
+    // cross (Real 3-vector), outerProduct, skew (Real 3-vector → 3x3).
+    ("rt_array_vector", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_matrix", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_symmetric", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_cross_f64", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_outer_f64", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_skew_f64", &[WTy::I32], &[WTy::I32]),
+    // promote(a, n): add trailing size-1 dimensions to reach rank n.
+    ("rt_array_promote", &[WTy::I32, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -3134,8 +3144,112 @@ fn compile_array_builtin(
             emit_array_reduce(ctx, argv[0], "rt_array_ndims", None)?;
             Ok(Some(SigTy::Int))
         }
+        // scalar(a): the single element of an array whose dimensions are all 1.
+        "scalar" if argv.len() == 1 => {
+            let elem = array_elem(argv[0])?
+                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: scalar() of a non-array expression"))?;
+            compile_exp(ctx, argv[0])?; // owned array
+            let arr_t = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(arr_t));
+            ctx.emit(we::Instruction::LocalGet(arr_t));
+            ctx.emit(we::Instruction::I32Const(1));
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+            elem_load(ctx, &elem);
+            if elem.is_heap() {
+                // Retain the borrowed handle so it outlives the array release.
+                let v = ctx.alloc_temp(WTy::I32);
+                ctx.emit(we::Instruction::LocalSet(v));
+                ctx.emit(we::Instruction::LocalGet(v));
+                ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+                release_temp_array(ctx, arr_t);
+                ctx.emit(we::Instruction::LocalGet(v));
+            } else {
+                release_temp_array(ctx, arr_t);
+            }
+            Ok(Some((*elem).clone()))
+        }
+        // vector(a) / matrix(a): reshape to rank 1 / rank 2; symmetric(a):
+        // mirror the upper triangle into the lower. Element-kind generic.
+        "vector" if argv.len() == 1 => {
+            emit_unary_array(ctx, argv[0], "rt_array_vector")?;
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        "matrix" if argv.len() == 1 => {
+            emit_unary_array(ctx, argv[0], "rt_array_matrix")?;
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        "symmetric" if argv.len() == 1 => {
+            emit_unary_array(ctx, argv[0], "rt_array_symmetric")?;
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        // cross(a,b): Real 3-vector cross product. skew(x): 3x3 skew matrix.
+        "cross" if argv.len() == 2 => {
+            emit_binary_array(ctx, argv[0], argv[1], "rt_array_cross_f64")?;
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        "skew" if argv.len() == 1 => {
+            emit_unary_array(ctx, argv[0], "rt_array_skew_f64")?;
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        // outerProduct(a,b): r[i,j] = a[i]*b[j]. Always Real (the operands are
+        // promoted to Real by the frontend, like `cross`).
+        "outerProduct" if argv.len() == 2 => {
+            emit_binary_array(ctx, argv[0], argv[1], "rt_array_outer_f64")?;
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
+        // promote(a, n): add trailing size-1 dimensions to reach rank `n`.
+        "promote" if argv.len() == 2 => {
+            if array_elem(argv[0])?.is_none() {
+                bail!("CodegenWasmJit: promote of a non-array expression");
+            }
+            compile_exp(ctx, argv[0])?;
+            let at = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(at));
+            ctx.emit(we::Instruction::LocalGet(at));
+            let w = compile_exp(ctx, argv[1])?;
+            coerce(ctx, w, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_promote")));
+            let res_t = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(res_t));
+            release_temp_array(ctx, at);
+            ctx.emit(we::Instruction::LocalGet(res_t));
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
         _ => Ok(None),
     }
+}
+
+/// Lower a one-array-argument runtime builtin: evaluate the operand, call `rt`
+/// (which returns a fresh array handle), then release the operand. Leaves the
+/// result handle on the stack.
+fn emit_unary_array(ctx: &mut FnCtx, arg: &DAE::Exp, rt: &str) -> Result<()> {
+    if array_elem(arg)?.is_none() {
+        bail!("CodegenWasmJit: {rt} of a non-array expression");
+    }
+    compile_exp(ctx, arg)?;
+    let at = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(at));
+    ctx.emit(we::Instruction::LocalGet(at));
+    ctx.emit(we::Instruction::Call(rt_index(rt)));
+    release_temp_array(ctx, at);
+    Ok(())
+}
+
+/// Lower a two-array-argument runtime builtin: evaluate both operands, call
+/// `rt`, then release both operands. Leaves the result handle on the stack.
+fn emit_binary_array(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp, rt: &str) -> Result<()> {
+    compile_exp(ctx, e1)?;
+    let at = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(at));
+    compile_exp(ctx, e2)?;
+    let bt = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(bt));
+    ctx.emit(we::Instruction::LocalGet(at));
+    ctx.emit(we::Instruction::LocalGet(bt));
+    ctx.emit(we::Instruction::Call(rt_index(rt)));
+    release_temp_array(ctx, at);
+    release_temp_array(ctx, bt);
+    Ok(())
 }
 
 /// Allocate a fresh array of element type `elem` whose dimensions are the given

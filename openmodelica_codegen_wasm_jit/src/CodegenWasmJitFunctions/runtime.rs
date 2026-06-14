@@ -1287,6 +1287,89 @@ mod tests {
         assert!(m.call(&mut store, (1, 0)).is_err()); // zero divisor traps
     }
 
+    /// Shape / geometric builtins: vector / matrix / promote reshape,
+    /// symmetric, cross, outerProduct, skew (all Real where numeric).
+    #[test]
+    fn precompiled_runtime_shape_builtins() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let ndims = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_ndims").unwrap();
+        let cross = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_cross_f64").unwrap();
+        let outer = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_outer_f64").unwrap();
+        let skew = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_skew_f64").unwrap();
+        let vector = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_vector").unwrap();
+        let promote = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_promote").unwrap();
+        let sym = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_symmetric").unwrap();
+        let rf = |store: &mut Store, h: i32, k: i32| {
+            let addr = elem_ptr.call(&mut *store, (h, k)).unwrap() as usize;
+            let mut b = [0u8; 8];
+            mem.read(&*store, addr, &mut b).unwrap();
+            f64::from_le_bytes(b)
+        };
+        let vecf = |store: &mut Store, dims: &[i32], vals: &[f64]| -> i32 {
+            let h = arr_new.call(&mut *store, (1, dims.len() as i32, vals.len() as i32)).unwrap();
+            for (a, d) in dims.iter().enumerate() {
+                set_dim.call(&mut *store, (h, a as i32, *d)).unwrap();
+            }
+            for (k, v) in vals.iter().enumerate() {
+                let addr = elem_ptr.call(&mut *store, (h, k as i32 + 1)).unwrap() as usize;
+                mem.write(&mut *store, addr, &v.to_le_bytes()).unwrap();
+            }
+            h
+        };
+
+        // cross(e1, e2) = e3.
+        let x = vecf(&mut store, &[3], &[1.0, 0.0, 0.0]);
+        let y = vecf(&mut store, &[3], &[0.0, 1.0, 0.0]);
+        let c = cross.call(&mut store, (x, y)).unwrap();
+        assert_eq!((rf(&mut store, c, 1), rf(&mut store, c, 2), rf(&mut store, c, 3)), (0.0, 0.0, 1.0));
+
+        // outerProduct({1,2},{3,4,5}) = {{3,4,5},{6,8,10}} (2x3).
+        let a = vecf(&mut store, &[2], &[1.0, 2.0]);
+        let b = vecf(&mut store, &[3], &[3.0, 4.0, 5.0]);
+        let o = outer.call(&mut store, (a, b)).unwrap();
+        assert_eq!((dim.call(&mut store, (o, 1)).unwrap(), dim.call(&mut store, (o, 2)).unwrap()), (2, 3));
+        assert_eq!((rf(&mut store, o, 3), rf(&mut store, o, 6)), (5.0, 10.0));
+
+        // skew({1,2,3}) row 1 = {0,-3,2}.
+        let sk = vecf(&mut store, &[3], &[1.0, 2.0, 3.0]);
+        let s = skew.call(&mut store, sk).unwrap();
+        assert_eq!((rf(&mut store, s, 1), rf(&mut store, s, 2), rf(&mut store, s, 3)), (0.0, -3.0, 2.0));
+
+        // vector of a 1x3 → 1-D {1,2,3}.
+        let v13 = vecf(&mut store, &[1, 3], &[1.0, 2.0, 3.0]);
+        let v = vector.call(&mut store, v13).unwrap();
+        assert_eq!(ndims.call(&mut store, v).unwrap(), 1);
+        assert_eq!(rf(&mut store, v, 2), 2.0);
+
+        // promote({1,2}, 3) → 3-D with dims {2,1,1}.
+        let pv = vecf(&mut store, &[2], &[1.0, 2.0]);
+        let p = promote.call(&mut store, (pv, 3)).unwrap();
+        assert_eq!(ndims.call(&mut store, p).unwrap(), 3);
+        assert_eq!((dim.call(&mut store, (p, 1)).unwrap(), dim.call(&mut store, (p, 2)).unwrap()), (2, 1));
+
+        // symmetric mirrors the upper triangle: a[2,1] is replaced by a[1,2].
+        let m = arr_new.call(&mut store, (1, 2, 4)).unwrap();
+        set_dim.call(&mut store, (m, 0, 2)).unwrap();
+        set_dim.call(&mut store, (m, 1, 2)).unwrap();
+        for (k, vv) in [1.0f64, 2.0, 9.0, 4.0].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (m, k as i32 + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &vv.to_le_bytes()).unwrap();
+        }
+        let sm = sym.call(&mut store, m).unwrap();
+        // row-major {1,2,2,4} (the 9 is discarded).
+        for (k, want) in [1.0f64, 2.0, 2.0, 4.0].iter().enumerate() {
+            assert_eq!(rf(&mut store, sm, k as i32 + 1), *want);
+        }
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {

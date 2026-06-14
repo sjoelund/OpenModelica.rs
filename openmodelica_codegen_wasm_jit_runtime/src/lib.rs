@@ -657,6 +657,144 @@ pub extern "C" fn rt_array_matmul_i32(a: u32, b: u32) -> u32 {
     result
 }
 
+/// Copy every (row-major) element of `src` into `dst` (same kind/total),
+/// deep-copying heap handles for value semantics. Shared by reshape builtins.
+fn copy_all_elems(src: u32, dst: u32, kind: u32, total: u32) {
+    let stride = elem_stride(kind);
+    let (sd, dd) = (arr_data(src), arr_data(dst));
+    unsafe {
+        core::ptr::copy_nonoverlapping(sd as *const u8, dd as *mut u8, (total * stride) as usize);
+    }
+    if matches!(kind, EK_STR | EK_ARRAY | EK_RECORD) {
+        for i in 0..total {
+            unsafe { store_u32(dd + i * 4, copy_kind(kind, load_u32(dd + i * 4))) };
+        }
+    }
+}
+
+/// `vector(a)`: flatten to a 1-D array (row-major order), copying all elements.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_vector(a: u32) -> u32 {
+    let kind = unsafe { load_u32(a + ARR_KIND_OFF) };
+    let total = rt_array_total(a);
+    let res = rt_array_new(kind, 1, total);
+    rt_array_set_dim(res, 0, total);
+    copy_all_elems(a, res, kind, total);
+    res
+}
+
+/// `matrix(a)`: reshape to a 2-D `[size(a,1), total/size(a,1)]` array (the
+/// trailing dimensions are 1), copying all elements row-major.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_matrix(a: u32) -> u32 {
+    let kind = unsafe { load_u32(a + ARR_KIND_OFF) };
+    let total = rt_array_total(a);
+    let d1 = rt_array_dim(a, 1);
+    let d2 = if d1 == 0 { 0 } else { total / d1 };
+    let res = rt_array_new(kind, 2, total);
+    rt_array_set_dim(res, 0, d1);
+    rt_array_set_dim(res, 1, d2);
+    copy_all_elems(a, res, kind, total);
+    res
+}
+
+/// `symmetric(a)`: copy the upper triangle (incl. diagonal) of a square matrix
+/// into the lower triangle — `r[i,j] = a[i,j]` for `j >= i`, else `a[j,i]`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_symmetric(a: u32) -> u32 {
+    let kind = unsafe { load_u32(a + ARR_KIND_OFF) };
+    let n = rt_array_dim(a, 1);
+    let m = rt_array_dim(a, 2);
+    let res = rt_array_new(kind, 2, n * m);
+    rt_array_set_dim(res, 0, n);
+    rt_array_set_dim(res, 1, m);
+    let stride = elem_stride(kind);
+    let (sd, dd) = (arr_data(a), arr_data(res));
+    let heap = matches!(kind, EK_STR | EK_ARRAY | EK_RECORD);
+    for i in 0..n {
+        for j in 0..m {
+            let (si, sj) = if j >= i { (i, j) } else { (j, i) };
+            let sp = sd + (si * m + sj) * stride;
+            let dp = dd + (i * m + j) * stride;
+            unsafe {
+                core::ptr::copy_nonoverlapping(sp as *const u8, dp as *mut u8, stride as usize);
+                if heap {
+                    store_u32(dp, copy_kind(kind, load_u32(dp)));
+                }
+            }
+        }
+    }
+    res
+}
+
+/// `cross(a, b)`: the 3-vector cross product (Real-only per the Modelica spec).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_cross_f64(a: u32, b: u32) -> u32 {
+    let (da, db) = (arr_data(a), arr_data(b));
+    let g = |p: u32, i: u32| unsafe { load_f64(p + i * 8) };
+    let (a1, a2, a3) = (g(da, 0), g(da, 1), g(da, 2));
+    let (b1, b2, b3) = (g(db, 0), g(db, 1), g(db, 2));
+    let res = rt_array_new(EK_REAL, 1, 3);
+    rt_array_set_dim(res, 0, 3);
+    let dr = arr_data(res);
+    unsafe {
+        store_f64(dr, a2 * b3 - a3 * b2);
+        store_f64(dr + 8, a3 * b1 - a1 * b3);
+        store_f64(dr + 16, a1 * b2 - a2 * b1);
+    }
+    res
+}
+
+/// `outerProduct(a, b)`: matrix `r[i,j] = a[i]*b[j]` (sizes `n` x `m`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_outer_f64(a: u32, b: u32) -> u32 {
+    let (n, m) = (rt_array_total(a), rt_array_total(b));
+    let res = rt_array_new(EK_REAL, 2, n * m);
+    rt_array_set_dim(res, 0, n);
+    rt_array_set_dim(res, 1, m);
+    let (da, db, dr) = (arr_data(a), arr_data(b), arr_data(res));
+    for i in 0..n {
+        for j in 0..m {
+            unsafe { store_f64(dr + (i * m + j) * 8, load_f64(da + i * 8) * load_f64(db + j * 8)) };
+        }
+    }
+    res
+}
+
+/// `promote(a, n)`: add trailing size-1 dimensions so the array has `n`
+/// dimensions (n >= ndims(a)); the element data is unchanged (row-major), only
+/// the shape grows. Used by the dynamic-size expansions of `outerProduct` etc.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_promote(a: u32, n: u32) -> u32 {
+    let kind = unsafe { load_u32(a + ARR_KIND_OFF) };
+    let nd = rt_array_ndims(a);
+    let total = rt_array_total(a);
+    let res = rt_array_new(kind, n, total);
+    for axis in 0..n {
+        let d = if axis < nd { rt_array_dim(a, axis as i32 + 1) } else { 1 };
+        rt_array_set_dim(res, axis, d);
+    }
+    copy_all_elems(a, res, kind, total);
+    res
+}
+
+/// `skew(x)`: the 3x3 skew-symmetric matrix `{{0,-x3,x2},{x3,0,-x1},{-x2,x1,0}}`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_skew_f64(x: u32) -> u32 {
+    let dx = arr_data(x);
+    let g = |i: u32| unsafe { load_f64(dx + i * 8) };
+    let (x1, x2, x3) = (g(0), g(1), g(2));
+    let res = rt_array_new(EK_REAL, 2, 9);
+    rt_array_set_dim(res, 0, 3);
+    rt_array_set_dim(res, 1, 3);
+    let dr = arr_data(res);
+    let vals = [0.0, -x3, x2, x3, 0.0, -x1, -x2, x1, 0.0];
+    for (i, v) in vals.iter().enumerate() {
+        unsafe { store_f64(dr + (i as u32) * 8, *v) };
+    }
+    res
+}
+
 /// `base ^ n` for an integer exponent, replicating the C runtime's
 /// `real_int_pow` (exponentiation by squaring) bit-for-bit so that scalar
 /// `x ^ <integer literal>` stays byte-identical with the C target — which uses
