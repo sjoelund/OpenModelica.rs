@@ -674,6 +674,22 @@ fn compile_function(
     for (slot, elem, dims) in &array_allocs {
         emit_array_alloc(&mut ctx, *slot, elem, dims)?;
     }
+    // Default-binding initializers for protected/output variables, in
+    // declaration order, mirroring the C target's `varInit` (driven by the
+    // variable's `value`). A `bind_from_outside` variable is supplied by the
+    // caller rather than its default, so it is skipped; inputs (function
+    // arguments) are never initialized here — they arrive as parameters.
+    for v in &**variableDeclarations {
+        let SimCodeFunction::Variable::Variable::VARIABLE { name, ty, value, bind_from_outside, .. } = &**v else {
+            continue;
+        };
+        if *bind_from_outside {
+            continue;
+        }
+        let Some(val) = value else { continue };
+        let lhs = DAE::Exp::CREF { componentRef: name.clone(), ty: ty.clone() };
+        compile_assign(&mut ctx, &lhs, val)?;
+    }
     compile_stmts(&mut ctx, body)?;
     // Fall-through return: release heap locals, push the output locals and end.
     release_heap_locals(&mut ctx);
