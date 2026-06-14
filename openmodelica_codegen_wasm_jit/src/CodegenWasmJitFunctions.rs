@@ -163,6 +163,11 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_int_string", &[WTy::I32], &[WTy::I32]),
     ("rt_real_string", &[WTy::F64], &[WTy::I32]),
     ("rt_bool_string", &[WTy::I32], &[WTy::I32]),
+    // `String(Real, significantDigits, minimumLength, leftJustified)` (C `%g`),
+    // and space-padding for `String(Integer/Boolean/Enumeration, minLength,
+    // leftJustified)`.
+    ("rt_real_format", &[WTy::F64, WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_str_pad", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1225,31 +1230,111 @@ fn str_substring(ctx: &mut FnCtx, s: &DAE::Exp, i: &DAE::Exp, j: &DAE::Exp) -> R
     Ok(())
 }
 
-/// `String(x[, significantDigits][, minimumLength, leftJustified])` — the
-/// Modelica builtin. The frontend supplies the formatting defaults explicitly:
-/// `String(i, minLength, leftJustified)` for Integer/Boolean and
-/// `String(r, significantDigits, minLength, leftJustified)` for Real.
-///
-/// Only the default formatting (no padding) is handled here; a non-zero
-/// `minimumLength` (right/left justification) and Real `significantDigits`
-/// precision need printf-style formatting to stay byte-identical to the C
-/// target, so those fall back cleanly (the module is not written → META_FAIL →
-/// the C target runs instead). `String(value)` with no format args is also
-/// accepted.
+/// `String(x[, significantDigits], minimumLength, leftJustified)` — the Modelica
+/// builtin. The frontend (`Static.elabBuiltinString`) always fills the format
+/// slots, so the argument shapes that reach here are:
+///   * `String(Integer|Boolean|String, minimumLength, leftJustified)` (3 args)
+///   * `String(Real, significantDigits, minimumLength, leftJustified)` (4 args)
+/// matching `Ceval.cevalBuiltinString`. The Real form is the C `printf`
+/// conversion `"%[-]{minimumLength}.{significantDigits}g"` (via `rt_real_format`,
+/// NOT the shortest-round-trip `realString`); the others format the scalar and
+/// then space-pad to `minimumLength` (`rt_str_pad`).
 fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy> {
-    let vty = exp_sigty(argv[0])?;
-    // A `minimumLength` of literal 0 means no padding, so the formatting args
-    // can be ignored. Anything else needs justification/precision support.
-    let no_padding = |min_len: &DAE::Exp| matches!(min_len, DAE::Exp::ICONST { integer: 0 });
-    match (vty, argv.len()) {
-        (SigTy::Str, 1) => format_scalar_string(ctx, argv[0], vty), // String(s) is the identity
-        (SigTy::Int, 1) | (SigTy::Bool, 1) | (SigTy::Real, 1) => format_scalar_string(ctx, argv[0], vty),
-        // String(int|bool, minLength, leftJustified)
-        (SigTy::Int, 3) | (SigTy::Bool, 3) if no_padding(argv[1]) => format_scalar_string(ctx, argv[0], vty),
-        // String(real, significantDigits, minLength, leftJustified): only the
-        // shortest-round-trip default (significantDigits handled by the C target).
-        other => bail!("CodegenWasmJit: String() with formatting args not yet supported ({other:?})"),
+    // `String(Enumeration)` must render the enumeration literal *name*
+    // (`Ceval.cevalBuiltinString` uses `AbsynUtil.pathLastIdent`); the wasm-jit
+    // value model carries only the Integer index, so reject rather than silently
+    // stringify the index. Carrying enum names would need the literal table
+    // threaded through from the DAE type into the sidecar/runtime.
+    if exp_is_enumeration(argv[0]) {
+        bail!("CodegenWasmJit: String(Enumeration) needs the enumeration literal name, which the wasm-jit value model (an enum is its Integer index) does not carry");
     }
+    let vty = exp_sigty(argv[0])?;
+    // `String(String, …)` is the identity: the C target ignores the
+    // minimumLength/leftJustified arguments for a string value (see the
+    // `"modelica_string"` arm of `CodegenCFunctions.tpl`'s String builtin —
+    // `tvar = sExp`), so padding must NOT be applied here either.
+    if vty == SigTy::Str {
+        return format_scalar_string(ctx, argv[0], vty);
+    }
+    match (vty, argv.len()) {
+        // Bare `String(scalar)` (no format slots) — does not normally reach the
+        // codegen (the frontend fills the slots), but is unambiguous.
+        (SigTy::Int, 1) | (SigTy::Bool, 1) => format_scalar_string(ctx, argv[0], vty),
+        // String(Integer|Boolean, minimumLength, leftJustified).
+        (SigTy::Int, 3) | (SigTy::Bool, 3) => {
+            emit_padded_scalar_string(ctx, argv[0], vty, argv[1], argv[2])
+        }
+        // String(Real, significantDigits, minimumLength, leftJustified).
+        (SigTy::Real, 4) => emit_real_format(ctx, argv[0], argv[1], argv[2], argv[3]),
+        other => bail!("CodegenWasmJit: unsupported String() argument shape {other:?}"),
+    }
+}
+
+/// Whether `exp` has an enumeration type (so `String(exp)` would need the
+/// literal name). Covers the expression forms that carry a `DAE.Type`; anything
+/// else is not an enumeration value.
+fn exp_is_enumeration(exp: &DAE::Exp) -> bool {
+    use DAE::Exp as E;
+    let is_enum = |ty: &DAE::Type| matches!(ty, DAE::Type::T_ENUMERATION { .. });
+    match exp {
+        E::ENUM_LITERAL { .. } => true,
+        E::CREF { ty, .. } | E::CAST { ty, .. } => is_enum(ty),
+        E::CALL { attr, .. } => is_enum(&attr.ty),
+        E::SHARED_LITERAL { exp, .. } => exp_is_enumeration(exp),
+        _ => false,
+    }
+}
+
+/// `String(Integer|Boolean|String, minimumLength, leftJustified)`: format the
+/// scalar to an owned String handle, then space-pad it to `minimumLength`.
+/// A literal `minimumLength` of 0 never pads (`cevalBuiltinStringFormat` returns
+/// the string unchanged), so the runtime call is skipped in that common default.
+fn emit_padded_scalar_string(
+    ctx: &mut FnCtx,
+    val: &DAE::Exp,
+    vty: SigTy,
+    min_len: &DAE::Exp,
+    left_just: &DAE::Exp,
+) -> Result<SigTy> {
+    // Leaves an owned (+1) string handle on the stack.
+    format_scalar_string(ctx, val, vty)?;
+    if let DAE::Exp::ICONST { integer: 0 } = min_len {
+        return Ok(SigTy::Str);
+    }
+    // Move the owned, unpadded handle into a temp: `rt_str_pad` borrows it and
+    // returns a fresh owned handle, so the unpadded one is released afterwards.
+    let t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(t));
+    ctx.emit(we::Instruction::LocalGet(t));
+    let wl = compile_exp(ctx, min_len)?;
+    coerce(ctx, wl, WTy::I32);
+    let wj = compile_exp(ctx, left_just)?;
+    coerce(ctx, wj, WTy::I32);
+    ctx.emit(we::Instruction::Call(rt_index("rt_str_pad")));
+    release_temp(ctx, t);
+    Ok(SigTy::Str)
+}
+
+/// `String(Real, significantDigits, minimumLength, leftJustified)` → the C `%g`
+/// conversion via `rt_real_format`. All four operands are scalars (no heap
+/// operands to release); the result is a fresh owned String handle.
+fn emit_real_format(
+    ctx: &mut FnCtx,
+    r: &DAE::Exp,
+    sig: &DAE::Exp,
+    min_len: &DAE::Exp,
+    left_just: &DAE::Exp,
+) -> Result<SigTy> {
+    let wr = compile_exp(ctx, r)?;
+    coerce(ctx, wr, WTy::F64);
+    let ws = compile_exp(ctx, sig)?;
+    coerce(ctx, ws, WTy::I32);
+    let wl = compile_exp(ctx, min_len)?;
+    coerce(ctx, wl, WTy::I32);
+    let wj = compile_exp(ctx, left_just)?;
+    coerce(ctx, wj, WTy::I32);
+    ctx.emit(we::Instruction::Call(rt_index("rt_real_format")));
+    Ok(SigTy::Str)
 }
 
 /// Format a scalar of the given `SigTy` to an owned String handle via the

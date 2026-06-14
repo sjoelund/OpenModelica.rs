@@ -328,6 +328,68 @@ mod tests {
         release.call(&mut store, r).unwrap();
     }
 
+    /// `rt_real_format` (`String(Real, significantDigits, minimumLength,
+    /// leftJustified)`) must match the canonical `printf`-`%g` formatter that
+    /// `Ceval.cevalBuiltinString` / the C target use, and `rt_str_pad`
+    /// (`String(Integer/Boolean/String, minimumLength, leftJustified)`) must
+    /// match `ExpressionSimplify.cevalBuiltinStringFormat`'s space-padding.
+    #[test]
+    fn precompiled_runtime_real_format_and_pad_abi() {
+        use openmodelica_util::System;
+
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+
+        let real_format =
+            inst.get_typed_func::<(f64, i32, i32, i32), i32>(&mut store, "rt_real_format").unwrap();
+        let str_new = inst.get_typed_func::<i32, i32>(&mut store, "rt_str_new").unwrap();
+        let str_data = inst.get_typed_func::<i32, i32>(&mut store, "rt_str_data").unwrap();
+        let str_pad = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_str_pad").unwrap();
+
+        // String(Real, sig, minlen, leftjust): mirror Ceval's format string
+        // `"%[-]{minlen}.{sig}g"` evaluated with `System.snprintff` (the canonical
+        // C-printf port) and compare byte-for-byte.
+        let values = [0.0, 1.5, -2.0, 1.0 / 3.0, 1e-7, 1234567.0, 6.022e23, std::f64::consts::PI, -0.000123456];
+        for &v in &values {
+            for &(sig, minlen, leftjust) in &[(6, 0, 1), (3, 0, 1), (6, 12, 1), (6, 12, 0), (2, 0, 1)] {
+                let h = real_format.call(&mut store, (v, sig, minlen, leftjust)).unwrap();
+                let got = read_rt_string(&mut store, &inst, mem, h);
+                let dash = if leftjust != 0 { "-" } else { "" };
+                let fmt = format!("%{dash}{minlen}.{sig}g");
+                let want = System::snprintff(
+                    arcstr::ArcStr::from(fmt),
+                    minlen + 20,
+                    metamodelica::Real::from(v),
+                )
+                .unwrap()
+                .to_string();
+                assert_eq!(got, want, "String({v}, sig={sig}, minlen={minlen}, leftjust={leftjust})");
+            }
+        }
+
+        // rt_str_pad: write a string into a fresh runtime object, then pad.
+        let make = |store: &mut wasmtime::Store<()>, s: &str| -> i32 {
+            let h = str_new.call(&mut *store, s.len() as i32).unwrap();
+            let d = str_data.call(&mut *store, h).unwrap() as usize;
+            mem.write(&mut *store, d, s.as_bytes()).unwrap();
+            h
+        };
+        // Shorter than minlen: pad with spaces (trailing when leftjust, else leading).
+        let h = make(&mut store, "hi");
+        let p = str_pad.call(&mut store, (h, 6, 1)).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, p), "hi    ");
+        let h = make(&mut store, "hi");
+        let p = str_pad.call(&mut store, (h, 6, 0)).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, p), "    hi");
+        // Already at least minlen: returned unchanged.
+        let h = make(&mut store, "already long");
+        let p = str_pad.call(&mut store, (h, 4, 0)).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, p), "already long");
+    }
+
     /// Encode a one-function module exporting `main` with the given signature
     /// and body, write it plus its sidecar under a temp basename, and return
     /// the basename for `load_and_execute`.

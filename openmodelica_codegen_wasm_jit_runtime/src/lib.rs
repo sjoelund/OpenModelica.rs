@@ -251,6 +251,99 @@ pub extern "C" fn rt_real_string(r: f64) -> u32 {
     new_str_from(&ryu_to_hr(&format!("{r:e}"), true))
 }
 
+/// `String(r, significantDigits, minimumLength, leftJustified)` for a Real.
+///
+/// The frontend always expands `String(Real)` to this 4-argument form (defaults
+/// `significantDigits = 6`, `minimumLength = 0`, `leftJustified = true`), and
+/// `Ceval.cevalBuiltinString` evaluates it as the C `printf` conversion
+/// `"%[-]{minimumLength}.{significantDigits}g"`. This must therefore match C's
+/// `%g` (NOT the shortest-round-trip `rt_real_string`/`realString`). The `%g`
+/// rendering and the trailing-zero trimming below mirror
+/// `openmodelica_util::System::c_format_double` exactly so the wasm-jit target,
+/// the Ceval interpreter and the C target all agree byte-for-byte.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_real_format(r: f64, sig: i32, min_len: i32, left_just: i32) -> u32 {
+    // C `%g` treats a precision of 0 as 1; the default is 6. `significantDigits`
+    // is always supplied here, so a non-positive value is the only edge case.
+    let p = if sig < 1 { 1 } else { sig as usize };
+    let body = format_g(r, p);
+    new_str_from(&pad(&body, min_len, left_just != 0))
+}
+
+/// Pad a string to `min_len` bytes with spaces (`leftJustified` → trailing,
+/// otherwise leading), used by `String(Integer/Boolean/Enumeration, minLength,
+/// leftJustified)`. Mirrors `ExpressionSimplify.cevalBuiltinStringFormat`:
+/// strings already at least `min_len` long are returned unchanged.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_str_pad(obj: u32, min_len: i32, left_just: i32) -> u32 {
+    let s = core::str::from_utf8(unsafe { str_bytes(obj) }).unwrap_or("");
+    new_str_from(&pad(s, min_len, left_just != 0))
+}
+
+/// Space-pad `s` to `min_len` bytes (no-op if already long enough). Shared by
+/// `rt_real_format` (printf width field) and `rt_str_pad`.
+fn pad(s: &str, min_len: i32, left_just: bool) -> String {
+    let len = s.len() as i32;
+    if len >= min_len {
+        return String::from(s);
+    }
+    let fill = (min_len - len) as usize;
+    let spaces = " ".repeat(fill);
+    if left_just { format!("{s}{spaces}") } else { format!("{spaces}{s}") }
+}
+
+/// C `%.{p}g` of `val` (`p` significant digits, `p >= 1`), with trailing zeros
+/// trimmed. Faithful port of the `'g'` arm of
+/// `openmodelica_util::System::c_format_double` (kept identical so all targets
+/// agree): the `%e`-style decimal exponent `x` selects the presentation — `%f`
+/// when `-4 <= x < p`, otherwise `%e` — then a trailing-zero/point trim.
+fn format_g(val: f64, p: usize) -> String {
+    let x = decimal_exponent(val, p);
+    let s = if x >= -4 && (x as i64) < p as i64 {
+        let prec = (p as i32 - 1 - x).max(0) as usize;
+        format!("{val:.prec$}")
+    } else {
+        format_c_exp(val, p - 1)
+    };
+    trim_g_significand(s)
+}
+
+/// Decimal exponent `X` that C's `%e` conversion of `val` would use at `sig`
+/// significant digits (rounding can carry into a higher exponent, e.g. 9.99 at
+/// 2 sig digits → "1.0e1", X = 1). Mirrors `System::decimal_exponent`.
+fn decimal_exponent(val: f64, sig: usize) -> i32 {
+    if val == 0.0 || !val.is_finite() {
+        return 0;
+    }
+    let raw = format!("{:.*e}", sig.saturating_sub(1), val);
+    raw.split_once('e').and_then(|(_, e)| e.parse().ok()).unwrap_or(0)
+}
+
+/// C `%e` rendering: mantissa, `e`, explicit sign, at-least-two-digit exponent
+/// (Rust's `{:e}` omits the sign and zero-padding). Mirrors `System::format_c_exp`.
+fn format_c_exp(val: f64, precision: usize) -> String {
+    let raw = format!("{:.*e}", precision, val);
+    let (mant, exp) = raw.split_once('e').unwrap_or((raw.as_str(), "0"));
+    let exp_num: i32 = exp.parse().unwrap_or(0);
+    let sign = if exp_num < 0 { '-' } else { '+' };
+    format!("{mant}e{sign}{:02}", exp_num.abs())
+}
+
+/// Strip trailing zeros (and a dangling decimal point) from a `%g` significand,
+/// leaving any exponent suffix intact. Mirrors `System::trim_g_significand`.
+fn trim_g_significand(s: String) -> String {
+    let (mant, exp) = match s.find(['e', 'E']) {
+        Some(idx) => (&s[..idx], &s[idx..]),
+        None => (s.as_str(), ""),
+    };
+    let mant = if mant.contains('.') {
+        mant.trim_end_matches('0').trim_end_matches('.')
+    } else {
+        mant
+    };
+    format!("{mant}{exp}")
+}
+
 /// Port of `ryu_to_hr` from `3rdParty/ryu/ryu/om_format.c` (and
 /// `metamodelica::ryu_to_hr`): convert a shortest-form scientific representation
 /// (`8.13e2`) to the minimal decimal / exponential rendering omc uses for Reals.
