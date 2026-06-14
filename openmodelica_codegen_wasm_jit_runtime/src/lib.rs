@@ -685,6 +685,59 @@ pub extern "C" fn rt_real_int_pow(mut base: f64, mut n: i32) -> f64 {
     if neg { 1.0 / result } else { result }
 }
 
+/// Scalar `base ^ exp` for a non-integer-literal exponent, replicating the C
+/// target's inlined generic real-power semantics so the result stays
+/// byte-identical. A negative base with an (effectively) integer exponent or an
+/// odd-root fractional exponent gives a real value; any other negative-base
+/// fractional exponent is an "invalid root"; and any nan/inf result is rejected.
+/// All the error cases trap, surfacing as `fail()` (META_FAIL) exactly as the C
+/// `throwStreamPrint` path does in the function-evaluation context.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_real_pow(base: f64, exp: f64) -> f64 {
+    let result;
+    if base < 0.0 && exp != 0.0 {
+        // Split the exponent into integer / fractional parts and round to the
+        // nearest integer (residual in [-0.5, 0.5]).
+        let mut int = libm::trunc(exp);
+        let mut frac = exp - int;
+        if frac > 0.5 {
+            frac -= 1.0;
+            int += 1.0;
+        } else if frac < -0.5 {
+            frac += 1.0;
+            int -= 1.0;
+        }
+        if libm::fabs(frac) < 1e-10 {
+            // Effectively an integer exponent: well-defined for a negative base.
+            result = libm::pow(base, int);
+        } else {
+            // A real fractional exponent is only real when 1/exp is an odd
+            // integer (an odd root, e.g. (-8)^(1/3) = -2).
+            let inv = 1.0 / exp;
+            let mut iint = libm::trunc(inv);
+            let mut ifrac = inv - iint;
+            if ifrac > 0.5 {
+                ifrac -= 1.0;
+                iint += 1.0;
+            } else if ifrac < -0.5 {
+                ifrac += 1.0;
+                iint -= 1.0;
+            }
+            if libm::fabs(ifrac) < 1e-10 && ((iint as i64 as u64) & 1) != 0 {
+                result = -libm::pow(-base, frac) * libm::pow(base, int);
+            } else {
+                core::arch::wasm32::unreachable();
+            }
+        }
+    } else {
+        result = libm::pow(base, exp);
+    }
+    if result.is_nan() || result.is_infinite() {
+        core::arch::wasm32::unreachable();
+    }
+    result
+}
+
 // ---------------------------------------------------------------------------
 // Records (heterogeneous, self-describing via an inline heap-field table)
 // ---------------------------------------------------------------------------

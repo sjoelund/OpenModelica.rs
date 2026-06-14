@@ -338,6 +338,9 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // `base ^ n` for an integer exponent (matches the C `real_int_pow` so scalar
     // integer powers stay byte-identical instead of going through generic pow).
     ("rt_real_int_pow", &[WTy::F64, WTy::I32], &[WTy::F64]),
+    // `base ^ exp` generic scalar power matching the C target's negative-base /
+    // odd-root / nan-inf handling (traps on an invalid root, surfacing fail()).
+    ("rt_real_pow", &[WTy::F64, WTy::F64], &[WTy::F64]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -1592,6 +1595,12 @@ fn real_exp_int_lit(e: &DAE::Exp) -> Option<i32> {
     }
 }
 
+/// Whether a `Real` literal exponent is exactly `0.5` — mirrors the frontend's
+/// `Expression.isHalf`, which the C target uses to lower `x ^ 0.5` to `sqrt`.
+fn exp_is_half(e: &DAE::Exp) -> bool {
+    matches!(e, DAE::Exp::RCONST { real } if real.into_inner() == 0.5)
+}
+
 /// The `SigTy` an arithmetic operator works on / produces. Unlike
 /// [`operator_wty`] this distinguishes Integer/Boolean and, crucially, String
 /// (so `+` on Strings can be lowered to `rt_concat` rather than `i32.add`).
@@ -1722,27 +1731,42 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
         return Ok(WTy::I32);
     }
     let wty = operator_wty(op)?;
-    // POW has no wasm instruction. An integer-literal exponent goes through the
-    // runtime `rt_real_int_pow` (exponentiation by squaring) to match the C
-    // target's integer-power optimization byte-for-byte; everything else routes
-    // to the host `pow` import.
+    // POW has no wasm instruction. Mirror the C target's scalar-power dispatch
+    // exactly: a literal `0.5` exponent is `sqrt` (with a negative-base check),
+    // an integer-literal exponent is exponentiation by squaring
+    // (`rt_real_int_pow`), and everything else is the generic `rt_real_pow`
+    // (negative-base / odd-root / nan-inf handling). Keeping the same three-way
+    // choice as C keeps the output byte-identical.
     if matches!(op, O::POW { .. }) {
-        if let Some(n) = real_exp_int_lit(e2) {
+        if exp_is_half(e2) {
+            // sqrt(base); a negative base is an invalid root → trap (fail()).
+            let a = compile_exp(ctx, e1)?;
+            coerce(ctx, a, WTy::F64);
+            let bt = ctx.alloc_temp(WTy::F64);
+            ctx.emit(we::Instruction::LocalSet(bt));
+            ctx.emit(we::Instruction::LocalGet(bt));
+            ctx.emit(we::Instruction::F64Const(0.0f64.into()));
+            ctx.emit(we::Instruction::F64Lt);
+            ctx.emit(we::Instruction::If(we::BlockType::Empty));
+            ctx.emit(we::Instruction::Unreachable);
+            ctx.emit(we::Instruction::End);
+            ctx.emit(we::Instruction::LocalGet(bt));
+            ctx.emit(we::Instruction::F64Sqrt);
+            return Ok(WTy::F64);
+        }
+        let rt = if let Some(n) = real_exp_int_lit(e2) {
             let a = compile_exp(ctx, e1)?;
             coerce(ctx, a, WTy::F64);
             ctx.emit(we::Instruction::I32Const(n));
-            ctx.emit(we::Instruction::Call(rt_index("rt_real_int_pow")));
-            if wty == WTy::I32 {
-                ctx.emit(we::Instruction::I32TruncF64S);
-                return Ok(WTy::I32);
-            }
-            return Ok(WTy::F64);
-        }
-        let a = compile_exp(ctx, e1)?;
-        coerce(ctx, a, WTy::F64);
-        let b = compile_exp(ctx, e2)?;
-        coerce(ctx, b, WTy::F64);
-        ctx.emit(we::Instruction::Call(builtin_index("pow").unwrap()));
+            "rt_real_int_pow"
+        } else {
+            let a = compile_exp(ctx, e1)?;
+            coerce(ctx, a, WTy::F64);
+            let b = compile_exp(ctx, e2)?;
+            coerce(ctx, b, WTy::F64);
+            "rt_real_pow"
+        };
+        ctx.emit(we::Instruction::Call(rt_index(rt)));
         // Integer power keeps Integer type in Modelica: truncate back.
         if wty == WTy::I32 {
             ctx.emit(we::Instruction::I32TruncF64S);
