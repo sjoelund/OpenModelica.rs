@@ -16,15 +16,24 @@
 // module and calls the exported entry `main`, marshalling `Values.Value`s in
 // and out.
 //
-// SCOPE (first step): scalar functions over Integer / Real / Boolean (and
+// SCOPE: scalar functions over Integer / Real / Boolean / String (and
 // Enumeration literals, treated as their Integer index). Arithmetic,
 // comparisons, `if`/`while`/`for`, calls to other generated functions and a
-// curated set of math builtins are supported. String and structured
-// (list/record/array) values are NOT yet handled: lowering a function that
-// needs them fails cleanly (the module is not written and `loadAndExecute`
-// returns `Values.META_FAIL`), exactly as if constant evaluation had failed —
-// the caller can fall back to the C target. Strings need a linear-memory
-// representation plus host-imported runtime builtins and are the next step.
+// curated set of math builtins are supported. Strings are reference-counted
+// values in the shared runtime's linear memory (see the `rt_*` imports and
+// `openmodelica_codegen_wasm_jit_runtime`): literals are materialized from
+// passive data segments with `memory.init`, retain/release is inserted by this
+// codegen (ownership-based ARC; see `release_heap_locals` / `str_binop`), and
+// the string builtins (`+`/concat, comparison, `substring`, `stringLength`,
+// `String`/`intString`/`boolString`) lower to runtime calls.
+//
+// When the `wasm-jit` target is selected it is authoritative: a construct this
+// codegen cannot lower is a hard, visible failure (a panic naming the reason),
+// NOT a silent degradation to the C target — see `translateFunctions`. Known
+// gaps that therefore panic today: `String(Real, significantDigits, …)` and any
+// non-zero `minimumLength` padding/justification (need printf-style formatting
+// to stay byte-identical to the C target), and structured values (arrays,
+// records, lists).
 
 // The two entry points keep their MetaModelica camelCase names so the generated
 // `CevalScript` caller resolves them; the rest of the module is idiomatic Rust.
@@ -176,11 +185,13 @@ fn mangle(path: &Absyn::Path) -> Result<String> {
 // Module assembly
 // -------------------------------------------------------------------------
 
-/// Signature of a generated wasm function: parameter and result value types.
+/// Signature of a generated wasm function: parameter and result Modelica types
+/// (`SigTy`, so String parameters/results are distinguishable for reference
+/// counting; the wasm value types are `SigTy::wty`).
 #[derive(Clone)]
 struct FnSig {
-    params: Vec<WTy>,
-    results: Vec<WTy>,
+    params: Vec<SigTy>,
+    results: Vec<SigTy>,
 }
 
 /// Everything the second pass needs to resolve a `CALL` to another generated
@@ -228,7 +239,7 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
         types.ty().function(params.iter().map(|w| w.val()), results.iter().map(|w| w.val()));
     }
     for sig in &sigs {
-        types.ty().function(sig.params.iter().map(|w| w.val()), sig.results.iter().map(|w| w.val()));
+        types.ty().function(sig.params.iter().map(|s| s.wty().val()), sig.results.iter().map(|s| s.wty().val()));
     }
 
     // Import section: the runtime's shared linear memory, the `env` math
@@ -247,13 +258,19 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
         imports.import("rt", *name, we::EntityType::Function((BUILTINS.len() + j) as u32));
     }
 
-    // Function + code sections.
+    // Compile the function bodies first (collecting any String literals into a
+    // module-wide pool), so the data-segment count is known before the code
+    // section is emitted.
     let mut functions = we::FunctionSection::new();
-    let mut code = we::CodeSection::new();
+    let mut bodies: Vec<we::Function> = Vec::with_capacity(funcs.len());
+    let mut literals: Vec<Vec<u8>> = Vec::new();
     for (id, f) in funcs.iter().enumerate() {
         functions.function(base + id as u32); // type index = base + id
-        let body = compile_function(f, &by_name)?;
-        code.function(&body);
+        bodies.push(compile_function(f, &by_name, &mut literals)?);
+    }
+    let mut code = we::CodeSection::new();
+    for body in &bodies {
+        code.function(body);
     }
 
     // Export the main function as "main".
@@ -265,7 +282,20 @@ fn build_module(fn_code: &SimCodeFunction::FunctionCode) -> Result<(Vec<u8>, Vec
     module.section(&imports);
     module.section(&functions);
     module.section(&exports);
+    // String literals become passive data segments materialized at runtime with
+    // `memory.init` (see SCONST in `compile_exp`). The DataCount section must
+    // precede the code section; the Data section follows it.
+    if !literals.is_empty() {
+        module.section(&we::DataCountSection { count: literals.len() as u32 });
+    }
     module.section(&code);
+    if !literals.is_empty() {
+        let mut data = we::DataSection::new();
+        for lit in &literals {
+            data.passive(lit.iter().copied());
+        }
+        module.section(&data);
+    }
     let bytes = module.finish();
 
     // Signature types of the main function for the sidecar.
@@ -278,8 +308,8 @@ fn function_signature(f: &SimCodeFunction::Function::Function) -> Result<(String
     let SimCodeFunction::Function::Function::FUNCTION { name, outVars, functionArguments, .. } = f else {
         bail!("CodegenWasmJit: only plain Modelica/MetaModelica FUNCTIONs are supported (no external/record-constructor)");
     };
-    let params = var_wtys(functionArguments)?;
-    let results = var_wtys(outVars)?;
+    let params = var_sigtys(functionArguments)?;
+    let results = var_sigtys(outVars)?;
     Ok((mangle(name)?, FnSig { params, results }))
 }
 
@@ -289,10 +319,6 @@ fn main_sig_types(f: &SimCodeFunction::Function::Function) -> Result<(Vec<SigTy>
         bail!("CodegenWasmJit: only plain FUNCTIONs are supported");
     };
     Ok((var_sigtys(functionArguments)?, var_sigtys(outVars)?))
-}
-
-fn var_wtys(vars: &Arc<List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Vec<WTy>> {
-    var_sigtys(vars).map(|v| v.into_iter().map(|s| s.wty()).collect())
 }
 
 fn var_sigtys(vars: &Arc<List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Vec<SigTy>> {
@@ -326,17 +352,19 @@ fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
 
 /// Per-function compilation state.
 struct FnCtx<'a> {
-    /// ident -> (local index, type). Inputs are the wasm params (indices
-    /// `0..n_in`); outputs and locals follow.
-    locals: HashMap<String, (u32, WTy)>,
+    /// ident -> (local index, Modelica type). Inputs are the wasm params
+    /// (indices `0..n_params`); outputs and locals follow.
+    locals: HashMap<String, (u32, SigTy)>,
     /// Wasm types of every non-parameter local (for `Function::new`), in index
     /// order starting at `n_params`.
     extra_locals: Vec<we::ValType>,
     n_params: u32,
     /// Output local indices, pushed (in order) before every `return`.
-    outputs: Vec<(u32, WTy)>,
+    outputs: Vec<(u32, SigTy)>,
     /// Resolves a `CALL` to another generated function.
     by_name: &'a HashMap<String, FnInfo>,
+    /// Module-wide String-literal pool; index = passive data-segment index.
+    literals: &'a mut Vec<Vec<u8>>,
     instrs: Vec<we::Instruction<'static>>,
 }
 
@@ -356,50 +384,52 @@ impl<'a> FnCtx<'a> {
 fn compile_function(
     f: &SimCodeFunction::Function::Function,
     by_name: &HashMap<String, FnInfo>,
+    literals: &mut Vec<Vec<u8>>,
 ) -> Result<we::Function> {
     let SimCodeFunction::Function::Function::FUNCTION { outVars, functionArguments, variableDeclarations, body, .. } = f
     else {
         bail!("CodegenWasmJit: only plain FUNCTIONs are supported");
     };
 
-    let mut locals: HashMap<String, (u32, WTy)> = HashMap::new();
+    let mut locals: HashMap<String, (u32, SigTy)> = HashMap::new();
     let mut idx: u32 = 0;
-    // Parameters first (wasm locals 0..n_in).
+    // Parameters first (wasm locals 0..n_params).
     for v in &**functionArguments {
-        let (name, wty) = var_name_ty(v)?;
-        locals.insert(name, (idx, wty));
+        let (name, sty) = var_name_ty(v)?;
+        locals.insert(name, (idx, sty));
         idx += 1;
     }
     let n_params = idx;
     let mut extra_locals: Vec<we::ValType> = Vec::new();
-    let mut outputs: Vec<(u32, WTy)> = Vec::new();
+    let mut outputs: Vec<(u32, SigTy)> = Vec::new();
     // Outputs next, then local declarations. An output is often also listed in
     // `variableDeclarations` (the function body assigns to it through the same
     // name); it must map to a single local, so a name already allocated as an
     // input or output is reused rather than given a fresh slot.
     for v in &**outVars {
-        let (name, wty) = var_name_ty(v)?;
+        let (name, sty) = var_name_ty(v)?;
         let slot = *locals.entry(name).or_insert_with(|| {
-            let s = (idx, wty);
-            extra_locals.push(wty.val());
+            let s = (idx, sty);
+            extra_locals.push(sty.wty().val());
             idx += 1;
             s
         });
         outputs.push(slot);
     }
     for v in &**variableDeclarations {
-        let (name, wty) = var_name_ty(v)?;
+        let (name, sty) = var_name_ty(v)?;
         locals.entry(name).or_insert_with(|| {
-            let s = (idx, wty);
-            extra_locals.push(wty.val());
+            let s = (idx, sty);
+            extra_locals.push(sty.wty().val());
             idx += 1;
             s
         });
     }
 
-    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, instrs: Vec::new() };
+    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new() };
     compile_stmts(&mut ctx, body)?;
-    // Fall-through return: push the output locals and end.
+    // Fall-through return: release heap locals, push the output locals and end.
+    release_heap_locals(&mut ctx);
     push_outputs(&mut ctx);
     ctx.emit(we::Instruction::End);
 
@@ -417,12 +447,34 @@ fn push_outputs(ctx: &mut FnCtx) {
     }
 }
 
-/// Name and wasm type of a `VARIABLE`. Only `CREF_IDENT` scalars are supported.
-fn var_name_ty(v: &SimCodeFunction::Variable::Variable) -> Result<(String, WTy)> {
+/// Reference-count cleanup before a return: release every heap local that is
+/// not an output (outputs are moved out to the caller). Parameters are included
+/// — a generated function *owns* its heap parameters (the caller passes an owned
+/// reference and does not release it after the call), so they are released here
+/// too. Releasing the null handle (an unassigned heap local) is a no-op.
+fn release_heap_locals(ctx: &mut FnCtx) {
+    let output_idxs: std::collections::HashSet<u32> = ctx.outputs.iter().map(|(i, _)| *i).collect();
+    let mut to_release: Vec<u32> = ctx
+        .locals
+        .values()
+        .filter(|(idx, sty)| sty.is_heap() && !output_idxs.contains(idx))
+        .map(|(idx, _)| *idx)
+        .collect();
+    // Deterministic order (HashMap iteration is unspecified) for stable output.
+    to_release.sort_unstable();
+    for idx in to_release {
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+    }
+}
+
+/// Name and Modelica type of a `VARIABLE`. Only `CREF_IDENT` scalars are
+/// supported.
+fn var_name_ty(v: &SimCodeFunction::Variable::Variable) -> Result<(String, SigTy)> {
     let SimCodeFunction::Variable::Variable::VARIABLE { name, ty, .. } = v else {
         bail!("CodegenWasmJit: function-pointer variables not supported");
     };
-    Ok((cref_ident(name)?, sig_ty(ty)?.wty()))
+    Ok((cref_ident(name)?, sig_ty(ty)?))
 }
 
 /// The identifier of a scalar `CREF_IDENT` component reference (no subscripts /
@@ -456,13 +508,26 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
                 bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
             };
             let ident = cref_ident(componentRef)?;
-            let (idx, dst_wty) = *ctx
+            let (idx, dst_sty) = *ctx
                 .locals
                 .get(&ident)
                 .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{ident}`"))?;
+            // The rhs leaves an owned value on the stack (a fresh +1 reference for
+            // heap values — see `compile_exp`).
             let src_wty = compile_exp(ctx, exp)?;
-            coerce(ctx, src_wty, dst_wty);
-            ctx.emit(we::Instruction::LocalSet(idx));
+            if dst_sty.is_heap() {
+                // Release-on-overwrite: free the previous value the local held
+                // (e.g. the previous loop iteration's string) *after* computing
+                // the new one (which may read the old value, as in `s := s + x`),
+                // then move the new owned value in. Stack: [new] -> release old
+                // -> store new.
+                ctx.emit(we::Instruction::LocalGet(idx));
+                ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+                ctx.emit(we::Instruction::LocalSet(idx));
+            } else {
+                coerce(ctx, src_wty, dst_sty.wty());
+                ctx.emit(we::Instruction::LocalSet(idx));
+            }
             Ok(())
         }
         S::STMT_IF { exp, statementLst, else_, .. } => {
@@ -489,15 +554,21 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
             Ok(())
         }
         S::STMT_RETURN { .. } => {
+            release_heap_locals(ctx);
             push_outputs(ctx);
             ctx.emit(we::Instruction::Return);
             Ok(())
         }
         S::STMT_NORETCALL { exp, .. } => {
-            // Evaluate for side effects and drop any results.
-            let n = compile_call_drop(ctx, exp)?;
-            for _ in 0..n {
-                ctx.emit(we::Instruction::Drop);
+            // Evaluate for side effects and discard any results. A discarded heap
+            // result is owned (+1), so it must be released, not merely dropped.
+            let results = compile_call_drop(ctx, exp)?;
+            for sty in results.iter().rev() {
+                if sty.is_heap() {
+                    ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+                } else {
+                    ctx.emit(we::Instruction::Drop);
+                }
             }
             Ok(())
         }
@@ -552,7 +623,7 @@ fn compile_for(
     };
     // Allocate the iterator local and stop/step locals.
     let it = ctx.alloc_temp(WTy::I32);
-    ctx.locals.insert(iter.to_string(), (it, WTy::I32));
+    ctx.locals.insert(iter.to_string(), (it, SigTy::Int));
     let stop_l = ctx.alloc_temp(WTy::I32);
     let step_l = ctx.alloc_temp(WTy::I32);
 
@@ -615,14 +686,45 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             ctx.emit(we::Instruction::I32Const(*index));
             Ok(WTy::I32)
         }
+        // The frontend interns constant literals (strings, but also numeric
+        // ones) into a shared pool; the wrapper carries the underlying constant
+        // expression, which is what we lower.
+        E::SHARED_LITERAL { exp, .. } => compile_exp(ctx, exp),
+        // A String literal: materialize a fresh (refcount 1) String from its
+        // passive data segment with `memory.init`, so the value is owned exactly
+        // like any other heap-producing expression.
+        E::SCONST { string } => {
+            let bytes = string.as_bytes().to_vec();
+            let len = bytes.len() as u32;
+            let seg = ctx.literals.len() as u32;
+            ctx.literals.push(bytes);
+            let obj = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::I32Const(len as i32));
+            ctx.emit(we::Instruction::Call(rt_index("rt_str_new")));
+            ctx.emit(we::Instruction::LocalTee(obj));
+            // memory.init dest=rt_str_data(obj), src_offset=0, size=len
+            ctx.emit(we::Instruction::Call(rt_index("rt_str_data")));
+            ctx.emit(we::Instruction::I32Const(0));
+            ctx.emit(we::Instruction::I32Const(len as i32));
+            ctx.emit(we::Instruction::MemoryInit { mem: 0, data_index: seg });
+            ctx.emit(we::Instruction::LocalGet(obj));
+            Ok(WTy::I32)
+        }
         E::CREF { componentRef, .. } => {
             let ident = cref_ident(componentRef)?;
-            let (idx, wty) = *ctx
+            let (idx, sty) = *ctx
                 .locals
                 .get(&ident)
                 .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{ident}`"))?;
             ctx.emit(we::Instruction::LocalGet(idx));
-            Ok(wty)
+            // Reading a heap local yields an *owned* value: retain so the local
+            // keeps its reference while the value flows into an operation /
+            // assignment / call that will consume one reference.
+            if sty.is_heap() {
+                ctx.emit(we::Instruction::LocalGet(idx));
+                ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+            }
+            Ok(sty.wty())
         }
         E::CAST { ty, exp } => {
             let from = compile_exp(ctx, exp)?;
@@ -673,7 +775,7 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         E::CALL { path, expLst, attr } => {
             let results = compile_call(ctx, path, expLst, attr)?;
             match results.len() {
-                1 => Ok(results[0]),
+                1 => Ok(results[0].wty()),
                 0 => bail!("CodegenWasmJit: call to {} used in expression position returns no value", mangle(path)?),
                 _ => bail!("CodegenWasmJit: call to {} returns multiple values; not usable in expression position", mangle(path)?),
             }
@@ -688,16 +790,17 @@ fn exp_wty_hint(ctx: &FnCtx, exp: &DAE::Exp) -> Result<WTy> {
     use DAE::Exp as E;
     Ok(match exp {
         E::RCONST { .. } => WTy::F64,
-        E::ICONST { .. } | E::BCONST { .. } | E::ENUM_LITERAL { .. } | E::RELATION { .. } | E::LBINARY { .. } | E::LUNARY { .. } => WTy::I32,
+        E::ICONST { .. } | E::BCONST { .. } | E::ENUM_LITERAL { .. } | E::SCONST { .. } | E::RELATION { .. } | E::LBINARY { .. } | E::LUNARY { .. } => WTy::I32,
         E::CAST { ty, .. } => sig_ty(ty)?.wty(),
         E::CREF { componentRef, .. } => {
             let ident = cref_ident(componentRef)?;
-            ctx.locals.get(&ident).map(|(_, w)| *w).unwrap_or(WTy::F64)
+            ctx.locals.get(&ident).map(|(_, s)| s.wty()).unwrap_or(WTy::F64)
         }
         E::BINARY { operator, .. } => operator_wty(operator)?,
         E::UNARY { operator, .. } => operator_wty(operator)?,
         E::IFEXP { expThen, .. } => exp_wty_hint(ctx, expThen)?,
         E::CALL { attr, .. } => sig_ty(&attr.ty)?.wty(),
+        E::SHARED_LITERAL { exp, .. } => exp_wty_hint(ctx, exp)?,
         _ => WTy::F64,
     })
 }
@@ -736,6 +839,7 @@ fn exp_sigty(exp: &DAE::Exp) -> Result<SigTy> {
         E::BINARY { operator, .. } | E::UNARY { operator, .. } => operator_sigty(operator)?,
         E::RELATION { .. } | E::LBINARY { .. } | E::LUNARY { .. } => SigTy::Bool,
         E::IFEXP { expThen, .. } => exp_sigty(expThen)?,
+        E::SHARED_LITERAL { exp, .. } => exp_sigty(exp)?,
         other => bail!("CodegenWasmJit: cannot determine type of expression {other:?}"),
     })
 }
@@ -769,9 +873,7 @@ fn compile_binary(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE::
         let O::ADD { .. } = op else {
             bail!("CodegenWasmJit: unsupported String operator {op:?}");
         };
-        compile_exp(ctx, e1)?;
-        compile_exp(ctx, e2)?;
-        ctx.emit(we::Instruction::Call(rt_index("rt_concat")));
+        str_binop(ctx, e1, e2, "rt_concat")?;
         return Ok(WTy::I32);
     }
     let wty = operator_wty(op)?;
@@ -812,16 +914,14 @@ fn compile_relation(ctx: &mut FnCtx, e1: &DAE::Exp, op: &DAE::Operator, e2: &DAE
     // String comparisons go through the runtime: equality via `rt_streq`,
     // ordering via `rt_strcmp` (which returns -1/0/1) compared against 0.
     if relation_operand_sigty(op)? == SigTy::Str {
-        compile_exp(ctx, e1)?;
-        compile_exp(ctx, e2)?;
         match op {
-            O::EQUAL { .. } => ctx.emit(we::Instruction::Call(rt_index("rt_streq"))),
+            O::EQUAL { .. } => str_binop(ctx, e1, e2, "rt_streq")?,
             O::NEQUAL { .. } => {
-                ctx.emit(we::Instruction::Call(rt_index("rt_streq")));
+                str_binop(ctx, e1, e2, "rt_streq")?;
                 ctx.emit(we::Instruction::I32Eqz);
             }
             O::LESS { .. } | O::LESSEQ { .. } | O::GREATER { .. } | O::GREATEREQ { .. } => {
-                ctx.emit(we::Instruction::Call(rt_index("rt_strcmp")));
+                str_binop(ctx, e1, e2, "rt_strcmp")?;
                 ctx.emit(we::Instruction::I32Const(0));
                 ctx.emit(match op {
                     O::LESS { .. } => we::Instruction::I32LtS,
@@ -881,9 +981,12 @@ fn compile_call(
     path: &Absyn::Path,
     args: &Arc<List<Arc<DAE::Exp>>>,
     attr: &DAE::CallAttributes,
-) -> Result<Vec<WTy>> {
+) -> Result<Vec<SigTy>> {
     let mangled = mangle(path)?;
-    // A call to another generated function.
+    // A call to another generated function. Heap arguments are passed as owned
+    // (+1) references — a generated function *consumes* its heap parameters
+    // (they are released at its scope exit), so the caller does not release them
+    // after the call.
     if let Some(info) = ctx.by_name.get(&mangled) {
         let params = info.sig.params.clone();
         let results = info.sig.results.clone();
@@ -894,23 +997,23 @@ fn compile_call(
         }
         for (a, p) in argv.iter().zip(params.iter()) {
             let w = compile_exp(ctx, a)?;
-            coerce(ctx, w, *p);
+            coerce(ctx, w, p.wty());
         }
         ctx.emit(we::Instruction::Call(index));
         return Ok(results);
     }
-    // Otherwise it must be a (builtin) math function.
+    // Otherwise it must be a (builtin) math/string function.
     let name = AbsynUtil::pathLastIdent(Arc::new(path.clone()))?.to_string();
-    compile_math_builtin(ctx, &name, args, attr).map(|w| vec![w])
+    compile_math_builtin(ctx, &name, args, attr).map(|s| vec![s])
 }
 
-/// Like [`compile_call`] but for statement position; returns the number of
-/// result values left on the stack (to be dropped).
-fn compile_call_drop(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<usize> {
+/// Like [`compile_call`] but for statement position; returns the result types
+/// left on the stack (to be released if heap, otherwise dropped).
+fn compile_call_drop(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<Vec<SigTy>> {
     let DAE::Exp::CALL { path, expLst, attr } = exp else {
         bail!("CodegenWasmJit: no-return statement is not a call: {exp:?}");
     };
-    Ok(compile_call(ctx, path, expLst, attr)?.len())
+    compile_call(ctx, path, expLst, attr)
 }
 
 /// Lower a scalar math builtin. Single-instruction builtins are emitted inline;
@@ -920,13 +1023,14 @@ fn compile_math_builtin(
     name: &str,
     args: &Arc<List<Arc<DAE::Exp>>>,
     attr: &DAE::CallAttributes,
-) -> Result<WTy> {
+) -> Result<SigTy> {
     let argv: Vec<&Arc<DAE::Exp>> = (&**args).into_iter().collect();
-    let result_wty = sig_ty(&attr.ty).unwrap_or(SigTy::Real).wty();
+    let result_sig = sig_ty(&attr.ty).unwrap_or(SigTy::Real);
+    let result_wty = result_sig.wty();
 
-    // Host-imported transcendentals (all operate on f64).
+    // Host-imported transcendentals (all operate on and return f64).
     if let Some(bi) = builtin_index(name) {
-        let (_, params, result) = BUILTINS[bi as usize];
+        let (_, params, _) = BUILTINS[bi as usize];
         if argv.len() != params.len() {
             bail!("CodegenWasmJit: builtin {name} expects {} args", params.len());
         }
@@ -935,27 +1039,27 @@ fn compile_math_builtin(
             coerce(ctx, w, *p);
         }
         ctx.emit(we::Instruction::Call(bi));
-        return Ok(result);
+        return Ok(SigTy::Real);
     }
 
     match name {
         "sqrt" => {
             unary_f64(ctx, &argv, we::Instruction::F64Sqrt)?;
-            Ok(WTy::F64)
+            Ok(SigTy::Real)
         }
         "floor" => {
             unary_f64(ctx, &argv, we::Instruction::F64Floor)?;
-            Ok(WTy::F64)
+            Ok(SigTy::Real)
         }
         "ceil" => {
             unary_f64(ctx, &argv, we::Instruction::F64Ceil)?;
-            Ok(WTy::F64)
+            Ok(SigTy::Real)
         }
         // integer(r): largest Integer <= r.
         "integer" => {
             unary_f64(ctx, &argv, we::Instruction::F64Floor)?;
             ctx.emit(we::Instruction::I32TruncF64S);
-            Ok(WTy::I32)
+            Ok(SigTy::Int)
         }
         "abs" => {
             need_args(&argv, 1, name)?;
@@ -963,7 +1067,7 @@ fn compile_math_builtin(
                 let w = compile_exp(ctx, argv[0])?;
                 coerce(ctx, w, WTy::F64);
                 ctx.emit(we::Instruction::F64Abs);
-                Ok(WTy::F64)
+                Ok(SigTy::Real)
             } else {
                 let w = compile_exp(ctx, argv[0])?;
                 coerce(ctx, w, WTy::I32);
@@ -978,7 +1082,7 @@ fn compile_math_builtin(
                 ctx.emit(we::Instruction::I32Const(0));
                 ctx.emit(we::Instruction::I32LtS); // x<0
                 ctx.emit(we::Instruction::Select);
-                Ok(WTy::I32)
+                Ok(result_sig)
             }
         }
         "max" | "min" => {
@@ -989,7 +1093,7 @@ fn compile_math_builtin(
                 let b = compile_exp(ctx, argv[1])?;
                 coerce(ctx, b, WTy::F64);
                 ctx.emit(if name == "max" { we::Instruction::F64Max } else { we::Instruction::F64Min });
-                Ok(WTy::F64)
+                Ok(SigTy::Real)
             } else {
                 let a = compile_exp(ctx, argv[0])?;
                 coerce(ctx, a, WTy::I32);
@@ -1005,7 +1109,7 @@ fn compile_math_builtin(
                 ctx.emit(we::Instruction::LocalGet(tb));
                 ctx.emit(if name == "max" { we::Instruction::I32GtS } else { we::Instruction::I32LtS });
                 ctx.emit(we::Instruction::Select);
-                Ok(WTy::I32)
+                Ok(result_sig)
             }
         }
         // div(a,b): integer division truncating toward zero.
@@ -1016,7 +1120,7 @@ fn compile_math_builtin(
             let b = compile_exp(ctx, argv[1])?;
             coerce(ctx, b, WTy::I32);
             ctx.emit(we::Instruction::I32DivS);
-            Ok(WTy::I32)
+            Ok(SigTy::Int)
         }
         // rem(a,b): integer remainder truncating toward zero.
         "rem" if result_wty == WTy::I32 => {
@@ -1026,7 +1130,7 @@ fn compile_math_builtin(
             let b = compile_exp(ctx, argv[1])?;
             coerce(ctx, b, WTy::I32);
             ctx.emit(we::Instruction::I32RemS);
-            Ok(WTy::I32)
+            Ok(SigTy::Int)
         }
         // Number → String formatting via the runtime: a scalar becomes a freshly
         // allocated (refcount 1) String handle. The typed builtin names are
@@ -1045,37 +1149,80 @@ fn compile_math_builtin(
         // explicit builtin form is `stringAppend`.
         "stringAppend" => {
             need_args(&argv, 2, name)?;
-            compile_exp(ctx, argv[0])?;
-            compile_exp(ctx, argv[1])?;
-            ctx.emit(we::Instruction::Call(rt_index("rt_concat")));
-            Ok(WTy::I32)
+            str_binop(ctx, argv[0], argv[1], "rt_concat")?;
+            Ok(SigTy::Str)
         }
         "stringLength" => {
             need_args(&argv, 1, name)?;
-            compile_exp(ctx, argv[0])?;
-            ctx.emit(we::Instruction::Call(rt_index("rt_str_len")));
-            Ok(WTy::I32) // Integer
+            str_unop(ctx, argv[0], "rt_str_len")?;
+            Ok(SigTy::Int)
         }
         "stringEqual" => {
             need_args(&argv, 2, name)?;
-            compile_exp(ctx, argv[0])?;
-            compile_exp(ctx, argv[1])?;
-            ctx.emit(we::Instruction::Call(rt_index("rt_streq")));
-            Ok(WTy::I32) // Boolean
+            str_binop(ctx, argv[0], argv[1], "rt_streq")?;
+            Ok(SigTy::Bool)
         }
         // `substring(s, i, j)` — 1-based inclusive.
         "substring" => {
             need_args(&argv, 3, name)?;
-            compile_exp(ctx, argv[0])?;
-            let i = compile_exp(ctx, argv[1])?;
-            coerce(ctx, i, WTy::I32);
-            let j = compile_exp(ctx, argv[2])?;
-            coerce(ctx, j, WTy::I32);
-            ctx.emit(we::Instruction::Call(rt_index("rt_substring")));
-            Ok(WTy::I32)
+            str_substring(ctx, argv[0], argv[1], argv[2])?;
+            Ok(SigTy::Str)
         }
         other => bail!("CodegenWasmJit: builtin function `{other}` not yet supported"),
     }
+}
+
+/// Release a heap value held in scratch local `t` (used to free owned operands
+/// after a borrowing runtime op consumed them off the stack).
+fn release_temp(ctx: &mut FnCtx, t: u32) {
+    ctx.emit(we::Instruction::LocalGet(t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+}
+
+/// A runtime string op with two heap operands: each is an owned (+1) value, the
+/// runtime only borrows them, so both are released after the call. Leaves the
+/// op's result on the stack.
+fn str_binop(ctx: &mut FnCtx, e1: &DAE::Exp, e2: &DAE::Exp, rt_fn: &str) -> Result<()> {
+    compile_exp(ctx, e1)?;
+    let t1 = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(t1));
+    compile_exp(ctx, e2)?;
+    let t2 = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(t2));
+    ctx.emit(we::Instruction::LocalGet(t1));
+    ctx.emit(we::Instruction::LocalGet(t2));
+    ctx.emit(we::Instruction::Call(rt_index(rt_fn)));
+    release_temp(ctx, t1);
+    release_temp(ctx, t2);
+    Ok(())
+}
+
+/// A runtime string op with one heap operand (e.g. `rt_str_len`): the owned
+/// operand is released after the call. Leaves the op's result on the stack.
+fn str_unop(ctx: &mut FnCtx, e: &DAE::Exp, rt_fn: &str) -> Result<()> {
+    compile_exp(ctx, e)?;
+    let t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(t));
+    ctx.emit(we::Instruction::LocalGet(t));
+    ctx.emit(we::Instruction::Call(rt_index(rt_fn)));
+    release_temp(ctx, t);
+    Ok(())
+}
+
+/// `substring(s, i, j)`: one heap operand `s` (released after) plus two scalar
+/// indices. Leaves the new String handle on the stack.
+fn str_substring(ctx: &mut FnCtx, s: &DAE::Exp, i: &DAE::Exp, j: &DAE::Exp) -> Result<()> {
+    compile_exp(ctx, s)?;
+    let ts = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(ts));
+    ctx.emit(we::Instruction::LocalGet(ts));
+    let wi = compile_exp(ctx, i)?;
+    coerce(ctx, wi, WTy::I32);
+    let wj = compile_exp(ctx, j)?;
+    coerce(ctx, wj, WTy::I32);
+    ctx.emit(we::Instruction::Call(rt_index("rt_substring")));
+    release_temp(ctx, ts);
+    Ok(())
 }
 
 /// `String(x[, significantDigits][, minimumLength, leftJustified])` — the
@@ -1089,15 +1236,14 @@ fn compile_math_builtin(
 /// target, so those fall back cleanly (the module is not written → META_FAIL →
 /// the C target runs instead). `String(value)` with no format args is also
 /// accepted.
-fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<WTy> {
+fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy> {
     let vty = exp_sigty(argv[0])?;
     // A `minimumLength` of literal 0 means no padding, so the formatting args
     // can be ignored. Anything else needs justification/precision support.
     let no_padding = |min_len: &DAE::Exp| matches!(min_len, DAE::Exp::ICONST { integer: 0 });
     match (vty, argv.len()) {
-        (SigTy::Str, 1) => compile_exp(ctx, argv[0]), // String(s) is the identity
-        (SigTy::Int, 1) | (SigTy::Bool, 1) => format_scalar_string(ctx, argv[0], vty),
-        (SigTy::Real, 1) => format_scalar_string(ctx, argv[0], vty),
+        (SigTy::Str, 1) => format_scalar_string(ctx, argv[0], vty), // String(s) is the identity
+        (SigTy::Int, 1) | (SigTy::Bool, 1) | (SigTy::Real, 1) => format_scalar_string(ctx, argv[0], vty),
         // String(int|bool, minLength, leftJustified)
         (SigTy::Int, 3) | (SigTy::Bool, 3) if no_padding(argv[1]) => format_scalar_string(ctx, argv[0], vty),
         // String(real, significantDigits, minLength, leftJustified): only the
@@ -1106,32 +1252,37 @@ fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<WTy> 
     }
 }
 
-/// Format a scalar of the given `SigTy` to a String handle via the runtime.
-fn format_scalar_string(ctx: &mut FnCtx, arg: &DAE::Exp, ty: SigTy) -> Result<WTy> {
+/// Format a scalar of the given `SigTy` to an owned String handle via the
+/// runtime.
+fn format_scalar_string(ctx: &mut FnCtx, arg: &DAE::Exp, ty: SigTy) -> Result<SigTy> {
     match ty {
         SigTy::Int => {
             let w = compile_exp(ctx, arg)?;
             coerce(ctx, w, WTy::I32);
             ctx.emit(we::Instruction::Call(rt_index("rt_int_string")));
-            Ok(WTy::I32)
+            Ok(SigTy::Str)
         }
         SigTy::Bool => {
             let w = compile_exp(ctx, arg)?;
             coerce(ctx, w, WTy::I32);
             ctx.emit(we::Instruction::Call(rt_index("rt_bool_string")));
-            Ok(WTy::I32)
+            Ok(SigTy::Str)
         }
         SigTy::Real => emit_real_string(ctx, arg),
-        SigTy::Str => compile_exp(ctx, arg),
+        // String(s) is the identity; `compile_exp` already returns an owned copy.
+        SigTy::Str => {
+            compile_exp(ctx, arg)?;
+            Ok(SigTy::Str)
+        }
     }
 }
 
 /// `realString(r)` / `String(r)` with default formatting.
-fn emit_real_string(ctx: &mut FnCtx, arg: &DAE::Exp) -> Result<WTy> {
+fn emit_real_string(ctx: &mut FnCtx, arg: &DAE::Exp) -> Result<SigTy> {
     let w = compile_exp(ctx, arg)?;
     coerce(ctx, w, WTy::F64);
     ctx.emit(we::Instruction::Call(rt_index("rt_real_string")));
-    Ok(WTy::I32)
+    Ok(SigTy::Str)
 }
 
 fn unary_f64(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>], instr: we::Instruction<'static>) -> Result<()> {
@@ -1164,18 +1315,19 @@ fn coerce(ctx: &mut FnCtx, from: WTy, to: WTy) {
 // -------------------------------------------------------------------------
 
 /// `CodegenWasmJitFunctions.translateFunctions`: lower `fnCode` to a wasm module
-/// written to `<name>.wasm` (+ `<name>.wasm.sig`). Infallible at the call site
-/// (the MetaModelica declaration cannot fail); on a lowering error nothing is
-/// written and the subsequent `loadAndExecute` returns `Values.META_FAIL`, so
-/// an unsupported function fails just like a failed constant evaluation. The
-/// error is logged to stderr so it is not silently lost.
+/// written to `<name>.wasm` (+ `<name>.wasm.sig`).
+///
+/// When the `wasm-jit` target is selected it is authoritative: a construct it
+/// cannot lower is a hard, visible failure (a panic with the precise reason),
+/// **not** a silent degradation to the C target. This surfaces exactly what is
+/// unimplemented instead of masking it behind a `META_FAIL`. Stale artefacts
+/// from a previous target are removed first so a panic cannot leave a mismatched
+/// module behind.
 pub fn translateFunctions(fnCode: SimCodeFunction::FunctionCode) {
+    let _ = std::fs::remove_file(format!("{}.wasm", fnCode.name));
+    let _ = std::fs::remove_file(format!("{}.wasm.sig", fnCode.name));
     if let Err(e) = translate_functions_inner(&fnCode) {
-        eprintln!("CodegenWasmJit: cannot JIT function `{}`: {e:#}", fnCode.name);
-        // Remove any stale artefacts from a previous target so loadAndExecute
-        // does not pick up an unrelated module.
-        let _ = std::fs::remove_file(format!("{}.wasm", fnCode.name));
-        let _ = std::fs::remove_file(format!("{}.wasm.sig", fnCode.name));
+        panic!("CodegenWasmJit: cannot JIT function `{}` for the wasm-jit target: {e:#}", fnCode.name);
     }
 }
 
