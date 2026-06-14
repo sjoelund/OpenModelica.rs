@@ -3197,9 +3197,18 @@ fn compile_range_array(ctx: &mut FnCtx, ty: &DAE::Type, start: &DAE::Exp, step: 
     let SigTy::Array { elem, .. } = sig_ty(ty)? else {
         bail!("CodegenWasmJit: range with non-array type {ty:?}");
     };
-    if !matches!(*elem, SigTy::Int) {
-        bail!("CodegenWasmJit: only Integer ranges are supported as array values (element {elem:?})");
+    match &*elem {
+        // Integer and enumeration ranges (enum literals are their i32 index).
+        SigTy::Int => compile_int_range_array(ctx, start, step, stop),
+        SigTy::Real => compile_real_range_array(ctx, start, step, stop),
+        other => bail!("CodegenWasmJit: only Integer/Real ranges are supported as array values (element {other:?})"),
     }
+}
+
+/// `start:step:stop` over Integers — `n = max(0, (stop-start)/step + 1)`
+/// elements (integer division naturally handles either step direction), filled
+/// `arr[k] = start + k*step`.
+fn compile_int_range_array(ctx: &mut FnCtx, start: &DAE::Exp, step: Option<&DAE::Exp>, stop: &DAE::Exp) -> Result<()> {
     let start_t = ctx.alloc_temp(WTy::I32);
     let w = compile_exp(ctx, start)?;
     coerce(ctx, w, WTy::I32);
@@ -3269,6 +3278,103 @@ fn compile_range_array(ctx: &mut FnCtx, ty: &DAE::Type, start: &DAE::Exp, step: 
     ctx.emit(we::Instruction::I32Mul);
     ctx.emit(we::Instruction::I32Add);
     elem_store(ctx, &SigTy::Int);
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalSet(k_t));
+    ctx.emit(we::Instruction::Br(0));
+    ctx.emit(we::Instruction::End); // loop
+    ctx.emit(we::Instruction::End); // block
+    ctx.emit(we::Instruction::LocalGet(arr));
+    Ok(())
+}
+
+/// `start:step:stop` over Reals, byte-identical to the C runtime's
+/// `create_real_array_from_range`: the element count is
+/// `(step>0 ? start<=stop : start>=stop) ? (size_t)((stop-start)/step + 1) : 0`,
+/// and the elements are produced by **accumulation** (`val += step`), not
+/// `start + k*step`, so the rounding matches exactly.
+fn compile_real_range_array(ctx: &mut FnCtx, start: &DAE::Exp, step: Option<&DAE::Exp>, stop: &DAE::Exp) -> Result<()> {
+    // `val` doubles as the running accumulator (starts at `start`).
+    let val_t = ctx.alloc_temp(WTy::F64);
+    let w = compile_exp(ctx, start)?;
+    coerce(ctx, w, WTy::F64);
+    ctx.emit(we::Instruction::LocalSet(val_t));
+    let step_t = ctx.alloc_temp(WTy::F64);
+    match step {
+        Some(e) => {
+            let w = compile_exp(ctx, e)?;
+            coerce(ctx, w, WTy::F64);
+        }
+        None => ctx.emit(we::Instruction::F64Const(1.0f64.into())),
+    }
+    ctx.emit(we::Instruction::LocalSet(step_t));
+    let stop_t = ctx.alloc_temp(WTy::F64);
+    let w = compile_exp(ctx, stop)?;
+    coerce(ctx, w, WTy::F64);
+    ctx.emit(we::Instruction::LocalSet(stop_t));
+
+    // n = 0; if (step>0 ? start<=stop : start>=stop) n = trunc((stop-start)/step + 1)
+    let n_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalSet(n_t));
+    // cond on the stack:
+    ctx.emit(we::Instruction::LocalGet(step_t));
+    ctx.emit(we::Instruction::F64Const(0.0f64.into()));
+    ctx.emit(we::Instruction::F64Gt);
+    ctx.emit(we::Instruction::If(we::BlockType::Result(we::ValType::I32)));
+    ctx.emit(we::Instruction::LocalGet(val_t));
+    ctx.emit(we::Instruction::LocalGet(stop_t));
+    ctx.emit(we::Instruction::F64Le);
+    ctx.emit(we::Instruction::Else);
+    ctx.emit(we::Instruction::LocalGet(val_t));
+    ctx.emit(we::Instruction::LocalGet(stop_t));
+    ctx.emit(we::Instruction::F64Ge);
+    ctx.emit(we::Instruction::End);
+    ctx.emit(we::Instruction::If(we::BlockType::Empty));
+    ctx.emit(we::Instruction::LocalGet(stop_t));
+    ctx.emit(we::Instruction::LocalGet(val_t));
+    ctx.emit(we::Instruction::F64Sub);
+    ctx.emit(we::Instruction::LocalGet(step_t));
+    ctx.emit(we::Instruction::F64Div);
+    ctx.emit(we::Instruction::F64Const(1.0f64.into()));
+    ctx.emit(we::Instruction::F64Add);
+    ctx.emit(we::Instruction::I32TruncF64S); // truncate toward zero, like (size_t)
+    ctx.emit(we::Instruction::LocalSet(n_t));
+    ctx.emit(we::Instruction::End);
+
+    let arr = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(SigTy::Real.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(arr));
+    ctx.emit(we::Instruction::LocalGet(arr));
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+
+    // for k in 0..n: arr[k] = val; val += step
+    let k_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(0));
+    ctx.emit(we::Instruction::LocalSet(k_t));
+    ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::LocalGet(n_t));
+    ctx.emit(we::Instruction::I32GeS);
+    ctx.emit(we::Instruction::BrIf(1));
+    ctx.emit(we::Instruction::LocalGet(arr));
+    ctx.emit(we::Instruction::LocalGet(k_t));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    ctx.emit(we::Instruction::LocalGet(val_t));
+    elem_store(ctx, &SigTy::Real);
+    ctx.emit(we::Instruction::LocalGet(val_t));
+    ctx.emit(we::Instruction::LocalGet(step_t));
+    ctx.emit(we::Instruction::F64Add);
+    ctx.emit(we::Instruction::LocalSet(val_t));
     ctx.emit(we::Instruction::LocalGet(k_t));
     ctx.emit(we::Instruction::I32Const(1));
     ctx.emit(we::Instruction::I32Add);
