@@ -2683,6 +2683,14 @@ fn compile_math_builtin(
             ctx.emit(we::Instruction::I32TruncF64S);
             Ok(SigTy::Int)
         }
+        // `Integer(e)` — the ordinal of an enumeration value. Enum values are
+        // already stored as their 1-based index (an i32), so this is identity.
+        "Integer" => {
+            need_args(&argv, 1, name)?;
+            let w = compile_exp(ctx, argv[0])?;
+            coerce(ctx, w, WTy::I32);
+            Ok(SigTy::Int)
+        }
         "abs" => {
             need_args(&argv, 1, name)?;
             if result_wty == WTy::F64 {
