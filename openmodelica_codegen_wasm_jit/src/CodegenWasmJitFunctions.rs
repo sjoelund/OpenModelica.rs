@@ -1542,14 +1542,32 @@ fn compile_else(ctx: &mut FnCtx, e: &DAE::Else) -> Result<()> {
     }
 }
 
-/// Lower `for iter in start:stop loop ...` (unit step) and `start:step:stop`
-/// over an Integer range. Other ranges (Real, arrays) are not yet supported.
+/// Lower a `for iter in range loop ...` statement. An Integer (or enumeration)
+/// scalar `start:stop` / `start:step:stop` range uses an efficient counter loop
+/// (no allocation); any other iterable — an array variable, an array literal, a
+/// slice — is evaluated to an array once and iterated element by element
+/// ([`compile_for_array`]).
 fn compile_for(
     ctx: &mut FnCtx,
     iter: &ArcStr,
     range: &DAE::Exp,
     body: &Arc<List<Arc<DAE::Statement>>>,
-    _ty: &DAE::Type,
+    ty: &DAE::Type,
+) -> Result<()> {
+    if let DAE::Exp::RANGE { .. } = range {
+        if matches!(sig_ty(ty), Ok(SigTy::Int)) {
+            return compile_for_int_range(ctx, iter, range, body);
+        }
+    }
+    compile_for_array(ctx, iter, range, body)
+}
+
+/// The counter-loop lowering for an Integer scalar range (see [`compile_for`]).
+fn compile_for_int_range(
+    ctx: &mut FnCtx,
+    iter: &ArcStr,
+    range: &DAE::Exp,
+    body: &Arc<List<Arc<DAE::Statement>>>,
 ) -> Result<()> {
     let DAE::Exp::RANGE { start, step, stop, .. } = range else {
         bail!("CodegenWasmJit: for-loop over non-range expression not supported");
@@ -1591,6 +1609,80 @@ fn compile_for(
     ctx.emit(we::Instruction::Br(0));
     ctx.emit(we::Instruction::End); // loop
     ctx.emit(we::Instruction::End); // block
+    Ok(())
+}
+
+/// Lower `for x in <array> loop ...`: evaluate the iterable to an array once,
+/// then loop `k = 1..total`, binding `x` to `arr[k]` each pass. Handles array
+/// literals, array variables and slices — any rank-1 vector. A heap element
+/// (String / record / nested array) is retained while bound to `x` and released
+/// at the end of each iteration; the iterator local is nulled afterwards so the
+/// function-exit cleanup does not double-free it.
+fn compile_for_array(
+    ctx: &mut FnCtx,
+    iter: &ArcStr,
+    range: &DAE::Exp,
+    body: &Arc<List<Arc<DAE::Statement>>>,
+) -> Result<()> {
+    let SigTy::Array { elem, rank } = exp_sigty(range)? else {
+        bail!("CodegenWasmJit: for-loop over non-array, non-range expression not supported");
+    };
+    if rank != 1 {
+        bail!("CodegenWasmJit: for-loop over a multi-dimensional array not yet supported");
+    }
+    let elem = (*elem).clone();
+    // Evaluate the iterable to an owned array handle.
+    compile_exp(ctx, range)?;
+    let arr_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(arr_t));
+    // n = total element count; k = 1-based counter.
+    let n = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalGet(arr_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_total")));
+    ctx.emit(we::Instruction::LocalSet(n));
+    let k = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::LocalSet(k));
+    let it = ctx.alloc_temp(elem.wty());
+    ctx.locals.insert(iter.to_string(), (it, elem.clone()));
+
+    // block { loop { k>n -> br 1; it = arr[k]; <body>; release it; k++; br 0 } }
+    ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
+    ctx.emit(we::Instruction::LocalGet(k));
+    ctx.emit(we::Instruction::LocalGet(n));
+    ctx.emit(we::Instruction::I32GtS);
+    ctx.emit(we::Instruction::BrIf(1));
+    // it = arr[k]; a heap element is borrowed from the array, so retain it to own
+    // the binding (the body's reads/releases are then balanced).
+    ctx.emit(we::Instruction::LocalGet(arr_t));
+    ctx.emit(we::Instruction::LocalGet(k));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    elem_load(ctx, &elem);
+    ctx.emit(we::Instruction::LocalSet(it));
+    if elem.is_heap() {
+        ctx.emit(we::Instruction::LocalGet(it));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+    }
+    compile_stmts(ctx, body)?;
+    if let Some(release_fn) = elem.release_fn() {
+        ctx.emit(we::Instruction::LocalGet(it));
+        ctx.emit(we::Instruction::Call(rt_index(release_fn)));
+    }
+    ctx.emit(we::Instruction::LocalGet(k));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalSet(k));
+    ctx.emit(we::Instruction::Br(0));
+    ctx.emit(we::Instruction::End); // loop
+    ctx.emit(we::Instruction::End); // block
+    if elem.is_heap() {
+        // The last element was released above; null the slot so the function-exit
+        // release_heap_locals treats it as an unassigned (null) handle.
+        ctx.emit(we::Instruction::I32Const(0));
+        ctx.emit(we::Instruction::LocalSet(it));
+    }
+    release_temp_array(ctx, arr_t);
     Ok(())
 }
 
