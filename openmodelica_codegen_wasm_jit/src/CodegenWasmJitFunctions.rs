@@ -965,6 +965,73 @@ fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()>
     Ok(())
 }
 
+/// Store a freshly-owned value held in temp `vt` into simple local `idx` of type
+/// `dst_sty`, releasing the local's previous value first (release-on-overwrite).
+/// The value must already be privately owned (a call/constructor result), so no
+/// value-semantics copy is made. Used by tuple assignment.
+fn store_fresh_into_local(ctx: &mut FnCtx, idx: u32, dst_sty: &SigTy, vt: u32) {
+    if let Some(release_fn) = dst_sty.release_fn() {
+        // [new] -> release old -> store new.
+        ctx.emit(we::Instruction::LocalGet(vt));
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::Call(rt_index(release_fn)));
+        ctx.emit(we::Instruction::LocalSet(idx));
+    } else {
+        ctx.emit(we::Instruction::LocalGet(vt));
+        ctx.emit(we::Instruction::LocalSet(idx));
+    }
+}
+
+/// Lower `(l1, l2, …) := f(args)` (`STMT_TUPLE_ASSIGN`): call the multi-output
+/// generated function (which leaves its results on the stack, first result
+/// deepest), then move each owned result into its target local. A `_` (wildcard)
+/// target discards its value (releasing it if heap). Targets must be simple
+/// locals; subscripted / qualified tuple targets are not supported.
+fn compile_tuple_assign(ctx: &mut FnCtx, lhs: &Arc<List<Arc<DAE::Exp>>>, call: &DAE::Exp) -> Result<()> {
+    let DAE::Exp::CALL { path, expLst, attr } = call else {
+        bail!("CodegenWasmJit: tuple assignment rhs is not a function call: {call:?}");
+    };
+    let lhs_v: Vec<&Arc<DAE::Exp>> = (&**lhs).into_iter().collect();
+    let results = compile_call(ctx, path, expLst, attr)?;
+    if results.len() != lhs_v.len() {
+        bail!("CodegenWasmJit: tuple assignment arity mismatch ({} targets, {} results)", lhs_v.len(), results.len());
+    }
+    // Pop the results into temps (the last result is on top of the stack).
+    let mut temps = vec![0u32; results.len()];
+    for i in (0..results.len()).rev() {
+        let vt = ctx.alloc_temp(results[i].wty());
+        ctx.emit(we::Instruction::LocalSet(vt));
+        temps[i] = vt;
+    }
+    for (i, lhs_exp) in lhs_v.iter().enumerate() {
+        let sty = &results[i];
+        let vt = temps[i];
+        let DAE::Exp::CREF { componentRef, .. } = &***lhs_exp else {
+            bail!("CodegenWasmJit: tuple-assignment target is not a cref: {lhs_exp:?}");
+        };
+        match &**componentRef {
+            // `_` output: discard (release a heap value).
+            DAE::ComponentRef::WILD => {
+                if let Some(release_fn) = sty.release_fn() {
+                    ctx.emit(we::Instruction::LocalGet(vt));
+                    ctx.emit(we::Instruction::Call(rt_index(release_fn)));
+                }
+            }
+            DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } if subscriptLst.is_empty() => {
+                let name = ident.to_string();
+                let (idx, dst_sty) = ctx
+                    .locals
+                    .get(&name)
+                    .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: tuple assignment to unknown variable `{name}`"))?
+                    .clone();
+                store_fresh_into_local(ctx, idx, &dst_sty, vt);
+            }
+            other => bail!("CodegenWasmJit: unsupported tuple-assignment target `{other:?}`"),
+        }
+    }
+    Ok(())
+}
+
 /// The (copy, release) runtime entry points for a mutable value type that needs
 /// a private copy on aliasing assignment, or `None` for scalars and immutable
 /// strings.
@@ -1489,6 +1556,7 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
     use DAE::Statement as S;
     match stmt {
         S::STMT_ASSIGN { exp1, exp, .. } => compile_assign(ctx, exp1, exp),
+        S::STMT_TUPLE_ASSIGN { expExpLst, exp, .. } => compile_tuple_assign(ctx, expExpLst, exp),
         // Whole-array assignment (`r := {...}`, `r := other`); `compile_assign`
         // copies when the source is a variable (value semantics) and moves a
         // fresh constructor/call result.
