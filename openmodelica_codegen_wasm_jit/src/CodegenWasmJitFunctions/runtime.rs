@@ -1271,6 +1271,22 @@ mod tests {
         assert!(pow.call(&mut store, (1e300, 2.0)).is_err());
     }
 
+    /// `rt_mod_int`: floored integer modulo, result takes the divisor's sign.
+    #[test]
+    fn precompiled_runtime_mod_int() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let m = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_mod_int").unwrap();
+        assert_eq!(m.call(&mut store, (7, 3)).unwrap(), 1);
+        assert_eq!(m.call(&mut store, (-7, 3)).unwrap(), 2);
+        assert_eq!(m.call(&mut store, (7, -3)).unwrap(), -2);
+        assert_eq!(m.call(&mut store, (-7, -3)).unwrap(), -1);
+        assert_eq!(m.call(&mut store, (6, 3)).unwrap(), 0);
+        assert!(m.call(&mut store, (1, 0)).is_err()); // zero divisor traps
+    }
+
     /// The matrix-constructor builtins: identity, diagonal, linspace.
     #[test]
     fn precompiled_runtime_array_constructors() {

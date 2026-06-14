@@ -341,6 +341,8 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // `base ^ exp` generic scalar power matching the C target's negative-base /
     // odd-root / nan-inf handling (traps on an invalid root, surfacing fail()).
     ("rt_real_pow", &[WTy::F64, WTy::F64], &[WTy::F64]),
+    // Integer `mod(x,y)` — floored modulo (result takes the divisor's sign).
+    ("rt_mod_int", &[WTy::I32, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -2020,6 +2022,18 @@ fn compile_math_builtin(
             ctx.emit(we::Instruction::I32DivS);
             Ok(SigTy::Int)
         }
+        // div(a,b) for Reals: `trunc(a/b)` (truncate toward zero, Real result).
+        // The frontend also expands Real `rem` into `a - b*div(a,b)`.
+        "div" => {
+            need_args(&argv, 2, name)?;
+            let a = compile_exp(ctx, argv[0])?;
+            coerce(ctx, a, WTy::F64);
+            let b = compile_exp(ctx, argv[1])?;
+            coerce(ctx, b, WTy::F64);
+            ctx.emit(we::Instruction::F64Div);
+            ctx.emit(we::Instruction::F64Trunc);
+            Ok(SigTy::Real)
+        }
         // rem(a,b): integer remainder truncating toward zero.
         "rem" if result_wty == WTy::I32 => {
             need_args(&argv, 2, name)?;
@@ -2028,6 +2042,75 @@ fn compile_math_builtin(
             let b = compile_exp(ctx, argv[1])?;
             coerce(ctx, b, WTy::I32);
             ctx.emit(we::Instruction::I32RemS);
+            Ok(SigTy::Int)
+        }
+        // rem(a,b) for Reals: `a - b*trunc(a/b)` (truncated remainder).
+        "rem" => {
+            need_args(&argv, 2, name)?;
+            let a = compile_exp(ctx, argv[0])?;
+            coerce(ctx, a, WTy::F64);
+            let at = ctx.alloc_temp(WTy::F64);
+            ctx.emit(we::Instruction::LocalSet(at));
+            let b = compile_exp(ctx, argv[1])?;
+            coerce(ctx, b, WTy::F64);
+            let bt = ctx.alloc_temp(WTy::F64);
+            ctx.emit(we::Instruction::LocalSet(bt));
+            ctx.emit(we::Instruction::LocalGet(at)); // a
+            ctx.emit(we::Instruction::LocalGet(bt)); // b * trunc(a/b)
+            ctx.emit(we::Instruction::LocalGet(at));
+            ctx.emit(we::Instruction::LocalGet(bt));
+            ctx.emit(we::Instruction::F64Div);
+            ctx.emit(we::Instruction::F64Trunc);
+            ctx.emit(we::Instruction::F64Mul);
+            ctx.emit(we::Instruction::F64Sub);
+            Ok(SigTy::Real)
+        }
+        // mod(a,b): Modelica floored modulo `a - floor(a/b)*b`. Integer goes
+        // through the runtime (floored, result takes the divisor's sign);
+        // Real is inlined with `floor`.
+        "mod" if result_wty == WTy::I32 => {
+            need_args(&argv, 2, name)?;
+            let a = compile_exp(ctx, argv[0])?;
+            coerce(ctx, a, WTy::I32);
+            let b = compile_exp(ctx, argv[1])?;
+            coerce(ctx, b, WTy::I32);
+            ctx.emit(we::Instruction::Call(rt_index("rt_mod_int")));
+            Ok(SigTy::Int)
+        }
+        "mod" => {
+            need_args(&argv, 2, name)?;
+            let a = compile_exp(ctx, argv[0])?;
+            coerce(ctx, a, WTy::F64);
+            let at = ctx.alloc_temp(WTy::F64);
+            ctx.emit(we::Instruction::LocalSet(at));
+            let b = compile_exp(ctx, argv[1])?;
+            coerce(ctx, b, WTy::F64);
+            let bt = ctx.alloc_temp(WTy::F64);
+            ctx.emit(we::Instruction::LocalSet(bt));
+            ctx.emit(we::Instruction::LocalGet(at)); // a
+            ctx.emit(we::Instruction::LocalGet(at)); // floor(a/b) * b
+            ctx.emit(we::Instruction::LocalGet(bt));
+            ctx.emit(we::Instruction::F64Div);
+            ctx.emit(we::Instruction::F64Floor);
+            ctx.emit(we::Instruction::LocalGet(bt));
+            ctx.emit(we::Instruction::F64Mul);
+            ctx.emit(we::Instruction::F64Sub);
+            Ok(SigTy::Real)
+        }
+        // sign(x): -1 / 0 / 1 (Integer), `(x > 0) - (x < 0)`.
+        "sign" => {
+            need_args(&argv, 1, name)?;
+            let w = compile_exp(ctx, argv[0])?;
+            coerce(ctx, w, WTy::F64);
+            let t = ctx.alloc_temp(WTy::F64);
+            ctx.emit(we::Instruction::LocalSet(t));
+            ctx.emit(we::Instruction::LocalGet(t));
+            ctx.emit(we::Instruction::F64Const(0.0f64.into()));
+            ctx.emit(we::Instruction::F64Gt); // (x > 0) -> i32
+            ctx.emit(we::Instruction::LocalGet(t));
+            ctx.emit(we::Instruction::F64Const(0.0f64.into()));
+            ctx.emit(we::Instruction::F64Lt); // (x < 0) -> i32
+            ctx.emit(we::Instruction::I32Sub);
             Ok(SigTy::Int)
         }
         // Number → String formatting via the runtime: a scalar becomes a freshly

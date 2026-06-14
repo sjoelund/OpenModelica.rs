@@ -738,6 +738,18 @@ pub extern "C" fn rt_real_pow(base: f64, exp: f64) -> f64 {
     result
 }
 
+/// Integer `mod(x, y)` — Modelica's floored modulo `x - floor(x/y)*y`, whose
+/// result takes the sign of the divisor (unlike C's truncated `%`). Traps on a
+/// zero divisor, matching integer division by zero.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_mod_int(x: i32, y: i32) -> i32 {
+    if y == 0 {
+        core::arch::wasm32::unreachable();
+    }
+    let r = x.wrapping_rem(y);
+    if r != 0 && (r < 0) != (y < 0) { r + y } else { r }
+}
+
 // ---------------------------------------------------------------------------
 // Records (heterogeneous, self-describing via an inline heap-field table)
 // ---------------------------------------------------------------------------
