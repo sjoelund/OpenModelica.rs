@@ -317,6 +317,7 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     ("rt_array_scalar_f64", &[WTy::I32, WTy::F64, WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_array_neg_i32", &[WTy::I32], &[WTy::I32]),
     ("rt_array_neg_f64", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_transpose", &[WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -2715,6 +2716,19 @@ fn compile_array_builtin(
                 Ok(Some((*elem).clone()))
             }
         },
+        // transpose(a): a fresh n×m array (the operand 2-D array is released).
+        "transpose" if argv.len() == 1 => {
+            if array_elem(argv[0])?.is_none() {
+                bail!("CodegenWasmJit: transpose of a non-array expression");
+            }
+            compile_exp(ctx, argv[0])?;
+            let at = ctx.alloc_temp(WTy::I32);
+            ctx.emit(we::Instruction::LocalSet(at));
+            ctx.emit(we::Instruction::LocalGet(at));
+            ctx.emit(we::Instruction::Call(rt_index("rt_array_transpose")));
+            release_temp_array(ctx, at);
+            Ok(Some(sig_ty(&attr.ty)?))
+        }
         // ndims(a) -> Integer.
         "ndims" if argv.len() == 1 => {
             if array_elem(argv[0])?.is_none() {

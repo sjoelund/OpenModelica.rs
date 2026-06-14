@@ -672,6 +672,43 @@ pub extern "C" fn rt_array_neg_f64(a: u32) -> u32 {
     res
 }
 
+/// `transpose(a)` of a 2-D array: a fresh `n x m` array with `res[j,i] = a[i,j]`.
+/// Heap elements (string/array/record) are value-copied (retain/deep-copy) so
+/// the result shares no mutable storage with `a`.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_transpose(a: u32) -> u32 {
+    if rt_array_ndims(a) != 2 {
+        core::arch::wasm32::unreachable();
+    }
+    let m = rt_array_dim(a, 1);
+    let n = rt_array_dim(a, 2);
+    let kind = unsafe { load_u32(a + ARR_KIND_OFF) };
+    let stride = elem_stride(kind);
+    let res = rt_array_new(kind, 2, m * n);
+    rt_array_set_dim(res, 0, n);
+    rt_array_set_dim(res, 1, m);
+    let (sd, rd) = (arr_data(a), arr_data(res));
+    for i in 0..m {
+        for j in 0..n {
+            unsafe {
+                core::ptr::copy_nonoverlapping(
+                    (sd + (i * n + j) * stride) as *const u8,
+                    (rd + (j * m + i) * stride) as *mut u8,
+                    stride as usize,
+                );
+            }
+        }
+    }
+    // Value semantics: copy the (now byte-shared) heap-element handles.
+    if kind == EK_STR || kind == EK_ARRAY || kind == EK_RECORD {
+        for idx in 0..m * n {
+            let copied = copy_kind(kind, unsafe { load_u32(rd + idx * 4) });
+            unsafe { store_u32(rd + idx * 4, copied) };
+        }
+    }
+    res
+}
+
 // ---------------------------------------------------------------------------
 // Strings
 // ---------------------------------------------------------------------------

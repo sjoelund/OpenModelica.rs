@@ -997,6 +997,40 @@ mod tests {
         }
     }
 
+    /// `transpose` of a 2x3 Integer matrix gives a 3x2 with swapped indices.
+    #[test]
+    fn precompiled_runtime_array_transpose() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let transpose = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_transpose").unwrap();
+
+        // [[1,2,3],[4,5,6]] row-major: 1,2,3,4,5,6.
+        let a = arr_new.call(&mut store, (0, 2, 6)).unwrap();
+        set_dim.call(&mut store, (a, 0, 2)).unwrap();
+        set_dim.call(&mut store, (a, 1, 3)).unwrap();
+        for (k, v) in [1i32, 2, 3, 4, 5, 6].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (a, k as i32 + 1)).unwrap() as usize;
+            mem.write(&mut store, addr, &v.to_le_bytes()).unwrap();
+        }
+        let t = transpose.call(&mut store, a).unwrap();
+        assert_eq!(dim.call(&mut store, (t, 1)).unwrap(), 3);
+        assert_eq!(dim.call(&mut store, (t, 2)).unwrap(), 2);
+        // transpose is [[1,4],[2,5],[3,6]] row-major: 1,4,2,5,3,6.
+        for (k, want) in [1i32, 4, 2, 5, 3, 6].iter().enumerate() {
+            let addr = elem_ptr.call(&mut store, (t, k as i32 + 1)).unwrap() as usize;
+            let mut b = [0u8; 4];
+            mem.read(&store, addr, &mut b).unwrap();
+            assert_eq!(i32::from_le_bytes(b), *want);
+        }
+    }
+
     /// The record runtime: a self-describing object with a String + Integer
     /// field. `rt_record_copy` must retain the (immutable) string and give
     /// independent scalar storage; `rt_record_release` must release the string
