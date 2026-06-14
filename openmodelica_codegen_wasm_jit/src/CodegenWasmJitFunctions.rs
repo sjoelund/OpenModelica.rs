@@ -73,47 +73,115 @@ impl WTy {
     }
 }
 
-/// One scalar Modelica type, as recorded in the `.wasm.sig` sidecar so
-/// `loadAndExecute` can map wasm scalars back to the right `Values.Value`
-/// constructor (an `i32` result is ambiguous between Integer and Boolean).
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+/// One Modelica value type, as the wasm-jit models it and as recorded in the
+/// `.wasm.sig` sidecar so `loadAndExecute` can map wasm values back to the right
+/// `Values.Value` constructor (an `i32` result is otherwise ambiguous between
+/// Integer, Boolean and a heap handle).
+///
+/// Scalars map to a wasm value type ([`SigTy::wty`]). `Str` and `Array` are
+/// reference-counted heap values represented by an `i32` handle into the shared
+/// runtime heap. `Array` carries its scalar element type and rank (number of
+/// dimensions); Modelica arrays are rectangular, so the rank captures every
+/// dimension rather than nesting `Array`s. The element stride, load/store value
+/// type, release entry point and marshalling are all derivable from `elem`; the
+/// runtime array object additionally records the element kind and the per-axis
+/// sizes in its header so a single `rt_array_release` frees nested heap
+/// elements and indexing/`size` work for any rank.
+#[derive(Clone, PartialEq, Eq, Debug)]
 enum SigTy {
     Int,
     Real,
     Bool,
-    /// A `String`. Represented at the wasm level as an `i32` handle (pointer)
-    /// into the shared runtime heap; the bytes live in linear memory.
+    /// A `String`: an `i32` handle; the bytes live in linear memory.
     Str,
+    /// An N-dimensional array of `elem` with `rank` dimensions: an `i32` handle
+    /// to a runtime array object (flat row-major storage).
+    Array { elem: Arc<SigTy>, rank: u32 },
 }
 
 impl SigTy {
-    fn code(self) -> char {
+    /// Append this type's `.wasm.sig` encoding to `out`. Scalars are a single
+    /// letter; a rank-`k` array is `k` `'['`s followed by its scalar element
+    /// encoding (e.g. `"[R"` for `Real[:]`, `"[[I"` for `Integer[:,:]`). The
+    /// `'['` prefix lets the reader consume one whole type without separators
+    /// ([`parse_sig_types`]).
+    fn write_code(&self, out: &mut String) {
         match self {
-            SigTy::Int => 'I',
-            SigTy::Real => 'R',
-            SigTy::Bool => 'B',
-            SigTy::Str => 'S',
+            SigTy::Int => out.push('I'),
+            SigTy::Real => out.push('R'),
+            SigTy::Bool => out.push('B'),
+            SigTy::Str => out.push('S'),
+            SigTy::Array { elem, rank } => {
+                for _ in 0..*rank {
+                    out.push('[');
+                }
+                elem.write_code(out);
+            }
         }
     }
-    fn from_code(c: char) -> Result<SigTy> {
-        Ok(match c {
-            'I' => SigTy::Int,
-            'R' => SigTy::Real,
-            'B' => SigTy::Bool,
-            'S' => SigTy::Str,
-            other => bail!("CodegenWasmJit: unknown signature type code {other:?}"),
-        })
-    }
-    fn wty(self) -> WTy {
+    fn wty(&self) -> WTy {
         match self {
-            SigTy::Int | SigTy::Bool | SigTy::Str => WTy::I32,
+            SigTy::Int | SigTy::Bool | SigTy::Str | SigTy::Array { .. } => WTy::I32,
             SigTy::Real => WTy::F64,
+        }
+    }
+    /// The runtime element-kind tag stored in an array header when this type is
+    /// the array's element. Must stay in sync with the runtime's `EK_*` constants.
+    fn elem_kind(&self) -> u32 {
+        match self {
+            SigTy::Int => 0,
+            SigTy::Real => 1,
+            SigTy::Bool => 2,
+            SigTy::Str => 3,
+            SigTy::Array { .. } => 4,
+        }
+    }
+    /// The runtime release entry point for a heap value of this type, or `None`
+    /// for a non-heap scalar. Used wherever an owned heap value is freed.
+    fn release_fn(&self) -> Option<&'static str> {
+        match self {
+            SigTy::Str => Some("rt_release"),
+            SigTy::Array { .. } => Some("rt_array_release"),
+            _ => None,
         }
     }
     /// Whether this is a reference-counted heap value (needs ARC on
     /// assignment / at scope exit).
-    fn is_heap(self) -> bool {
-        matches!(self, SigTy::Str)
+    fn is_heap(&self) -> bool {
+        self.release_fn().is_some()
+    }
+}
+
+/// Parse one `.wasm.sig` line into a list of [`SigTy`]s (see [`SigTy::write_code`]
+/// for the encoding). Types are concatenated without separators; an `'['`
+/// consumes the following type as its array element.
+fn parse_sig_types(line: &str) -> Result<Vec<SigTy>> {
+    let mut chars = line.chars().peekable();
+    let mut out = Vec::new();
+    while chars.peek().is_some() {
+        out.push(parse_sig_type(&mut chars)?);
+    }
+    Ok(out)
+}
+
+fn parse_sig_type(chars: &mut std::iter::Peekable<std::str::Chars>) -> Result<SigTy> {
+    match chars.next() {
+        Some('I') => Ok(SigTy::Int),
+        Some('R') => Ok(SigTy::Real),
+        Some('B') => Ok(SigTy::Bool),
+        Some('S') => Ok(SigTy::Str),
+        Some('[') => {
+            // Consecutive `'['`s are the rank of one array (Modelica arrays are
+            // rectangular, so the element after them is a scalar, never another
+            // array).
+            let mut rank = 1u32;
+            while chars.peek() == Some(&'[') {
+                chars.next();
+                rank += 1;
+            }
+            Ok(SigTy::Array { elem: Arc::new(parse_sig_type(chars)?), rank })
+        }
+        other => bail!("CodegenWasmJit: malformed signature type code {other:?}"),
     }
 }
 
@@ -168,6 +236,17 @@ const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // leftJustified)`.
     ("rt_real_format", &[WTy::F64, WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
     ("rt_str_pad", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    // N-dimensional arrays: allocate (elem_kind, ndims, total), set a dimension
+    // size, query ndims / total / a dimension, element byte address by row-major
+    // linear index (1-based, bounds-checked), and refcount release (frees nested
+    // heap elements first).
+    ("rt_array_new", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_set_dim", &[WTy::I32, WTy::I32, WTy::I32], &[]),
+    ("rt_array_ndims", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_total", &[WTy::I32], &[WTy::I32]),
+    ("rt_array_dim", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_elem_ptr", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    ("rt_array_release", &[WTy::I32], &[]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -329,15 +408,34 @@ fn main_sig_types(f: &SimCodeFunction::Function::Function) -> Result<(Vec<SigTy>
 fn var_sigtys(vars: &Arc<List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Vec<SigTy>> {
     let mut out = Vec::new();
     for v in &**vars {
-        let SimCodeFunction::Variable::Variable::VARIABLE { ty, .. } = &**v else {
+        let SimCodeFunction::Variable::Variable::VARIABLE { ty, instDims, .. } = &**v else {
             bail!("CodegenWasmJit: unsupported variable kind (function pointer)");
         };
-        out.push(sig_ty(ty)?);
+        out.push(variable_sigty(ty, instDims)?);
     }
     Ok(out)
 }
 
-/// Map a scalar `DAE.Type` to a `SigTy`, or fail for non-scalar types.
+/// The `SigTy` of a function variable, combining its declared `ty` with its
+/// `instDims`. SimCode is inconsistent about where array dimensions live: an
+/// input array's `ty` is the full `T_ARRAY`, while an output/local array's `ty`
+/// is the scalar element type with the dimensions in `instDims`. So a `T_ARRAY`
+/// `ty` is authoritative (its `dims` are complete); otherwise a non-empty
+/// `instDims` makes the scalar `ty` the element type of a rank-`|instDims|` array.
+fn variable_sigty(ty: &DAE::Type, inst_dims: &Arc<List<Arc<DAE::Dimension>>>) -> Result<SigTy> {
+    let base = sig_ty(ty)?;
+    if matches!(base, SigTy::Array { .. }) {
+        return Ok(base);
+    }
+    let rank = (&**inst_dims).into_iter().count() as u32;
+    if rank == 0 {
+        Ok(base)
+    } else {
+        Ok(SigTy::Array { elem: Arc::new(base), rank })
+    }
+}
+
+/// Map a `DAE.Type` to a `SigTy`, or fail for types not yet supported.
 fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
     Ok(match ty {
         DAE::Type::T_INTEGER { .. } => SigTy::Int,
@@ -346,8 +444,19 @@ fn sig_ty(ty: &DAE::Type) -> Result<SigTy> {
         // An enumeration value is its 1-based Integer index.
         DAE::Type::T_ENUMERATION { .. } => SigTy::Int,
         DAE::Type::T_STRING { .. } => SigTy::Str,
+        // An N-dimensional array. A `T_ARRAY` usually carries all dimensions in
+        // `dims` (so `Real[2,3]` is one `T_ARRAY` with two dims), but a nested
+        // `T_ARRAY` element is also possible; both flatten to a single rank
+        // since Modelica arrays are rectangular.
+        DAE::Type::T_ARRAY { ty, dims } => {
+            let ndims = (&**dims).into_iter().count() as u32;
+            match sig_ty(ty)? {
+                SigTy::Array { elem, rank } => SigTy::Array { elem, rank: rank + ndims },
+                elem => SigTy::Array { elem: Arc::new(elem), rank: ndims },
+            }
+        }
         DAE::Type::T_SUBTYPE_BASIC { .. } => bail!("CodegenWasmJit: subtype-basic types not yet supported"),
-        other => bail!("CodegenWasmJit: non-scalar type not supported: {other:?}"),
+        other => bail!("CodegenWasmJit: type not supported: {other:?}"),
     })
 }
 
@@ -413,19 +522,22 @@ fn compile_function(
     // input or output is reused rather than given a fresh slot.
     for v in &**outVars {
         let (name, sty) = var_name_ty(v)?;
-        let slot = *locals.entry(name).or_insert_with(|| {
-            let s = (idx, sty);
-            extra_locals.push(sty.wty().val());
-            idx += 1;
-            s
-        });
+        let slot = locals
+            .entry(name)
+            .or_insert_with(|| {
+                extra_locals.push(sty.wty().val());
+                let s = (idx, sty);
+                idx += 1;
+                s
+            })
+            .clone();
         outputs.push(slot);
     }
     for v in &**variableDeclarations {
         let (name, sty) = var_name_ty(v)?;
         locals.entry(name).or_insert_with(|| {
-            let s = (idx, sty);
             extra_locals.push(sty.wty().val());
+            let s = (idx, sty);
             idx += 1;
             s
         });
@@ -459,27 +571,29 @@ fn push_outputs(ctx: &mut FnCtx) {
 /// too. Releasing the null handle (an unassigned heap local) is a no-op.
 fn release_heap_locals(ctx: &mut FnCtx) {
     let output_idxs: std::collections::HashSet<u32> = ctx.outputs.iter().map(|(i, _)| *i).collect();
-    let mut to_release: Vec<u32> = ctx
+    // (local index, release entry point) for each owned heap local that is not
+    // an output. The entry point depends on the type (string vs array vs …).
+    let mut to_release: Vec<(u32, &'static str)> = ctx
         .locals
         .values()
-        .filter(|(idx, sty)| sty.is_heap() && !output_idxs.contains(idx))
-        .map(|(idx, _)| *idx)
+        .filter(|(idx, _)| !output_idxs.contains(idx))
+        .filter_map(|(idx, sty)| sty.release_fn().map(|f| (*idx, f)))
         .collect();
     // Deterministic order (HashMap iteration is unspecified) for stable output.
     to_release.sort_unstable();
-    for idx in to_release {
+    for (idx, release_fn) in to_release {
         ctx.emit(we::Instruction::LocalGet(idx));
-        ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+        ctx.emit(we::Instruction::Call(rt_index(release_fn)));
     }
 }
 
-/// Name and Modelica type of a `VARIABLE`. Only `CREF_IDENT` scalars are
-/// supported.
+/// Name and Modelica type of a `VARIABLE` (combining `ty` and `instDims`; see
+/// [`variable_sigty`]). The name must be a plain `CREF_IDENT`.
 fn var_name_ty(v: &SimCodeFunction::Variable::Variable) -> Result<(String, SigTy)> {
-    let SimCodeFunction::Variable::Variable::VARIABLE { name, ty, .. } = v else {
+    let SimCodeFunction::Variable::Variable::VARIABLE { name, ty, instDims, .. } = v else {
         bail!("CodegenWasmJit: function-pointer variables not supported");
     };
-    Ok((cref_ident(name)?, sig_ty(ty)?))
+    Ok((cref_ident(name)?, variable_sigty(ty, instDims)?))
 }
 
 /// The identifier of a scalar `CREF_IDENT` component reference (no subscripts /
@@ -504,37 +618,54 @@ fn compile_stmts(ctx: &mut FnCtx, stmts: &Arc<List<Arc<DAE::Statement>>>) -> Res
     Ok(())
 }
 
+/// Assign `rhs` to a whole-variable lhs (scalar or whole array/string local).
+/// The rhs leaves an owned value on the stack (a fresh +1 reference for heap
+/// values — see `compile_exp`); for a heap destination the previous value is
+/// released first (release-on-overwrite). Element assignment `a[i] := x` (a
+/// subscripted lhs) is not yet supported.
+fn compile_assign(ctx: &mut FnCtx, lhs: &DAE::Exp, rhs: &DAE::Exp) -> Result<()> {
+    let DAE::Exp::CREF { componentRef, .. } = lhs else {
+        bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
+    };
+    let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
+        bail!("CodegenWasmJit: assignment to qualified/record lhs not supported");
+    };
+    if !subscriptLst.is_empty() {
+        bail!("CodegenWasmJit: element assignment `a[i] := x` not yet supported");
+    }
+    let name = ident.to_string();
+    let (idx, dst_sty) = ctx
+        .locals
+        .get(&name)
+        .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{name}`"))?
+        .clone();
+    let src_wty = compile_exp(ctx, rhs)?;
+    if let Some(release_fn) = dst_sty.release_fn() {
+        // Release-on-overwrite: free the previous value the local held *after*
+        // computing the new one (which may read the old value, as in `s := s + x`),
+        // then move the new owned value in. Stack: [new] -> release old -> store.
+        ctx.emit(we::Instruction::LocalGet(idx));
+        ctx.emit(we::Instruction::Call(rt_index(release_fn)));
+        ctx.emit(we::Instruction::LocalSet(idx));
+    } else {
+        coerce(ctx, src_wty, dst_sty.wty());
+        ctx.emit(we::Instruction::LocalSet(idx));
+    }
+    Ok(())
+}
+
 fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
     use DAE::Statement as S;
     match stmt {
-        S::STMT_ASSIGN { exp1, exp, .. } => {
-            // The lhs must be a scalar local.
-            let DAE::Exp::CREF { componentRef, .. } = &**exp1 else {
-                bail!("CodegenWasmJit: assignment to non-cref lhs not supported");
-            };
-            let ident = cref_ident(componentRef)?;
-            let (idx, dst_sty) = *ctx
-                .locals
-                .get(&ident)
-                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: assignment to unknown variable `{ident}`"))?;
-            // The rhs leaves an owned value on the stack (a fresh +1 reference for
-            // heap values — see `compile_exp`).
-            let src_wty = compile_exp(ctx, exp)?;
-            if dst_sty.is_heap() {
-                // Release-on-overwrite: free the previous value the local held
-                // (e.g. the previous loop iteration's string) *after* computing
-                // the new one (which may read the old value, as in `s := s + x`),
-                // then move the new owned value in. Stack: [new] -> release old
-                // -> store new.
-                ctx.emit(we::Instruction::LocalGet(idx));
-                ctx.emit(we::Instruction::Call(rt_index("rt_release")));
-                ctx.emit(we::Instruction::LocalSet(idx));
-            } else {
-                coerce(ctx, src_wty, dst_sty.wty());
-                ctx.emit(we::Instruction::LocalSet(idx));
-            }
-            Ok(())
-        }
+        S::STMT_ASSIGN { exp1, exp, .. } => compile_assign(ctx, exp1, exp),
+        // Whole-array assignment (`r := {...}`, `r := other`). The rhs produces
+        // an owned array handle; the lhs is a whole array local, so this is the
+        // same release-on-overwrite store as a heap `STMT_ASSIGN`. NOTE: an alias
+        // assignment `r := other` shares the handle rather than copying; this is
+        // observationally correct only while array *elements* cannot be mutated
+        // (element assignment is not yet implemented — it will need copy-on-write
+        // / copy-on-assign to preserve Modelica value semantics).
+        S::STMT_ASSIGN_ARR { lhs, exp, .. } => compile_assign(ctx, lhs, exp),
         S::STMT_IF { exp, statementLst, else_, .. } => {
             let c = compile_exp(ctx, exp)?;
             coerce(ctx, c, WTy::I32);
@@ -569,10 +700,9 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
             // result is owned (+1), so it must be released, not merely dropped.
             let results = compile_call_drop(ctx, exp)?;
             for sty in results.iter().rev() {
-                if sty.is_heap() {
-                    ctx.emit(we::Instruction::Call(rt_index("rt_release")));
-                } else {
-                    ctx.emit(we::Instruction::Drop);
+                match sty.release_fn() {
+                    Some(release_fn) => ctx.emit(we::Instruction::Call(rt_index(release_fn))),
+                    None => ctx.emit(we::Instruction::Drop),
                 }
             }
             Ok(())
@@ -716,20 +846,41 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
             Ok(WTy::I32)
         }
         E::CREF { componentRef, .. } => {
-            let ident = cref_ident(componentRef)?;
-            let (idx, sty) = *ctx
+            // A scalar/whole-value reference, or a subscripted array element.
+            let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = &**componentRef else {
+                // CREF_QUAL etc. (record fields) are not supported yet.
+                bail!("CodegenWasmJit: unsupported component reference {componentRef:?}");
+            };
+            let name = ident.to_string();
+            let (idx, sty) = ctx
                 .locals
-                .get(&ident)
-                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{ident}`"))?;
-            ctx.emit(we::Instruction::LocalGet(idx));
-            // Reading a heap local yields an *owned* value: retain so the local
-            // keeps its reference while the value flows into an operation /
-            // assignment / call that will consume one reference.
-            if sty.is_heap() {
+                .get(&name)
+                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: reference to unknown variable `{name}`"))?
+                .clone();
+            if subscriptLst.is_empty() {
+                ctx.emit(we::Instruction::LocalGet(idx));
+                // Reading a heap local yields an *owned* value: retain so the
+                // local keeps its reference while the value flows into an
+                // operation / assignment / call that will consume one reference.
+                // `rt_retain` just bumps the refcount at offset 0, shared by
+                // strings and arrays.
+                if sty.is_heap() {
+                    ctx.emit(we::Instruction::LocalGet(idx));
+                    ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+                }
+                Ok(sty.wty())
+            } else {
+                // Indexed read `v[i, ...]`: push the (retained, owned) array
+                // handle, then load the element (which releases the handle).
+                let SigTy::Array { elem, rank } = sty else {
+                    bail!("CodegenWasmJit: subscripting non-array local `{name}`");
+                };
+                let idx_exps = index_subscripts(subscriptLst, rank)?;
+                ctx.emit(we::Instruction::LocalGet(idx));
                 ctx.emit(we::Instruction::LocalGet(idx));
                 ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+                index_loaded(ctx, &elem, &idx_exps)
             }
-            Ok(sty.wty())
         }
         E::CAST { ty, exp } => {
             let from = compile_exp(ctx, exp)?;
@@ -785,6 +936,18 @@ fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
                 _ => bail!("CodegenWasmJit: call to {} returns multiple values; not usable in expression position", mangle(path)?),
             }
         }
+        // Array constructor `{e1, e2, ...}` or matrix `{{...}, {...}}`.
+        E::ARRAY { ty, .. } | E::MATRIX { ty, .. } => {
+            compile_array_literal(ctx, ty, exp)?;
+            Ok(WTy::I32)
+        }
+        // Array subscription `a[i]` (single index into a 1-D array).
+        E::ASUB { exp, sub } => compile_index(ctx, exp, sub),
+        // `size(a)` / `size(a, d)`.
+        E::SIZE { exp, sz } => {
+            compile_size(ctx, exp, sz.as_deref())?;
+            Ok(WTy::I32)
+        }
         other => bail!("CodegenWasmJit: expression not yet supported: {other:?}"),
     }
 }
@@ -806,6 +969,10 @@ fn exp_wty_hint(ctx: &FnCtx, exp: &DAE::Exp) -> Result<WTy> {
         E::IFEXP { expThen, .. } => exp_wty_hint(ctx, expThen)?,
         E::CALL { attr, .. } => sig_ty(&attr.ty)?.wty(),
         E::SHARED_LITERAL { exp, .. } => exp_wty_hint(ctx, exp)?,
+        // Array handles and `size(a, d)` are `i32`; an array element's wasm type
+        // comes from the element type.
+        E::ARRAY { .. } | E::MATRIX { .. } | E::RANGE { .. } | E::SIZE { .. } => WTy::I32,
+        E::ASUB { .. } => exp_sigty(exp).map(|s| s.wty()).unwrap_or(WTy::I32),
         _ => WTy::F64,
     })
 }
@@ -845,6 +1012,23 @@ fn exp_sigty(exp: &DAE::Exp) -> Result<SigTy> {
         E::RELATION { .. } | E::LBINARY { .. } | E::LUNARY { .. } => SigTy::Bool,
         E::IFEXP { expThen, .. } => exp_sigty(expThen)?,
         E::SHARED_LITERAL { exp, .. } => exp_sigty(exp)?,
+        // Array-valued expressions carry their (array) type directly.
+        E::ARRAY { ty, .. } | E::MATRIX { ty, .. } | E::RANGE { ty, .. } => sig_ty(ty)?,
+        // `a[subs]`: subscripting reduces the rank by the number of subscripts
+        // (a full index yields the scalar element).
+        E::ASUB { exp, sub } => {
+            let SigTy::Array { elem, rank } = exp_sigty(exp)? else {
+                bail!("CodegenWasmJit: subscripting a non-array expression");
+            };
+            let n = (&**sub).into_iter().count() as u32;
+            match rank.checked_sub(n) {
+                Some(0) | None => (*elem).clone(),
+                Some(left) => SigTy::Array { elem, rank: left },
+            }
+        }
+        // `size(a, d)` is a scalar Integer; `size(a)` is the dimension vector.
+        E::SIZE { sz: Some(_), .. } => SigTy::Int,
+        E::SIZE { sz: None, .. } => SigTy::Array { elem: Arc::new(SigTy::Int), rank: 1 },
         other => bail!("CodegenWasmJit: cannot determine type of expression {other:?}"),
     })
 }
@@ -1256,7 +1440,7 @@ fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy
     if vty == SigTy::Str {
         return format_scalar_string(ctx, argv[0], vty);
     }
-    match (vty, argv.len()) {
+    match (&vty, argv.len()) {
         // Bare `String(scalar)` (no format slots) — does not normally reach the
         // codegen (the frontend fills the slots), but is unambiguous.
         (SigTy::Int, 1) | (SigTy::Bool, 1) => format_scalar_string(ctx, argv[0], vty),
@@ -1359,6 +1543,9 @@ fn format_scalar_string(ctx: &mut FnCtx, arg: &DAE::Exp, ty: SigTy) -> Result<Si
             compile_exp(ctx, arg)?;
             Ok(SigTy::Str)
         }
+        // `String(array)` is not a scalar conversion (the frontend would not
+        // produce it here); reject rather than mis-format.
+        SigTy::Array { .. } => bail!("CodegenWasmJit: String() of an array is not supported"),
     }
 }
 
@@ -1368,6 +1555,223 @@ fn emit_real_string(ctx: &mut FnCtx, arg: &DAE::Exp) -> Result<SigTy> {
     coerce(ctx, w, WTy::F64);
     ctx.emit(we::Instruction::Call(rt_index("rt_real_string")));
     Ok(SigTy::Str)
+}
+
+// -------------------------------------------------------------------------
+// Arrays (N-dimensional, flat row-major; see the runtime's Arrays section)
+// -------------------------------------------------------------------------
+
+/// Load one array element from the byte address on top of the stack, leaving its
+/// value. The wasm load instruction (and natural alignment) follow the element
+/// type.
+fn elem_load(ctx: &mut FnCtx, elem: &SigTy) {
+    match elem.wty() {
+        WTy::I32 => ctx.emit(we::Instruction::I32Load(we::MemArg { offset: 0, align: 2, memory_index: 0 })),
+        WTy::F64 => ctx.emit(we::Instruction::F64Load(we::MemArg { offset: 0, align: 3, memory_index: 0 })),
+    }
+}
+
+/// Store an array element: stack is `[addr, value]`.
+fn elem_store(ctx: &mut FnCtx, elem: &SigTy) {
+    match elem.wty() {
+        WTy::I32 => ctx.emit(we::Instruction::I32Store(we::MemArg { offset: 0, align: 2, memory_index: 0 })),
+        WTy::F64 => ctx.emit(we::Instruction::F64Store(we::MemArg { offset: 0, align: 3, memory_index: 0 })),
+    }
+}
+
+/// The constant per-axis sizes of an array `DAE.Type`, flattening nested
+/// `T_ARRAY`s (a rectangular array may be one `T_ARRAY` with several `dims` or a
+/// nest of `T_ARRAY`s). Fails on a non-constant dimension (`:` / expression),
+/// which needs the dynamic-allocation path (resize) not yet implemented.
+fn const_dims(ty: &DAE::Type) -> Result<Vec<u32>> {
+    let DAE::Type::T_ARRAY { ty: elem, dims } = ty else {
+        return Ok(Vec::new());
+    };
+    let mut out = Vec::new();
+    for d in &**dims {
+        match &**d {
+            DAE::Dimension::DIM_INTEGER { integer } if *integer >= 0 => out.push(*integer as u32),
+            other => bail!("CodegenWasmJit: array construction needs constant dimensions, got {other:?}"),
+        }
+    }
+    out.extend(const_dims(elem)?);
+    Ok(out)
+}
+
+/// Collect the scalar leaf expressions of a (possibly nested) array constructor
+/// in row-major order. `ARRAY`/`MATRIX` nodes are the structure; anything else
+/// is a leaf element.
+fn flatten_array_exp<'a>(exp: &'a DAE::Exp, out: &mut Vec<&'a DAE::Exp>) {
+    use DAE::Exp as E;
+    match exp {
+        E::ARRAY { array, .. } => {
+            for e in &**array {
+                flatten_array_exp(e, out);
+            }
+        }
+        E::MATRIX { matrix, .. } => {
+            for row in &**matrix {
+                for e in &**row {
+                    flatten_array_exp(e, out);
+                }
+            }
+        }
+        E::SHARED_LITERAL { exp, .. } => flatten_array_exp(exp, out),
+        other => out.push(other),
+    }
+}
+
+/// Lower an array constructor (`{...}`, possibly nested for a matrix) of the
+/// given declared `ty`, leaving an owned (+1) array handle on the stack. Builds
+/// the flat row-major runtime object and stores every scalar leaf; an owned heap
+/// element's reference transfers into the array (released by `rt_array_release`).
+fn compile_array_literal(ctx: &mut FnCtx, ty: &DAE::Type, whole: &DAE::Exp) -> Result<()> {
+    let SigTy::Array { elem, rank } = sig_ty(ty)? else {
+        bail!("CodegenWasmJit: array constructor with non-array type {ty:?}");
+    };
+    let dims = const_dims(ty)?;
+    if dims.len() as u32 != rank {
+        bail!("CodegenWasmJit: array constructor rank {rank} does not match {} dimensions", dims.len());
+    }
+    let total: u32 = dims.iter().product();
+    let mut leaves = Vec::new();
+    flatten_array_exp(whole, &mut leaves);
+    if leaves.len() as u32 != total {
+        bail!("CodegenWasmJit: array constructor has {} elements but type implies {total}", leaves.len());
+    }
+
+    // obj = rt_array_new(elem_kind, rank, total); set each dimension size.
+    let obj = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(elem.elem_kind() as i32));
+    ctx.emit(we::Instruction::I32Const(rank as i32));
+    ctx.emit(we::Instruction::I32Const(total as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(obj));
+    for (axis, d) in dims.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::I32Const(axis as i32));
+        ctx.emit(we::Instruction::I32Const(*d as i32));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+    }
+    // Store each leaf at its row-major position (1-based linear index).
+    for (k, leaf) in leaves.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::I32Const(k as i32 + 1));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+        let w = compile_exp(ctx, leaf)?;
+        coerce(ctx, w, elem.wty());
+        elem_store(ctx, &elem);
+    }
+    ctx.emit(we::Instruction::LocalGet(obj));
+    Ok(())
+}
+
+/// Lower `a[i, j, ...]` (full subscripting of an N-D array to a scalar element).
+/// `base` produces the owned array handle; `subs` must be one `INDEX` per
+/// dimension (slicing / partial indexing is not yet supported). Returns the
+/// element's wasm type.
+fn compile_index(ctx: &mut FnCtx, base: &DAE::Exp, subs: &Arc<List<Arc<DAE::Subscript>>>) -> Result<WTy> {
+    let SigTy::Array { elem, rank } = exp_sigty(base)? else {
+        bail!("CodegenWasmJit: subscripting a non-array expression");
+    };
+    let idx_exps = index_subscripts(subs, rank)?;
+    compile_exp(ctx, base)?; // owned array handle
+    index_loaded(ctx, &elem, &idx_exps)
+}
+
+/// Extract one `INDEX` expression per dimension from a subscript list, or fail
+/// for slicing / whole-dimension / wrong arity (not yet supported).
+fn index_subscripts(subs: &Arc<List<Arc<DAE::Subscript>>>, rank: u32) -> Result<Vec<Arc<DAE::Exp>>> {
+    let subs: Vec<&Arc<DAE::Subscript>> = (&**subs).into_iter().collect();
+    if subs.len() as u32 != rank {
+        bail!("CodegenWasmJit: array slicing / partial indexing not supported ({} subscripts on rank {rank})", subs.len());
+    }
+    let mut out = Vec::with_capacity(subs.len());
+    for s in subs {
+        match &**s {
+            DAE::Subscript::INDEX { exp } => out.push(exp.clone()),
+            other => bail!("CodegenWasmJit: non-scalar subscript {other:?} (slicing not supported)"),
+        }
+    }
+    Ok(out)
+}
+
+/// Given an owned array handle on top of the stack plus the `INDEX` expressions
+/// (one per dimension), compute the row-major linear index, load the scalar
+/// element, release the array, and leave the (owned, if heap) element. Returns
+/// the element's wasm type.
+fn index_loaded(ctx: &mut FnCtx, elem: &SigTy, idx_exps: &[Arc<DAE::Exp>]) -> Result<WTy> {
+    let arr_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(arr_t));
+
+    // acc = (i0 - 1); then acc = acc * dim(axis) + (i_axis - 1) row-major.
+    let acc = ctx.alloc_temp(WTy::I32);
+    let w = compile_exp(ctx, &idx_exps[0])?;
+    coerce(ctx, w, WTy::I32);
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Sub);
+    ctx.emit(we::Instruction::LocalSet(acc));
+    for (axis0, ie) in idx_exps.iter().enumerate().skip(1) {
+        ctx.emit(we::Instruction::LocalGet(acc));
+        ctx.emit(we::Instruction::LocalGet(arr_t));
+        ctx.emit(we::Instruction::I32Const(axis0 as i32 + 1)); // 1-based axis
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
+        ctx.emit(we::Instruction::I32Mul);
+        let w = compile_exp(ctx, ie)?;
+        coerce(ctx, w, WTy::I32);
+        ctx.emit(we::Instruction::I32Const(1));
+        ctx.emit(we::Instruction::I32Sub);
+        ctx.emit(we::Instruction::I32Add);
+        ctx.emit(we::Instruction::LocalSet(acc));
+    }
+    // addr = rt_array_elem_ptr(arr, acc + 1); load the element.
+    ctx.emit(we::Instruction::LocalGet(arr_t));
+    ctx.emit(we::Instruction::LocalGet(acc));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    elem_load(ctx, elem);
+
+    if elem.is_heap() {
+        // The element is a borrowed handle into the array; retain it so it
+        // outlives the array we now release, making it an owned (+1) result.
+        let v = ctx.alloc_temp(WTy::I32);
+        ctx.emit(we::Instruction::LocalSet(v));
+        ctx.emit(we::Instruction::LocalGet(v));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+        release_temp_array(ctx, arr_t);
+        ctx.emit(we::Instruction::LocalGet(v));
+    } else {
+        // Scalar value already on the stack; releasing the array (void) leaves it.
+        release_temp_array(ctx, arr_t);
+    }
+    Ok(elem.wty())
+}
+
+/// Release an owned array handle held in scratch local `t`.
+fn release_temp_array(ctx: &mut FnCtx, t: u32) {
+    ctx.emit(we::Instruction::LocalGet(t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
+}
+
+/// Lower `size(a, d)` (a dimension size) or reject `size(a)` (the dimension
+/// vector, an array result) for now. `a`'s owned handle is released after.
+fn compile_size(ctx: &mut FnCtx, exp: &DAE::Exp, sz: Option<&DAE::Exp>) -> Result<()> {
+    let Some(d) = sz else {
+        bail!("CodegenWasmJit: size(a) (the dimension vector) is not yet supported; use size(a, d)");
+    };
+    if !matches!(exp_sigty(exp)?, SigTy::Array { .. }) {
+        bail!("CodegenWasmJit: size() of a non-array expression");
+    }
+    compile_exp(ctx, exp)?; // owned array handle
+    let arr_t = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::LocalSet(arr_t));
+    ctx.emit(we::Instruction::LocalGet(arr_t));
+    let w = compile_exp(ctx, d)?;
+    coerce(ctx, w, WTy::I32);
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_dim")));
+    release_temp_array(ctx, arr_t); // leaves the dim value
+    Ok(())
 }
 
 fn unary_f64(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>], instr: we::Instruction<'static>) -> Result<()> {
@@ -1421,8 +1825,10 @@ fn translate_functions_inner(fn_code: &SimCodeFunction::FunctionCode) -> Result<
     let base = fn_code.name.to_string();
     std::fs::write(format!("{base}.wasm"), &bytes)?;
     // Sidecar: line 1 = input type codes, line 2 = output type codes.
-    let in_codes: String = in_sig.iter().map(|s| s.code()).collect();
-    let out_codes: String = out_sig.iter().map(|s| s.code()).collect();
+    let mut in_codes = String::new();
+    in_sig.iter().for_each(|s| s.write_code(&mut in_codes));
+    let mut out_codes = String::new();
+    out_sig.iter().for_each(|s| s.write_code(&mut out_codes));
     std::fs::write(format!("{base}.wasm.sig"), format!("{in_codes}\n{out_codes}\n"))?;
     Ok(())
 }

@@ -97,7 +97,7 @@ fn read_sig(path: &str) -> Result<Sig> {
     let text = std::fs::read_to_string(path)?;
     let mut lines = text.lines();
     let parse = |line: Option<&str>| -> Result<Vec<SigTy>> {
-        line.unwrap_or("").chars().map(SigTy::from_code).collect()
+        super::parse_sig_types(line.unwrap_or(""))
     };
     let inputs = parse(lines.next())?;
     let outputs = parse(lines.next())?;
@@ -177,13 +177,23 @@ pub(super) fn load_and_execute(
     wt(linker.instance(&mut store, "rt", rt_inst))?;
     let instance = wt(linker.instantiate(&mut store, &module))?;
 
-    // Runtime entry points needed to marshal strings in and out of the heap.
+    // Runtime entry points needed to marshal heap values (strings, arrays) in
+    // and out of the shared heap.
     let memory = rt_inst
         .get_memory(&mut store, "memory")
         .ok_or_else(|| anyhow!("CodegenWasmJit: runtime has no `memory` export"))?;
-    let rt_str_new = wt(rt_inst.get_typed_func::<i32, i32>(&mut store, "rt_str_new"))?;
-    let rt_str_len = wt(rt_inst.get_typed_func::<i32, i32>(&mut store, "rt_str_len"))?;
-    let rt_str_data = wt(rt_inst.get_typed_func::<i32, i32>(&mut store, "rt_str_data"))?;
+    let rt = RtFns {
+        mem: memory,
+        str_new: wt(rt_inst.get_typed_func(&mut store, "rt_str_new"))?,
+        str_len: wt(rt_inst.get_typed_func(&mut store, "rt_str_len"))?,
+        str_data: wt(rt_inst.get_typed_func(&mut store, "rt_str_data"))?,
+        arr_new: wt(rt_inst.get_typed_func(&mut store, "rt_array_new"))?,
+        arr_set_dim: wt(rt_inst.get_typed_func(&mut store, "rt_array_set_dim"))?,
+        arr_ndims: wt(rt_inst.get_typed_func(&mut store, "rt_array_ndims"))?,
+        arr_total: wt(rt_inst.get_typed_func(&mut store, "rt_array_total"))?,
+        arr_dim: wt(rt_inst.get_typed_func(&mut store, "rt_array_dim"))?,
+        arr_elem_ptr: wt(rt_inst.get_typed_func(&mut store, "rt_array_elem_ptr"))?,
+    };
 
     let func = instance
         .get_func(&mut store, "main")
@@ -196,21 +206,7 @@ pub(super) fn load_and_execute(
     }
     let mut params: Vec<wasmtime::Val> = Vec::with_capacity(argv.len());
     for (a, ty) in argv.iter().zip(sig.inputs.iter()) {
-        params.push(match ty {
-            SigTy::Real => wasmtime::Val::F64(value_as_f64(a)?.to_bits()),
-            SigTy::Int | SigTy::Bool => wasmtime::Val::I32(value_as_i32(a)?),
-            SigTy::Str => {
-                let v: &Values::Value = a;
-                let Values::Value::STRING { string } = v else {
-                    bail!("CodegenWasmJit: expected a String argument, got {v:?}");
-                };
-                let b = string.as_bytes();
-                let h = wt(rt_str_new.call(&mut store, b.len() as i32))?;
-                let d = wt(rt_str_data.call(&mut store, h))? as usize;
-                memory.write(&mut store, d, b).map_err(|e| anyhow!("CodegenWasmJit: memory write: {e}"))?;
-                wasmtime::Val::I32(h)
-            }
-        });
+        params.push(marshal_in(&mut store, &rt, ty, a)?);
     }
 
     // Result buffer sized to the function's declared results.
@@ -224,26 +220,7 @@ pub(super) fn load_and_execute(
 
     let mut out: Vec<Arc<Values::Value>> = Vec::with_capacity(results.len());
     for (val, ty) in results.iter().zip(sig.outputs.iter()) {
-        out.push(Arc::new(match ty {
-            SigTy::Int => Values::Value::INTEGER {
-                integer: val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 result"))?,
-            },
-            SigTy::Bool => Values::Value::BOOL {
-                boolean: val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 result"))? != 0,
-            },
-            SigTy::Real => Values::Value::REAL {
-                real: metamodelica::Real::from(val.f64().ok_or_else(|| anyhow!("CodegenWasmJit: expected f64 result"))?),
-            },
-            SigTy::Str => {
-                let h = val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 string handle result"))?;
-                let len = wt(rt_str_len.call(&mut store, h))? as usize;
-                let d = wt(rt_str_data.call(&mut store, h))? as usize;
-                let mut buf = vec![0u8; len];
-                memory.read(&store, d, &mut buf).map_err(|e| anyhow!("CodegenWasmJit: memory read: {e}"))?;
-                let s = std::str::from_utf8(&buf).map_err(|e| anyhow!("CodegenWasmJit: non-utf8 result string: {e}"))?;
-                Values::Value::STRING { string: ArcStr::from(s) }
-            }
-        }));
+        out.push(Arc::new(marshal_out(&mut store, &rt, ty, val)?));
     }
 
     Ok(match out.len() {
@@ -251,6 +228,208 @@ pub(super) fn load_and_execute(
         1 => out.pop().unwrap(),
         _ => Arc::new(Values::Value::TUPLE { valueLst: Arc::new(List::from_iter(out)) }),
     })
+}
+
+/// The runtime entry points (and shared memory) the host needs to build/read
+/// heap values. `wasmtime::TypedFunc` and `Memory` are cheap handles, so this is
+/// passed by reference alongside `&mut Store`.
+struct RtFns {
+    mem: wasmtime::Memory,
+    str_new: wasmtime::TypedFunc<i32, i32>,
+    str_len: wasmtime::TypedFunc<i32, i32>,
+    str_data: wasmtime::TypedFunc<i32, i32>,
+    arr_new: wasmtime::TypedFunc<(i32, i32, i32), i32>,
+    arr_set_dim: wasmtime::TypedFunc<(i32, i32, i32), ()>,
+    arr_ndims: wasmtime::TypedFunc<i32, i32>,
+    arr_total: wasmtime::TypedFunc<i32, i32>,
+    arr_dim: wasmtime::TypedFunc<(i32, i32), i32>,
+    arr_elem_ptr: wasmtime::TypedFunc<(i32, i32), i32>,
+}
+
+type Store = wasmtime::Store<()>;
+
+/// Build a `wasmtime::Val` (scalar, or an `i32` handle into the heap) for the
+/// argument value `v` of the given Modelica type. Heap values (strings, arrays)
+/// are materialized in the runtime heap; the generated callee owns/consumes
+/// them, so the host does not release them afterwards.
+fn marshal_in(store: &mut Store, rt: &RtFns, ty: &SigTy, v: &Values::Value) -> Result<wasmtime::Val> {
+    Ok(match ty {
+        SigTy::Real => wasmtime::Val::F64(value_as_f64(v)?.to_bits()),
+        SigTy::Int | SigTy::Bool => wasmtime::Val::I32(value_as_i32(v)?),
+        SigTy::Str => wasmtime::Val::I32(str_to_handle(store, rt, v)?),
+        SigTy::Array { elem, rank } => wasmtime::Val::I32(array_to_handle(store, rt, elem, *rank, v)?),
+    })
+}
+
+/// Materialize a `Values.STRING` into a fresh runtime string, returning its handle.
+fn str_to_handle(store: &mut Store, rt: &RtFns, v: &Values::Value) -> Result<i32> {
+    let Values::Value::STRING { string } = v else {
+        bail!("CodegenWasmJit: expected a String argument, got {v:?}");
+    };
+    let b = string.as_bytes();
+    let h = wt(rt.str_new.call(&mut *store, b.len() as i32))?;
+    let d = wt(rt.str_data.call(&mut *store, h))? as usize;
+    rt.mem.write(&mut *store, d, b).map_err(|e| anyhow!("CodegenWasmJit: memory write: {e}"))?;
+    Ok(h)
+}
+
+/// Materialize a (nested) `Values.ARRAY` into a flat row-major runtime array of
+/// `elem`/`rank`, returning its handle. The `Values.ARRAY` nests one level per
+/// dimension; the leaves are flattened row-major and written into the object.
+fn array_to_handle(store: &mut Store, rt: &RtFns, elem: &SigTy, rank: u32, v: &Values::Value) -> Result<i32> {
+    let Values::Value::ARRAY { dimLst, .. } = v else {
+        bail!("CodegenWasmJit: expected an array argument, got {v:?}");
+    };
+    let dims: Vec<i32> = (&**dimLst).into_iter().copied().collect();
+    if dims.len() as u32 != rank {
+        bail!("CodegenWasmJit: array argument has {} dimensions, expected rank {rank}", dims.len());
+    }
+    let total: i32 = dims.iter().product();
+    let obj = wt(rt.arr_new.call(&mut *store, (elem.elem_kind() as i32, rank as i32, total)))?;
+    for (axis, d) in dims.iter().enumerate() {
+        wt(rt.arr_set_dim.call(&mut *store, (obj, axis as i32, *d)))?;
+    }
+    // Flatten the nested value into row-major scalar leaves and write each.
+    let mut leaves = Vec::new();
+    flatten_values(v, &mut leaves);
+    if leaves.len() as i32 != total {
+        bail!("CodegenWasmJit: array argument has {} elements but dimensions imply {total}", leaves.len());
+    }
+    for (k, leaf) in leaves.iter().enumerate() {
+        let addr = wt(rt.arr_elem_ptr.call(&mut *store, (obj, k as i32 + 1)))? as usize;
+        write_elem(store, rt, elem, addr, leaf)?;
+    }
+    Ok(obj)
+}
+
+/// Collect the scalar leaf values of a (possibly nested) `Values.ARRAY` in
+/// row-major order.
+fn flatten_values<'a>(v: &'a Values::Value, out: &mut Vec<&'a Values::Value>) {
+    match v {
+        Values::Value::ARRAY { valueLst, .. } => {
+            for e in &**valueLst {
+                flatten_values(e, out);
+            }
+        }
+        other => out.push(other),
+    }
+}
+
+/// Write one array element of type `elem` at byte address `addr`.
+fn write_elem(store: &mut Store, rt: &RtFns, elem: &SigTy, addr: usize, v: &Values::Value) -> Result<()> {
+    match elem {
+        SigTy::Real => write_bytes(store, rt, addr, &value_as_f64(v)?.to_le_bytes())?,
+        SigTy::Int | SigTy::Bool => write_bytes(store, rt, addr, &value_as_i32(v)?.to_le_bytes())?,
+        SigTy::Str => {
+            let h = str_to_handle(store, rt, v)?;
+            write_bytes(store, rt, addr, &h.to_le_bytes())?;
+        }
+        SigTy::Array { elem, rank } => {
+            let h = array_to_handle(store, rt, elem, *rank, v)?;
+            write_bytes(store, rt, addr, &h.to_le_bytes())?;
+        }
+    }
+    Ok(())
+}
+
+fn write_bytes(store: &mut Store, rt: &RtFns, addr: usize, bytes: &[u8]) -> Result<()> {
+    rt.mem.write(&mut *store, addr, bytes).map_err(|e| anyhow!("CodegenWasmJit: memory write: {e}"))
+}
+
+/// Build a `Values.Value` from a wasm result of the given Modelica type.
+fn marshal_out(store: &mut Store, rt: &RtFns, ty: &SigTy, val: &wasmtime::Val) -> Result<Values::Value> {
+    Ok(match ty {
+        SigTy::Int => Values::Value::INTEGER {
+            integer: val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 result"))?,
+        },
+        SigTy::Bool => Values::Value::BOOL {
+            boolean: val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 result"))? != 0,
+        },
+        SigTy::Real => Values::Value::REAL {
+            real: metamodelica::Real::from(val.f64().ok_or_else(|| anyhow!("CodegenWasmJit: expected f64 result"))?),
+        },
+        SigTy::Str => {
+            let h = val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 string handle result"))?;
+            Values::Value::STRING { string: ArcStr::from(read_string(store, rt, h)?.as_str()) }
+        }
+        SigTy::Array { elem, .. } => {
+            let h = val.i32().ok_or_else(|| anyhow!("CodegenWasmJit: expected i32 array handle result"))?;
+            read_array(store, rt, elem, h)?
+        }
+    })
+}
+
+/// Read a runtime string handle's bytes into a `String`.
+fn read_string(store: &mut Store, rt: &RtFns, h: i32) -> Result<String> {
+    let len = wt(rt.str_len.call(&mut *store, h))? as usize;
+    let d = wt(rt.str_data.call(&mut *store, h))? as usize;
+    let mut buf = vec![0u8; len];
+    rt.mem.read(&*store, d, &mut buf).map_err(|e| anyhow!("CodegenWasmJit: memory read: {e}"))?;
+    String::from_utf8(buf).map_err(|e| anyhow!("CodegenWasmJit: non-utf8 result string: {e}"))
+}
+
+/// Read a runtime array handle into a (nested) `Values.ARRAY` of element type
+/// `elem`. The flat row-major elements are folded into the nested
+/// dimension-by-dimension structure the rest of the compiler uses.
+fn read_array(store: &mut Store, rt: &RtFns, elem: &SigTy, h: i32) -> Result<Values::Value> {
+    let ndims = wt(rt.arr_ndims.call(&mut *store, h))?;
+    let total = wt(rt.arr_total.call(&mut *store, h))?;
+    let mut dims = Vec::with_capacity(ndims as usize);
+    for axis in 1..=ndims {
+        dims.push(wt(rt.arr_dim.call(&mut *store, (h, axis)))?);
+    }
+    // Read every scalar leaf row-major.
+    let mut flat = Vec::with_capacity(total as usize);
+    for k in 0..total {
+        let addr = wt(rt.arr_elem_ptr.call(&mut *store, (h, k + 1)))? as usize;
+        flat.push(read_elem(store, rt, elem, addr)?);
+    }
+    Ok(nest_values(&dims, &flat))
+}
+
+/// Read one array element of type `elem` at byte address `addr`.
+fn read_elem(store: &mut Store, rt: &RtFns, elem: &SigTy, addr: usize) -> Result<Values::Value> {
+    Ok(match elem {
+        SigTy::Real => Values::Value::REAL { real: metamodelica::Real::from(f64::from_le_bytes(read_bytes::<8>(store, rt, addr)?)) },
+        SigTy::Int => Values::Value::INTEGER { integer: i32::from_le_bytes(read_bytes::<4>(store, rt, addr)?) },
+        SigTy::Bool => Values::Value::BOOL { boolean: i32::from_le_bytes(read_bytes::<4>(store, rt, addr)?) != 0 },
+        SigTy::Str => {
+            let h = i32::from_le_bytes(read_bytes::<4>(store, rt, addr)?);
+            Values::Value::STRING { string: ArcStr::from(read_string(store, rt, h)?.as_str()) }
+        }
+        SigTy::Array { elem, .. } => {
+            let h = i32::from_le_bytes(read_bytes::<4>(store, rt, addr)?);
+            read_array(store, rt, elem, h)?
+        }
+    })
+}
+
+fn read_bytes<const N: usize>(store: &mut Store, rt: &RtFns, addr: usize) -> Result<[u8; N]> {
+    let mut buf = [0u8; N];
+    rt.mem.read(&*store, addr, &mut buf).map_err(|e| anyhow!("CodegenWasmJit: memory read: {e}"))?;
+    Ok(buf)
+}
+
+// `elem_kind` reuses `super::SigTy::elem_kind` so the host and codegen share one
+// definition of the element-kind tags.
+
+/// Fold a flat row-major element list into the nested `Values.ARRAY` structure:
+/// one nesting level per dimension, each level's `dimLst` being the dimensions
+/// at and below it.
+fn nest_values(dims: &[i32], flat: &[Values::Value]) -> Values::Value {
+    let d = dims[0];
+    let values: Vec<Arc<Values::Value>> = if dims.len() == 1 {
+        flat.iter().cloned().map(Arc::new).collect()
+    } else {
+        let chunk = flat.len() / d.max(1) as usize;
+        (0..d as usize)
+            .map(|i| Arc::new(nest_values(&dims[1..], &flat[i * chunk..(i + 1) * chunk])))
+            .collect()
+    };
+    Values::Value::ARRAY {
+        valueLst: Arc::new(List::from_iter(values)),
+        dimLst: Arc::new(List::from_iter(dims.iter().copied())),
+    }
 }
 
 #[cfg(test)]
@@ -326,6 +505,60 @@ mod tests {
         retain.call(&mut store, r).unwrap();
         release.call(&mut store, r).unwrap();
         release.call(&mut store, r).unwrap();
+    }
+
+    /// The N-D array ABI: header bookkeeping (ndims/total/dims), row-major
+    /// element addressing, and `rt_array_release` freeing nested heap (String)
+    /// elements without trapping.
+    #[test]
+    fn precompiled_runtime_array_abi() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+
+        let arr_new = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_array_new").unwrap();
+        let set_dim = inst.get_typed_func::<(i32, i32, i32), ()>(&mut store, "rt_array_set_dim").unwrap();
+        let ndims = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_ndims").unwrap();
+        let total = inst.get_typed_func::<i32, i32>(&mut store, "rt_array_total").unwrap();
+        let dim = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_dim").unwrap();
+        let elem_ptr = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_array_elem_ptr").unwrap();
+        let arr_release = inst.get_typed_func::<i32, ()>(&mut store, "rt_array_release").unwrap();
+        let int_string = inst.get_typed_func::<i32, i32>(&mut store, "rt_int_string").unwrap();
+
+        // A 2x3 Real array (elem_kind 1). Header reports rank/total/dims.
+        let a = arr_new.call(&mut store, (1, 2, 6)).unwrap();
+        set_dim.call(&mut store, (a, 0, 2)).unwrap();
+        set_dim.call(&mut store, (a, 1, 3)).unwrap();
+        assert_eq!(ndims.call(&mut store, a).unwrap(), 2);
+        assert_eq!(total.call(&mut store, a).unwrap(), 6);
+        assert_eq!(dim.call(&mut store, (a, 1)).unwrap(), 2);
+        assert_eq!(dim.call(&mut store, (a, 2)).unwrap(), 3);
+
+        // Round-trip f64 elements through the row-major linear addresses.
+        for k in 1..=6i32 {
+            let addr = elem_ptr.call(&mut store, (a, k)).unwrap() as usize;
+            mem.write(&mut store, addr, &(k as f64 * 1.5).to_le_bytes()).unwrap();
+        }
+        for k in 1..=6i32 {
+            let addr = elem_ptr.call(&mut store, (a, k)).unwrap() as usize;
+            let mut buf = [0u8; 8];
+            mem.read(&store, addr, &mut buf).unwrap();
+            assert_eq!(f64::from_le_bytes(buf), k as f64 * 1.5);
+        }
+        arr_release.call(&mut store, a).unwrap();
+
+        // An array of two Strings (elem_kind 3): releasing the array must release
+        // the contained string handles (no trap, double release is the symptom).
+        let s = arr_new.call(&mut store, (3, 1, 2)).unwrap();
+        set_dim.call(&mut store, (s, 0, 2)).unwrap();
+        for (k, n) in [(1, 11), (2, 22)] {
+            let h = int_string.call(&mut store, n).unwrap();
+            let addr = elem_ptr.call(&mut store, (s, k)).unwrap() as usize;
+            mem.write(&mut store, addr, &h.to_le_bytes()).unwrap();
+        }
+        arr_release.call(&mut store, s).unwrap();
     }
 
     /// `rt_real_format` (`String(Real, significantDigits, minimumLength,

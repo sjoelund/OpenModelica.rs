@@ -25,9 +25,12 @@
 //! algorithm as the rest of the compiler so `String(x)` is byte-identical to the
 //! C target (see `ryu_to_hr`, ported from `metamodelica`/the C `om_format.c`).
 //!
-//! Arrays and records will reuse `rt_alloc`/`rt_retain`/`rt_release`; their
-//! release must first release any contained heap elements, which will be added
-//! as typed `rt_release_*` entry points when those types land.
+//! ## Arrays
+//!
+//! 1-D arrays reuse `rt_alloc`/`rt_retain` and add a self-describing object (see
+//! the Arrays section) with its own `rt_array_release` that releases contained
+//! heap elements before freeing. Records will follow the same pattern with an
+//! `rt_record_release` when they land.
 
 #![no_std]
 
@@ -124,6 +127,156 @@ pub extern "C" fn rt_release(obj: u32) {
     if rc == 0 {
         rt_free(obj);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Arrays (N-dimensional, flat row-major)
+// ---------------------------------------------------------------------------
+//
+// An array object is
+//   `[refcount:u32][elem_kind:u32][ndims:u32][total:u32][dim_0:u32 .. dim_{n-1}:u32]
+//    [pad to 8][elements row-major ...]`.
+// `total` is the product of the dims (the number of scalar elements). The
+// element area is 8-byte aligned (so `f64` elements are aligned) and the
+// elements are packed by kind — 4 bytes for Integer/Boolean and for a heap
+// *handle* (String / nested array), 8 bytes for Real — stored row-major (last
+// subscript varies fastest), matching the C runtime's `base_array` and the
+// nested `Values.ARRAY` the rest of the compiler uses.
+//
+// The `elem_kind`/`ndims`/`dim_*` words make the object self-describing, so the
+// generic `rt_array_release` frees contained heap elements (recursing into
+// nested arrays) and the host marshals it out without a per-element sidecar.
+//
+// The element-kind tags MUST match `SigTy::elem_kind` in the codegen.
+const EK_INT: u32 = 0;
+const EK_REAL: u32 = 1;
+const EK_BOOL: u32 = 2;
+const EK_STR: u32 = 3;
+const EK_ARRAY: u32 = 4;
+
+const ARR_KIND_OFF: u32 = 4;
+const ARR_NDIMS_OFF: u32 = 8;
+const ARR_TOTAL_OFF: u32 = 12;
+const ARR_DIMS_OFF: u32 = 16;
+
+/// Byte stride of one element of the given kind: 8 for Real, 4 for Integer /
+/// Boolean and for a heap handle (String / nested array).
+fn elem_stride(kind: u32) -> u32 {
+    match kind {
+        EK_REAL => 8,
+        EK_INT | EK_BOOL | EK_STR | EK_ARRAY => 4,
+        _ => 4,
+    }
+}
+
+/// Round `n` up to the next multiple of 8 (element-area alignment).
+fn align8(n: u32) -> u32 {
+    (n + 7) & !7
+}
+
+/// Byte offset from the object base to the first element, given `ndims`.
+fn arr_data_off(ndims: u32) -> u32 {
+    align8(ARR_DIMS_OFF + ndims * 4)
+}
+
+/// Byte address of the first element.
+fn arr_data(obj: u32) -> u32 {
+    obj + arr_data_off(unsafe { load_u32(obj + ARR_NDIMS_OFF) })
+}
+
+/// Allocate a zero-initialized array object: `ndims` dimensions, `total` scalar
+/// elements of `elem_kind` (refcount 1, dims left 0 — set with `rt_array_set_dim`).
+/// Zeroing means handle elements start as the null handle (0), so releasing a
+/// partially filled array is safe.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_new(elem_kind: u32, ndims: u32, total: u32) -> u32 {
+    let data_off = arr_data_off(ndims);
+    let obj = rt_alloc(data_off + total * elem_stride(elem_kind));
+    unsafe {
+        store_u32(obj, 1); // refcount
+        store_u32(obj + ARR_KIND_OFF, elem_kind);
+        store_u32(obj + ARR_NDIMS_OFF, ndims);
+        store_u32(obj + ARR_TOTAL_OFF, total);
+        // Zero the dim words and the element area (rt_alloc does not zero).
+        for off in (ARR_DIMS_OFF..data_off + total * elem_stride(elem_kind)).step_by(4) {
+            store_u32(obj + off, 0);
+        }
+    }
+    obj
+}
+
+/// Set the size of dimension `axis` (0-based) of an array.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_set_dim(obj: u32, axis: u32, size: u32) {
+    unsafe { store_u32(obj + ARR_DIMS_OFF + axis * 4, size) };
+}
+
+/// Number of dimensions.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_ndims(obj: u32) -> u32 {
+    unsafe { load_u32(obj + ARR_NDIMS_OFF) }
+}
+
+/// Total number of scalar elements (product of the dimensions).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_total(obj: u32) -> u32 {
+    unsafe { load_u32(obj + ARR_TOTAL_OFF) }
+}
+
+/// Size of dimension `axis` (1-based, as Modelica `size(a, axis)` is). Traps on
+/// an out-of-range axis.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_dim(obj: u32, axis: i32) -> u32 {
+    let ndims = rt_array_ndims(obj) as i32;
+    if axis < 1 || axis > ndims {
+        core::arch::wasm32::unreachable();
+    }
+    unsafe { load_u32(obj + ARR_DIMS_OFF + (axis as u32 - 1) * 4) }
+}
+
+/// Byte address of the element at row-major linear position `index` (1-based).
+/// Traps on an out-of-range index (→ META_FAIL), matching the bounds check the
+/// C target performs. The generated code computes `index` from the per-axis
+/// subscripts and `rt_array_dim`, then loads/stores through this address with
+/// the element's natural wasm type.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_elem_ptr(obj: u32, index: i32) -> u32 {
+    let total = rt_array_total(obj) as i32;
+    if index < 1 || index > total {
+        core::arch::wasm32::unreachable();
+    }
+    let kind = unsafe { load_u32(obj + ARR_KIND_OFF) };
+    arr_data(obj) + (index as u32 - 1) * elem_stride(kind)
+}
+
+/// Decrement an array's reference count, freeing it at zero (no-op on null).
+/// Before freeing, any contained heap elements are released according to the
+/// element kind, so nested strings / arrays are not leaked. Recurses through
+/// nested arrays (each carries its own `elem_kind`).
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_array_release(obj: u32) {
+    if obj == 0 {
+        return;
+    }
+    let rc = unsafe { load_u32(obj) } - 1;
+    unsafe { store_u32(obj, rc) };
+    if rc != 0 {
+        return;
+    }
+    let kind = unsafe { load_u32(obj + ARR_KIND_OFF) };
+    // Heap element kinds hold handles that must be released first.
+    if kind == EK_STR || kind == EK_ARRAY {
+        let data = arr_data(obj);
+        for i in 0..rt_array_total(obj) {
+            let handle = unsafe { load_u32(data + i * 4) };
+            if kind == EK_STR {
+                rt_release(handle);
+            } else {
+                rt_array_release(handle);
+            }
+        }
+    }
+    rt_free(obj);
 }
 
 // ---------------------------------------------------------------------------
