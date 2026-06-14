@@ -21,6 +21,14 @@ fn wt<T>(r: std::result::Result<T, wasmtime::Error>) -> Result<T> {
     r.map_err(|e| anyhow!("{e:?}"))
 }
 
+/// The static linear-memory runtime, precompiled from
+/// `openmodelica_codegen_wasm_jit_runtime` to `wasm32-unknown-unknown` (rebuild
+/// with that crate's `build-runtime.sh`). Instantiated alongside every generated
+/// module, which imports its `memory` and `rt_*` exports — so the allocator,
+/// reference counting and string ops are shared precompiled code, not re-emitted
+/// per module.
+pub(super) static RUNTIME_WASM: &[u8] = include_bytes!("../runtime.wasm");
+
 /// Process-wide JIT cache shared across all `load_and_execute` calls.
 ///
 /// Building a `wasmtime::Engine` and (especially) compiling a module with
@@ -210,6 +218,76 @@ pub(super) fn load_and_execute(
 mod tests {
     use super::*;
     use wasm_encoder as we;
+
+    /// Read the bytes of a runtime string handle out of an instance's memory.
+    fn read_rt_string(
+        store: &mut wasmtime::Store<()>,
+        inst: &wasmtime::Instance,
+        mem: wasmtime::Memory,
+        handle: i32,
+    ) -> String {
+        let len = inst.get_typed_func::<i32, i32>(&mut *store, "rt_str_len").unwrap().call(&mut *store, handle).unwrap();
+        let data = inst.get_typed_func::<i32, i32>(&mut *store, "rt_str_data").unwrap().call(&mut *store, handle).unwrap();
+        let mut buf = vec![0u8; len as usize];
+        mem.read(&*store, data as usize, &mut buf).unwrap();
+        String::from_utf8(buf).unwrap()
+    }
+
+    /// The precompiled runtime instantiates and its `rt_*` string ABI works,
+    /// including `rt_real_string` matching the canonical `metamodelica::realString`
+    /// byte-for-byte (so `String(Real)` stays identical to the C target).
+    #[test]
+    fn precompiled_runtime_string_abi() {
+        let engine = wasmtime::Engine::default();
+        let module = wasmtime::Module::new(&engine, RUNTIME_WASM).unwrap();
+        let mut store = wasmtime::Store::new(&engine, ());
+        let inst = wasmtime::Linker::new(&engine).instantiate(&mut store, &module).unwrap();
+        let mem = inst.get_memory(&mut store, "memory").unwrap();
+
+        let int_string = inst.get_typed_func::<i32, i32>(&mut store, "rt_int_string").unwrap();
+        let real_string = inst.get_typed_func::<f64, i32>(&mut store, "rt_real_string").unwrap();
+        let bool_string = inst.get_typed_func::<i32, i32>(&mut store, "rt_bool_string").unwrap();
+        let concat = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_concat").unwrap();
+        let streq = inst.get_typed_func::<(i32, i32), i32>(&mut store, "rt_streq").unwrap();
+        let substring = inst.get_typed_func::<(i32, i32, i32), i32>(&mut store, "rt_substring").unwrap();
+        let retain = inst.get_typed_func::<i32, ()>(&mut store, "rt_retain").unwrap();
+        let release = inst.get_typed_func::<i32, ()>(&mut store, "rt_release").unwrap();
+
+        let h42 = int_string.call(&mut store, 42).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, h42), "42");
+        let htrue = bool_string.call(&mut store, 1).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, htrue), "true");
+
+        // Concatenation: "12" + "3" via int formatting.
+        let a = int_string.call(&mut store, 12).unwrap();
+        let b = int_string.call(&mut store, 3).unwrap();
+        let ab = concat.call(&mut store, (a, b)).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, ab), "123");
+
+        // substring("123", 2, 3) = "23".
+        let sub = substring.call(&mut store, (ab, 2, 3)).unwrap();
+        assert_eq!(read_rt_string(&mut store, &inst, mem, sub), "23");
+
+        // Equality.
+        let a2 = int_string.call(&mut store, 12).unwrap();
+        assert_eq!(streq.call(&mut store, (a, a2)).unwrap(), 1);
+        assert_eq!(streq.call(&mut store, (a, b)).unwrap(), 0);
+
+        // realString must match the canonical formatter for a spread of values.
+        for v in [0.0, 1.5, -2.0, 1.0 / 3.0, 1e-7, 1234567.0, 6.022e23, std::f64::consts::PI] {
+            let h = real_string.call(&mut store, v).unwrap();
+            let got = read_rt_string(&mut store, &inst, mem, h);
+            let want = metamodelica::realString(metamodelica::Real::from(v)).to_string();
+            assert_eq!(got, want, "realString({v})");
+        }
+
+        // Refcount: retain then two releases frees without trapping; the freed
+        // slot is reused by the next allocation (allocator actually frees).
+        let r = int_string.call(&mut store, 7).unwrap();
+        retain.call(&mut store, r).unwrap();
+        release.call(&mut store, r).unwrap();
+        release.call(&mut store, r).unwrap();
+    }
 
     /// Encode a one-function module exporting `main` with the given signature
     /// and body, write it plus its sidecar under a temp basename, and return
