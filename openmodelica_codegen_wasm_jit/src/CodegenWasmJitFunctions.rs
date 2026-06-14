@@ -614,11 +614,40 @@ struct FnCtx<'a> {
     /// Module-wide String-literal pool; index = passive data-segment index.
     literals: &'a mut Vec<Vec<u8>>,
     instrs: Vec<we::Instruction<'static>>,
+    /// Number of currently-open structured-control frames (`block`/`loop`/`if`),
+    /// maintained automatically by [`FnCtx::emit`]. A relative branch index to a
+    /// frame opened at level `L` is `ctrl_depth - L` (see [`FnCtx::branch_to`]).
+    ctrl_depth: u32,
+    /// Stack of enclosing loops, innermost last: `(break_level, continue_level)`,
+    /// the `ctrl_depth` values of the loop's break-target and continue-target
+    /// blocks. Drives `break`/`continue` (`STMT_BREAK`/`STMT_CONTINUE`).
+    loops: Vec<(u32, u32)>,
+    /// Heap locals that hold a *borrowed* reference (not owned), so they must be
+    /// skipped by `release_heap_locals` — currently the `for x in array` iterator,
+    /// which aliases an element of the array that outlives the loop.
+    borrowed_locals: Vec<u32>,
 }
 
 impl<'a> FnCtx<'a> {
     fn emit(&mut self, i: we::Instruction<'static>) {
+        // Track structured-control nesting so `break`/`continue` can compute their
+        // relative branch depth. `Else` keeps the same frame; `End` closes one.
+        match i {
+            we::Instruction::Block(_) | we::Instruction::Loop(_) | we::Instruction::If(_) => {
+                self.ctrl_depth += 1;
+            }
+            we::Instruction::End => {
+                self.ctrl_depth = self.ctrl_depth.saturating_sub(1);
+            }
+            _ => {}
+        }
         self.instrs.push(i);
+    }
+    /// Emit an unconditional branch to the structured-control frame that was open
+    /// at `target_level` (a recorded `ctrl_depth`). `br 0` is the innermost frame.
+    fn branch_to(&mut self, target_level: u32) {
+        let rel = self.ctrl_depth - target_level;
+        self.emit(we::Instruction::Br(rel));
     }
     /// Allocate a fresh scratch local of the given type and return its index.
     /// Never reused, so transient uses inside one expression never clobber.
@@ -666,7 +695,7 @@ fn compile_function(
         intern_local(v, &mut idx, &mut extra_locals, &mut locals, &mut array_allocs)?;
     }
 
-    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new() };
+    let mut ctx = FnCtx { locals, extra_locals, n_params, outputs, by_name, literals, instrs: Vec::new(), ctrl_depth: 0, loops: Vec::new(), borrowed_locals: Vec::new() };
     // Allocate every array local/output up front so it is a real (possibly empty)
     // array object, never a null handle — matching the C runtime, where the array
     // descriptor always exists. Unknown (`:`) dimensions start at size 0 and are
@@ -830,7 +859,7 @@ fn release_heap_locals(ctx: &mut FnCtx) {
     let mut to_release: Vec<(u32, &'static str)> = ctx
         .locals
         .values()
-        .filter(|(idx, _)| !output_idxs.contains(idx))
+        .filter(|(idx, _)| !output_idxs.contains(idx) && !ctx.borrowed_locals.contains(idx))
         .filter_map(|(idx, sty)| sty.release_fn().map(|f| (*idx, f)))
         .collect();
     // Deterministic order (HashMap iteration is unspecified) for stable output.
@@ -1474,14 +1503,17 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
             Ok(())
         }
         S::STMT_WHILE { exp, statementLst, .. } => {
-            // block { loop { <cond>; i32.eqz; br_if 1; <body>; br 0 } }
+            // block { loop { <cond>; i32.eqz; br_if 1; block { <body> }; br 0 } }
+            // The inner block is the `continue` target (fall through re-checks the
+            // condition); the outer block is the `break` target.
             ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+            let break_level = ctx.ctrl_depth;
             ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
             let c = compile_exp(ctx, exp)?;
             coerce(ctx, c, WTy::I32);
             ctx.emit(we::Instruction::I32Eqz);
             ctx.emit(we::Instruction::BrIf(1));
-            compile_stmts(ctx, statementLst)?;
+            compile_loop_body(ctx, break_level, statementLst)?;
             ctx.emit(we::Instruction::Br(0));
             ctx.emit(we::Instruction::End); // loop
             ctx.emit(we::Instruction::End); // block
@@ -1518,6 +1550,22 @@ fn compile_stmt(ctx: &mut FnCtx, stmt: &DAE::Statement) -> Result<()> {
             Ok(())
         }
         S::STMT_FOR { iter, range, statementLst, type_, .. } => compile_for(ctx, iter, range, statementLst, type_),
+        S::STMT_BREAK { .. } => {
+            let (brk, _) = *ctx
+                .loops
+                .last()
+                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: `break` outside a loop"))?;
+            ctx.branch_to(brk);
+            Ok(())
+        }
+        S::STMT_CONTINUE { .. } => {
+            let (_, cont) = *ctx
+                .loops
+                .last()
+                .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: `continue` outside a loop"))?;
+            ctx.branch_to(cont);
+            Ok(())
+        }
         other => bail!("CodegenWasmJit: statement not yet supported: {other:?}"),
     }
 }
@@ -1540,6 +1588,27 @@ fn compile_else(ctx: &mut FnCtx, e: &DAE::Else) -> Result<()> {
             Ok(())
         }
     }
+}
+
+/// Emit a loop body wrapped in its `continue` block, with the loop registered on
+/// `ctx.loops` so nested `break`/`continue` resolve to the right depths. The
+/// enclosing `block` (break target) and `loop` frame must already be open;
+/// `break_level` is the `ctrl_depth` recorded just after opening the break block.
+/// On return the `continue` block is closed, so the caller emits the per-iteration
+/// advance (increment / condition re-check) next — `continue` falls through to it.
+fn compile_loop_body(
+    ctx: &mut FnCtx,
+    break_level: u32,
+    body: &Arc<List<Arc<DAE::Statement>>>,
+) -> Result<()> {
+    ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    let continue_level = ctx.ctrl_depth;
+    ctx.loops.push((break_level, continue_level));
+    let r = compile_stmts(ctx, body);
+    ctx.loops.pop();
+    r?;
+    ctx.emit(we::Instruction::End); // continue block
+    Ok(())
 }
 
 /// Lower a `for iter in range loop ...` statement. An Integer (or enumeration)
@@ -1593,15 +1662,17 @@ fn compile_for_int_range(
     coerce(ctx, pw, WTy::I32);
     ctx.emit(we::Instruction::LocalSet(stop_l));
 
-    // block { loop { (it>stop) -> br 1; body; it+=step; br 0 } }
-    // Assumes a positive step (the common case for generated loops).
+    // block { loop { (it>stop) -> br 1; block { body }; it+=step; br 0 } }
+    // Assumes a positive step (the common case for generated loops). The inner
+    // block is the `continue` target — falling through runs the increment.
     ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    let break_level = ctx.ctrl_depth;
     ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
     ctx.emit(we::Instruction::LocalGet(it));
     ctx.emit(we::Instruction::LocalGet(stop_l));
     ctx.emit(we::Instruction::I32GtS);
     ctx.emit(we::Instruction::BrIf(1));
-    compile_stmts(ctx, body)?;
+    compile_loop_body(ctx, break_level, body)?;
     ctx.emit(we::Instruction::LocalGet(it));
     ctx.emit(we::Instruction::LocalGet(step_l));
     ctx.emit(we::Instruction::I32Add);
@@ -1614,10 +1685,13 @@ fn compile_for_int_range(
 
 /// Lower `for x in <array> loop ...`: evaluate the iterable to an array once,
 /// then loop `k = 1..total`, binding `x` to `arr[k]` each pass. Handles array
-/// literals, array variables and slices — any rank-1 vector. A heap element
-/// (String / record / nested array) is retained while bound to `x` and released
-/// at the end of each iteration; the iterator local is nulled afterwards so the
-/// function-exit cleanup does not double-free it.
+/// literals, array variables and slices — any rank-1 vector.
+///
+/// The iterator binds a *borrowed* element: the array (`arr_t`) is held for the
+/// whole loop, so `x` need not own a reference — the body's heap reads retain on
+/// read and release on consume, staying balanced. The slot is recorded in
+/// `borrowed_locals` so `release_heap_locals` skips it (it owns nothing), which
+/// also makes `break`/early-`return` leak-safe.
 fn compile_for_array(
     ctx: &mut FnCtx,
     iter: &ArcStr,
@@ -1645,30 +1719,25 @@ fn compile_for_array(
     ctx.emit(we::Instruction::LocalSet(k));
     let it = ctx.alloc_temp(elem.wty());
     ctx.locals.insert(iter.to_string(), (it, elem.clone()));
+    if elem.is_heap() {
+        ctx.borrowed_locals.push(it);
+    }
 
-    // block { loop { k>n -> br 1; it = arr[k]; <body>; release it; k++; br 0 } }
+    // block { loop { k>n -> br 1; it = arr[k]; block { body }; k++; br 0 } }
     ctx.emit(we::Instruction::Block(we::BlockType::Empty));
+    let break_level = ctx.ctrl_depth;
     ctx.emit(we::Instruction::Loop(we::BlockType::Empty));
     ctx.emit(we::Instruction::LocalGet(k));
     ctx.emit(we::Instruction::LocalGet(n));
     ctx.emit(we::Instruction::I32GtS);
     ctx.emit(we::Instruction::BrIf(1));
-    // it = arr[k]; a heap element is borrowed from the array, so retain it to own
-    // the binding (the body's reads/releases are then balanced).
+    // it = arr[k] (borrowed; the array outlives the loop).
     ctx.emit(we::Instruction::LocalGet(arr_t));
     ctx.emit(we::Instruction::LocalGet(k));
     ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
     elem_load(ctx, &elem);
     ctx.emit(we::Instruction::LocalSet(it));
-    if elem.is_heap() {
-        ctx.emit(we::Instruction::LocalGet(it));
-        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
-    }
-    compile_stmts(ctx, body)?;
-    if let Some(release_fn) = elem.release_fn() {
-        ctx.emit(we::Instruction::LocalGet(it));
-        ctx.emit(we::Instruction::Call(rt_index(release_fn)));
-    }
+    compile_loop_body(ctx, break_level, body)?;
     ctx.emit(we::Instruction::LocalGet(k));
     ctx.emit(we::Instruction::I32Const(1));
     ctx.emit(we::Instruction::I32Add);
@@ -1676,12 +1745,6 @@ fn compile_for_array(
     ctx.emit(we::Instruction::Br(0));
     ctx.emit(we::Instruction::End); // loop
     ctx.emit(we::Instruction::End); // block
-    if elem.is_heap() {
-        // The last element was released above; null the slot so the function-exit
-        // release_heap_locals treats it as an unassigned (null) handle.
-        ctx.emit(we::Instruction::I32Const(0));
-        ctx.emit(we::Instruction::LocalSet(it));
-    }
     release_temp_array(ctx, arr_t);
     Ok(())
 }
