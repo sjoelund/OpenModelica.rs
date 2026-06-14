@@ -2831,6 +2831,22 @@ fn operator_sigty(op: &DAE::Operator) -> Result<SigTy> {
         // Scalar/matrix products carry the element (scalar-product) or result
         // (matrix-product) type; `sig_ty` yields the produced value's `SigTy`.
         O::MUL_SCALAR_PRODUCT { ty } | O::MUL_MATRIX_PRODUCT { ty } => ty,
+        // Element-wise and array/scalar operators all carry the (array) result
+        // type. `sig_ty` turns it into the `SigTy::Array { .. }` value type.
+        O::UMINUS_ARR { ty }
+        | O::ADD_ARR { ty }
+        | O::SUB_ARR { ty }
+        | O::MUL_ARR { ty }
+        | O::DIV_ARR { ty }
+        | O::MUL_ARRAY_SCALAR { ty }
+        | O::ADD_ARRAY_SCALAR { ty }
+        | O::SUB_SCALAR_ARRAY { ty }
+        | O::DIV_ARRAY_SCALAR { ty }
+        | O::DIV_SCALAR_ARRAY { ty }
+        | O::POW_ARRAY_SCALAR { ty }
+        | O::POW_SCALAR_ARRAY { ty }
+        | O::POW_ARR { ty }
+        | O::POW_ARR2 { ty } => ty,
         other => bail!("CodegenWasmJit: cannot determine type of operator {other:?}"),
     };
     sig_ty(ty)
@@ -3376,6 +3392,20 @@ fn compile_math_builtin(
             need_args(&argv, 3, name)?;
             str_substring(ctx, argv[0], argv[1], argv[2])?;
             Ok(SigTy::Str)
+        }
+        // `smooth(p, expr)` and `noEvent(expr)` are smoothness/event annotations
+        // that are the identity on the value expression at runtime (the C target
+        // likewise just evaluates the expression). The returned `SigTy` is
+        // derived from the emitted wasm type so it always matches the stack.
+        "smooth" => {
+            need_args(&argv, 2, name)?;
+            let w = compile_exp(ctx, argv[1])?;
+            Ok(if w == WTy::F64 { SigTy::Real } else { SigTy::Int })
+        }
+        "noEvent" => {
+            need_args(&argv, 1, name)?;
+            let w = compile_exp(ctx, argv[0])?;
+            Ok(if w == WTy::F64 { SigTy::Real } else { SigTy::Int })
         }
         other => bail!("CodegenWasmJit: builtin function `{other}` not yet supported"),
     }
