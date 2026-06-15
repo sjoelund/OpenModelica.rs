@@ -16,5 +16,9 @@ const-str.workspace=true
 arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true
-curl.workspace = true
 zip = { version = "8.6.0", default-features = false, features = ["deflate"] }
+
+# Native libcurl (downloads) has no wasm target; Curl.rs is replaced by the
+# Curl_wasm.rs stub on wasm, so the dep is native-only.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+curl.workspace = true

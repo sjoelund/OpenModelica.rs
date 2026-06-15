@@ -1817,6 +1817,8 @@ const WASM_GATED_TOP_MODULES: &[(&str, Option<&str>)] = &[
     ("FFI", Some("FFI_wasm.rs")),
     // dlopens libOMSimulator; only reached from openmodelica_backend_tools.
     ("OMSimulatorExt", None),
+    // downloads via native libcurl (pulls socket2, no wasm target).
+    ("Curl", Some("Curl_wasm.rs")),
 ];
 
 /// Emit a top-level `pub mod NAME;`, cfg-gating the native-only modules listed
