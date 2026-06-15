@@ -1501,6 +1501,7 @@ dependencies = [
  "loop_unwrap",
  "metamodelica",
  "openmodelica_error",
+ "openmodelica_vfs",
  "web-time",
  "winnow",
 ]
@@ -2268,6 +2269,7 @@ dependencies = [
  "nalgebra",
  "openmodelica_error",
  "openmodelica_util_datatypes_basic",
+ "openmodelica_vfs",
  "roxmltree",
  "web-time",
  "zip",
@@ -2285,6 +2287,10 @@ dependencies = [
  "match_deref",
  "metamodelica",
 ]
+
+[[package]]
+name = "openmodelica_vfs"
+version = "0.1.0"
 
 [[package]]
 name = "openssl-probe"

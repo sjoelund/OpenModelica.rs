@@ -509,22 +509,44 @@ pub fn freeLibrary(inLibHandle: i32, inPrintDebug: bool) -> Result<()> {
 // ───────────────────────────────── file I/O ──────────────────────────────────
 
 pub fn writeFile(fileNameToWrite: ArcStr, stringToBeWritten: ArcStr) -> Result<()> {
-    fs::write(fileNameToWrite.as_str(), stringToBeWritten.as_bytes())
-        .with_context(|| format!("System.writeFile: cannot write {}", fileNameToWrite))?;
-    Ok(())
+    // On wasm there is no OS filesystem; keep written files in the in-memory VFS
+    // so the rest of the run (and the JS host) can read them back.
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::write(fileNameToWrite.as_str(), stringToBeWritten.as_bytes().to_vec());
+        return Ok(());
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        fs::write(fileNameToWrite.as_str(), stringToBeWritten.as_bytes())
+            .with_context(|| format!("System.writeFile: cannot write {}", fileNameToWrite))?;
+        Ok(())
+    }
 }
 
 pub fn appendFile(file: ArcStr, data: ArcStr) -> Result<()> {
-    use std::io::Write as _;
-    let mut f = fs::OpenOptions::new().create(true).append(true)
-        .open(file.as_str())
-        .with_context(|| format!("System.appendFile: cannot open {file}"))?;
-    f.write_all(data.as_bytes())
-        .with_context(|| format!("System.appendFile: cannot write to {file}"))?;
-    Ok(())
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::append(file.as_str(), data.as_bytes());
+        return Ok(());
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        use std::io::Write as _;
+        let mut f = fs::OpenOptions::new().create(true).append(true)
+            .open(file.as_str())
+            .with_context(|| format!("System.appendFile: cannot open {file}"))?;
+        f.write_all(data.as_bytes())
+            .with_context(|| format!("System.appendFile: cannot write to {file}"))?;
+        Ok(())
+    }
 }
 
 pub fn readFile(inString: ArcStr) -> Result<ArcStr> {
+    #[cfg(target_arch = "wasm32")]
+    let bytes = openmodelica_vfs::read(inString.as_str())
+        .with_context(|| format!("System.readFile: cannot read {inString}"))?;
+    #[cfg(not(target_arch = "wasm32"))]
     let bytes = fs::read(inString.as_str())
         .with_context(|| format!("System.readFile: cannot read {inString}"))?;
     let s = String::from_utf8(bytes)
@@ -1056,6 +1078,9 @@ pub fn time() -> metamodelica::Real {
 }
 
 pub fn regularFileExists(inString: ArcStr) -> bool {
+    #[cfg(target_arch = "wasm32")]
+    return openmodelica_vfs::exists(inString.as_str());
+    #[cfg(not(target_arch = "wasm32"))]
     fs::metadata(inString.as_str()).map(|m| m.is_file()).unwrap_or(false)
 }
 
@@ -2084,9 +2109,40 @@ pub fn numBits() -> i32 {
 }
 
 pub fn realpath(path: ArcStr) -> Result<ArcStr> {
-    let canon = fs::canonicalize(path.as_str())
-        .with_context(|| format!("System.realpath: cannot resolve {path}"))?;
-    Ok(ArcStr::from(canon.to_string_lossy().as_ref()))
+    // No filesystem on wasm to canonicalize against (and no symlinks to
+    // resolve); collapse `.`/`..` lexically and return the path as-is.
+    #[cfg(target_arch = "wasm32")]
+    return Ok(ArcStr::from(lexical_normalize(path.as_str())));
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let canon = fs::canonicalize(path.as_str())
+            .with_context(|| format!("System.realpath: cannot resolve {path}"))?;
+        Ok(ArcStr::from(canon.to_string_lossy().as_ref()))
+    }
+}
+
+/// Collapse `.` and `..` components in a forward-slash path without touching a
+/// filesystem (wasm has none). Used by [`realpath`] on wasm so the builtin paths
+/// FBuiltin builds (`<home>/bin/../lib/omc/…`) reduce to a stable canonical form.
+#[cfg(target_arch = "wasm32")]
+fn lexical_normalize(path: &str) -> String {
+    let absolute = path.starts_with('/');
+    let mut out: Vec<&str> = Vec::new();
+    for comp in path.split('/') {
+        match comp {
+            "" | "." => {}
+            ".." => {
+                if matches!(out.last(), Some(&c) if c != "..") {
+                    out.pop();
+                } else if !absolute {
+                    out.push("..");
+                }
+            }
+            c => out.push(c),
+        }
+    }
+    let joined = out.join("/");
+    if absolute { format!("/{joined}") } else { joined }
 }
 
 pub fn getSimulationHelpText(_detailed: bool, _sphinx: bool) -> ArcStr {

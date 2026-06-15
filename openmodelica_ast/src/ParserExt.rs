@@ -119,6 +119,12 @@ fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar, r
 /// with the original — and the original bytes are returned so the lexer can
 /// reproduce the per-string-literal warning + ASCII fallback.
 fn read_source_file(filename: &str) -> std::io::Result<(String, Option<Arc<[u8]>>)> {
+    // On wasm there is no OS filesystem; serve the embedded builtins (and any
+    // host-provided files) from the in-memory VFS instead.
+    #[cfg(target_arch = "wasm32")]
+    if let Some(bytes) = openmodelica_vfs::read(filename) {
+        return Ok(sanitize_source_bytes(bytes));
+    }
     Ok(sanitize_source_bytes(std::fs::read(filename)?))
 }
 

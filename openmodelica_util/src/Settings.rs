@@ -187,6 +187,19 @@ pub fn getInstallationDirectoryPath() -> Result<ArcStr> {
         }
     }
 
+    // wasm has no executable path to dladdr and no OS environment; the JS host
+    // seeds OPENMODELICAHOME into the in-process env map (System::setEnv), so
+    // read it from there.
+    #[cfg(target_arch = "wasm32")]
+    if let Ok(env) = crate::System::readEnv(ArcStr::from("OPENMODELICAHOME"))
+        && !env.is_empty()
+    {
+        let path = convert_to_forward_slashes(&env);
+        let mut state = STATE.lock().unwrap();
+        state.installation_path = Some(path.clone());
+        return Ok(path);
+    }
+
     let exe = std::env::current_exe()
         .map_err(|e| anyhow::anyhow!("failed to determine executable path: {e}"))
         .map(|p| convert_to_forward_slashes(&p.to_string_lossy()));
