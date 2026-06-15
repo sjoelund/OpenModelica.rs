@@ -1134,15 +1134,54 @@ fn write_mat4(model: &SimModel, path: &str, rows: &[f64], n_reals: u32, params: 
     write_char_matrix_cols(&mut out, "name", &names);
     write_char_matrix_cols(&mut out, "description", &descs);
 
+    // Compact the trajectory like the C runtime does: a `TimeVariant` signal
+    // whose value never changes over the whole run is stored once in data_1
+    // instead of as `n_rows` identical doubles in data_2. (For MultiBody models
+    // most algebraic variables are constant — this is the difference between a
+    // ~3MB and a ~0.5MB result file.) `TimeVariant { row }` maps 1:1 to
+    // result-buffer column `row - 1` (column 0 is time).
+    let param_vals: &[f64] = params;
+    let n_params = param_vals.len();
+    let demote = n_rows >= 2;
+    let mut col_is_const = vec![false; n_reals];
+    if demote {
+        for c in 1..n_reals {
+            let first = rows[c];
+            col_is_const[c] = (1..n_rows).all(|r| rows[r * n_reals + c] == first);
+        }
+    }
+    // Assign new data_2 rows to the kept (varying) columns and data_1 rows to
+    // the demoted constant columns. Both are 1-based (data_2 row 1 = time;
+    // data_1 row 1 = the reserved [start, stop] row, rows 2.. = params then
+    // demoted constants).
+    let mut new_data2_row = vec![0i32; n_reals];
+    let mut const_data1_row = vec![0i32; n_reals];
+    let mut varying_cols: Vec<usize> = Vec::new();
+    let mut next_const_row: i32 = 2 + n_params as i32;
+    for c in 1..n_reals {
+        if col_is_const[c] {
+            const_data1_row[c] = next_const_row;
+            next_const_row += 1;
+        } else {
+            varying_cols.push(c);
+            new_data2_row[c] = 1 + varying_cols.len() as i32;
+        }
+    }
+
     // dataInfo (4 x nSignals int32, column-major): [channel, index, interp, extrap].
     let mut data_info: Vec<i32> = Vec::with_capacity(signals.len() * 4);
-    // Parameters occupy data_1 rows starting at 2 (row 1 is the reserved
-    // start/stop row), in result order.
     let mut next_param_row: i32 = 2;
     for v in signals {
         let info = match &v.kind {
             ResultKind::Time => [0, 1, 0, -1],
-            ResultKind::TimeVariant { row } => [2, *row as i32, 0, 0],
+            ResultKind::TimeVariant { row } => {
+                let c = (*row as usize).saturating_sub(1);
+                if c < n_reals && col_is_const[c] {
+                    [1, const_data1_row[c], 0, 0] // demoted to data_1
+                } else {
+                    [2, new_data2_row[c], 0, 0]
+                }
+            }
             ResultKind::Param { .. } => {
                 let r = next_param_row;
                 next_param_row += 1;
@@ -1154,23 +1193,36 @@ fn write_mat4(model: &SimModel, path: &str, rows: &[f64], n_reals: u32, params: 
     write_int_matrix(&mut out, "dataInfo", 4, signals.len(), &data_info);
 
     // data_1 (nData1 x 2 double, column-major): row 1 = [start, stop]; then one
-    // row per parameter (same value in both columns). Parameter values were read
-    // from `SimData` by the runner (in result/`Param` order).
-    let param_vals: &[f64] = params;
-    let n_data1 = 1 + param_vals.len();
+    // row per parameter, then one per demoted-constant column (same value in
+    // both columns).
+    let n_const = n_reals.saturating_sub(1) - varying_cols.len();
+    let n_data1 = 1 + n_params + n_const;
     let mut data_1: Vec<f64> = vec![0.0; n_data1 * 2];
-    // Column 0 (start values), column 1 (stop values), column-major.
     data_1[0] = model.start_time;
     data_1[n_data1] = model.stop_time;
     for (i, val) in param_vals.iter().enumerate() {
         data_1[1 + i] = *val;
         data_1[n_data1 + 1 + i] = *val;
     }
+    for c in 1..n_reals {
+        if col_is_const[c] {
+            let idx = (const_data1_row[c] - 1) as usize; // 1-based row -> 0-based index
+            data_1[idx] = rows[c];
+            data_1[n_data1 + idx] = rows[c];
+        }
+    }
     write_double_matrix(&mut out, "data_1", n_data1, 2, &data_1);
 
-    // data_2 (n_reals x n_rows double, column-major) — identical byte layout to
-    // the row-major result buffer (variable=row, timestep=column).
-    write_double_matrix(&mut out, "data_2", n_reals, n_rows, rows);
+    // data_2 (n_reals2 x n_rows double, column-major): time + the varying columns.
+    let n_reals2 = 1 + varying_cols.len();
+    let mut data_2: Vec<f64> = Vec::with_capacity(n_rows * n_reals2);
+    for r in 0..n_rows {
+        data_2.push(rows[r * n_reals]); // time
+        for &c in &varying_cols {
+            data_2.push(rows[r * n_reals + c]);
+        }
+    }
+    write_double_matrix(&mut out, "data_2", n_reals2, n_rows, &data_2);
 
     std::fs::write(path, &out).map_err(|e| anyhow!("CodegenWasmJit: cannot write {path}: {e}"))?;
     let _ = &model.model_name; // (kept for diagnostics)
