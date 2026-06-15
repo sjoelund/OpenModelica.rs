@@ -168,6 +168,11 @@ struct SimModel {
     stop_time: f64,
     n_intervals: u32,
     output_format: String,
+    /// Integration method requested by `simulate(..., method=...)` (e.g.
+    /// `"dassl"`, `"euler"`). Selects the driver in [`sim_runtime::run`].
+    method: String,
+    /// Relative/absolute tolerance for the adaptive integrators (DASSL).
+    tolerance: f64,
 }
 
 /// Process-wide table of prepared models, keyed by file-name prefix. Populated
@@ -237,8 +242,7 @@ fn run_simulation_inner(prefix: &str, result_file: &str, _simflags: &str) -> Res
     if model.output_format != "mat" {
         bail!("CodegenWasmJit: only the `mat` output format is supported (got `{}`)", model.output_format);
     }
-    let driver = std::env::var("OMC_WASM_SIM_DRIVER").unwrap_or_default();
-    let run = sim_runtime::run(&model, driver == "host")?;
+    let run = sim_runtime::run(&model)?;
     write_mat4(&model, result_file, &run.rows, run.n_reals, &run.params)
 }
 
@@ -725,6 +729,8 @@ fn build_sim_model(sim_code: &SimCode::SimCode) -> Result<SimModel> {
         stop_time: settings.stopTime.into_inner(),
         n_intervals: settings.numberOfIntervals.max(0) as u32,
         output_format: settings.outputFormat.to_string(),
+        method: settings.method.to_string(),
+        tolerance: settings.tolerance.into_inner(),
     })
 }
 

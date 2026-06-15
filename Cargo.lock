@@ -1239,6 +1239,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "arcstr",
+ "daskr",
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_frontend_dump",

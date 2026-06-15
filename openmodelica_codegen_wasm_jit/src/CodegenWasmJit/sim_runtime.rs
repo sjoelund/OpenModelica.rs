@@ -1,20 +1,25 @@
 // Host side of the `wasm-jit` simulation target: JIT the precompiled runtime
 // module and the generated model module (sharing one linear memory), then run
-// the integration in one of two ways and return the result trajectory.
+// the integration and return the result trajectory. The driver is selected by
+// the model's integration `method`:
 //
-//   * In-wasm driver (default): a single call to the model's `simulate` export,
-//     whose emitted loop calls `functionODE`/`functionAlgebraics` and the
-//     runtime's `rt_euler_step`/`rt_sim_store_row` with no host boundary
-//     crossing per step. Returns a result buffer the host reads out.
-//   * Host-driven driver (`OMC_WASM_SIM_DRIVER=host`, for benchmarking): the
-//     forward-Euler loop runs in native Rust, calling `functionODE`/
-//     `functionAlgebraics` once per step (a wasm boundary crossing each step)
-//     and reading/writing `SimData` through the wasm memory.
+//   * `method="euler"` — forward Euler. Two variants:
+//       - in-wasm (default): a single call to the model's `simulate` export,
+//         whose emitted loop calls `functionODE`/`functionAlgebraics` and the
+//         runtime's `rt_euler_step`/`rt_sim_store_row` with no host boundary
+//         crossing per step.
+//       - host-driven (`OMC_WASM_SIM_DRIVER=host`, for benchmarking): the Euler
+//         loop runs in native Rust, one wasm call per step.
+//   * `method="dassl"` (the OpenModelica default) — the variable-order,
+//     variable-step BDF DAE solver from the `daskr` crate, driven from the host.
+//     `daskr` integrates natively; its residual callback `G(t,y,y') = y' - f(t,y)`
+//     drives the wasm `functionODE` once per evaluation. DASSL chooses its own
+//     internal steps and interpolates back to each output point.
 //
-// Both drivers share the same generated model module and the same `SimData`
-// layout; only the loop location differs.
+// All drivers share the same generated model module and `SimData` layout.
 
-use anyhow::{Result, anyhow};
+use anyhow::{Result, anyhow, bail};
+use std::cell::Cell;
 use std::time::Instant;
 
 use super::{REAL_OFF, ResultKind, SimModel, TIME_OFF};
@@ -52,7 +57,7 @@ fn write_f64(mem: &wasmtime::Memory, store: &mut Store, addr: u32, v: f64) -> Re
     Ok(())
 }
 
-pub(super) fn run(model: &SimModel, host_driven: bool) -> Result<RunResult> {
+pub(super) fn run(model: &SimModel) -> Result<RunResult> {
     let engine = wasmtime::Engine::default();
     let mut linker = wasmtime::Linker::new(&engine);
     add_host_builtins(&mut linker)?;
@@ -82,17 +87,36 @@ pub(super) fn run(model: &SimModel, host_driven: bool) -> Result<RunResult> {
     let start = model.start_time;
     let stop = model.stop_time;
 
+    // Select the integrator by `method`. `dassl` is OpenModelica's default; an
+    // empty method (no `experiment` annotation / `method=` argument) means the
+    // default too. `euler` keeps the existing forward-Euler drivers.
+    let host_driven = std::env::var("OMC_WASM_SIM_DRIVER").map(|v| v == "host").unwrap_or(false);
+    let method = model.method.as_str();
+    let driver_label;
     let t0 = Instant::now();
-    let rows: Vec<f64> = if host_driven {
-        run_host(&mut store, &instance, &memory, model, sim_data, n_reals, n_rows, start, stop)?
-    } else {
-        run_wasm(&mut store, &instance, &memory, sim_data, n_reals, n_rows, start, stop)?
+    let rows: Vec<f64> = match method {
+        "dassl" | "dasslrt" | "ida" | "" => {
+            driver_label = "dassl";
+            run_dassl(&mut store, &instance, &memory, model, sim_data, n_reals, n_rows, start, stop)?
+        }
+        "euler" => {
+            if host_driven {
+                driver_label = "euler-host";
+                run_host(&mut store, &instance, &memory, model, sim_data, n_reals, n_rows, start, stop)?
+            } else {
+                driver_label = "euler-wasm";
+                run_wasm(&mut store, &instance, &memory, sim_data, n_reals, n_rows, start, stop)?
+            }
+        }
+        other => bail!(
+            "CodegenWasmJit: unsupported integration method `{other}` (supported: `dassl`, `euler`)"
+        ),
     };
     let elapsed = t0.elapsed();
     if std::env::var("OMC_WASM_SIM_BENCH").is_ok() {
         eprintln!(
-            "wasm-jit sim [{}] {} steps in {:?} ({:.2} us/step)",
-            if host_driven { "host" } else { "wasm" },
+            "wasm-jit sim [{}] {} intervals in {:?} ({:.2} us/interval)",
+            driver_label,
             n_steps,
             elapsed,
             elapsed.as_secs_f64() * 1e6 / (n_rows.max(1) as f64),
@@ -182,6 +206,258 @@ fn run_host(
             let d = read_f64(memory, store, ders_base + i * 8)?;
             write_f64(memory, store, states_base + i * 8, s + h * d)?;
         }
+    }
+    Ok(rows)
+}
+
+// ===========================================================================
+// DASSL (daskr) driver
+// ===========================================================================
+//
+// The model is an explicit ODE `der(y) = f(t, y)` (the wasm `functionODE`
+// computes `f` into the derivative slots given `time` + state slots). DASSL
+// solves the equivalent DAE residual `G(t, y, y') = y' - f(t, y) = 0` with its
+// numerical Jacobian, choosing internal steps adaptively and interpolating back
+// to each output point. `daskr` runs natively; its `RES` callback is a bare
+// `unsafe fn` (Fortran calling convention) that cannot capture, so the wasm
+// context is passed through a thread-local raw pointer set for the duration of
+// the integration (single-threaded; `RES` only runs nested inside `ddaskr`).
+
+/// Context the `RES` callback needs to evaluate `f(t, y)` through wasm.
+struct ResCtx {
+    store: *mut Store,
+    memory: wasmtime::Memory,
+    f_ode: wasmtime::TypedFunc<u32, ()>,
+    sim_data: u32,
+    states_base: u32,
+    ders_base: u32,
+    n_states: usize,
+    /// Number of residual (right-hand-side) evaluations, for the bench line.
+    nfe: u64,
+    /// A wasm trap / memory error captured inside the callback, surfaced after
+    /// `ddaskr` returns (the C-style callback cannot return a `Result`).
+    err: Option<anyhow::Error>,
+}
+
+thread_local! {
+    static RES_CTX: Cell<*mut ResCtx> = const { Cell::new(std::ptr::null_mut()) };
+}
+
+/// Clears the thread-local `RES_CTX` on drop so a stale pointer never leaks into
+/// a later run on the same thread (even if `ddaskr` bails early).
+struct ResCtxGuard;
+impl Drop for ResCtxGuard {
+    fn drop(&mut self) {
+        RES_CTX.with(|c| c.set(std::ptr::null_mut()));
+    }
+}
+
+/// DASSL residual `G(t, y, y') = y' - f(t, y)`. Writes `t` and the candidate
+/// states `y` into `SimData`, calls the wasm `functionODE` to get `f` into the
+/// derivative slots, then `delta := y' - f`. On any wasm error sets `IRES = -2`
+/// (DASKR treats this as unrecoverable and returns a negative `IDID`).
+unsafe fn dassl_res(
+    t: *mut f64,
+    y: *mut f64,
+    yprime: *mut f64,
+    _cj: *mut f64,
+    delta: *mut f64,
+    ires: *mut i32,
+    _rpar: *mut f64,
+    _ipar: *mut i32,
+) {
+    let ctx_ptr = RES_CTX.with(|c| c.get());
+    if ctx_ptr.is_null() {
+        unsafe { *ires = -2 };
+        return;
+    }
+    let ctx = unsafe { &mut *ctx_ptr };
+    if ctx.err.is_some() {
+        unsafe { *ires = -2 };
+        return;
+    }
+    let store = unsafe { &mut *ctx.store };
+    let mut bail = |ctx: &mut ResCtx, e: anyhow::Error| {
+        ctx.err = Some(e);
+        unsafe { *ires = -2 };
+    };
+    // time + candidate states into SimData.
+    if let Err(e) = write_f64(&ctx.memory, store, ctx.sim_data + TIME_OFF, unsafe { *t }) {
+        return bail(ctx, e);
+    }
+    for i in 0..ctx.n_states {
+        let yi = unsafe { *y.add(i) };
+        if let Err(e) = write_f64(&ctx.memory, store, ctx.states_base + (i as u32) * 8, yi) {
+            return bail(ctx, e);
+        }
+    }
+    // f(t, y) -> derivative slots.
+    if let Err(e) = ctx.f_ode.call(&mut *store, ctx.sim_data).map_err(|e| anyhow!("{e:?}")) {
+        return bail(ctx, e);
+    }
+    ctx.nfe += 1;
+    // delta = y' - f.
+    for i in 0..ctx.n_states {
+        match read_f64(&ctx.memory, store, ctx.ders_base + (i as u32) * 8) {
+            Ok(der) => unsafe { *delta.add(i) = *yprime.add(i) - der },
+            Err(e) => return bail(ctx, e),
+        }
+    }
+}
+
+/// DASSL driver: integrate with `daskr::solver::ddaskr`, emitting a result row
+/// at each of the `n_rows` output points (`start` plus the interval grid).
+#[allow(clippy::too_many_arguments)]
+fn run_dassl(
+    store: &mut Store,
+    instance: &wasmtime::Instance,
+    memory: &wasmtime::Memory,
+    model: &SimModel,
+    sim_data: u32,
+    n_reals: u32,
+    n_rows: u32,
+    start: f64,
+    stop: f64,
+) -> Result<Vec<f64>> {
+    use daskr::solver;
+
+    // Silence DASKR's own diagnostic printing (it would go to stdout and corrupt
+    // the omc result record); failures are surfaced here via IDID instead.
+    daskr::aux::xsetf(0);
+
+    let f_params = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionParameters"))?;
+    let f_init = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionInitialEquations"))?;
+    let f_ode = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionODE"))?;
+    let f_alg = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionAlgebraics"))?;
+
+    wt(f_params.call(&mut *store, sim_data))?;
+    wt(f_init.call(&mut *store, sim_data))?;
+
+    let n_states = model.layout.n_states as usize;
+    let states_base = sim_data + REAL_OFF;
+    let ders_base = states_base + model.layout.n_states * 8;
+    let n_steps = n_rows - 1;
+    let h = if n_steps == 0 { 0.0 } else { (stop - start) / n_steps as f64 };
+
+    // Emit one result row (`[time, realVars…]`) from the current SimData, after
+    // setting `time` and recomputing `functionODE`/`functionAlgebraics` so the
+    // reported derivatives and algebraics are consistent with the states.
+    let emit_row =
+        |store: &mut Store, rows: &mut Vec<f64>, time: f64| -> Result<()> {
+            write_f64(memory, store, sim_data + TIME_OFF, time)?;
+            wt(f_ode.call(&mut *store, sim_data))?;
+            wt(f_alg.call(&mut *store, sim_data))?;
+            for i in 0..n_reals {
+                rows.push(read_f64(memory, store, sim_data + i * 8)?);
+            }
+            Ok(())
+        };
+
+    let mut rows: Vec<f64> = Vec::with_capacity((n_rows * n_reals) as usize);
+    // Row 0 at the start time.
+    emit_row(store, &mut rows, start)?;
+
+    // No states: nothing to integrate — just evaluate outputs on the grid.
+    if n_states == 0 {
+        for row in 1..n_rows {
+            let time = if row == n_steps { stop } else { start + row as f64 * h };
+            emit_row(store, &mut rows, time)?;
+        }
+        return Ok(rows);
+    }
+
+    // Initial y, y' from SimData. For an explicit ODE the consistent initial
+    // derivative is exactly f(t0, y0), which `functionODE` (already called by
+    // `emit_row`) has written into the derivative slots — so INFO(11)=0.
+    let mut y: Vec<f64> = (0..n_states)
+        .map(|i| read_f64(memory, store, states_base + (i as u32) * 8))
+        .collect::<Result<_>>()?;
+    let mut yp: Vec<f64> = (0..n_states)
+        .map(|i| read_f64(memory, store, ders_base + (i as u32) * 8))
+        .collect::<Result<_>>()?;
+
+    // --- DASKR work arrays / options (dense, numerical Jacobian). ---
+    let neq = n_states as i32;
+    let nrt = 0i32;
+    let mut info = [0i32; 24]; // all defaults: dense direct method, numerical Jac,
+                               // scalar tolerances, interpolating output, no IC calc.
+    let tol = if model.tolerance > 0.0 { model.tolerance } else { 1e-6 };
+    let mut rtol = [tol];
+    let mut atol = [tol];
+    // Dense direct method storage (MAXORD=5): RWORK base 60 + 9*NEQ + NEQ^2,
+    // IWORK base 40 + NEQ; pad generously.
+    let lrw = (60 + 9 * neq + neq * neq + 3 * nrt + 64) as usize;
+    let liw = (40 + neq + 64) as usize;
+    let mut rwork = vec![0.0f64; lrw];
+    let mut iwork = vec![0i32; liw];
+    let mut rpar = [0.0f64];
+    let mut ipar = [0i32];
+    let mut jroot = [0i32];
+    let mut idid = 0i32;
+    let mut t = start;
+
+    // Install the wasm context for the residual callback.
+    let mut ctx = ResCtx {
+        store: store as *mut Store,
+        memory: *memory,
+        f_ode: f_ode.clone(),
+        sim_data,
+        states_base,
+        ders_base,
+        n_states,
+        nfe: 0,
+        err: None,
+    };
+    let _guard = ResCtxGuard;
+    RES_CTX.with(|c| c.set(&mut ctx as *mut ResCtx));
+
+    for row in 1..n_rows {
+        let mut tout = if row == n_steps { stop } else { start + row as f64 * h };
+        // DASKR integrates past TOUT and interpolates back to T = TOUT
+        // (INFO(3)=0), updating t, y, yp in place. INFO(1) stays 0 across
+        // continuation calls (DASKR tracks state in rwork/iwork).
+        unsafe {
+            solver::ddaskr(
+                dassl_res,
+                neq,
+                &mut t,
+                y.as_mut_ptr(),
+                yp.as_mut_ptr(),
+                &mut tout,
+                info.as_mut_ptr(),
+                rtol.as_mut_ptr(),
+                atol.as_mut_ptr(),
+                &mut idid,
+                rwork.as_mut_ptr(),
+                lrw as i32,
+                iwork.as_mut_ptr(),
+                liw as i32,
+                rpar.as_mut_ptr(),
+                ipar.as_mut_ptr(),
+                solver::dummy_jacd,
+                solver::dummy_jack,
+                solver::dummy_psol,
+                solver::dummy_rt,
+                nrt,
+                jroot.as_mut_ptr(),
+            );
+        }
+        // Surface a wasm error captured in the callback, then DASSL failures.
+        if let Some(e) = ctx.err.take() {
+            return Err(e.context(format!("in DASSL residual at t={t}")));
+        }
+        if idid < 0 {
+            bail!("CodegenWasmJit: DASSL (daskr) failed at t={t} (target {tout}), IDID={idid}");
+        }
+        // t == tout now; write the interpolated state back and emit the row.
+        for i in 0..n_states {
+            write_f64(memory, store, states_base + (i as u32) * 8, y[i])?;
+        }
+        emit_row(store, &mut rows, tout)?;
+    }
+
+    if std::env::var("OMC_WASM_SIM_BENCH").is_ok() {
+        eprintln!("wasm-jit sim [dassl] {} residual evals, {} steps", ctx.nfe, iwork.get(10).copied().unwrap_or(0));
     }
     Ok(rows)
 }
