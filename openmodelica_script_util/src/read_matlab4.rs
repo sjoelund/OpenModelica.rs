@@ -14,8 +14,17 @@
 #![allow(non_snake_case)]
 
 use std::cmp::Ordering;
+#[cfg(not(target_arch = "wasm32"))]
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
+
+// The result file is read lazily via `Read + Seek`. Natively that is an
+// `std::fs::File`; on wasm (no filesystem) the file is loaded from the in-memory
+// VFS into an `std::io::Cursor`, which offers the same `Read + Seek`.
+#[cfg(not(target_arch = "wasm32"))]
+type Src = File;
+#[cfg(target_arch = "wasm32")]
+type Src = std::io::Cursor<Vec<u8>>;
 
 /// One entry from the `name`/`description`/`dataInfo` metadata tables.
 #[derive(Clone)]
@@ -30,7 +39,7 @@ pub struct MatVariable {
 
 /// An opened MATLAB v4 result file.
 pub struct MatReader {
-    file: File,
+    file: Src,
     /// Variable/parameter descriptors, sorted by [`iws_cmp`] for binary search.
     pub allInfo: Vec<MatVariable>,
     pub params: Vec<f64>,
@@ -126,13 +135,26 @@ fn mat_element_length(ty: i32) -> Option<usize> {
     }
 }
 
-fn read_exact_vec(file: &mut File, n: usize) -> Result<Vec<u8>, String> {
+/// Duplicate the reader source: a second OS handle natively (`try_clone`), a
+/// copy of the in-memory bytes on wasm (`Cursor` has no `try_clone`). The caller
+/// parses metadata with one copy and keeps the other for lazy `seek`+read of the
+/// data payload.
+#[cfg(not(target_arch = "wasm32"))]
+fn clone_src(f: &Src) -> Result<Src, String> {
+    f.try_clone().map_err(|e| e.to_string())
+}
+#[cfg(target_arch = "wasm32")]
+fn clone_src(f: &Src) -> Result<Src, String> {
+    Ok(f.clone())
+}
+
+fn read_exact_vec(file: &mut Src, n: usize) -> Result<Vec<u8>, String> {
     let mut buf = vec![0u8; n];
     file.read_exact(&mut buf).map_err(|e| e.to_string())?;
     Ok(buf)
 }
 
-fn read_header(file: &mut File) -> Result<MHeader, String> {
+fn read_header(file: &mut Src) -> Result<MHeader, String> {
     let buf = read_exact_vec(file, 20)?;
     let g = |i: usize| u32::from_le_bytes([buf[i], buf[i + 1], buf[i + 2], buf[i + 3]]);
     Ok(MHeader {
@@ -145,7 +167,7 @@ fn read_header(file: &mut File) -> Result<MHeader, String> {
 }
 
 /// Read `n` character elements (stored either as doubles or raw bytes).
-fn read_chars(ty: i32, n: usize, file: &mut File) -> Result<Vec<u8>, String> {
+fn read_chars(ty: i32, n: usize, file: &mut Src) -> Result<Vec<u8>, String> {
     let p = (ty % 100) / 10;
     if p == 0 {
         let raw = read_exact_vec(file, n * 8)?;
@@ -162,7 +184,7 @@ fn read_chars(ty: i32, n: usize, file: &mut File) -> Result<Vec<u8>, String> {
     }
 }
 
-fn read_int32(ty: i32, n: usize, file: &mut File) -> Result<Vec<i32>, String> {
+fn read_int32(ty: i32, n: usize, file: &mut Src) -> Result<Vec<i32>, String> {
     let p = (ty % 100) / 10;
     if p == 0 {
         let raw = read_exact_vec(file, n * 8)?;
@@ -185,7 +207,7 @@ fn read_int32(ty: i32, n: usize, file: &mut File) -> Result<Vec<i32>, String> {
     }
 }
 
-fn read_doubles(ty: i32, n: usize, file: &mut File) -> Result<Vec<f64>, String> {
+fn read_doubles(ty: i32, n: usize, file: &mut Src) -> Result<Vec<f64>, String> {
     let p = (ty % 100) / 10;
     if n == 0 {
         return Ok(Vec::new());
@@ -234,12 +256,17 @@ impl MatReader {
     /// Open and parse `filename`. Returns a textual error on the first problem,
     /// mirroring `omc_new_matlab4_reader`.
     pub fn open(filename: &str) -> Result<MatReader, String> {
+        #[cfg(not(target_arch = "wasm32"))]
         let mut file = File::open(filename).map_err(|e| e.to_string())?;
+        #[cfg(target_arch = "wasm32")]
+        let mut file = std::io::Cursor::new(
+            openmodelica_vfs::read(filename).ok_or_else(|| format!("No such file: {filename}"))?,
+        );
         const MATRIX_NAMES: [&str; 6] =
             ["Aclass", "name", "description", "dataInfo", "data_1", "data_2"];
 
         let mut reader = MatReader {
-            file: file.try_clone().map_err(|e| e.to_string())?,
+            file: clone_src(&file)?,
             allInfo: Vec::new(),
             params: Vec::new(),
             nparam: 0,

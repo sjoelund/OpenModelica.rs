@@ -6,7 +6,21 @@
 // `read_matlab4.rs`; `SimulationResults.rs` dispatches between the three
 // by file suffix exactly like `SimulationResultsImpl__openFile`.
 
+#[cfg(not(target_arch = "wasm32"))]
 use std::fs;
+
+/// Read a result file's bytes: the OS filesystem natively, or the in-memory VFS
+/// on wasm (where the simulation wrote its result there).
+fn read_result_bytes(filename: &str) -> Result<Vec<u8>, String> {
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::read(filename).ok_or_else(|| format!("No such file: {filename}"))
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        fs::read(filename).map_err(|e| e.to_string())
+    }
+}
 
 // ─────────────────────────────────── CSV ──────────────────────────────────
 
@@ -27,7 +41,7 @@ impl CsvReader {
     /// `read_csv`: returns `Err` with a short reason wherever the C reader
     /// returns NULL (caller turns that into the scripting error message).
     pub fn open(filename: &str) -> Result<CsvReader, String> {
-        let bytes = fs::read(filename).map_err(|e| e.to_string())?;
+        let bytes = read_result_bytes(filename)?;
         // Optional `"sep=X"` first line selects the cell delimiter; the
         // data then starts at offset 8 (`"sep=X"␊`), as in read_csv.c.
         let (delim, offset) = if bytes.len() >= 8 && bytes.starts_with(b"\"sep=") {
@@ -186,7 +200,7 @@ pub enum PltVal {
 
 impl PltReader {
     pub fn open(filename: &str) -> Result<PltReader, String> {
-        let bytes = fs::read(filename).map_err(|e| e.to_string())?;
+        let bytes = read_result_bytes(filename)?;
         // .plt is ASCII; tolerate stray non-UTF8 bytes instead of failing.
         let text = String::from_utf8_lossy(&bytes);
         Ok(PltReader { lines: text.lines().map(str::to_owned).collect() })

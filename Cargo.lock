@@ -2174,6 +2174,7 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
+ "openmodelica_vfs",
  "zip",
 ]
 
