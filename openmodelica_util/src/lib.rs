@@ -32,7 +32,6 @@ pub mod Lapack;
 pub mod LexerJSON;
 pub mod MMath;
 pub mod NFLookupTree;
-// dlopens libOMSimulator; no dynamic loading on wasm.
 #[cfg(not(target_arch = "wasm32"))]
 pub mod OMSimulatorExt;
 pub mod Print;
@@ -60,8 +59,6 @@ pub mod Util;
 pub mod Vector;
 pub mod ZeroMQ;
 pub mod Globals;
-// Native dynamic loading (dlopen) for the `-d=gen` C/.so pipeline; the wasm
-// build has no dlopen, so a stub reports the loader unavailable.
 #[cfg(not(target_arch = "wasm32"))]
 pub mod dynload;
 #[cfg(target_arch = "wasm32")]

@@ -1803,6 +1803,43 @@ fn emit_scripting_api_qt(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std:
     Ok(())
 }
 
+/// Top-level modules that bind native C libraries with no wasm target. On the
+/// wasm32 build of omc they are either dropped (nothing in their own crate
+/// references them) or replaced by a hand-written `*_wasm.rs` stub exposing the
+/// same public surface (when generated code in the same crate calls into them).
+/// The native build is unaffected. `Some(stub)` → native real file +
+/// `#[cfg(wasm32)] #[path = stub]`; `None` → native-only, absent on wasm.
+const WASM_GATED_TOP_MODULES: &[(&str, Option<&str>)] = &[
+    // dlopen loader for the `-d=gen` C/.so function-eval pipeline; wasm evaluates
+    // through the in-process wasm JIT instead.
+    ("dynload", Some("dynload_wasm.rs")),
+    // libffi dynamic call for `external "C"` compile-time evaluation.
+    ("FFI", Some("FFI_wasm.rs")),
+    // dlopens libOMSimulator; only reached from openmodelica_backend_tools.
+    ("OMSimulatorExt", None),
+];
+
+/// Emit a top-level `pub mod NAME;`, cfg-gating the native-only modules listed
+/// in [`WASM_GATED_TOP_MODULES`] so the wasm build drops or stubs them.
+fn emit_top_mod_decl(out: &mut String, name: &str) {
+    match WASM_GATED_TOP_MODULES.iter().find(|(m, _)| *m == name) {
+        Some((_, Some(stub))) => {
+            writeln!(out, "#[cfg(not(target_arch = \"wasm32\"))]").unwrap();
+            writeln!(out, "pub mod {name};").unwrap();
+            writeln!(out, "#[cfg(target_arch = \"wasm32\")]").unwrap();
+            writeln!(out, "#[path = \"{stub}\"]").unwrap();
+            writeln!(out, "pub mod {name};").unwrap();
+        }
+        Some((_, None)) => {
+            writeln!(out, "#[cfg(not(target_arch = \"wasm32\"))]").unwrap();
+            writeln!(out, "pub mod {name};").unwrap();
+        }
+        None => {
+            writeln!(out, "pub mod {name};").unwrap();
+        }
+    }
+}
+
 fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: &str) -> String {
     let mut out = String::new();
     writeln!(out, "// Auto-generated lib file").unwrap();
@@ -1823,7 +1860,7 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
         match node.kind {
             NodeKind::Class(MM::Class{restriction: Absyn::Restriction::R_PACKAGE, ..}) |
             NodeKind::Class(MM::Class{restriction: Absyn::Restriction::R_UNIONTYPE, ..}) => {
-                writeln!(out, "pub mod {name};").unwrap();
+                emit_top_mod_decl(&mut out, name);
             },
             _ => continue,
         }
@@ -1848,7 +1885,7 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
     // their file is present in this crate's source directory.
     for (file, module) in [("dynload.rs", "dynload"), ("DynLoadExt.rs", "DynLoadExt")] {
         if std::path::Path::new(&format!("{this_dir}/{file}")).exists() {
-            writeln!(out, "pub mod {module};").unwrap();
+            emit_top_mod_decl(&mut out, module);
         }
     }
     // Hand-written port of the `NBASSC` `external "C"` bodies

@@ -1,6 +1,10 @@
 // Auto-generated lib file
 #![recursion_limit = "1024"]
 pub mod BaseModelica;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod FFI;
+#[cfg(target_arch = "wasm32")]
+#[path = "FFI_wasm.rs"]
 pub mod FFI;
 pub mod NFAlgorithm;
 pub mod NFArrayConnections;
