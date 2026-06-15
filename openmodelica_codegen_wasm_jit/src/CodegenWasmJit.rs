@@ -124,9 +124,25 @@ impl SimLayout {
         }
     }
 
-    /// Number of f64 in a result row: `time` + all real variables.
+    /// Number of f64 in the real part of a result row: `time` + all real
+    /// variables (states | derivatives | algebraics).
     fn n_reals_row(&self) -> u32 {
         1 + 2 * self.n_states + self.n_real_alg
+    }
+    /// Count of integer algebraic variables (the slots between `int_off` and
+    /// `iparam_off`).
+    fn n_int_alg(&self) -> u32 {
+        (self.iparam_off - self.int_off) / 4
+    }
+    /// Count of boolean algebraic variables (between `bool_off` and `bparam_off`).
+    fn n_bool_alg(&self) -> u32 {
+        (self.bparam_off - self.bool_off) / 4
+    }
+    /// Total f64 columns in a result row: the real part followed by the integer
+    /// and boolean algebraic variables (captured per row, as f64), so a varying
+    /// Integer/Boolean is recorded over time rather than only at the end.
+    fn n_row_total(&self) -> u32 {
+        self.n_reals_row() + self.n_int_alg() + self.n_bool_alg()
     }
 }
 
@@ -371,15 +387,37 @@ fn kind_from_slot(off: u32, wty: WTy, negate: bool, heap: bool, layout: &SimLayo
         // realVars region (states | derivatives | algebraics) -> data_2 column.
         return Some(ResultKind::Column { col: 1 + (off - REAL_OFF) / 8, negate });
     }
-    if off >= layout.rparam_off && off < layout.str_off {
-        // Real parameters, and all integer/boolean slots (params *and*
-        // algebraics). The integer/boolean trajectory is not captured per row,
-        // so these read their final SimData value into data_1 — correct for the
-        // constant integer/boolean variables typical of physical models (e.g.
-        // visualization colors); a varying one would show only its final value.
+    // Integer / boolean *algebraic* variables are captured per row (as f64) in
+    // the columns after the real part, so a varying one is recorded over time.
+    if off >= layout.int_off && off < layout.iparam_off {
+        let col = layout.n_reals_row() + (off - layout.int_off) / 4;
+        return Some(ResultKind::Column { col, negate });
+    }
+    if off >= layout.bool_off && off < layout.bparam_off {
+        let col = layout.n_reals_row() + layout.n_int_alg() + (off - layout.bool_off) / 4;
+        return Some(ResultKind::Column { col, negate });
+    }
+    // Real / integer / boolean *parameters* are time-invariant -> data_1.
+    let is_param = (off >= layout.rparam_off && off < layout.int_off)
+        || (off >= layout.iparam_off && off < layout.bool_off)
+        || (off >= layout.bparam_off && off < layout.str_off);
+    if is_param {
         return Some(ResultKind::Param { off, wty, negate });
     }
     None // string slots
+}
+
+/// Inverse of the `Column` assignment in [`kind_from_slot`]: the SimData byte
+/// offset a result-buffer column reads from.
+fn col_to_off(col: u32, layout: &SimLayout) -> u32 {
+    let nr = layout.n_reals_row();
+    if col < nr {
+        REAL_OFF + (col - 1) * 8
+    } else if col < nr + layout.n_int_alg() {
+        layout.int_off + (col - nr) * 4
+    } else {
+        layout.bool_off + (col - nr - layout.n_int_alg()) * 4
+    }
 }
 
 /// Build the cref->slot map and the result-variable list from the model's
@@ -545,7 +583,7 @@ fn build_var_map(
     let referenced: std::collections::HashSet<u32> = result_vars
         .iter()
         .filter_map(|v| match &v.kind {
-            ResultKind::Column { col, .. } => Some(REAL_OFF + (*col - 1) * 8),
+            ResultKind::Column { col, .. } => Some(col_to_off(*col, layout)),
             ResultKind::Param { off, .. } => Some(*off),
             _ => None,
         })
@@ -1143,10 +1181,13 @@ fn build_simulate(layout: &SimLayout, eqfn: &EqFnIdx) -> we::Function {
     const BUF: u32 = 4;
     const H: u32 = 5;
     const ROW: u32 = 6;
+    const DEST: u32 = 7;
 
     let n_reals = layout.n_reals_row();
+    let n_total = layout.n_row_total();
     let n_states = layout.n_states;
-    let mut f = we::Function::new([(1, we::ValType::I32), (1, we::ValType::F64), (1, we::ValType::I32)]);
+    // locals: BUF(i32), H(f64), ROW(i32), DEST(i32)
+    let mut f = we::Function::new([(1, we::ValType::I32), (1, we::ValType::F64), (2, we::ValType::I32)]);
     use we::Instruction as I;
 
     // functionParameters(sim_data); functionInitialEquations(sim_data)
@@ -1155,11 +1196,11 @@ fn build_simulate(layout: &SimLayout, eqfn: &EqFnIdx) -> we::Function {
     f.instruction(&I::LocalGet(SIM_DATA));
     f.instruction(&I::Call(eqfn.initial));
 
-    // buf = rt_alloc((n_steps + 1) * n_reals * 8)
+    // buf = rt_alloc((n_steps + 1) * n_total * 8)
     f.instruction(&I::LocalGet(N_STEPS));
     f.instruction(&I::I32Const(1));
     f.instruction(&I::I32Add);
-    f.instruction(&I::I32Const((n_reals * 8) as i32));
+    f.instruction(&I::I32Const((n_total * 8) as i32));
     f.instruction(&I::I32Mul);
     f.instruction(&I::Call(rt_index("rt_alloc")));
     f.instruction(&I::LocalSet(BUF));
@@ -1197,12 +1238,33 @@ fn build_simulate(layout: &SimLayout, eqfn: &EqFnIdx) -> we::Function {
     f.instruction(&I::LocalGet(SIM_DATA));
     f.instruction(&I::Call(eqfn.algebraics));
 
-    // rt_sim_store_row(buf, row, sim_data, n_reals)
+    // Store the row at dest = buf + row * n_total * 8:
+    //   - copy the real part [time | realVars] (contiguous from sim_data[0])
+    //   - then each integer / boolean algebraic slot, converted i32 -> f64
     f.instruction(&I::LocalGet(BUF));
     f.instruction(&I::LocalGet(ROW));
+    f.instruction(&I::I32Const((n_total * 8) as i32));
+    f.instruction(&I::I32Mul);
+    f.instruction(&I::I32Add);
+    f.instruction(&I::LocalSet(DEST));
+    // memory.copy(dest, sim_data, n_reals*8)
+    f.instruction(&I::LocalGet(DEST));
     f.instruction(&I::LocalGet(SIM_DATA));
-    f.instruction(&I::I32Const(n_reals as i32));
-    f.instruction(&I::Call(rt_index("rt_sim_store_row")));
+    f.instruction(&I::I32Const((n_reals * 8) as i32));
+    f.instruction(&I::MemoryCopy { src_mem: 0, dst_mem: 0 });
+    let store_islot = |f: &mut we::Function, src_off: u32, dst_col: u32| {
+        f.instruction(&I::LocalGet(DEST));
+        f.instruction(&I::LocalGet(SIM_DATA));
+        f.instruction(&I::I32Load(crate::CodegenWasmJitFunctions::mem_arg(src_off, 2)));
+        f.instruction(&I::F64ConvertI32S);
+        f.instruction(&I::F64Store(crate::CodegenWasmJitFunctions::mem_arg(dst_col * 8, 3)));
+    };
+    for i in 0..layout.n_int_alg() {
+        store_islot(&mut f, layout.int_off + i * 4, n_reals + i);
+    }
+    for j in 0..layout.n_bool_alg() {
+        store_islot(&mut f, layout.bool_off + j * 4, n_reals + layout.n_int_alg() + j);
+    }
 
     // if row >= n_steps: break (exit the block)
     f.instruction(&I::LocalGet(ROW));

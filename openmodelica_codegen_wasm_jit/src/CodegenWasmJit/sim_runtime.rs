@@ -155,12 +155,39 @@ pub(super) fn take_compiled_model(model: &SimModel) -> Result<wasmtime::Module> 
 
 /// Result of a simulation run.
 pub(super) struct RunResult {
-    /// Row-major trajectory: `n_rows * n_reals` f64, each row `[time, realVars…]`.
+    /// Row-major trajectory: `n_rows * n_reals` f64, each row
+    /// `[time, realVars…, intAlg…, boolAlg…]` (integer/boolean algebraics
+    /// captured per row, as f64).
     pub(super) rows: Vec<f64>,
-    /// Values per row (`1 + 2*nStates + nAlgs`).
+    /// Columns per row = `SimLayout::n_row_total()`.
     pub(super) n_reals: u32,
     /// Parameter values (in result `Param` order), read from `SimData` after the run.
     pub(super) params: Vec<f64>,
+}
+
+/// Read one little-endian i32 from wasm linear memory at byte address `addr`.
+fn read_i32(mem: &wasmtime::Memory, store: &Store, addr: u32) -> Result<i32> {
+    let mut b = [0u8; 4];
+    mem.read(store, addr as usize, &mut b).map_err(|e| anyhow!("CodegenWasmJit: mem read: {e}"))?;
+    Ok(i32::from_le_bytes(b))
+}
+
+/// Append one trajectory row to `rows`: the real part `[time | realVars]`
+/// followed by the integer and boolean algebraic slots (converted to f64),
+/// matching `SimLayout::n_row_total()` and the column layout `kind_from_slot`
+/// assigns. Used by the host-driven drivers; the in-wasm `simulate` emits the
+/// same layout.
+fn capture_row(mem: &wasmtime::Memory, store: &Store, rows: &mut Vec<f64>, sim_data: u32, layout: &super::SimLayout) -> Result<()> {
+    for i in 0..layout.n_reals_row() {
+        rows.push(read_f64(mem, store, sim_data + i * 8)?);
+    }
+    for i in 0..layout.n_int_alg() {
+        rows.push(read_i32(mem, store, sim_data + layout.int_off + i * 4)? as f64);
+    }
+    for j in 0..layout.n_bool_alg() {
+        rows.push(read_i32(mem, store, sim_data + layout.bool_off + j * 4)? as f64);
+    }
+    Ok(())
 }
 
 type Store = wasmtime::Store<()>;
@@ -227,7 +254,7 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
     let rt_alloc = wt(rt_inst.get_typed_func::<u32, u32>(&mut store, "rt_alloc"))?;
 
     let layout = &model.layout;
-    let n_reals = layout.n_reals_row();
+    let n_reals = layout.n_row_total(); // total result-row width (reals + int/bool algebraics)
     let n_steps = model.n_intervals;
     let n_rows = n_steps + 1;
 
@@ -345,10 +372,7 @@ fn run_host(
         write_f64(memory, store, sim_data + TIME_OFF, time)?;
         wt(f_ode.call(&mut *store, sim_data))?;
         wt(f_alg.call(&mut *store, sim_data))?;
-        // Store the row: [time, realVars…] = first n_reals f64 of SimData.
-        for i in 0..n_reals {
-            rows.push(read_f64(memory, store, sim_data + i * 8)?);
-        }
+        capture_row(memory, store, &mut rows, sim_data, &model.layout)?;
         if row == n_steps {
             break;
         }
@@ -520,9 +544,7 @@ fn run_dassl(
             if let Some(t) = t {
                 output_wasm.set(output_wasm.get() + t.elapsed());
             }
-            for i in 0..n_reals {
-                rows.push(read_f64(memory, store, sim_data + i * 8)?);
-            }
+            capture_row(memory, store, rows, sim_data, &model.layout)?;
             Ok(())
         };
 
