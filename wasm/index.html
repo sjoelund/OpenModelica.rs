@@ -16,6 +16,13 @@
   .reply { color: #d4d4d4; }
   .err { color: #f48771; }
   .meta { color: #808080; font-style: italic; }
+  header { display: flex; align-items: center; gap: 12px; }
+  header .title { color: #4ec9b0; font-weight: 700; }
+  header .hint { color: #808080; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  header code { color: #ce9178; }
+  button { background: #0e639c; color: #fff; border: 0; border-radius: 3px; padding: 5px 12px; font: inherit; cursor: pointer; }
+  button:hover:not(:disabled) { background: #1177bb; }
+  button:disabled { background: #3a3a3a; color: #777; cursor: default; }
   form { display: flex; flex: 0 0 auto; border-top: 1px solid #333; background: #252526; }
   #prompt { color: #608b4e; padding: 8px 4px 8px 12px; }
   #input { flex: 1; background: transparent; border: 0; color: #d4d4d4; font: inherit; padding: 8px 12px 8px 4px; outline: none; }
@@ -23,9 +30,10 @@
 </head>
 <body>
 <header>
-  <b>OpenModelica</b> wasm — type an interactive command (e.g. <code>getVersion()</code>,
-  <code>loadString("model M end M;")</code>, <code>checkModel(M)</code>).
-  Compiler stdout/stderr is routed to the browser devtools console.
+  <span class="title">OpenModelica</span>
+  <button id="mslBtn" disabled>Load MSL</button>
+  <span class="hint">interactive command (e.g. <code>checkModel(M)</code>); after loading MSL try
+    <code>simulate(Modelica.Electrical.Analog.Examples.ChuaCircuit, stopTime=100)</code>. stdout/stderr → devtools console.</span>
 </header>
 <div id="log"></div>
 <form id="form" autocomplete="off">
@@ -34,11 +42,12 @@
 </form>
 
 <script type="module">
-import init, { omc_set_env, omc_init, omc_eval } from './pkg-web/OpenModelicaCompiler.js';
+import init, { omc_set_env, omc_init, omc_eval, omc_vfs_load_zip } from './pkg-web/OpenModelicaCompiler.js';
 
 const log = document.getElementById('log');
 const input = document.getElementById('input');
 const form = document.getElementById('form');
+const mslBtn = document.getElementById('mslBtn');
 
 function line(text, cls) {
   const div = document.createElement('div');
@@ -59,8 +68,38 @@ function line(text, cls) {
   line('Ready. ' + omc_eval('getVersion()'), 'meta');
   input.disabled = false;
   input.placeholder = '';
+  mslBtn.disabled = false;
   input.focus();
 })().catch((e) => line('Startup error: ' + e, 'err'));
+
+// Fetch the Modelica Standard Library archive served next to this page, unzip it
+// into the VFS, point MODELICAPATH at it, and load it. One fetch stages the whole
+// library (Modelica + ModelicaServices + Complex).
+mslBtn.addEventListener('click', async () => {
+  mslBtn.disabled = true;
+  const t0 = performance.now();
+  try {
+    line('Fetching libs/msl.zip…', 'meta');
+    const resp = await fetch('libs/msl.zip');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const buf = new Uint8Array(await resp.arrayBuffer());
+    line(`Unzipping ${(buf.length / 1048576).toFixed(1)} MB into the VFS…`, 'meta');
+    const n = omc_vfs_load_zip('/lib', buf);
+    omc_eval('setModelicaPath("/lib")');
+    line(`Staged ${n} files. Loading Modelica…`, 'meta');
+    const ok = omc_eval('loadModel(Modelica)');
+    const dt = ((performance.now() - t0) / 1000).toFixed(1);
+    if (ok.trim() === 'true') {
+      line(`MSL loaded (${dt}s). Try: simulate(Modelica.Electrical.Analog.Examples.ChuaCircuit, stopTime=100)`, 'meta');
+    } else {
+      line('loadModel(Modelica) returned ' + ok + ' — ' + omc_eval('getErrorString()'), 'err');
+      mslBtn.disabled = false;
+    }
+  } catch (e) {
+    line('MSL load failed: ' + e, 'err');
+    mslBtn.disabled = false;
+  }
+});
 
 form.addEventListener('submit', (ev) => {
   ev.preventDefault();
