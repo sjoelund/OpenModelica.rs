@@ -55,7 +55,7 @@ zmq = "0.10"
 # -d=gen. wasmtime errors are wrapped with anyhow::anyhow! (its re-exported
 # anyhow does not unify with ours under these features).
 wasm-encoder = "0.252"
-wasmtime = { version = "45", default-features = false, features = ["std", "cranelift", "runtime"] }
+wasmtime = { version = "45", default-features = false, features = ["std", "cranelift", "runtime", "parallel-compilation"] }
 openmodelica_codegen_wasm_jit = {path = "openmodelica_codegen_wasm_jit"}
 # Cycle-collecting garbage collector for reference cycles closed through
 # mutable cells (Mutable/Pointer). Only the `unsync` half is used: MetaModelica

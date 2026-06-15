@@ -20,6 +20,7 @@
 
 use anyhow::{Result, anyhow, bail};
 use std::cell::Cell;
+use std::sync::OnceLock;
 use std::time::Instant;
 
 use super::{REAL_OFF, ResultKind, SimModel, TIME_OFF};
@@ -28,6 +29,129 @@ use crate::CodegenWasmJitFunctions::runtime::add_host_builtins;
 
 /// The runtime module, embedded the same way the function half embeds it.
 static RUNTIME_WASM: &[u8] = include_bytes!("../runtime.wasm");
+
+/// One process-wide wasmtime `Engine`, so the (model-independent) runtime module
+/// can be JIT-compiled once and reused, and so model modules built on background
+/// threads share the same engine the run instantiates them on.
+pub(super) fn sim_engine() -> &'static wasmtime::Engine {
+    static ENGINE: OnceLock<wasmtime::Engine> = OnceLock::new();
+    ENGINE.get_or_init(|| {
+        let mut cfg = wasmtime::Config::new();
+        // Compile module functions across threads (off by default with
+        // default-features=false) — ~4x faster module compilation here.
+        cfg.parallel_compilation(true);
+        // Experimental opt-level override; default is wasmtime's `Speed`.
+        match std::env::var("OMC_WASM_OPT").as_deref() {
+            Ok("none") => { cfg.cranelift_opt_level(wasmtime::OptLevel::None); }
+            Ok("speed_and_size") => { cfg.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize); }
+            _ => {}
+        }
+        wasmtime::Engine::new(&cfg).expect("wasm-jit: failed to build wasmtime engine")
+    })
+}
+
+/// The compiled runtime module, obtained once per process and shared across all
+/// simulations. The runtime module is fixed, so its compiled form is cached
+/// **on disk** (AOT): the first process to need it JIT-compiles and
+/// `serialize`s it; every later process `deserialize`s the artifact in
+/// microseconds. `deserialize` validates the artifact against the current
+/// wasmtime version / engine config / target, so a stale or incompatible cache
+/// is rejected and we transparently fall back to JIT (then refresh the cache).
+pub(super) fn runtime_module() -> Result<&'static wasmtime::Module> {
+    static MODULE: OnceLock<std::result::Result<wasmtime::Module, String>> = OnceLock::new();
+    MODULE
+        .get_or_init(|| load_or_compile_runtime().map_err(|e| format!("{e:?}")))
+        .as_ref()
+        .map_err(|e| anyhow!("CodegenWasmJit: obtaining runtime module: {e}"))
+}
+
+/// Path of the on-disk AOT cache for the runtime module. Keyed by a hash of the
+/// runtime bytes + the engine opt-level so different builds/configs don't
+/// collide; `deserialize` itself is the authoritative compatibility guard.
+///
+/// Stored under the per-user OpenModelica home (`$HOME/.openmodelica/cache`,
+/// the same convention as `…/.openmodelica/binaries`): persistent across
+/// reboots and not shared between users (unlike a world-writable temp dir, where
+/// the sticky bit would stop other users refreshing it). Falls back to the
+/// system temp dir if `$HOME` is unset or the cache dir can't be created.
+fn runtime_cache_path() -> std::path::PathBuf {
+    use std::hash::{Hash, Hasher};
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    RUNTIME_WASM.len().hash(&mut h);
+    RUNTIME_WASM.hash(&mut h);
+    std::env::var("OMC_WASM_OPT").unwrap_or_default().hash(&mut h);
+    let key = h.finish();
+
+    let home = openmodelica_util::Settings::getHomeDir(false);
+    let dir = if home.is_empty() {
+        Some(std::env::temp_dir())
+    } else {
+        let d = std::path::Path::new(&*home).join(".openmodelica").join("cache");
+        std::fs::create_dir_all(&d).ok().map(|_| d)
+    };
+    let dir = dir.unwrap_or_else(std::env::temp_dir);
+    dir.join(format!("wasmjit-runtime-{key:016x}.cwasm"))
+}
+
+fn load_or_compile_runtime() -> Result<wasmtime::Module> {
+    let engine = sim_engine();
+    let path = runtime_cache_path();
+    // Try the AOT artifact first (microseconds). `deserialize_file` is unsafe
+    // because it trusts the artifact; it is one we produced under temp_dir, and
+    // wasmtime validates version/config compatibility (erroring otherwise).
+    if path.exists() {
+        if let Ok(m) = unsafe { wasmtime::Module::deserialize_file(engine, &path) } {
+            return Ok(m);
+        }
+        // Incompatible/corrupt cache (e.g. wasmtime upgrade): fall through to
+        // recompile and overwrite it below.
+    }
+    let module = wasmtime::Module::new(engine, RUNTIME_WASM).map_err(|e| anyhow!("{e:?}"))?;
+    // Best-effort: persist the compiled artifact for the next process. Write to
+    // a temp sibling then rename, so a concurrent reader never sees a partial file.
+    if let Ok(bytes) = module.serialize() {
+        let tmp = path.with_extension(format!("cwasm.tmp{}", std::process::id()));
+        if std::fs::write(&tmp, &bytes).is_ok() && std::fs::rename(&tmp, &path).is_err() {
+            let _ = std::fs::remove_file(&tmp);
+        }
+    }
+    Ok(module)
+}
+
+/// JIT-compile a generated model module on the shared engine. Called either on a
+/// background thread from `translateModel` (overlapping the rest of the OMC
+/// pipeline) or inline from `run` as a fallback.
+pub(super) fn compile_model_module(wasm: &[u8]) -> Result<wasmtime::Module> {
+    wasmtime::Module::new(sim_engine(), wasm).map_err(|e| anyhow!("{e:?}"))
+}
+
+/// Begin compiling the fixed runtime module on a background thread, once per
+/// process. The runtime module does not depend on the model, so this can be
+/// started as soon as we know a wasm-jit simulation is coming (`translateModel`
+/// entry) — it then compiles while `build_sim_model` generates the model bytes,
+/// and `run` only waits for whatever did not overlap. Idempotent.
+pub(super) fn start_runtime_compile() {
+    static STARTED: std::sync::Once = std::sync::Once::new();
+    STARTED.call_once(|| {
+        std::thread::spawn(|| {
+            let _ = runtime_module(); // populates the OnceLock cache
+        });
+    });
+}
+
+/// Take the model module compiled on the background thread `translateModel`
+/// spawned (joining it), or compile inline if there is no pending job.
+fn take_compiled_model(model: &SimModel) -> Result<wasmtime::Module> {
+    let job = model.compiled.lock().unwrap().take();
+    match job {
+        Some(handle) => match handle.join() {
+            Ok(Ok(m)) => Ok(m),
+            Ok(Err(e)) => bail!("CodegenWasmJit: background model-module compile failed: {e}"),
+            Err(_) => bail!("CodegenWasmJit: background model-module compile thread panicked"),
+        },
+        None => compile_model_module(&model.wasm),
+    }
+}
 
 /// Result of a simulation run.
 pub(super) struct RunResult {
@@ -58,18 +182,38 @@ fn write_f64(mem: &wasmtime::Memory, store: &mut Store, addr: u32, v: f64) -> Re
 }
 
 pub(super) fn run(model: &SimModel) -> Result<RunResult> {
-    let engine = wasmtime::Engine::default();
-    let mut linker = wasmtime::Linker::new(&engine);
+    let bench = std::env::var("OMC_WASM_SIM_BENCH").is_ok();
+    let engine = sim_engine();
+    let mut linker = wasmtime::Linker::new(engine);
     add_host_builtins(&mut linker)?;
 
-    let runtime_module = wt(wasmtime::Module::new(&engine, RUNTIME_WASM))?;
-    let model_module = wt(wasmtime::Module::new(&engine, &model.wasm))?;
+    // Phase 1: obtain the compiled modules. The runtime module is compiled once
+    // per process (cached); the model module was JIT-compiled on a background
+    // thread spawned by `translateModel` (overlapping the rest of the OMC
+    // pipeline) — here we just join it. If no background job is present (e.g. a
+    // direct call), compile inline as a fallback.
+    let t_compile = Instant::now();
+    let runtime_module = runtime_module()?;
+    let rt_compile = t_compile.elapsed();
+    let t_model = Instant::now();
+    let model_module = take_compiled_model(model)?;
+    let model_compile = t_model.elapsed();
+    let compile_time = t_compile.elapsed();
+    if bench {
+        eprintln!(
+            "wasm-jit sim: module fetch — runtime.wasm ({} KB) {:?} (cached/compiled), model.wasm ({} KB) {:?} (join/compile)",
+            RUNTIME_WASM.len() / 1024, rt_compile, model.wasm.len() / 1024, model_compile,
+        );
+    }
 
-    let mut store = wasmtime::Store::new(&engine, ());
-    let rt_inst = wt(linker.instantiate(&mut store, &runtime_module))?;
+    // Phase 2: instantiate (sharing the runtime's linear memory).
+    let t_inst = Instant::now();
+    let mut store = wasmtime::Store::new(engine, ());
+    let rt_inst = wt(linker.instantiate(&mut store, runtime_module))?;
     // The generated module imports the runtime's exports under module name "rt".
     wt(linker.instance(&mut store, "rt", rt_inst))?;
     let instance = wt(linker.instantiate(&mut store, &model_module))?;
+    let inst_time = t_inst.elapsed();
 
     let memory = rt_inst
         .get_memory(&mut store, "memory")
@@ -113,12 +257,14 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
         ),
     };
     let elapsed = t0.elapsed();
-    if std::env::var("OMC_WASM_SIM_BENCH").is_ok() {
+    if bench {
         eprintln!(
-            "wasm-jit sim [{}] {} intervals in {:?} ({:.2} us/interval)",
+            "wasm-jit sim [{}]: compile {:?} | instantiate {:?} | integrate {:?} ({} intervals, {:.2} us/interval)",
             driver_label,
-            n_steps,
+            compile_time,
+            inst_time,
             elapsed,
+            n_steps,
             elapsed.as_secs_f64() * 1e6 / (n_rows.max(1) as f64),
         );
     }
@@ -234,6 +380,11 @@ struct ResCtx {
     n_states: usize,
     /// Number of residual (right-hand-side) evaluations, for the bench line.
     nfe: u64,
+    /// Cumulative wall time spent inside the wasm `functionODE` call (the model
+    /// RHS, incl. any `SES_LINEAR` numerical probing). Only accumulated when
+    /// `bench` is set, to keep the hot path free of `Instant::now()`.
+    wasm_ode: std::time::Duration,
+    bench: bool,
     /// A wasm trap / memory error captured inside the callback, surfaced after
     /// `ddaskr` returns (the C-style callback cannot return a `Result`).
     err: Option<anyhow::Error>,
@@ -277,7 +428,7 @@ unsafe fn dassl_res(
         return;
     }
     let store = unsafe { &mut *ctx.store };
-    let mut bail = |ctx: &mut ResCtx, e: anyhow::Error| {
+    let bail = |ctx: &mut ResCtx, e: anyhow::Error| {
         ctx.err = Some(e);
         unsafe { *ires = -2 };
     };
@@ -292,7 +443,12 @@ unsafe fn dassl_res(
         }
     }
     // f(t, y) -> derivative slots.
-    if let Err(e) = ctx.f_ode.call(&mut *store, ctx.sim_data).map_err(|e| anyhow!("{e:?}")) {
+    let t_ode = if ctx.bench { Some(std::time::Instant::now()) } else { None };
+    let ode_res = ctx.f_ode.call(&mut *store, ctx.sim_data).map_err(|e| anyhow!("{e:?}"));
+    if let Some(t) = t_ode {
+        ctx.wasm_ode += t.elapsed();
+    }
+    if let Err(e) = ode_res {
         return bail(ctx, e);
     }
     ctx.nfe += 1;
@@ -339,14 +495,25 @@ fn run_dassl(
     let n_steps = n_rows - 1;
     let h = if n_steps == 0 { 0.0 } else { (stop - start) / n_steps as f64 };
 
+    let bench = std::env::var("OMC_WASM_SIM_BENCH").is_ok();
+    // Cumulative wasm time spent emitting output rows (functionODE +
+    // functionAlgebraics at each communication point), kept separate from the
+    // RES-callback wasm time so the bench can attribute the integrate phase to
+    // RES / output / daskr-core.
+    let output_wasm = std::cell::Cell::new(std::time::Duration::ZERO);
+
     // Emit one result row (`[time, realVars…]`) from the current SimData, after
     // setting `time` and recomputing `functionODE`/`functionAlgebraics` so the
     // reported derivatives and algebraics are consistent with the states.
     let emit_row =
         |store: &mut Store, rows: &mut Vec<f64>, time: f64| -> Result<()> {
             write_f64(memory, store, sim_data + TIME_OFF, time)?;
+            let t = if bench { Some(std::time::Instant::now()) } else { None };
             wt(f_ode.call(&mut *store, sim_data))?;
             wt(f_alg.call(&mut *store, sim_data))?;
+            if let Some(t) = t {
+                output_wasm.set(output_wasm.get() + t.elapsed());
+            }
             for i in 0..n_reals {
                 rows.push(read_f64(memory, store, sim_data + i * 8)?);
             }
@@ -406,6 +573,8 @@ fn run_dassl(
         ders_base,
         n_states,
         nfe: 0,
+        wasm_ode: std::time::Duration::ZERO,
+        bench,
         err: None,
     };
     let _guard = ResCtxGuard;
@@ -456,8 +625,21 @@ fn run_dassl(
         emit_row(store, &mut rows, tout)?;
     }
 
-    if std::env::var("OMC_WASM_SIM_BENCH").is_ok() {
-        eprintln!("wasm-jit sim [dassl] {} residual evals, {} steps", ctx.nfe, iwork.get(10).copied().unwrap_or(0));
+    if ctx.bench {
+        let nst = iwork.get(10).copied().unwrap_or(0); // IWORK(11) = number of steps
+        let nje = iwork.get(12).copied().unwrap_or(0);  // IWORK(13) = number of Jacobian evals
+        eprintln!(
+            "wasm-jit sim [dassl] DASKR stats: {nst} steps, {} residual evals (={:.1}/step), {nje} Jacobian evals",
+            ctx.nfe,
+            ctx.nfe as f64 / (nst.max(1) as f64),
+        );
+        eprintln!(
+            "wasm-jit sim [dassl] integrate breakdown: RES wasm {:?} ({:.2} us/eval) | output wasm {:?} ({} pts) | daskr core (host, rest)",
+            ctx.wasm_ode,
+            ctx.wasm_ode.as_secs_f64() * 1e6 / (ctx.nfe.max(1) as f64),
+            output_wasm.get(),
+            n_rows,
+        );
     }
     Ok(rows)
 }

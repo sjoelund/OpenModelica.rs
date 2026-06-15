@@ -173,6 +173,10 @@ struct SimModel {
     method: String,
     /// Relative/absolute tolerance for the adaptive integrators (DASSL).
     tolerance: f64,
+    /// Background JIT job for the model module, spawned by [`translateModel`] so
+    /// the (cranelift) compile overlaps the rest of the OMC pipeline instead of
+    /// landing on `runSimulation`'s critical path. `runSimulation` joins it.
+    compiled: Mutex<Option<std::thread::JoinHandle<Result<wasmtime::Module, String>>>>,
 }
 
 /// Process-wide table of prepared models, keyed by file-name prefix. Populated
@@ -193,6 +197,11 @@ fn sim_models() -> &'static Mutex<HashMap<String, Arc<SimModel>>> {
 /// machinery for the C target. Errors are fatal (a panic naming the reason),
 /// matching `CodegenWasmJitFunctions.translateFunctions`.
 pub fn translateModel(simCode: SimCode::SimCode) {
+    // The runtime module is fixed and model-independent: start compiling it now,
+    // on a background thread, so it overlaps the model-bytes generation in
+    // `build_sim_model` below (and is cached for the run). Nothing else runs
+    // between here and `runSimulation`, so this is the earliest useful point.
+    sim_runtime::start_runtime_compile();
     let prefix = simCode.fileNamePrefix.to_string();
     let _ = std::fs::remove_file(format!("{prefix}.wasm"));
     match build_sim_model(&simCode) {
@@ -239,11 +248,21 @@ fn run_simulation_inner(prefix: &str, result_file: &str, _simflags: &str) -> Res
         .get(prefix)
         .cloned()
         .ok_or_else(|| anyhow!("no prepared wasm-jit model for `{prefix}` (translateModel not run?)"))?;
-    if model.output_format != "mat" {
-        bail!("CodegenWasmJit: only the `mat` output format is supported (got `{}`)", model.output_format);
+    // `empty` runs the integration but writes no result file — useful for
+    // benchmarking the solver in isolation from the `.mat` writer.
+    match model.output_format.as_str() {
+        "mat" => {
+            let run = sim_runtime::run(&model)?;
+            write_mat4(&model, result_file, &run.rows, run.n_reals, &run.params)
+        }
+        "empty" => {
+            sim_runtime::run(&model)?;
+            Ok(())
+        }
+        other => bail!(
+            "CodegenWasmJit: only the `mat` and `empty` output formats are supported (got `{other}`)"
+        ),
     }
-    let run = sim_runtime::run(&model)?;
-    write_mat4(&model, result_file, &run.rows, run.n_reals, &run.params)
 }
 
 // ===========================================================================
@@ -714,8 +733,21 @@ fn build_sim_model(sim_code: &SimCode::SimCode) -> Result<SimModel> {
         .as_ref()
         .ok_or_else(|| anyhow!("CodegenWasmJit: model has no simulation settings"))?;
 
+    // Kick off the (cranelift) JIT compile of this model module on a background
+    // thread now, while the rest of the OMC pipeline (remaining templates,
+    // buildModel, the scripting round-trip) runs, so it is off `runSimulation`'s
+    // critical path. The thread also warms the process-wide runtime module
+    // (compiled once). `runSimulation` joins this via `take_compiled_model`.
+    // The runtime module is already compiling (started at `translateModel`
+    // entry); compile the model module concurrently here so the two overlap.
+    let compile_wasm = wasm.clone();
+    let compiled = Mutex::new(Some(std::thread::spawn(move || {
+        sim_runtime::compile_model_module(&compile_wasm).map_err(|e| format!("{e:#}"))
+    })));
+
     Ok(SimModel {
         wasm,
+        compiled,
         layout,
         result_vars,
         model_name: openmodelica_frontend_dump::AbsynUtil::pathString(
