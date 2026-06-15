@@ -50,12 +50,15 @@ serde_json = "1"
 # in .cargo/config.toml (this image has no libzmq.pc).
 zmq = "0.10"
 # WebAssembly JIT backend for the `wasm-jit` simCodeTarget
-# (openmodelica_codegen_wasm_jit): wasm-encoder emits the module, wasmtime
+# (openmodelica_codegen_wasm_jit): wasm-encoder emits the module, wasmer
 # JIT-compiles and runs it in-process, replacing the C->.so->dlopen path of
-# -d=gen. wasmtime errors are wrapped with anyhow::anyhow! (its re-exported
-# anyhow does not unify with ours under these features).
+# -d=gen. wasmer (not wasmtime) is used because its `js` backend can later JIT
+# *inside* a browser-wasm build of omc, which wasmtime cannot; here we select
+# the native `sys`/cranelift backend. wasmer errors are wrapped with
+# anyhow::anyhow! via the `wt` helper (their Debug formatting), since the
+# crate's many engine error types do not share one anyhow-convertible type.
 wasm-encoder = "0.252"
-wasmtime = { version = "45", default-features = false, features = ["std", "cranelift", "runtime", "parallel-compilation"] }
+wasmer = { version = "6", default-features = false, features = ["sys", "cranelift", "std", "wat"] }
 openmodelica_codegen_wasm_jit = {path = "openmodelica_codegen_wasm_jit"}
 # Cycle-collecting garbage collector for reference cycles closed through
 # mutable cells (Mutable/Pointer). Only the `unsync` half is used: MetaModelica

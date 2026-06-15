@@ -30,23 +30,24 @@ use crate::CodegenWasmJitFunctions::runtime::add_host_builtins;
 /// The runtime module, embedded the same way the function half embeds it.
 static RUNTIME_WASM: &[u8] = include_bytes!("../runtime.wasm");
 
-/// One process-wide wasmtime `Engine`, so the (model-independent) runtime module
-/// can be JIT-compiled once and reused, and so model modules built on background
-/// threads share the same engine the run instantiates them on.
-pub(super) fn sim_engine() -> &'static wasmtime::Engine {
-    static ENGINE: OnceLock<wasmtime::Engine> = OnceLock::new();
+/// One process-wide wasmer `Engine` (native `sys`/cranelift backend), so the
+/// (model-independent) runtime module can be JIT-compiled once and reused, and
+/// so model modules built on background threads share the same engine the run
+/// instantiates them on. Cloning an `Engine` is a cheap handle copy; a module
+/// compiled with one clone instantiates in any `Store` built from another.
+pub(super) fn sim_engine() -> &'static wasmer::Engine {
+    use wasmer::sys::{Cranelift, CraneliftOptLevel, EngineBuilder};
+    static ENGINE: OnceLock<wasmer::Engine> = OnceLock::new();
     ENGINE.get_or_init(|| {
-        let mut cfg = wasmtime::Config::new();
-        // Compile module functions across threads (off by default with
-        // default-features=false) — ~4x faster module compilation here.
-        cfg.parallel_compilation(true);
-        // Experimental opt-level override; default is wasmtime's `Speed`.
+        let mut compiler = Cranelift::default();
+        // Experimental opt-level override; default is cranelift's `Speed`.
+        // (wasmer compiles module functions in parallel by default.)
         match std::env::var("OMC_WASM_OPT").as_deref() {
-            Ok("none") => { cfg.cranelift_opt_level(wasmtime::OptLevel::None); }
-            Ok("speed_and_size") => { cfg.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize); }
+            Ok("none") => { compiler.opt_level(CraneliftOptLevel::None); }
+            Ok("speed_and_size") => { compiler.opt_level(CraneliftOptLevel::SpeedAndSize); }
             _ => {}
         }
-        wasmtime::Engine::new(&cfg).expect("wasm-jit: failed to build wasmtime engine")
+        EngineBuilder::new(compiler).engine().into()
     })
 }
 
@@ -55,10 +56,10 @@ pub(super) fn sim_engine() -> &'static wasmtime::Engine {
 /// **on disk** (AOT): the first process to need it JIT-compiles and
 /// `serialize`s it; every later process `deserialize`s the artifact in
 /// microseconds. `deserialize` validates the artifact against the current
-/// wasmtime version / engine config / target, so a stale or incompatible cache
+/// wasmer version / engine config / target, so a stale or incompatible cache
 /// is rejected and we transparently fall back to JIT (then refresh the cache).
-pub(super) fn runtime_module() -> Result<&'static wasmtime::Module> {
-    static MODULE: OnceLock<std::result::Result<wasmtime::Module, String>> = OnceLock::new();
+pub(super) fn runtime_module() -> Result<&'static wasmer::Module> {
+    static MODULE: OnceLock<std::result::Result<wasmer::Module, String>> = OnceLock::new();
     MODULE
         .get_or_init(|| load_or_compile_runtime().map_err(|e| format!("{e:?}")))
         .as_ref()
@@ -93,20 +94,21 @@ fn runtime_cache_path() -> std::path::PathBuf {
     dir.join(format!("wasmjit-runtime-{key:016x}.cwasm"))
 }
 
-fn load_or_compile_runtime() -> Result<wasmtime::Module> {
+fn load_or_compile_runtime() -> Result<wasmer::Module> {
     let engine = sim_engine();
     let path = runtime_cache_path();
-    // Try the AOT artifact first (microseconds). `deserialize_file` is unsafe
-    // because it trusts the artifact; it is one we produced under temp_dir, and
-    // wasmtime validates version/config compatibility (erroring otherwise).
+    // Try the AOT artifact first (microseconds). `deserialize_from_file` is
+    // unsafe because it trusts the artifact; it is one we produced under
+    // temp_dir, and wasmer validates version/config compatibility (erroring
+    // otherwise).
     if path.exists() {
-        if let Ok(m) = unsafe { wasmtime::Module::deserialize_file(engine, &path) } {
+        if let Ok(m) = unsafe { wasmer::Module::deserialize_from_file(engine, &path) } {
             return Ok(m);
         }
-        // Incompatible/corrupt cache (e.g. wasmtime upgrade): fall through to
+        // Incompatible/corrupt cache (e.g. wasmer upgrade): fall through to
         // recompile and overwrite it below.
     }
-    let module = wasmtime::Module::new(engine, RUNTIME_WASM).map_err(|e| anyhow!("{e:?}"))?;
+    let module = wasmer::Module::from_binary(engine, RUNTIME_WASM).map_err(|e| anyhow!("{e:?}"))?;
     // Best-effort: persist the compiled artifact for the next process. Write to
     // a temp sibling then rename, so a concurrent reader never sees a partial file.
     if let Ok(bytes) = module.serialize() {
@@ -121,8 +123,8 @@ fn load_or_compile_runtime() -> Result<wasmtime::Module> {
 /// JIT-compile a generated model module on the shared engine. Called either on a
 /// background thread from `translateModel` (overlapping the rest of the OMC
 /// pipeline) or inline from `run` as a fallback.
-pub(super) fn compile_model_module(wasm: &[u8]) -> Result<wasmtime::Module> {
-    wasmtime::Module::new(sim_engine(), wasm).map_err(|e| anyhow!("{e:?}"))
+pub(super) fn compile_model_module(wasm: &[u8]) -> Result<wasmer::Module> {
+    wasmer::Module::from_binary(sim_engine(), wasm).map_err(|e| anyhow!("{e:?}"))
 }
 
 /// Begin compiling the fixed runtime module on a background thread, once per
@@ -141,7 +143,7 @@ pub(super) fn start_runtime_compile() {
 
 /// Take the model module compiled on the background thread `translateModel`
 /// spawned (joining it), or compile inline if there is no pending job.
-pub(super) fn take_compiled_model(model: &SimModel) -> Result<wasmtime::Module> {
+pub(super) fn take_compiled_model(model: &SimModel) -> Result<wasmer::Module> {
     let job = model.compiled.lock().unwrap().take();
     match job {
         Some(handle) => match handle.join() {
@@ -166,9 +168,9 @@ pub(super) struct RunResult {
 }
 
 /// Read one little-endian i32 from wasm linear memory at byte address `addr`.
-fn read_i32(mem: &wasmtime::Memory, store: &Store, addr: u32) -> Result<i32> {
+fn read_i32(mem: &wasmer::Memory, store: &Store, addr: u32) -> Result<i32> {
     let mut b = [0u8; 4];
-    mem.read(store, addr as usize, &mut b).map_err(|e| anyhow!("CodegenWasmJit: mem read: {e}"))?;
+    mem.view(store).read(addr as u64, &mut b).map_err(|e| anyhow!("CodegenWasmJit: mem read: {e}"))?;
     Ok(i32::from_le_bytes(b))
 }
 
@@ -177,7 +179,7 @@ fn read_i32(mem: &wasmtime::Memory, store: &Store, addr: u32) -> Result<i32> {
 /// matching `SimLayout::n_row_total()` and the column layout `kind_from_slot`
 /// assigns. Used by the host-driven drivers; the in-wasm `simulate` emits the
 /// same layout.
-fn capture_row(mem: &wasmtime::Memory, store: &Store, rows: &mut Vec<f64>, sim_data: u32, layout: &super::SimLayout) -> Result<()> {
+fn capture_row(mem: &wasmer::Memory, store: &Store, rows: &mut Vec<f64>, sim_data: u32, layout: &super::SimLayout) -> Result<()> {
     for i in 0..layout.n_reals_row() {
         rows.push(read_f64(mem, store, sim_data + i * 8)?);
     }
@@ -190,29 +192,30 @@ fn capture_row(mem: &wasmtime::Memory, store: &Store, rows: &mut Vec<f64>, sim_d
     Ok(())
 }
 
-type Store = wasmtime::Store<()>;
+type Store = wasmer::Store;
 
-fn wt<T>(r: std::result::Result<T, wasmtime::Error>) -> Result<T> {
+/// Flatten any wasmer engine/runtime error into our `anyhow` (their error types
+/// — `RuntimeError`, `InstantiationError`, `MemoryAccessError`, … — do not share
+/// a single anyhow-convertible type, so we format via `Debug`).
+fn wt<T, E: std::fmt::Debug>(r: std::result::Result<T, E>) -> Result<T> {
     r.map_err(|e| anyhow!("{e:?}"))
 }
 
 /// Read one little-endian f64 from wasm linear memory at byte address `addr`.
-fn read_f64(mem: &wasmtime::Memory, store: &Store, addr: u32) -> Result<f64> {
+fn read_f64(mem: &wasmer::Memory, store: &Store, addr: u32) -> Result<f64> {
     let mut b = [0u8; 8];
-    mem.read(store, addr as usize, &mut b).map_err(|e| anyhow!("CodegenWasmJit: mem read: {e}"))?;
+    mem.view(store).read(addr as u64, &mut b).map_err(|e| anyhow!("CodegenWasmJit: mem read: {e}"))?;
     Ok(f64::from_le_bytes(b))
 }
 
-fn write_f64(mem: &wasmtime::Memory, store: &mut Store, addr: u32, v: f64) -> Result<()> {
-    mem.write(store, addr as usize, &v.to_le_bytes()).map_err(|e| anyhow!("CodegenWasmJit: mem write: {e}"))?;
+fn write_f64(mem: &wasmer::Memory, store: &mut Store, addr: u32, v: f64) -> Result<()> {
+    mem.view(&*store).write(addr as u64, &v.to_le_bytes()).map_err(|e| anyhow!("CodegenWasmJit: mem write: {e}"))?;
     Ok(())
 }
 
 pub(super) fn run(model: &SimModel) -> Result<RunResult> {
     let bench = std::env::var("OMC_WASM_SIM_BENCH").is_ok();
     let engine = sim_engine();
-    let mut linker = wasmtime::Linker::new(engine);
-    add_host_builtins(&mut linker)?;
 
     // Phase 1: obtain the compiled modules. The runtime module is compiled once
     // per process (cached); the model module was JIT-compiled on a background
@@ -239,19 +242,25 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
         );
     }
 
-    // Phase 2: instantiate (sharing the runtime's linear memory).
+    // Phase 2: instantiate (sharing the runtime's linear memory). Host imports
+    // are store-bound in wasmer, so they are built here (per run) rather than
+    // cached; this is just function-handle creation, negligible next to compile.
     let t_inst = Instant::now();
-    let mut store = wasmtime::Store::new(engine, ());
-    let rt_inst = wt(linker.instantiate(&mut store, runtime_module))?;
+    let mut store = wasmer::Store::new(engine.clone());
+    let mut imports = wasmer::Imports::new();
+    add_host_builtins(&mut store, &mut imports)?;
+    let rt_inst = wt(wasmer::Instance::new(&mut store, runtime_module, &imports))?;
     // The generated module imports the runtime's exports under module name "rt".
-    wt(linker.instance(&mut store, "rt", rt_inst))?;
-    let instance = wt(linker.instantiate(&mut store, &model_module))?;
+    imports.register_namespace("rt", rt_inst.exports.iter().map(|(k, v)| (k.clone(), v.clone())));
+    let instance = wt(wasmer::Instance::new(&mut store, &model_module, &imports))?;
     let inst_time = t_inst.elapsed();
 
     let memory = rt_inst
-        .get_memory(&mut store, "memory")
-        .ok_or_else(|| anyhow!("CodegenWasmJit: runtime has no `memory` export"))?;
-    let rt_alloc = wt(rt_inst.get_typed_func::<u32, u32>(&mut store, "rt_alloc"))?;
+        .exports
+        .get_memory("memory")
+        .map_err(|e| anyhow!("CodegenWasmJit: runtime has no `memory` export: {e:?}"))?
+        .clone();
+    let rt_alloc: wasmer::TypedFunction<u32, u32> = wt(rt_inst.exports.get_typed_function(&store, "rt_alloc"))?;
 
     let layout = &model.layout;
     let n_reals = layout.n_row_total(); // total result-row width (reals + int/bool algebraics)
@@ -310,7 +319,7 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
                 WTy::F64 => read_f64(&memory, &store, sim_data + off)?,
                 WTy::I32 => {
                     let mut b = [0u8; 4];
-                    memory.read(&store, (sim_data + off) as usize, &mut b).map_err(|e| anyhow!("{e}"))?;
+                    memory.view(&store).read((sim_data + off) as u64, &mut b).map_err(|e| anyhow!("{e}"))?;
                     i32::from_le_bytes(b) as f64
                 }
             };
@@ -324,27 +333,27 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
 /// In-wasm driver: one call to `simulate`, then read the result buffer.
 fn run_wasm(
     store: &mut Store,
-    instance: &wasmtime::Instance,
-    memory: &wasmtime::Memory,
+    instance: &wasmer::Instance,
+    memory: &wasmer::Memory,
     sim_data: u32,
     n_reals: u32,
     n_rows: u32,
     start: f64,
     stop: f64,
 ) -> Result<Vec<f64>> {
-    let simulate = wt(instance.get_typed_func::<(u32, f64, f64, u32), u32>(&mut *store, "simulate"))?;
-    let buf = wt(simulate.call(&mut *store, (sim_data, start, stop, n_rows - 1)))?;
+    let simulate = wt(instance.exports.get_typed_function::<(u32, f64, f64, u32), u32>(&store, "simulate"))?;
+    let buf = wt(simulate.call(&mut *store, sim_data, start, stop, n_rows - 1))?;
     let count = (n_rows * n_reals) as usize;
     let mut bytes = vec![0u8; count * 8];
-    memory.read(&*store, buf as usize, &mut bytes).map_err(|e| anyhow!("CodegenWasmJit: result read: {e}"))?;
+    memory.view(&*store).read(buf as u64, &mut bytes).map_err(|e| anyhow!("CodegenWasmJit: result read: {e}"))?;
     Ok(bytes.chunks_exact(8).map(|c| f64::from_le_bytes(c.try_into().unwrap())).collect())
 }
 
 /// Host-driven driver: the forward-Euler loop in native Rust.
 fn run_host(
     store: &mut Store,
-    instance: &wasmtime::Instance,
-    memory: &wasmtime::Memory,
+    instance: &wasmer::Instance,
+    memory: &wasmer::Memory,
     model: &SimModel,
     sim_data: u32,
     n_reals: u32,
@@ -352,10 +361,10 @@ fn run_host(
     start: f64,
     stop: f64,
 ) -> Result<Vec<f64>> {
-    let f_params = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionParameters"))?;
-    let f_init = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionInitialEquations"))?;
-    let f_ode = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionODE"))?;
-    let f_alg = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionAlgebraics"))?;
+    let f_params = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionParameters"))?;
+    let f_init = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionInitialEquations"))?;
+    let f_ode = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionODE"))?;
+    let f_alg = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionAlgebraics"))?;
 
     wt(f_params.call(&mut *store, sim_data))?;
     wt(f_init.call(&mut *store, sim_data))?;
@@ -402,8 +411,8 @@ fn run_host(
 /// Context the `RES` callback needs to evaluate `f(t, y)` through wasm.
 struct ResCtx {
     store: *mut Store,
-    memory: wasmtime::Memory,
-    f_ode: wasmtime::TypedFunc<u32, ()>,
+    memory: wasmer::Memory,
+    f_ode: wasmer::TypedFunction<u32, ()>,
     sim_data: u32,
     states_base: u32,
     ders_base: u32,
@@ -496,8 +505,8 @@ unsafe fn dassl_res(
 #[allow(clippy::too_many_arguments)]
 fn run_dassl(
     store: &mut Store,
-    instance: &wasmtime::Instance,
-    memory: &wasmtime::Memory,
+    instance: &wasmer::Instance,
+    memory: &wasmer::Memory,
     model: &SimModel,
     sim_data: u32,
     n_reals: u32,
@@ -511,10 +520,10 @@ fn run_dassl(
     // the omc result record); failures are surfaced here via IDID instead.
     daskr::aux::xsetf(0);
 
-    let f_params = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionParameters"))?;
-    let f_init = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionInitialEquations"))?;
-    let f_ode = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionODE"))?;
-    let f_alg = wt(instance.get_typed_func::<u32, ()>(&mut *store, "functionAlgebraics"))?;
+    let f_params = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionParameters"))?;
+    let f_init = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionInitialEquations"))?;
+    let f_ode = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionODE"))?;
+    let f_alg = wt(instance.exports.get_typed_function::<u32, ()>(&store, "functionAlgebraics"))?;
 
     wt(f_params.call(&mut *store, sim_data))?;
     wt(f_init.call(&mut *store, sim_data))?;
@@ -594,7 +603,7 @@ fn run_dassl(
     // Install the wasm context for the residual callback.
     let mut ctx = ResCtx {
         store: store as *mut Store,
-        memory: *memory,
+        memory: memory.clone(),
         f_ode: f_ode.clone(),
         sim_data,
         states_base,

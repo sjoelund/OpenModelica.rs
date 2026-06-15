@@ -5,7 +5,7 @@
 // the C target. Instead of generating ~25 C files + `_init.xml` + a makefile,
 // building an executable and running it to write a `.mat`, this lowers the
 // SimCode equation systems to a single WebAssembly *model module* (the
-// numerical right-hand sides) and runs the simulation in-process with wasmtime.
+// numerical right-hand sides) and runs the simulation in-process with wasmer.
 //
 // Two design departures from the C runtime, per the project steer:
 //   * No XML/JSON serialization of model metadata. The host (this Rust code)
@@ -201,10 +201,10 @@ struct SimModel {
     /// the (cranelift) compile overlaps the rest of the OMC pipeline instead of
     /// landing on `runSimulation`'s critical path. Joined by [`finishCompile`]
     /// (in `buildModel`'s compile phase) or, failing that, by `runSimulation`.
-    compiled: Mutex<Option<std::thread::JoinHandle<Result<wasmtime::Module, String>>>>,
+    compiled: Mutex<Option<std::thread::JoinHandle<Result<wasmer::Module, String>>>>,
     /// The compiled model module once [`finishCompile`] has joined the job, so
     /// `runSimulation` can instantiate without recompiling.
-    prepared: Mutex<Option<wasmtime::Module>>,
+    prepared: Mutex<Option<wasmer::Module>>,
 }
 
 /// Process-wide table of prepared models, keyed by file-name prefix. Populated

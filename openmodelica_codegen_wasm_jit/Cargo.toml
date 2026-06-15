@@ -14,5 +14,5 @@ anyhow.workspace = true
 arcstr.workspace = true
 ordered-float.workspace = true
 wasm-encoder.workspace = true
-wasmtime.workspace = true
+wasmer.workspace = true
 daskr = { path = "../daskr" }

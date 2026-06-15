@@ -5,7 +5,7 @@
 // `CodegenCFunctions` for the C target and of `DynLoad`/`DynLoadExt` for the
 // execute side: instead of generating C, building a shared object and
 // `dlopen`ing it, the `-d=gen` functions are lowered to a WebAssembly module
-// that is JIT-compiled and run in-process with `wasmtime`. This skips the
+// that is JIT-compiled and run in-process with `wasmer`. This skips the
 // gcc/clang invocation, which dominates the latency of interactive function
 // evaluation.
 //
