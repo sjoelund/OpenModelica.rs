@@ -35,6 +35,7 @@ static RUNTIME_WASM: &[u8] = include_bytes!("../runtime.wasm");
 /// so model modules built on background threads share the same engine the run
 /// instantiates them on. Cloning an `Engine` is a cheap handle copy; a module
 /// compiled with one clone instantiates in any `Store` built from another.
+#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn sim_engine() -> &'static wasmer::Engine {
     use wasmer::sys::{Cranelift, CraneliftOptLevel, EngineBuilder};
     static ENGINE: OnceLock<wasmer::Engine> = OnceLock::new();
@@ -49,6 +50,15 @@ pub(super) fn sim_engine() -> &'static wasmer::Engine {
         }
         EngineBuilder::new(compiler).engine().into()
     })
+}
+
+/// wasm build: the `js` backend has no cranelift compiler to configure; module
+/// compilation is forwarded to the host JS `WebAssembly` engine. `Engine` is the
+/// default js engine.
+#[cfg(target_arch = "wasm32")]
+pub(super) fn sim_engine() -> &'static wasmer::Engine {
+    static ENGINE: OnceLock<wasmer::Engine> = OnceLock::new();
+    ENGINE.get_or_init(wasmer::Engine::default)
 }
 
 /// The compiled runtime module, obtained once per process and shared across all
