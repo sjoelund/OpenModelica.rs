@@ -408,18 +408,26 @@ fn build_var_map(
     let states: Vec<&SimCodeVar::SimVar> = lst(&vars.stateVars).collect();
     let ders: Vec<&SimCodeVar::SimVar> = lst(&vars.derivativeVars).collect();
 
+    // Protected/hidden primaries that were filtered out, kept as (name, comment,
+    // off, wty, heap) so they can be re-emitted at the end if a non-protected
+    // output ends up sharing their data slot (an alias-group member the C runtime
+    // keeps in the result).
+    let mut filtered: Vec<(String, String, u32, WTy, bool)> = Vec::new();
+
     // Push a primary (non-alias) variable: always register its slot (equations
     // reference even protected/internal vars), but only emit it as a result
-    // signal if it passes the C-compatible filter.
+    // signal if it passes the C-compatible filter (else stash it in `filtered`).
     let mut push_primary =
-        |map: &mut SimVarMap, result_vars: &mut Vec<ResultVar>, sv: &SimCodeVar::SimVar,
-         off: u32, wty: WTy, heap: bool, raw_name: String| -> Result<()> {
+        |map: &mut SimVarMap, result_vars: &mut Vec<ResultVar>, filtered: &mut Vec<(String, String, u32, WTy, bool)>,
+         sv: &SimCodeVar::SimVar, off: u32, wty: WTy, heap: bool, raw_name: String| -> Result<()> {
             insert_var(map, sv, off, wty, heap)?;
-            if is_result_output(sv) {
-                if let (Some(name), Some(kind)) =
-                    (result_name(&raw_name), kind_from_slot(off, wty, false, heap, layout))
-                {
-                    result_vars.push(ResultVar { name, comment: sv.comment.to_string(), kind });
+            if let Some(name) = result_name(&raw_name) {
+                if is_result_output(sv) {
+                    if let Some(kind) = kind_from_slot(off, wty, false, heap, layout) {
+                        result_vars.push(ResultVar { name, comment: sv.comment.to_string(), kind });
+                    }
+                } else {
+                    filtered.push((name, sv.comment.to_string(), off, wty, heap));
                 }
             }
             Ok(())
@@ -428,7 +436,7 @@ fn build_var_map(
     // States | derivatives | real algebraics -> the realVars region (data_2).
     for (i, sv) in states.iter().enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, REAL_OFF + (i as u32) * 8, WTy::F64, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, REAL_OFF + (i as u32) * 8, WTy::F64, false, name)?;
     }
     for (i, sv) in ders.iter().enumerate() {
         // der(x) is displayed as `der(<state name>)`.
@@ -436,13 +444,13 @@ fn build_var_map(
             Some(s) => format!("der({})", cref_display(&s.name)?),
             None => cref_display(&sv.name)?,
         };
-        push_primary(&mut map, &mut result_vars, sv, REAL_OFF + (layout.n_states + i as u32) * 8, WTy::F64, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, REAL_OFF + (layout.n_states + i as u32) * 8, WTy::F64, false, name)?;
     }
     let real_algs: Vec<&SimCodeVar::SimVar> =
         lst(&vars.algVars).chain(lst(&vars.discreteAlgVars)).collect();
     for (j, sv) in real_algs.iter().enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, REAL_OFF + (2 * layout.n_states + j as u32) * 8, WTy::F64, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, REAL_OFF + (2 * layout.n_states + j as u32) * 8, WTy::F64, false, name)?;
     }
 
     // Real / Integer / Boolean parameters -> data_1. Integer & Boolean algebraic
@@ -450,23 +458,23 @@ fn build_var_map(
     // (they are not captured per row); strings get slots only.
     for (k, sv) in lst(&vars.paramVars).enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, layout.rparam_off + (k as u32) * 8, WTy::F64, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, layout.rparam_off + (k as u32) * 8, WTy::F64, false, name)?;
     }
     for (i, sv) in lst(&vars.intAlgVars).enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, layout.int_off + (i as u32) * 4, WTy::I32, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, layout.int_off + (i as u32) * 4, WTy::I32, false, name)?;
     }
     for (k, sv) in lst(&vars.intParamVars).enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, layout.iparam_off + (k as u32) * 4, WTy::I32, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, layout.iparam_off + (k as u32) * 4, WTy::I32, false, name)?;
     }
     for (i, sv) in lst(&vars.boolAlgVars).enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, layout.bool_off + (i as u32) * 4, WTy::I32, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, layout.bool_off + (i as u32) * 4, WTy::I32, false, name)?;
     }
     for (k, sv) in lst(&vars.boolParamVars).enumerate() {
         let name = cref_display(&sv.name)?;
-        push_primary(&mut map, &mut result_vars, sv, layout.bparam_off + (k as u32) * 4, WTy::I32, false, name)?;
+        push_primary(&mut map, &mut result_vars, &mut filtered, sv, layout.bparam_off + (k as u32) * 4, WTy::I32, false, name)?;
     }
     for (i, sv) in lst(&vars.stringAlgVars).enumerate() {
         insert_var(&mut map, sv, layout.str_off + (i as u32) * 4, WTy::I32, true)?;
@@ -526,6 +534,26 @@ fn build_var_map(
                 kind_from_slot(slot.off, slot.wty, slot.negate, slot.heap, layout),
             ) {
                 result_vars.push(ResultVar { name, comment: av.comment.to_string(), kind });
+            }
+        }
+    }
+
+    // Re-emit a filtered (protected/hidden) variable if a non-protected output
+    // references its data slot — i.e. it is an alias-group member of an output
+    // variable, which the C runtime keeps in the result (e.g. a protected
+    // parameter aliased by a public connector variable).
+    let referenced: std::collections::HashSet<u32> = result_vars
+        .iter()
+        .filter_map(|v| match &v.kind {
+            ResultKind::Column { col, .. } => Some(REAL_OFF + (*col - 1) * 8),
+            ResultKind::Param { off, .. } => Some(*off),
+            _ => None,
+        })
+        .collect();
+    for (name, comment, off, wty, heap) in filtered {
+        if referenced.contains(&off) {
+            if let Some(kind) = kind_from_slot(off, wty, false, heap, layout) {
+                result_vars.push(ResultVar { name, comment, kind });
             }
         }
     }
