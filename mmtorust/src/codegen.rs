@@ -1819,6 +1819,8 @@ const WASM_GATED_TOP_MODULES: &[(&str, Option<&str>)] = &[
     ("OMSimulatorExt", None),
     // downloads via native libcurl (pulls socket2, no wasm target).
     ("Curl", Some("Curl_wasm.rs")),
+    // OMSimulator scripting API; drives the dropped OMSimulatorExt (libOMSimulator).
+    ("CevalScriptOMSimulator", Some("CevalScriptOMSimulator_wasm.rs")),
 ];
 
 /// Emit a top-level `pub mod NAME;`, cfg-gating the native-only modules listed

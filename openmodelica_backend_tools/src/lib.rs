@@ -4,6 +4,10 @@ pub mod AbsynToJulia;
 pub mod AvlTree;
 pub mod BinaryTreeInt;
 pub mod Binding;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod CevalScriptOMSimulator;
+#[cfg(target_arch = "wasm32")]
+#[path = "CevalScriptOMSimulator_wasm.rs"]
 pub mod CevalScriptOMSimulator;
 pub mod Conversion;
 pub mod DAEQuery;
