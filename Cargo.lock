@@ -1950,10 +1950,12 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_simcode_types",
  "openmodelica_util",
+ "openmodelica_vfs",
  "ordered-float",
  "wasm-encoder 0.252.0",
  "wasmer",
  "wasmtime",
+ "web-time",
 ]
 
 [[package]]

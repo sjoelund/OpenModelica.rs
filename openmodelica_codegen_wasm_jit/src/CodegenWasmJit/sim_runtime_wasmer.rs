@@ -21,7 +21,9 @@
 use anyhow::{Result, anyhow, bail};
 use std::cell::Cell;
 use std::sync::OnceLock;
-use std::time::Instant;
+// `web-time` re-exports `std::time` on native (zero cost) and backs `Instant`
+// with the JS monotonic clock on wasm, where `Instant::now()` panics.
+use web_time::Instant;
 
 use super::{REAL_OFF, ResultKind, SimModel, TIME_OFF};
 use crate::CodegenWasmJitFunctions::WTy;
@@ -89,6 +91,7 @@ pub(super) fn runtime_module() -> Result<&'static wasmer::Module> {
 /// reboots and not shared between users (unlike a world-writable temp dir, where
 /// the sticky bit would stop other users refreshing it). Falls back to the
 /// system temp dir if `$HOME` is unset or the cache dir can't be created.
+#[cfg(not(target_arch = "wasm32"))]
 fn runtime_cache_path() -> std::path::PathBuf {
     use std::hash::{Hash, Hasher};
     let mut h = std::collections::hash_map::DefaultHasher::new();
@@ -110,6 +113,13 @@ fn runtime_cache_path() -> std::path::PathBuf {
 
 fn load_or_compile_runtime() -> Result<wasmer::Module> {
     let engine = sim_engine();
+    // wasm has no filesystem for an on-disk AOT cache (and `temp_dir()` panics);
+    // the in-memory OnceLock already caches the compiled module for the session,
+    // so compile straight from the embedded bytes.
+    #[cfg(target_arch = "wasm32")]
+    return wasmer::Module::from_binary(engine, RUNTIME_WASM).map_err(|e| anyhow!("{e:?}"));
+    #[cfg(not(target_arch = "wasm32"))]
+    {
     let path = runtime_cache_path();
     // Try the AOT artifact first (microseconds). `deserialize_from_file` is
     // unsafe because it trusts the artifact; it is one we produced under
@@ -132,6 +142,7 @@ fn load_or_compile_runtime() -> Result<wasmer::Module> {
         }
     }
     Ok(module)
+    }
 }
 
 /// JIT-compile a generated model module on the shared engine. Called either on a
@@ -147,12 +158,20 @@ pub(super) fn compile_model_module(wasm: &[u8]) -> Result<wasmer::Module> {
 /// entry) — it then compiles while `build_sim_model` generates the model bytes,
 /// and `run` only waits for whatever did not overlap. Idempotent.
 pub(super) fn start_runtime_compile() {
-    static STARTED: std::sync::Once = std::sync::Once::new();
-    STARTED.call_once(|| {
-        std::thread::spawn(|| {
-            let _ = runtime_module(); // populates the OnceLock cache
+    // wasm has no threads; the runtime module is compiled synchronously on first
+    // use (`runtime_module()` is called from finishCompile / run). Skipping the
+    // prewarm only forgoes the native overlap optimisation.
+    #[cfg(target_arch = "wasm32")]
+    return;
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        static STARTED: std::sync::Once = std::sync::Once::new();
+        STARTED.call_once(|| {
+            std::thread::spawn(|| {
+                let _ = runtime_module(); // populates the OnceLock cache
+            });
         });
-    });
+    }
 }
 
 /// Take the model module compiled on the background thread `translateModel`
@@ -160,11 +179,18 @@ pub(super) fn start_runtime_compile() {
 pub(super) fn take_compiled_model(model: &SimModel) -> Result<wasmer::Module> {
     let job = model.compiled.lock().unwrap().take();
     match job {
+        // Native: the job is a thread handle to join. wasm: the job is the
+        // already-computed compile result.
+        #[cfg(not(target_arch = "wasm32"))]
         Some(handle) => match handle.join() {
             Ok(Ok(m)) => Ok(m),
             Ok(Err(e)) => bail!("CodegenWasmJit: background model-module compile failed: {e}"),
             Err(_) => bail!("CodegenWasmJit: background model-module compile thread panicked"),
         },
+        #[cfg(target_arch = "wasm32")]
+        Some(Ok(m)) => Ok(m),
+        #[cfg(target_arch = "wasm32")]
+        Some(Err(e)) => bail!("CodegenWasmJit: model-module compile failed: {e}"),
         None => compile_model_module(&model.wasm),
     }
 }
@@ -496,7 +522,7 @@ unsafe fn dassl_res(
         }
     }
     // f(t, y) -> derivative slots.
-    let t_ode = if ctx.bench { Some(std::time::Instant::now()) } else { None };
+    let t_ode = if ctx.bench { Some(Instant::now()) } else { None };
     let ode_res = ctx.f_ode.call(&mut *store, ctx.sim_data).map_err(|e| anyhow!("{e:?}"));
     if let Some(t) = t_ode {
         ctx.wasm_ode += t.elapsed();
@@ -561,7 +587,7 @@ fn run_dassl(
     let emit_row =
         |store: &mut Store, rows: &mut Vec<f64>, time: f64| -> Result<()> {
             write_f64(memory, store, sim_data + TIME_OFF, time)?;
-            let t = if bench { Some(std::time::Instant::now()) } else { None };
+            let t = if bench { Some(Instant::now()) } else { None };
             wt(f_ode.call(&mut *store, sim_data))?;
             wt(f_alg.call(&mut *store, sim_data))?;
             if let Some(t) = t {

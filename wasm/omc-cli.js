@@ -13,11 +13,11 @@
 const path = require('node:path');
 const readline = require('node:readline');
 
-const omc = require(path.join(__dirname, 'pkg', 'OpenModelicaCompiler.js'));
+const omc = require(path.join(__dirname, 'pkg-nodejs', 'OpenModelicaCompiler.js'));
 
-// Seed the install dir (no OS environment inside wasm). Note: the wasm build has
-// no filesystem yet, so commands that read library files will still fail — but
-// self-contained commands (getVersion, arithmetic, …) work.
+// Seed the install dir (no OS environment inside wasm). The builtin Modelica
+// environment is embedded (openmodelica_vfs), so OPENMODELICAHOME only needs to
+// be a non-empty path — the builtins resolve by basename regardless of value.
 omc.omc_set_env('OPENMODELICAHOME', process.env.OPENMODELICAHOME || '/usr');
 
 if (!omc.omc_init()) {

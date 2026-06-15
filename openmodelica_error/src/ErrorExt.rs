@@ -300,7 +300,10 @@ pub fn addSourceMessage(
     };
     with_state(|s| {
         if s.show_messages {
-            eprintln!("{}", entry.full_message());
+            // `--showErrorMessages`: echo at push time. Route through the host
+            // stderr sink so the echo reaches the JS console on wasm (a bare
+            // `eprintln!` is discarded there).
+            metamodelica::host_eprint(&format!("{}\n", entry.full_message()));
         }
         bump_counters(s, &msg_severity, 1);
         s.queue.push(entry);

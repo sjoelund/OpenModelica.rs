@@ -5,3 +5,5 @@ a.mo
 build/
 __pycache__/
 wasm/pkg/
+wasm/pkg-nodejs/
+wasm/pkg-web/

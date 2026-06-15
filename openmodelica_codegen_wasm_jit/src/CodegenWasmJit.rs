@@ -190,6 +190,15 @@ struct ResultVar {
     kind: ResultKind,
 }
 
+/// A pending model-module compile. Native builds run it on a background thread
+/// (overlapping the rest of the OMC pipeline); wasm has no threads, so it is
+/// compiled eagerly and the result stored directly. [`sim_runtime`] takes it via
+/// `take_compiled_model`, which joins on native and unwraps on wasm.
+#[cfg(not(target_arch = "wasm32"))]
+pub(crate) type ModelCompileJob = std::thread::JoinHandle<Result<sim_runtime::Module, String>>;
+#[cfg(target_arch = "wasm32")]
+pub(crate) type ModelCompileJob = Result<sim_runtime::Module, String>;
+
 /// The prepared, ready-to-run artifact for one model, stashed in-process by
 /// [`translateModel`] and consumed by [`runSimulation`] (keyed by file-name
 /// prefix). This is the in-memory replacement for the C target's `_init.xml`
@@ -212,7 +221,7 @@ struct SimModel {
     /// the (cranelift) compile overlaps the rest of the OMC pipeline instead of
     /// landing on `runSimulation`'s critical path. Joined by [`finishCompile`]
     /// (in `buildModel`'s compile phase) or, failing that, by `runSimulation`.
-    compiled: Mutex<Option<std::thread::JoinHandle<Result<sim_runtime::Module, String>>>>,
+    compiled: Mutex<Option<ModelCompileJob>>,
     /// The compiled model module once [`finishCompile`] has joined the job, so
     /// `runSimulation` can instantiate without recompiling.
     prepared: Mutex<Option<sim_runtime::Module>>,
@@ -224,6 +233,19 @@ struct SimModel {
 fn sim_models() -> &'static Mutex<HashMap<String, Arc<SimModel>>> {
     static MODELS: OnceLock<Mutex<HashMap<String, Arc<SimModel>>>> = OnceLock::new();
     MODELS.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+/// Write `bytes` to `path`: the OS filesystem natively, or the in-memory VFS on
+/// wasm (where there is no filesystem — the `.wasm` dump, `.log` and result file
+/// land there for the JS host / `getSimulationResult` to read back).
+fn write_output(path: &str, bytes: &[u8]) -> std::io::Result<()> {
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::write(path, bytes.to_vec());
+        Ok(())
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    std::fs::write(path, bytes)
 }
 
 // ===========================================================================
@@ -247,7 +269,7 @@ pub fn translateModel(simCode: SimCode::SimCode) {
         Ok(model) => {
             // Write the module for inspection/debugging (mirrors the function
             // half writing `<name>.wasm`); the run itself uses the stashed bytes.
-            if let Err(e) = std::fs::write(format!("{prefix}.wasm"), &model.wasm) {
+            if let Err(e) = write_output(&format!("{prefix}.wasm"), &model.wasm) {
                 panic!("CodegenWasmJit: cannot write {prefix}.wasm: {e:#}");
             }
             sim_models().lock().unwrap().insert(prefix, Arc::new(model));
@@ -270,7 +292,7 @@ pub fn runSimulation(fileNamePrefix: ArcStr, resultFile: ArcStr, simflags: ArcSt
             .to_string(),
         Err(e) => format!("LOG_ERROR         | error   | wasm-jit simulation failed: {e:#}\n"),
     };
-    let _ = std::fs::write(format!("{fileNamePrefix}.log"), log);
+    let _ = write_output(&format!("{fileNamePrefix}.log"), log.as_bytes());
     match res {
         Ok(()) => 0,
         Err(e) => {
@@ -938,9 +960,16 @@ fn build_sim_model(sim_code: &SimCode::SimCode) -> Result<SimModel> {
     // The runtime module is already compiling (started at `translateModel`
     // entry); compile the model module concurrently here so the two overlap.
     let compile_wasm = wasm.clone();
+    // Native: compile on a background thread to overlap the rest of the pipeline.
+    // wasm: no threads — compile eagerly and store the result for take_compiled_model.
+    #[cfg(not(target_arch = "wasm32"))]
     let compiled = Mutex::new(Some(std::thread::spawn(move || {
         sim_runtime::compile_model_module(&compile_wasm).map_err(|e| format!("{e:#}"))
     })));
+    #[cfg(target_arch = "wasm32")]
+    let compiled = Mutex::new(Some(
+        sim_runtime::compile_model_module(&compile_wasm).map_err(|e| format!("{e:#}")),
+    ));
 
     Ok(SimModel {
         wasm,
@@ -1460,7 +1489,7 @@ fn write_mat4(model: &SimModel, path: &str, rows: &[f64], n_reals: u32, params: 
     }
     write_double_matrix(&mut out, "data_2", n_reals2, n_rows, &data_2);
 
-    std::fs::write(path, &out).map_err(|e| anyhow!("CodegenWasmJit: cannot write {path}: {e}"))?;
+    write_output(path, &out).map_err(|e| anyhow!("CodegenWasmJit: cannot write {path}: {e}"))?;
     let _ = &model.model_name; // (kept for diagnostics)
     Ok(())
 }
