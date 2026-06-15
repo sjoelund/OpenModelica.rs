@@ -54,8 +54,8 @@ use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 
 use crate::CodegenWasmJitFunctions::{
-    BUILTINS, ENV_EXTRA, FnCtx, FnInfo, RT_BUILTINS, SimCtx, SimSlot, WTy, compile_function,
-    external_known, function_signature, rt_index, sim_cref_key,
+    ArrayGroup, BUILTINS, ENV_EXTRA, FnCtx, FnInfo, RT_BUILTINS, SimCtx, SimSlot, WTy,
+    compile_function, external_known, function_signature, rt_index, sim_cref_key,
 };
 
 mod sim_runtime;
@@ -89,6 +89,10 @@ struct SimLayout {
     iparam_off: u32,
     bool_off: u32,
     bparam_off: u32,
+    /// String algebraic variables (one i32 String handle each).
+    str_off: u32,
+    /// String parameters (one i32 String handle each).
+    sparam_off: u32,
     total: u32,
 }
 
@@ -101,6 +105,8 @@ impl SimLayout {
         n_int_param: u32,
         n_bool_alg: u32,
         n_bool_param: u32,
+        n_str_alg: u32,
+        n_str_param: u32,
     ) -> Self {
         let n_real = 2 * n_states + n_real_alg; // states | ders | algs
         let rparam_off = REAL_OFF + n_real * 8;
@@ -108,8 +114,13 @@ impl SimLayout {
         let iparam_off = int_off + n_int_alg * 4;
         let bool_off = iparam_off + n_int_param * 4;
         let bparam_off = bool_off + n_bool_alg * 4;
-        let total = bparam_off + n_bool_param * 4;
-        SimLayout { n_states, n_real_alg, rparam_off, int_off, iparam_off, bool_off, bparam_off, total }
+        let str_off = bparam_off + n_bool_param * 4;
+        let sparam_off = str_off + n_str_alg * 4;
+        let total = sparam_off + n_str_param * 4;
+        SimLayout {
+            n_states, n_real_alg, rparam_off, int_off, iparam_off, bool_off, bparam_off,
+            str_off, sparam_off, total,
+        }
     }
 
     /// Number of f64 in a result row: `time` + all real variables.
@@ -239,6 +250,12 @@ fn run_simulation_inner(prefix: &str, result_file: &str, _simflags: &str) -> Res
 struct SimVarMap {
     vars: HashMap<String, SimSlot>,
     starts: HashMap<String, Option<Arc<DAE::Exp>>>,
+    /// Finalized array-variable groups (base cref key -> contiguous slot range).
+    array_groups: HashMap<String, ArrayGroup>,
+    /// Transient accumulator: base cref key -> the scalarized elements seen
+    /// (subscripts, byte offset, value type). Finalized into `array_groups` at the
+    /// end of [`build_var_map`].
+    array_acc: HashMap<String, Vec<(Vec<i32>, u32, WTy)>>,
 }
 
 /// Display name of a model variable's component reference (OMC `.`-separated
@@ -255,7 +272,12 @@ fn build_var_map(
     vars: &SimCodeVar::SimVars,
     layout: &SimLayout,
 ) -> Result<(SimVarMap, Vec<ResultVar>)> {
-    let mut map = SimVarMap { vars: HashMap::new(), starts: HashMap::new() };
+    let mut map = SimVarMap {
+        vars: HashMap::new(),
+        starts: HashMap::new(),
+        array_groups: HashMap::new(),
+        array_acc: HashMap::new(),
+    };
     let mut result_vars: Vec<ResultVar> = Vec::new();
 
     // time — result signal 0.
@@ -272,7 +294,7 @@ fn build_var_map(
     let mut next_tv_row: u32 = 2; // data_2 row 1 is time; signals start at row 2
     for (i, sv) in states.iter().enumerate() {
         let off = REAL_OFF + (i as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64)?;
+        insert_var(&mut map, sv, off, WTy::F64, false)?;
         result_vars.push(ResultVar {
             name: cref_display(&sv.name)?,
             comment: sv.comment.to_string(),
@@ -283,7 +305,7 @@ fn build_var_map(
     // Derivatives: realVars[nStates..2*nStates], paired with states by index.
     for (i, sv) in ders.iter().enumerate() {
         let off = REAL_OFF + (layout.n_states + i as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64)?;
+        insert_var(&mut map, sv, off, WTy::F64, false)?;
         // der(x) is displayed as `der(<state name>)`.
         let dname = match states.get(i) {
             Some(s) => format!("der({})", cref_display(&s.name)?),
@@ -301,7 +323,7 @@ fn build_var_map(
         lst(&vars.algVars).chain(lst(&vars.discreteAlgVars)).collect();
     for (j, sv) in real_algs.iter().enumerate() {
         let off = REAL_OFF + (2 * layout.n_states + j as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64)?;
+        insert_var(&mut map, sv, off, WTy::F64, false)?;
         result_vars.push(ResultVar {
             name: cref_display(&sv.name)?,
             comment: sv.comment.to_string(),
@@ -313,7 +335,7 @@ fn build_var_map(
     // Real parameters (time-invariant; data_1).
     for (k, sv) in lst(&vars.paramVars).enumerate() {
         let off = layout.rparam_off + (k as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64)?;
+        insert_var(&mut map, sv, off, WTy::F64, false)?;
         result_vars.push(ResultVar {
             name: cref_display(&sv.name)?,
             comment: sv.comment.to_string(),
@@ -324,16 +346,23 @@ fn build_var_map(
     // as result signals — mechanical models are Real-dominated). They resolve in
     // equations; surfacing them as result columns is future work.
     for (i, sv) in lst(&vars.intAlgVars).enumerate() {
-        insert_var(&mut map, sv, layout.int_off + (i as u32) * 4, WTy::I32)?;
+        insert_var(&mut map, sv, layout.int_off + (i as u32) * 4, WTy::I32, false)?;
     }
     for (k, sv) in lst(&vars.intParamVars).enumerate() {
-        insert_var(&mut map, sv, layout.iparam_off + (k as u32) * 4, WTy::I32)?;
+        insert_var(&mut map, sv, layout.iparam_off + (k as u32) * 4, WTy::I32, false)?;
     }
     for (i, sv) in lst(&vars.boolAlgVars).enumerate() {
-        insert_var(&mut map, sv, layout.bool_off + (i as u32) * 4, WTy::I32)?;
+        insert_var(&mut map, sv, layout.bool_off + (i as u32) * 4, WTy::I32, false)?;
     }
     for (k, sv) in lst(&vars.boolParamVars).enumerate() {
-        insert_var(&mut map, sv, layout.bparam_off + (k as u32) * 4, WTy::I32)?;
+        insert_var(&mut map, sv, layout.bparam_off + (k as u32) * 4, WTy::I32, false)?;
+    }
+    // String algebraics and parameters: an i32 String handle per slot (`heap`).
+    for (i, sv) in lst(&vars.stringAlgVars).enumerate() {
+        insert_var(&mut map, sv, layout.str_off + (i as u32) * 4, WTy::I32, true)?;
+    }
+    for (k, sv) in lst(&vars.stringParamVars).enumerate() {
+        insert_var(&mut map, sv, layout.sparam_off + (k as u32) * 4, WTy::I32, true)?;
     }
 
     // Aliases: resolve to the slot of the target variable (with negation). This
@@ -350,21 +379,131 @@ fn build_var_map(
             let key = sim_cref_key(&av.name)?;
             map.vars.insert(
                 key,
-                SimSlot { off: tslot.off, wty: tslot.wty, negate: tslot.negate ^ negate },
+                SimSlot { off: tslot.off, wty: tslot.wty, negate: tslot.negate ^ negate, heap: tslot.heap },
             );
         }
         // An alias whose target is not (yet) mapped is silently skipped; a
         // reference to it then fails loudly at lowering with a clear message.
     }
 
+    finalize_array_groups(&mut map)?;
     Ok((map, result_vars))
 }
 
-/// Register one variable's slot (by canonical cref key) and its start value.
-fn insert_var(map: &mut SimVarMap, sv: &SimCodeVar::SimVar, off: u32, wty: WTy) -> Result<()> {
+/// Register one variable's slot (by canonical cref key) and its start value. If
+/// the variable is a scalarized array element (`base[c1,…,cn]`), also record it
+/// under its array base name so a whole-array reference can later be marshalled.
+fn insert_var(map: &mut SimVarMap, sv: &SimCodeVar::SimVar, off: u32, wty: WTy, heap: bool) -> Result<()> {
     let key = sim_cref_key(&sv.name)?;
-    map.vars.insert(key.clone(), SimSlot { off, wty, negate: false });
+    map.vars.insert(key.clone(), SimSlot { off, wty, negate: false, heap });
     map.starts.insert(key, sv.initialValue.clone());
+    if let Some((base, subs)) = array_element_of(&sv.name)? {
+        map.array_acc.entry(base).or_default().push((subs, off, wty));
+    }
+    Ok(())
+}
+
+/// If `cr` is a scalarized array element `base[c1,…,cn]` — the subscripts on the
+/// *final* component, all constant integers, with every ancestor component
+/// unsubscripted — return `(base cref key, subscripts)`. Returns `None` for a
+/// plain scalar, a non-constant subscript, or a subscript on an intermediate
+/// component (an array of records, handled element-wise instead).
+fn array_element_of(cr: &Arc<DAE::ComponentRef>) -> Result<Option<(String, Vec<i32>)>> {
+    use DAE::ComponentRef as C;
+    let mut base = String::new();
+    let mut node: &Arc<DAE::ComponentRef> = cr;
+    loop {
+        match &**node {
+            C::CREF_IDENT { ident, subscriptLst, .. } => {
+                base.push_str(ident);
+                if subscriptLst.is_empty() {
+                    return Ok(None);
+                }
+                return Ok(const_int_subscripts(subscriptLst)?.map(|subs| (base, subs)));
+            }
+            C::CREF_QUAL { ident, subscriptLst, componentRef, .. } => {
+                if !subscriptLst.is_empty() {
+                    return Ok(None);
+                }
+                base.push_str(ident);
+                base.push('.');
+                node = componentRef;
+            }
+            _ => return Ok(None),
+        }
+    }
+}
+
+/// Parse a subscript list to constant 1-based integer indices, or `None` if any
+/// subscript is not a constant integer / enum literal (a slice, `:`, expression).
+fn const_int_subscripts(subs: &Arc<List<Arc<DAE::Subscript>>>) -> Result<Option<Vec<i32>>> {
+    let mut out = Vec::new();
+    for sub in &**subs {
+        match &**sub {
+            DAE::Subscript::INDEX { exp } => match &**exp {
+                DAE::Exp::ICONST { integer } => out.push(*integer),
+                DAE::Exp::ENUM_LITERAL { index, .. } => out.push(*index),
+                _ => return Ok(None),
+            },
+            _ => return Ok(None),
+        }
+    }
+    Ok(Some(out))
+}
+
+/// Finalize the accumulated array elements into [`ArrayGroup`]s. For each base:
+/// derive the shape from the maximum index per axis, then *verify* that the
+/// scalarized elements occupy a contiguous, row-major slot range (offset of
+/// element `[i1,…,in]` equals `base_off + rowmajor_index * stride`). If the
+/// backend ever lays them out differently, fail loudly rather than silently
+/// build a wrong array — there is no heuristic fallback.
+fn finalize_array_groups(map: &mut SimVarMap) -> Result<()> {
+    let acc = std::mem::take(&mut map.array_acc);
+    for (base, elems) in acc {
+        let rank = elems[0].0.len();
+        if elems.iter().any(|(s, _, _)| s.len() != rank) {
+            bail!("CodegenWasmJit: inconsistent subscript rank for array variable `{base}`");
+        }
+        // Shape: 1-based max index per axis.
+        let mut dims = vec![0u32; rank];
+        for (subs, _, _) in &elems {
+            for (axis, &ix) in subs.iter().enumerate() {
+                if ix < 1 {
+                    bail!("CodegenWasmJit: non-positive subscript {ix} for array variable `{base}`");
+                }
+                dims[axis] = dims[axis].max(ix as u32);
+            }
+        }
+        let total: u32 = dims.iter().product();
+        if total as usize != elems.len() {
+            // Not all elements present (e.g. a sub-slice is its own variable):
+            // cannot treat as one contiguous whole-array. Skip; a whole-array
+            // reference then fails loudly with "unknown variable".
+            continue;
+        }
+        let wty = elems[0].2;
+        if elems.iter().any(|(_, _, w)| *w != wty) {
+            bail!("CodegenWasmJit: mixed element types for array variable `{base}`");
+        }
+        let stride = match wty { WTy::F64 => 8, WTy::I32 => 4 };
+        let base_off = elems.iter().map(|(_, o, _)| *o).min().unwrap();
+        // Verify contiguous, row-major layout.
+        for (subs, off, _) in &elems {
+            let mut lin: u32 = 0;
+            for (axis, &ix) in subs.iter().enumerate() {
+                lin = lin * dims[axis] + (ix as u32 - 1);
+            }
+            let expected = base_off + lin * stride;
+            if *off != expected {
+                bail!(
+                    "CodegenWasmJit: array variable `{base}` is not laid out contiguously in \
+                     row-major order (element {subs:?} at offset {off}, expected {expected}); \
+                     whole-array marshalling needs a contiguous slot range"
+                );
+            }
+        }
+        map.array_groups.insert(base, ArrayGroup { base_off, wty, dims, total });
+    }
     Ok(())
 }
 
@@ -397,15 +536,31 @@ fn build_sim_model(sim_code: &SimCode::SimCode) -> Result<SimModel> {
         count(&vars.intParamVars) as u32,
         count(&vars.boolAlgVars) as u32,
         count(&vars.boolParamVars) as u32,
+        count(&vars.stringAlgVars) as u32,
+        count(&vars.stringParamVars) as u32,
     );
 
     let (var_map, result_vars) = build_var_map(vars, &layout)?;
 
     // Index -> equation map (for SES_ALIAS, which re-runs another equation by
-    // index). `allEquations` holds every scalar equation.
+    // index). An alias may point at an equation defined in a different system
+    // list than the one being lowered (e.g. a parameter-equation alias to an
+    // initial equation), so index every list. `eqFunction_<n>` is emitted once in
+    // the C target and shared; here the target equation is inlined.
     let mut eq_index: HashMap<i32, Arc<SimCode::SimEqSystem>> = HashMap::new();
-    for e in lst(&sim_code.allEquations) {
-        eq_index.insert(eq_index_of(e), e.clone());
+    let mut index_list = |eqs: &Arc<List<Arc<SimCode::SimEqSystem>>>, idx: &mut HashMap<i32, Arc<SimCode::SimEqSystem>>| {
+        for e in lst(eqs) {
+            idx.entry(eq_index_of(e)).or_insert_with(|| e.clone());
+        }
+    };
+    index_list(&sim_code.allEquations, &mut eq_index);
+    index_list(&sim_code.initialEquations, &mut eq_index);
+    index_list(&sim_code.removedInitialEquations, &mut eq_index);
+    index_list(&sim_code.parameterEquations, &mut eq_index);
+    index_list(&sim_code.removedEquations, &mut eq_index);
+    index_list(&sim_code.startValueEquations, &mut eq_index);
+    for part in lst(&sim_code.odeEquations).chain(lst(&sim_code.algebraicEquations)) {
+        index_list(part, &mut eq_index);
     }
 
     // --- Collect the model's Modelica functions (callable from equations). ---
@@ -610,6 +765,7 @@ fn collect_param_bindings(vars: &SimCodeVar::SimVars) -> Vec<(Arc<DAE::Component
     for p in lst(&vars.paramVars)
         .chain(lst(&vars.intParamVars))
         .chain(lst(&vars.boolParamVars))
+        .chain(lst(&vars.stringParamVars))
     {
         if let Some(v) = &p.initialValue {
             out.push((p.name.clone(), v.clone()));
@@ -642,6 +798,7 @@ fn build_eq_fn_with_prelude(
         data_local: 0,
         vars: var_map.vars.clone(),
         starts: var_map.starts.clone(),
+        array_groups: var_map.array_groups.clone(),
     };
     let mut ctx = FnCtx::new_sim(sim, by_name, literals);
     for (cref, exp) in prelude {
@@ -672,6 +829,10 @@ fn lower_equation(
             let lhs = DAE::Exp::CREF { componentRef: cref.clone(), ty: t_real() };
             ctx.sim_assign(&lhs, exp)
         }
+        // A whole-array assignment `lhs := exp` (lhs is already a cref expression,
+        // exp an array-valued expression). For a model array variable this routes
+        // through the whole-array scatter in `compile_sim_cref_assign`.
+        E::SES_ARRAY_CALL_ASSIGN { lhs, exp, .. } => ctx.sim_assign(lhs, exp),
         E::SES_ALGORITHM { statements, .. } => ctx.sim_stmts(statements),
         // An alias equation re-runs another equation (by index): inline it.
         E::SES_ALIAS { aliasOf, .. } => {

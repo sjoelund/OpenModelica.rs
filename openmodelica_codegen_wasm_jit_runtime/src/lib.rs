@@ -1508,6 +1508,227 @@ pub extern "C" fn rt_real_format(r: f64, sig: i32, min_len: i32, left_just: i32)
     new_str_from(&pad(&body, min_len, left_just != 0))
 }
 
+/// A parsed Modelica printf-style format directive (`String(value, format)`).
+/// Mirrors `modelica_string_format_to_c_string_format` in the C runtime.
+struct FmtSpec {
+    minus: bool, // '-' left-justify
+    zero: bool,  // '0' zero-pad
+    plus: bool,  // '+' always show sign
+    space: bool, // ' ' leading space for non-negative
+    hash: bool,  // '#' alternate form
+    width: u32,
+    prec: Option<u32>,
+    conv: u8,
+}
+
+/// Parse a Modelica format directive (the body after the implicit leading `%`)
+/// into a [`FmtSpec`], mirroring `modelica_string_format_to_c_string_format`:
+/// flags, optional width, optional `.precision`, then a single conversion
+/// specifier. Returns `None` for an unparseable directive (length modifiers,
+/// unknown specifier, trailing data) — the caller traps, matching the C
+/// runtime's `omc_assert`.
+fn parse_modelica_format(bytes: &[u8]) -> Option<FmtSpec> {
+    let mut spec = FmtSpec {
+        minus: false, zero: false, plus: false, space: false, hash: false,
+        width: 0, prec: None, conv: 0,
+    };
+    let mut i = 0;
+    // Flags.
+    while i < bytes.len() {
+        match bytes[i] {
+            b'#' => spec.hash = true,
+            b'0' => spec.zero = true,
+            b'-' => spec.minus = true,
+            b' ' => spec.space = true,
+            b'+' => spec.plus = true,
+            _ => break,
+        }
+        i += 1;
+    }
+    // Width (digits).
+    while i < bytes.len() && bytes[i].is_ascii_digit() {
+        spec.width = spec.width * 10 + (bytes[i] - b'0') as u32;
+        i += 1;
+    }
+    // Precision (`.` then digits; `.` with no digits means 0).
+    if i < bytes.len() && bytes[i] == b'.' {
+        i += 1;
+        let mut p = 0u32;
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            p = p * 10 + (bytes[i] - b'0') as u32;
+            i += 1;
+        }
+        spec.prec = Some(p);
+    }
+    // Conversion specifier (single character; length modifiers are rejected, as
+    // in the C runtime).
+    if i >= bytes.len() {
+        return None;
+    }
+    let conv = bytes[i];
+    match conv {
+        b'f' | b'e' | b'E' | b'g' | b'G' | b'c' | b'd' | b'i' | b'o' | b'x' | b'X' | b'u' => {}
+        _ => return None, // length modifier / unknown specifier
+    }
+    spec.conv = conv;
+    i += 1;
+    // No trailing data after the directive.
+    if i != bytes.len() {
+        return None;
+    }
+    Some(spec)
+}
+
+/// Apply a [`FmtSpec`]'s sign flag and field width to an already-rendered numeric
+/// `body` (which carries a leading `-` only for a negative value, as produced by
+/// Rust's float/int formatting). Matches C printf field padding: `-` left-
+/// justifies, `0` zero-pads after the sign, otherwise space-pads on the left.
+fn apply_sign_width(mut body: String, spec: &FmtSpec) -> String {
+    // Sign: a non-negative value gets '+' or ' ' if requested.
+    if !body.starts_with('-') {
+        if spec.plus {
+            body.insert(0, '+');
+        } else if spec.space {
+            body.insert(0, ' ');
+        }
+    }
+    let len = body.len() as u32;
+    if len >= spec.width {
+        return body;
+    }
+    let fill = (spec.width - len) as usize;
+    if spec.minus {
+        // Left-justify: trailing spaces.
+        let mut s = body;
+        s.push_str(&" ".repeat(fill));
+        s
+    } else if spec.zero {
+        // Zero-pad after any sign character.
+        let sign_len = body.bytes().next().map_or(0, |c| {
+            if c == b'-' || c == b'+' || c == b' ' { 1 } else { 0 }
+        });
+        let (sign, rest) = body.split_at(sign_len);
+        format!("{sign}{}{rest}", "0".repeat(fill))
+    } else {
+        // Right-justify: leading spaces.
+        format!("{}{body}", " ".repeat(fill))
+    }
+}
+
+/// Render a double for a floating conversion (`f e E g G`) per `spec`, returning
+/// the numeric body (leading `-` only for a negative value; sign/width applied by
+/// the caller). Traps on a non-floating specifier or the unimplemented `#` flag.
+fn format_float_body(r: f64, spec: &FmtSpec) -> String {
+    // Alternate form (`#`) changes trailing-zero / decimal-point behavior; not
+    // yet replicated. No in-scope model uses it; trap rather than mis-format.
+    if spec.hash {
+        core::arch::wasm32::unreachable()
+    }
+    match spec.conv {
+        b'f' | b'F' => {
+            let p = spec.prec.unwrap_or(6) as usize;
+            format!("{r:.p$}")
+        }
+        b'e' | b'E' => {
+            let p = spec.prec.unwrap_or(6) as usize;
+            let s = format_c_exp(r, p);
+            if spec.conv == b'E' { s.replace('e', "E") } else { s }
+        }
+        b'g' | b'G' => {
+            // %g precision is significant digits (0 is treated as 1), default 6.
+            let p = spec.prec.unwrap_or(6).max(1) as usize;
+            let s = format_g(r, p);
+            if spec.conv == b'G' { s.replace('e', "E") } else { s }
+        }
+        // Non-floating specifier for a Real value: the C runtime asserts.
+        _ => core::arch::wasm32::unreachable(),
+    }
+}
+
+/// `String(Real, format)` — the format-string variant. `fmt` is a (borrowed)
+/// Modelica printf directive; only the floating conversions `f e E g G` are
+/// valid for a Real (others trap, as the C runtime's
+/// `modelica_real_to_modelica_string_format` asserts). Mirrors that function:
+/// parse the directive, render the double, apply sign/width.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_string_format_real(r: f64, fmt: u32) -> u32 {
+    let spec = match parse_modelica_format(unsafe { str_bytes(fmt) }) {
+        Some(s) => s,
+        None => core::arch::wasm32::unreachable(),
+    };
+    let body = format_float_body(r, &spec);
+    new_str_from(&apply_sign_width(body, &spec))
+}
+
+/// `String(Integer, format)` — the integer format-string variant. Mirrors the C
+/// runtime's `modelica_integer_to_modelica_string_format`: a floating specifier
+/// renders the value as a double; `c d i` render a signed value; `o x X u`
+/// render the (sign-extended, as C does) value in the given radix. Integer
+/// precision is the minimum digit count (zero-padded), as in C printf.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_string_format_int(i: i32, fmt: u32) -> u32 {
+    let spec = match parse_modelica_format(unsafe { str_bytes(fmt) }) {
+        Some(s) => s,
+        None => core::arch::wasm32::unreachable(),
+    };
+    match spec.conv {
+        b'f' | b'F' | b'e' | b'E' | b'g' | b'G' => {
+            let body = format_float_body(i as f64, &spec);
+            new_str_from(&apply_sign_width(body, &spec))
+        }
+        b'c' => {
+            // Character conversion: the byte with code `i`.
+            let mut s = String::new();
+            s.push((i as u8) as char);
+            new_str_from(&apply_sign_width(s, &spec))
+        }
+        b'd' | b'i' => {
+            let neg = i < 0;
+            let mut digits = format!("{}", (i as i64).unsigned_abs());
+            if let Some(p) = spec.prec {
+                while (digits.len() as u32) < p {
+                    digits.insert(0, '0');
+                }
+            }
+            let body = if neg { format!("-{digits}") } else { digits };
+            new_str_from(&apply_sign_width(body, &effective_int_spec(&spec)))
+        }
+        b'o' | b'x' | b'X' | b'u' => {
+            // C casts to (unsigned long); replicate the sign extension.
+            let u = (i as i64) as u64;
+            let mut digits = match spec.conv {
+                b'o' => format!("{u:o}"),
+                b'x' => format!("{u:x}"),
+                b'X' => format!("{u:X}"),
+                _ => format!("{u}"),
+            };
+            if let Some(p) = spec.prec {
+                while (digits.len() as u32) < p {
+                    digits.insert(0, '0');
+                }
+            }
+            new_str_from(&apply_sign_width(digits, &effective_int_spec(&spec)))
+        }
+        _ => core::arch::wasm32::unreachable(),
+    }
+}
+
+/// A copy of `spec` with the `0` (zero-pad) flag cleared when a precision is
+/// present — C printf ignores `0` for integer conversions with an explicit
+/// precision (the precision already zero-pads the digits).
+fn effective_int_spec(spec: &FmtSpec) -> FmtSpec {
+    FmtSpec {
+        minus: spec.minus,
+        zero: spec.zero && spec.prec.is_none(),
+        plus: spec.plus,
+        space: spec.space,
+        hash: spec.hash,
+        width: spec.width,
+        prec: spec.prec,
+        conv: spec.conv,
+    }
+}
+
 /// Pad a string to `min_len` bytes with spaces (`leftJustified` → trailing,
 /// otherwise leading), used by `String(Integer/Boolean/Enumeration, minLength,
 /// leftJustified)`. Mirrors `ExpressionSimplify.cevalBuiltinStringFormat`:

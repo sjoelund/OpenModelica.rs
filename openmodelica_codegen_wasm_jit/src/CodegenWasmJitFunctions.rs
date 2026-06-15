@@ -411,6 +411,12 @@ pub(crate) const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // Copy all elements of `src` into `dst` at a 0-based element offset (used to
     // build an array constructor whose elements are themselves arrays).
     ("rt_array_blit", &[WTy::I32, WTy::I32, WTy::I32], &[]),
+    // `String(Real, format)` (the format-string variant): (value, format-string
+    // handle) -> formatted String. Borrows the format handle.
+    ("rt_string_format_real", &[WTy::F64, WTy::I32], &[WTy::I32]),
+    // `String(Integer, format)`: (value, format-string handle) -> formatted
+    // String (Booleans are coerced to 0/1 i32). Borrows the format handle.
+    ("rt_string_format_int", &[WTy::I32, WTy::I32], &[WTy::I32]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -766,6 +772,28 @@ pub(crate) struct SimCtx {
     /// zero). Stored separately from `vars` because `$START` reads the start
     /// attribute, not the live value.
     pub(crate) starts: HashMap<String, Option<Arc<DAE::Exp>>>,
+    /// Canonical cref key of an *array-valued* model variable (the base name with
+    /// no final subscript, e.g. `body.R_start.T`) -> the contiguous slot range its
+    /// scalarized elements occupy. A whole-array reference reads/writes the range
+    /// as one runtime array object (gather on read, scatter on assign). See
+    /// `compile_sim_cref_read`/`compile_sim_cref_assign`.
+    pub(crate) array_groups: HashMap<String, ArrayGroup>,
+}
+
+/// The contiguous `SimData` slot range backing one scalarized array model
+/// variable. The backend lays an array's scalar elements out consecutively in
+/// row-major order; this records the start offset and shape so a whole-array
+/// reference can be marshalled to/from a runtime array object with one bulk copy.
+#[derive(Clone)]
+pub(crate) struct ArrayGroup {
+    /// Byte offset of element `[1,1,…]` (row-major first) within `SimData`.
+    pub(crate) base_off: u32,
+    /// Element value type (`F64` for Real, `I32` for Integer/Boolean).
+    pub(crate) wty: WTy,
+    /// Array dimension sizes (row-major, outermost first).
+    pub(crate) dims: Vec<u32>,
+    /// Product of `dims` (number of scalar elements).
+    pub(crate) total: u32,
 }
 
 /// A scalar model variable's location within the `SimData` block.
@@ -773,11 +801,15 @@ pub(crate) struct SimCtx {
 pub(crate) struct SimSlot {
     /// Byte offset of the value within the `SimData` block.
     pub(crate) off: u32,
-    /// Value type — `F64` for Real, `I32` for Integer/Boolean.
+    /// Value type — `F64` for Real, `I32` for Integer/Boolean/String handle.
     pub(crate) wty: WTy,
     /// Alias negation: the cref is a negated alias of the variable at `off`, so
     /// a read negates and a write is rejected (aliases are never assigned).
     pub(crate) negate: bool,
+    /// The slot holds a reference-counted heap handle (a String). A read retains;
+    /// an assignment releases the previous handle before storing the new (owned)
+    /// one. Scalar Real/Integer/Boolean slots are not heap.
+    pub(crate) heap: bool,
 }
 
 impl<'a> FnCtx<'a> {
@@ -2511,7 +2543,16 @@ fn compile_sim_cref_read(ctx: &mut FnCtx, cref: &DAE::ComponentRef) -> Result<Op
     let key = sim_cref_key(cref)?;
     let slot = match ctx.sim.as_ref().unwrap().vars.get(&key) {
         Some(s) => *s,
-        None => bail!("CodegenWasmJit: simulation reference to unknown variable `{key}`"),
+        None => {
+            // Not a scalar slot: it may be a whole array-valued model variable,
+            // whose scalarized elements occupy a contiguous slot range. Gather the
+            // range into a fresh runtime array object.
+            if let Some(group) = ctx.sim.as_ref().unwrap().array_groups.get(&key).cloned() {
+                emit_sim_array_gather(ctx, &group);
+                return Ok(Some(WTy::I32));
+            }
+            bail!("CodegenWasmJit: simulation reference to unknown variable `{key}`")
+        }
     };
     let data = ctx.sim.as_ref().unwrap().data_local;
     ctx.emit(we::Instruction::LocalGet(data));
@@ -2532,6 +2573,14 @@ fn compile_sim_cref_read(ctx: &mut FnCtx, cref: &DAE::ComponentRef) -> Result<Op
             }
         }
     }
+    if slot.heap {
+        // Reading a heap (String) slot yields an owned reference, like reading a
+        // heap local: retain so the slot keeps its reference while the value flows
+        // into the consuming operation. (`rt_retain` is null-safe.)
+        ctx.emit(we::Instruction::LocalGet(data));
+        ctx.emit(we::Instruction::I32Load(mem_arg(slot.off, 2)));
+        ctx.emit(we::Instruction::Call(rt_index("rt_retain")));
+    }
     Ok(Some(slot.wty))
 }
 
@@ -2543,6 +2592,17 @@ fn compile_sim_cref_assign(ctx: &mut FnCtx, cref: &DAE::ComponentRef, rhs: &DAE:
     if ctx.sim.is_none() {
         return Ok(false);
     }
+    // `$START.x := expr` in the initial system: the C target sets `x`'s start
+    // attribute *and* the live value `realVars[x] = start` (see the
+    // `$START.<cref>`-LHS pattern in `_06inz`). The numeric effect is `x := expr`,
+    // so redirect the assignment to the underlying variable's live slot. (Reads of
+    // `$START.x` still resolve to the start attribute via `compile_sim_cref_read`,
+    // which is consistent — the start expression equals the assigned value.)
+    if let DAE::ComponentRef::CREF_QUAL { ident, componentRef, .. } = cref {
+        if ident.as_str() == "$START" {
+            return compile_sim_cref_assign(ctx, componentRef, rhs);
+        }
+    }
     // Plain idents that are wasm locals are handled by the normal path.
     if let DAE::ComponentRef::CREF_IDENT { ident, subscriptLst, .. } = cref {
         if subscriptLst.is_empty() && ctx.locals.contains_key(ident.as_str()) {
@@ -2552,12 +2612,28 @@ fn compile_sim_cref_assign(ctx: &mut FnCtx, cref: &DAE::ComponentRef, rhs: &DAE:
     let key = sim_cref_key(cref)?;
     let slot = match ctx.sim.as_ref().unwrap().vars.get(&key) {
         Some(s) => *s,
-        None => bail!("CodegenWasmJit: simulation assignment to unknown variable `{key}`"),
+        None => {
+            // A whole array-valued model variable: evaluate the rhs to a runtime
+            // array and scatter its elements into the contiguous slot range.
+            if let Some(group) = ctx.sim.as_ref().unwrap().array_groups.get(&key).cloned() {
+                emit_sim_array_scatter(ctx, &group, rhs)?;
+                return Ok(true);
+            }
+            bail!("CodegenWasmJit: simulation assignment to unknown variable `{key}`")
+        }
     };
     if slot.negate {
         bail!("CodegenWasmJit: assignment to negated alias `{key}`");
     }
     let data = ctx.sim.as_ref().unwrap().data_local;
+    if slot.heap {
+        // Release the handle the slot currently holds before overwriting it with
+        // the new (owned) one; the rhs reference transfers into the slot. The slot
+        // starts null (zeroed `SimData`), and `rt_release` is null-safe.
+        ctx.emit(we::Instruction::LocalGet(data));
+        ctx.emit(we::Instruction::I32Load(mem_arg(slot.off, 2)));
+        ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+    }
     // Stack order for a store is [addr, value]: push the base, evaluate the rhs,
     // coerce to the slot type, then store at the constant offset.
     ctx.emit(we::Instruction::LocalGet(data));
@@ -2568,6 +2644,80 @@ fn compile_sim_cref_assign(ctx: &mut FnCtx, cref: &DAE::ComponentRef, rhs: &DAE:
         WTy::I32 => ctx.emit(we::Instruction::I32Store(mem_arg(slot.off, 2))),
     }
     Ok(true)
+}
+
+/// The `(elem_kind, byte_stride)` pair for an array of `wty` scalars: Real maps
+/// to `EK_REAL`/8, Integer/Boolean to `EK_INT`/4. (A whole-array Boolean model
+/// variable is tagged `EK_INT`; the two share 4-byte storage and no in-scope
+/// builtin distinguishes them — revisit if a Boolean-array external appears.)
+fn sim_array_elem_kind_stride(wty: WTy) -> (u32, u32) {
+    match wty {
+        WTy::F64 => (SigTy::Real.elem_kind(), 8),
+        WTy::I32 => (SigTy::Int.elem_kind(), 4),
+    }
+}
+
+/// Emit code that gathers a whole array-valued model variable from its
+/// contiguous `SimData` slot range into a fresh (refcount-1) runtime array
+/// object, leaving the owned handle on the stack. The slots are stored
+/// row-major and contiguously (verified at layout time), so the element data is
+/// one `memory.copy` from the slot range into the new object's data area.
+fn emit_sim_array_gather(ctx: &mut FnCtx, group: &ArrayGroup) {
+    let (ek, stride) = sim_array_elem_kind_stride(group.wty);
+    let ndims = group.dims.len() as u32;
+    let data = ctx.sim.as_ref().unwrap().data_local;
+    let obj = ctx.alloc_temp(WTy::I32);
+    // obj = rt_array_new(elem_kind, ndims, total); set each dimension.
+    ctx.emit(we::Instruction::I32Const(ek as i32));
+    ctx.emit(we::Instruction::I32Const(ndims as i32));
+    ctx.emit(we::Instruction::I32Const(group.total as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_new")));
+    ctx.emit(we::Instruction::LocalSet(obj));
+    for (axis, d) in group.dims.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(obj));
+        ctx.emit(we::Instruction::I32Const(axis as i32));
+        ctx.emit(we::Instruction::I32Const(*d as i32));
+        ctx.emit(we::Instruction::Call(rt_index("rt_array_set_dim")));
+    }
+    // memory.copy(dst = obj data, src = SimData + base_off, len = total * stride).
+    ctx.emit(we::Instruction::LocalGet(obj));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    ctx.emit(we::Instruction::LocalGet(data));
+    ctx.emit(we::Instruction::I32Const(group.base_off as i32));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::I32Const((group.total * stride) as i32));
+    ctx.emit(we::Instruction::MemoryCopy { src_mem: 0, dst_mem: 0 });
+    ctx.emit(we::Instruction::LocalGet(obj));
+}
+
+/// Emit code that scatters a whole-array assignment into a model variable's
+/// contiguous `SimData` slot range: evaluate `rhs` to an owned runtime array,
+/// `memory.copy` its (row-major, scalar) element data over the slots, then
+/// release the handle. Real/Integer elements are flat scalars, so the bulk copy
+/// is a complete (deep) value copy — no per-element retain is needed.
+fn emit_sim_array_scatter(ctx: &mut FnCtx, group: &ArrayGroup, rhs: &DAE::Exp) -> Result<()> {
+    let (_, stride) = sim_array_elem_kind_stride(group.wty);
+    let data = ctx.sim.as_ref().unwrap().data_local;
+    let h = ctx.alloc_temp(WTy::I32);
+    let rw = compile_exp(ctx, rhs)?;
+    if rw != WTy::I32 {
+        bail!("CodegenWasmJit: whole-array assignment rhs is not an array handle");
+    }
+    ctx.emit(we::Instruction::LocalSet(h));
+    // memory.copy(dst = SimData + base_off, src = rhs data, len = total * stride).
+    ctx.emit(we::Instruction::LocalGet(data));
+    ctx.emit(we::Instruction::I32Const(group.base_off as i32));
+    ctx.emit(we::Instruction::I32Add);
+    ctx.emit(we::Instruction::LocalGet(h));
+    ctx.emit(we::Instruction::I32Const(1));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_elem_ptr")));
+    ctx.emit(we::Instruction::I32Const((group.total * stride) as i32));
+    ctx.emit(we::Instruction::MemoryCopy { src_mem: 0, dst_mem: 0 });
+    // Consume the rhs reference (we copied out the element data, not the handle).
+    ctx.emit(we::Instruction::LocalGet(h));
+    ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
+    Ok(())
 }
 
 fn compile_exp(ctx: &mut FnCtx, exp: &DAE::Exp) -> Result<WTy> {
@@ -3501,6 +3651,13 @@ fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy
     if vty == SigTy::Str {
         return format_scalar_string(ctx, argv[0], vty);
     }
+    // The format-string variant `String(value, format)` (`elabBuiltinString`'s
+    // second form): a 2-argument call whose second argument is a String. The
+    // runtime parses the printf directive (mirroring the C runtime's
+    // `modelica_*_to_modelica_string_format`).
+    if argv.len() == 2 && exp_sigty(argv[1])? == SigTy::Str {
+        return emit_string_format(ctx, argv[0], argv[1], &vty);
+    }
     match (&vty, argv.len()) {
         // Bare `String(scalar)` (no format slots) — does not normally reach the
         // codegen (the frontend fills the slots), but is unambiguous.
@@ -3513,6 +3670,33 @@ fn emit_string_builtin(ctx: &mut FnCtx, argv: &[&Arc<DAE::Exp>]) -> Result<SigTy
         (SigTy::Real, 4) => emit_real_format(ctx, argv[0], argv[1], argv[2], argv[3]),
         other => bail!("CodegenWasmJit: unsupported String() argument shape {other:?}"),
     }
+}
+
+/// `String(value, format)` — the format-string variant. Evaluate the value and
+/// the (owned) format-string handle and dispatch to the runtime formatter, which
+/// parses the printf directive at runtime (so the format need not be constant).
+/// The runtime borrows the format handle; it is released here afterwards.
+fn emit_string_format(ctx: &mut FnCtx, val: &DAE::Exp, fmt: &DAE::Exp, vty: &SigTy) -> Result<SigTy> {
+    let rt_fn = match vty {
+        SigTy::Real => "rt_string_format_real",
+        // Integer and Boolean share the integer formatter (Booleans coerce to
+        // 0/1). The String format variant (`%s`) is not yet ported.
+        SigTy::Int | SigTy::Bool => "rt_string_format_int",
+        other => bail!("CodegenWasmJit: String(value, format) not yet implemented for {other:?}"),
+    };
+    let w = compile_exp(ctx, val)?;
+    coerce(ctx, w, vty.wty());
+    let fmt_t = ctx.alloc_temp(WTy::I32);
+    let fw = compile_exp(ctx, fmt)?;
+    if fw != WTy::I32 {
+        bail!("CodegenWasmJit: String() format argument is not a string");
+    }
+    ctx.emit(we::Instruction::LocalTee(fmt_t)); // keep the handle, leave it on the stack
+    ctx.emit(we::Instruction::Call(rt_index(rt_fn)));
+    // Release the (borrowed) format handle now that formatting is done.
+    ctx.emit(we::Instruction::LocalGet(fmt_t));
+    ctx.emit(we::Instruction::Call(rt_index("rt_release")));
+    Ok(SigTy::Str)
 }
 
 /// Whether `exp` has an enumeration type (so `String(exp)` would need the
