@@ -58,9 +58,12 @@ zmq = "0.10"
 # anyhow::anyhow! via the `wt` helper (their Debug formatting), since the
 # crate's many engine error types do not share one anyhow-convertible type.
 wasm-encoder = "0.252"
-# Backend feature is selected per-target by the consuming crate
-# (openmodelica_codegen_wasm_jit): native targets add `sys`+`cranelift`, the
-# wasm32 target adds `js` (delegating to the host JS `WebAssembly` engine).
+# Engine backends for the wasm-jit target, selected by feature/target in
+# openmodelica_codegen_wasm_jit: wasmtime (native default, fastest cranelift),
+# or wasmer — whose `js` backend is the only one that can JIT inside a
+# browser-wasm build of omc, and which can also be selected natively
+# (`--features engine-wasmer`) to benchmark against wasmtime.
+wasmtime = { version = "45", default-features = false, features = ["std", "cranelift", "runtime", "parallel-compilation"] }
 wasmer = { version = "6", default-features = false, features = ["std", "wat"] }
 openmodelica_codegen_wasm_jit = {path = "openmodelica_codegen_wasm_jit"}
 # Cycle-collecting garbage collector for reference cycles closed through

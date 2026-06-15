@@ -42,6 +42,12 @@ arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true
 
+[features]
+# Forward the wasm-jit engine choice. Default is wasmtime (implicit); enabling
+# `engine-wasmer` switches the native build to wasmer (benchmarking) and is
+# required for a wasm build. See openmodelica_codegen_wasm_jit.
+engine-wasmer = ["openmodelica_codegen_wasm_jit/engine-wasmer"]
+
 # Enable the native ZeroMQ interactive server (Main.rs uses ZeroMQ.rs). The
 # `zeromq` feature pulls native libzmq, which has no wasm target, so it is
 # only requested off-wasm; wasm builds use ZeroMQ.rs's feature-off fallback.

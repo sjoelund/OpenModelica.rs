@@ -56,6 +56,22 @@ use openmodelica_simcode_types::SimCodeFunction;
 
 use wasm_encoder as we;
 
+// On wasm32 wasmtime has no backend, so `engine-wasmer` is mandatory there.
+#[cfg(all(feature = "jit", target_arch = "wasm32", not(feature = "engine-wasmer")))]
+compile_error!("openmodelica_codegen_wasm_jit: the wasm32 target requires `engine-wasmer` (wasmtime has no wasm backend)");
+
+// The execution engine is selected at compile time: wasmtime natively (the
+// default/fast path), wasmer when `engine-wasmer` is set or on wasm32 (its `js`
+// backend), or a no-engine stub when the `jit` feature is off. Same module
+// interface across all three (see the parallel block in CodegenWasmJit.rs).
+#[cfg(all(feature = "jit", not(feature = "engine-wasmer"), not(target_arch = "wasm32")))]
+#[path = "CodegenWasmJitFunctions/runtime_wasmtime.rs"]
+pub(crate) mod runtime;
+#[cfg(all(feature = "jit", any(feature = "engine-wasmer", target_arch = "wasm32")))]
+#[path = "CodegenWasmJitFunctions/runtime_wasmer.rs"]
+pub(crate) mod runtime;
+#[cfg(not(feature = "jit"))]
+#[path = "CodegenWasmJitFunctions/runtime_stub.rs"]
 pub(crate) mod runtime;
 
 /// A wasm value type. MetaModelica `Integer` is the port's `i32`

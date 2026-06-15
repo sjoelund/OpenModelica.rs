@@ -59,6 +59,17 @@ use crate::CodegenWasmJitFunctions::{
     sim_cref_key,
 };
 
+// Engine selected at compile time; same module interface across all three
+// (mirrors the block in CodegenWasmJitFunctions.rs, including the misconfig
+// guards). The `SimModel` below stores compiled modules as `sim_runtime::Module`.
+#[cfg(all(feature = "jit", not(feature = "engine-wasmer"), not(target_arch = "wasm32")))]
+#[path = "CodegenWasmJit/sim_runtime_wasmtime.rs"]
+mod sim_runtime;
+#[cfg(all(feature = "jit", any(feature = "engine-wasmer", target_arch = "wasm32")))]
+#[path = "CodegenWasmJit/sim_runtime_wasmer.rs"]
+mod sim_runtime;
+#[cfg(not(feature = "jit"))]
+#[path = "CodegenWasmJit/sim_runtime_stub.rs"]
 mod sim_runtime;
 
 /// Iterate a MetaModelica `List` (which is `IntoIterator` by reference, not via
@@ -201,10 +212,10 @@ struct SimModel {
     /// the (cranelift) compile overlaps the rest of the OMC pipeline instead of
     /// landing on `runSimulation`'s critical path. Joined by [`finishCompile`]
     /// (in `buildModel`'s compile phase) or, failing that, by `runSimulation`.
-    compiled: Mutex<Option<std::thread::JoinHandle<Result<wasmer::Module, String>>>>,
+    compiled: Mutex<Option<std::thread::JoinHandle<Result<sim_runtime::Module, String>>>>,
     /// The compiled model module once [`finishCompile`] has joined the job, so
     /// `runSimulation` can instantiate without recompiling.
-    prepared: Mutex<Option<wasmer::Module>>,
+    prepared: Mutex<Option<sim_runtime::Module>>,
 }
 
 /// Process-wide table of prepared models, keyed by file-name prefix. Populated

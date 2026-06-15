@@ -30,6 +30,10 @@ use crate::CodegenWasmJitFunctions::runtime::add_host_builtins;
 /// The runtime module, embedded the same way the function half embeds it.
 static RUNTIME_WASM: &[u8] = include_bytes!("../runtime.wasm");
 
+/// The compiled-module type for this backend; `CodegenWasmJit::SimModel` stores
+/// it backend-agnostically as `sim_runtime::Module`.
+pub(crate) type Module = wasmer::Module;
+
 /// One process-wide wasmer `Engine` (native `sys`/cranelift backend), so the
 /// (model-independent) runtime module can be JIT-compiled once and reused, and
 /// so model modules built on background threads share the same engine the run

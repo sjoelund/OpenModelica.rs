@@ -21,3 +21,8 @@ arcstr.workspace = true
 # allocate/free the malloc-boxed values shared with OMEdit (the header's
 # `mmc_mk_*` use malloc/strdup, so the shims free them with the same allocator).
 libc.workspace = true
+
+[features]
+# Forward the wasm-jit engine choice (default wasmtime; see
+# openmodelica_codegen_wasm_jit).
+engine-wasmer = ["openmodelica_backend_main/engine-wasmer"]
