@@ -278,7 +278,7 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
     // Read parameter values from SimData (result `Param` order).
     let mut params = Vec::new();
     for v in &model.result_vars {
-        if let ResultKind::Param { off, wty } = &v.kind {
+        if let ResultKind::Param { off, wty, .. } = &v.kind {
             let val = match wty {
                 WTy::F64 => read_f64(&memory, &store, sim_data + off)?,
                 WTy::I32 => {

@@ -137,13 +137,21 @@ impl SimLayout {
 /// How a result signal is stored in the `.mat` (which matrix + value source).
 #[derive(Clone)]
 enum ResultKind {
-    /// The independent variable (`time`): data_2 row 1, channel 0.
+    /// The independent variable (`time`): data_2 row 1.
     Time,
-    /// A time-variant signal: data_2 at the given 1-based row.
-    TimeVariant { row: u32 },
-    /// A time-invariant parameter: data_1 at the given 1-based row; `value` is
-    /// read from `SimData` after initialization.
-    Param { off: u32, wty: WTy },
+    /// A time-variant real signal that reads result-buffer column `col` (0-based
+    /// into the `[time | realVars]` row layout, so `col >= 1`). Several signals
+    /// can reference the same column (alias variables) — the writer emits one
+    /// data column and points each name at it (with `negate` for negated
+    /// aliases), exactly like the C runtime's `dataInfo` aliasing.
+    Column { col: u32, negate: bool },
+    /// A time-invariant parameter read from `SimData` at byte offset `off`
+    /// (`negate` for negated aliases of a parameter).
+    Param { off: u32, wty: WTy, negate: bool },
+    /// A compile-time constant (the `constVars`/`intConstVars`/`boolConstVars`
+    /// lists, e.g. visualization colors): the value is known here, with no
+    /// SimData slot, and is written directly to `data_1`.
+    Const { value: f64 },
 }
 
 /// One signal in the result file (in C-compatible order: time, states,
@@ -312,6 +320,68 @@ fn cref_display(cr: &Arc<DAE::ComponentRef>) -> Result<String> {
     Ok(ComponentReferenceBasics::printComponentRefStr(cr.clone())?.to_string())
 }
 
+/// Whether a variable is emitted to the result file, matching the C runtime's
+/// default selection: drop protected variables and `annotation(HideResult=true)`.
+fn is_result_output(sv: &SimCodeVar::SimVar) -> bool {
+    !sv.isProtected && sv.hideResult != Some(true)
+}
+
+/// Map a raw cref display name to the name it carries in the result file, or
+/// `None` to drop it. The new backend names a derivative of a non-state variable
+/// `$DER.x`; the C runtime shows it as `der(x)`. Other `$`-prefixed names are
+/// backend-internal auxiliaries (`$cse*`, `$PRE*`, …) and are not output.
+fn result_name(raw: &str) -> Option<String> {
+    if let Some(rest) = raw.strip_prefix("$DER.") {
+        Some(format!("der({rest})"))
+    } else if raw.starts_with('$') {
+        None
+    } else {
+        Some(raw.to_string())
+    }
+}
+
+/// Evaluate a constant variable's binding to a scalar, for the `*ConstVars`
+/// lists (which have no SimData slot). Handles the literal forms model constants
+/// actually take (numbers, booleans, enums, and unary minus thereof).
+fn const_value(exp: &Option<Arc<DAE::Exp>>) -> Option<f64> {
+    fn eval(e: &DAE::Exp) -> Option<f64> {
+        use DAE::Exp as E;
+        match e {
+            E::ICONST { integer } => Some(*integer as f64),
+            E::RCONST { real } => Some(real.into_inner()),
+            E::BCONST { bool } => Some(if *bool { 1.0 } else { 0.0 }),
+            E::ENUM_LITERAL { index, .. } => Some(*index as f64),
+            E::UNARY { operator: DAE::Operator::UMINUS { .. }, exp } => eval(exp).map(|v| -v),
+            E::CAST { exp, .. } => eval(exp),
+            _ => None,
+        }
+    }
+    exp.as_ref().and_then(|e| eval(e))
+}
+
+/// Classify a `SimData` slot (by byte offset) into how it appears in the result
+/// file: a time-variant real reads a result-buffer column; a real/integer/
+/// boolean parameter reads `data_1`. Integer/boolean *algebraic* variables (not
+/// captured per row) and string variables have no numeric result column.
+fn kind_from_slot(off: u32, wty: WTy, negate: bool, heap: bool, layout: &SimLayout) -> Option<ResultKind> {
+    if heap {
+        return None; // strings are not stored as numeric result data
+    }
+    if off >= REAL_OFF && off < layout.rparam_off {
+        // realVars region (states | derivatives | algebraics) -> data_2 column.
+        return Some(ResultKind::Column { col: 1 + (off - REAL_OFF) / 8, negate });
+    }
+    if off >= layout.rparam_off && off < layout.str_off {
+        // Real parameters, and all integer/boolean slots (params *and*
+        // algebraics). The integer/boolean trajectory is not captured per row,
+        // so these read their final SimData value into data_1 — correct for the
+        // constant integer/boolean variables typical of physical models (e.g.
+        // visualization colors); a varying one would show only its final value.
+        return Some(ResultKind::Param { off, wty, negate });
+    }
+    None // string slots
+}
+
 /// Build the cref->slot map and the result-variable list from the model's
 /// `SimVars`. The slot offsets follow [`SimLayout`]; the result order matches
 /// the C runtime (time, states, state derivatives, real algebraics, then
@@ -338,74 +408,66 @@ fn build_var_map(
     let states: Vec<&SimCodeVar::SimVar> = lst(&vars.stateVars).collect();
     let ders: Vec<&SimCodeVar::SimVar> = lst(&vars.derivativeVars).collect();
 
-    // States: realVars[0..nStates].
-    let mut next_tv_row: u32 = 2; // data_2 row 1 is time; signals start at row 2
+    // Push a primary (non-alias) variable: always register its slot (equations
+    // reference even protected/internal vars), but only emit it as a result
+    // signal if it passes the C-compatible filter.
+    let mut push_primary =
+        |map: &mut SimVarMap, result_vars: &mut Vec<ResultVar>, sv: &SimCodeVar::SimVar,
+         off: u32, wty: WTy, heap: bool, raw_name: String| -> Result<()> {
+            insert_var(map, sv, off, wty, heap)?;
+            if is_result_output(sv) {
+                if let (Some(name), Some(kind)) =
+                    (result_name(&raw_name), kind_from_slot(off, wty, false, heap, layout))
+                {
+                    result_vars.push(ResultVar { name, comment: sv.comment.to_string(), kind });
+                }
+            }
+            Ok(())
+        };
+
+    // States | derivatives | real algebraics -> the realVars region (data_2).
     for (i, sv) in states.iter().enumerate() {
-        let off = REAL_OFF + (i as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64, false)?;
-        result_vars.push(ResultVar {
-            name: cref_display(&sv.name)?,
-            comment: sv.comment.to_string(),
-            kind: ResultKind::TimeVariant { row: next_tv_row },
-        });
-        next_tv_row += 1;
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, REAL_OFF + (i as u32) * 8, WTy::F64, false, name)?;
     }
-    // Derivatives: realVars[nStates..2*nStates], paired with states by index.
     for (i, sv) in ders.iter().enumerate() {
-        let off = REAL_OFF + (layout.n_states + i as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64, false)?;
         // der(x) is displayed as `der(<state name>)`.
-        let dname = match states.get(i) {
+        let name = match states.get(i) {
             Some(s) => format!("der({})", cref_display(&s.name)?),
             None => cref_display(&sv.name)?,
         };
-        result_vars.push(ResultVar {
-            name: dname,
-            comment: sv.comment.to_string(),
-            kind: ResultKind::TimeVariant { row: next_tv_row },
-        });
-        next_tv_row += 1;
+        push_primary(&mut map, &mut result_vars, sv, REAL_OFF + (layout.n_states + i as u32) * 8, WTy::F64, false, name)?;
     }
-    // Real algebraics: algVars ++ discreteAlgVars.
     let real_algs: Vec<&SimCodeVar::SimVar> =
         lst(&vars.algVars).chain(lst(&vars.discreteAlgVars)).collect();
     for (j, sv) in real_algs.iter().enumerate() {
-        let off = REAL_OFF + (2 * layout.n_states + j as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64, false)?;
-        result_vars.push(ResultVar {
-            name: cref_display(&sv.name)?,
-            comment: sv.comment.to_string(),
-            kind: ResultKind::TimeVariant { row: next_tv_row },
-        });
-        next_tv_row += 1;
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, REAL_OFF + (2 * layout.n_states + j as u32) * 8, WTy::F64, false, name)?;
     }
 
-    // Real parameters (time-invariant; data_1).
+    // Real / Integer / Boolean parameters -> data_1. Integer & Boolean algebraic
+    // variables get slots (for equation resolution) but no result column yet
+    // (they are not captured per row); strings get slots only.
     for (k, sv) in lst(&vars.paramVars).enumerate() {
-        let off = layout.rparam_off + (k as u32) * 8;
-        insert_var(&mut map, sv, off, WTy::F64, false)?;
-        result_vars.push(ResultVar {
-            name: cref_display(&sv.name)?,
-            comment: sv.comment.to_string(),
-            kind: ResultKind::Param { off, wty: WTy::F64 },
-        });
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, layout.rparam_off + (k as u32) * 8, WTy::F64, false, name)?;
     }
-    // Integer / Boolean algebraics and parameters: slots only (not yet emitted
-    // as result signals — mechanical models are Real-dominated). They resolve in
-    // equations; surfacing them as result columns is future work.
     for (i, sv) in lst(&vars.intAlgVars).enumerate() {
-        insert_var(&mut map, sv, layout.int_off + (i as u32) * 4, WTy::I32, false)?;
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, layout.int_off + (i as u32) * 4, WTy::I32, false, name)?;
     }
     for (k, sv) in lst(&vars.intParamVars).enumerate() {
-        insert_var(&mut map, sv, layout.iparam_off + (k as u32) * 4, WTy::I32, false)?;
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, layout.iparam_off + (k as u32) * 4, WTy::I32, false, name)?;
     }
     for (i, sv) in lst(&vars.boolAlgVars).enumerate() {
-        insert_var(&mut map, sv, layout.bool_off + (i as u32) * 4, WTy::I32, false)?;
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, layout.bool_off + (i as u32) * 4, WTy::I32, false, name)?;
     }
     for (k, sv) in lst(&vars.boolParamVars).enumerate() {
-        insert_var(&mut map, sv, layout.bparam_off + (k as u32) * 4, WTy::I32, false)?;
+        let name = cref_display(&sv.name)?;
+        push_primary(&mut map, &mut result_vars, sv, layout.bparam_off + (k as u32) * 4, WTy::I32, false, name)?;
     }
-    // String algebraics and parameters: an i32 String handle per slot (`heap`).
     for (i, sv) in lst(&vars.stringAlgVars).enumerate() {
         insert_var(&mut map, sv, layout.str_off + (i as u32) * 4, WTy::I32, true)?;
     }
@@ -413,9 +475,25 @@ fn build_var_map(
         insert_var(&mut map, sv, layout.sparam_off + (k as u32) * 4, WTy::I32, true)?;
     }
 
-    // Aliases: resolve to the slot of the target variable (with negation). This
-    // lets equations and `$START` of an alias read the aliased value. Alias
-    // result columns are future work; the simulation itself is unaffected.
+    // Compile-time constants (real / integer / boolean): no SimData slot — their
+    // value is the binding literal. Emit each to data_1 (the C runtime keeps them
+    // in the result too, e.g. visualization colors). Record their values so a
+    // constant's aliases resolve below.
+    let mut const_of: HashMap<String, f64> = HashMap::new();
+    for sv in lst(&vars.constVars).chain(lst(&vars.intConstVars)).chain(lst(&vars.boolConstVars)) {
+        let Some(value) = const_value(&sv.initialValue) else { continue };
+        const_of.insert(sim_cref_key(&sv.name)?, value);
+        if is_result_output(sv) {
+            if let Some(name) = result_name(&cref_display(&sv.name)?) {
+                result_vars.push(ResultVar { name, comment: sv.comment.to_string(), kind: ResultKind::Const { value } });
+            }
+        }
+    }
+
+    // Aliases: resolve to the target variable's slot (with negation) so equations
+    // and `$START` of an alias read the aliased value, AND emit the alias as a
+    // result signal pointing at the target's data column / parameter (with sign)
+    // — the C runtime's `dataInfo` aliasing, so the data is stored once.
     for av in lst(&vars.aliasVars).chain(lst(&vars.intAliasVars)).chain(lst(&vars.boolAliasVars)) {
         let (target, negate) = match &av.aliasvar {
             SimCodeVar::AliasVariable::ALIAS { varName } => (varName.clone(), false),
@@ -423,15 +501,33 @@ fn build_var_map(
             SimCodeVar::AliasVariable::NOALIAS => continue,
         };
         let tkey = sim_cref_key(&target)?;
-        if let Some(tslot) = map.vars.get(&tkey).copied() {
-            let key = sim_cref_key(&av.name)?;
-            map.vars.insert(
-                key,
-                SimSlot { off: tslot.off, wty: tslot.wty, negate: tslot.negate ^ negate, heap: tslot.heap },
-            );
+        let Some(tslot) = map.vars.get(&tkey).copied() else {
+            // Target has no slot: it may be a compile-time constant.
+            if let Some(&cval) = const_of.get(&tkey) {
+                if is_result_output(av) {
+                    if let Some(name) = result_name(&cref_display(&av.name)?) {
+                        let value = if negate { -cval } else { cval };
+                        result_vars.push(ResultVar { name, comment: av.comment.to_string(), kind: ResultKind::Const { value } });
+                    }
+                }
+            }
+            continue;
+        };
+        let slot = SimSlot {
+            off: tslot.off,
+            wty: tslot.wty,
+            negate: tslot.negate ^ negate,
+            heap: tslot.heap,
+        };
+        map.vars.insert(sim_cref_key(&av.name)?, slot);
+        if is_result_output(av) {
+            if let (Some(name), Some(kind)) = (
+                result_name(&cref_display(&av.name)?),
+                kind_from_slot(slot.off, slot.wty, slot.negate, slot.heap, layout),
+            ) {
+                result_vars.push(ResultVar { name, comment: av.comment.to_string(), kind });
+            }
         }
-        // An alias whose target is not (yet) mapped is silently skipped; a
-        // reference to it then fails loudly at lowering with a clear message.
     }
 
     finalize_array_groups(&mut map)?;
@@ -1134,57 +1230,87 @@ fn write_mat4(model: &SimModel, path: &str, rows: &[f64], n_reals: u32, params: 
     write_char_matrix_cols(&mut out, "name", &names);
     write_char_matrix_cols(&mut out, "description", &descs);
 
-    // Compact the trajectory like the C runtime does: a `TimeVariant` signal
-    // whose value never changes over the whole run is stored once in data_1
-    // instead of as `n_rows` identical doubles in data_2. (For MultiBody models
-    // most algebraic variables are constant — this is the difference between a
-    // ~3MB and a ~0.5MB result file.) `TimeVariant { row }` maps 1:1 to
-    // result-buffer column `row - 1` (column 0 is time).
+    // Build data_2 / data_1 like the C runtime: each `Column` signal references
+    // a result-buffer column; several names can share one column (alias dedup).
+    // A referenced column that is constant over the whole run is stored once in
+    // data_1; varying ones go to data_2. Parameters (and constant aliases of
+    // them) go to data_1. Negated aliases get a negative dataInfo index.
     let param_vals: &[f64] = params;
-    let n_params = param_vals.len();
     let demote = n_rows >= 2;
+
+    // Which buffer columns does any signal reference, and is each constant?
+    let mut referenced = vec![false; n_reals];
+    for v in signals {
+        if let ResultKind::Column { col, .. } = &v.kind {
+            let c = *col as usize;
+            if c < n_reals {
+                referenced[c] = true;
+            }
+        }
+    }
     let mut col_is_const = vec![false; n_reals];
     if demote {
         for c in 1..n_reals {
-            let first = rows[c];
-            col_is_const[c] = (1..n_rows).all(|r| rows[r * n_reals + c] == first);
+            if referenced[c] {
+                let first = rows[c];
+                col_is_const[c] = (1..n_rows).all(|r| rows[r * n_reals + c] == first);
+            }
         }
     }
-    // Assign new data_2 rows to the kept (varying) columns and data_1 rows to
-    // the demoted constant columns. Both are 1-based (data_2 row 1 = time;
-    // data_1 row 1 = the reserved [start, stop] row, rows 2.. = params then
-    // demoted constants).
-    let mut new_data2_row = vec![0i32; n_reals];
-    let mut const_data1_row = vec![0i32; n_reals];
+    // data_1 holds (after the reserved [start,stop] row) one row per scalar
+    // signal — `Param` (read from SimData) and `Const` (literal) — in signal
+    // order, then one row per demoted constant column.
+    let n_scalars = signals
+        .iter()
+        .filter(|v| matches!(v.kind, ResultKind::Param { .. } | ResultKind::Const { .. }))
+        .count();
+
+    // Assign data_2 rows to varying referenced columns; data_1 rows to constant
+    // referenced columns (after [start,stop] and the scalar signals).
+    let mut col_data2_row = vec![0i32; n_reals];
+    let mut col_data1_row = vec![0i32; n_reals];
     let mut varying_cols: Vec<usize> = Vec::new();
-    let mut next_const_row: i32 = 2 + n_params as i32;
+    let mut const_cols: Vec<usize> = Vec::new();
+    let mut next_const_row: i32 = 2 + n_scalars as i32;
     for c in 1..n_reals {
+        if !referenced[c] {
+            continue; // column belongs to a filtered-out variable — drop it
+        }
         if col_is_const[c] {
-            const_data1_row[c] = next_const_row;
+            const_cols.push(c);
+            col_data1_row[c] = next_const_row;
             next_const_row += 1;
         } else {
             varying_cols.push(c);
-            new_data2_row[c] = 1 + varying_cols.len() as i32;
+            col_data2_row[c] = 1 + varying_cols.len() as i32;
         }
     }
 
     // dataInfo (4 x nSignals int32, column-major): [channel, index, interp, extrap].
     let mut data_info: Vec<i32> = Vec::with_capacity(signals.len() * 4);
-    let mut next_param_row: i32 = 2;
+    let mut next_scalar_row: i32 = 2;
     for v in signals {
         let info = match &v.kind {
             ResultKind::Time => [0, 1, 0, -1],
-            ResultKind::TimeVariant { row } => {
-                let c = (*row as usize).saturating_sub(1);
-                if c < n_reals && col_is_const[c] {
-                    [1, const_data1_row[c], 0, 0] // demoted to data_1
+            ResultKind::Column { col, negate } => {
+                let c = *col as usize;
+                let sgn = if *negate { -1 } else { 1 };
+                if c < n_reals && col_data1_row[c] != 0 {
+                    [1, sgn * col_data1_row[c], 0, 0]
+                } else if c < n_reals && col_data2_row[c] != 0 {
+                    [2, sgn * col_data2_row[c], 0, 0]
                 } else {
-                    [2, new_data2_row[c], 0, 0]
+                    [0, 1, 0, -1] // unreachable (every Column is referenced); alias time
                 }
             }
-            ResultKind::Param { .. } => {
-                let r = next_param_row;
-                next_param_row += 1;
+            ResultKind::Param { negate, .. } => {
+                let r = next_scalar_row;
+                next_scalar_row += 1;
+                [1, if *negate { -r } else { r }, 0, 0]
+            }
+            ResultKind::Const { .. } => {
+                let r = next_scalar_row;
+                next_scalar_row += 1;
                 [1, r, 0, 0]
             }
         };
@@ -1192,24 +1318,33 @@ fn write_mat4(model: &SimModel, path: &str, rows: &[f64], n_reals: u32, params: 
     }
     write_int_matrix(&mut out, "dataInfo", 4, signals.len(), &data_info);
 
-    // data_1 (nData1 x 2 double, column-major): row 1 = [start, stop]; then one
-    // row per parameter, then one per demoted-constant column (same value in
-    // both columns).
-    let n_const = n_reals.saturating_sub(1) - varying_cols.len();
-    let n_data1 = 1 + n_params + n_const;
+    // data_1 (nData1 x 2 double, column-major): row 1 = [start, stop]; then the
+    // scalar signals (Param values read from SimData, Const literals), then the
+    // demoted constant columns. `param_vals` is in `Param`-signal order.
+    let n_data1 = 1 + n_scalars + const_cols.len();
     let mut data_1: Vec<f64> = vec![0.0; n_data1 * 2];
     data_1[0] = model.start_time;
     data_1[n_data1] = model.stop_time;
-    for (i, val) in param_vals.iter().enumerate() {
-        data_1[1 + i] = *val;
-        data_1[n_data1 + 1 + i] = *val;
+    let mut row_idx = 1usize; // 0-based index of data_1 row 2
+    let mut param_idx = 0usize;
+    for v in signals {
+        let val = match &v.kind {
+            ResultKind::Param { .. } => {
+                let v = param_vals.get(param_idx).copied().unwrap_or(0.0);
+                param_idx += 1;
+                v
+            }
+            ResultKind::Const { value } => *value,
+            _ => continue,
+        };
+        data_1[row_idx] = val;
+        data_1[n_data1 + row_idx] = val;
+        row_idx += 1;
     }
-    for c in 1..n_reals {
-        if col_is_const[c] {
-            let idx = (const_data1_row[c] - 1) as usize; // 1-based row -> 0-based index
-            data_1[idx] = rows[c];
-            data_1[n_data1 + idx] = rows[c];
-        }
+    for &c in &const_cols {
+        let idx = (col_data1_row[c] - 1) as usize; // 1-based row -> 0-based index
+        data_1[idx] = rows[c];
+        data_1[n_data1 + idx] = rows[c];
     }
     write_double_matrix(&mut out, "data_1", n_data1, 2, &data_1);
 
