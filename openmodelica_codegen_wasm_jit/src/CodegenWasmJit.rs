@@ -175,8 +175,12 @@ struct SimModel {
     tolerance: f64,
     /// Background JIT job for the model module, spawned by [`translateModel`] so
     /// the (cranelift) compile overlaps the rest of the OMC pipeline instead of
-    /// landing on `runSimulation`'s critical path. `runSimulation` joins it.
+    /// landing on `runSimulation`'s critical path. Joined by [`finishCompile`]
+    /// (in `buildModel`'s compile phase) or, failing that, by `runSimulation`.
     compiled: Mutex<Option<std::thread::JoinHandle<Result<wasmtime::Module, String>>>>,
+    /// The compiled model module once [`finishCompile`] has joined the job, so
+    /// `runSimulation` can instantiate without recompiling.
+    prepared: Mutex<Option<wasmtime::Module>>,
 }
 
 /// Process-wide table of prepared models, keyed by file-name prefix. Populated
@@ -238,6 +242,26 @@ pub fn runSimulation(fileNamePrefix: ArcStr, resultFile: ArcStr, simflags: ArcSt
             eprintln!("CodegenWasmJit: simulation of `{fileNamePrefix}` failed: {e:#}");
             1
         }
+    }
+}
+
+/// `CodegenWasmJit.finishCompile`: force the model's wasm modules to finish
+/// compiling. Called from `buildModel`'s compile phase (the wasm-jit counterpart
+/// of `compileModel` building the C executable) so the JIT-compile cost is
+/// measured as `timeCompile` rather than leaking into `timeSimulation`. It joins
+/// the background model-module compile (started by `translateModel`) and forces
+/// the runtime module (compiled-once / AOT-cached), stashing the compiled model
+/// module for `runSimulation`. Errors are deferred — `runSimulation` recompiles
+/// and reports them — so this never fails the build by itself.
+pub fn finishCompile(fileNamePrefix: ArcStr) {
+    let model = sim_models().lock().unwrap().get(&fileNamePrefix.to_string()).cloned();
+    let Some(model) = model else { return };
+    // Force the runtime module (so its compile/cache-load is in `timeCompile`).
+    let _ = sim_runtime::runtime_module();
+    // Join the background model-module compile and stash the result.
+    match sim_runtime::take_compiled_model(&model) {
+        Ok(m) => *model.prepared.lock().unwrap() = Some(m),
+        Err(e) => eprintln!("CodegenWasmJit: model-module compile failed for `{fileNamePrefix}`: {e:#}"),
     }
 }
 
@@ -748,6 +772,7 @@ fn build_sim_model(sim_code: &SimCode::SimCode) -> Result<SimModel> {
     Ok(SimModel {
         wasm,
         compiled,
+        prepared: Mutex::new(None),
         layout,
         result_vars,
         model_name: openmodelica_frontend_dump::AbsynUtil::pathString(

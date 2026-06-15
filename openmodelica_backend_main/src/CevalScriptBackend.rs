@@ -7701,6 +7701,12 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
                         if '__try9: {
                             if unwrap_break_err!(Config::simCodeTarget(), '__try9) != literal!("wasm-jit") {
                                         unwrap_break_err!(CevalScript::compileModel((filenameprefix.clone()).clone(), libsAndLibDirs.clone(), (literal!("")).clone(), metamodelica::nil()), '__try9);
+                            } else {
+                                        // wasm-jit has no external compile step; instead force the
+                                        // JIT compile of the model's wasm modules here so its cost is
+                                        // attributed to `timeCompile` (this clock) rather than leaking
+                                        // into `timeSimulation` at `runSimulation`.
+                                        CodegenWasmJit::finishCompile((filenameprefix.clone()).clone());
                             }
                             Ok::<(), anyhow::Error>(())
                         }.is_err() {

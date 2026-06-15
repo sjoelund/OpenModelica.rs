@@ -141,7 +141,7 @@ pub(super) fn start_runtime_compile() {
 
 /// Take the model module compiled on the background thread `translateModel`
 /// spawned (joining it), or compile inline if there is no pending job.
-fn take_compiled_model(model: &SimModel) -> Result<wasmtime::Module> {
+pub(super) fn take_compiled_model(model: &SimModel) -> Result<wasmtime::Module> {
     let job = model.compiled.lock().unwrap().take();
     match job {
         Some(handle) => match handle.join() {
@@ -195,8 +195,14 @@ pub(super) fn run(model: &SimModel) -> Result<RunResult> {
     let t_compile = Instant::now();
     let runtime_module = runtime_module()?;
     let rt_compile = t_compile.elapsed();
+    // Prefer the module already prepared by `finishCompile` (buildModel's
+    // compile phase, counted as `timeCompile`); otherwise join/compile here.
     let t_model = Instant::now();
-    let model_module = take_compiled_model(model)?;
+    let prepared = model.prepared.lock().unwrap().take();
+    let model_module = match prepared {
+        Some(m) => m,
+        None => take_compiled_model(model)?,
+    };
     let model_compile = t_model.elapsed();
     let compile_time = t_compile.elapsed();
     if bench {
