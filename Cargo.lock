@@ -1174,7 +1174,9 @@ dependencies = [
  "openmodelica_script_util",
  "openmodelica_scripting_qt",
  "openmodelica_util",
+ "openmodelica_vfs",
  "wasm-bindgen",
+ "zip",
 ]
 
 [[package]]

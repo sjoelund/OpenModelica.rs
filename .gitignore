@@ -7,3 +7,4 @@ __pycache__/
 wasm/pkg/
 wasm/pkg-nodejs/
 wasm/pkg-web/
+wasm/libs/

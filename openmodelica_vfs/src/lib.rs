@@ -55,6 +55,31 @@ fn basename(path: &str) -> &str {
     path.rsplit(['/', '\\']).next().unwrap_or(path)
 }
 
+/// Canonicalise a path key: backslashes → `/`, collapse repeated slashes, and
+/// drop any trailing slash (except for the root `/`). So `a//b/`, `a/b`, and
+/// `a\b` all map to the same key — essential for prefix-based directory queries
+/// when MODELICAPATH and the compiler concatenate paths with stray slashes.
+fn normalize(path: &str) -> String {
+    let mut out = String::with_capacity(path.len());
+    let mut prev_slash = false;
+    for c in path.chars() {
+        let c = if c == '\\' { '/' } else { c };
+        if c == '/' {
+            if !prev_slash {
+                out.push('/');
+            }
+            prev_slash = true;
+        } else {
+            out.push(c);
+            prev_slash = false;
+        }
+    }
+    if out.len() > 1 && out.ends_with('/') {
+        out.pop();
+    }
+    out
+}
+
 // ──────────────────────────── writable store ─────────────────────────────────
 
 fn store() -> &'static Mutex<HashMap<String, Vec<u8>>> {
@@ -64,7 +89,7 @@ fn store() -> &'static Mutex<HashMap<String, Vec<u8>>> {
 
 /// Write `bytes` to `path`, replacing any existing entry.
 pub fn write(path: &str, bytes: Vec<u8>) {
-    store().lock().unwrap().insert(path.to_owned(), bytes);
+    store().lock().unwrap().insert(normalize(path), bytes);
 }
 
 /// Append `bytes` to `path`, creating it if absent.
@@ -72,7 +97,7 @@ pub fn append(path: &str, bytes: &[u8]) {
     store()
         .lock()
         .unwrap()
-        .entry(path.to_owned())
+        .entry(normalize(path))
         .or_default()
         .extend_from_slice(bytes);
 }
@@ -80,24 +105,57 @@ pub fn append(path: &str, bytes: &[u8]) {
 /// Read `path`: an exact store entry wins, otherwise the embedded builtin whose
 /// basename matches. Returns `None` if neither exists.
 pub fn read(path: &str) -> Option<Vec<u8>> {
-    if let Some(b) = store().lock().unwrap().get(path) {
+    if let Some(b) = store().lock().unwrap().get(&normalize(path)) {
         return Some(b.clone());
     }
     builtin_by_basename(basename(path)).map(|s| s.as_bytes().to_vec())
 }
 
-/// True when [`read`] would succeed for `path`.
+/// True when [`read`] would succeed for `path` (a stored file).
 pub fn exists(path: &str) -> bool {
-    store().lock().unwrap().contains_key(path) || builtin_by_basename(basename(path)).is_some()
+    store().lock().unwrap().contains_key(&normalize(path)) || builtin_by_basename(basename(path)).is_some()
+}
+
+/// True when `path` is a directory: some stored key lives under `path/`.
+pub fn is_dir(path: &str) -> bool {
+    let prefix = format!("{}/", normalize(path));
+    store().lock().unwrap().keys().any(|k| k.starts_with(&prefix))
+}
+
+/// The immediate children of directory `dir`, as `(name, is_dir)` pairs (no
+/// recursion, deduplicated). Empty when `dir` holds nothing.
+pub fn list_dir(dir: &str) -> Vec<(String, bool)> {
+    let prefix = format!("{}/", normalize(dir));
+    let mut seen: std::collections::HashMap<String, bool> = std::collections::HashMap::new();
+    for k in store().lock().unwrap().keys() {
+        if let Some(rest) = k.strip_prefix(&prefix)
+            && !rest.is_empty()
+        {
+            match rest.split_once('/') {
+                Some((child, _)) => {
+                    seen.insert(child.to_owned(), true);
+                }
+                None => {
+                    seen.entry(rest.to_owned()).or_insert(false);
+                }
+            }
+        }
+    }
+    seen.into_iter().collect()
 }
 
 /// Remove `path` from the writable store. Embedded builtins are immutable and
 /// unaffected. Returns true if an entry was removed.
 pub fn remove(path: &str) -> bool {
-    store().lock().unwrap().remove(path).is_some()
+    store().lock().unwrap().remove(&normalize(path)).is_some()
 }
 
 /// Every path currently held in the writable store (excludes embedded builtins).
 pub fn list() -> Vec<String> {
     store().lock().unwrap().keys().cloned().collect()
+}
+
+/// Number of files currently held in the writable store.
+pub fn len() -> usize {
+    store().lock().unwrap().len()
 }

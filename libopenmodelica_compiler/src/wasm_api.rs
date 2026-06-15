@@ -79,6 +79,47 @@ pub fn omc_init() -> bool {
     matches!(catch_unwind(AssertUnwindSafe(|| capi::init(&args))), Ok(Ok(())))
 }
 
+/// Write one file into the in-memory VFS at `path`. Lets the JS host stage files
+/// the compiler will read — e.g. download a Modelica library file-by-file (a
+/// manifest of paths, each fetched and put here) before `loadModel`.
+#[wasm_bindgen]
+pub fn omc_vfs_put(path: &str, bytes: &[u8]) {
+    openmodelica_vfs::write(path, bytes.to_vec());
+}
+
+/// Read a file back out of the VFS (e.g. a simulation result the run wrote), or
+/// `None` if absent.
+#[wasm_bindgen]
+pub fn omc_vfs_get(path: &str) -> Option<Vec<u8>> {
+    openmodelica_vfs::read(path)
+}
+
+/// Unzip `data` into the VFS, mounting each entry under `mount` (e.g.
+/// `mount="/lib"`, entry `Modelica 4.1.0/package.mo` → `/lib/Modelica 4.1.0/
+/// package.mo`). One fetch + this call stages a whole Modelica library; point
+/// MODELICAPATH at `mount` and `loadModel`. Returns the number of files written
+/// or an error string.
+#[wasm_bindgen]
+pub fn omc_vfs_load_zip(mount: &str, data: &[u8]) -> Result<usize, String> {
+    let reader = std::io::Cursor::new(data);
+    let mut zip = zip::ZipArchive::new(reader).map_err(|e| format!("zip open: {e}"))?;
+    let mut count = 0usize;
+    for i in 0..zip.len() {
+        let mut entry = zip.by_index(i).map_err(|e| format!("zip entry {i}: {e}"))?;
+        if !entry.is_file() {
+            continue;
+        }
+        // `enclosed_name` strips any `..`/absolute components (zip-slip safe).
+        let Some(name) = entry.enclosed_name() else { continue };
+        let path = format!("{}/{}", mount.trim_end_matches('/'), name.to_string_lossy());
+        let mut buf = Vec::with_capacity(entry.size() as usize);
+        std::io::Read::read_to_end(&mut entry, &mut buf).map_err(|e| format!("read {name:?}: {e}"))?;
+        openmodelica_vfs::write(&path, buf);
+        count += 1;
+    }
+    Ok(count)
+}
+
 /// Evaluate one interactive command and return its reply — the same string the
 /// `--interactive=zmq` server returns for a request. Evaluation errors and
 /// panics are returned as `"Error: …"` text rather than thrown, so a REPL can

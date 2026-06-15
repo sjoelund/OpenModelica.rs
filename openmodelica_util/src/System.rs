@@ -809,17 +809,29 @@ pub fn setEnv(varName: ArcStr, value: ArcStr, overwrite: bool) -> i32 {
 }
 
 pub fn subDirectories(inString: ArcStr) -> Arc<List<ArcStr>> {
-    let mut out: Vec<ArcStr> = Vec::new();
-    if let Ok(rd) = fs::read_dir(inString.as_str()) {
-        for ent in rd.flatten() {
-            let p = ent.path();
-            if p.is_dir()
-                && let Some(name) = p.file_name() {
-                    out.push(ArcStr::from(name.to_string_lossy().as_ref()));
-                }
-        }
+    #[cfg(target_arch = "wasm32")]
+    {
+        let out: Vec<ArcStr> = openmodelica_vfs::list_dir(inString.as_str())
+            .into_iter()
+            .filter(|(_, is_dir)| *is_dir)
+            .map(|(name, _)| ArcStr::from(name))
+            .collect();
+        return list_from_vec(out);
     }
-    list_from_vec(out)
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let mut out: Vec<ArcStr> = Vec::new();
+        if let Ok(rd) = fs::read_dir(inString.as_str()) {
+            for ent in rd.flatten() {
+                let p = ent.path();
+                if p.is_dir()
+                    && let Some(name) = p.file_name() {
+                        out.push(ArcStr::from(name.to_string_lossy().as_ref()));
+                    }
+            }
+        }
+        list_from_vec(out)
+    }
 }
 
 fn files_with_ext(dir: &str, ext: &str) -> Vec<ArcStr> {
@@ -830,20 +842,35 @@ fn files_with_ext(dir: &str, ext: &str) -> Vec<ArcStr> {
     // class to load. The C version returns directory order (scandir with a
     // NULL comparator); callers that care sort the combined list themselves.
     let package_file = format!("package.{ext}");
-    let mut out: Vec<ArcStr> = Vec::new();
-    if let Ok(rd) = fs::read_dir(dir) {
-        for ent in rd.flatten() {
-            let p = ent.path();
-            if p.is_file()
-                && p.extension().map(|e| e == ext).unwrap_or(false)
-                && let Some(name) = p.file_name()
-                && name.to_string_lossy() != package_file.as_str()
-            {
-                out.push(ArcStr::from(name.to_string_lossy().as_ref()));
+    let dot_ext = format!(".{ext}");
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::list_dir(dir)
+            .into_iter()
+            .filter(|(name, is_dir)| {
+                !is_dir && name.ends_with(&dot_ext) && name.as_str() != package_file.as_str()
+            })
+            .map(|(name, _)| ArcStr::from(name))
+            .collect()
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let _ = &dot_ext;
+        let mut out: Vec<ArcStr> = Vec::new();
+        if let Ok(rd) = fs::read_dir(dir) {
+            for ent in rd.flatten() {
+                let p = ent.path();
+                if p.is_file()
+                    && p.extension().map(|e| e == ext).unwrap_or(false)
+                    && let Some(name) = p.file_name()
+                    && name.to_string_lossy() != package_file.as_str()
+                {
+                    out.push(ArcStr::from(name.to_string_lossy().as_ref()));
+                }
             }
         }
+        out
     }
-    out
 }
 
 pub fn moFiles(inString: ArcStr) -> Arc<List<ArcStr>> {
@@ -914,21 +941,19 @@ fn split_version(version: &str) -> ([i64; MODELICAPATH_LEVELS], String, bool) {
 fn get_all_modelica_paths(name: &str, mps: &Arc<List<ArcStr>>) -> Vec<ModelicaPathEntry> {
     let mut res = Vec::new();
     for mp in &**mps {
-        let Ok(dir) = fs::read_dir(mp.as_str()) else { continue };
-        for ent in dir.flatten() {
-            let Ok(file) = ent.file_name().into_string() else { continue };
+        for (file, _) in dir_entries(mp.as_str()) {
             if !file.starts_with(name)
                 || !matches!(file.as_bytes().get(name.len()), None | Some(b' ') | Some(b'.'))
             {
                 continue;
             }
             let is_package_dir = ["package.mo", "package.moc"].iter().any(|pkg| {
-                fs::metadata(format!("{mp}/{file}/{pkg}")).map(|m| m.is_file()).unwrap_or(false)
+                path_is_file(&format!("{mp}/{file}/{pkg}"))
             });
             let file_is_dir = if is_package_dir {
                 true
             } else if (file.ends_with(".mo") || file.ends_with(".moc"))
-                && fs::metadata(format!("{mp}/{file}")).map(|m| m.is_file()).unwrap_or(false)
+                && path_is_file(&format!("{mp}/{file}"))
             {
                 false
             } else {
@@ -945,6 +970,40 @@ fn get_all_modelica_paths(name: &str, mps: &Arc<List<ArcStr>>) -> Vec<ModelicaPa
         }
     }
     res
+}
+
+/// Immediate children of `dir` as `(name, is_dir)`: the OS filesystem natively,
+/// the in-memory VFS on wasm. Used by the MODELICAPATH scan.
+fn dir_entries(dir: &str) -> Vec<(String, bool)> {
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::list_dir(dir)
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let mut out = Vec::new();
+        if let Ok(rd) = fs::read_dir(dir) {
+            for ent in rd.flatten() {
+                if let Ok(name) = ent.file_name().into_string() {
+                    out.push((name, ent.path().is_dir()));
+                }
+            }
+        }
+        out
+    }
+}
+
+/// True when `path` is an existing regular file: the OS filesystem natively, the
+/// VFS on wasm.
+fn path_is_file(path: &str) -> bool {
+    #[cfg(target_arch = "wasm32")]
+    {
+        openmodelica_vfs::exists(path)
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        fs::metadata(path).map(|m| m.is_file()).unwrap_or(false)
+    }
 }
 
 fn version_equal(v1: &[i64], v2: &[i64], num_to_test: usize) -> bool {
@@ -1103,6 +1162,9 @@ pub fn removeFile(fileName: ArcStr) -> i32 {
 }
 
 pub fn directoryExists(inString: ArcStr) -> bool {
+    #[cfg(target_arch = "wasm32")]
+    return openmodelica_vfs::is_dir(inString.as_str());
+    #[cfg(not(target_arch = "wasm32"))]
     fs::metadata(inString.as_str()).map(|m| m.is_dir()).unwrap_or(false)
 }
 
