@@ -41,3 +41,9 @@ const-str.workspace=true
 arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true
+
+# Enable the native ZeroMQ interactive server (Main.rs uses ZeroMQ.rs). The
+# `zeromq` feature pulls native libzmq, which has no wasm target, so it is
+# only requested off-wasm; wasm builds use ZeroMQ.rs's feature-off fallback.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+openmodelica_util = { workspace = true, features = ["zeromq"] }
