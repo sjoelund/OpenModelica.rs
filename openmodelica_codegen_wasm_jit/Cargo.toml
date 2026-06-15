@@ -14,5 +14,14 @@ anyhow.workspace = true
 arcstr.workspace = true
 ordered-float.workspace = true
 wasm-encoder.workspace = true
-wasmer.workspace = true
 daskr = { path = "../daskr" }
+
+# wasmer backend selected by target: native uses the `sys` cranelift JIT; the
+# wasm32 build uses the `js` backend, which forwards to the host JS engine's
+# `WebAssembly` API (the one engine that can JIT inside browser-wasm). See
+# CodegenWasmJit/sim_runtime.rs and CodegenWasmJitFunctions/runtime.rs.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+wasmer = { workspace = true, features = ["sys", "cranelift"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasmer = { workspace = true, features = ["js"] }

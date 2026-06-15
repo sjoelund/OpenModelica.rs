@@ -58,7 +58,10 @@ zmq = "0.10"
 # anyhow::anyhow! via the `wt` helper (their Debug formatting), since the
 # crate's many engine error types do not share one anyhow-convertible type.
 wasm-encoder = "0.252"
-wasmer = { version = "6", default-features = false, features = ["sys", "cranelift", "std", "wat"] }
+# Backend feature is selected per-target by the consuming crate
+# (openmodelica_codegen_wasm_jit): native targets add `sys`+`cranelift`, the
+# wasm32 target adds `js` (delegating to the host JS `WebAssembly` engine).
+wasmer = { version = "6", default-features = false, features = ["std", "wat"] }
 openmodelica_codegen_wasm_jit = {path = "openmodelica_codegen_wasm_jit"}
 # Cycle-collecting garbage collector for reference cycles closed through
 # mutable cells (Mutable/Pointer). Only the `unsync` half is used: MetaModelica
