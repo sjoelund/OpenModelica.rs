@@ -1926,3 +1926,33 @@ pub extern "C" fn rt_sim_store_row(buf: u32, row: u32, sim_data: u32, n_reals: u
         unsafe { store_f64(dst + i * 8, load_f64(sim_data + i * 8)) };
     }
 }
+
+// ---------------------------------------------------------------------------
+// Dense linear solve (LU with partial pivoting), used by `SES_LINEAR` and,
+// later, the `Modelica.Math.Matrices.*` LAPACK externals. Backed by `nalgebra`
+// (no_std, dlmalloc-backed `alloc`, `libm` floats) so the solve stays in-wasm —
+// no per-step host boundary crossing. LU with partial pivoting is the same
+// algorithm class as LAPACK's `dgesv`, so results track the C target closely.
+// ---------------------------------------------------------------------------
+
+/// Solve the dense `n`×`n` system `A x = b` in place: `A` is `a_ptr` as `n*n`
+/// f64 in **column-major** order, `b` is `b_ptr` as `n` f64. On success the
+/// solution overwrites `b` (`b ← x`) and 0 is returned; on a singular/failed
+/// factorization `b` is left unchanged and 1 is returned.
+#[unsafe(no_mangle)]
+pub extern "C" fn rt_linsolve(a_ptr: u32, b_ptr: u32, n: u32) -> i32 {
+    use nalgebra::{DMatrix, DVector};
+    let n = n as usize;
+    let a = unsafe { core::slice::from_raw_parts(a_ptr as *const f64, n * n) };
+    let b = unsafe { core::slice::from_raw_parts(b_ptr as *const f64, n) };
+    let am = DMatrix::<f64>::from_column_slice(n, n, a);
+    let bv = DVector::<f64>::from_column_slice(b);
+    match am.lu().solve(&bv) {
+        Some(x) => {
+            let out = unsafe { core::slice::from_raw_parts_mut(b_ptr as *mut f64, n) };
+            out.copy_from_slice(x.as_slice());
+            0
+        }
+        None => 1,
+    }
+}

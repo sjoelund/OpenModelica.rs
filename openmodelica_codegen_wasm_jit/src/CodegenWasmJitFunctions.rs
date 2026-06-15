@@ -417,6 +417,12 @@ pub(crate) const RT_BUILTINS: &[(&str, &[WTy], &[WTy])] = &[
     // `String(Integer, format)`: (value, format-string handle) -> formatted
     // String (Booleans are coerced to 0/1 i32). Borrows the format handle.
     ("rt_string_format_int", &[WTy::I32, WTy::I32], &[WTy::I32]),
+    // Dense linear solve `A x = b` in place (A column-major `n*n` f64 at a_ptr,
+    // b `n` f64 at b_ptr; solution overwrites b). Returns 0 ok, 1 singular.
+    ("rt_linsolve", &[WTy::I32, WTy::I32, WTy::I32], &[WTy::I32]),
+    // Raw deallocation (frees a block from `rt_alloc`); used to release the
+    // `SES_LINEAR` scratch (A/b/residual buffers) after each solve.
+    ("rt_free", &[WTy::I32], &[]),
 ];
 
 /// Absolute wasm function index of a runtime import (after all [`BUILTINS`]).
@@ -2717,6 +2723,160 @@ fn emit_sim_array_scatter(ctx: &mut FnCtx, group: &ArrayGroup, rhs: &DAE::Exp) -
     // Consume the rhs reference (we copied out the element data, not the handle).
     ctx.emit(we::Instruction::LocalGet(h));
     ctx.emit(we::Instruction::Call(rt_index("rt_array_release")));
+    Ok(())
+}
+
+/// Emit one residual evaluation for a torn linear system: run the inner
+/// constraint equations (`lower_inner`), then store each residual `r_k` as an f64
+/// at `base + dest_off + k*8`. Used by [`compile_linear_system`] for each probe.
+fn emit_residual_eval(
+    ctx: &mut FnCtx,
+    base: u32,
+    res_exps: &[&Arc<DAE::Exp>],
+    dest_off: u32,
+    lower_inner: &mut dyn FnMut(&mut FnCtx) -> Result<()>,
+) -> Result<()> {
+    lower_inner(ctx)?;
+    for (k, exp) in res_exps.iter().enumerate() {
+        ctx.emit(we::Instruction::LocalGet(base));
+        let w = compile_exp(ctx, exp)?;
+        coerce(ctx, w, WTy::F64);
+        ctx.emit(we::Instruction::F64Store(mem_arg(dest_off + (k as u32) * 8, 3)));
+    }
+    Ok(())
+}
+
+/// Lower a torn linear system `A x = b` (the `SES_LINEAR` residual form) into the
+/// current simulation equation function.
+///
+/// The system solves `iter_vars` (the `n` tearing unknowns). `lower_inner` lowers
+/// the inner "local constraint" equations, which compute the torn variables (and
+/// any intermediates) from the current values of `iter_vars`; `res_exps` are the
+/// `n` residual expressions `r_i`, where the system is `r(x) = 0`. Because the
+/// system is linear, `r(x) = A x - b`, so we recover `A` and `b` exactly by
+/// probing the residual (the numerical-Jacobian approach the C runtime uses when
+/// `setA == NULL`):
+///   * `b_i = -r_i(0)` — residual with all unknowns set to 0;
+///   * `A[i][j] = r_i(e_j) - r_i(0)` — residual with unknown `j` set to 1.
+/// Then `rt_linsolve` (LU with partial pivoting) solves `A x = b` in place, the
+/// solution is scattered back into `iter_vars`, and the inner equations are run
+/// once more so the torn variables are consistent with the solution.
+///
+/// `lower_inner` is invoked `n + 2` times (once per probe + once to recover); the
+/// inner equations read the unknowns from their `SimData` slots, which this code
+/// sets before each invocation.
+pub(crate) fn compile_linear_system(
+    ctx: &mut FnCtx,
+    iter_vars: &[Arc<DAE::ComponentRef>],
+    res_exps: &[&Arc<DAE::Exp>],
+    lower_inner: &mut dyn FnMut(&mut FnCtx) -> Result<()>,
+) -> Result<()> {
+    let n = iter_vars.len();
+    if n == 0 {
+        return Ok(());
+    }
+    if res_exps.len() != n {
+        bail!(
+            "CodegenWasmJit: linear system has {n} unknowns but {} residuals",
+            res_exps.len()
+        );
+    }
+    // Resolve each unknown to its (real) SimData slot offset.
+    let mut slots: Vec<u32> = Vec::with_capacity(n);
+    for cr in iter_vars {
+        let key = sim_cref_key(cr)?;
+        let slot = ctx
+            .sim
+            .as_ref()
+            .unwrap()
+            .vars
+            .get(&key)
+            .copied()
+            .ok_or_else(|| anyhow::anyhow!("CodegenWasmJit: linear-system unknown `{key}` has no slot"))?;
+        if slot.wty != WTy::F64 {
+            bail!("CodegenWasmJit: linear-system unknown `{key}` is not a Real variable");
+        }
+        slots.push(slot.off);
+    }
+    let data = ctx.sim.as_ref().unwrap().data_local;
+
+    // One scratch block: A (n*n, column-major) | b (n) | res0 (n) | rescol (n).
+    let a_off: u32 = 0;
+    let b_off: u32 = (n * n * 8) as u32;
+    let res0_off: u32 = ((n * n + n) * 8) as u32;
+    let rescol_off: u32 = ((n * n + 2 * n) * 8) as u32;
+    let scratch_bytes: u32 = ((n * n + 3 * n) * 8) as u32;
+
+    let base = ctx.alloc_temp(WTy::I32);
+    ctx.emit(we::Instruction::I32Const(scratch_bytes as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_alloc")));
+    ctx.emit(we::Instruction::LocalSet(base));
+
+    // Set unknown `j` to a literal 0.0 / 1.0 in its SimData slot.
+    let set_unknown = |ctx: &mut FnCtx, slot_off: u32, val: f64| {
+        ctx.emit(we::Instruction::LocalGet(data));
+        ctx.emit(we::Instruction::F64Const(val.into()));
+        ctx.emit(we::Instruction::F64Store(mem_arg(slot_off, 3)));
+    };
+
+    // --- b = -r(0): all unknowns 0, residual into res0, then negate into b. ---
+    for &off in &slots {
+        set_unknown(ctx, off, 0.0);
+    }
+    emit_residual_eval(ctx, base, res_exps, res0_off, lower_inner)?;
+    for i in 0..n {
+        let i = i as u32;
+        ctx.emit(we::Instruction::LocalGet(base));
+        ctx.emit(we::Instruction::LocalGet(base));
+        ctx.emit(we::Instruction::F64Load(mem_arg(res0_off + i * 8, 3)));
+        ctx.emit(we::Instruction::F64Neg);
+        ctx.emit(we::Instruction::F64Store(mem_arg(b_off + i * 8, 3)));
+    }
+
+    // --- A columns: unknown `col` set to 1, the rest 0; A[:,col] = r(e_col) - r(0). ---
+    for col in 0..n {
+        for (j, &off) in slots.iter().enumerate() {
+            set_unknown(ctx, off, if j == col { 1.0 } else { 0.0 });
+        }
+        emit_residual_eval(ctx, base, res_exps, rescol_off, lower_inner)?;
+        for i in 0..n {
+            let i_u = i as u32;
+            let elem_off = a_off + ((col * n + i) as u32) * 8; // column-major
+            ctx.emit(we::Instruction::LocalGet(base));
+            ctx.emit(we::Instruction::LocalGet(base));
+            ctx.emit(we::Instruction::F64Load(mem_arg(rescol_off + i_u * 8, 3)));
+            ctx.emit(we::Instruction::LocalGet(base));
+            ctx.emit(we::Instruction::F64Load(mem_arg(res0_off + i_u * 8, 3)));
+            ctx.emit(we::Instruction::F64Sub);
+            ctx.emit(we::Instruction::F64Store(mem_arg(elem_off, 3)));
+        }
+    }
+
+    // --- solve A x = b in place (b <- x); trap on a singular system. ---
+    ctx.emit(we::Instruction::LocalGet(base)); // a_ptr (a_off == 0)
+    ctx.emit(we::Instruction::LocalGet(base));
+    ctx.emit(we::Instruction::I32Const(b_off as i32));
+    ctx.emit(we::Instruction::I32Add); // b_ptr
+    ctx.emit(we::Instruction::I32Const(n as i32));
+    ctx.emit(we::Instruction::Call(rt_index("rt_linsolve")));
+    ctx.emit(we::Instruction::If(we::BlockType::Empty)); // nonzero => singular
+    ctx.emit(we::Instruction::Unreachable);
+    ctx.emit(we::Instruction::End);
+
+    // --- scatter the solution into the unknown slots. ---
+    for j in 0..n {
+        ctx.emit(we::Instruction::LocalGet(data));
+        ctx.emit(we::Instruction::LocalGet(base));
+        ctx.emit(we::Instruction::F64Load(mem_arg(b_off + (j as u32) * 8, 3)));
+        ctx.emit(we::Instruction::F64Store(mem_arg(slots[j], 3)));
+    }
+
+    // --- recover the torn variables: re-run the inner equations at the solution. ---
+    lower_inner(ctx)?;
+
+    // --- free the scratch block. ---
+    ctx.emit(we::Instruction::LocalGet(base));
+    ctx.emit(we::Instruction::Call(rt_index("rt_free")));
     Ok(())
 }
 

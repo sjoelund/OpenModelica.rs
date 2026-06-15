@@ -55,7 +55,8 @@ use openmodelica_frontend_dump::ComponentReferenceBasics;
 
 use crate::CodegenWasmJitFunctions::{
     ArrayGroup, BUILTINS, ENV_EXTRA, FnCtx, FnInfo, RT_BUILTINS, SimCtx, SimSlot, WTy,
-    compile_function, external_known, function_signature, rt_index, sim_cref_key,
+    compile_function, compile_linear_system, external_known, function_signature, rt_index,
+    sim_cref_key,
 };
 
 mod sim_runtime;
@@ -833,6 +834,7 @@ fn lower_equation(
         // exp an array-valued expression). For a model array variable this routes
         // through the whole-array scatter in `compile_sim_cref_assign`.
         E::SES_ARRAY_CALL_ASSIGN { lhs, exp, .. } => ctx.sim_assign(lhs, exp),
+        E::SES_LINEAR { lSystem, .. } => lower_linear_system(ctx, lSystem, eq_index),
         E::SES_ALGORITHM { statements, .. } => ctx.sim_stmts(statements),
         // An alias equation re-runs another equation (by index): inline it.
         E::SES_ALIAS { aliasOf, .. } => {
@@ -849,6 +851,47 @@ fn lower_equation(
             eq_index_of(other),
         ),
     }
+}
+
+/// Lower a `SES_LINEAR` (torn) system. The `residual` list is partitioned into
+/// the inner constraint equations (which compute the torn variables from the
+/// iteration unknowns) and the `SES_RESIDUAL` residual expressions; the unknowns
+/// are `lSystem.vars`. The numerical-Jacobian assembly + solve + scatter is in
+/// [`compile_linear_system`]; here we just supply the unknowns, residual
+/// expressions, and a closure that lowers the inner equations (re-invoked for
+/// each residual probe).
+fn lower_linear_system(
+    ctx: &mut FnCtx,
+    lsystem: &SimCode::LinearSystem,
+    eq_index: &HashMap<i32, Arc<SimCode::SimEqSystem>>,
+) -> Result<()> {
+    use SimCode::SimEqSystem as E;
+    let mut inner: Vec<Arc<SimCode::SimEqSystem>> = Vec::new();
+    let mut res_exps: Vec<&Arc<DAE::Exp>> = Vec::new();
+    for e in lst(&lsystem.residual) {
+        match &**e {
+            E::SES_RESIDUAL { exp, .. } => res_exps.push(exp),
+            _ => inner.push(e.clone()),
+        }
+    }
+    if res_exps.is_empty() {
+        // No residual equations: this is the non-torn symbolic form (A from
+        // `simJac`, b from `beqs`), which is not yet lowered. The torn/residual
+        // form is what the in-scope models use.
+        bail!(
+            "CodegenWasmJit: SES_LINEAR (index {}) has no residual equations — the symbolic \
+             simJac/beqs form is not yet supported",
+            lsystem.index
+        );
+    }
+    let iter_vars: Vec<Arc<DAE::ComponentRef>> = lst(&lsystem.vars).map(|v| v.name.clone()).collect();
+    let mut lower_inner = |c: &mut FnCtx| -> Result<()> {
+        for eq in &inner {
+            lower_equation(c, eq, eq_index)?;
+        }
+        Ok(())
+    };
+    compile_linear_system(ctx, &iter_vars, &res_exps, &mut lower_inner)
 }
 
 fn eq_kind_name(eq: &SimCode::SimEqSystem) -> &'static str {
