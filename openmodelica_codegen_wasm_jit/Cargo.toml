@@ -41,4 +41,9 @@ wasmtime = { workspace = true, optional = true }
 wasmer = { workspace = true, features = ["sys", "cranelift"], optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wasmer = { workspace = true, features = ["js"], optional = true }
+# `wasm-types-polyfill` is required: the JS `WebAssembly` API does not expose a
+# function's parameter/result types, so without the polyfill every exported
+# function reports an empty `[]->[]` signature and `get_typed_function` fails
+# with `ExportError::IncompatibleType`. It ships in wasmer's `js-default` but not
+# bare `js`, so request it explicitly.
+wasmer = { workspace = true, features = ["js", "wasm-types-polyfill"], optional = true }
