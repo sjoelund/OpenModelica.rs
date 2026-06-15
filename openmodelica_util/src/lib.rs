@@ -28,6 +28,10 @@ pub mod HashSetString;
 pub mod IOStream;
 pub mod IOStreamExt;
 pub mod JSON;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod Lapack;
+#[cfg(target_arch = "wasm32")]
+#[path = "Lapack_wasm.rs"]
 pub mod Lapack;
 pub mod LexerJSON;
 pub mod MMath;

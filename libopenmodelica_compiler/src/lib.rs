@@ -29,6 +29,10 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 // MetaModelica-ABI compatibility shims (`omc_Main_init` / `omc_Main_handleCommand`
 // / GC + Windows no-ops) OMEdit links against. Implemented over the embedding ABI
 // below; the `#[no_mangle]` entry points are exported from this cdylib directly.
+// OMEdit is a native C++ host (malloc/free/strdup/FILE), so these shims and the
+// SimulationRuntime C ABI below are native-only; a wasm build of this cdylib
+// targets a JS host and exposes the init/eval entry points instead.
+#[cfg(not(target_arch = "wasm32"))]
 mod mmc_compat;
 
 // SimulationRuntime metadata tables OMEdit reads (FLAG_*, *_METHOD_*,
@@ -40,6 +44,7 @@ mod sim_metadata;
 // realtime clock, ryu number formatting), backed by the Rust port so OMEdit
 // needs no OpenModelica C runtime library. The `#[no_mangle]` symbols are
 // exported from this cdylib directly.
+#[cfg(not(target_arch = "wasm32"))]
 mod omedit_runtime;
 
 // Re-export the generated typed OMEdit interface ABI (the `extern "C"` wrappers
@@ -47,7 +52,8 @@ mod omedit_runtime;
 // The `pub use` makes the `#[no_mangle]` symbols reachable from this cdylib's
 // crate root so the linker keeps them in `libOpenModelicaCompiler.so` (an rlib's
 // `#[no_mangle]` items are otherwise liable to be dropped if nothing references
-// them).
+// them). OMEdit-specific, so native-only.
+#[cfg(not(target_arch = "wasm32"))]
 pub use openmodelica_scripting_qt::scripting_api_qt::*;
 
 // Re-export the plot/loadModel callback registration entry points (implemented

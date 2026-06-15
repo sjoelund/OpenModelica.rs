@@ -1821,6 +1821,8 @@ const WASM_GATED_TOP_MODULES: &[(&str, Option<&str>)] = &[
     ("Curl", Some("Curl_wasm.rs")),
     // OMSimulator scripting API; drives the dropped OMSimulatorExt (libOMSimulator).
     ("CevalScriptOMSimulator", Some("CevalScriptOMSimulator_wasm.rs")),
+    // FFI to system LAPACK/BLAS (d*_ routines); no LAPACK to link on wasm.
+    ("Lapack", Some("Lapack_wasm.rs")),
 ];
 
 /// Emit a top-level `pub mod NAME;`, cfg-gating the native-only modules listed

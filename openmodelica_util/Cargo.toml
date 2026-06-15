@@ -27,6 +27,11 @@ zip = { version = "8.6.0", default-features = false, features = ["deflate"] }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 zmq = { workspace = true, optional = true }
 
+# On wasm there is no system LAPACK to FFI into; Lapack_wasm.rs implements the
+# LAPACK builtins over nalgebra's pure-Rust decompositions (LU/SVD/QR/eigen).
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+nalgebra = { version = "0.33", default-features = false, features = ["std"] }
+
 [features]
 # `zeromq` is NOT a default feature: it pulls native libzmq (no wasm target),
 # and a default feature cannot be turned off per-target. The native interactive
