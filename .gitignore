@@ -4,3 +4,4 @@ mslSources.txt
 a.mo
 build/
 __pycache__/
+wasm/pkg/

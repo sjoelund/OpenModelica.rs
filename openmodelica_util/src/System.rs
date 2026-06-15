@@ -24,7 +24,13 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::sync::Arc;
+// std::time::*::now() panics on wasm32-unknown-unknown (no clock); web-time
+// provides the same API backed by the JS clock there. `Duration` is clock-free,
+// so it stays from std on both.
+#[cfg(not(target_arch = "wasm32"))]
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
+#[cfg(target_arch = "wasm32")]
+use web_time::{Instant, SystemTime, UNIX_EPOCH};
 
 use anyhow::{Context, Result, bail};
 use arcstr::{ArcStr, literal};
@@ -734,7 +740,21 @@ pub fn pwd() -> ArcStr {
     }
 }
 
+// The wasm build has no OS environment — `std::env::set_var` *panics* on
+// wasm32-unknown-unknown — so `setEnv`/`readEnv` keep an in-process map instead
+// (wasm is single-threaded, hence a `thread_local`). The JS host seeds it (e.g.
+// OPENMODELICAHOME) before init.
+#[cfg(target_arch = "wasm32")]
+thread_local! {
+    static WASM_ENV: std::cell::RefCell<std::collections::HashMap<String, String>> =
+        std::cell::RefCell::new(std::collections::HashMap::new());
+}
+
 pub fn readEnv(inString: ArcStr) -> Result<ArcStr> {
+    #[cfg(target_arch = "wasm32")]
+    if let Some(v) = WASM_ENV.with(|e| e.borrow().get(inString.as_str()).cloned()) {
+        return Ok(ArcStr::from(v));
+    }
     match std::env::var(inString.as_str()) {
         Ok(v) => Ok(ArcStr::from(v)),
         Err(_) => bail!("System.readEnv: variable {inString} not set"),
@@ -742,15 +762,28 @@ pub fn readEnv(inString: ArcStr) -> Result<ArcStr> {
 }
 
 pub fn setEnv(varName: ArcStr, value: ArcStr, overwrite: bool) -> i32 {
+    #[cfg(target_arch = "wasm32")]
+    {
+        WASM_ENV.with(|e| {
+            let mut m = e.borrow_mut();
+            if overwrite || !m.contains_key(varName.as_str()) {
+                m.insert(varName.to_string(), value.to_string());
+            }
+        });
+        return 0;
+    }
     // SAFETY: std::env::set_var is `unsafe` under edition 2024 because it
     // races with concurrent getenv calls in other threads. The C runtime
     // accepts the same hazard; we mirror the behavior here and rely on
     // callers using this only during startup configuration.
-    if !overwrite && std::env::var_os(varName.as_str()).is_some() {
-        return 0;
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        if !overwrite && std::env::var_os(varName.as_str()).is_some() {
+            return 0;
+        }
+        unsafe { std::env::set_var(varName.as_str(), value.as_str()); }
+        0
     }
-    unsafe { std::env::set_var(varName.as_str(), value.as_str()); }
-    0
 }
 
 pub fn subDirectories(inString: ArcStr) -> Arc<List<ArcStr>> {
@@ -1149,7 +1182,7 @@ pub fn getVariableValue(
 pub fn getFileModificationTime(fileName: ArcStr) -> Option<metamodelica::Real> {
     fs::metadata(fileName.as_str()).ok()
         .and_then(|m| m.modified().ok())
-        .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+        .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| metamodelica::OrderedFloat(d.as_secs_f64()))
 }
 
@@ -2179,7 +2212,7 @@ pub fn stat(filename: ArcStr) -> (bool, metamodelica::Real, metamodelica::Real, 
         Ok(m) => {
             let size = m.len() as f64;
             let mtime = m.modified().ok()
-                .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
                 .map(|d| d.as_secs_f64())
                 .unwrap_or(0.0);
             let kind = if m.is_file() {

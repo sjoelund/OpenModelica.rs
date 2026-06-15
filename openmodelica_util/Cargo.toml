@@ -31,6 +31,9 @@ zmq = { workspace = true, optional = true }
 # LAPACK builtins over nalgebra's pure-Rust decompositions (LU/SVD/QR/eigen).
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 nalgebra = { version = "0.33", default-features = false, features = ["std"] }
+# Drop-in Instant/SystemTime over the JS clock (`performance.now`/`Date.now`);
+# std::time::*::now() panics on wasm32-unknown-unknown. See System.rs.
+web-time = "1"
 
 [features]
 # `zeromq` is NOT a default feature: it pulls native libzmq (no wasm target),

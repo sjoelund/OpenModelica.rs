@@ -1174,6 +1174,7 @@ dependencies = [
  "openmodelica_script_util",
  "openmodelica_scripting_qt",
  "openmodelica_util",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1304,6 +1305,7 @@ dependencies = [
  "metamodelica_derive",
  "num-traits",
  "ordered-float",
+ "web-time",
 ]
 
 [[package]]
@@ -1499,6 +1501,7 @@ dependencies = [
  "loop_unwrap",
  "metamodelica",
  "openmodelica_error",
+ "web-time",
  "winnow",
 ]
 
@@ -2266,6 +2269,7 @@ dependencies = [
  "openmodelica_error",
  "openmodelica_util_datatypes_basic",
  "roxmltree",
+ "web-time",
  "zip",
  "zmq",
 ]
@@ -3624,6 +3628,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c72a4ba7088f7bac94cf516e49882bdf97068904a563768cf249efc839ec42cb"
 dependencies = [
  "wast",
+]
+
+[[package]]
+name = "web-time"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb"
+dependencies = [
+ "js-sys",
+ "wasm-bindgen",
 ]
 
 [[package]]

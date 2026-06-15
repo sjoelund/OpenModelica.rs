@@ -2110,10 +2110,17 @@ pub fn valueConstructor<A>(value: &A) -> Result<i32> {
 
 /// Returns the current time in seconds relative to process start.
 /// Not very accurate, intended for diff comparisons.
-fn getStartInstant() -> std::time::Instant {
+// `Instant::now` panics on wasm32-unknown-unknown (no clock); web-time backs it
+// with the JS clock there.
+#[cfg(not(target_arch = "wasm32"))]
+use std::time::Instant;
+#[cfg(target_arch = "wasm32")]
+use web_time::Instant;
+
+fn getStartInstant() -> Instant {
     use std::sync::OnceLock;
-    static START: OnceLock<std::time::Instant> = OnceLock::new();
-    *START.get_or_init(std::time::Instant::now)
+    static START: OnceLock<Instant> = OnceLock::new();
+    *START.get_or_init(Instant::now)
 }
 
 pub fn clock() -> Real {

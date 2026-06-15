@@ -35,6 +35,11 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 #[cfg(not(target_arch = "wasm32"))]
 mod mmc_compat;
 
+// JavaScript (wasm-bindgen) bindings: the string-to-string command interface a
+// browser/Node host calls instead of the native C ABI above.
+#[cfg(target_arch = "wasm32")]
+mod wasm_api;
+
 // SimulationRuntime metadata tables OMEdit reads (FLAG_*, *_METHOD_*,
 // OMC_LOG_STREAM_*); generated from the C runtime by gen/gen-sim-tables.sh so
 // OMEdit needs no OpenModelica C runtime library for them.

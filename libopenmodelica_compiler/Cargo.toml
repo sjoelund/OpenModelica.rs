@@ -22,6 +22,11 @@ arcstr.workspace = true
 # `mmc_mk_*` use malloc/strdup, so the shims free them with the same allocator).
 libc.workspace = true
 
+# wasm build: the JS bindings (src/wasm_api.rs). Pinned to match the
+# wasm-bindgen the wasmer `js` backend targets (see the workspace Cargo.lock).
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "=0.2.100"
+
 [features]
 # Forward the wasm-jit engine choice (default wasmtime; see
 # openmodelica_codegen_wasm_jit).

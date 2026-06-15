@@ -171,9 +171,15 @@ fn file_timestamp(filename: &str) -> f64 {
 }
 
 /// `time(NULL)` for string parses, like parseString in Parser/parse.c.
+/// `SystemTime::now` panics on wasm32-unknown-unknown; web-time backs it with
+/// the JS clock there.
 fn now_timestamp() -> f64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
+    #[cfg(not(target_arch = "wasm32"))]
+    use std::time::{SystemTime, UNIX_EPOCH};
+    #[cfg(target_arch = "wasm32")]
+    use web_time::{SystemTime, UNIX_EPOCH};
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
         .map(|d| d.as_secs() as f64)
         .unwrap_or(0.0)
 }
