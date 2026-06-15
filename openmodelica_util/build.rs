@@ -2,6 +2,13 @@
 // `src/Lapack.rs` resolve. The reference `liblapack.so` provides the
 // `d*_` Fortran-ABI routines; `libblas` satisfies its transitive symbols.
 fn main() {
+    // The wasm target has no native LAPACK/BLAS to link and no C toolchain to
+    // compile the shim; both the FFI (`src/Lapack.rs`) and the C error shim
+    // (`dynload`) are `cfg`'d out for wasm, so this build script is a no-op there.
+    if std::env::var("CARGO_CFG_TARGET_ARCH").as_deref() == Ok("wasm32") {
+        return;
+    }
+
     println!("cargo:rustc-link-lib=dylib=lapack");
     println!("cargo:rustc-link-lib=dylib=blas");
 

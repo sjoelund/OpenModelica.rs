@@ -26,7 +26,7 @@
 use std::sync::Arc;
 
 use arcstr::ArcStr;
-use libc::c_char;
+use core::ffi::c_char;
 use metamodelica::{List, OrderedFloat, Real, nil};
 
 type Mat = Arc<List<Arc<List<Real>>>>;

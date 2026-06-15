@@ -183,6 +183,21 @@ pub fn stringFindString(r#str: ArcStr, searchStr: ArcStr) -> ArcStr {
 /// is empty and `nmatch` is 1 on match, 0 otherwise. On a compile error
 /// `nmatch` is 0 and (for `maxMatches > 0`) the error message is the first
 /// element.
+#[cfg(target_arch = "wasm32")]
+pub fn regex(
+    _str: ArcStr,
+    _re: ArcStr,
+    _maxMatches: i32,
+    _extended: bool,
+    _ignoreCase: bool,
+) -> (i32, Arc<List<ArcStr>>) {
+    // POSIX regex(3) (libc regcomp/regexec) is unavailable on wasm; a pure-Rust
+    // port (over the `regex` crate, reconciling POSIX ERE/BRE semantics with the
+    // C runtime's) is the follow-up. Until then this path is unimplemented.
+    todo!("System.regex: POSIX regex not available on wasm; needs a pure-Rust port")
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 pub fn regex(
     str: ArcStr,
     re: ArcStr,
@@ -226,7 +241,7 @@ pub fn regex(
             if maxn == 0 {
                 return (0, metamodelica::nil());
             }
-            let mut buf = vec![0 as libc::c_char; 2048];
+            let mut buf = vec![0 as core::ffi::c_char; 2048];
             libc::regerror(rc, &preg, buf.as_mut_ptr(), buf.len());
             let msg = std::ffi::CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned();
             let mut items: Vec<ArcStr> = Vec::with_capacity(maxn);
@@ -589,16 +604,16 @@ pub fn spawnCall(_path: ArcStr, _str: ArcStr) -> i32 {
 /// external-window flag, then 18 string arguments.
 pub type PlotCallback = unsafe extern "C" fn(
     *mut std::ffi::c_void,
-    libc::c_int,
-    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
-    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
-    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
-    *const libc::c_char, *const libc::c_char, *const libc::c_char, *const libc::c_char,
-    *const libc::c_char, *const libc::c_char,
+    core::ffi::c_int,
+    *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char,
+    *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char,
+    *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char,
+    *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_char,
+    *const core::ffi::c_char, *const core::ffi::c_char,
 );
 
 /// Matches the C `LoadModelCallback`: the host class pointer and a model name.
-pub type LoadModelCallback = unsafe extern "C" fn(*mut std::ffi::c_void, *const libc::c_char);
+pub type LoadModelCallback = unsafe extern "C" fn(*mut std::ffi::c_void, *const core::ffi::c_char);
 
 struct PlotReg {
     class_ptr: usize,
@@ -656,7 +671,7 @@ pub fn plotCallBack(
     // with `reg.0` (its class pointer); the CStrings outlive the call.
     unsafe {
         (reg.1)(
-            reg.0 as *mut std::ffi::c_void, externalWindow as libc::c_int,
+            reg.0 as *mut std::ffi::c_void, externalWindow as core::ffi::c_int,
             f.as_ptr(), ti.as_ptr(), g.as_ptr(), pt.as_ptr(),
             lx.as_ptr(), ly.as_ptr(), xl.as_ptr(), yl.as_ptr(),
             a1.as_ptr(), a2.as_ptr(), b1.as_ptr(), b2.as_ptr(),
@@ -2190,7 +2205,7 @@ pub fn alarm(seconds: i32) -> i32 {
     use std::sync::atomic::{AtomicBool, Ordering};
     static HANDLER_INSTALLED: AtomicBool = AtomicBool::new(false);
 
-    extern "C" fn alarm_handler(signo: libc::c_int) {
+    extern "C" fn alarm_handler(signo: core::ffi::c_int) {
         unsafe {
             // Forward the alarm to every process in our group, then reset
             // SIGALRM to its default action so the signal terminates us.
@@ -2206,12 +2221,12 @@ pub fn alarm(seconds: i32) -> i32 {
         {
             libc::signal(libc::SIGALRM, alarm_handler as *const () as libc::sighandler_t);
         }
-        libc::alarm(seconds as libc::c_uint) as i32
+        libc::alarm(seconds as core::ffi::c_uint) as i32
     }
 }
 
 #[cfg(not(unix))]
-pub fn alarm(seconds: i32) -> i32 {
+pub fn alarm(_seconds: i32) -> i32 {
     // The Windows runtime uses the C library's `alarm` directly without a
     // custom SIGALRM disposition; no MSVC target is built here yet.
     todo!("System.alarm: non-unix SIGALRM scheduling not yet ported")
